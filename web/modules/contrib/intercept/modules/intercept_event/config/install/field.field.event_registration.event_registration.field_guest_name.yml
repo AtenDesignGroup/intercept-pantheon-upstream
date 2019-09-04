@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.event_registration.field_guest_name
+  module:
+    - intercept_event
+id: event_registration.event_registration.field_guest_name
+field_name: field_guest_name
+entity_type: event_registration
+bundle: event_registration
+label: 'Guest Name'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

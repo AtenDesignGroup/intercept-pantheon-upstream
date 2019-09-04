@@ -1,0 +1,12 @@
+
+locationsList:
+  js:
+    js/dist/locationsList.js:
+      preprocess: false
+
+  dependencies:
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon

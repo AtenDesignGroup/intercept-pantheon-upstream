@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_branch_location
+    - node.type.location
+id: node.location.field_branch_location
+field_name: field_branch_location
+entity_type: node
+bundle: location
+label: 'Branch Location'
+description: 'Select this to differentiate branch locations from locations in the broader community. '
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

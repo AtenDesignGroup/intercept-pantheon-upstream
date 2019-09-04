@@ -1,0 +1,13 @@
+services:
+  intercept_event.manager:
+    class: Drupal\intercept_event\EventManager
+    arguments: ['@current_user', '@entity_type.manager']
+  intercept_event.recurring_manager:
+    class: Drupal\intercept_event\RecurringEventManager
+    arguments: ['@current_user', '@entity_type.manager', '@messenger', '@intercept_core.utility.dates']
+  intercept_event.evaluation_manager:
+    class: Drupal\intercept_event\EventEvaluationManager
+    arguments: ['@current_user', '@entity_type.manager']
+  intercept_event.queue:
+    class: Drupal\intercept_event\EventQueue
+    arguments: ['@queue']

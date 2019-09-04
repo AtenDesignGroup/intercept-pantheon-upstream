@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies: {  }
+id: intercept_room_reservation_approver
+label: 'InterCEPT Room Reservation Approver'
+weight: 4
+is_admin: null
+permissions:
+  - 'access management page room_reservations'
+  - 'access staff management'
+  - 'access staff management page room_reservations'
+  - 'approve room_reservation'
+  - 'approve room_reservation entities'
+  - 'bypass room reservation agreement'
+  - 'bypass room reservation limit'
+  - 'cancel room_reservation'
+  - 'create room_reservation'
+  - 'update any room_reservation'
+  - 'update own room_reservation'
+  - 'view own room_reservation'
+  - 'view reservation content'
+  - 'view room_reservation'
+  - 'view staff use room reservation'

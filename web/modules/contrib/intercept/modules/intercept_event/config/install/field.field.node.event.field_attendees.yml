@@ -1,0 +1,47 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_attendees
+    - node.type.event
+    - taxonomy.vocabulary.population_segment
+  content:
+    - 'taxonomy_term:population_segment:10276290-1e5d-41db-b255-be74e09b2154'
+    - 'taxonomy_term:population_segment:6be4fc28-bd6d-4ca2-9ec3-012ff5371141'
+    - 'taxonomy_term:population_segment:88c9168a-2699-46c9-a54b-0bc6383578f6'
+    - 'taxonomy_term:population_segment:a8fd2344-84b4-401e-ae24-1bc7db8fe20d'
+  module:
+    - tally
+id: node.event.field_attendees
+field_name: field_attendees
+entity_type: node
+bundle: event
+label: Attendees
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    count: null
+    target_uuid: a8fd2344-84b4-401e-ae24-1bc7db8fe20d
+  -
+    count: null
+    target_uuid: 10276290-1e5d-41db-b255-be74e09b2154
+  -
+    count: null
+    target_uuid: 88c9168a-2699-46c9-a54b-0bc6383578f6
+  -
+    count: null
+    target_uuid: 6be4fc28-bd6d-4ca2-9ec3-012ff5371141
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      population_segment: population_segment
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: tally_reference

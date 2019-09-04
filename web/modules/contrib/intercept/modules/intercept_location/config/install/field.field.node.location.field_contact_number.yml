@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_contact_number
+    - node.type.location
+  module:
+    - telephone
+id: node.location.field_contact_number
+field_name: field_contact_number
+entity_type: node
+bundle: location
+label: 'Contact Number'
+description: 'Enter the phone number of the branch.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: telephone

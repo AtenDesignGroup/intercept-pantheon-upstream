@@ -1,0 +1,34 @@
+langcode: en
+status: true
+dependencies: {  }
+id: intercept_equipment_reservation_manager
+label: 'InterCEPT Equipment Reservation Manager'
+weight: 4
+is_admin: null
+permissions:
+  - 'access  management'
+  - 'access  management page default'
+  - 'access management'
+  - 'access management page equipment_reservations'
+  - 'access staff management'
+  - 'access staff management page room_reservations'
+  - 'add equipment reservation entities'
+  - 'bypass room reservation agreement'
+  - 'bypass room reservation limit'
+  - 'create equipment_reservation'
+  - 'create room_reservation'
+  - 'delete equipment reservation entities'
+  - 'edit equipment reservation entities'
+  - 'save draft'
+  - 'update any equipment_reservation'
+  - 'update own customer profile'
+  - 'update own equipment_reservation'
+  - 'update own room_reservation'
+  - 'view equipment_reservation'
+  - 'view own customer profile'
+  - 'view own equipment_reservation'
+  - 'view own room_reservation'
+  - 'view published equipment reservation entities'
+  - 'view reservation content'
+  - 'view staff use room reservation'
+  - 'view the administration theme'

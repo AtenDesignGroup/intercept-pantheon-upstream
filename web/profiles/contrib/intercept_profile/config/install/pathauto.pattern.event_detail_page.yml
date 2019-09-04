@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: event_detail_page
+label: 'Event - Detail Page'
+type: 'canonical_entities:node'
+pattern: 'event/[node:field_date_time:start_date:html_date]/[node:title]'
+selection_criteria:
+  c31fb04f-0590-4881-af04-44e2165ed417:
+    id: node_type
+    bundles:
+      event: event
+    negate: false
+    context_mapping:
+      node: node
+    uuid: c31fb04f-0590-4881-af04-44e2165ed417
+selection_logic: and
+weight: -5
+relationships: {  }

@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_staff_use_only
+    - node.type.room
+id: node.room.field_staff_use_only
+field_name: field_staff_use_only
+entity_type: node
+bundle: room
+label: 'Staff Use Only'
+description: 'Check if this room can only be reserved by staff.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'True'
+  off_label: 'False'
+field_type: boolean

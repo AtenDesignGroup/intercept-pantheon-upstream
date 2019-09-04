@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.event_registration.field_registrants
+    - taxonomy.vocabulary.population_segment
+  module:
+    - intercept_event
+    - tally
+id: event_registration.event_registration.field_registrants
+field_name: field_registrants
+entity_type: event_registration
+bundle: event_registration
+label: Registrants
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      population_segment: population_segment
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: tally_reference

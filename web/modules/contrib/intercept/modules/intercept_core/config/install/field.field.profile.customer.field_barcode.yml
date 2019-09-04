@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_barcode
+    - profile.type.customer
+id: profile.customer.field_barcode
+field_name: field_barcode
+entity_type: profile
+bundle: customer
+label: 'Card number'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

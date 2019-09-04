@@ -1,0 +1,10 @@
+name: Tally
+type: module
+description: Adds a field to calculate a simple count per referenced entity
+# core: 8.x
+
+# Information added by Drupal.org packaging script on 2019-08-01
+version: '8.x-1.x-dev'
+core: '8.x'
+project: 'tally'
+datestamp: 1564686517

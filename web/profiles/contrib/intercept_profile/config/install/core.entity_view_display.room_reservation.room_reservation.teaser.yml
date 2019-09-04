@@ -1,0 +1,149 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.room_reservation.teaser
+    - field.field.room_reservation.room_reservation.field_agreement
+    - field.field.room_reservation.room_reservation.field_attendee_count
+    - field.field.room_reservation.room_reservation.field_dates
+    - field.field.room_reservation.room_reservation.field_event
+    - field.field.room_reservation.room_reservation.field_group_name
+    - field.field.room_reservation.room_reservation.field_meeting_purpose
+    - field.field.room_reservation.room_reservation.field_meeting_purpose_details
+    - field.field.room_reservation.room_reservation.field_publicize
+    - field.field.room_reservation.room_reservation.field_refreshments
+    - field.field.room_reservation.room_reservation.field_refreshments_description
+    - field.field.room_reservation.room_reservation.field_room
+    - field.field.room_reservation.room_reservation.field_status
+    - field.field.room_reservation.room_reservation.field_user
+  module:
+    - datetime_range
+    - intercept_room_reservation
+    - options
+    - text
+id: room_reservation.room_reservation.teaser
+targetEntityType: room_reservation
+bundle: room_reservation
+mode: teaser
+content:
+  action_button:
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_attendee_count:
+    type: number_integer
+    weight: 6
+    region: content
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+  field_dates:
+    type: daterange_default
+    weight: 3
+    region: content
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: short
+      separator: '-'
+    third_party_settings: {  }
+  field_event:
+    type: entity_reference_label
+    weight: 7
+    region: content
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_group_name:
+    type: string
+    weight: 8
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_meeting_purpose:
+    type: entity_reference_label
+    weight: 9
+    region: content
+    label: inline
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_publicize:
+    type: boolean
+    weight: 12
+    region: content
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+  field_refreshments:
+    type: boolean
+    weight: 10
+    region: content
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+  field_refreshments_description:
+    type: text_default
+    weight: 11
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  field_room:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_status:
+    type: list_default
+    weight: 2
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  field_user:
+    type: entity_reference_label
+    weight: 5
+    region: content
+    label: inline
+    settings:
+      link: false
+    third_party_settings: {  }
+  room_location:
+    type: entity_reference_label
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  user_id:
+    label: hidden
+    type: author
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  attendees_full: true
+  author: true
+  field_agreement: true
+  field_meeting_purpose_details: true
+  image: true
+  location: true
+  location_full: true

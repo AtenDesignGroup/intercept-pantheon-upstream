@@ -1,0 +1,109 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.customer.field_address
+    - field.field.profile.customer.field_audiences
+    - field.field.profile.customer.field_barcode
+    - field.field.profile.customer.field_email_address
+    - field.field.profile.customer.field_event_types
+    - field.field.profile.customer.field_first_name
+    - field.field.profile.customer.field_hold_pickup_location
+    - field.field.profile.customer.field_ils_username
+    - field.field.profile.customer.field_last_name
+    - field.field.profile.customer.field_phone
+    - field.field.profile.customer.field_preferred_location
+    - profile.type.customer
+  module:
+    - address
+    - telephone
+id: profile.customer.default
+targetEntityType: profile
+bundle: customer
+mode: default
+content:
+  field_address:
+    weight: 9
+    settings:
+      default_country: null
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_audiences:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_barcode:
+    weight: 8
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_email_address:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+    region: content
+  field_event_types:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_first_name:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_ils_username:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_last_name:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_phone:
+    weight: 2
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+  field_preferred_location:
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+hidden:
+  card_number: true
+  field_hold_pickup_location: true
+  pin: true

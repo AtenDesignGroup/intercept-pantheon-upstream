@@ -1,0 +1,5 @@
+intercept_ils.settings_form:
+  route_name: intercept_ils.settings
+  title: 'Intercept ILS Settings'
+  description: 'Settings for the Intercept ILS module'
+  parent: intercept_core.settings

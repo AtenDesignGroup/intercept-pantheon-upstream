@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_online_registration
+    - node.type.room
+id: node.room.field_online_registration
+field_name: field_online_registration
+entity_type: node
+bundle: room
+label: 'Online Registration'
+description: 'Check if this room can only be reserved online.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

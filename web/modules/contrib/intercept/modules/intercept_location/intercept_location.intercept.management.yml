@@ -1,0 +1,6 @@
+intercept_location:
+  controller: 'Drupal\intercept_location\Controller\ManagementController::view'
+  pages:
+    locations_rooms:
+      title: 'Locations & Rooms'
+      menu_link: FALSE

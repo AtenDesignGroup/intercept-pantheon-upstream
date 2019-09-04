@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains tally.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function tally_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the tally module.
+    case 'help.page.tally':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Tally') . '</p>';
+      return $output;
+
+    default:
+  }
+}

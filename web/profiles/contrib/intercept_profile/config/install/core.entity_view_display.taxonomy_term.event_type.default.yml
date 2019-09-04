@@ -1,0 +1,47 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.event_type.field_evaluation_criteria_neg
+    - field.field.taxonomy_term.event_type.field_evaluation_criteria_pos
+    - field.field.taxonomy_term.event_type.field_examples
+    - taxonomy.vocabulary.event_type
+  module:
+    - text
+id: taxonomy_term.event_type.default
+targetEntityType: taxonomy_term
+bundle: event_type
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_evaluation_criteria_neg:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_evaluation_criteria_pos:
+    weight: 4
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_examples:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

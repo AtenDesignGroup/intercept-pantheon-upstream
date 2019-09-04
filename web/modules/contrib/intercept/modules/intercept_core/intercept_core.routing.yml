@@ -1,0 +1,72 @@
+rema_api.system_time:
+  path: '/intercept/time'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\SystemTime::response'
+  requirements:
+    _access: 'TRUE'
+
+intercept_core.settings:
+  path: '/admin/config/intercept'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'InterCEPT Settings'
+  requirements:
+    _permission: 'access administration pages'
+
+intercept_core.general:
+  path: '/admin/config/intercept/general'
+  defaults:
+    _form: '\Drupal\intercept_core\Form\SettingsForm'
+    _title: 'InterCEPT General'
+  requirements:
+    _permission: 'administer intercept_core'
+
+intercept_core.admin_structure:
+  path: '/admin/structure/intercept'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'InterCEPT'
+  requirements:
+    _permission: 'access administration pages'
+
+intercept_core.account.settings:
+  path: '/account/settings'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\UserAccount::userRedirect'
+    _title: 'Settings'
+    route_name: 'intercept_core.user_profile_form'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+intercept_core.user_profile_form:
+  path: '/user/{user}/settings'
+  defaults:
+    _entity_form: 'user.customer'
+    _title_callback: 'Drupal\user\Controller\UserController::userTitle'
+  requirements:
+    user: '\d+'
+    _entity_access: 'user.update'
+
+intercept_core.admin_permissions:
+  path: '/admin/config/intercept/permissions'
+  defaults:
+    _form: '\Drupal\intercept_core\Form\UserPermissionsForm'
+    _title: 'Permissions'
+  requirements:
+    _permission: 'administer permissions'
+
+intercept_core.api.customer_search:
+  path: '/api/customer/search'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\UserAccount::customerSearchApi'
+    _title: 'Customer Search'
+  requirements:
+    _permission: 'search customer'
+
+intercept_core.api.customer_register:
+  path: '/api/customer/register'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\UserAccount::customerRegisterApi'
+    _title: 'Register customer'
+  requirements:
+    _permission: 'search customer'

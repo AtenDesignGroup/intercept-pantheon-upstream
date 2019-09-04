@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.event_series
+  module:
+    - user
+id: node.event_series.default
+targetEntityType: node
+bundle: event_series
+mode: default
+content:
+  links:
+    weight: 100
+    region: content
+hidden:
+  image_primary: true

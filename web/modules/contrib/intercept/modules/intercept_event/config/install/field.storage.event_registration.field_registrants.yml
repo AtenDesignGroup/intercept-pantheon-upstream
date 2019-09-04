@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_event
+    - tally
+    - taxonomy
+id: event_registration.field_registrants
+field_name: field_registrants
+entity_type: event_registration
+type: tally_reference
+settings:
+  target_type: taxonomy_term
+module: tally
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_link_directions
+    - node.type.location
+  module:
+    - link
+id: node.location.field_link_directions
+field_name: field_link_directions
+entity_type: node
+bundle: location
+label: 'Get Directions Link'
+description: 'Provide the Google Maps link for the branch.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 16
+  title: 0
+field_type: link

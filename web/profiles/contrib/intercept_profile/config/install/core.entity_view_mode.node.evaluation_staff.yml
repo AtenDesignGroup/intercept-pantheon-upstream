@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.evaluation_staff
+label: 'Evaluation (staff)'
+targetEntityType: node
+cache: true

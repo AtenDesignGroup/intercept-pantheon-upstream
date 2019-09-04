@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_affiliated
+    - node.type.location
+id: node.location.field_affiliated
+field_name: field_affiliated
+entity_type: node
+bundle: location
+label: 'Affiliated Location'
+description: 'Check for locations affiliated with your organization.'
+required: true
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Affiliated Location'
+  off_label: 'Community Location'
+field_type: boolean

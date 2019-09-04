@@ -1,0 +1,142 @@
+event_form_helper:
+  js:
+    js/event_form_helper.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+
+event_recurring:
+  version: VERSION
+  js:
+    js/event_recurring.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - date_recur/rrule
+
+eventCheckin:
+  version: VERSION
+  js:
+    js/event_checkin.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+
+eventAddToCalendar:
+  js:
+    js/dist/eventAddToCalendar.js:
+      preprocess: true
+  dependencies:
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/interceptCommon
+    - intercept_core/interceptClient
+
+eventList:
+  js:
+    js/dist/eventList.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/moment
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+    - intercept_core/bigCalendar
+    - intercept_core/materialIcons
+
+eventRegister:
+  js:
+    js/dist/eventRegister.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/moment
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+    - intercept_core/materialIcons
+
+eventRegisterButton:
+  js:
+    js/dist/eventRegisterButton.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/moment
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+
+eventCustomerEvaluation:
+  js:
+    js/dist/eventCustomerEvaluation.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+
+eventAttendanceList:
+  js:
+    js/dist/eventAttendanceList.js:
+      preprocess: false
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+
+eventCustomerEvaluations:
+  js:
+    js/dist/eventCustomerEvaluations.js:
+      preprocess: false
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+
+manageEventRegistrations:
+  js:
+    js/dist/eventRegistrationList.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/moment
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+
+eventNumberAttendees:
+  js:
+    js/event_number_attendees.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

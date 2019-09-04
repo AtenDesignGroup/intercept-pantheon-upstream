@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_keywords
+    - node.type.event
+id: node.event.field_keywords
+field_name: field_keywords
+entity_type: node
+bundle: event
+label: Keywords
+description: 'This field is used to improve the customer-facing event search and is meant to only be filled in by Drupal during hook_node_presave() and hook_taxonomy_term_update(). It currently contains a concatenated, sanitized version of the following fields: Title, Content, Intro, Teaser, Event tag titles'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

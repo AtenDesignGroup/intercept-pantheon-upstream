@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_requires_explanation
+    - taxonomy.vocabulary.meeting_purpose
+id: taxonomy_term.meeting_purpose.field_requires_explanation
+field_name: field_requires_explanation
+entity_type: taxonomy_term
+bundle: meeting_purpose
+label: 'Requires Explanation'
+description: 'Select if this option warrants further explanation such as "Other"'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

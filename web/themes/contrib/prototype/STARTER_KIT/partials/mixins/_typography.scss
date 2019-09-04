@@ -1,0 +1,179 @@
+//
+// Mixins for typography
+//
+
+@function scale-has-lh($scale) {
+  @return length($scale) > 1;
+}
+
+//
+// Returns a font scale for a specific breakpoint.
+//
+// @param $breakpoint;
+//   The name of the breakpoint who's font scale we need.
+// @param $map;
+//   A font sizing map. Defaults to the sitewide defined in
+//   `settings/typography`
+// @return
+//   Sass map of font sizes.
+@function get-breakpoint-fs-map($breakpoint: "none", $map: $font-sizes) {
+  @if map-has-key($map, $breakpoint) {
+    @return map-get($map, $breakpoint);
+  }
+
+  @else {
+    @warn "Unfortunately, no breakpoint could be retrieved for `#{$breakpoint}`. "
+        + "Please make sure it is defined in `$map` map.";
+  }
+};
+
+//
+// Returns a specific font size from a font scale.
+//
+// @param $size;
+//   The named font size to look for.
+// @param $map;
+//   A font scale map.
+// @return
+//   Font size value.
+@function get-fs($size, $map) {
+  @if map-has-key($map, $size) {
+    // Always return the first size item.
+    @return nth(map-get($map, $size), 1);
+  }
+
+  @else {
+    @warn "Unfortunately, no font-size could be retrieved for `#{$size}`. "
+        + "Please make sure it is defined in `$map` map.";
+  }
+}
+
+//
+// Returns a specific line height from a font scale.
+//
+// @param $size;
+//   The named line height to look for.
+// @param $map;
+//   A font scale map.
+// @return
+//   Font size value.
+@function get-lh($size, $map) {
+  @if map-has-key($map, $size) and length(map-get($map, $size)) > 1 {
+    // Always return the second size item.
+    @return nth(map-get($map, $size), 2);
+  }
+
+  @else {
+    @warn "Unfortunately, no line-height could be retrieved for `#{$size}`. "
+        + "Please make sure it is defined in `$map` map.";
+  }
+}
+
+//
+// Returns a specific font size, for a specific breakpoint from a font map.
+//
+// @param $size;
+//   The named font size to look for.
+// @param $breakpoint;
+//   The named breakpoint to look through. Defaults to 'none'.
+// @param $map;
+//   The font scale map to use. Defaults to scale defined in
+//   `settings/typography`.
+// @return
+//   Font size value.
+@function get-fs-from-breakpoint($size, $breakpoint: "none", $map: $font-sizes) {
+  @return get-fs($size, get-breakpoint-fs-map($breakpoint, $map));
+}
+
+//
+// Returns a font size in REM units from a font map.
+//
+// @param $size;
+//   The named font size to look for.
+// @param $breakpoint;
+//   The named breakpoint to look through. Defaults to 'none'.
+// @param $map;
+//   The font scale map to use. Defaults to scale defined in
+//   `settings/typography`.
+// @return
+//   Font size in REM units.
+@function fs($size, $breakpoint: "none", $map: $font-sizes) {
+  @return rem(get-fs-from-breakpoint($size, $breakpoint, $map));
+}
+
+//
+// Returns a specific line height, for a specific breakpoint from a font map.
+//
+// @param $size;
+//   The named line height to look for.
+// @param $breakpoint;
+//   The named breakpoint to look through. Defaults to 'none'.
+// @param $map;
+//   The font scale map to use. Defaults to scale defined in
+//   `settings/typography`.
+// @return
+//   Font size value.
+@function get-lh-from-breakpoint($size, $breakpoint: "none", $map: $font-sizes) {
+  @return get-lh($size, get-breakpoint-fs-map($breakpoint, $map));
+}
+
+//
+// Returns a unitless line-height from a font map.
+//
+// @param $size;
+//   The named line height to look for.
+// @param $breakpoint;
+//   The named breakpoint to look through. Defaults to 'none'.
+// @param $map;
+//   The font scale map to use. Defaults to scale defined in
+//   `settings/typography`.
+// @return
+//   Font size in REM units.
+@function line-height($size, $breakpoint: "none", $map: $font-sizes) {
+  $fs: get-fs-from-breakpoint($size, $breakpoint, $map);
+  $lh: get-lh-from-breakpoint($size, $breakpoint, $map);
+  @return $lh/$fs;
+}
+
+@mixin set-font-rhythm($size, $breakpoint: null, $map: $font-sizes) {
+  font-size: fs($size, $breakpoint, $map);
+
+  // Check if our scale has a line height.
+  @if scale-has-lh(map-get(get-breakpoint-fs-map($breakpoint, $map), $size)) {
+    line-height: line-height($size, $breakpoint, $map);
+  }
+}
+
+//
+// Outputs styles for a full font scale across breakpoints.
+//
+// @param $size;
+//   The named font size to look for.
+// @param $breakpoint;
+//   The named breakpoint to look through. Defaults to 'none'.
+// @param $map;
+//   The font scale map to use. Defaults to scale defined in
+//   `settings/typography`.
+@mixin fs($size, $breakpoint: null, $map: $font-sizes) {
+  @if $breakpoint != null {
+    @include bp($breakpoint) {
+      @include set-font-rhythm($size, $breakpoint, $map);
+    }
+  }
+
+  @else {
+    @each $bp, $scale in $map {
+      // If the font size exists in the current scale, set our styles.
+      @if map-has-key($scale, $size) {
+        @include bp($bp) {
+          @include set-font-rhythm($size, $bp, $map);
+        }
+      }
+    }
+  }
+}
+
+// Line Height
+@mixin lh($size) {
+  line-height: lh($size);
+}

@@ -1,0 +1,45 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.event_recurrence.event_recurrence.field_event_rrule
+  module:
+    - date_recur
+    - intercept_event
+    - user
+id: event_recurrence.event_recurrence.default
+targetEntityType: event_recurrence
+bundle: event_recurrence
+mode: default
+content:
+  field_event_rrule:
+    weight: 0
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+      separator: '-'
+      show_rrule: '1'
+      show_next: '5'
+      count_per_item: '1'
+      occurrence_format_type: medium
+      same_end_date_format_type: medium
+    third_party_settings: {  }
+    type: date_recur_basic_formatter
+    region: content
+  name:
+    label: above
+    type: string
+    weight: -4
+    region: content
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  user_id:
+    label: hidden
+    type: author
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

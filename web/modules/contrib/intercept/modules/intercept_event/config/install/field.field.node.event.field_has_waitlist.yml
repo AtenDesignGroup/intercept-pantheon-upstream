@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_has_waitlist
+    - node.type.event
+id: node.event.field_has_waitlist
+field_name: field_has_waitlist
+entity_type: node
+bundle: event
+label: 'Waitlist Available'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

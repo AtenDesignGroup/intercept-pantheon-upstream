@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - votingapi.vote_type.evaluation
+id: vote.evaluation.default
+targetEntityType: vote
+bundle: evaluation
+mode: default
+content:
+  default:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  evaluation:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  feedback: true
+  vote_criteria: true

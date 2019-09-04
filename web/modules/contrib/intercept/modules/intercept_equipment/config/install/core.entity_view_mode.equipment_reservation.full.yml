@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_equipment
+id: equipment_reservation.full
+label: 'Full content'
+targetEntityType: equipment_reservation
+cache: true

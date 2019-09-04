@@ -1,0 +1,37 @@
+# Room reservation routing definition
+room_reservation.settings_tab:
+  route_name: room_reservation.settings
+  title: 'Settings'
+  base_route: room_reservation.settings
+
+entity.room_reservation.canonical:
+  route_name: entity.room_reservation.canonical
+  base_route: entity.room_reservation.canonical
+  title: 'View'
+
+entity.room_reservation.edit_form:
+  route_name: entity.room_reservation.edit_form
+  base_route: entity.room_reservation.canonical
+  title: 'Edit'
+
+entity.room_reservation.delete_form:
+  route_name:  entity.room_reservation.delete_form
+  base_route:  entity.room_reservation.canonical
+  title: Delete
+  weight: 10
+
+entity.room_reservation.collection:
+  title: 'Room Reservations'
+  route_name: entity.room_reservation.collection
+  base_route: system.admin_content
+  weight: 15
+
+room_reservation.availability:
+  route_name: room_reservation.availability
+  title: 'Availability'
+  base_route: entity.room_reservation.collection
+
+entity.node.reservations:
+  title: 'Reservations'
+  route_name: entity.node.reservations
+  base_route: entity.node.canonical

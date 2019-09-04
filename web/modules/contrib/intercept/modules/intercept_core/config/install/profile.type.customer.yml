@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies: {  }
+id: customer
+label: Customer
+registration: true
+multiple: false
+roles:
+  authenticated: authenticated
+  intercept_registered_customer: intercept_registered_customer
+  intercept_staff: intercept_staff
+  intercept_system_admin: intercept_system_admin
+  administrator: administrator
+  intercept_kiosk: '0'
+weight: 0
+use_revisions: false
+description: ''

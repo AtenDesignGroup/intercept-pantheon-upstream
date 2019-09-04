@@ -1,0 +1,14 @@
+{
+  "name": "drupal/tally",
+  "type": "drupal-module",
+  "description": "Adds a field to calculate a simply count per referenced entity",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/tally",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/tally",
+    "source": "http://cgit.drupalcode.org/tally"
+  },
+  "require": { }
+}

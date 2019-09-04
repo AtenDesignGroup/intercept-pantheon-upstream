@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+id: evaluation
+label: Evaluation
+value_type: custom
+description: 'Allows an attendee for an event to rate each event with a like or dislike, and then provide criteria associated with taxonomy terms.'

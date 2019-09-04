@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_waitlist_max
+    - node.type.event
+id: node.event.field_waitlist_max
+field_name: field_waitlist_max
+entity_type: node
+bundle: event
+label: 'Waitlist Limit'
+description: 'Limit the number of attendees that can be added to the waitlist. Input 0 for unlimited.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  min: 0
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

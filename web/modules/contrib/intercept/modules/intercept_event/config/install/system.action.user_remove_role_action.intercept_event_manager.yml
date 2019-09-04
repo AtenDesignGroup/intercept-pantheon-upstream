@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.intercept_event_manager
+  module:
+    - user
+id: user_remove_role_action.intercept_event_manager
+label: 'Remove the InterCEPT Event Manager role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: intercept_event_manager

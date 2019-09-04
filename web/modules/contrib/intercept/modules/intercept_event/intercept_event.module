@@ -1,0 +1,683 @@
+<?php
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+use Drupal\pathauto\AliasUniquifier;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+
+/**
+ * Implements hook_theme().
+ */
+function intercept_event_theme() {
+  return [
+    'event_attendance_scan_form' => [
+      'render element' => 'form',
+    ],
+    'event_registration_event_form' => [
+      'render element' => 'form',
+    ],
+    'event_recurrence_event_form' => [
+      'render element' => 'form',
+    ],
+    'events_recommended' => [
+      'variables' => ['content' => NULL],
+      'template' => 'events-recommended',
+    ],
+    'node_event_analysis' => [
+      'variables' => ['content' => NULL],
+      'template' => 'node-event-analysis',
+    ],
+    'node_event_registrations' => [
+      'variables' => ['content' => NULL],
+      'template' => 'node-event-registrations',
+    ],
+    'evaluation_eval_widget' => [
+      'variables' => [
+        'label' => t('Your rating for this event:'),
+        'value' => NULL,
+      ],
+      'template' => 'evaluation-eval-widget',
+    ],
+    'event_eval_feedback' => [
+      'variables' => [
+        'content' => NULL,
+        'user' => NULL,
+      ],
+      'template' => 'event-eval-feedback',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function intercept_event_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if ($entity->getEntityTypeId() == 'flagging' && $entity->bundle() == 'saved_event' && $operation == 'view') {
+    $permissions = [
+      'view saved_event flagging entities',
+      'administer flaggings',
+    ];
+    if ($entity->getOwnerId() == $account->id()) {
+      $permissions[] = 'view own saved_event flagging entities';
+    }
+    return AccessResult::allowedIfHasPermissions($account, $permissions, 'OR');
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function intercept_event_entity_operation(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'event_registration') {
+    $operation = function ($op) use ($entity) {
+      return [
+        'title' => t(ucwords($op)),
+        'url' => Url::fromRoute("entity.event_registration.{$op}_form", [
+          'event_registration' => $entity->id(),
+          'destination' => Url::fromRoute('<current>')->toString(),
+        ]),
+      ];
+    };
+    return [
+      'cancel' => $operation('cancel'),
+    ];
+  }
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function intercept_event_entity_extra_field_info() {
+  $extra = [];
+
+  $extra['vote']['evaluation']['display']['evaluation'] = [
+    'label' => t('Event evaluation'),
+    'description' => t('A simple liked or disliked display.'),
+    'weight' => 0,
+    'visible' => FALSE,
+  ];
+
+  $extra['node']['event']['display']['evaluation_attendee_default'] = [
+    'label' => t('Evaluation default (attendee)'),
+    'description' => t('View evaluation widget for attendees.'),
+    'weight' => 10,
+    'visible' => FALSE,
+  ];
+
+  $extra['node']['event']['display']['evaluation_attendee_js'] = [
+    'label' => t('Evaluation JS widget (attendee)'),
+    'description' => t('View evaluation widget for attendees.'),
+    'weight' => 10,
+    'visible' => FALSE,
+  ];
+
+  $extra['node']['event']['display']['evaluation_staff'] = [
+    'label' => t('Evaluation (staff)'),
+    'description' => t('View evaluation widget for staff users.'),
+    'weight' => 10,
+    'visible' => FALSE,
+  ];
+
+  $extra['event_attendance']['event_attendance']['form']['event_summary'] = [
+    'label' => t('Event summary'),
+    'description' => t('View event summary information.'),
+    'weight' => 10,
+    'visible' => FALSE,
+  ];
+
+  $extra['node']['event']['form']['recurring_event'] = [
+    'label' => t('Recurring event'),
+    'description' => t('View event recurrence information.'),
+    'weight' => 10,
+    'visible' => FALSE,
+  ];
+
+  return $extra;
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function intercept_event_entity_type_build(array &$entity_types) {
+  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  $entity_types['node']
+    ->setFormClass('template', 'Drupal\intercept_event\Form\EventTemplateForm')
+    ->setLinkTemplate('template-form', '/node/{node}/template')
+    ->setFormClass('recurrence', 'Drupal\intercept_event\Form\EventRecurrenceEventsForm')
+    ->setLinkTemplate('recurrence-form', '/node/{node}/recurrences')
+    ->setFormClass('attendance', 'Drupal\intercept_event\Form\EventAttendanceEventsForm')
+    ->setLinkTemplate('attendance-form', '/node/{node}/recurrences');
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function intercept_event_node_access(NodeInterface $node, $op, AccountInterface $account) {
+  if ($node->bundle() == 'event' && $op == 'template') {
+    return AccessResult::allowedIfHasPermission($account, 'create event content from template');
+  }
+  if ($node->bundle() == 'event' && $op == 'analysis') {
+    return AccessResult::allowedIfHasPermission($account, 'analyze events');
+  }
+  if ($node->bundle() == 'event' && $op == 'scan') {
+    return AccessResult::allowedIfHasPermission($account, 'scan event_attendance');
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function intercept_event_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  // Check if it's edit because 'view' might not have any items.
+  if ($operation == 'edit') {
+    if ($items->getEntity()->bundle() == 'event' && $field_definition->getName() == 'field_event_is_template') {
+      return AccessResult::forbiddenIf(!$account->hasPermission('edit event field field_event_is_template'));
+    }
+    if ($items->getEntity()->bundle() == 'event' && $field_definition->getName() == 'field_featured') {
+      return AccessResult::forbiddenIf(!$account->hasPermission('edit event field field_featured'));
+    }
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_pathauto_alias_alter().
+ */
+function intercept_event_pathauto_alias_alter(&$alias, array &$context) {
+  if ($context['module'] == 'node' && $context['bundle'] == 'event') {
+    // Utilize uniquify() function from Pathauto to prevent duplicate aliases
+    // which will lead to incorrect registrations for events.
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $config_factory = \Drupal::service('config.factory');
+    $alias_storage_helper = \Drupal::service('pathauto.alias_storage_helper');
+    $module_handler = \Drupal::service('module_handler');
+    $route_provider = \Drupal::service('router.route_provider');
+    $alias_manager = \Drupal::service('path.alias_manager');
+    $alias_uniquifier = new AliasUniquifier($config_factory, $alias_storage_helper, $module_handler, $route_provider, $alias_manager);
+    $unique_alias = $alias_uniquifier->uniquify($alias, $context['source'], $langcode);
+    // Then ultimately make the alias for registration.
+    \Drupal::service('intercept_event.manager')->addRegisterAlias($context['data']['node'], $alias);
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function intercept_event_node_update(NodeInterface $node) {
+  if ($node->bundle() == 'event') {
+    if ($node->path->pathauto) {
+      return;
+    }
+    \Drupal::service('intercept_event.manager')->addRegisterAlias($node);
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function intercept_event_node_insert(NodeInterface $node) {
+  if ($node->bundle() == 'event') {
+    if ($node->path->pathauto) {
+      return;
+    }
+    \Drupal::service('intercept_event.manager')->addRegisterAlias($node);
+  }
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function intercept_event_entity_presave(EntityInterface $entity) {
+  switch ($entity->bundle()) {
+    case 'event':
+      $keywords = '';
+      $title = $entity->get('title')->value;
+      $teaser = html_entity_decode(strip_tags($entity->get('field_text_teaser')->value));
+      $content = html_entity_decode(strip_tags($entity->get('field_text_content')->value));
+      $intro = html_entity_decode(strip_tags($entity->get('field_text_intro')->value));
+      $keywords = implode(' ', [$title, $teaser, $content, $intro]);
+      $types = $entity->get('field_event_type')->referencedEntities();
+      foreach ($types as $type) {
+        $keywords .= ' ' . $type->getName();
+      }
+      $audiences = $entity->get('field_event_audience')->referencedEntities();
+      foreach ($audiences as $audience) {
+        $keywords .= ' ' . $audience->getName();
+      }
+      $tags = $entity->get('field_event_tags')->referencedEntities();
+      foreach ($tags as $tag) {
+        $keywords .= ' ' . $tag->getName();
+      }
+      // Clean up the keywords string to remove punctuation & extra white space.
+      $keywords = preg_replace("/[^a-zA-Z 0-9\-]/", ' ', $keywords);
+      $keywords = preg_replace('/\s+/', ' ', $keywords);
+      $keywords = trim($keywords);
+      // Setting the value into the keywords field.
+      $entity->field_keywords->value = $keywords;
+      break;
+
+    case 'audience':
+    case 'event_type':
+    case 'tag':
+      // It's a taxonomy term from one of our taxonomy fields that gets
+      // concatenated into the keywords field.
+      // Find the term id.
+      $tid = $entity->id();
+      if ($tid) {
+        // Then, find all of the event nodes that currently use this term.
+        $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
+          'field_event_audience' => $tid,
+        ]);
+        if (empty($nodes)) {
+          $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
+            'field_event_type' => $tid,
+          ]);
+        }
+        if (empty($nodes)) {
+          $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
+            'field_event_tags' => $tid,
+          ]);
+        }
+        // Trigger a re-save of all of those (thus updating keywords field data).
+        if (count($nodes) > 0) {
+          $eventQueue = Drupal::service('intercept_event.queue');
+          foreach($nodes as $node) {
+            $eventQueue->add($node->id());
+          }
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function intercept_event_node_delete(NodeInterface $node) {
+  if ($node->bundle() == 'event') {
+    \Drupal::service('intercept_event.manager')->deleteRegisterAlias($node);
+    return;
+  }
+}
+
+/**
+ * Implemtent hook_theme_suggestions_HOOK_alter().
+ */
+function intercept_event_theme_suggestions_form_element_alter(&$suggestions, $variables) {
+  if (!isset($variables['element']['#form_id'])) {
+    return;
+  }
+  $form_id = $variables['element']['#form_id'];
+
+  // Add a suggestion for staff evaluations.
+  $evaluation_form_position = strrpos($form_id, 'event_evaluation_staff_form');
+  if ($evaluation_form_position !== FALSE && $evaluation_form_position >= 0) {
+    $suggestions[] = "form_element__type__" . $variables['element']['#type'] . "__event_evaluation_staff_form";
+  }
+  else if ($form_id == 'views_exposed_form') {
+    if ($variables['element']['#attributes']['id'] == 'edit-title' && $variables['element']['#title'] == 'Title') {
+      $suggestions[] = "form_element__type__" . $variables['element']['#type'] . "__event_attendance_export_form";
+    }
+  }
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function intercept_event_views_post_execute(ViewExecutable $view) {
+  if ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
+    // FIXME: Make this at least not hardcoded for the group info, but then
+    // also see if there is a better solution.
+    $conditions = $view->query->where[3]['conditions'];
+    if (empty($conditions)) {
+      // For this particular filter group if they have none of the checkboxes
+      // then views will remove all of those filters.
+      // The proper solution would be that at least one in the group is required.
+      $view->total_rows = 0;
+      $view->result = [];
+      $view->pager->destroy();
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // TODO: Change this to a widget type for the exposed filter.
+  $view = $form_state->get('view');
+  if ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
+    $query = \Drupal::request()->query->all();
+    if (empty($query)) {
+      foreach (['attended', 'registered', 'saved'] as $field) {
+        $form[$field]['#value'] = 1;
+      }
+    }
+  }
+  if ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
+    $link = function ($d, $o, $t) {
+      $query = \Drupal::request()->query->all();
+      // 2 is upcoming dates combined filter.
+      $query['date'] = $d;
+      $query['sort'] = $o;
+      $query['order'] = 'field_date_time';
+      ($d == 1) ? $suffix = ' - ' : $suffix = '';
+      return [
+        '#type' => 'link',
+        '#title' => t($t),
+        '#url' => Url::fromRoute('<current>', [], [
+          'query' => $query,
+        ]),
+        '#attributes' => ['class' => ['date-filter', 'date-filter-' . strtolower($t)]],
+        '#suffix' => $suffix,
+      ];
+    };
+    $form['links'] = [
+      '#weight' => -5,
+      'past' => $link(1, 'desc', 'Past'),
+      'upcoming' => $link(2, 'asc', 'Upcoming'),
+    ];
+    $form['date']['#type'] = 'hidden';
+  }
+  else if ($view->id() == 'intercept_event_attendance' && $view->current_display == 'embed') {
+    // Remove autocomplete from the form's date fields.
+    $form['date_start']['#attributes']['autocomplete'] = 'off';
+    $form['date_end']['#attributes']['autocomplete'] = 'off';
+    $form['attendance_date']['min']['#attributes']['autocomplete'] = 'off';
+    $form['attendance_date']['max']['#attributes']['autocomplete'] = 'off';
+  }
+  else if ($view->id() == 'intercept_event_attendance_by_age_group' && $view->current_display == 'page') {
+    // Remove autocomplete from the form's date fields.
+    $form['field_date_time_value']['min']['#attributes']['autocomplete'] = 'off';
+    $form['field_date_time_value']['max']['#attributes']['autocomplete'] = 'off';
+  }
+  
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_event_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  $node = $form_state->getFormObject()->getEntity();
+  if ($node->bundle() == 'event' && $node->hasField('event_recurrence')) {
+    \Drupal::service('intercept_event.recurring_manager')->nodeFormAlter($form, $form_state);
+  }
+  if ($node->bundle() == 'event') {
+    \Drupal::service('intercept_event.manager')->nodeFormAlter($form, $form_state);
+    if (!$node->isNew()) {
+      \Drupal::service('intercept_event.manager')->nodeEditFormAlter($form, $form_state);
+    }
+  }
+  $request = \Drupal::service('request_stack')->getCurrentRequest();
+  if ($node->bundle() == 'event' && $node->isNew() && $request->query->get('template')) {
+    $form['field_event_is_template']['widget']['value']['#default_value'] = 1;
+  }
+  if ($form_state->getFormObject()->getEntity()->bundle() == 'event') {
+    $form['#validate'][] = 'intercept_event_node_event_form_validate';
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function intercept_event_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
+  switch($form_id) {
+    case 'node_event_attendance_form':
+      $form['#attached']['library'][] = 'intercept_event/eventNumberAttendees';
+      break;
+  }
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function intercept_event_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($entity->bundle() == 'event' && $display->getComponent('evaluation_attendee_default')) {
+    $build['evaluation'] = \Drupal::service('intercept_event.evaluation_manager')
+      ->getDefaultForm($entity);
+  }
+  if ($entity->bundle() == 'event' && $display->getComponent('evaluation_attendee_js')) {
+    $evaluation_manager = \Drupal::service('intercept_event.evaluation_manager');
+
+    if ($evaluation_manager->eventHasEnded($entity)) {
+      $evaluation = $evaluation_manager->loadByEntity($entity, [
+        'user_id' => '<current>',
+      ]);
+      $build['evaluation'] = $evaluation ? $evaluation->view() : $evaluation_manager->buildJsWidget($entity);
+    }
+  }
+  if ($entity->bundle() === 'event' && $entity->field_must_register->value === '1') {
+    $build['register_prompt'] = [
+      '#markup' => '<div class="event-register-button js--event-register-button" data-event-uuid="' . $entity->uuid() . '"></div>',
+      '#attached' => [
+        'library' => ['intercept_event/eventRegisterButton'],
+      ],
+    ];
+  }
+}
+
+/**
+ * Implements hook_vote_view().
+ */
+function intercept_event_vote_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($entity->bundle() == 'evaluation' && $display->getComponent('evaluation')) {
+    $build['evaluation'] = [
+      '#theme' => 'evaluation_eval_widget',
+      '#value' => $entity->getValue() ? 'like' : 'dislike',
+    ];
+  }
+}
+
+/**
+ * Custom form validation for the event node form.
+ *
+ * @see intercept_event_form_node_form_alter()
+ */
+function intercept_event_node_event_form_validate(&$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  $must_register = !empty($values['field_must_register']) ? $values['field_must_register']['value'] : FALSE;
+  if ($must_register) {
+    // In this case a partial date was entered, but is invalid.
+    $errors = $form_state->getErrors();
+    if (!empty($errors['field_event_register_period][0']) || !empty($errors['field_date_time][0'])) {
+      // Skip to avoid overcomplicating our date validation.
+      return;
+    }
+
+    $valid_dates = function ($date_array) {
+      if (empty($date_array['value']) || empty($date_array['end_value'])) {
+        return FALSE;
+      }
+      if (!($date_array['value'] instanceof \Drupal\Component\Datetime\DateTimePlus) || !($date_array['end_value'] instanceof \Drupal\Component\Datetime\DateTimePlus)) {
+        return FALSE;
+      }
+      return TRUE;
+    };
+
+    $dates_event = $values['field_date_time'][0];
+    $dates_registration = $values['field_event_register_period'][0];
+
+    if (!$valid_dates($dates_registration)) {
+      $form_state->setErrorByName('field_event_register_period[0', t('Registration period is required.'));
+      return;
+    }
+    if (!$valid_dates($dates_event)) {
+      // This should not be possible, but just in case so further validation does not break.
+      $form_state->setErrorByName('field_event_register_period[0', t('Event date is invalid.'));
+    }
+
+    // TODO: Check to see if date module has already set an error on the
+    // end value being before the start value.
+    $get_field_name = function ($field, $field_name = 'field_event_register') {
+      $parents = [$field_name . '_period', 0, $field];
+      return implode('][', $parents);
+    };
+
+    $title = $form['field_event_register_period']['widget']['#title'];
+
+    if (!$dates_event['end_value']->diff($dates_registration['end_value'])->invert) {
+      $form_state->setErrorByName($get_field_name('end_value'), t('The @title must end before the event end date.', [
+        '@title' => $title,
+      ]));
+    }
+    if (!$dates_event['value']->diff($dates_registration['value'])->invert) {
+      $form_state->setErrorByName($get_field_name('value'), t('The @title must start before the event start date.', [
+        '@title' => $title,
+      ]));
+    }
+  }
+
+  if ($values['field_event_designation'][0]['value'] == 'events') {
+    $required_fields = [
+      'field_event_type_primary' => 'Primary Event Type',
+      'field_event_type' => 'Event Type(s)',
+      'field_event_audience' => 'Audience(s)',
+      'field_audience_primary' => 'Primary Audience',
+    ];
+    foreach ($required_fields as $key => $name) {
+      if (empty($values[$key])) {
+        $form_state->setErrorByName($key, t('@name is required.', ['@name' => $name]));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_bundle_field_info().
+ */
+function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  $fields = [];
+  if ($entity_type->id() == 'vote' && $bundle == 'evaluation') {
+    $fields['vote_criteria'] = \Drupal\Core\Field\BaseFieldDefinition::create('map')
+      ->setLabel(t('Vote criteria'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+    $fields['feedback'] = \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Feedback'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    return $fields;
+  }
+  if ($entity_type->id() == 'node' && $bundle == 'event') {
+    $fields['registration'] = \Drupal\Core\Field\BaseFieldDefinition::create('intercept_computed')
+      ->setLabel(t('Registration details'))
+      ->setComputed(TRUE)
+      ->setSetting('properties', [
+        'total' => DataDefinition::create('integer')->setLabel(t('Total registrations:')),
+        'total_waitlist' => DataDefinition::create('integer')->setLabel(t('Total waitlisted:')),
+        'status' => DataDefinition::create('string')->setLabel(t('Registration Status:')),
+        'status_user' => DataDefinition::create('string')->setLabel(t('Status for current user:')),
+      ])
+      ->setClass(\Drupal\intercept_event\EventRegistrationField::class);
+
+    $fields['event_recurrence'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Event recurrence'))
+      ->setSetting('target_type', 'event_recurrence')
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type) {
+  if ($entity_type->id() == 'vote') {
+    $definitions = [];
+    $definitions['vote_criteria'] = \Drupal\Core\Field\BaseFieldDefinition::create('map')
+      ->setName('vote_criteria')
+      ->setLabel(t('Vote criteria'))
+      ->setCardinality(1);
+    $definitions['feedback'] = \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+      ->setName('feedback')
+      ->setLabel(t('Feedback'))
+      ->setCardinality(1);
+    return $definitions;
+  }
+  if ($entity_type->id() == 'node') {
+    $definitions = [];
+    $definitions['event_recurrence'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setName('event_reccurence')
+      ->setLabel(t('Event recurrence'))
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setSettings([
+        'unsigned' => FALSE,
+        'size' => 'normal',
+        'target_type' => 'event_recurrence',
+      ])
+      ->setCardinality(1);
+    return $definitions;
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'intercept_event_attendance') {
+    foreach ($query->where as &$condition_group) {
+      // For each condition in condition group.
+      foreach ($condition_group['conditions'] as &$condition) {
+        // Attendance dates.
+        if (isset($condition['field']) && strstr($condition['field'], 'event_attendance.created')) {
+          // Run the query from the beginning of the start date until the end of the end date.
+          // First, find the end date chosen (timestamp).
+          preg_match('/(\d{10}) AND (\d{10})/', $condition['field'], $matches);
+          if (!empty($matches)) {
+            $end_timestamp = $matches[2] + 86399;
+            $condition['field'] = preg_replace("/(?<=\d{10} AND )\d{10}/", $end_timestamp, $condition['field']);
+          }
+        }
+        // Event dates.
+        elseif (isset($condition['field']) && strstr($condition['field'], 'field_date_time_value') && strstr($condition['field'], '<=')) {
+          // Run the query from the beginning of the start date until the end of the end date.
+          $condition['field'] = preg_replace("/(?<=\<\= DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "23:59:59')", $condition['field']);
+        }
+      }
+    }
+  }
+  elseif ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
+    $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
+    $query->addGroupBy('node.nid');
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'intercept_event_attendance_by_age_group' && $display_id == 'page') {
+    // Build the link to download the CSV.
+    $request = \Drupal::request();
+    $link_renderable = \Drupal\Core\Link::createFromRoute('Download CSV', 'view.intercept_event_attendance_by_age_group.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link = \Drupal::service('renderer')->render($link_renderable);
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => '<h1 class="title">Event Attendance By Age Group</h1>' .
+      $link . '<br>' .
+      '<a href="/account/manage/event-attendance-export">View All Attendance</a>',
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('page', 'header', 'area_text_custom', $options);
+  }
+}

@@ -1,0 +1,61 @@
+entity.user.room_reservations:
+  path: '/user/{user}/room-reservations'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::manage'
+    _title: 'Room Reservations'
+  requirements:
+    node: \d+
+    _entity_access: 'user.update'
+
+entity.node.reservations:
+  path: '/node/{node}/reservations'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::reservations'
+  requirements:
+    node: \d+
+    _entity_access: 'node.update'
+    _entity_bundle: 'room'
+    _permission: 'administer nodes'
+  options:
+    _admin_route: TRUE
+
+intercept_room_reservation.reserve_room:
+  path: '/reserve-room'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::reserve'
+    _title: 'reserve'
+  requirements:
+    _access: 'TRUE'
+
+intercept_room_reservation.account.room_reservations:
+  path: '/account/room-reservations'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\UserAccount::userRedirect'
+    _title: 'Room Reservations'
+    route_name: 'entity.user.room_reservations'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+intercept_room_reservation.api.reserve:
+  path: '/api/rooms/reserve'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::reserveRoom'
+  methods: [POST, GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+intercept_room_reservation.api.user_status:
+  path: '/api/rooms/user/status'
+  methods: [POST, GET]
+  defaults:
+    _controller: 'Drupal\intercept_room_reservation\Controller\RoomReservationController::userStatus'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+intercept_room_reservation.api.availability:
+  path: '/api/rooms/availability'
+  methods: [POST, GET]
+  defaults:
+    _controller: 'Drupal\intercept_room_reservation\Controller\RoomReservationController::availability'
+  requirements:
+    _access: 'TRUE'

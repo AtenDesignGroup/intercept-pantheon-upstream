@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_event
+    - telephone
+id: event_registration.field_guest_phone_number
+field_name: field_guest_phone_number
+entity_type: event_registration
+type: telephone
+settings: {  }
+module: telephone
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

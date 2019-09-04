@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.meeting_purpose.field_requires_explanation
+    - taxonomy.vocabulary.meeting_purpose
+  module:
+    - text
+id: taxonomy_term.meeting_purpose.default
+targetEntityType: taxonomy_term
+bundle: meeting_purpose
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_requires_explanation:
+    weight: 1
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+hidden: {  }

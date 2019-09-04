@@ -1,0 +1,302 @@
+<?php
+
+/**
+ * @file
+ * Contains intercept_equipment.module.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Render\Element;
+use Drupal\intercept_equipment\Entity\EquipmentReservationInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Database\Database;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+
+/**
+ * Implements hook_node_access().
+ */
+function intercept_equipment_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
+  if ($node->bundle() == 'equipment' && $op == 'view') {
+    return AccessResult::forbiddenIf(!$account->hasPermission('view reservation content'))
+      ->cachePerPermissions()
+      ->cachePerUser()
+      ->addCacheableDependency($node);
+  }
+   // No opinion.
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_update_N().
+ * 
+ * Install temporary database table so that we can uninstall and reinstall
+ * module with new equipment reservation entity.
+ */
+function intercept_equipment_update_8001() {
+  $spec = array(
+    'description' => 'Equipment Reservations',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('id'),
+  ); 
+  $schema = Database::getConnection()->schema();
+  if ($schema->tableExists('equipment_reservation') == FALSE) {
+    $schema->createTable('equipment_reservation', $spec);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function intercept_equipment_mail($key, &$message, $params) {
+  $options = array(
+    'langcode' => $message['langcode'],
+  );
+  switch ($key) {
+    case 'created':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Equipment Request - @equipment_title for @username', array('@username' => $params['username'], '@equipment_title' => $params['equipment_title']), $options);
+      $message['body'] = [];
+      $message['body'][] = t("The following request was submitted:\n\nContact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", array('@email_address' => $params['email_address'], '@username' => $params['username'], '@equipment_title' => $params['equipment_title'], '@reservation_start_date' => $params['reservation_start_date'], '@reservation_end_date' => $params['reservation_end_date'], '@location_title' => $params['location_title'], '@room_title' => $params['room_title'], '@event_title' => $params['event_title']), $options);
+      // Do we need a notification for the requestor? Legacy system did it but
+      // ...we also have an equipment reservations listing page. Let's not do
+      // ...this for launch. -MJ
+      break;
+  }
+  //https://valuebound.com/resources/blog/how-to-send-mail-programmatically-drupal-8
+  //https://valuebound.com/resources/blog/how-to-send-custom-formatted-html-mail-drupal-8-using-hook-mail-alter
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function intercept_equipment_equipment_reservation_insert(Drupal\Core\Entity\EntityInterface $entity) {
+  // NOTIFICATIONS
+
+  // Get the "to" email address.
+  $equipment_nid = $entity->get('field_equipment')->getValue();
+  $equipment_node = Node::load($equipment_nid[0]['target_id']);
+
+  // Get the equipment node's taxonomy term
+  // (e.g., Technology, Operations, etc.)
+  $equipment_type = $equipment_node->get('field_equipment_type')->getValue();
+  $equipment_type = $equipment_type[0]['target_id'];
+  $equipment_term = Term::load($equipment_type);
+  // Email the appropriate email address(es) as specified on the term.
+  $email_addresses = $equipment_term->get('field_email')->getValue();
+  $email_addresses = $email_addresses[0];
+
+  if (!empty($email_addresses)) {
+    // Set up variables used in the subject/body of the emails.
+    // Get requestor/current user's email address.
+    $user = \Drupal::currentUser();
+    $email = $user->getEmail();
+    // Username of requestor
+    $username = $user->getUsername();
+    // Equipment title
+    $equipment_title = $equipment_node->getTitle();
+    // Dates/times of reservation
+    $reservation_dates = $entity->get('field_dates')->getValue();
+    $dateTime = new DrupalDateTime($reservation_dates[0]['value'], 'UTC');
+    $reservation_start_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
+    $dateTime = new DrupalDateTime($reservation_dates[0]['end_value'], 'UTC');
+    $reservation_end_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
+    // Location
+    $location_nid = $entity->get('field_location')->getValue();
+    $location_node = Node::load($location_nid[0]['target_id']);
+    $location_title = $location_node->getTitle();
+    // Room
+    $room_nid = $entity->get('field_room')->getValue();
+    if ($room_nid) {
+      $room_node = Node::load($room_nid[0]['target_id']);
+      $room_title = $room_node->getTitle();
+    }
+    else {
+      $room_title = '';
+    }
+    // Event
+    $event_nid = $entity->get('field_event')->getValue();
+    if ($event_nid) {
+      $event_node = Node::load($event_nid[0]['target_id']);
+      $event_title = $event_node->getTitle();
+    }
+    else {
+      $event_title = '';
+    }
+
+    // Send it!
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $module = 'intercept_equipment';
+    $key = 'created';
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $params = [
+      'email_address' => $email,
+      'username' => $username,
+      'equipment_title' => $equipment_title,
+      'reservation_start_date' => $reservation_start_date,
+      'reservation_end_date' => $reservation_end_date,
+      'location_title' => $location_title,
+      'room_title' => $room_title,
+      'event_title' => $event_title,
+    ];
+    $send = true;
+    foreach($email_addresses as $email_address) {
+      $to = $email_address;
+      $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+    }
+  }
+
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_equipment_form_views_exposed_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  $view = $form_state->get('view');
+  if ($view->id() == 'intercept_equipment_reservations' && $view->current_display == 'embed') {
+    $link = function($d, $o, $t) {
+      $query = \Drupal::request()->query->all();
+      // 2 is upcoming dates combined filter.
+      $query['field_dates_value'] = $d;
+      $query['sort'] = $o;
+      $query['order'] = 'field_dates_value';
+      ($d == 1) ? $suffix = ' - ' : $suffix = '';
+      return [
+        '#type' => 'link',
+        '#title' => t($t),
+        '#url' => Url::fromRoute('<current>', [], [
+          'query' => $query,
+        ]),
+        '#attributes' => ['class' => ['date-filter', 'date-filter-' . strtolower($t)]],
+        '#suffix' => $suffix,
+      ];
+    };
+    $form['links'] = [
+      '#weight' => -5,
+      'past' => $link(1, 'desc', 'Past'),
+      'upcoming' => $link(2, 'asc', 'Upcoming'),
+    ];
+    $form['field_dates_value']['#type'] = 'hidden';
+
+    // Change the locations field to be a dropdown.
+    // See: https://atendesigngroup.com/blog/drupal-8-views-entity-reference-exposed-filter-select-list
+    // Query nodes
+    $storage = Drupal::getContainer()->get('entity_type.manager')->getStorage('node');
+    $nids = $storage->getQuery();
+ 
+    // Gather published location nodes and sort by title
+    $nids = $nids->condition('type', 'location')
+      ->condition('status', 1)
+      ->sort('title')
+      ->execute();
+ 
+    // If there are no nodes, move on
+    if (!$nids) {
+      return FALSE;
+    }
+ 
+    // Start building out the options for our select list
+    $options = [];
+    $nodes = $storage->loadMultiple($nids);
+ 
+    // Push titles into select list
+    foreach ($nodes as $node) {
+      $title = $node->getTitle();
+      $options[$title] = $title;
+    }
+ 
+    // Start building out our new form element
+    $location_field = 'title_1';
+    $form[$location_field]['#type'] = 'select';
+    $form[$location_field]['#multiple'] = FALSE;
+ 
+    // Specify the empty option for our select list
+    $form[$location_field]['#empty_option'] = t('Any');
+ 
+    // Add the $options from above to our select list
+    $form[$location_field]['#options'] = $options;
+    unset($form[$location_field]['#size']);
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function intercept_equipment_theme() {
+  return [
+    'equipment_reservation' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for Equipment reservation templates.
+ *
+ * Default template: equipment_reservation.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the user information and any
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_equipment_reservation(array &$variables) {
+  // Fetch EquipmentReservation Entity Object.
+  $equipment_reservation = $variables['equipment_reservation'] = $variables['elements']['#equipment_reservation'];
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  // Helpful $content variable for templates.
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+  $variables['label'] = $equipment_reservation->label();
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function intercept_equipment_theme_suggestions_equipment_reservation(array $variables) {
+  $suggestions = [];
+  $equipment_reservation = $variables['elements']['#equipment_reservation'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'equipment_reservation__' . $sanitized_view_mode;
+  $suggestions[] = 'equipment_reservation__' . $equipment_reservation->bundle();
+  $suggestions[] = 'equipment_reservation__' . $equipment_reservation->bundle() . '__' . $sanitized_view_mode;
+
+  return $suggestions;
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function intercept_equipment_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'intercept_equipment_reservations' && $view->current_display == 'embed') {
+    foreach ($query->where as &$condition_group) {
+      // For each condition in condition group
+      foreach ($condition_group['conditions'] as &$condition) {
+        if (isset($condition['field']) && strstr($condition['field'], 'field_dates_value')) {
+          // Run the query from the beginning of the start date until the end of the end date.
+          $condition['field'] = preg_replace("/(?<=AND DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "23:59:59')", $condition['field']);
+          $condition['field'] = preg_replace("/(?<=BETWEEN DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "00:00:00')", $condition['field']);
+        }
+      }
+    }
+  }
+}

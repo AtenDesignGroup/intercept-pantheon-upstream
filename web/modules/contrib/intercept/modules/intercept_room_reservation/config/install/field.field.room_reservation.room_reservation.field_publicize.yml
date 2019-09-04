@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.room_reservation.field_publicize
+  module:
+    - intercept_room_reservation
+id: room_reservation.room_reservation.field_publicize
+field_name: field_publicize
+entity_type: room_reservation
+bundle: room_reservation
+label: Publicize
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'I plan to publicly advertise this meeting.'
+  off_label: 'I do not plan to publicly advertise this meeting.'
+field_type: boolean

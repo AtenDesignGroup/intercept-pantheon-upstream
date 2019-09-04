@@ -1,0 +1,337 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.media.simple
+    - field.field.node.event.field_add_to_cal
+    - field.field.node.event.field_attendees
+    - field.field.node.event.field_audience_primary
+    - field.field.node.event.field_capacity_max
+    - field.field.node.event.field_date_time
+    - field.field.node.event.field_evanced_id
+    - field.field.node.event.field_event_audience
+    - field.field.node.event.field_event_designation
+    - field.field.node.event.field_event_is_template
+    - field.field.node.event.field_event_register_period
+    - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_tags
+    - field.field.node.event.field_event_type
+    - field.field.node.event.field_event_type_primary
+    - field.field.node.event.field_featured
+    - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_keywords
+    - field.field.node.event.field_location
+    - field.field.node.event.field_must_register
+    - field.field.node.event.field_presented_by_non_staff
+    - field.field.node.event.field_presenter
+    - field.field.node.event.field_room
+    - field.field.node.event.field_text_content
+    - field.field.node.event.field_text_intro
+    - field.field.node.event.field_text_teaser
+    - field.field.node.event.field_waitlist_max
+    - field.field.node.event.image_primary
+    - node.type.event
+  module:
+    - addtocalendar
+    - datetime_range
+    - entity_browser_entity_form
+    - existing_values_autocomplete_widget
+    - field_group
+    - inline_entity_form
+    - path
+    - text
+third_party_settings:
+  field_group:
+    group_attendees:
+      children:
+        - field_capacity_max
+        - field_must_register
+        - field_event_register_period
+        - field_has_waitlist
+        - field_waitlist_max
+      parent_name: ''
+      weight: 13
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: false
+      label: Attendees
+      region: content
+    group_logistics:
+      children:
+        - field_location
+        - field_room
+        - reservation
+      parent_name: ''
+      weight: 10
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: Logistics
+      region: content
+    group_metadata:
+      children:
+        - field_event_series
+        - field_event_type
+        - field_event_type_primary
+        - field_event_audience
+        - field_audience_primary
+        - field_presented_by_non_staff
+        - field_presenter
+        - field_event_tags
+      parent_name: ''
+      weight: 12
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: false
+      label: Metadata
+      region: content
+id: node.event.default
+targetEntityType: node
+bundle: event
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_add_to_cal:
+    type: add_to_calendar_widget_type
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_audience_primary:
+    weight: 17
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_capacity_max:
+    weight: 18
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_date_time:
+    weight: 9
+    settings: {  }
+    third_party_settings: {  }
+    type: daterange_default
+    region: content
+  field_event_audience:
+    weight: 16
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_event_designation:
+    weight: 21
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_event_register_period:
+    weight: 20
+    settings: {  }
+    third_party_settings: {  }
+    type: daterange_default
+    region: content
+  field_event_series:
+    type: options_select
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_event_tags:
+    weight: 20
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_event_type:
+    weight: 14
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_event_type_primary:
+    weight: 15
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_featured:
+    weight: 18
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_has_waitlist:
+    weight: 21
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_location:
+    weight: 12
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_must_register:
+    weight: 19
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_presented_by_non_staff:
+    weight: 18
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_presenter:
+    weight: 19
+    settings:
+      size: 60
+      placeholder: ''
+      suggestions_count: 15
+    third_party_settings: {  }
+    type: existing_autocomplete_field_widget
+    region: content
+  field_room:
+    weight: 13
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_text_content:
+    weight: 8
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_text_intro:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_text_teaser:
+    weight: 5
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_waitlist_max:
+    weight: 23
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  image_primary:
+    weight: 6
+    settings:
+      form_mode: simple
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: stories_image_uploader
+    type: inline_entity_form_complex
+    region: content
+  path:
+    type: path
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 16
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  recurring_event:
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  reservation:
+    weight: 14
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 4
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 14
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 17
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  event_recurrence: true
+  field_attendees: true
+  field_evanced_id: true
+  field_event_is_template: true
+  field_keywords: true
+  promote: true
+  sticky: true

@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.room_reservation.field_group_name
+  module:
+    - intercept_room_reservation
+id: room_reservation.room_reservation.field_group_name
+field_name: field_group_name
+entity_type: room_reservation
+bundle: room_reservation
+label: 'Group name'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,75 @@
+global:
+  version: 1.0.x
+  css:
+    theme:
+      build/libraries/global/global.css: { preprocess: true }
+  js:
+    build/libraries/global/global.js: { preprocess: true }
+  dependencies:
+    - core/jquery
+
+search_form:
+  version: 1.0.x
+  css:
+    theme:
+      build/libraries/search-form/search-form.css: { preprocess: true }
+
+#
+# Component Library
+#
+
+# Card
+card:
+  css:
+    component:
+      build/components/card/card.component.css: {}
+
+# Breadcrumbs
+breadcrumbs:
+  css:
+    component:
+      build/components/breadcrumbs/breadcrumbs.component.css: {}
+
+# Header
+header:
+  css:
+    component:
+      build/components/header/header.css: {}
+  js:
+    build/components/header/header.js: {}
+
+# More Link
+more-link:
+  css:
+    component:
+      build/components/more-link/more-link.component.css: {}
+
+# Pager
+pager:
+  css:
+    component:
+      build/components/pager/pager.component.css: {}
+
+# Progress Bar
+progress:
+  css:
+    component:
+      build/components/progress/progress.component.css: {}
+
+# Section Title
+section-title:
+  css:
+    component:
+      build/components/section-title/section-title.component.css: {}
+
+# Tabs
+tabs:
+  css:
+    component:
+      build/components/tabs/tabs.component.css: {}
+
+# Teaser
+teaser:
+  css:
+    component:
+      build/components/teaser/teaser.component.css: {}

@@ -1,0 +1,14 @@
+name: 'InterCEPT ILS'
+type: module
+description: 'Intercept ILS integration'
+core: 8.x
+dependencies:
+  - intercept:intercept
+  - intercept:intercept_core
+  - externalauth:externalauth
+  - profile:profile
+package: 'InterCEPT'
+# Information added by Drupal.org packaging script on 2019-08-22
+version: '8.x-1.0-alpha9'
+project: 'intercept'
+datestamp: 1566489190

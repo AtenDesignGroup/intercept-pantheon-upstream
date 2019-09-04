@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_text_teaser
+    - node.type.room
+  module:
+    - text
+id: node.room.field_text_teaser
+field_name: field_text_teaser
+entity_type: node
+bundle: room
+label: 'Teaser Text'
+description: 'Please keep the teaser to 50 or fewer words. This will ONLY display in lists.'
+required: true
+translatable: false
+default_value:
+  -
+    value: ''
+    format: simple_formatting
+default_value_callback: ''
+settings: {  }
+field_type: text_long

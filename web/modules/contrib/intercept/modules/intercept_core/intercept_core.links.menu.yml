@@ -1,0 +1,39 @@
+intercept_core.settings:
+  title: 'InterCEPT Settings'
+  description: 'Administer InterCEPT specific settings.'
+  route_name: intercept_core.settings
+  parent: system.admin_config
+
+intercept_core.general:
+  title: 'InterCEPT Settings'
+  description: 'InterCEPT general settings.'
+  route_name: intercept_core.general
+  parent: intercept_core.settings
+
+intercept_core.permissions:
+  title: 'InterCEPT Permissions'
+  description: 'InterCEPT specific permissions.'
+  route_name: intercept_core.admin_permissions
+  parent: intercept_core.settings
+
+intercept_core.admin_structure:
+  title: 'InterCEPT'
+  description: 'Configure InterCEPT entity structures.'
+  route_name: intercept_core.admin_structure
+  parent: system.admin_structure
+
+intercept_core.account.settings:
+  title: 'Settings'
+  weight: 15
+  route_name: intercept_core.account.settings
+  menu_name: account
+
+intercept_core.account.manage:
+  title: 'Manage'
+  weight: 15
+  route_name: intercept_core.management.default.redirect
+  menu_name: account
+
+# Management menu
+intercept_core.manage:
+  deriver: \Drupal\intercept_core\Plugin\Derivative\InterceptMenuLinks

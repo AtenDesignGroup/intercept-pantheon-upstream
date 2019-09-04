@@ -1,0 +1,142 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.room.field_approval_required
+    - field.field.node.room.field_capacity_max
+    - field.field.node.room.field_capacity_min
+    - field.field.node.room.field_location
+    - field.field.node.room.field_reservation_phone_number
+    - field.field.node.room.field_room_fees
+    - field.field.node.room.field_room_standard_equipment
+    - field.field.node.room.field_room_type
+    - field.field.node.room.field_staff_use_only
+    - field.field.node.room.field_text_content
+    - field.field.node.room.field_text_intro
+    - field.field.node.room.field_text_teaser
+    - field.field.node.room.image_primary
+    - image.style.medium
+    - node.type.room
+  module:
+    - media
+    - telephone
+    - text
+    - user
+id: node.room.default
+targetEntityType: node
+bundle: room
+mode: default
+content:
+  field_approval_required:
+    weight: 14
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_capacity_max:
+    weight: 7
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_capacity_min:
+    weight: 6
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_location:
+    weight: 0
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_reservation_phone_number:
+    weight: 11
+    label: inline
+    settings:
+      title: ''
+    third_party_settings: {  }
+    type: telephone_link
+    region: content
+  field_room_fees:
+    weight: 8
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_room_standard_equipment:
+    weight: 9
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_room_type:
+    weight: 1
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_staff_use_only:
+    weight: 12
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_text_content:
+    weight: 5
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_text_intro:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_text_teaser:
+    weight: 3
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  image_primary:
+    weight: 2
+    label: hidden
+    settings:
+      image_style: medium
+      image_link: ''
+    third_party_settings: {  }
+    type: media_thumbnail
+    region: content
+  links:
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

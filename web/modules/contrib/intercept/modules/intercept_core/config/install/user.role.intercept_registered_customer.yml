@@ -1,0 +1,43 @@
+langcode: en
+status: true
+dependencies: {  }
+id: intercept_registered_customer
+label: 'InterCEPT Registered Customer'
+weight: 2
+is_admin: null
+permissions:
+  - 'add event registration entities'
+  - 'add room reservation entities'
+  - 'change own username'
+  - 'create event_registration'
+  - 'create room_reservation'
+  - 'edit room reservation entities'
+  - 'evaluate own events'
+  - 'flag saved_event'
+  - 'unflag saved_event'
+  - 'update own customer profile'
+  - 'update own event evaluation'
+  - 'update own event_registration'
+  - 'update own room_reservation'
+  - 'update referenced user event_attendance'
+  - 'update referenced user event_registration'
+  - 'view any audience taxonomy_term'
+  - 'view any equipment_type taxonomy_term'
+  - 'view any evaluation_criteria taxonomy_term'
+  - 'view any event content'
+  - 'view any event_series content'
+  - 'view any event_type taxonomy_term'
+  - 'view any lc_subject taxonomy_term'
+  - 'view any location content'
+  - 'view any meeting_purpose taxonomy_term'
+  - 'view any population_segment taxonomy_term'
+  - 'view any room content'
+  - 'view any room_type taxonomy_term'
+  - 'view any tag taxonomy_term'
+  - 'view own customer profile'
+  - 'view own event evaluation'
+  - 'view own room_reservation'
+  - 'view own saved_event flagging entities'
+  - 'view published room reservation entities'
+  - 'view referenced user event_attendance'
+  - 'view referenced user event_registration'

@@ -1,0 +1,5 @@
+permission_callbacks:
+  - \Drupal\intercept_core\InterceptPermissionsProvider::managementPermissions
+
+search customer:
+  title: 'Search API by first name, last name or email and see masked results'

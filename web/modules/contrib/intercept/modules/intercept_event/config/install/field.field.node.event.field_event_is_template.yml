@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_is_template
+    - node.type.event
+id: node.event.field_event_is_template
+field_name: field_event_is_template
+entity_type: node
+bundle: event
+label: Template
+description: 'Check if you would like this event to be made available as a template for other events.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

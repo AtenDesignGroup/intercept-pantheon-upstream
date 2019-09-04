@@ -1,0 +1,9 @@
+intercept_equipment:
+  controller: 'Drupal\intercept_equipment\Controller\ManagementController::view'
+  pages:
+    equipment_reservations:
+      title: 'Equipment Reservations'
+      menu_weight: 15
+    equipment_configuration:
+      title: 'Equipment'
+      menu_link: FALSE

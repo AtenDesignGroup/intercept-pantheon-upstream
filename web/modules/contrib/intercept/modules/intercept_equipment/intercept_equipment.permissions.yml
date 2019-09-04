@@ -1,0 +1,31 @@
+view reservation content:
+  title: "Equipment: View published content"
+  description: "Overrides view published content for equipment node"
+
+add equipment reservation entities:
+  title: 'Create new Equipment Reservation entities'
+
+administer equipment reservation entities:
+  title: 'Administer Equipment Reservation entities'
+  description: 'Allow to access the administration form to configure Equipment Reservation entities.'
+  restrict access: true
+
+delete equipment reservation entities:
+  title: 'Delete Equipment Reservation entities'
+
+edit equipment reservation entities:
+  title: 'Edit Equipment Reservation entities'
+
+view published equipment reservation entities:
+  title: 'View published Equipment Reservation entities'
+
+view all equipment reservation revisions:
+  title: 'View all Equipment Reservation revisions'
+
+revert all equipment reservation revisions:
+  title: 'Revert all Equipment Reservation revisions'
+  description: 'Role requires permission <em>view Equipment Reservation revisions</em> and <em>edit rights</em> for equipment reservation entities in question or <em>administer equipment reservation entities</em>.'
+
+delete all equipment reservation revisions:
+  title: 'Delete all revisions'
+  description: 'Role requires permission to <em>view Equipment Reservation revisions</em> and <em>delete rights</em> for equipment reservation entities in question or <em>administer equipment reservation entities</em>.'

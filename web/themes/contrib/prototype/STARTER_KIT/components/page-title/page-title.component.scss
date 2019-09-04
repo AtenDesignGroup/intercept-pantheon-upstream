@@ -1,0 +1,12 @@
+@import "_partials";
+
+.page-title {
+  @include fs(h1);
+  @include lh(-1);
+  margin-bottom: rem($sp-normal);
+  padding-bottom: rem($sp-normal);
+}
+
+.page-title--small {
+  @include fs(display);
+}

@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.evaluation_criteria.field_evaluation
+    - taxonomy.vocabulary.evaluation_criteria
+id: taxonomy_term.evaluation_criteria.default
+targetEntityType: taxonomy_term
+bundle: evaluation_criteria
+mode: default
+content:
+  field_evaluation:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  description: true
+  path: true

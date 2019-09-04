@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - votingapi.vote_type.evaluation
+id: vote.evaluation.default
+targetEntityType: vote
+bundle: evaluation
+mode: default
+content: {  }
+hidden:
+  feedback: true
+  vote_criteria: true

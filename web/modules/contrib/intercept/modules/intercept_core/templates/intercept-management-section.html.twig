@@ -1,0 +1,19 @@
+<section class="intercept-management-section">
+  {% if title %}
+    <h2 class="intercept-management-section__heading">{{title}}</h2>
+  {% endif %}
+  {% if actions %}
+  <ul class="intercept-management-section__actions">
+    {% for action in actions %}
+    {% if action['#link']|render %}
+    <li class="intercept-management-section__actions-item">{{action}}</li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if content %}
+  <div class="intercept-management-section__content">
+    {{ content }}
+  </div>
+  {% endif %}
+</section>

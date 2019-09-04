@@ -1,0 +1,23 @@
+entity.event_recurrence.add_form:
+  route_name: entity.event_recurrence.add_form
+  title: 'Add Event Recurrence'
+  appears_on:
+    - entity.event_recurrence.collection
+entity.event_attendance.add_form:
+  route_name: entity.event_attendance.add_form
+  title: 'Add Event Attendance'
+  appears_on:
+    - entity.event_attendance.collection
+    - entity.node.attendance
+
+entity.event_registration.add_form:
+  route_name: entity.event_registration.add_form
+  title: 'Add Event Registration'
+  appears_on:
+    - entity.event_registration.collection
+
+intercept_event.manage.staff.event_templates:
+  route_name: intercept_event.management.staff_event_templates
+  title: 'Create an Event'
+  appears_on:
+    - intercept_event.management.staff_events

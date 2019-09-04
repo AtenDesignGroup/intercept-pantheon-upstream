@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_evaluation_criteria_pos
+    - taxonomy.vocabulary.evaluation_criteria
+    - taxonomy.vocabulary.event_type
+id: taxonomy_term.event_type.field_evaluation_criteria_pos
+field_name: field_evaluation_criteria_pos
+entity_type: taxonomy_term
+bundle: event_type
+label: 'Positive evaluation criteria'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      evaluation_criteria: evaluation_criteria
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

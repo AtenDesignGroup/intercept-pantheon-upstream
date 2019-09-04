@@ -1,0 +1,12 @@
+intercept_equipment.add_equipment:
+  route_name: node.add
+  title: 'Add Equipment'
+  route_parameters:
+    node_type: 'equipment'
+  appears_on:
+    - intercept_equipment.manage_equipment
+entity.equipment_reservation.add_form:
+  route_name: entity.equipment_reservation.add_form
+  title: 'Add Equipment Reservation'
+  appears_on:
+    - entity.equipment_reservation.collection

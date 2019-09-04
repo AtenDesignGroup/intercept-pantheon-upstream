@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.room_reservation.field_agreement
+  module:
+    - intercept_room_reservation
+id: room_reservation.room_reservation.field_agreement
+field_name: field_agreement
+entity_type: room_reservation
+bundle: room_reservation
+label: Agreement
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: Agreed
+  off_label: 'No response'
+field_type: boolean

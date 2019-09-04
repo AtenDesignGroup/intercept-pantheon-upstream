@@ -1,0 +1,25 @@
+# Equipment reservation menu items definition
+entity.equipment_reservation.collection:
+  title: 'Equipment reservations'
+  route_name: entity.equipment_reservation.collection
+  description: 'List Equipment reservation entities'
+  parent: system.admin_content
+  weight: 50
+
+equipment_reservation.admin.structure.settings:
+  title: 'Equipment reservations'
+  description: 'Configure Equipment reservation entities'
+  route_name: equipment_reservation.settings
+  parent: intercept_core.admin_structure
+
+equipment_reservation.reserve_equipment:
+  title: Reserve Equipment
+  description: 'Make an Equipment reservation'
+  route_name: intercept_equipment.reserve_equipment
+  menu_name: main
+
+intercept_equipment.account.equipment_reservations:
+  title: 'Equipment Reservations'
+  weight: 10
+  route_name: intercept_equipment.account.equipment_reservations
+  menu_name: account

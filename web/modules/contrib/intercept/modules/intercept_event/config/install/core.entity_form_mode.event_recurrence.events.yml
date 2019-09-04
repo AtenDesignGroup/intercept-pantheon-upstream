@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_event
+id: event_recurrence.events
+label: Events
+targetEntityType: event_recurrence
+cache: true

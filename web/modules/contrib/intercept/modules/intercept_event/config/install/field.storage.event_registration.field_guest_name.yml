@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_event
+id: event_registration.field_guest_name
+field_name: field_guest_name
+entity_type: event_registration
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: room_detail_page
+label: 'Room - Detail Page'
+type: 'canonical_entities:node'
+pattern: 'location/[node:field_location:entity:title]/[node:title]'
+selection_criteria:
+  ce66ec9a-7bb6-4428-af7d-f6b640867584:
+    id: node_type
+    bundles:
+      room: room
+    negate: false
+    context_mapping:
+      node: node
+    uuid: ce66ec9a-7bb6-4428-af7d-f6b640867584
+selection_logic: and
+weight: -5
+relationships: {  }

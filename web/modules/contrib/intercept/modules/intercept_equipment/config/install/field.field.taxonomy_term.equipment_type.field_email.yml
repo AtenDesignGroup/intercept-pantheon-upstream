@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_email
+    - taxonomy.vocabulary.equipment_type
+id: taxonomy_term.equipment_type.field_email
+field_name: field_email
+entity_type: taxonomy_term
+bundle: equipment_type
+label: Email
+description: 'Email address(es) of who should be notified when this type of equipment is reserved.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

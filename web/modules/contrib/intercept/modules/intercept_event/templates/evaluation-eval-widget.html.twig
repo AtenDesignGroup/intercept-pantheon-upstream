@@ -1,0 +1,9 @@
+<div class="evaluation__eval-widget" name="">
+  <h3 class="evaluation__widget-label">{{label}}</h3>
+  {% if value == 'like' %}
+  <svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><title>Like</title><g fill="none" fill-rule="evenodd"><circle stroke="#00AFD0" stroke-width="5" cx="30" cy="30" r="27.5"></circle><circle fill="#00AFD0" cx="20.5" cy="24.5" r="3.5"></circle><circle fill="#00AFD0" cx="39.5" cy="24.5" r="3.5"></circle><path d="M19 39c7.7 6.4 14.4 6.4 22 0" stroke="#00AFD0" stroke-width="5" stroke-linecap="round"></path></g></svg>
+  {% endif %}
+  {% if value == 'dislike' %}
+  <svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><title>Dislike</title><g fill="none" fill-rule="evenodd"><circle stroke="#00AFD0" stroke-width="5" cx="30" cy="30" r="27.5"></circle><circle fill="#00AFD0" cx="20.5" cy="24.5" r="3.5"></circle><circle fill="#00AFD0" cx="39.5" cy="24.5" r="3.5"></circle><path d="M19 43.9c7.2-6 13.7-7 22 0" stroke="#00AFD0" stroke-width="5" stroke-linecap="round"></path></g></svg>
+  {% endif %}
+</div>

@@ -1,0 +1,84 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.room_reservation.event
+    - field.field.room_reservation.room_reservation.field_agreement
+    - field.field.room_reservation.room_reservation.field_attendee_count
+    - field.field.room_reservation.room_reservation.field_dates
+    - field.field.room_reservation.room_reservation.field_event
+    - field.field.room_reservation.room_reservation.field_group_name
+    - field.field.room_reservation.room_reservation.field_meeting_purpose
+    - field.field.room_reservation.room_reservation.field_meeting_purpose_details
+    - field.field.room_reservation.room_reservation.field_publicize
+    - field.field.room_reservation.room_reservation.field_refreshments
+    - field.field.room_reservation.room_reservation.field_refreshments_description
+    - field.field.room_reservation.room_reservation.field_room
+    - field.field.room_reservation.room_reservation.field_status
+    - field.field.room_reservation.room_reservation.field_user
+  module:
+    - datetime_range
+    - intercept_room_reservation
+    - options
+id: room_reservation.room_reservation.event
+targetEntityType: room_reservation
+bundle: room_reservation
+mode: event
+content:
+  field_dates:
+    type: daterange_default
+    weight: 3
+    region: content
+    label: hidden
+    settings:
+      separator: '-'
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+  field_room:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_status:
+    type: list_key
+    weight: 2
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  room_location:
+    type: entity_reference_label
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  user_id:
+    label: hidden
+    type: author
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  action_button: true
+  attendees_full: true
+  author: true
+  field_agreement: true
+  field_attendee_count: true
+  field_event: true
+  field_group_name: true
+  field_meeting_purpose: true
+  field_meeting_purpose_details: true
+  field_publicize: true
+  field_refreshments: true
+  field_refreshments_description: true
+  field_user: true
+  image: true
+  location: true
+  location_full: true

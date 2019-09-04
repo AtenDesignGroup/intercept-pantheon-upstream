@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.room_reservation.field_refreshments_description
+  module:
+    - intercept_room_reservation
+    - text
+id: room_reservation.room_reservation.field_refreshments_description
+field_name: field_refreshments_description
+entity_type: room_reservation
+bundle: room_reservation
+label: 'Refreshments Description'
+description: 'Describe your light refreshments for this meeting.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

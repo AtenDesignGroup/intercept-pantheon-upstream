@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_reservation_phone_number
+    - node.type.room
+  module:
+    - telephone
+id: node.room.field_reservation_phone_number
+field_name: field_reservation_phone_number
+entity_type: node
+bundle: room
+label: 'Reservation Phone Number'
+description: 'Enter the number patrons can call to reserve this room over the telephone.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: telephone

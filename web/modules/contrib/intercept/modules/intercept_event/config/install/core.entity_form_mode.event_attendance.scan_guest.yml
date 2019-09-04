@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_event
+id: event_attendance.scan_guest
+label: 'Scan Guest'
+targetEntityType: event_attendance
+cache: true

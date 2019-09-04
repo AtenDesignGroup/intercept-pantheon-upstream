@@ -1,0 +1,56 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.equipment.field_duration_min
+    - field.field.node.equipment.field_equipment_type
+    - field.field.node.equipment.field_text_content
+    - field.field.node.equipment.image_primary
+    - node.type.equipment
+  module:
+    - duration_field
+    - text
+    - user
+id: node.equipment.default
+targetEntityType: node
+bundle: equipment
+mode: default
+content:
+  field_duration_min:
+    weight: 3
+    label: above
+    settings:
+      text_length: full
+      separator: space
+    third_party_settings: {  }
+    type: duration_human_display
+    region: content
+  field_equipment_type:
+    weight: 2
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_text_content:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  image_primary:
+    weight: 5
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - node.type.event_series
+  module:
+    - user
+id: node.event_series.teaser
+targetEntityType: node
+bundle: event_series
+mode: teaser
+content:
+  links:
+    weight: 100
+    region: content
+hidden:
+  image_primary: true

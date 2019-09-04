@@ -1,0 +1,82 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.room.field_approval_required
+    - field.field.node.room.field_capacity_max
+    - field.field.node.room.field_capacity_min
+    - field.field.node.room.field_location
+    - field.field.node.room.field_reservation_phone_number
+    - field.field.node.room.field_room_fees
+    - field.field.node.room.field_room_standard_equipment
+    - field.field.node.room.field_room_type
+    - field.field.node.room.field_staff_use_only
+    - field.field.node.room.field_text_content
+    - field.field.node.room.field_text_intro
+    - field.field.node.room.field_text_teaser
+    - field.field.node.room.image_primary
+    - node.type.room
+  module:
+    - text
+    - user
+id: node.room.teaser
+targetEntityType: node
+bundle: room
+mode: teaser
+content:
+  field_capacity_max:
+    type: number_integer
+    weight: 2
+    region: content
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+  field_reservation_phone_number:
+    type: string
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_room_type:
+    type: entity_reference_label
+    weight: 3
+    region: content
+    label: inline
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_text_teaser:
+    type: text_default
+    weight: 1
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  image_primary:
+    type: entity_reference_entity_view
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      view_mode: card
+      link: false
+    third_party_settings: {  }
+  links:
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_approval_required: true
+  field_capacity_min: true
+  field_location: true
+  field_room_fees: true
+  field_room_standard_equipment: true
+  field_staff_use_only: true
+  field_text_content: true
+  field_text_intro: true

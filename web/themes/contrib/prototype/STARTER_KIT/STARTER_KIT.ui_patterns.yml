@@ -1,0 +1,25 @@
+font_sizes:
+  label: "Font Sizes"
+  description: Display font size variables
+  fields:
+    sizes:
+      type: collection
+      label: Sizes
+      description: A collection of sizes
+      preview:
+        - Mega
+        - Headline
+        - Display
+        - Heading
+        - Subhead
+        - Body
+        - Caption
+        - Small
+        - Label
+        - Tiny
+        - Micro
+  libraries:
+  - font_size:
+      css:
+        component:
+          build/components/patterns/font-size/font-size.css: {}

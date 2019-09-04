@@ -1,0 +1,124 @@
+@import "_partials";
+
+.teaser {
+  @include bp(medium) {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.teaser__image {
+  align-self: flex-start;
+  flex: none;
+
+  @include bp(none medium) {
+    margin-bottom: rem(20px);
+  }
+
+  @include bp(medium x-medium) {
+    margin-right: 30px;
+    width: percentage(2/6);
+  }
+
+  @include bp(large) {
+    margin-right: 40px;
+  }
+}
+
+.teaser__content {
+  max-width: 100%;
+}
+
+.teaser__image + .teaser__content {
+  flex: initial;
+
+  @include bp(medium) {
+  }
+
+  @include bp(large) {
+    width: percentage(4/7);
+  }
+}
+
+.teaser__title {
+  @include fs(large);
+  @include lh(0);
+
+  &:not(:last-child) {
+    margin-bottom: .5em;
+  }
+}
+
+a.teaser__title {
+  @include link--primary;
+}
+
+.teaser__title-link {
+  @include link--primary;
+}
+
+.teaser__meta {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: .5em;
+
+  > :not(:last-child) {
+    margin-right: 1.5em;
+  }
+}
+
+.teaser__type {
+  @include fs(tiny);
+
+  &:not(:last-child) {
+    margin-bottom: rem($sp-tight);
+  }
+}
+
+.teaser__subtitle {
+  @include fs(tiny);
+  @include lh(0);
+}
+
+.teaser__description {
+  @include fs(small);
+  @include lh(1);
+}
+
+.teaser__dateline {
+  @include fs(small);
+  white-space: nowrap;
+}
+
+.teaser__author {
+  @include fs(small);
+
+  &:not(:last-child) {
+    margin-bottom: .5em;
+  }
+}
+
+.teaser__more-link {
+  &:not(:first-child) {
+    margin-top: $sp-tight;
+  }
+}
+
+.teaser__tags {
+  @include fs(small);
+  margin-top: 1em;
+
+  a:not([class]) {
+    @include link--secondary;
+  }
+}
+
+//
+// Modifiers
+//
+.teaser--no-image {
+  .teaser__content {
+    width: 100%; // IE11 fix for content spilling outside the bounds of the teaser.
+  }
+}

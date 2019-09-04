@@ -1,0 +1,14 @@
+intercept_event:
+  controller: 'Drupal\intercept_event\Controller\ManagementController::view'
+  pages:
+    events:
+      title: 'Events'
+      menu_weight: 5
+    event_templates:
+      title: 'Create an Event'
+      menu_link: FALSE
+    event_configuration:
+      title: 'Event configuration'
+      menu_link: FALSE
+    event_attendance_export:
+      title: 'Export data'

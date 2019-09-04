@@ -1,0 +1,15 @@
+.section-title > span {
+  display: block; }
+
+.section-title > small {
+  font-size: 0.7rem;
+  display: block;
+  margin-top: .5em; }
+  @media (min-width: 37.5em) {
+    .section-title > small {
+      font-size: 0.7rem; } }
+
+.section-title--ruled {
+  border-bottom: solid 0.05rem #c3c1c3;
+  margin-bottom: 1.8rem;
+  padding-bottom: 1.2rem; }

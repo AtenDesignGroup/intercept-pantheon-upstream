@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - date_recur
+    - intercept_event
+id: event_recurrence.field_event_rrule
+field_name: field_event_rrule
+entity_type: event_recurrence
+type: date_recur
+settings:
+  datetime_type: datetime
+  occurrence_handler_plugin: intercept_occurrence_handler
+module: date_recur
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

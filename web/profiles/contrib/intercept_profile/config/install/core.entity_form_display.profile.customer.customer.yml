@@ -1,0 +1,142 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.profile.customer
+    - field.field.profile.customer.field_address
+    - field.field.profile.customer.field_audiences
+    - field.field.profile.customer.field_barcode
+    - field.field.profile.customer.field_email_address
+    - field.field.profile.customer.field_event_types
+    - field.field.profile.customer.field_first_name
+    - field.field.profile.customer.field_hold_pickup_location
+    - field.field.profile.customer.field_ils_username
+    - field.field.profile.customer.field_last_name
+    - field.field.profile.customer.field_phone
+    - field.field.profile.customer.field_preferred_location
+    - profile.type.customer
+  module:
+    - address
+    - field_group
+    - telephone
+third_party_settings:
+  field_group:
+    group_account_info:
+      children:
+        - field_first_name
+        - field_last_name
+        - pin
+        - field_phone
+        - field_email_address
+        - field_barcode
+        - field_ils_username
+        - field_address
+      parent_name: ''
+      weight: 0
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: false
+      label: 'Account Info'
+    group_preferences:
+      children:
+        - field_preferred_location
+        - field_event_types
+        - field_audiences
+      parent_name: ''
+      weight: 1
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: false
+      label: Preferences
+id: profile.customer.customer
+targetEntityType: profile
+bundle: customer
+mode: customer
+content:
+  field_address:
+    type: address_default
+    weight: 8
+    region: content
+    settings:
+      default_country: US
+    third_party_settings: {  }
+  field_audiences:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_barcode:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_email_address:
+    type: email_default
+    weight: 5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_event_types:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_first_name:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_ils_username:
+    type: string_textfield
+    weight: 7
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_last_name:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_phone:
+    weight: 4
+    settings:
+      placeholder: 'Phone number'
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+  field_preferred_location:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  pin:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  card_number: true
+  field_hold_pickup_location: true
+  hold_pickup_location: true

@@ -1,0 +1,69 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.event_attendance.event_attendance.field_attendees
+    - field.field.event_attendance.event_attendance.field_event
+    - field.field.event_attendance.event_attendance.field_guest_zip_code
+    - field.field.event_attendance.event_attendance.field_user
+  module:
+    - intercept_event
+    - tally
+id: event_attendance.event_attendance.default
+targetEntityType: event_attendance
+bundle: event_attendance
+mode: default
+content:
+  author:
+    type: entity_reference_autocomplete
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  field_attendees:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: tally_default
+    region: content
+  field_event:
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_user:
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  user_id:
+    type: entity_reference_autocomplete
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+hidden:
+  event_summary: true
+  field_guest_zip_code: true

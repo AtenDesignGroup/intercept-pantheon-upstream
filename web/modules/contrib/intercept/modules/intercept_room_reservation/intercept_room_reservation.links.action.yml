@@ -1,0 +1,5 @@
+entity.room_reservation.add_form:
+  route_name: entity.room_reservation.add_form
+  title: 'Add Room reservation'
+  appears_on:
+    - entity.room_reservation.collection

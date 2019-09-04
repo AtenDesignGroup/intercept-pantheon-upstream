@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_approval_required
+    - node.type.room
+id: node.room.field_approval_required
+field_name: field_approval_required
+entity_type: node
+bundle: room
+label: 'Approval required'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Approval is required'
+  off_label: 'No approval is required'
+field_type: boolean

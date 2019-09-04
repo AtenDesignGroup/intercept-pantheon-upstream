@@ -1,0 +1,42 @@
+//
+//
+//
+@import "_partials";
+
+
+.fs {
+  line-height: lh(0);
+  margin: 10px;
+  position: relative;
+
+  &:after {
+    bottom: 25%;
+    color: $gray-50;
+    display: inline-block;
+    font-size: 14px;
+    margin: auto 8px;
+    position: absolute;
+    right: 100%;
+  }
+}
+
+//
+// Create font size classes for viewing font scales
+//
+
+// Loop over breakpoints within the scale.
+@each $breakpoint, $scale in $font-sizes {
+  // Loop over font sizes within a breakpoint.
+  @each $size, $fs in $scale {
+
+      @include bp($breakpoint) {
+        .fs--#{$size} {
+          font-size: nth($fs, 1);
+
+          &:after {
+            content: "#{nth($fs, 1)} ";
+          }
+        }
+      }
+  }
+}

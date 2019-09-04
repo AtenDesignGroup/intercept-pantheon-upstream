@@ -1,0 +1,6 @@
+<?php
+
+/**
+ * @file
+ * Contains intercept_room_reservation update hooks.
+ */

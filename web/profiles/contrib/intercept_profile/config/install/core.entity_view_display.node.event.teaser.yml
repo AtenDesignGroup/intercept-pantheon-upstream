@@ -1,0 +1,112 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.event.field_capacity_max
+    - field.field.node.event.field_date_time
+    - field.field.node.event.field_event_audience
+    - field.field.node.event.field_event_is_template
+    - field.field.node.event.field_event_register_period
+    - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_tags
+    - field.field.node.event.field_event_type
+    - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_location
+    - field.field.node.event.field_must_register
+    - field.field.node.event.field_room
+    - field.field.node.event.field_text_content
+    - field.field.node.event.field_text_intro
+    - field.field.node.event.field_text_teaser
+    - field.field.node.event.image_primary
+    - image.style.4to3_740x556
+    - node.type.event
+  module:
+    - datetime_range
+    - media
+    - user
+id: node.event.teaser
+targetEntityType: node
+bundle: event
+mode: teaser
+content:
+  field_date_time:
+    type: daterange_default
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      timezone_override: ''
+      format_type: short
+      separator: '-'
+    third_party_settings: {  }
+  field_event_audience:
+    type: entity_reference_label
+    weight: 5
+    region: content
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_event_type:
+    type: entity_reference_label
+    weight: 4
+    region: content
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_location:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_text_teaser:
+    type: basic_string
+    weight: 3
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  flag_saved_event:
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  image_primary:
+    type: media_thumbnail
+    weight: 2
+    region: content
+    label: hidden
+    settings:
+      image_style: 4to3_740x556
+      image_link: ''
+    third_party_settings: {  }
+  links:
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  evaluation_attendee_default: true
+  evaluation_attendee_js: true
+  evaluation_staff: true
+  event_recurrence: true
+  field_attendees: true
+  field_audience_primary: true
+  field_capacity_max: true
+  field_event_is_template: true
+  field_event_register_period: true
+  field_event_series: true
+  field_event_tags: true
+  field_event_type_primary: true
+  field_featured: true
+  field_has_waitlist: true
+  field_must_register: true
+  field_room: true
+  field_text_content: true
+  field_text_intro: true
+  field_waitlist_max: true

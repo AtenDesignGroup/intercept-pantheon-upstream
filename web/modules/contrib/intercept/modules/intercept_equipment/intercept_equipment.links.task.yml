@@ -1,0 +1,27 @@
+# Equipment reservation routing definition
+equipment_reservation.settings_tab:
+  route_name: equipment_reservation.settings
+  title: 'Settings'
+  base_route: equipment_reservation.settings
+
+entity.equipment_reservation.canonical:
+  route_name: entity.equipment_reservation.canonical
+  base_route: entity.equipment_reservation.canonical
+  title: 'View'
+
+entity.equipment_reservation.edit_form:
+  route_name: entity.equipment_reservation.edit_form
+  base_route: entity.equipment_reservation.canonical
+  title: 'Edit'
+
+entity.equipment_reservation.delete_form:
+  route_name:  entity.equipment_reservation.delete_form
+  base_route:  entity.equipment_reservation.canonical
+  title: Delete
+  weight: 10
+
+entity.equipment_reservation.collection:
+  title: 'Equipment Reservations'
+  route_name: entity.equipment_reservation.collection
+  base_route: system.admin_content
+  weight: 15

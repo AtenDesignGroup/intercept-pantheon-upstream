@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.equipment_reservation.field_dates
+  module:
+    - datetime_range
+    - intercept_equipment
+id: equipment_reservation.equipment_reservation.field_dates
+field_name: field_dates
+entity_type: equipment_reservation
+bundle: equipment_reservation
+label: Dates
+description: ''
+required: true
+translatable: false
+default_value:
+  -
+    default_date_type: now
+    default_date: now
+    default_end_date_type: relative
+    default_end_date: '+1 day'
+default_value_callback: ''
+settings: {  }
+field_type: daterange

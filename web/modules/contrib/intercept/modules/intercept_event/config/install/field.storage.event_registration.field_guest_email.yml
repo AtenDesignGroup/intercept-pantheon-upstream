@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_event
+id: event_registration.field_guest_email
+field_name: field_guest_email
+entity_type: event_registration
+type: email
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

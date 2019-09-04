@@ -1,0 +1,91 @@
+react:
+  js:
+    https://unpkg.com/react@16.3.2/umd/react.production.min.js:
+      external: true
+      minified: true
+    https://unpkg.com/react-dom@16.3.2/umd/react-dom.production.min.js:
+      external: true
+      minified: true
+
+user_settings_form_helper:
+  js:
+    js/user_settings_form_helper.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+
+reservation_form_helper:
+  js:
+    js/reservation_form_helper.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - intercept_event/event_form_helper
+
+bigCalendar:
+  version: 0.18.0
+  css:
+    base:
+      css/vendor/react-big-calendar.css: {}
+
+moment:
+  js:
+    https://unpkg.com/moment@2.20.1/min/moment.min.js:
+      external: true
+    https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.17/moment-timezone-with-data-2012-2022.min.js:
+      external: true
+
+materialIcons:
+  remote: https://fonts.googleapis.com
+  version: 3.0.1
+  license:
+    name: Apache 2.0
+    url: https://raw.githubusercontent.com/google/material-design-icons/master/LICENSE
+    gpl-compatible: true
+  css:
+    theme:
+      https://fonts.googleapis.com/icon?family=Material+Icons: { type: external, minified: true }
+
+babelHelpers:
+  js:
+    js/dist/babelHelpers.js:
+      preprocess: true
+
+pickadate:
+  js:
+    libraries/pickadate/pickadate.js:
+      preprocess: true
+  dependencies:
+    - core/jquery
+    - core/drupal
+
+interceptCommon:
+  js:
+    js/dist/interceptCommon.js:
+      preprocess: true
+  dependencies:
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/moment
+
+interceptClient:
+  js:
+    js/dist/interceptClient.js:
+      preprocess: true
+  dependencies:
+    - core/drupalSettings
+    - intercept_core/babelHelpers
+    - intercept_core/react
+    - intercept_core/interceptTheme
+    - intercept_core/materialIcons
+
+interceptTheme:
+  js:
+    js/dist/interceptTheme.js:
+      preprocess: true
+  dependencies:
+    - core/drupalSettings
+    - intercept_core/babelHelpers

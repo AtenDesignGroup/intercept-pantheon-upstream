@@ -1,0 +1,108 @@
+# Event Recurrence routing definition
+event_recurrence.settings_tab:
+  route_name: event_recurrence.settings
+  title: 'Settings'
+  base_route: event_recurrence.settings
+
+entity.event_recurrence.canonical:
+  route_name: entity.event_recurrence.canonical
+  base_route: entity.event_recurrence.canonical
+  title: 'View'
+
+entity.event_recurrence.edit_form:
+  route_name: entity.event_recurrence.edit_form
+  base_route: entity.event_recurrence.canonical
+  title: 'Edit'
+
+entity.node.recurrence_form:
+  route_name: entity.node.recurrence_form
+  base_route: entity.node.canonical
+  title: 'Recurrences'
+
+entity.event_recurrence.delete_form:
+  route_name:  entity.event_recurrence.delete_form
+  base_route:  entity.event_recurrence.canonical
+  title: Delete
+  weight: 10
+
+entity.event_recurrence.collection:
+  title: 'Event recurrence'
+  route_name: entity.event_recurrence.collection
+  base_route: system.admin_content
+  weight: 15
+
+# Event Attendance routing definition
+event_attendance.settings_tab:
+  route_name: event_attendance.settings
+  title: 'Settings'
+  base_route: event_attendance.settings
+
+entity.event_attendance.canonical:
+  route_name: entity.event_attendance.canonical
+  base_route: entity.event_attendance.canonical
+  title: 'View'
+
+entity.event_attendance.edit_form:
+  route_name: entity.event_attendance.edit_form
+  base_route: entity.event_attendance.canonical
+  title: 'Edit'
+
+entity.event_attendance.delete_form:
+  route_name:  entity.event_attendance.delete_form
+  base_route:  entity.event_attendance.canonical
+  title: Delete
+  weight: 10
+
+entity.event_attendance.collection:
+  title: 'Event attendance'
+  route_name: entity.event_attendance.collection
+  base_route: system.admin_content
+  weight: 20
+
+# Event Registration routing definition
+event_registration.settings_tab:
+  route_name: event_registration.settings
+  title: 'Settings'
+  base_route: event_registration.settings
+
+entity.event_registration.canonical:
+  route_name: entity.event_registration.canonical
+  base_route: entity.event_registration.canonical
+  title: 'View'
+
+entity.event_registration.edit_form:
+  route_name: entity.event_registration.edit_form
+  base_route: entity.event_registration.canonical
+  title: 'Edit'
+
+entity.event_registration.delete_form:
+  route_name:  entity.event_registration.delete_form
+  base_route:  entity.event_registration.canonical
+  title: Delete
+  weight: 10
+
+entity.event_registration.collection:
+  title: 'Event registration'
+  route_name: entity.event_registration.collection
+  base_route: system.admin_content
+  weight: 20 
+
+entity.node.attendance:
+  title: 'Attendance'
+  route_name: entity.node.attendance
+  base_route: entity.node.canonical
+
+entity.node.registrations:
+  title: 'Registrations'
+  route_name: entity.node.registrations
+  base_route: entity.node.canonical
+
+entity.node.scan:
+  title: 'Scan'
+  route_name: entity.node.scan
+  base_route: entity.node.canonical
+
+entity.node.analysis:
+  title: 'Analysis'
+  route_name: entity.node.analysis
+  base_route: entity.node.canonical

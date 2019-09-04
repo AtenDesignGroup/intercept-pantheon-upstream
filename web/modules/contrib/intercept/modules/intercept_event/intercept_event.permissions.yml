@@ -1,0 +1,50 @@
+edit event field field_event_is_template:
+  title: 'Mark an event node as template'
+
+edit event field field_featured:
+  title: 'Mark an event node as featured'
+
+scan event_attendance:
+  title: 'Scan in event attendance'
+
+analyze events:
+  title: 'Analyze events'
+
+create event content from template:
+  title: 'Event: Create new content from template'
+
+access event attendance tab:
+  title: 'Access the node/{node}/attendance menu task'
+
+access event registrations tab:
+  title: 'Access the node/{node}/registrations menu task'
+
+view saved_event flagging entities:
+  title: 'View saved event flagging entities'
+
+view own saved_event flagging entities:
+  title: 'View OWN saved event flagging entities'
+
+view own event evaluation:
+  title: 'View OWN event evaluation'
+
+view any event evaluation:
+  title: 'View any event evaluation'
+
+update own event evaluation:
+  title: 'Update own event evaluation'
+
+update any event evaluation:
+  title: 'Update any event evaluations'
+
+evaluate own events:
+  title: 'Evaluate events that a user has attended, registered for, or saved'
+
+evaluate any event:
+  title: 'Evaluate any event'
+
+create own event feedback:
+  title: 'Event feedback: Provide and edit feedback on own event'
+
+create any event feedback:
+  title: 'Event feedback: Provide and edit feedback on any event'

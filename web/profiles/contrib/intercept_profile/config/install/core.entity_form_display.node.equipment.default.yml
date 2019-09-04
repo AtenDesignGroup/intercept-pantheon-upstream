@@ -1,0 +1,119 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.media.simple
+    - field.field.node.equipment.field_duration_min
+    - field.field.node.equipment.field_equipment_type
+    - field.field.node.equipment.field_text_content
+    - field.field.node.equipment.image_primary
+    - node.type.equipment
+  module:
+    - duration_field
+    - entity_browser_entity_form
+    - inline_entity_form
+    - path
+    - text
+id: node.equipment.default
+targetEntityType: node
+bundle: equipment
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_duration_min:
+    weight: 4
+    settings:
+      duration: ''
+    third_party_settings: {  }
+    type: duration_widget
+    region: content
+  field_equipment_type:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_text_content:
+    weight: 3
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  image_primary:
+    weight: 1
+    settings:
+      form_mode: simple
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: stories_image
+    type: inline_entity_form_complex
+    region: content
+  path:
+    type: path
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 7
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 9
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 12
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  sticky: true

@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_capacity_max
+    - node.type.event
+id: node.event.field_capacity_max
+field_name: field_capacity_max
+entity_type: node
+bundle: event
+label: Capacity
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

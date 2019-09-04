@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_evaluation
+    - taxonomy.vocabulary.evaluation_criteria
+  module:
+    - options
+id: taxonomy_term.evaluation_criteria.field_evaluation
+field_name: field_evaluation
+entity_type: taxonomy_term
+bundle: evaluation_criteria
+label: Evaluation
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_integer

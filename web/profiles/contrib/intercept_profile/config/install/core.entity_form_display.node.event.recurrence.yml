@@ -1,0 +1,75 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.node.recurrence
+    - field.field.node.event.field_attendees
+    - field.field.node.event.field_audience_primary
+    - field.field.node.event.field_capacity_max
+    - field.field.node.event.field_date_time
+    - field.field.node.event.field_event_audience
+    - field.field.node.event.field_event_is_template
+    - field.field.node.event.field_event_register_period
+    - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_tags
+    - field.field.node.event.field_event_type
+    - field.field.node.event.field_event_type_primary
+    - field.field.node.event.field_featured
+    - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_location
+    - field.field.node.event.field_must_register
+    - field.field.node.event.field_room
+    - field.field.node.event.field_text_content
+    - field.field.node.event.field_text_intro
+    - field.field.node.event.field_text_teaser
+    - field.field.node.event.field_waitlist_max
+    - field.field.node.event.image_primary
+    - node.type.event
+id: node.event.recurrence
+targetEntityType: node
+bundle: event
+mode: recurrence
+content:
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  event_recurrence: true
+  field_add_to_cal: true
+  field_attendees: true
+  field_audience_primary: true
+  field_capacity_max: true
+  field_date_time: true
+  field_event_audience: true
+  field_event_is_template: true
+  field_event_register_period: true
+  field_event_series: true
+  field_event_tags: true
+  field_event_type: true
+  field_event_type_primary: true
+  field_featured: true
+  field_has_waitlist: true
+  field_location: true
+  field_must_register: true
+  field_room: true
+  field_text_content: true
+  field_text_intro: true
+  field_text_teaser: true
+  field_waitlist_max: true
+  image_primary: true
+  path: true
+  promote: true
+  publish_on: true
+  recurring_event: true
+  reservation: true
+  status: true
+  sticky: true
+  uid: true
+  unpublish_on: true
+  url_redirects: true

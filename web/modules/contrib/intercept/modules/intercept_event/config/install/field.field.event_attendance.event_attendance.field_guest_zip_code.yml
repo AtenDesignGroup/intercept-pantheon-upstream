@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.event_attendance.field_guest_zip_code
+  module:
+    - intercept_event
+id: event_attendance.event_attendance.field_guest_zip_code
+field_name: field_guest_zip_code
+entity_type: event_attendance
+bundle: event_attendance
+label: 'Guest zip code'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

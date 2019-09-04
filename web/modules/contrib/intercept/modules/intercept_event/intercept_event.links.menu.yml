@@ -1,0 +1,51 @@
+entity.event_recurrence.collection:
+  title: 'Event recurrence'
+  route_name: entity.event_recurrence.collection
+  description: 'List Event recurrence entities'
+  parent: system.admin_content
+  weight: 20
+
+entity.event_attendance.collection:
+  title: 'Event attendance'
+  route_name: entity.event_attendance.collection
+  description: 'List Event Attendance entities'
+  parent: system.admin_content
+  weight: 25
+
+entity.event_registration.collection:
+  title: 'Event registration'
+  route_name: entity.event_registration.collection
+  description: 'List Event Registration entities'
+  parent: system.admin_content
+  weight: 30
+
+event_recurrence.admin.structure.settings:
+  title: 'Event recurrence'
+  description: 'Configure Event recurrence entities'
+  route_name: event_recurrence.settings
+  parent: intercept_core.admin_structure
+
+events.browse:
+  title: Events
+  description: 'Browse upcoming events'
+  route_name: intercept_event.events_controller_list
+  menu_name: main
+
+intercept_event.account.events:
+  title: 'My Events'
+  weight: 5
+  route_name: intercept_event.account.events
+  menu_name: account
+
+event_attendance.admin.structure.settings:
+  title: Event attendance
+  description: 'Configure Event Attendance entities'
+  route_name: event_attendance.settings
+  parent: intercept_core.admin_structure
+
+
+event_registration.admin.structure.settings:
+  title: Event registration
+  description: 'Configure Event Registration entities'
+  route_name: event_registration.settings
+  parent: intercept_core.admin_structure

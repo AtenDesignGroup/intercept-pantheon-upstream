@@ -1,0 +1,16 @@
+services:
+  intercept_ils.auth:
+    class: Drupal\intercept_ils\Auth
+    public: false
+    decorates: user.auth
+    decoration_inner_name: intercept_ils.auth.user_auth
+    arguments: ['@entity.manager', '@password', '@intercept_ils.auth.user_auth', '@externalauth.externalauth', '@externalauth.authmap', '@config.factory', '@plugin.manager.intercept_ils']
+  intercept_ils.mapping_manager:
+    class: Drupal\intercept_ils\MappingManager
+    arguments: ['@entity_type.manager', '@entity.query', '@config.factory', '@plugin.manager.intercept_ils']
+  intercept_ils.settings:
+    class: \Drupal\intercept_ils\Form\SettingsForm
+    arguments: ['@plugin.manager.intercept_ils']
+  plugin.manager.intercept_ils:
+    class: Drupal\intercept_ils\ILSManager
+    parent: default_plugin_manager

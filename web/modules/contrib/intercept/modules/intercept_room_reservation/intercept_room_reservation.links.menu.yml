@@ -1,0 +1,26 @@
+
+# Room reservation menu items definition
+entity.room_reservation.collection:
+  title: 'Room reservations'
+  route_name: entity.room_reservation.collection
+  description: 'List Room reservation entities'
+  parent: system.admin_content
+  weight: 50
+
+room_reservation.admin.structure.settings:
+  title: 'Room reservations'
+  description: 'Configure Room reservation entities'
+  route_name: room_reservation.settings
+  parent: intercept_core.admin_structure
+
+room_reservation.reserve_room:
+  title: Reserve a Room
+  description: 'Make a room reservation'
+  route_name: intercept_room_reservation.reserve_room
+  menu_name: main
+
+intercept_room_reservation.account.room_reservations:
+  title: 'My Room Reservations'
+  weight: 10
+  route_name: intercept_room_reservation.account.room_reservations
+  menu_name: account

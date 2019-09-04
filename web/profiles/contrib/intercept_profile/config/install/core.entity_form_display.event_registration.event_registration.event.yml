@@ -1,0 +1,185 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.event_registration.event
+    - field.field.event_registration.event_registration.field_event
+    - field.field.event_registration.event_registration.field_guest_email
+    - field.field.event_registration.event_registration.field_guest_name
+    - field.field.event_registration.event_registration.field_guest_phone_number
+    - field.field.event_registration.event_registration.field_registrants
+    - field.field.event_registration.event_registration.field_user
+  module:
+    - field_group
+    - intercept_event
+    - tally
+    - telephone
+third_party_settings:
+  field_group:
+    group_advanced:
+      children:
+        - group_registrants
+        - group_status
+        - group_author
+        - group_event
+      parent_name: ''
+      weight: 2
+      format_type: tabs
+      format_settings:
+        label: Advanced
+        direction: vertical
+        id: ''
+        classes: ''
+      label: Advanced
+    group_status:
+      children:
+        - status
+      parent_name: group_advanced
+      weight: 22
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Status
+    group_author:
+      children:
+        - author
+      parent_name: group_advanced
+      weight: 23
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Author
+    group_registrants:
+      children:
+        - field_registrants
+      parent_name: group_advanced
+      weight: 21
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Registrants
+    group_event:
+      children:
+        - field_event
+      parent_name: group_advanced
+      weight: 24
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Event
+    group_guest_details:
+      children:
+        - field_guest_name
+        - field_guest_email
+        - field_guest_phone_number
+      parent_name: ''
+      weight: 1
+      format_type: fieldset
+      format_settings:
+        label: 'Guest Details'
+        description: 'These fields are used only for informational purposes by staff if the ILS record for the customer being used contains information that differs from the customer’s current contact information (such as in a non-cardholder/guest situation).'
+        required_fields: true
+        id: ''
+        classes: 'collapsible collapsed'
+      label: 'Guest Details'
+id: event_registration.event_registration.event
+targetEntityType: event_registration
+bundle: event_registration
+mode: event
+content:
+  author:
+    type: entity_reference_autocomplete
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  field_event:
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_guest_email:
+    type: email_default
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_guest_name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_guest_phone_number:
+    type: telephone_default
+    weight: 2
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_registrants:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: tally_default
+    region: content
+  field_user:
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  name:
+    type: string_textfield
+    weight: -4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  user_id:
+    type: entity_reference_autocomplete
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+hidden: {  }

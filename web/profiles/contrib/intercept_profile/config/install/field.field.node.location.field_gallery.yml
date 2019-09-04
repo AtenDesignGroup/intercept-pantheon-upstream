@@ -1,0 +1,66 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_gallery
+    - node.type.location
+    - paragraphs.paragraphs_type.stories_slideshow
+  module:
+    - entity_reference_revisions
+id: node.location.field_gallery
+field_name: field_gallery
+entity_type: node
+bundle: location
+label: Gallery
+description: 'Upload photos of the branch. Note this can be a combination of inside and outside photos.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    negate: 0
+    target_bundles:
+      stories_slideshow: stories_slideshow
+    target_bundles_drag_drop:
+      stories_block:
+        weight: 12
+        enabled: false
+      stories_cta:
+        weight: 13
+        enabled: false
+      stories_curated_content:
+        weight: 14
+        enabled: false
+      button:
+        weight: 15
+        enabled: false
+      stories_image:
+        weight: 15
+        enabled: false
+      image_with_caption_credit:
+        weight: 16
+        enabled: false
+      stories_link_list:
+        weight: 16
+        enabled: false
+      stories_quote:
+        weight: 17
+        enabled: false
+      stories_slideshow:
+        enabled: true
+        weight: 18
+      stories_table:
+        weight: 19
+        enabled: false
+      stories_text:
+        weight: 20
+        enabled: false
+      stories_views:
+        weight: 21
+        enabled: false
+      stories_web_video:
+        weight: 22
+        enabled: false
+field_type: entity_reference_revisions

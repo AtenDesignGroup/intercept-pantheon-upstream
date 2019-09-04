@@ -1,0 +1,34 @@
+<?php
+
+use Drupal\consumers\Entity\Consumer;
+
+/**
+ * Implements hook_install().
+ */
+function intercept_core_install() {
+  if (\Drupal::service('entity.definition_update_manager')->needsUpdates()) {
+    \Drupal::service('entity.definition_update_manager')->applyUpdates();
+  }
+  $consumer = Consumer::create([
+    'label' => 'Intercept Client',
+    'confidential' => TRUE,
+    'image_styles' => ['3to2_540x360', '4to3_740x556'],
+  ]);
+  $consumer->save();
+  \Drupal::state()->set('intercept_client.id', $consumer->id());
+  \Drupal::state()->set('intercept_client.uuid', $consumer->uuid());
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function intercept_core_uninstall() {
+  $state = \Drupal::state();
+  $id = $state->get('intercept_client.id');
+
+  if ($consumer = \Drupal::service('entity_type.manager')->getStorage('consumer')->load($id)) {
+    $consumer->delete();
+  }
+  $state->delete('intercept_client.id');
+  $state->delete('intercept_client.uuid');
+}

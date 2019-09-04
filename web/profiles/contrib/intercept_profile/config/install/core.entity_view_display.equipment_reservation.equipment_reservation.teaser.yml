@@ -1,0 +1,64 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.equipment_reservation.teaser
+    - field.field.equipment_reservation.equipment_reservation.field_dates
+    - field.field.equipment_reservation.equipment_reservation.field_equipment
+    - field.field.equipment_reservation.equipment_reservation.field_location
+    - field.field.equipment_reservation.equipment_reservation.field_room
+    - field.field.equipment_reservation.equipment_reservation.field_user
+  module:
+    - datetime_range
+    - intercept_equipment
+id: equipment_reservation.equipment_reservation.teaser
+targetEntityType: equipment_reservation
+bundle: equipment_reservation
+mode: teaser
+content:
+  field_dates:
+    weight: 4
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: short
+      separator: '-'
+    third_party_settings: {  }
+    type: daterange_default
+    region: content
+  field_equipment:
+    weight: 0
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_location:
+    weight: 1
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_room:
+    type: entity_reference_label
+    weight: 2
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_user:
+    weight: 5
+    label: inline
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden:
+  author: true
+  equipment_location: true
+  image: true

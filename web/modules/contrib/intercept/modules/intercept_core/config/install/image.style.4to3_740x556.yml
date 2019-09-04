@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: 4to3_740x556
+label: '4:3 740x556'
+effects:
+  ad3689f4-969c-477b-a1ae-e9b562e81f24:
+    uuid: ad3689f4-969c-477b-a1ae-e9b562e81f24
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 740
+      height: 556
+      crop_type: focal_point

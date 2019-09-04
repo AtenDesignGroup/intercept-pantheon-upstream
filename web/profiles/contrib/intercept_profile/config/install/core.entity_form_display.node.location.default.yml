@@ -1,0 +1,246 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.media.simple
+    - field.field.node.location.field_address
+    - field.field.node.location.field_affiliated
+    - field.field.node.location.field_branch_location
+    - field.field.node.location.field_closed_for_renovations
+    - field.field.node.location.field_contact_number
+    - field.field.node.location.field_features
+    - field.field.node.location.field_gallery
+    - field.field.node.location.field_link_directions
+    - field.field.node.location.field_location_abbreviation
+    - field.field.node.location.field_location_hours
+    - field.field.node.location.field_map_link
+    - field.field.node.location.field_text_content
+    - field.field.node.location.field_text_intro
+    - field.field.node.location.field_virtual_tour
+    - field.field.node.location.image_primary
+    - node.type.location
+  module:
+    - address
+    - entity_browser_entity_form
+    - field_group
+    - inline_entity_form
+    - link
+    - office_hours
+    - paragraphs
+    - path
+    - telephone
+    - text
+third_party_settings:
+  field_group:
+    group_contact:
+      children:
+        - field_contact_number
+        - field_address
+        - field_virtual_tour
+        - field_link_directions
+        - field_map_link
+        - field_closed_for_renovations
+        - field_location_hours
+      parent_name: ''
+      weight: 3
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: false
+      label: Contact
+      region: content
+id: node.location.default
+targetEntityType: node
+bundle: location
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_address:
+    weight: 5
+    settings:
+      default_country: US
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_branch_location:
+    weight: 26
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_closed_for_renovations:
+    type: boolean_checkbox
+    weight: 10
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_contact_number:
+    weight: 4
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+  field_features:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_gallery:
+    type: paragraphs
+    weight: 7
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+  field_link_directions:
+    type: link_default
+    weight: 7
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_location_abbreviation:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_location_hours:
+    weight: 11
+    settings: {  }
+    third_party_settings: {  }
+    type: office_hours_default
+    region: content
+  field_map_link:
+    weight: 8
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_text_content:
+    weight: 8
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_text_intro:
+    weight: 2
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_virtual_tour:
+    weight: 6
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  image_primary:
+    weight: 1
+    settings:
+      form_mode: simple
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: stories_image_uploader
+    type: inline_entity_form_complex
+    region: content
+  path:
+    type: path
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 11
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 15
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 14
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 12
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 9
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 16
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 17
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_affiliated: true

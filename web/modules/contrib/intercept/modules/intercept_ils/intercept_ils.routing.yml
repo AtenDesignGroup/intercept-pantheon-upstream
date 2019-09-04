@@ -1,0 +1,7 @@
+intercept_ils.settings:
+  path: /admin/config/intercept/intercept_ils_settings
+  defaults:
+    _title: 'Intercept ILS Settings'
+    _form: \Drupal\intercept_ils\Form\SettingsForm
+  requirements:
+    _permission: 'administer intercept_ils settings'

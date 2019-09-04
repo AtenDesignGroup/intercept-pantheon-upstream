@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Functions to support theming.
+ */
+
+/**
+ * Add a prefix to a path for use with array_walk().
+ */
+function _STARTER_KIT_get_absolute_path(&$value, $key, $prefix) {
+  $value = $prefix . $value;
+}

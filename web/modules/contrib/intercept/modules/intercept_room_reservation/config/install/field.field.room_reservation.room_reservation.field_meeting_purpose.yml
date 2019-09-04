@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.room_reservation.field_meeting_purpose
+    - taxonomy.vocabulary.meeting_purpose
+  module:
+    - intercept_room_reservation
+id: room_reservation.room_reservation.field_meeting_purpose
+field_name: field_meeting_purpose
+entity_type: room_reservation
+bundle: room_reservation
+label: 'Meeting Purpose'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      meeting_purpose: meeting_purpose
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

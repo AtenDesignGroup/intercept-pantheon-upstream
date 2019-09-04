@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_type_primary
+    - node.type.event
+    - taxonomy.vocabulary.event_type
+id: node.event.field_event_type_primary
+field_name: field_event_type_primary
+entity_type: node
+bundle: event
+label: 'Primary Event Type'
+description: 'Choose the primary event type. This is used for reporting purposes. '
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      event_type: event_type
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

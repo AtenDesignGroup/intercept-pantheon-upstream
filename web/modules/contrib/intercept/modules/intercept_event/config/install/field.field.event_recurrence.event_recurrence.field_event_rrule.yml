@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.event_recurrence.field_event_rrule
+  module:
+    - date_recur
+    - intercept_event
+id: event_recurrence.event_recurrence.field_event_rrule
+field_name: field_event_rrule
+entity_type: event_recurrence
+bundle: event_recurrence
+label: 'Recurrence Rule'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  precreate: P1Y
+field_type: date_recur

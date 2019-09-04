@@ -1,0 +1,5 @@
+bundle: intercept
+excluded:
+  - jsonapi_extras.jsonapi_resource_config.node--location
+  - jsonapi_extras.jsonapi_resource_config.node--room
+required: true

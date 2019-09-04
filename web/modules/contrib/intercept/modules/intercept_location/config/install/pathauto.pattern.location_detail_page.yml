@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: location_detail_page
+label: 'Location - Detail Page'
+type: 'canonical_entities:node'
+pattern: 'location/[node:title]'
+selection_criteria:
+  0e4a59d7-7c34-49ff-90ba-4e404f53dea2:
+    id: node_type
+    bundles:
+      location: location
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 0e4a59d7-7c34-49ff-90ba-4e404f53dea2
+selection_logic: and
+weight: -5
+relationships: {  }

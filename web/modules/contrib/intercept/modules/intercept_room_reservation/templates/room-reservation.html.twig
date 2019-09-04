@@ -1,0 +1,25 @@
+{#
+/**
+ * @file room_reservation.html.twig
+ * Default theme implementation to present Room reservation data.
+ *
+ * This template is used when viewing Room reservation pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_room_reservation()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('room-reservation', 'form-item') }}>
+  {% if content %}
+    {{- content|without('action_button', 'field_location', 'field_status', 'room_location') -}}
+  {% endif %}
+  <footer>
+    {{ content.action_button }}
+  </footer>
+</div>

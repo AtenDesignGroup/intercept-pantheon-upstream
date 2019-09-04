@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: equipment_detail_page
+label: 'Equipment - Detail Page'
+type: 'canonical_entities:node'
+pattern: 'equipment/[node:title]'
+selection_criteria:
+  aaec1623-6fc9-4bab-a66f-3b9c30c8a4ab:
+    id: node_type
+    bundles:
+      equipment: equipment
+    negate: false
+    context_mapping:
+      node: node
+    uuid: aaec1623-6fc9-4bab-a66f-3b9c30c8a4ab
+selection_logic: and
+weight: -5
+relationships: {  }

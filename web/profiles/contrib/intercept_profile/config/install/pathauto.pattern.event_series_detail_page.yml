@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: event_series_detail_page
+label: 'Event Series - Detail Page'
+type: 'canonical_entities:node'
+pattern: 'event-series/[node:title]'
+selection_criteria:
+  6b49aacf-dfe6-4772-933c-f0ece3dcc4ea:
+    id: node_type
+    bundles:
+      event_series: event_series
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 6b49aacf-dfe6-4772-933c-f0ece3dcc4ea
+selection_logic: and
+weight: -5
+relationships: {  }

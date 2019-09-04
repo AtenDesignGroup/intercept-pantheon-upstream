@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.intercept_equipment_reservation_manager
+  module:
+    - user
+id: user_remove_role_action.intercept_equipment_reservation_manager
+label: 'Remove the InterCEPT Equipment Reservation Manager role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: intercept_equipment_reservation_manager

@@ -1,0 +1,27 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/brief') }}
+<article {{ component.attributes('brief', modifiers, attr) }}>
+  <h3 class="brief__title">
+    {% if title_link %}
+    <a href="{{ title_link.url }}" title="{{ title }}" class="{{ title_link.class }}">
+    {% endif %}
+
+    {{ title }}
+
+    {% if title_link %}
+    </a>
+    {% endif %}
+  </h3>
+
+  {% if body|field_value %}<div class="brief__body">{{ body|field_value }}</div>{% endif %}
+
+  <a class="button button--arrow-green" href="{{ title_link.url }}">
+    {% if link_text %}
+    {{ link_text }}
+
+    {% else %}
+    {{ title }}
+
+    {% endif %}
+  </a>
+</article>

@@ -1,0 +1,17 @@
+h1.page-title {
+  margin-bottom: 1.5625rem;
+  color: #0288D1;
+  font-weight: 900; }
+  @media (min-width: 48em) {
+    h1.page-title {
+      margin-bottom: 2.0625rem; } }
+  @media (min-width: 62em) {
+    h1.page-title {
+      margin-bottom: 3.125rem; } }
+
+h1.page-title--reversed {
+  color: #fff; }
+  h1.page-title--reversed a {
+    color: #fff; }
+    h1.page-title--reversed a:hover {
+      color: #fff; }

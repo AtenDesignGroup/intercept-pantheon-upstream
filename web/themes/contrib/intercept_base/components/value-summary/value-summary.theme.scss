@@ -1,0 +1,24 @@
+@import "_partials";
+
+.value-summary {
+  &__wrapper {
+    background-color: $gray-90;
+  }
+
+  &__footer--error {
+    background: $clr-error;
+
+    .value-summary__footer-link {
+      color: $white;
+      font-weight: $fw-bold;
+      opacity: .8;
+      transition: .2s all ease-out;
+
+      &:hover,
+      &:focus {
+        color: $white;
+        opacity: 1;
+      }
+    }
+  }
+}

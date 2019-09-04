@@ -1,0 +1,30 @@
+@import "_partials";
+
+.location {
+  background: $clr-secondary-dark;
+}
+
+.location__content {
+  color: $white;
+}
+
+.location__title,
+.location__subtitle {
+  color: inherit;
+  font-weight: $fw-bold;
+}
+
+.location__address {
+  > a:not([class]) {
+    color: $white;
+    font-weight: normal;
+    opacity: .8;
+    transition: all ease-out .2s;
+
+    &:hover,
+    &:focus {
+      color: $white;
+      opacity: 1;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+addtocalendar.settings:
+  type: config_object
+  label: 'Add to Calendar Settings'
+  mapping:
+    addtocalendar_show:
+      type: string
+      label: 'Show Add to Calendar'
+    style:
+      type: string
+      label: 'Select Style'
+    display_text:
+      type: text
+      label: 'Display Text'
+      translatable: true
+    atc_title:
+      type: string
+      label: 'Title of the event'
+    atc_description:
+      type: string
+      label: 'Description of the event'
+    atc_location:
+      type: string
+      label: 'Location of the event'
+    atc_privacy:
+      type: string
+      label: 'Privacy of the event'
+    data_secure:
+      type: string
+      label: 'Security level'
+    multiple_value:
+      type: integer
+      label: 'AddToCalendar button visibility'
+    delta:
+      type: integer
+      label: 'AddToCalendar button visibility for a particular date field'

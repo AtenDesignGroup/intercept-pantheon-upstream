@@ -1,0 +1,14 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/byline') }}
+
+{% if author or date %}
+<ul class="byline">
+  {% if author %}
+  <li class="byline__item byline__author">{{ author }}</li>
+  {% endif %}
+
+  {% if date %}
+  <li class="byline__item byline__date">{{ date }}</li>
+  {% endif %}
+</ul>
+{% endif %}

@@ -1,0 +1,14 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/content-list') }}
+
+<div {{ component.attributes('content-list', modifiers, attr) }}>
+  {% if heading %}
+    <h3 class="content-list__heading">{{ heading }}</h3>
+  {% endif %}
+
+  <ul class="content-list__list">
+    {% for item in items %}
+        <li class="content-list__item">{{ item }}</li>
+    {% endfor %}
+  </ul>
+</div>

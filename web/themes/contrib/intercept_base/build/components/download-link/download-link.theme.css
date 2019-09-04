@@ -1,0 +1,12 @@
+.download-link > a:not([class]) {
+  background-color: #D3D8DF;
+  color: #4C4D4F;
+  font-weight: 900; }
+  .download-link > a:not([class]):hover, .download-link > a:not([class]):focus {
+    background-color: #EEF1F4;
+    color: #130f13; }
+    .download-link > a:not([class]):hover + .icon, .download-link > a:not([class]):focus + .icon {
+      background-color: #039BE5; }
+
+.download-link > .icon {
+  background-color: #0288D1; }

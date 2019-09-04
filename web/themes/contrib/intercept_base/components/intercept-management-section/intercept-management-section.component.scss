@@ -1,0 +1,43 @@
+@import "_partials";
+
+.intercept-management-section__actions {
+  @include list--no-bullets;
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  margin: rem(-16px);
+
+  @include bp(medium) {
+    margin: rem(-30px);
+  }
+}
+
+.intercept-management-section__actions-item {
+  align-items: stretch;
+  display: flex;
+  flex: none;
+  width: 100%;
+  padding: rem(16px);
+
+  > .card {
+    width: 100%;
+  }
+
+  @include bp(default) {
+    width: 50%;
+  }
+
+  @include bp(medium) {
+    padding: rem(30px);
+    width: 33%;
+  }
+}
+
+.intercept-management-section__content {
+
+  // Roughly aling the table columns.
+  tr > :first-child {
+    max-width: 40%;
+    width: 20em;
+  }
+}

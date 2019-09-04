@@ -1,0 +1,38 @@
+//
+// @file
+// Box mixins
+//
+// These styles deal with inner padding and box widths.
+//
+
+@mixin box--constrained($width: $w-full) {
+  box-sizing: content-box;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: $width;
+}
+
+@mixin box--narrow($width: $w-narrow) {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: $w-narrow;
+  width: 100%;
+}
+
+@mixin box--gutters($left: $w-gutter, $right: $left) {
+  padding-left: $left;
+  padding-right: $right;
+}
+
+@mixin box--padded($top: $w-gutter, $bottom: $top) {
+  padding-bottom: $bottom;
+  padding-top: $top;
+}
+
+@mixin l--section {
+  @include spacing(margin-bottom, loose);
+}
+
+@mixin l--section-xl {
+  @include spacing(margin-bottom, sparser);
+}

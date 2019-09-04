@@ -1,0 +1,23 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/metadata') }}
+
+{% macro items_inline(items) %}
+  {% for item in items %}
+    <span class="metadata__item metadata__item--inline">{{ item }}{% if loop.last != true %}{{ separator|default(',')}} {% endif %}</span>
+  {% endfor %}
+{% endmacro %}
+
+{% macro items(items) %}
+  {% for item in items %}
+    <div class="metadata__item metadata__item--block">{{ item }}</div>
+  {% endfor %}
+{% endmacro %}
+
+<div {{ component.attributes('metadata', modifiers, attr) }}>
+  {% if title %}
+    <h4 class="metadata__title">{{ title }}</h4>
+  {% endif %}
+  {% if data %}
+    <div class="metadata__content">{{ inline|default(false) ? _self.items_inline(data) : _self.items(data) }}</div>
+  {% endif %}
+</div>

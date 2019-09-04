@@ -1,0 +1,4 @@
+{% import '@intercept-base-components/icons/icon.twig' as icon %}
+{% import '@components/component.twig' as component %}
+{{attach_library('intercept_base/download-link')}}
+<div {{ component.attributes('download-link', modifiers, attr) }}>{{link}} {{icon.inline('download')}}</div>

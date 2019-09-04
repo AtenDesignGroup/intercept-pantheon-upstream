@@ -1,0 +1,9 @@
+@import "_partials";
+
+.action-flag {
+  .save-link__star .star {
+    fill: $white;
+    stroke-width: 3rem;
+    stroke: $green-60;
+  }
+}

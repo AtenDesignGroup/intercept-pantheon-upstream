@@ -1,0 +1,10 @@
+@import "_partials";
+
+.highlight {
+  @include spacing(margin-bottom, compact);
+  background: $clr-secondary-light;
+  color: $clr-secondary-dark;
+  text-transform: uppercase;
+  font-weight: $fw-bold;
+  letter-spacing: (2/12)*1em;
+}

@@ -1,0 +1,29 @@
+.content-list:not(:last-child),
+.content-list__heading:not(:last-child),
+.content-list__item:not(:last-child) {
+  margin-bottom: 1.5625rem; }
+  @media (min-width: 48em) {
+    .content-list:not(:last-child),
+    .content-list__heading:not(:last-child),
+    .content-list__item:not(:last-child) {
+      margin-bottom: 2.0625rem; } }
+  @media (min-width: 62em) {
+    .content-list:not(:last-child),
+    .content-list__heading:not(:last-child),
+    .content-list__item:not(:last-child) {
+      margin-bottom: 3.125rem; } }
+
+.content-list__heading {
+  font-size: 1.41667rem; }
+  @media (min-width: 48em) {
+    .content-list__heading {
+      font-size: 1.875rem; } }
+  @media (min-width: 62em) {
+    .content-list__heading {
+      font-size: 2.25rem; } }
+
+.content-list__list {
+  margin: 0;
+  padding: 0; }
+  .content-list__list > li {
+    list-style: none; }

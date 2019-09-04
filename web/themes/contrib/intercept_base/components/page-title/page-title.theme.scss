@@ -1,0 +1,19 @@
+@import "_partials";
+
+h1.page-title {
+  @include spacing(margin-bottom, normal);
+  color: $clr-primary;
+  font-weight: $fw-bold;
+}
+
+h1.page-title--reversed {
+  color: $white;
+
+  a {
+    color: $white;
+
+    &:hover {
+      color: $white;
+    }
+  }
+}

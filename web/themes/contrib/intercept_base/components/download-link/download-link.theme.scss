@@ -1,0 +1,24 @@
+@import "_partials";
+
+.download-link {
+
+  > a:not([class]) {
+    background-color: $gray-60;
+    color: $gray-20;
+    font-weight: $fw-bold;
+
+    &:hover,
+    &:focus {
+      background-color: $gray-80;
+      color: $gray-00;
+
+      + .icon {
+        background-color: $clr-primary-light;
+      }
+    }
+  }
+
+  > .icon {
+    background-color: $clr-primary;
+  }
+}

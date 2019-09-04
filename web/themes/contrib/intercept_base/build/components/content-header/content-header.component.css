@@ -1,0 +1,141 @@
+.content-header {
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  position: relative; }
+  @media (min-width: 43.75em) {
+    .content-header {
+      padding-left: 7.14286%;
+      padding-right: 0;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: reverse;
+          -ms-flex-direction: row-reverse;
+              flex-direction: row-reverse; } }
+  @media (min-width: 48em) {
+    .content-header {
+      padding-left: 6.25%;
+      padding-right: 0;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: reverse;
+          -ms-flex-direction: row-reverse;
+              flex-direction: row-reverse; } }
+  @media (min-width: 62em) {
+    .content-header {
+      padding-left: 7.40741%;
+      padding-right: 0; } }
+
+.content-header__text {
+  padding-left: 7.14286%;
+  padding-right: 7.14286%;
+  padding-top: 2.0625rem;
+  padding-bottom: 2.0625rem;
+  color: #fff;
+  -webkit-box-flex: 1;
+      -ms-flex: auto;
+          flex: auto;
+  z-index: 1; }
+  @media (min-width: 48em) {
+    .content-header__text {
+      padding-top: 4.125rem; } }
+  @media (min-width: 62em) {
+    .content-header__text {
+      padding-top: 6.25rem; } }
+  @media (min-width: 48em) {
+    .content-header__text {
+      padding-bottom: 4.125rem; } }
+  @media (min-width: 62em) {
+    .content-header__text {
+      padding-bottom: 6.25rem; } }
+  @media (min-width: 43.75em) {
+    .content-header__text {
+      padding-left: 0;
+      padding-right: 0;
+      -ms-flex-item-align: center;
+          -ms-grid-row-align: center;
+          align-self: center;
+      padding-right: 4rem; } }
+  @media (min-width: 48em) {
+    .content-header__text {
+      padding-right: 10rem; } }
+
+.content-header__image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover; }
+  @media (max-width: 43.6875em) {
+    .content-header__image {
+      padding-bottom: 66.66667%; } }
+  @media (min-width: 43.75em) {
+    .content-header__image {
+      min-width: 33.33333%;
+      margin-left: 6.66667%; } }
+  @media (min-width: 48em) {
+    .content-header__image {
+      min-width: 33.33333%;
+      margin-left: 6.66667%; } }
+  @media (min-width: 62em) {
+    .content-header__image {
+      min-width: 34.61538%;
+      margin-left: 3.84615%; } }
+
+.content-header__supertitle {
+  font-size: 0.5rem; }
+  @media (min-width: 48em) {
+    .content-header__supertitle {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .content-header__supertitle {
+      font-size: 0.75rem; } }
+  .content-header__supertitle:not(:last-child) {
+    margin-bottom: 0.375rem; }
+    @media (min-width: 48em) {
+      .content-header__supertitle:not(:last-child) {
+        margin-bottom: 0.495rem; } }
+    @media (min-width: 62em) {
+      .content-header__supertitle:not(:last-child) {
+        margin-bottom: 0.75rem; } }
+
+.content-header__title:not(:last-child) {
+  margin-bottom: 0.375rem; }
+  @media (min-width: 48em) {
+    .content-header__title:not(:last-child) {
+      margin-bottom: 0.495rem; } }
+  @media (min-width: 62em) {
+    .content-header__title:not(:last-child) {
+      margin-bottom: 0.75rem; } }
+
+.content-header__title h1.page-title {
+  color: #fff;
+  margin-bottom: 0; }
+
+.content-header__date-date,
+.content-header__date-time {
+  font-size: 0.95833rem;
+  line-height: 1.2;
+  display: block; }
+  @media (min-width: 48em) {
+    .content-header__date-date,
+    .content-header__date-time {
+      font-size: 1.25rem; } }
+  @media (min-width: 62em) {
+    .content-header__date-date,
+    .content-header__date-time {
+      font-size: 1.5rem; } }
+  .content-header__date-date:not(:last-child),
+  .content-header__date-time:not(:last-child) {
+    margin-bottom: 0.375rem; }
+    @media (min-width: 48em) {
+      .content-header__date-date:not(:last-child),
+      .content-header__date-time:not(:last-child) {
+        margin-bottom: 0.495rem; } }
+    @media (min-width: 62em) {
+      .content-header__date-date:not(:last-child),
+      .content-header__date-time:not(:last-child) {
+        margin-bottom: 0.75rem; } }

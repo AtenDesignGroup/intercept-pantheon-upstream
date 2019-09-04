@@ -1,0 +1,14 @@
+@import "_partials";
+
+.view-switcher__button {
+  background-color: transparent !important;
+  color: $clr-primary;
+  font-weight: $fw-bold;
+  text-transform: uppercase;
+
+  &:hover,
+  &:focus {
+    background-color: transparent;
+    color: $clr-primary-dark;
+  }
+}

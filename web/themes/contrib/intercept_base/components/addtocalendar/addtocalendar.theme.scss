@@ -1,0 +1,27 @@
+@import '_partials';
+
+.addtocalendar .atcb-link,
+.react-add-to-calendar__button {
+  color: $gray-50;
+  font-weight: $fw-bold;
+
+  &:hover,
+  &:focus {
+    color: $gray-20;
+  }
+}
+
+.react-add-to-calendar__dropdown {
+  border: 1px solid $gray-80;
+
+  > ul:not([class]) > li > a {
+    color: $gray-50;
+    font-weight: $fw-bold;
+
+    &:hover,
+    &:focus {
+      color: $gray-20;
+      background-color: $gray-80;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+@import "_partials";
+
+.reservation-summary {
+  &__location {
+    margin-bottom: 0;
+  }
+
+  &__room {
+    &:not(:last-child) {
+      @include spacing(margin-bottom, compact);
+    }
+  }
+}

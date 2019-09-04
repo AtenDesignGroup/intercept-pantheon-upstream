@@ -1,0 +1,8 @@
+.more-link {
+  color: #0277BD; }
+  .more-link polygon {
+    fill: #0277BD; }
+  .more-link:hover, .more-link:focus {
+    color: #0288D1; }
+    .more-link:hover polygon, .more-link:focus polygon {
+      fill: #0288D1; }

@@ -1,0 +1,10 @@
+@import "_partials";
+
+.event-eval-feedback__user {
+  @include fs(x-small);
+  font-weight: $fw-bold;
+
+  &:not(:last-child) {
+    margin-top: 1em;
+  }
+}

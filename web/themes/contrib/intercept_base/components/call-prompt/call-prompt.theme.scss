@@ -1,0 +1,12 @@
+@import '_partials';
+
+.call-prompt {
+  &__text {
+    font-weight: $fw-bold;
+  }
+
+  &__link {
+    @include link--secondary;
+    font-weight: $fw-bold;
+  }
+}

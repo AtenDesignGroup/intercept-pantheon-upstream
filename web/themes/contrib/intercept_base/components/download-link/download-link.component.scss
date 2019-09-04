@@ -1,0 +1,39 @@
+@import "_partials";
+
+.download-link {
+  overflow: hidden;
+  position: relative;
+
+  > a:not([class]) {
+    @include lh(-1);
+    border: 0;
+    display: block;
+    letter-spacing: .01em;
+    padding: .75em 1em .75em 3.5em;
+    transition-property: all;
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+  }
+
+  > .icon {
+    align-items: center;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    margin: auto;
+    padding: .25em .5em;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 2.5em;
+
+    > svg {
+      height: 1em;
+      width: ce(16, 21);
+    }
+  }
+}

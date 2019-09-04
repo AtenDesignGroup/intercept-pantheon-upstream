@@ -1,0 +1,114 @@
+//
+// @file
+// Form Styles
+//
+// Classes to support form elements
+//
+
+.form__heading {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+}
+
+.form__main {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+// Form Item Wrapper
+.form-item {
+  margin: 1em 0;
+}
+
+.form-item--inline {
+  display: flex;
+  align-items: stretch;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, tight);
+  }
+
+  // &:not(:last-child) {
+  //   @include spacing(margin-bottom, tight);
+  // }
+
+  > .form-item {
+    flex: 1;
+  }
+
+  .form-item {
+    margin: 0;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.form-item__help-text {
+  @include fs(x-small);
+  font-style: italic;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, narrow);
+  }
+}
+
+//
+// User Login Form
+//
+
+.user-login-form {
+  max-width: 25em;
+  margin-left: auto;
+  margin-right: auto;
+
+  label {
+    display: block;
+    font-weight: $fw-bold;
+  }
+
+  .description {
+    @include fs(x-small);
+    font-style: italic;
+  }
+}
+
+//
+// Action links
+//
+.action-links {
+  display: flex;
+  align-content: flex-start;
+  padding: 0;
+
+  > li {
+    display: block;
+    list-style: none;
+
+    &:not(:last-child) {
+      margin-right: 1em;
+    }
+  }
+}
+
+.input-checkboxes__checkbox {
+  margin: 0;
+
+  &:not(:last-child) {
+    // margin-bottom: rem(12px);
+  }
+}
+
+.input-checkboxes__checkbox-text {
+  font-weight: $fw-bold;
+}
+
+.input__label--file {
+  // Override the incredibly specific selector
+  position: static !important;
+  display: block;
+}

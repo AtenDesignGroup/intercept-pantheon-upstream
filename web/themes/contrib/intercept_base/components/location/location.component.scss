@@ -1,0 +1,99 @@
+@import "_partials";
+
+.location {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  @include bp(small medium) {
+    flex-direction: row;
+  }
+
+  @include bp(large) {
+    flex-direction: row;
+  }
+}
+
+.location__image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding-bottom: percentage(2/3);
+
+  @include bp(none large) {
+  }
+
+  // @include bp(medium) {
+  //   flex-basis: percentage(6/15);
+  //   margin-left: percentage(1/15);
+  // }
+
+  // @include bp(large) {
+  //   flex-basis: percentage(10/26);
+  //   margin-left: percentage(1/26);
+  // }
+  @include bp(small medium) {
+    flex-basis: percentage(3/7);
+    padding-bottom: 0;
+  }
+
+  @include bp(large) {
+    flex-basis: percentage(7/15);
+    padding-bottom: 0;
+    // flex-direction: column;
+    // align-items: stretch;
+    // overflow: hidden;
+    // justify-content: center;
+  }
+}
+
+.location__content {
+  @include spacing(padding-top, normal);
+  @include spacing(padding-bottom, normal);
+  @include box--gutters(percentage(1/16));
+
+  color: $white;
+  flex: auto;
+
+  @include bp(medium) {
+    align-self: center;
+  }
+}
+
+.location__highlight {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, compact);
+  }
+}
+
+.location__header {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, compact);
+  }
+}
+
+.location__title,
+.location__subtitle,
+.location__address {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, compact);
+  }
+}
+
+.location__title {
+  @include fs(large);
+}
+
+.location__subtitle {
+  @include fs(small);
+}
+
+.location__address {
+  @include fs(small);
+
+  > p,
+  > a:not([class]) {
+    margin-bottom: 0;
+  }
+}

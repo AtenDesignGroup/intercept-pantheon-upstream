@@ -1,0 +1,8 @@
+.intro:not(:last-child) {
+  margin-bottom: 0.9375rem; }
+  @media (min-width: 48em) {
+    .intro:not(:last-child) {
+      margin-bottom: 1.2375rem; } }
+  @media (min-width: 62em) {
+    .intro:not(:last-child) {
+      margin-bottom: 1.875rem; } }

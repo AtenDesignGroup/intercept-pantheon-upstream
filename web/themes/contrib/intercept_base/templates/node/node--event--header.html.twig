@@ -1,0 +1,18 @@
+{% set location = content.field_location|field_target_entity %}
+{% set image_url = content.image_primary|field_target_entity.field_media_image.entity.uri.value %}
+{% if image_url %}
+  {% set image = file_url(content.image_primary|field_target_entity.field_media_image.entity.uri.value|image_style('4to3_740x556')) %}
+{% else %}
+  {% set image = null %}
+{% endif %}
+
+{% include '@intercept-base-components/content-header/content-header.twig' with {
+  title: label|field_value,
+  image: image,
+  type: 'Event'|t,
+  supertitle: location.label,
+  date: {
+    date: node.field_date_time.start_date|date("l, F j, Y"),
+    time: (node.field_date_time.start_date|date("g:i a") ~ ' – ' ~ node.field_date_time.end_date|date("g:i a"))|replace({'m':'.m.'})|replace({':00':''})
+  },
+} %}

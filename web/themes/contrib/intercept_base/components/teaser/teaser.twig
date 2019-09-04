@@ -1,0 +1,124 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% import '@intercept-base-components/icons/icon.twig' as icon %}
+{{ attach_library('intercept_base/teaser') }}
+
+{% set modifiers = modifiers|default([])|merge([image or books ? 'has-image' : date ? 'without-image' : 'no-image']) %}
+<{{ tag|default('article') }} {{ component.attributes('teaser', modifiers, attr) }}>
+  {% if image or books or date %}
+  <div class="teaser__image">
+    {% if image %}
+      {% if title_url %}
+        <a href="{{ title_url }}" class="teaser__image-link" aria-hidden="true">{{ image }}</a>
+      {% else %}
+        {{ image }}
+      {% endif %}
+      {% elseif books %}
+      <div class="teaser__images">
+        {% for book in books %}
+        <div class="teaser__images-image">
+          <a href="{{ url }}" title="{{ title }}">
+              <img src="{{ book.image.url }}" alt="{{ book.image.alt }}">
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if date %}
+        <div class="teaser__date-wrapper">
+          <p class="teaser__date">
+            <span class="teaser__date-month">{{ date.month }}</span>
+            <span class="teaser__date-date">{{ date.date }}</span>
+            <span class="teaser__date-time">{{ date.time }}</span>
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+  {% if event_date %}
+    <div class="teaser__event-date-wrapper">
+      <p class="teaser__date">
+        <span class="teaser__date-month">{{ event_date.month }}</span>
+        <span class="teaser__date-date">{{ event_date.date }}</span>
+        <span class="teaser__date-time">{{ event_date.time }}</span>
+      </p>
+    </div>
+  {% endif %}
+  <div class="teaser__main clearfix">
+    <div class="teaser__content clearfix">
+      {% if type %}
+      <div class="teaser__highlight">
+        {% include '@intercept-base-components/highlight/highlight.twig' with { text: type } only %}
+      </div>
+      {% endif %}
+
+      {% if supertitle %}
+      <span class="teaser__supertitle">{{ supertitle }}</span>
+      {% endif %}
+
+      <h3 class="teaser__title">
+        {% if title_url %}
+          <a href="{{ title_url }}" class="teaser__title-link">{{ title }}</a>
+        {% else %}
+        {{ title }}
+        {% endif %}
+      </h3>
+
+      {% if subtitle %}
+      <div class="teaser__subtitle">{{ subtitle }}</div>
+      {% endif %}
+
+      {% if registration %}
+      <div class="teaser__registration">
+        {{ registration }}
+      </div>
+      {% endif %}
+
+      {% if save %}
+      <div class="teaser__flag">
+        {{ save }}
+      </div>
+      {% endif %}
+
+      {% if dateline or author or authors or description %}
+      <footer class="teaser__meta">
+        {% if dateline %}
+          <span class="teaser__dateline">{{ dateline }}</span>
+        {% endif %}
+
+        {# BLOG #}
+        {% if date2 %}
+          <p class="content-header__date">
+            <span class="content-header__date-date">{{ date2.date }}</span>
+            <span class="content-header__date-time">{{ date2.time }}</span>
+          </p>
+        {% endif %}
+
+        {# BLOG #}
+        {% if byline %}
+          {% include '@intercept-base-components/byline/byline.twig' with {
+            author: byline.author,
+            date: byline.date }
+          only %}
+        {% endif %}
+
+        {% if description %}
+        <div class="teaser__description">{{ description }}</div>
+        {% endif %}
+
+        {% if tags %}
+        <div class="teaser__tags">{{ tags }}</div>
+        {% endif %}
+
+        {% if more_link %}
+        <div class="teaser__more-link">
+          {% include '@intercept-base-components/more-link/more-link.twig' with more_link only %}
+        </div>
+        {% endif %}
+      </footer>
+      {% endif %}
+    </div>
+    {% if footer %}
+    <div class="teaser__footer">{{ footer }}</div>
+    {% endif %}
+  </div>
+</{{ tag|default('article') }}>

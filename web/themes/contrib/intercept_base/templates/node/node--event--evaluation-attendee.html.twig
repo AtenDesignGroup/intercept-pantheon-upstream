@@ -1,0 +1,11 @@
+{% macro listing(context) %}
+  {% include '@intercept_base/node/node--event--listing.html.twig' with context %}
+{% endmacro %}
+{% if content.evaluation %}
+  {% include '@intercept-base-components/evaluation/evaluation.twig' with {
+    subject: _self.listing(_context),
+    widget: content.evaluation
+  } %}
+{% else %}
+  {% include '@intercept_base/node/node--event--teaser.html.twig' %}
+{% endif %}

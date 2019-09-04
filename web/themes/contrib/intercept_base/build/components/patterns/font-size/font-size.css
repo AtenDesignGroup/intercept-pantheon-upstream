@@ -1,0 +1,301 @@
+.fs {
+  line-height: 1.2;
+  margin: 10px;
+  position: relative; }
+  .fs:after {
+    bottom: 25%;
+    color: #878B90;
+    display: inline-block;
+    font-size: 14px;
+    margin: auto 8px;
+    position: absolute;
+    right: 100%; }
+
+.fs--nano {
+  font-size: 7.38889px; }
+  .fs--nano:after {
+    content: "7.38889px "; }
+
+.fs--micro {
+  font-size: 8px; }
+  .fs--micro:after {
+    content: "8px "; }
+
+.fs--tiny {
+  font-size: 9.22222px; }
+  .fs--tiny:after {
+    content: "9.22222px "; }
+
+.fs--x-small {
+  font-size: 10.44444px; }
+  .fs--x-small:after {
+    content: "10.44444px "; }
+
+.fs--small {
+  font-size: 11.66667px; }
+  .fs--small:after {
+    content: "11.66667px "; }
+
+.fs--body {
+  font-size: 12.88889px; }
+  .fs--body:after {
+    content: "12.88889px "; }
+
+.fs--secondary-menu {
+  font-size: 14.11111px; }
+  .fs--secondary-menu:after {
+    content: "14.11111px "; }
+
+.fs--main-menu {
+  font-size: 17.77778px; }
+  .fs--main-menu:after {
+    content: "17.77778px "; }
+
+.fs--label {
+  font-size: 13.5px; }
+  .fs--label:after {
+    content: "13.5px "; }
+
+.fs--medium {
+  font-size: 14.11111px; }
+  .fs--medium:after {
+    content: "14.11111px "; }
+
+.fs--large {
+  font-size: 16.55556px; }
+  .fs--large:after {
+    content: "16.55556px "; }
+
+.fs--h5 {
+  font-size: 14.11111px; }
+  .fs--h5:after {
+    content: "14.11111px "; }
+
+.fs--h4 {
+  font-size: 15.33333px; }
+  .fs--h4:after {
+    content: "15.33333px "; }
+
+.fs--h3 {
+  font-size: 19px; }
+  .fs--h3:after {
+    content: "19px "; }
+
+.fs--h2 {
+  font-size: 22.66667px; }
+  .fs--h2:after {
+    content: "22.66667px "; }
+
+.fs--h1 {
+  font-size: 30px; }
+  .fs--h1:after {
+    content: "30px "; }
+
+.fs--mega {
+  font-size: 37.33333px; }
+  .fs--mega:after {
+    content: "37.33333px "; }
+
+@media (min-width: 48em) {
+  .fs--nano {
+    font-size: 8.33333px; }
+    .fs--nano:after {
+      content: "8.33333px "; } }
+
+@media (min-width: 48em) {
+  .fs--micro {
+    font-size: 10px; }
+    .fs--micro:after {
+      content: "10px "; } }
+
+@media (min-width: 48em) {
+  .fs--tiny {
+    font-size: 11.66667px; }
+    .fs--tiny:after {
+      content: "11.66667px "; } }
+
+@media (min-width: 48em) {
+  .fs--x-small {
+    font-size: 13.33333px; }
+    .fs--x-small:after {
+      content: "13.33333px "; } }
+
+@media (min-width: 48em) {
+  .fs--small {
+    font-size: 15px; }
+    .fs--small:after {
+      content: "15px "; } }
+
+@media (min-width: 48em) {
+  .fs--body {
+    font-size: 16.66667px; }
+    .fs--body:after {
+      content: "16.66667px "; } }
+
+@media (min-width: 48em) {
+  .fs--secondary-menu {
+    font-size: 15px; }
+    .fs--secondary-menu:after {
+      content: "15px "; } }
+
+@media (min-width: 48em) {
+  .fs--main-menu {
+    font-size: 16.66667px; }
+    .fs--main-menu:after {
+      content: "16.66667px "; } }
+
+@media (min-width: 48em) {
+  .fs--label {
+    font-size: 17.5px; }
+    .fs--label:after {
+      content: "17.5px "; } }
+
+@media (min-width: 48em) {
+  .fs--medium {
+    font-size: 18.33333px; }
+    .fs--medium:after {
+      content: "18.33333px "; } }
+
+@media (min-width: 48em) {
+  .fs--large {
+    font-size: 22.5px; }
+    .fs--large:after {
+      content: "22.5px "; } }
+
+@media (min-width: 48em) {
+  .fs--h5 {
+    font-size: 18.33333px; }
+    .fs--h5:after {
+      content: "18.33333px "; } }
+
+@media (min-width: 48em) {
+  .fs--h4 {
+    font-size: 20px; }
+    .fs--h4:after {
+      content: "20px "; } }
+
+@media (min-width: 48em) {
+  .fs--h3 {
+    font-size: 25px; }
+    .fs--h3:after {
+      content: "25px "; } }
+
+@media (min-width: 48em) {
+  .fs--h2 {
+    font-size: 30px; }
+    .fs--h2:after {
+      content: "30px "; } }
+
+@media (min-width: 48em) {
+  .fs--h1 {
+    font-size: 40px; }
+    .fs--h1:after {
+      content: "40px "; } }
+
+@media (min-width: 48em) {
+  .fs--mega {
+    font-size: 50px; }
+    .fs--mega:after {
+      content: "50px "; } }
+
+@media (min-width: 62em) {
+  .fs--nano {
+    font-size: 10px; }
+    .fs--nano:after {
+      content: "10px "; } }
+
+@media (min-width: 62em) {
+  .fs--micro {
+    font-size: 12px; }
+    .fs--micro:after {
+      content: "12px "; } }
+
+@media (min-width: 62em) {
+  .fs--tiny {
+    font-size: 14px; }
+    .fs--tiny:after {
+      content: "14px "; } }
+
+@media (min-width: 62em) {
+  .fs--x-small {
+    font-size: 16px; }
+    .fs--x-small:after {
+      content: "16px "; } }
+
+@media (min-width: 62em) {
+  .fs--small {
+    font-size: 18px; }
+    .fs--small:after {
+      content: "18px "; } }
+
+@media (min-width: 62em) {
+  .fs--body {
+    font-size: 20px; }
+    .fs--body:after {
+      content: "20px "; } }
+
+@media (min-width: 62em) {
+  .fs--secondary-menu {
+    font-size: 18px; }
+    .fs--secondary-menu:after {
+      content: "18px "; } }
+
+@media (min-width: 62em) {
+  .fs--main-menu {
+    font-size: 20px; }
+    .fs--main-menu:after {
+      content: "20px "; } }
+
+@media (min-width: 62em) {
+  .fs--label {
+    font-size: 21px; }
+    .fs--label:after {
+      content: "21px "; } }
+
+@media (min-width: 62em) {
+  .fs--medium {
+    font-size: 24px; }
+    .fs--medium:after {
+      content: "24px "; } }
+
+@media (min-width: 62em) {
+  .fs--large {
+    font-size: 30px; }
+    .fs--large:after {
+      content: "30px "; } }
+
+@media (min-width: 62em) {
+  .fs--h5 {
+    font-size: 22px; }
+    .fs--h5:after {
+      content: "22px "; } }
+
+@media (min-width: 62em) {
+  .fs--h4 {
+    font-size: 24px; }
+    .fs--h4:after {
+      content: "24px "; } }
+
+@media (min-width: 62em) {
+  .fs--h3 {
+    font-size: 30px; }
+    .fs--h3:after {
+      content: "30px "; } }
+
+@media (min-width: 62em) {
+  .fs--h2 {
+    font-size: 36px; }
+    .fs--h2:after {
+      content: "36px "; } }
+
+@media (min-width: 62em) {
+  .fs--h1 {
+    font-size: 48px; }
+    .fs--h1:after {
+      content: "48px "; } }
+
+@media (min-width: 62em) {
+  .fs--mega {
+    font-size: 60px; }
+    .fs--mega:after {
+      content: "60px "; } }

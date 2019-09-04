@@ -1,0 +1,6 @@
+@import '_partials';
+
+.intro {
+  @include fs(large);
+  @include lh(1);
+}

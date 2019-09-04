@@ -1,0 +1,74 @@
+@import '_partials';
+
+.summary--card {
+  max-width: 24em;
+
+  .summary__content {
+    @include spacing(padding, tight);
+  }
+}
+
+.summary__header {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+}
+
+.summary__body {
+  @include fs(small);
+  @include spacing(margin-top, tight);
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+}
+
+.summary__link {
+  @include link--primary;
+  text-decoration: none;
+}
+
+.summary__title {
+  @include fs(h4);
+  @include lh(0);
+}
+
+.summary__supertitle {
+  @include fs(micro);
+  @include lh(0);
+}
+
+.summary__subtitle {
+  @include fs(micro);
+  @include lh(0);
+}
+
+.summary__dateline-date {
+  @include fs(small);
+  font-weight: $fw-bold;
+}
+
+.summary__label {
+  @include fs(x-small);
+  font-style: italic;
+}
+
+.summary__dateline-time {
+  @include fs(x-small);
+}
+
+.summary__dateline-date,
+.summary__dateline-time {
+  @include lh(0);
+  display: block;
+}
+
+.summary__dateline,
+.summary__dateline-date,
+.summary__title,
+// .summary__subtitle,
+.summary__label {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, narrow);
+  }
+}

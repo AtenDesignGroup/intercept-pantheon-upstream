@@ -1,0 +1,47 @@
+// Setting element spacing
+$sp-tiny: 3px;
+$sp-narrow: 8px;
+$sp-compact: 12px;
+$sp-tighter: 22px;
+$sp-tight:  30px;
+$sp-normal: 50px;
+$sp-loose:  100px;
+$sp-looser: 125px;
+$sp-sparse: 150px;
+$sp-sparser: 200px;
+
+$spacing: (
+  "none": (
+    "tiny": rem($sp-tiny),
+    "narrow": rem($sp-narrow * .5),
+    "compact": rem($sp-compact * .5),
+    "tight": rem($sp-tight * .5),
+    "normal": rem($sp-normal * .5),
+    "loose": rem($sp-loose * .33),
+    "looser": rem($sp-looser * .33),
+    "sparse": rem($sp-sparse * .33),
+    "sparser": rem($sp-sparser * .33)
+  ),
+  "medium": (
+    "tiny": rem($sp-tiny * .66),
+    "narrow": rem($sp-narrow * .66),
+    "compact": rem($sp-compact * .66),
+    "tight": rem($sp-tight * .66),
+    "normal": rem($sp-normal * .66),
+    "loose": rem($sp-loose * .66),
+    "looser": rem($sp-looser * .66),
+    "sparse": rem($sp-sparse * .66),
+    "sparser": rem($sp-sparser * .66)
+  ),
+  "large": (
+    "tiny": rem($sp-tiny),
+    "narrow": rem($sp-narrow),
+    "compact": rem($sp-compact),
+    "tight": rem($sp-tight),
+    "normal": rem($sp-normal),
+    "loose": rem($sp-loose),
+    "looser": rem($sp-looser),
+    "sparse": rem($sp-sparse),
+    "sparser": rem($sp-sparser)
+  )
+);

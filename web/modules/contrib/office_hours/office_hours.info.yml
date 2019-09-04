@@ -1,0 +1,16 @@
+name: "Office Hours"
+description: "Defines a 'weekly office hours' field type, allowing you to specify when an Entity is open or closed."
+package: Field types
+dependencies:
+ - drupal:field
+ - drupal:datetime
+# core: 8.x
+libraries:
+  - office_hours
+type: module
+
+# Information added by Drupal.org packaging script on 2019-06-21
+version: '8.x-1.2'
+core: '8.x'
+project: 'office_hours'
+datestamp: 1561108393

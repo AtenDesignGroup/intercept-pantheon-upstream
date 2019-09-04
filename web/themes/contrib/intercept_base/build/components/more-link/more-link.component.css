@@ -1,0 +1,75 @@
+.more-link {
+  font-size: 0.65278rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  display: inline-block;
+  font-weight: 900;
+  letter-spacing: 0.125em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  -webkit-transition: all .2s ease-out;
+  transition: all .2s ease-out;
+  white-space: normal; }
+  @media (min-width: 48em) {
+    .more-link {
+      font-size: 0.83333rem; } }
+  @media (min-width: 62em) {
+    .more-link {
+      font-size: 1rem; } }
+  .more-link:hover .more-link__arrow, .more-link:focus .more-link__arrow {
+    -webkit-transform: translateX(0.5em);
+            transform: translateX(0.5em); }
+  .more-link:not(:last-child) {
+    margin-bottom: 6.25rem; }
+
+.more-link__arrow {
+  display: inline-block;
+  position: relative;
+  top: .0625em;
+  -webkit-transition: -webkit-transform .2s ease-out;
+  transition: -webkit-transform .2s ease-out;
+  transition: transform .2s ease-out;
+  transition: transform .2s ease-out, -webkit-transform .2s ease-out;
+  white-space: nowrap; }
+  .more-link__arrow .icon {
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center; }
+  .more-link__arrow svg {
+    height: .875em; }
+  .more-link__arrow polygon {
+    -webkit-transition: -webkit-transform .2s ease-out;
+    transition: -webkit-transform .2s ease-out;
+    transition: transform .2s ease-out;
+    transition: transform .2s ease-out, -webkit-transform .2s ease-out; }
+
+.more-link__wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between; }
+  .more-link__wrapper > .more-link {
+    margin-bottom: 1.875rem; }
+  .more-link__wrapper > .more-link:first-child {
+    margin-right: 1.875rem; }
+
+.more-link--back svg {
+  -webkit-transform: rotateZ(180deg);
+          transform: rotateZ(180deg); }
+
+.more-link--back:hover .more-link__arrow, .more-link--back:focus .more-link__arrow {
+  -webkit-transform: translateX(-0.5em);
+          transform: translateX(-0.5em); }
+
+.more-link--reversed {
+  color: #fff; }

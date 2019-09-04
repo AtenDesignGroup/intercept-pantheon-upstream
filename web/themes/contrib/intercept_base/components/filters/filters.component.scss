@@ -1,0 +1,338 @@
+@import "_partials";
+
+%filter {
+  display: flex;
+
+  .filters__inputs > & {
+    width: 100%;
+  }
+
+  @include bp(small medium) {
+    .filters__inputs > & {
+      width: percentage(11/23);
+      margin-right: percentage(1/23);
+
+      &:nth-child(2n) {
+        margin-right: 0;
+      }
+
+      &:nth-child(2n+1):nth-last-child(-n+2),
+      &:nth-child(2n+1):nth-last-child(-n+2) ~ * {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @include bp(medium) {
+    .filters__inputs > & {
+      width: percentage(7/23);
+      margin-right: percentage(1/23);
+
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
+    }
+
+    .filters--3up .filters__inputs > & {
+      &:nth-child(3n+1):nth-last-child(-n+3),
+      &:nth-child(3n+1):nth-last-child(-n+3) ~ * {
+        margin-bottom: 0;
+      }
+    }
+
+    .filters--4up .filters__inputs > & {
+      width: percentage(5/23);
+
+      &,
+      &:nth-child(3n) {
+        margin-right: percentage(1/23);
+      }
+
+      &:nth-child(4n) {
+        margin-right: 0;
+      }
+
+      &:nth-child(4n+1):nth-last-child(-n+4),
+      &:nth-child(4n+1):nth-last-child(-n+4) ~ * {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+%filter__label {
+  @include fs(x-small);
+  margin: 0;
+}
+
+%filter__control {
+  width: 100%;
+}
+
+.filters__heading {
+  @include fs(x-small);
+  @include spacing(margin-bottom, narrow);
+  text-transform: uppercase;
+}
+
+.filters__inputs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  > .form-item {
+    margin-right: 2em;
+  }
+}
+
+.radios__group {
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+
+  .radios__radio-label {
+    @extend %filter__label;
+
+    &:not(:last-child) {
+      margin-right: 1em;
+    }
+  }
+}
+
+.select-filter {
+  @extend %filter;
+}
+
+.select-filter__control {
+  @extend %filter__control;
+
+  .select-filter__label {
+    @extend %filter__label;
+  }
+}
+
+.select-filter__menu {
+  .select-filter__menu-item {
+    @include fs(tiny);
+    @include spacing('padding-left', narrow);
+
+    svg {
+      height: rem(14px);
+      width: rem(14px);
+    }
+
+    &[data-depth="1"] {
+      padding-left: rem(35px);
+    }
+
+    &[data-depth="2"] {
+      padding-left: rem(70px);
+    }
+  }
+
+  .select-filter__checkbox {
+    color: $clr-text;
+
+    &[class*="checked"] {
+      color: $clr-primary;
+    }
+
+    + [class^="MuiListItemText"] {
+      padding-left: 0;
+    }
+  }
+}
+
+
+.keyword-filter {
+  @extend %filter;
+
+  .keyword-filter__label {
+    @extend %filter__label;
+
+  }
+
+  input {
+    line-height: 1;
+  }
+}
+
+.keyword-filter__control {
+  @extend %filter__control;
+}
+
+.date-filter {
+  @extend %filter;
+
+  .date-filter__label {
+    @extend %filter__label;
+  }
+}
+
+.time-filter {
+  @extend %filter;
+
+  .time-filter__label {
+    @extend %filter__label;
+  }
+}
+
+.input {
+  @extend %filter;
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+
+  .input--user & {
+    margin-bottom: 0;
+  }
+
+  .input__label {
+    @extend %filter__label;
+  }
+}
+
+.input.input--number,
+.input.input--checkbox {
+  display: flex;
+}
+
+.input--incrementer {
+  @include fs(small);
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, compact);
+  }
+}
+
+.input-group--date-time {
+  display: flex;
+  flex-wrap: wrap;
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+
+  > .input--date {
+    width: 100%;
+  }
+
+  > .input--time {
+    margin-bottom: 0;
+    width: percentage(11/23);
+
+    &:not(:last-child) {
+      margin-right: percentage(1/23);
+    }
+  }
+}
+
+.input-group--subgroup {
+  @include spacing('padding-left', tight);
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+}
+
+.input-group {
+  .input-group__summary,
+  .input-group__details {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .input-group__details {
+    display: block;
+
+    > .input {
+      width: 100%;
+    }
+  }
+
+  .input__label {
+    @extend %filter__label;
+  }
+}
+
+.input-group.input-group--expandable {
+  &:before {
+    content: none;
+  }
+}
+
+.input-group--find-room {
+  > .input--select {
+    @include spacing(margin-bottom, narrow);
+  }
+}
+
+.input--textarea {
+  .input__label {
+    @include fs(body);
+    font-weight: $fw-bold;
+  }
+
+  .input__description {
+    @include fs(tiny);
+
+    &:not(:last-child) {
+      @include spacing(margin-bottom, tight);
+    }
+  }
+
+  textarea {
+    @include fs(x-small);
+  }
+}
+
+// TEMPORARY STYLES
+// The widget for the attendence form on /event/[nid]/analysis is not final.
+// These styles are to clean up the spacing until the
+// markup can be improved.
+table[id="edit-field-attendees"] {
+  margin-top: 0;
+
+  tr[data-drupal-selector] {
+    // Input
+    td:nth-child(1) {
+      width: 2em;
+
+      > .form-item {
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+        width: 2em;
+
+        > input {
+          height: auto !important;
+          margin-bottom: 0 !important;
+          padding-bottom: 0 !important;
+          text-align: right;
+        }
+      }
+    }
+
+    // Label
+    td:nth-child(2) {
+      padding-left: 0;
+
+      > .input-field {
+        @include fs(x-small);
+        font-weight: $fw-bold;
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+      }
+    }
+  }
+
+  caption {
+    // Visually hidden
+    position: absolute !important;
+    clip: rect(1px, 1px, 1px, 1px);
+    overflow: hidden;
+    height: 1px;
+    width: 1px;
+    word-wrap: normal;
+  }
+}

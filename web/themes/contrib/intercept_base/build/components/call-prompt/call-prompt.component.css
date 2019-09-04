@@ -1,0 +1,16 @@
+.call-prompt {
+  font-size: 0.65278rem;
+  letter-spacing: .03em; }
+  @media (min-width: 48em) {
+    .call-prompt {
+      font-size: 0.83333rem; } }
+  @media (min-width: 62em) {
+    .call-prompt {
+      font-size: 1rem; } }
+  .call-prompt__text {
+    display: block;
+    white-space: nowrap;
+    text-transform: uppercase; }
+  .call-prompt__link {
+    display: block;
+    white-space: nowrap; }

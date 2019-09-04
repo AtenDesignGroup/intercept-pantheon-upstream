@@ -1,0 +1,43 @@
+@import "_partials";
+
+.page-header {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+
+  &:not(:last-child) {
+    margin-bottom: rem($sp-tight);
+  }
+
+  .page-title {
+    margin-bottom: 0;
+
+    &:not(:last-child) {
+      margin-bottom: rem($sp-compact);
+    }
+  }
+
+  @include bp(medium) {
+    align-items: flex-end;
+    flex-direction: row;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+      // margin-bottom: rem($sp-normal);
+    }
+
+    .page-title {
+      margin-right: auto;
+
+      &:not(:last-child) {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @include bp(large) {
+    &:not(:last-child) {
+      margin-bottom: rem($sp-normal);
+    }
+  }
+}

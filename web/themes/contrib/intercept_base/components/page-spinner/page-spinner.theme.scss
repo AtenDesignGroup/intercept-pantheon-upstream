@@ -1,0 +1,7 @@
+@import "_partials";
+
+.page-spinner {
+  > [role="progressbar"] > div {
+    background-color: $clr-primary;
+  }
+}

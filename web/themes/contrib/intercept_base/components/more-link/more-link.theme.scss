@@ -1,0 +1,18 @@
+@import "_partials";
+
+.more-link {
+  color: $clr-primary-dark;
+
+  polygon {
+    fill: $clr-primary-dark;
+  }
+
+  &:hover,
+  &:focus {
+    color: $clr-primary;
+
+    polygon {
+      fill: $clr-primary;
+    }
+  }
+}

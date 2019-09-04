@@ -1,0 +1,404 @@
+global:
+  version: 1.0.x
+  css:
+    theme:
+      build/libraries/global/global.css: { preprocess: true }
+      build/libraries/global/global.print.css:
+        preprocess: true
+        media: print
+  js:
+    build/libraries/global/global.js: { preprocess: true }
+  dependencies:
+    - core/jquery
+
+bigCalendar:
+  version: 0.18.0
+  css:
+    base:
+      build/libraries/bigCalendar/bigCalendar.base.css: {}
+    theme:
+      build/libraries/bigCalendar/bigCalendar.theme.css: {}
+
+filter-tips:
+  version: 1.0.x
+  css:
+    theme:
+      build/libraries/filter-tips/filter-tips.css: { preprocess: true }
+
+search_form:
+  version: 1.0.x
+  css:
+    theme:
+      build/libraries/search-form/search-form.css: { preprocess: true }
+
+styleguide:
+  version: 1.0
+  css:
+    theme:
+      build/libraries/styleguide/styleguide.css: {}
+#
+# Component Library
+#
+
+# Action Button
+action-button:
+  css:
+    theme:
+      build/components/action-button/action-button.theme.css: {}
+
+# App Bar
+addtocalendar:
+  css:
+    component:
+      build/components/addtocalendar/addtocalendar.component.css: {}
+    theme:
+      build/components/addtocalendar/addtocalendar.theme.css: {}
+
+# App Bar
+app-bar:
+  css:
+    theme:
+      build/components/app-bar/app-bar.theme.css: {}
+
+# Breadcrumbs
+breadcrumbs:
+  css:
+    component:
+      build/components/breadcrumbs/breadcrumbs.css: {}
+
+# Brief
+brief:
+  css:
+    component:
+      build/components/brief/brief.component.css: {}
+      build/components/brief/brief.theme.css: {}
+
+# Button
+button:
+  css:
+    component:
+      build/components/button/button.component.css: {}
+    # theme:
+    #   build/components/button/button.theme.css: {}
+
+# Byline
+byline:
+  css:
+    component:
+      build/components/byline/byline.component.css: {}
+    theme:
+      build/components/byline/byline.theme.css: {}
+
+# Card
+card:
+  css:
+    component:
+      build/components/card/card.component.css: {}
+    theme:
+      build/components/card/card.theme.css: {}
+
+# Call Prompt
+call-prompt:
+  css:
+    component:
+      build/components/call-prompt/call-prompt.component.css: {}
+    theme:
+      build/components/call-prompt/call-prompt.theme.css: {}
+
+# Content Header
+content-header:
+  css:
+    component:
+      build/components/content-header/content-header.component.css: {}
+    theme:
+      build/components/content-header/content-header.theme.css: {}
+
+# Content List
+content-list:
+  css:
+    component:
+      build/components/content-list/content-list.component.css: {}
+    theme:
+      build/components/content-list/content-list.theme.css: {}
+
+# Current Filters
+current-filters:
+  css:
+    component:
+      build/components/current-filters/current-filters.component.css: {}
+
+# Dialog
+dialog:
+  css:
+    component:
+      build/components/dialog/dialog.component.css: {}
+    theme:
+      build/components/dialog/dialog.theme.css: {}
+
+# Download Link
+download-link:
+  css:
+    component:
+      build/components/download-link/download-link.component.css: {}
+    theme:
+      build/components/download-link/download-link.theme.css: {}
+
+# Dropbutton
+dropbutton:
+  version: 1.0.x
+  css:
+    theme:
+      build/components/dropbutton/dropbutton.theme.css: { preprocess: true }
+
+# Evaluation
+evaluation:
+  css:
+    component:
+      build/components/evaluation/evaluation.component.css: {}
+    theme:
+      build/components/evaluation/evaluation.theme.css: {}
+
+# Evaluation Summary
+evaluation-summary:
+  css:
+    component:
+      build/components/evaluation-summary/evaluation-summary.component.css: {}
+    theme:
+      build/components/evaluation-summary/evaluation-summary.theme.css: {}
+
+# Event Evaluation Feedback
+event-eval-feedback:
+  css:
+    theme:
+      build/components/event-eval-feedback/event-eval-feedback.theme.css: {}
+
+# Filters
+filters:
+  css:
+    component:
+      build/components/filters/filters.component.css: {}
+    theme:
+      build/components/filters/filters.theme.css: {}
+
+# Footer
+footer:
+  css:
+    component:
+      build/components/footer/footer.css: {}
+
+# Header
+header:
+  css:
+    component:
+      build/components/header/header.css: {}
+      build/components/header/header--primary-menu.css: {}
+      build/components/header/header--secondary-menu.css: {}
+      build/components/header/header--search.css: {}
+  js:
+    build/components/header/header.js: {}
+
+# Highlight
+highlight:
+  css:
+    component:
+      build/components/highlight/highlight.component.css: {}
+    theme:
+      build/components/highlight/highlight.theme.css: {}
+
+# Intro
+intro:
+  css:
+    component:
+      build/components/intro/intro.component.css: {}
+    theme:
+      build/components/intro/intro.theme.css: {}
+
+# Listing
+listing:
+  css:
+    component:
+      build/components/listing/listing.component.css: {}
+    theme:
+      build/components/listing/listing.theme.css: {}
+
+# Loading Indicator
+loading-indicator:
+  css:
+    component:
+      build/components/loading-indicator/loading-indicator.component.css: {}
+
+# Summary
+summary:
+  css:
+    component:
+      build/components/summary/summary.component.css: {}
+    theme:
+      build/components/summary/summary.theme.css: {}
+
+# Intercept Management Section
+intercept-management-section:
+  css:
+    component:
+      build/components/intercept-management-section/intercept-management-section.component.css: {}
+
+# Location
+location:
+  css:
+    component:
+      build/components/location/location.component.css: {}
+    theme:
+      build/components/location/location.theme.css: {}
+
+# Media
+media:
+  css:
+    component:
+      build/components/media/media.component.css: {}
+
+# Metadata
+metadata:
+  css:
+    component:
+      build/components/metadata/metadata.component.css: {}
+
+# Messages
+messages:
+  css:
+    component:
+      build/components/messages/messages.component.css: {}
+    theme:
+      build/components/messages/messages.theme.css: {}
+
+# More Link
+more-link:
+  css:
+    component:
+      build/components/more-link/more-link.component.css: {}
+    theme:
+      build/components/more-link/more-link.theme.css: {}
+
+# Quote
+quote:
+  css:
+    component:
+      build/components/quote/quote.component.css: {}
+
+# Page Header
+page-header:
+  css:
+    component:
+      build/components/page-header/page-header.component.css: {}
+
+#Page Title
+page-title:
+  css:
+    component:
+      build/components/page-title/page-title.component.css: {}
+    theme:
+      build/components/page-title/page-title.theme.css: {}
+
+# Pager
+pager:
+  css:
+    component:
+      build/components/pager/pager.css: {}
+
+# Page Spinner
+page-spinner:
+  css:
+    theme:
+      build/components/page-spinner/page-spinner.theme.css: {}
+
+# Person
+person:
+  css:
+    component:
+      build/components/person/person.component.css: {}
+    theme:
+      build/components/person/person.theme.css: {}
+
+# Print Calendar
+print-cal:
+  css:
+    component:
+      build/components/print-cal/print-cal.component.css: {}
+
+# Progress Bar
+progress:
+  css:
+    component:
+      build/components/progress/progress.css: {}
+
+# Reservation Summary
+reservation-summary:
+  css:
+    component:
+      build/components/reservation-summary/reservation-summary.component.css: {}
+
+# Save Link
+save-link:
+  css:
+    component:
+      build/components/save-link/save-link.component.css: {}
+    theme:
+      build/components/save-link/save-link.theme.css: {}
+
+# Section Title
+section-title:
+  css:
+    component:
+      build/components/section-title/section-title.component.css: {}
+    theme:
+      build/components/section-title/section-title.theme.css: {}
+
+# Slick JS
+slick:
+  version: 1.6.0
+  css:
+    component:
+      vendor/slick/slick.css: {}
+  js:
+    vendor/slick/slick.min.js: { minified: true }
+  dependencies:
+      - core/jquery
+
+# Slideshow
+slideshow:
+  css:
+    component:
+      build/components/slideshow/slideshow.css: {}
+  js:
+    build/components/slideshow/slideshow.js: {}
+  dependencies:
+      - core/jquery
+      - intercept_base/slick
+
+# Tabs
+tabs:
+  css:
+    component:
+      build/components/tabs/tabs.css: {}
+
+# Teaser
+teaser:
+  css:
+    component:
+      build/components/teaser/teaser.component.css: {}
+    theme:
+      build/components/teaser/teaser.theme.css: {}
+
+# Value Summary
+value-summary:
+  css:
+    component:
+      build/components/value-summary/value-summary.component.css: {}
+    theme:
+      build/components/value-summary/value-summary.theme.css: {}
+
+# View Switcher
+view-switcher:
+  css:
+    component:
+      build/components/view-switcher/view-switcher.component.css: {}
+    theme:
+      build/components/view-switcher/view-switcher.theme.css: {}

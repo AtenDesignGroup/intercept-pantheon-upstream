@@ -1,0 +1,5 @@
+{% include '@intercept-base-components/media/media.twig' with { 
+  media: content.field_media_image,
+  caption: content.field_media_caption|field_value,
+  credit: content.field_media_credit|field_value
+} %}

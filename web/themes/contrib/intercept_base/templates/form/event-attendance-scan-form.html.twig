@@ -1,0 +1,73 @@
+{% import '@intercept-base-components/more-link/more-link.twig' as more_link %}
+<div class="l--sidebar-after clearfix">
+  <div class="l__main">
+    <div class="l__secondary">
+      {{form.event}}
+    </div>
+    <div class="l__primary">
+      <div class="l--subsection">
+        {{form.instructions_header}}
+        {{form.instructions_text}}
+        {{form.results}}
+        <div class="form-item--inline">
+          {{form.barcode}}
+          {{form.field_guest_zip_code.widget}}
+          {{form.actions.submit}}
+        </div>
+        {% if form.instructions_footer %}
+          <div class="form-item__help-text">
+            {{form.instructions_footer}}
+          </div>
+        {% endif %}
+        {{ form|without(
+          'event',
+          'barcode',
+          'instructions_header',
+          'instructions_footer',
+          'instructions_text',
+          'actions',
+          'results',
+          'guest',
+          'lookup',
+          'retry',
+          'field_guest_zip_code',
+          'cancel') }}
+        {{ form.actions|without('submit') }}
+      </div>
+      {% if form.guest %}
+      <div class="l--subsection">
+        {% include more_link with {
+          text: form.guest['#title'],
+          url: form.guest['#url']|render
+        } %}
+      </div>
+      {% endif %}
+      {% if form.lookup %}
+      <div class="l--subsection">
+        {% include more_link with {
+          text: form.lookup['#title'],
+          url: form.lookup['#url']|render
+        } %}
+      </div>
+      {% endif %}
+      {% if form.retry %}
+      <div class="l--subsection">
+        {% include more_link with {
+          text: form.retry['#title'],
+          url: form.retry['#url']|render,
+          back: TRUE
+        } %}
+      </div>
+      {% endif %}
+      {% if form.cancel %}
+      <div class="l--subsection">
+        {% include more_link with {
+          text: form.cancel['#title'],
+          url: form.cancel['#url']|render,
+          back: TRUE
+        } %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

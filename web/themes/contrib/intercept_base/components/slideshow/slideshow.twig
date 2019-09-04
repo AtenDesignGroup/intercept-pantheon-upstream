@@ -1,0 +1,11 @@
+{% import '@intercept-base-components/component.twig' as component %} {{ attach_library('intercept_base/slideshow') }}
+
+<div {{ component.attributes('slideshow', modifiers, attr) }}>
+  {% if slides is iterable and not slides['#items'] %}
+    {% for slide in slides %}
+     {{ slide }}
+    {% endfor %}
+  {% else %}
+    {{ slides }}
+  {% endif %}
+</div>

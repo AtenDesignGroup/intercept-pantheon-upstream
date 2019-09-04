@@ -1,0 +1,7 @@
+{% include '@intercept-base-components/slideshow/slide.twig' with {
+  media: content.field_media_image,
+  caption: content.field_media_caption|field_value,
+  credit: content.field_media_credit|field_value,
+  background: content.field_media_image|field_target_entity.uri.value
+} %}
+

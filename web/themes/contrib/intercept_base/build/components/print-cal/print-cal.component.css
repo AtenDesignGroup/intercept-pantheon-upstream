@@ -1,0 +1,97 @@
+.print-cal__header,
+.print-cal__body {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[7];
+      grid-template-columns: repeat(7, 1fr);
+  width: 100%; }
+  .print-cal__header > *,
+  .print-cal__body > * {
+    -ms-flex-item-align: stretch;
+        -ms-grid-row-align: stretch;
+        align-self: stretch; }
+
+.print-cal__body {
+  border-bottom: 1px solid #D3D8DF; }
+
+.print-cal__cell {
+  border-left: 1px solid #D3D8DF;
+  border-top: 1px solid #D3D8DF;
+  padding: 0.375rem; }
+  .print-cal__cell:nth-child(7n) {
+    border-right: 1px solid #D3D8DF; }
+
+.print-cal__cell-day {
+  font-size: 0.5rem;
+  margin-bottom: 0.375rem; }
+  @media (min-width: 48em) {
+    .print-cal__cell-day {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .print-cal__cell-day {
+      font-size: 0.75rem; } }
+  .print-cal__cell--not-in-scope .print-cal__cell-day {
+    opacity: .4; }
+
+.print-event {
+  line-height: 1.2;
+  font-size: 0.57639rem; }
+  @media (min-width: 48em) {
+    .print-event {
+      font-size: 0.72917rem; } }
+  @media (min-width: 62em) {
+    .print-event {
+      font-size: 0.875rem; } }
+  .print-event:not(:last-child) {
+    margin-bottom: .25em; }
+
+.print-event__title,
+.print-event__location,
+.print-event__time {
+  line-height: 1.2;
+  line-height: inherit; }
+
+.print-event__title {
+  font-weight: 900; }
+
+.print-event__time {
+  display: block; }
+
+.print-legend {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap; }
+  .print-legend:not(:first-child) {
+    margin-top: 0.9375rem; }
+    @media (min-width: 48em) {
+      .print-legend:not(:first-child) {
+        margin-top: 1.2375rem; } }
+    @media (min-width: 62em) {
+      .print-legend:not(:first-child) {
+        margin-top: 1.875rem; } }
+
+.print-legend__item {
+  font-size: 0.5rem;
+  margin-bottom: 0.375rem;
+  line-height: 1.2;
+  white-space: nowrap; }
+  @media (min-width: 48em) {
+    .print-legend__item {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .print-legend__item {
+      font-size: 0.75rem; } }
+  @media (min-width: 48em) {
+    .print-legend__item {
+      margin-bottom: 0.495rem; } }
+  @media (min-width: 62em) {
+    .print-legend__item {
+      margin-bottom: 0.75rem; } }
+  .print-legend__item:not(:last-child) {
+    margin-right: 3em; }
+
+.print-legend__item-abbv {
+  font-weight: 900;
+  margin-right: .5em; }

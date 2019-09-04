@@ -1,0 +1,62 @@
+@import "_partials";
+
+.value-summary {
+  flex: 1;
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, normal);
+  }
+
+  &__wrapper {
+    @include spacing(padding, normal);
+  }
+
+  &__footer {
+    @include spacing(padding-left, normal);
+    @include spacing(padding-right, normal);
+    @include spacing(padding-top, compact);
+    @include spacing(padding-bottom, compact);
+  }
+
+  &__value {
+    @include fs(h3);
+    margin-top: 0;
+
+    @include bp(none medium) {
+      font-size: .875rem;
+    }
+  }
+
+  & &__button {
+    @include spacing(margin-top, compact);
+  }
+
+  & &__icon-button {
+    font-size: 1em;
+    height: 2em;
+    width: 2em;
+    position: relative;
+    margin-left: .25em;
+    top: -.25em;
+  }
+
+  // Bigger than mobile.
+  @include bp(medium) {
+    &:not(:last-child) {
+      margin-bottom: 0;
+    }
+
+    &:not(:last-child) {
+      margin-right: 2em;
+    }
+
+    &__wrapper {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}
+
+.value-summary__footer {
+
+}

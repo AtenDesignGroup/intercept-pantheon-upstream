@@ -1,0 +1,34 @@
+.download-link {
+  overflow: hidden;
+  position: relative; }
+  .download-link > a:not([class]) {
+    line-height: 1;
+    border: 0;
+    display: block;
+    letter-spacing: .01em;
+    padding: .75em 1em .75em 3.5em;
+    -webkit-transition-property: all;
+    transition-property: all; }
+    .download-link > a:not([class]):hover, .download-link > a:not([class]):focus {
+      text-decoration: none; }
+  .download-link > .icon {
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    bottom: 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    left: 0;
+    margin: auto;
+    padding: .25em .5em;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 2.5em; }
+    .download-link > .icon > svg {
+      height: 1em;
+      width: 0.7619em; }

@@ -1,0 +1,54 @@
+//
+// @file
+// Breakpoint Mixin
+
+//
+// Create media queries based on the values in site $breakpoints map.
+// @param $breakpoint;
+//   The named breakpoint key we want to use. Can provide a list for min/max
+//   queries.
+// @param $breakpoints;
+//   The map of breakpoint key/value pairs. Defaults to the global $breakpionts
+//   map in `settings/breakpoints`.
+//
+@mixin bp($breakpoint, $breakpoints: $breakpoints) {
+  $min-bp-name: nth($breakpoint, 1);
+
+  @if map-has-key($breakpoints, $min-bp-name) {
+    $min-bp-value: map-get($breakpoints, $min-bp-name);
+
+    @if length($breakpoint) == 1 and $min-bp-value == 0 {
+      @content;
+    }
+
+    // Handle min-max-width query.
+    @else if length($breakpoint) == 2 and map-has-key($breakpoints, nth($breakpoint, 2)) {
+      // Get our max width value, subtract one pixel to avoid breakpiont
+      // conflicts.
+      $max-bp-value: (map-get($breakpoints, nth($breakpoint, 2))) - 1px;
+
+      @if $min-bp-value == 0 {
+        @include breakpoint(max-width $max-bp-value) {
+          @content;
+        };
+      }
+
+      @else {
+        @include breakpoint($min-bp-value $max-bp-value) {
+          @content;
+        };
+      }
+    }
+
+    // Single min-width query.
+    @else {
+      @include breakpoint($min-bp-value) {
+        @content;
+      };
+    }
+  }
+
+  @else {
+    @warn $min-bp-name + " is not a key in breakpoints.";
+  }
+}

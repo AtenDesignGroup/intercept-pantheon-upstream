@@ -1,0 +1,22 @@
+{#
+/**
+ * @file event_recommended.html.twig
+ * Default theme implementation to present Event Recommended data.
+ *
+ * This template is used when viewing Event Recommended pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_event_recommended()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('events-recommended') }}>
+  {% if content %}
+    {{- content -}}
+  {% endif %}
+</div>

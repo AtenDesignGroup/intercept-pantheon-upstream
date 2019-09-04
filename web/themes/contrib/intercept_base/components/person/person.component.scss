@@ -1,0 +1,73 @@
+@import '_partials';
+
+.person {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+
+  @include bp(small) {
+    flex-direction: row;
+  }
+
+  // Image Container
+  &__image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: rem(200px);
+    min-width: rem(200px);
+
+    @include bp(large) {
+      min-width: rem(300px);
+    }
+  }
+
+  // Highlight
+  &__highlight {
+    left: 0;
+    position: absolute;
+    top: 0;
+
+    .highlight {
+      position: absolute;
+    }
+  }
+
+  // Text Container
+  &__text {
+    padding: 2rem;
+  }
+
+  // Name
+  &__title {
+    color: $white;
+  }
+
+  // Position
+  &__subtitle {
+    color: $white;
+    margin: 0;
+  }
+
+  // Department
+  &__department {
+    @include fs(x-small);
+    
+    .field__item {
+      display: inline-block;
+
+      &::after {
+        content: ", ";
+      }
+
+      &:last-of-type::after {
+        content: none;
+      }
+    }
+  }
+
+  // Bio
+  &__bio {
+    margin-top: 1rem;
+  }
+}

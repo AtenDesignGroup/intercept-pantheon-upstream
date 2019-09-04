@@ -1,0 +1,11 @@
+.reservation-summary__location {
+  margin-bottom: 0; }
+
+.reservation-summary__room:not(:last-child) {
+  margin-bottom: 0.375rem; }
+  @media (min-width: 48em) {
+    .reservation-summary__room:not(:last-child) {
+      margin-bottom: 0.495rem; } }
+  @media (min-width: 62em) {
+    .reservation-summary__room:not(:last-child) {
+      margin-bottom: 0.75rem; } }

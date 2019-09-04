@@ -1,0 +1,22 @@
+@import "_partials";
+
+.content-header {
+  background: $clr-secondary-dark;
+}
+
+.content-header__text {
+  color: $white;
+}
+
+.content-header__supertitle,
+.content-header__date-date {
+  font-weight: $fw-bold;
+}
+
+.content-header__description {
+  color: $white;
+
+  .intro {
+    color: $white;
+  }
+}

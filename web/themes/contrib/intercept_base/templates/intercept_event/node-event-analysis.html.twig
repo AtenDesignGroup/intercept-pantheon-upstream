@@ -1,0 +1,31 @@
+{{ content.header }}
+<div class="l--offset">
+  <div class="l--2-col l--2-col--ruled l--section">
+    <div class="l__main">
+      <div class="l__primary">
+        {% include '@intercept-base-components/section-title/section-title.twig' with {
+          title: content.attendance.title,
+        } %}
+        {{ content.attendance.form }}
+      </div>
+      <div class="l__secondary">
+        {% include '@intercept-base-components/section-title/section-title.twig' with {
+          title: content.staff_evaluation.title,
+        } %}
+        {{ content.staff_evaluation.form }}
+      </div>
+    </div>
+  </div>
+  <div class="l--overflow-x l--section">
+    {% include '@intercept-base-components/section-title/section-title.twig' with {
+      title: 'Customer Interactions',
+    } %}
+    {{ content.attendance_list }}
+  </div>
+  <div class="l--section">
+    {% include '@intercept-base-components/section-title/section-title.twig' with {
+      title: 'Customer Evaluations',
+    } %}
+    {{ content.customer_evaluations }}
+  </div>
+</div>

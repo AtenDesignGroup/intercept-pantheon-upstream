@@ -1,0 +1,11 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/evaluation') }}
+
+<div {{ component.attributes('evaluation', modifiers, attr) }}>
+  <div class="evaluation__subject">
+    {{subject}}
+  </div>
+  <div class="evaluation__widget">
+    {{widget}}
+  </div>
+</div>

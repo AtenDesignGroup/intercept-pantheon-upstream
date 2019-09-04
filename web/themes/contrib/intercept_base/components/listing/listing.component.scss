@@ -1,0 +1,137 @@
+@import '_partials';
+
+.listing {
+  display: flex;
+  padding-right: 2rem;
+  align-items: stretch;
+}
+
+.listing__image {
+  flex-shrink: 0;
+  margin-right: 1rem;
+  width: 3rem;
+
+  @include bp(small) {
+    margin-right: 1.5rem;
+    width: rem(120px);
+  }
+
+  @include bp(x-large) {
+    max-width: rem(120px);
+    width: 40%;
+  }
+}
+
+.listing__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.listing__prompt {
+  @include fs(micro);
+  font-style: italic;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, tiny);
+  }
+}
+
+.listing__footer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: flex-end;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, compact);
+  }
+}
+
+.listing__text {
+  @include fs(small);
+  @include lh(0);
+  font-weight: $fw-bold;
+}
+
+.listing__supertitle {
+  @include fs(micro);
+  font-weight: bold;
+}
+
+.listing__subtitle {
+  @include fs(x-small);
+  font-weight: normal;
+}
+
+.listing__link {
+  @include link--primary;
+  text-decoration: none;
+}
+
+
+.listing__date-wrapper {
+  align-self: start;
+  flex-shrink: 0;
+  margin-right: 1rem;
+  padding: 1em;
+  text-align: center;
+  width: 4.5rem;
+
+  @include bp(small) {
+    margin-right: 1.5rem;
+    width: rem(120px);
+  }
+
+  @include bp(x-large) {
+    max-width: rem(120px);
+    width: 40%;
+  }
+}
+
+.listing__date {
+  color: $white;
+}
+
+.listing__date-month {
+  @include fs(x-small);
+  display: block;
+  text-transform: uppercase;
+  font-weight: $fw-bold;
+  letter-spacing: .0625em;
+}
+
+.listing__date-date {
+  @include fs(large);
+  display: block;
+}
+
+.listing__date-time {
+  @include fs(micro);
+  display: block;
+  font-weight: $fw-bold;
+}
+
+// This template should be wrapped in a collection component
+// so we don't need to use contextual selectors.
+
+.events-recommended {
+  display: flex;
+  flex-direction: column;
+
+  @include bp(x-large) {
+    align-content: center;
+    align-items: stretch;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .listing {
+    flex: 1;
+    margin-bottom: rem(20px);
+    padding-right: 0;
+
+    &:not(:nth-child(3n)) {
+      margin-right: rem(40px);
+    }
+  }
+}

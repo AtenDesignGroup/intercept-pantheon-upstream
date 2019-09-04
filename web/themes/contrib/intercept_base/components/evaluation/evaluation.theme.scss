@@ -1,0 +1,53 @@
+@import '_partials';
+
+.evaluation__eval-widget {
+
+}
+
+.evaluation .evaluation__widget-label {
+  color: $gray-20;
+  font-weight: $fw-bold;
+  margin-top: 0;
+}
+
+.evaluation__widget {
+  position: relative;
+
+  @include bp(medium) {
+    &:after {
+      background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
+      background-position: top center;
+      background-repeat: repeat-y;
+      background-size: .3125em .3125em;
+      bottom: 0;
+      content: "";
+      display: block;
+      left: 0;
+      margin: auto;
+      position: absolute;
+      top: 0;
+      width: .325em;
+    }
+  }
+
+  @include bp(large) {
+    .evaluation__criteria {
+      position: relative;
+
+      &:after {
+        background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
+        background-position: top center;
+        background-repeat: repeat-y;
+        background-size: .3125em .3125em;
+        bottom: 0;
+        content: "";
+        display: block;
+        margin: auto;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: .325em;
+      }
+    }
+  }
+}

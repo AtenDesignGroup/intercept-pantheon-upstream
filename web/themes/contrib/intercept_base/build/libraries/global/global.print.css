@@ -1,0 +1,142 @@
+html {
+  font-size: 8pt;
+  background: white;
+  color: black; }
+
+nav,
+.header__site-navigation,
+.header__site-navigation--mobile,
+.environment-indicator-overwritten-environment,
+.bootstrap-iso .filters,
+.filters__heading,
+.filters__inputs,
+.item-list,
+.view-switcher,
+.footer,
+.loading-indicator {
+  display: none; }
+
+.header__logo {
+  width: 70pt;
+  margin-left: auto;
+  margin-right: auto; }
+
+h1 {
+  font-size: 150%; }
+
+.l--offset {
+  padding: 0; }
+
+.bootstrap-iso {
+  padding: 0; }
+
+.bootstrap-iso > .row {
+  margin-left: 0 !important; }
+
+.current-filters__wrapper {
+  display: block; }
+
+.current-filter {
+  margin-bottom: 0;
+  display: inline-block; }
+
+.option-chip {
+  background-color: transparent !important;
+  margin: 0;
+  padding: 0 !important; }
+  .option-chip:not(:last-child):after {
+    content: ","; }
+  .option-chip > svg {
+    display: none; }
+
+.events-list .teaser__image {
+  background-image: none;
+  width: 13.04348%; }
+  .events-list .teaser__image img {
+    display: none; }
+
+.events-list .teaser__date-wrapper {
+  padding: 0; }
+
+.events-list .teaser__image--link {
+  display: none; }
+
+.events-list .teaser__date {
+  color: #4C4D4F; }
+
+.events-list .teaser__title {
+  font-size: 1rem; }
+
+.events-list .teaser__date-month,
+.events-list .teaser__date-date {
+  display: inline;
+  font-size: 1.25rem; }
+
+.events-list .teaser__date-time {
+  display: block;
+  font-size: 1rem; }
+
+.events-list .teaser__main {
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  width: 82.6087%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; }
+  .events-list .teaser__main .teser__content {
+    -webkit-box-flex: 1;
+        -ms-flex: auto;
+            flex: auto;
+    width: auto; }
+  .events-list .teaser__main .teaser__footer {
+    -webkit-box-flex: 0;
+        -ms-flex: none;
+            flex: none;
+    margin-left: 4.34783%;
+    min-width: 8em;
+    text-align: right;
+    width: 17.3913%; }
+
+.content-list__heading {
+  page-break-after: avoid; }
+
+.content-list__heading + .content-list__list {
+  page-break-before: avoid; }
+
+.content-list:not(:last-child) {
+  margin-bottom: 5rem; }
+
+.teaser {
+  page-break-inside: avoid; }
+
+.rbc-calendar {
+  display: block;
+  height: auto; }
+  .rbc-calendar .rbc-month-view {
+    min-height: 420pt; }
+  .rbc-calendar .rbc-btn-group,
+  .rbc-calendar .rbc-toolbar__pager-button {
+    display: none !important; }
+  .rbc-calendar .rbc-event {
+    background: transparent;
+    color: #4C4D4F; }
+  .rbc-calendar .rbc-date-cell > a,
+  .rbc-calendar .rbc-date-cell.rbc-current > a {
+    color: #4C4D4F; }
+  .rbc-calendar .rbc-off-range > a {
+    opacity: .4; }
+  .rbc-calendar .rbc-day-bg.rbc-off-range-bg {
+    background: transparent; }
+  .rbc-calendar .rbc-now.rbc-current:before {
+    content: none; }
+  .rbc-calendar .calendar-event,
+  .rbc-calendar .event-content {
+    white-space: normal;
+    overflow: visible; }
+  .rbc-calendar .calendar-event__title {
+    font-size: 6pt;
+    line-height: 1.2; }
+
+@media (orientation: portrait) {
+  .rbc-calendar .rbc-month-view {
+    min-height: 620pt; } }

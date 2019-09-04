@@ -1,0 +1,5 @@
+{% for item in items %}
+  {% include '@intercept-base-components/intro/intro.twig' with {
+    content: item.content
+  }%}
+{% endfor %}

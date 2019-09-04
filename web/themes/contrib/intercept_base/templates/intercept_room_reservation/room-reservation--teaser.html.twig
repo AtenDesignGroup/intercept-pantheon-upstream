@@ -1,0 +1,78 @@
+{% extends '@intercept-base-components/teaser/teaser--reservation.twig' %}
+
+{% import '@intercept-base-components/metadata/metadata.twig' as metadata %}
+{% set room = room_reservation.field_room.entity %}
+{% set location = room_reservation.field_room.entity.field_location.entity %}
+
+{% if location.label != room.label %}
+  {% set title = "@location @room"|t({ '@location': location.label, '@room': room.label }) %}
+{% else %}
+  {% set title = "@room"|t({ '@room': room.label }) %}
+{% endif %}
+
+{% set date = {
+  date: room_reservation.field_dates.start_date|date("F j, Y"),
+  time: "@start - @end"|t({
+      '@start': room_reservation.field_dates.start_date|date("g:i a"),
+      '@end': room_reservation.field_dates.end_date|date("g:i a"),
+    })|replace({'m':'.m.'})|replace({':00':''})
+  }
+%}
+
+{% if room.field_room_fees %}
+  {% set fees = drupal_field('field_room_fees', 'node', room.id) %}
+{% endif %}
+
+{% set image = drupal_entity('media', room.image_primary.0.target_id, 'teaser') %}
+
+{% block tags %}
+  {% if content.field_attendee_count|field_value %}
+    {% include metadata with {
+      title: "Attendees"|t(),
+      data: content.field_attendee_count|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+  {% if content.field_group_name|field_value %}
+    {% include metadata with {
+      title: "Group"|t(),
+      data: content.field_group_name|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+  {% if content.field_meeting_purpose|field_value %}
+    {% include metadata with {
+      title: "Purpose"|t(),
+      data: content.field_meeting_purpose|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+  {% if content.field_event|field_value %}
+    {% include metadata with {
+      title: "Event"|t(),
+      data: content.field_event|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+  {% if content.field_refreshments|field_value %}
+    {% set refreshments_data = room_reservation.field_refreshments.value == '1' ? content.field_refreshments_description|field_value : content.field_refreshments|field_value %}
+    {% include metadata with {
+      title: "Refreshments"|t(),
+      data: refreshments_data,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+  {{fees}}
+  {% if content.field_publicize|field_value %}
+    {% include metadata with {
+      title: "Publicize"|t(),
+      data: content.field_publicize|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+{% endblock %}
+{% block footer %}
+ <footer class="teaser__footer">
+  {{ content.action_button }}
+ </footer>
+{% endblock %}

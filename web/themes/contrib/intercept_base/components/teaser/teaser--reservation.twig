@@ -1,0 +1,60 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% import '@intercept-base-components/icons/icon.twig' as icon %}
+{% import '@intercept-base-components/metadata/metadata.twig' as metadata %}
+
+{{ attach_library('intercept_base/teaser') }}
+
+{% set modifiers = modifiers|default([])|merge(['reservation', image ? 'has-image' : 'no-image']) %}
+<{{ tag|default('article') }} {{ component.attributes('teaser', modifiers, attr) }}>
+  {% if image %}
+  <div class="teaser__image">
+    {% if title_url %}
+      <a href="{{ title_url }}" class="teaser__image-link" aria-hidden="true">{{ image }}</a>
+    {% else %}
+      {{ image }}
+    {% endif %}
+  </div>
+  {% endif %}
+  <div class="teaser__main clearfix">
+    <div class="teaser__content clearfix">
+      {% if type %}
+      <div class="teaser__highlight">
+        {% include '@intercept-base-components/highlight/highlight.twig' with { text: type } only %}
+      </div>
+      {% endif %}
+
+      {% if supertitle %}
+      <span class="teaser__supertitle">{{ supertitle }}</span>
+      {% endif %}
+
+      <h3 class="teaser__title">
+        {% if title_url %}
+          <a href="{{ title_url }}" class="teaser__title-link">{{ title }}</a>
+        {% else %}
+        {{ title }}
+        {% endif %}
+      </h3>
+      {% if date %}
+        <p class="teaser__reservation-date">
+          <span class="teaser__reservation-date-date">{{ date.date }}</span>
+          <span class="teaser__reservation-date-time">{{ date.time }}</span>
+        </p>
+      {% endif %}
+
+      {% block tags %}
+      {% if tags %}
+      <div class="teaser__meta">
+        <div class="teaser__tags">{{ tags }}</div>
+      </div>
+      {% endif %}
+      {% endblock %}
+    </div>
+    {% block footer %}
+    {% if footer %}
+    <footer class="teaser__footer">
+      {{ footer }}
+    </footer>
+    {% endif %}
+    {% endblock %}
+  </div>
+</{{ tag|default('article') }}>

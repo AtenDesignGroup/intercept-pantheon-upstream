@@ -1,0 +1,7 @@
+default:
+  label: Default
+  category: intercept_base
+  template: templates/layouts/default
+  regions:
+    content:
+      label: Content

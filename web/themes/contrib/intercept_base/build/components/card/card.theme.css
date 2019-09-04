@@ -1,0 +1,18 @@
+.card--gray {
+  background: #EEF1F4; }
+
+.card__content {
+  padding: 2rem; }
+
+.card__title-link {
+  color: #130f13;
+  text-decoration: none;
+  -webkit-transition: color .2s ease-out;
+  transition: color .2s ease-out; }
+  .card__title-link:hover, .card__title-link:focus {
+    color: #7A7D81; }
+  .card__title-link:active, .card__title-link.active--trail {
+    color: #7A7D81; }
+
+.card__dateline-date {
+  font-weight: 900; }

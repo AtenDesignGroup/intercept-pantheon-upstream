@@ -1,0 +1,7 @@
+//
+// @file
+// Spacing mixins
+//
+@mixin spacing($property, $value, $breakpoint: null) {
+  @include get-value($property, $value, $spacing, $breakpoint)
+}

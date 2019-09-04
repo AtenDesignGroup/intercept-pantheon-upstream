@@ -1,0 +1,28 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/summary') }}
+
+<article {{ component.attributes('summary', modifiers, attr) }}>
+    <p class="summary__supertitle">
+      {{supertitle}}
+    </p>
+    {% if title %}
+    <h4 class="summary__title">
+      {% if title_url %}
+        <a href="{{ title_url }}" class="summary__link" title="{{ text }}">
+      {% endif %}
+        {{ title }}
+      {% if title_url %}
+      </a>
+      {% endif %}
+    </h4>
+    {% if date %}
+      <p class="summary__dateline">
+        <span class="summary__dateline-date">{{date.date}}, </span>
+        <span class="summary__dateline-time">{{date.time}}</span>
+      </p>
+    {% endif %}
+    <p class="summary__subtitle">
+      {{subtitle}}
+    </p>
+  {% endif %}
+</article>

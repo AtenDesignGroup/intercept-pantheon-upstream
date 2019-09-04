@@ -1,0 +1,60 @@
+{
+  "name": "intercept-base",
+  "version": "0.1.0",
+  "description": "Collection of build tools for Aten projects.",
+  "dependencies": {
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.2.0",
+    "breakpoint-sass": "~2.6.1",
+    "browser-sync": "^2.11.1",
+    "browserify": "^13.0.0",
+    "browserify-shim": "^3.8.12",
+    "errorify": "^0.3.1",
+    "factor-bundle": "^2.5.0",
+    "glob": "^6.0.4",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-svgmin": "^1.2.3",
+    "gulp-svgstore": "^6.1.0",
+    "q": "^1.4.1",
+    "require-dir": "^0.3.0",
+    "sass-loader": "^4.1.1",
+    "susy": "^2.2.12",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp",
+    "compile": "gulp compile",
+    "compile:watch": "gulp compile --watch",
+    "compile:serve": "gulp compile --watch --serve",
+    "css": "gulp css",
+    "css:watch": "gulp css --watch",
+    "css:serve": "gulp css --watch --serve",
+    "js": "gulp js",
+    "js:watch": "gulp js --watch",
+    "js:serve": "gulp js --watch --serve",
+    "svg-sprite": "gulp svg-sprite",
+    "svg-sprite:watch": "gulp svg-sprite --watch",
+    "svg-sprite:serve": "gulp svg-sprite --watch --serve"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "ie 11",
+    "opera 12.1",
+    "ios 6",
+    "android 4"
+  ],
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "jquery": "global:jQuery"
+  }
+}

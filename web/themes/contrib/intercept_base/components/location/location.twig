@@ -1,0 +1,31 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/location') }}
+<aside {{ component.attributes('location', modifiers, attr) }}>
+  {% if image %}
+  <div class="location__image" style="background-image: url({{ image.src }});">
+  </div>
+  {% endif %}
+  <div class="location__content">
+    <header class="location__header">
+    {% if title %}
+      <h3 class="location__title">{{title}}</h3>
+      {% endif %}
+      {% if subtitle %}
+      <p class="location__subtitle">{{subtitle}}</p>
+      {% endif %}
+    </header>
+    {% if address or phone %}
+    <div class="location__address">
+      {{address}}
+      {{phone}}
+    </div>
+    {% endif %}
+    {% if map_link %}
+      {% include '@intercept-base-components/more-link/more-link.twig' with {
+        url: map_link,
+        text: 'Get Directions'|t,
+        modifiers: ['reversed']
+      } %}
+    {% endif %}
+  </div>
+</aside>

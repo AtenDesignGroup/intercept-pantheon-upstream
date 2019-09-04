@@ -1,0 +1,24 @@
+.pager__items {
+  margin: 0;
+  text-align: center; }
+
+.pager__item {
+  display: inline-block;
+  margin: 0 .25rem; }
+  .pager__item.is-active a {
+    color: #4C4D4F; }
+
+.pager__link {
+  color: #7A7D81;
+  text-decoration: none;
+  -webkit-transition: color .2s ease-out;
+  transition: color .2s ease-out;
+  text-decoration: none; }
+  .pager__link:hover, .pager__link:focus {
+    color: #4C4D4F;
+    text-decoration: none; }
+  .pager__link:active, .pager__link.active--trail {
+    color: #4C4D4F;
+    color: #7A7D81; }
+  .pager__link:hover {
+    text-decoration: underline; }

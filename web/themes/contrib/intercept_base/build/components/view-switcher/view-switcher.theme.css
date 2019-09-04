@@ -1,0 +1,8 @@
+.view-switcher__button {
+  background-color: transparent !important;
+  color: #0288D1;
+  font-weight: 900;
+  text-transform: uppercase; }
+  .view-switcher__button:hover, .view-switcher__button:focus {
+    background-color: transparent;
+    color: #0277BD; }

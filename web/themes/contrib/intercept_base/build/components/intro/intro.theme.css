@@ -1,0 +1,9 @@
+.intro {
+  font-size: 1.03472rem;
+  line-height: 1.5; }
+  @media (min-width: 48em) {
+    .intro {
+      font-size: 1.40625rem; } }
+  @media (min-width: 62em) {
+    .intro {
+      font-size: 1.875rem; } }

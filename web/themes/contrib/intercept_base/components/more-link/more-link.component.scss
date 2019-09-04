@@ -1,0 +1,81 @@
+@import "_partials";
+
+.more-link {
+  @include fs(x-small);
+  align-items: center;
+  display: inline-block;
+  font-weight: $fw-bold;
+  letter-spacing: (2 / 16) * 1em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all .2s ease-out;
+  white-space: normal;
+
+  &:hover,
+  &:focus {
+    .more-link__arrow {
+      transform: translateX(.5em);
+    }
+  }
+
+  &:not(:last-child) {
+    margin-bottom: rem($sp-loose);
+  }
+}
+
+.more-link__arrow {
+  display: inline-block;
+  position: relative;
+  top: .0625em;
+  transition: transform .2s ease-out;
+  white-space: nowrap;
+
+  .icon {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  svg {
+    height: .875em;
+  }
+
+  polygon {
+    transition: transform .2s ease-out;
+  }
+}
+
+.more-link__wrapper {
+  display: flex;
+  justify-content: space-between;
+
+  > .more-link {
+    margin-bottom: rem($sp-tight);
+  }
+
+  > .more-link:first-child {
+    margin-right: rem($sp-tight);
+  }
+}
+
+//
+// Modifiers
+//
+.more-link--back {
+  svg {
+    transform: rotateZ(180deg);
+  }
+
+  &:hover,
+  &:focus {
+    .more-link__arrow {
+      transform: translateX(-.5em);
+    }
+
+  }
+}
+
+.more-link--reversed {
+  color: $white;
+}

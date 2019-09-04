@@ -1,0 +1,8 @@
+.byline {
+  font-size: 0.72917rem; }
+  @media (min-width: 48em) {
+    .byline {
+      font-size: 0.9375rem; } }
+  @media (min-width: 62em) {
+    .byline {
+      font-size: 1.125rem; } }

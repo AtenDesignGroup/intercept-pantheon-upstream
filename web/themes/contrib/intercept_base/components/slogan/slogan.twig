@@ -1,0 +1,4 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% if text %}
+  <p {{ component.attributes('slogan', modifiers, attr) }}>{{text}}<p>
+{% endif %}

@@ -1,0 +1,13 @@
+{% import '@intercept-base-components/metadata/metadata.twig' as metadata %}
+
+{% set title = label_hidden ? null : label %}
+
+{% set data = [] %}
+{% for item in items %}
+  {% set data = data|merge([item.content]) %}
+{% endfor %}
+
+{% include metadata with {
+  title: title,
+  data: data,
+} %}

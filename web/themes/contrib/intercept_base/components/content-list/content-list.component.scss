@@ -1,0 +1,17 @@
+@import "_partials";
+
+.content-list,
+.content-list__heading,
+.content-list__item {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, normal);
+  }
+}
+
+.content-list__heading {
+  @include fs(h2);
+}
+
+.content-list__list {
+  @include list--no-bullets;
+}

@@ -1,0 +1,67 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/listing') }}
+
+{% set target_attr = '' %}
+{% if target %}
+{% set target_attr = 'target="{{ target }}"' %}
+{% endif %}
+
+<article {{ component.attributes('listing', modifiers, attr) }}>
+  {% if image %}
+  <div class="listing__image">
+    {% if url %}
+    <a href="{{ url }}" {{ target_attr }} class="listing__link" title="{{ text }}">
+    {% endif %}
+
+    {{ image }}
+
+    {% if url %}
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% if date %}
+    <div class="listing__date-wrapper">
+      <p class="listing__date">
+        <span class="listing__date-month">{{ date.month }}</span>
+        <span class="listing__date-date">{{ date.date }}</span>
+        <span class="listing__date-time">{{ date.time }}</span>
+      </p>
+    </div>
+  {% endif %}
+
+  {% if text %}
+  <div class="listing__content">
+    <div class="listing__highlight">
+      {% include '@intercept-base-components/highlight/highlight.twig' with { text: type } only %}
+    </div>
+    {% if supertitle %}
+      <span class="listing__supertitle">{{ supertitle }}</span>
+    {% endif %}
+    <div class="listing__text">
+      {% if url %}
+      <a href="{{ url }}" {{ target_attr }} class="listing__link" title="{{ text }}">
+      {% endif %}
+
+      {{ text }}
+
+      {% if url %}
+      </a>
+      {% endif %}
+    </div>
+    {% if subtitle %}
+      <span class="listing__subtitle">{{ subtitle }}</span>
+    {% endif %}
+    {% if prompt|render %}
+      <div class="listing__prompt">
+        {{ prompt }}
+      </div>
+    {% endif %}
+    {% if footer %}
+      <div class="listing__footer">
+        {{ footer }}
+      </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</article>

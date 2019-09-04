@@ -1,0 +1,7 @@
+{% import '@intercept-base-components/more-link/more-links.twig' as more_links %}
+{% if content.title %}
+  {% include '@intercept-base-components/page-title/page-title.twig' with {
+    text: content.title,
+  } only %}
+{% endif %}
+{{ content|without('title') }}

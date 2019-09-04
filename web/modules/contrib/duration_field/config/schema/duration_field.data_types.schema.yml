@@ -1,0 +1,3 @@
+duration:
+  label: 'Duration'
+  class: '\Drupal\duration_field\Plugin\DataType\DurationData'

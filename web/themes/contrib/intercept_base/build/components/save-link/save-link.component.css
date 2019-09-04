@@ -1,0 +1,57 @@
+.save-link {
+  font-size: 0.5rem;
+  line-height: 1;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: #878B90;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-weight: 900;
+  letter-spacing: 0.125em;
+  text-decoration: none;
+  text-transform: uppercase;
+  -webkit-transition: all .2s ease-out;
+  transition: all .2s ease-out;
+  white-space: normal; }
+  @media (min-width: 48em) {
+    .save-link {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .save-link {
+      font-size: 0.75rem; } }
+  .save-link:hover, .save-link:focus {
+    color: #4C4D4F; }
+  .save-link__star {
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    position: relative;
+    top: auto;
+    -webkit-transition: -webkit-transform .2s ease-out;
+    transition: -webkit-transform .2s ease-out;
+    transition: transform .2s ease-out;
+    transition: transform .2s ease-out, -webkit-transform .2s ease-out;
+    vertical-align: text-bottom;
+    white-space: nowrap; }
+    .save-link__star svg {
+      height: auto;
+      width: 1.875em; }
+  .save-link + .ajax-progress {
+    line-height: 1;
+    position: absolute;
+    left: 100%; }
+  .save-link__title {
+    padding-left: 0.625rem; }
+
+.flag-saved-event {
+  position: relative; }
+  .flag-saved-event:not(:last-child) {
+    margin-right: 1.25rem; }

@@ -1,0 +1,40 @@
+@import '_partials';
+
+.section-title {
+  > span {
+    display: block;
+  }
+
+  > small {
+    @include fs(tiny);
+    display: block;
+    margin-top: .5em;
+  }
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, compact);
+  }
+}
+
+.section-title--primary {
+
+}
+
+.section-title--ruled {
+  border-bottom: solid rem(1px) $clr-border;
+  margin-bottom: rem($sp-loose);
+  padding-bottom: rem($sp-normal);
+}
+
+.section-title--secondary {
+  @include fs(body);
+  font-weight: $fw-bold;
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, compact);
+  }
+}
+
+.section-title--tertiary {
+
+}

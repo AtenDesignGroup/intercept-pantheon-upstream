@@ -1,0 +1,25 @@
+//
+// @file
+// Global Styles - Primary Import Document
+//
+// This file outputs to global.css, the primary stylesheet for the theme
+//
+
+// Import Partials
+@import "_partials";
+
+// Browser Normalize
+@import "scss/normalize";
+
+// The Base
+@import "scss/base";
+@import "scss/field";
+@import "scss/list";
+@import "scss/layout";
+@import "scss/wysiwyg";
+@import "scss/form";
+
+// REMOVE ME
+#block-prototype-d8-branding {
+  width: 200px;
+}

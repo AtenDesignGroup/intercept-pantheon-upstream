@@ -1,0 +1,84 @@
+@import '_partials';
+
+.print-cal__header,
+.print-cal__body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+
+  > * {
+    align-self: stretch;
+  }
+}
+
+.print-cal__body {
+  border-bottom: 1px solid $clr-border;
+}
+
+.print-cal__cell {
+  border-left: 1px solid $clr-border;
+  border-top: 1px solid $clr-border;
+  padding: rem(6px);
+
+  &:nth-child(7n) {
+    border-right: 1px solid $clr-border;
+  }
+}
+
+.print-cal__cell-day {
+  @include fs(micro);
+  margin-bottom: rem(6px);
+
+  .print-cal__cell--not-in-scope & {
+    opacity: .4;
+  }
+}
+
+.print-event {
+  @include lh(0);
+  @include fs(tiny);
+
+  &:not(:last-child) {
+    margin-bottom: .25em;
+  }
+}
+
+.print-event__title,
+.print-event__location,
+.print-event__time {
+  @include lh(0);
+  line-height: inherit;
+}
+
+.print-event__title {
+  font-weight: $fw-bold;
+}
+
+.print-event__time {
+  display: block;
+}
+
+.print-legend {
+  display: flex;
+  flex-wrap: wrap;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, tight);
+  }
+}
+
+.print-legend__item {
+  @include fs(micro);
+  @include spacing(margin-bottom, compact);
+  line-height: lh(0);
+  white-space: nowrap;
+
+  &:not(:last-child) {
+    margin-right: 3em;
+  }
+}
+
+.print-legend__item-abbv {
+  font-weight: $fw-bold;
+  margin-right: .5em;
+}

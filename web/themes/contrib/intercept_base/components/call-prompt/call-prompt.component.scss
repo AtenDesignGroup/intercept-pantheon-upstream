@@ -1,0 +1,17 @@
+@import '_partials';
+
+.call-prompt {
+  @include fs(x-small);
+  letter-spacing: .03em;
+
+  &__text {
+    display: block;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  &__link {
+    display: block;
+    white-space: nowrap;
+  }
+}

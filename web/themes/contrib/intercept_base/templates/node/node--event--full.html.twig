@@ -1,0 +1,82 @@
+{% set location = content.field_location|field_target_entity %}
+{% set room = content.field_room|field_target_entity %}
+{% set image_url = content.image_primary|field_target_entity.field_media_image.entity.uri.value %}
+{% if image_url %}
+  {% set image = file_url(content.image_primary|field_target_entity.field_media_image.entity.uri.value|image_style('4to3_740x556')) %}
+{% else %}
+  {% set image = null %}
+{% endif %}
+
+<article{{ attributes.addClass(['article']) }}>
+  <div class="l--sidebar-after">
+    <div class="l__header">
+      {% include '@intercept-base-components/content-header/content-header.twig' with {
+        title: label|field_value,
+        image: image,
+        type: 'Event'|t,
+        supertitle: location.label,
+        date: {
+          date: node.field_date_time.start_date|date("l, F j, Y"),
+          time: (node.field_date_time.start_date|date("g:i a") ~ ' – ' ~ node.field_date_time.end_date|date("g:i a"))|replace({'m':'.m.'})|replace({':00':''})
+        },
+      } %}
+    </div>
+    <div class="l__main l--offset">
+      <div class="l__primary">
+        <div class="l--section">
+          <div class="l--subsection--tight">
+            {% if content.field_text_intro %}
+              {{ content.field_text_intro }}
+            {% endif %}
+            {% if content.field_text_content %}
+              {{ content.field_text_content|field_value }}
+            {% endif %}
+          </div>
+
+          <div class="actions l--subsection--tight">
+            <div class="actions__register">
+              {{ content.register_prompt }}
+            </div>
+            <div class="actions__save">
+              {{ content.flag_saved_event }}
+              {{ content.field_add_to_cal|field_value }}
+            </div>
+          </div>
+        </div>
+
+        {% if content.field_location and location.field_branch_location.value == '1' %}
+        <div class="l--section">
+          {% include '@intercept-base-components/location/location.twig' with {
+            title: location.label,
+            image: {
+              src: file_url(location.image_primary.entity.field_media_image.entity.uri.value|image_style('4to3_740x556')),
+              alt: location.image_primary.entity.field_media_image.alt
+            },
+            subtitle: room.label,
+            address: drupal_field('field_address', 'node', location.nid.value)|field_value,
+            phone: drupal_field('field_contact_number', 'node', location.nid.value)|field_value,
+            map_link: drupal_field('field_map_link', 'node', location.nid.value)|field_raw('uri')
+          } %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="l__secondary">
+        {% if content.field_event_type %}
+          {{ content.field_event_type }}
+        {% endif %}
+        {% if content.field_event_audience %}
+          {{ content.field_event_audience }}
+        {% endif %}
+        {% if content.field_event_series %}
+          {{ content.field_event_series }}
+        {% endif %}
+        {% if content.field_event_tags %}
+          {{ content.field_event_tags }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="l__footer l--offset">
+      {# @TODO: Related Events #}
+    </div>
+  </div>
+</article>

@@ -1,0 +1,14 @@
+@import '_partials';
+
+.listing__date-wrapper {
+  background-color: $clr-primary;
+}
+
+.listing__date {
+  color: $white;
+}
+
+.listing__supertitle {
+  font-weight: bold;
+  font-family: $ff-serif;
+}

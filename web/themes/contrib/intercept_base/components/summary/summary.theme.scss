@@ -1,0 +1,12 @@
+@import '_partials';
+
+.summary__title,
+.summary_date-date,
+.summary_date-time {
+  font-weight: bold;
+}
+
+.summary__title-link {
+  @include link--primary;
+  text-decoration: none;
+}

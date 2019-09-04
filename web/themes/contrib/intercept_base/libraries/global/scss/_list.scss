@@ -1,0 +1,315 @@
+.list--bullets {
+  @include list--bullets;
+}
+
+.list--no-bullets {
+  @include list--no-bullets;
+}
+
+.list--numbered {
+  @include list--numbered;
+}
+
+.list--basic {
+  @include list--no-bullets;
+
+  > .list__item {
+    @include fs(x-small);
+    @include lh(-1);
+
+    &:not(:last-child) {
+      margin-bottom: $sp-tight;
+    }
+  }
+
+  > .list__item > a:not([class]) {
+    @include lh(0);
+    border: 0;
+    display: block;
+    font-family: $ff-sans;
+    text-decoration: none;
+  }
+}
+
+@mixin list--ruled--colors() {
+  .row--screen--white & li {
+    border-color: $gray-60;
+  }
+}
+
+.list--ruled {
+  @include list--ruled--colors;
+  @include list--ruled($spacing: rem($sp-loose), $border-size: rem(8px));
+
+  @include bp(none medium) {
+    > li {
+      border-top-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--inner {
+  @include list--ruled--colors;
+  @include list--ruled($spacing: rem($sp-loose));
+
+  @include bp(none medium) {
+    > li {
+      border-top-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--above {
+  @include list--ruled--colors;
+  @include list--ruled(rem($sp-loose), 'above');
+
+  @include bp(none medium) {
+    > li {
+      border-top-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--below {
+  @include list--ruled--colors;
+  @include list--ruled(rem($sp-loose), 'below');
+
+  @include bp(none medium) {
+    > li {
+      border-bottom-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--looser {
+  @include list--ruled--colors;
+  @include list--ruled(2.5em);
+
+  @include bp(none medium) {
+    > li {
+      border-top-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--loose {
+  @include list--ruled--colors;
+  @include list--ruled(2.25em);
+
+  @include bp(none medium) {
+    > li {
+      border-top-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--tight {
+  @include list--ruled--colors;
+  @include list--ruled(1.25em);
+
+  @include bp(none medium) {
+    > li {
+      border-top-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--tighter {
+  @include list--ruled--colors;
+  @include list--ruled(.625em);
+
+  @include bp(none medium) {
+    > li {
+      border-top-width: rem(4px);
+    }
+  }
+}
+
+.list--ruled--light {
+  > li {
+    border-color: $gray-80;
+  }
+}
+
+.list--simple {
+  @include list--bullets;
+
+  > .list__item:not(:last-child) {
+    margin-bottom: rem(6px);
+  }
+
+  > .list__item > a:not([class]) {
+    @include lh(0);
+    // @include link--black;
+    border: 0;
+    display: block;
+    font-family: $ff-sans;
+    text-decoration: none;
+  }
+
+  > .list__item:before {
+    // top: .3em;
+  }
+
+  .field__label + & {
+    margin-top: 0;
+  }
+}
+
+.list--3up-grid {
+  @include list--no-bullets;
+
+  > .list__item:not(:first-child) {
+    margin-top: rem($sp-normal);
+  }
+
+  &.list--3up-grid--tight > .list__item:not(:first-child) {
+    margin-top: rem($sp-tight);
+  }
+
+  @include bp(large) {
+    display: flex;
+    flex-wrap: wrap;
+
+    > .list__item {
+      width: percentage(6/13);
+    }
+  }
+
+  .l--sidebar-after > .l__primary & {
+    @include bp(large) {
+      > .list__item {
+        flex: none;
+        margin-right: percentage(.5/13);
+        margin-top: 0;
+        width: percentage(4/13);
+      }
+
+      > .list__item:nth-child(3n+3) {
+        margin-right: 0;
+      }
+
+      > .list__item:nth-child(n+4) {
+        margin-top: $sp-normal;
+      }
+    }
+  }
+
+  .l--1-col > .l--section & {
+    @include bp(medium) {
+      display: flex;
+      flex-wrap: wrap;
+
+      > .list__item {
+        flex: none;
+        margin-right: percentage(1/23);
+        margin-top: 0;
+        width: percentage(7/23);
+      }
+
+      > .list__item:nth-child(3n+3) {
+        margin-right: 0;
+      }
+
+      > .list__item:nth-child(n+4) {
+        margin-top: percentage(1/23);
+      }
+    }
+  }
+
+  .l--1-col > .l--section &.list--3up-grid--tight {
+    @include bp(medium) {
+      > .list__item:nth-child(n+4) {
+        margin-top: rem($sp-tight);
+      }
+    }
+  }
+}
+
+.list--2up-grid {
+  @include list--no-bullets;
+
+  @include bp(none medium) {
+    > .list__item:not(:first-child) {
+      margin-top: rem($sp-normal);
+    }
+  }
+
+  @include bp(medium) {
+    display: flex;
+    flex-wrap: wrap;
+
+    > .list__item {
+      flex: none;
+      margin-right: percentage(1/23);
+      margin-top: 0;
+      width: percentage(11/23);
+    }
+
+    > .list__item:nth-child(2n+2) {
+      margin-right: 0;
+    }
+
+    > .list__item:nth-child(n+3) {
+      margin-top: percentage(1/23);
+    }
+  }
+}
+
+
+.list--4up-grid {
+  @include list--no-bullets;
+
+  @include bp(none medium) {
+    > .list__item:not(:first-child) {
+      margin-top: rem($sp-loose);
+    }
+  }
+
+  @include bp(medium large) {
+    display: flex;
+    flex-wrap: wrap;
+
+    > .list__item {
+      flex: none;
+      margin-top: 0;
+      margin-right: percentage(1/23);
+      width: percentage(11/23);
+    }
+
+    > .list__item:nth-child(2n+2) {
+      margin-right: 0;
+    }
+
+    > .list__item:nth-child(n+3) {
+      margin-top: $sp-normal;
+    }
+  }
+
+  @include bp(large) {
+    display: flex;
+    flex-wrap: wrap;
+
+    > .list__item {
+      margin-right: percentage(1/23);
+      margin-top: 0;
+      width: percentage(5/23);
+    }
+
+    > .list__item:nth-child(4n+4) {
+      margin-right: 0;
+    }
+
+    > .list__item:nth-child(n+5) {
+      margin-top: $sp-normal;
+    }
+  }
+}
+
+.list--content {
+  @include list--no-bullets;
+
+  > .list__item:not(:last-child) {
+    margin-bottom: rem($sp-normal);
+  }
+}

@@ -1,0 +1,43 @@
+.intercept-management-section__actions {
+  margin: 0;
+  padding: 0;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin: -1rem; }
+  .intercept-management-section__actions > li {
+    list-style: none; }
+  @media (min-width: 48em) {
+    .intercept-management-section__actions {
+      margin: -1.875rem; } }
+
+.intercept-management-section__actions-item {
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 0;
+      -ms-flex: none;
+          flex: none;
+  width: 100%;
+  padding: 1rem; }
+  .intercept-management-section__actions-item > .card {
+    width: 100%; }
+  @media (min-width: 31.25em) {
+    .intercept-management-section__actions-item {
+      width: 50%; } }
+  @media (min-width: 48em) {
+    .intercept-management-section__actions-item {
+      padding: 1.875rem;
+      width: 33%; } }
+
+.intercept-management-section__content tr > :first-child {
+  max-width: 40%;
+  width: 20em; }

@@ -1,0 +1,6 @@
+{% import '@intercept-base-components/component.twig' as component %}
+<a href="/" title="{{ title ? title : 'Home' }}" rel="home" {{ component.attributes('logo', modifiers, attr) }}>
+  {% if logo_path %}
+    <img src="{{ logo_path }}" alt="{{ alt ? alt : 'Home' }}" class="logo__image">
+  {% endif %}
+</a>

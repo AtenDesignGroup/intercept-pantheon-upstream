@@ -1,0 +1,38 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/person') }}
+
+<div {{ component.attributes('person', modifiers, attr) }}>
+
+  {% if type %}
+  <div class="person__highlight">
+    {% include '@intercept-base-components/highlight/highlight.twig' with {
+      text: type
+    } only %}
+  </div>
+  {% endif %}
+  
+  {% if image %}
+  <div class="person__image" style="background-image: url({{ image }});">
+  </div>
+  {% endif %}
+
+  <div class="person__text">
+    {% if title %}
+    <h2 class="person__title">{{ title }}</h2>
+    {% endif %}
+
+    {% if subtitle %}
+    <p class="person__subtitle">{{ subtitle }}</p>
+    {% endif %}
+
+    {% if department %}
+    <div class="person__department">{{ department }}</div>
+    {% endif %}
+
+    {% if bio %}
+    <div class="person__bio">{{ bio }}</div>
+    {% endif %}
+
+  </div>
+
+</div>

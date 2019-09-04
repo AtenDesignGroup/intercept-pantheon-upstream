@@ -1,0 +1,13 @@
+.highlight {
+  margin-bottom: 0.375rem;
+  background: #D3D8DF;
+  color: #4C4D4F;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 0.16667em; }
+  @media (min-width: 48em) {
+    .highlight {
+      margin-bottom: 0.495rem; } }
+  @media (min-width: 62em) {
+    .highlight {
+      margin-bottom: 0.75rem; } }

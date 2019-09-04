@@ -1,0 +1,74 @@
+@import "_partials";
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  > :not(:last-child) {
+    margin-right: 1em;
+  }
+
+  @include bp(small) {
+    flex-wrap: nowrap;
+  }
+}
+
+.actions__register {
+  margin-bottom: rem(18px);
+  width: 100%;
+
+  @include bp(small) {
+    margin-bottom: 0;
+    width: auto;
+  }
+}
+
+.actions__save {
+  display: flex;
+}
+
+.action-button__button.action-button__button {
+  display: flex;
+  width: 100%;
+  text-align: center;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, tiny);
+  }
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tiny);
+  }
+
+  [role="dialog"] & {
+    width: auto;
+  }
+}
+
+.action-button__message {
+  @include fs(x-small);
+  @include lh(0);
+  font-style: italic;
+  text-align: center;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, narrow);
+  }
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, narrow);
+  }
+
+  .summary__content & {
+    text-align: left;
+  }
+}
+
+.action-button__message--left {
+  text-align: left;
+}
+
+.flag-saved-event {
+  align-items: center;
+  display: flex;
+}

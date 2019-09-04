@@ -1,0 +1,19 @@
+{% import '@intercept-base-components/component.twig' as component %} 
+{{ attach_library('intercept_base/quote') }} 
+
+<article {{ component.attributes( 'quote l--section', modifiers, attr) }}>
+  {% if quote %}
+  <div class="quote__text">
+    {{ quote }}
+  </div>
+  {% endif %}
+  
+  {% if citation %}
+  <div class="quote__citation">
+    {# &mdash; {% if url %}<a href="{{ url }}" title="{{ citation }}">{% endif %}{{ citation }}{% if url %}
+    </a>{% endif %} #}
+    
+    &mdash; {{ citation }}
+  </div>
+  {% endif %}
+</article>

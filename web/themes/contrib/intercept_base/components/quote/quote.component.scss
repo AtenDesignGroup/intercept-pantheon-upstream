@@ -1,0 +1,41 @@
+//
+// @file
+// Quote Styles
+//
+
+@import "_partials";
+
+.quote {
+  @include spacing(margin-bottom, tight);
+  @include spacing(margin-top, tight);
+  @include spacing(padding-bottom, narrow);
+  padding-left: percentage(.5/7);
+  padding-right: percentage(.5/7);
+  position: relative;
+
+  @include bp(small) {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  @include bp(large) {
+    padding-left: 8rem;
+    padding-right: 8rem;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+  }
+}
+
+.quote__text {
+  border-top: rem(6px) solid $gray-80;
+  font-style: italic;
+  padding-top: .75rem;
+}
+
+.quote__citation {
+  @include fs(tiny); 
+  margin-top: 1rem;
+}

@@ -1,0 +1,15 @@
+{{ attach_library('intercept_base/listing') }}
+
+{% include '@intercept-base-components/listing/listing.twig' with {
+  supertitle: content.field_location|field_value,
+  subtitle: content.field_room|field_value,
+  date: {
+    month: node.field_date_time.start_date|date("M"),
+    date: node.field_date_time.start_date|date("d"),
+    time: node.field_date_time.start_date|date("g:i a")|replace({'m':'.m.'})
+  },
+  text: label|field_value,
+  url: url,
+  prompt: content.field_must_register|field_value,
+  footer: content.flag_saved_event
+} %}

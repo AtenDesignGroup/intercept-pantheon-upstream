@@ -1,0 +1,22 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/media') }}
+
+<article {{ component.attributes('media', modifiers, attr) }}>
+  {% if media %}
+  <div class="media__media">
+    {{ media }}
+  </div>
+  {% endif %}
+
+  {% if caption or credit %}
+  <div class="media__caption">
+    {% if caption %}
+    <div class="media__caption-caption">{{ caption }}</div>
+    {% endif %}
+
+    {% if credit %}
+      <div class="media__caption-credit">{{ credit }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
+</article>

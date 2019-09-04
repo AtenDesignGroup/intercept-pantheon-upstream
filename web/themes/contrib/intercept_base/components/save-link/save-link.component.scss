@@ -1,0 +1,54 @@
+@import "_partials";
+
+.save-link {
+  @include fs(micro);
+  @include lh(-1);
+  align-items: center;
+  color: $gray-50;
+  display: flex;
+  font-weight: $fw-bold;
+  letter-spacing: (2 / 16) * 1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all .2s ease-out;
+  white-space: normal;
+
+  &:hover,
+  &:focus {
+    color: $gray-20;
+  }
+
+  &__star {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    position: relative;
+    top: auto;
+    transition: transform .2s ease-out;
+    vertical-align: text-bottom;
+    white-space: nowrap;
+
+    svg {
+      height: auto;
+      width: 1.875em;
+    }
+  }
+
+  + .ajax-progress {
+    @include lh(-1);
+    position: absolute;
+    left: 100%;
+  }
+
+  &__title {
+    padding-left: rem(10px);
+  }
+}
+
+.flag-saved-event {
+  position: relative;
+
+  &:not(:last-child) {
+    margin-right: rem(20px);
+  }
+}

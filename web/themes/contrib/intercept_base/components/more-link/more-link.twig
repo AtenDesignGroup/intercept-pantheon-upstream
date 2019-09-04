@@ -1,0 +1,10 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% import '@intercept-base-components/icons/icon.twig' as icon %}
+{{ attach_library('intercept_base/more-link') }}
+{% set attr = attr|default({})|merge({href: url}) %}
+{% if back %}
+{% set modifiers = modifiers|default([])|merge(['back']) %}
+<a {{ component.attributes('more-link', modifiers, attr) }}><span class="more-link__arrow">{{ icon.inline('arrow-right') }}</span>&nbsp;{{ text }}</a>
+{% else %}
+<a {{ component.attributes('more-link', modifiers, attr) }}>{{ text }}&nbsp;<span class="more-link__arrow">{{ icon.inline('arrow-right') }}</span></a>
+{% endif %}

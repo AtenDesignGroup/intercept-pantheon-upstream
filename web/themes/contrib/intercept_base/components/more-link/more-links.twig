@@ -1,0 +1,8 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% import '@intercept-base-components/more-link/more-link.twig' as more_link %}
+{{ attach_library('intercept_base/more-link') }}
+<ul class="more-links list--3up-grid">
+  {% for item in links  %}
+  <li class="more-links__item list__item">{% include more_link with item %}</li>
+  {% endfor %}
+</ul>

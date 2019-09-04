@@ -1,0 +1,13 @@
+.search-form {
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; }
+  .search-form .form-item {
+    margin: 0; }
+
+.search-form__input {
+  margin: 0;
+  height: 100%; }

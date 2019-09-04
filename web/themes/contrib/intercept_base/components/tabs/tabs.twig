@@ -1,0 +1,10 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/tabs') }}
+
+{% macro tabs__item(link, attributes) %}
+  <li{{ attributes.addClass('tabs__item') }}>{{ link }}</li>
+{% endmacro %}
+
+<ul {{ component.attributes('tabs', modifiers, attr) }}>
+  {{ content }}
+</ul>

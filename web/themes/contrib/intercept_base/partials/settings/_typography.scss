@@ -1,0 +1,135 @@
+//
+// @file
+// Breakpoint variables.
+//
+
+//
+// Typefaces.
+//
+$ff-mono: monospace;
+$ff-sans: "Lato", sans-serif;
+$ff-serif: serif;
+
+//
+// Semantic fonts.
+//
+$ff-body:    $ff-serif;
+$ff-heading: $ff-sans;
+$ff-display: $ff-sans;
+
+//
+// Base
+//
+$base-font-size:    16px;
+$base-line-height:  1.5;
+
+$min1: 12;
+$max1: 48;
+
+//
+// $val: Large reference size
+// $min1: Reference body size
+// $max1: Reference mega size
+// $min1: target body size
+// $max1: target mega size
+//
+@function calc-font-size($val, $min1, $max1, $min2, $max2) {
+  $delta1: $max1 - $min1;
+  $delta2: $max2 - $min2;
+
+  @return (((($val - $min1) / $delta1) * $delta2) + $min2);
+}
+
+@function small-size($val) {
+  @return calc-font-size($val, $min1, $max1, 8, 30) * 1px;
+}
+
+@function medium-size($val) {
+  @return calc-font-size($val, $min1, $max1, 10, 40) * 1px;
+}
+
+$font-sizes: (
+  "none": (
+    "nano": small-size(11),
+    "micro": small-size(12),
+    "tiny": small-size(14),
+    "x-small": small-size(16),
+    "small": small-size(18),
+    "body": small-size(20),
+    "secondary-menu": small-size(22),
+    "main-menu": small-size(28),
+    "label": small-size(21),
+    "medium": small-size(22),
+    "large": small-size(26),
+    "h5": small-size(22),
+    "h4": small-size(24),
+    "h3": small-size(30),
+    "h2": small-size(36),
+    "h1": small-size(48),
+    "mega": small-size(60),
+  ),
+  "medium": (
+    "nano": medium-size(10),
+    "micro": medium-size(12),
+    "tiny": medium-size(14),
+    "x-small": medium-size(16),
+    "small": medium-size(18),
+    "body": medium-size(20),
+    "secondary-menu": medium-size(18),
+    "main-menu": medium-size(20),
+    "label": medium-size(21),
+    "medium": medium-size(22),
+    "large": medium-size(27),
+    "h5": medium-size(22),
+    "h4": medium-size(24),
+    "h3": medium-size(30),
+    "h2": medium-size(36),
+    "h1": medium-size(48),
+    "mega": medium-size(60),
+  ),
+  "large": (
+    "nano": 10px,
+    "micro": 12px,
+    "tiny": 14px,
+    "x-small": 16px,
+    "small": 18px,
+    "body": 20px,
+    "secondary-menu": 18px,
+    "main-menu": 20px,
+    "label": 21px,
+    "medium": 24px,
+    "large": 30px,
+    "h5": 22px,
+    "h4": 24px,
+    "h3": 30px,
+    "h2": 36px,
+    "h1": 48px,
+    "mega": 60px,
+  )
+);
+
+// Line heights map
+$lh: (
+  -1: 1,
+  0: 1.2,
+  1: 1.5,
+  2: 2
+);
+
+//
+// Font Weights
+//
+$fw-thin: 200;
+$fw-light: 300;
+$fw-regular: 400;
+$fw-book: 400;
+$fw-medium: 500;
+$fw-semibold: 600;
+$fw-bold: 900; // We are using Lato Black (900) for Bold
+$fw-demibold: 900;
+$fw-black: 900;
+
+//
+// Indentation.
+//
+$indent-amount: 1.5rem;

@@ -1,0 +1,286 @@
+//
+// @file
+// Global Styles - Primary Import Document
+//
+// This file outputs to global.css, the primary stylesheet for the theme
+//
+
+// Import Partials
+@import "_partials";
+
+html {
+  font-size:8pt;
+  background:white;
+  color:black;
+}
+
+nav,
+.header__site-navigation,
+.header__site-navigation--mobile,
+.environment-indicator-overwritten-environment,
+.bootstrap-iso .filters,
+.filters__heading,
+.filters__inputs,
+.item-list,
+.view-switcher,
+.footer,
+.loading-indicator
+ {
+  display:none;
+}
+
+.header__logo {
+  width: 70pt;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1{
+  font-size:150%;
+}
+
+.l--offset {
+  padding: 0;
+}
+
+.bootstrap-iso{
+  padding:0;
+}
+
+.bootstrap-iso > .row{
+  margin-left:0 !important;
+}
+
+// Filters
+.current-filters__wrapper {
+  display: block;
+}
+
+.current-filter {
+  margin-bottom: 0;
+  display: inline-block;
+}
+
+.option-chip {
+  background-color: transparent !important;
+  margin: 0;
+  padding: 0 !important;
+
+  &:not(:last-child) {
+    &:after {
+      content: ","
+    }
+  }
+
+  > svg {
+    display: none;
+  }
+}
+
+// Event List
+.events-list {
+  .teaser__image {
+    background-image: none;
+    width: percentage(3/23);
+
+    img {
+      display: none;
+    }
+  }
+
+  .teaser__date-wrapper {
+    padding: 0;
+  }
+
+  .teaser__image--link {
+    display: none;
+  }
+
+  .teaser__date {
+    color: $clr-text;
+  }
+
+  .teaser__title {
+    font-size: 1rem;
+  }
+
+  .teaser__date-month,
+  .teaser__date-date {
+    display: inline;
+    font-size: 1.25rem;
+  }
+
+  .teaser__date-time {
+    display: block;
+    font-size: 1rem;
+  }
+
+  .teaser__main {
+    flex-wrap: nowrap;
+    width: percentage(19/23);
+    display: flex;
+
+    .teser__content {
+      flex: auto;
+      width: auto;
+    }
+
+    .teaser__footer {
+      flex: none;
+      margin-left: percentage(1/23);
+      min-width: 8em;
+      text-align: right;
+      width: percentage(4/23);
+    }
+  }
+
+}
+
+.content-list__heading {
+  page-break-after: avoid;
+}
+
+.content-list__heading + .content-list__list {
+  page-break-before: avoid;
+}
+
+.content-list:not(:last-child) {
+  margin-bottom: 5rem;
+}
+
+.teaser {
+  page-break-inside: avoid;
+}
+
+// Event Calendar
+.rbc-calendar {
+  display: block;
+  height: auto;
+
+  .rbc-month-view {
+    min-height: 420pt;
+  }
+
+  .rbc-month-view,
+  .rbc-month-row {
+    // display: block;
+    // overflow: visible;
+  }
+
+  .rbc-btn-group,
+  .rbc-toolbar__pager-button {
+    display: none !important;
+  }
+
+  .rbc-event {
+    background: transparent;
+    color: $clr-text;
+  }
+
+  .rbc-date-cell > a,
+  .rbc-date-cell.rbc-current > a {
+    color: $clr-text;
+  }
+
+  .rbc-off-range > a {
+    opacity: .4;
+  }
+
+  .rbc-day-bg.rbc-off-range-bg {
+    background: transparent;
+  }
+
+  .rbc-now.rbc-current {
+    &:before {
+      content: none;
+    }
+  }
+
+  .calendar-event,
+  .event-content {
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .calendar-event__title {
+    font-size: 6pt;
+    line-height: 1.2;
+  }
+}
+
+@media (orientation: portrait) {
+  .rbc-calendar {
+    .rbc-month-view {
+      min-height: 620pt;
+    }
+  }
+}
+
+// .events {
+//   // font-size:8pt;
+//   width:100% !important;
+//   margin-left:0 !important;
+// }
+
+// .events .view-content{
+//   -moz-column-width: 20em;
+//   -webkit-column-width: 20em;
+//   column-width: 20em;
+//   -moz-column-gap: 2em;
+//   -webkit-column-gap: 2em;
+//   column-gap: 2em;
+// }
+
+// .events .view-content > .row{
+//   width:100%;
+//   page-break-inside: avoid;
+//   -webkit-column-break-inside:avoid;
+//   -moz-column-break-inside:avoid;
+//   -o-column-break-inside:avoid;
+//   -ms-column-break-inside:avoid;
+//   column-break-inside:avoid;
+//   border-bottom: solid 1px black;
+// }
+
+// .events .row{
+//   margin-left:0;
+// }
+
+// .events .event-item--title{
+//   /*margin-left:20px;*/
+//   width:80% !important;
+// }
+
+// .events .event-item--title h4{
+//   font-size:120%;
+// }
+
+// .events .event-item--title a:after{
+//   content:'' !important;
+// }
+
+// .events .event-item--times{
+//   clear:left;
+//   float:left;
+//   width:25% !important;
+// }
+// .events .event-item--content{
+//   float:left;
+//   margin-left:0.5em !important;
+//   width:55% !important;
+// }
+
+// .events .event-item--details{
+//   margin-left:0;
+//   width:auto;
+// }
+
+// .events .image{
+//   margin-left:0;
+// }
+
+// .events .row .btn,
+// .events .event-item--tags,
+// .events .event-item--room{
+//   display:none;
+// }

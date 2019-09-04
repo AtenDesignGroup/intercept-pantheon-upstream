@@ -1,0 +1,157 @@
+@import '_partials';
+
+.rbc-btn-group {
+  display: inline-block;
+  white-space: nowrap;
+
+  > button {
+    // color: $clr-text;
+
+    &:active,
+    &.rbc-active {
+      // background-color: #e6e6e6;
+      // border-color: #adadad;
+    }
+
+    &:active:hover,
+    &.rbc-active:hover,
+    &:active:focus,
+    &.rbc-active:focus {
+      // color: $clr-text;
+      // background-color: #d4d4d4;
+      // border-color: #8c8c8c;
+    }
+
+    &:focus {
+      // color: $clr-text;
+      // background-color: #e6e6e6;
+      // border-color: #adadad;
+    }
+
+    &:hover {
+      // color: $clr-text;
+      // background-color: #e6e6e6;
+      // border-color: #adadad;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+  }
+}
+
+.rbc-toolbar__label {
+  color: $clr-secondary;
+}
+
+.rbc-toolbar__pager-button.rbc-toolbar__pager-button {
+  &:focus {
+    background-color: $gray-70;
+  }
+}
+
+
+.rbc-event {
+  background-color: $clr-primary;
+  border: 1px Solid $white;
+  color: #fff;
+}
+
+.rbc-event:hover,
+.rbc-event:focus,
+.rbc-event.rbc-selected {
+  background-color: $clr-primary-dark;
+}
+
+.rbc-event-content {
+  font-weight: $fw-black;
+}
+
+.rbc-event-overlaps {
+  box-shadow: -1px 1px 5px 0px $gray-80;
+}
+
+.rbc-event-continues-prior {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.rbc-event-continues-after {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rbc-event-continues-earlier {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.rbc-event-continues-later {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rbc-event-continues-day-after {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rbc-event-continues-day-prior {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.rbc-row-segment {
+  padding: 0 1px 1px 1px;
+}
+
+.rbc-selected-cell {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.rbc-show-more {
+  background-color: rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+  color: $clr-secondary;
+
+  &:hover,
+  &:focus {
+    color: $clr-secondary-dark;
+  }
+}
+
+.rbc-day-slot .rbc-event {
+  border-color: $clr-primary;
+}
+
+.rbc-slot-selection {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.rbc-date-cell,
+.rbc-header {
+  > a {
+    @include link--secondary;
+  }
+}
+
+.rbc-date-cell.rbc-now,
+.rbc-header.rbc-today {
+  > a {
+    @include link--tertiary;
+  }
+}
+
+.rbc-header.rbc-today,
+.rbc-month-view .rbc-date-cell.rbc-now {
+  &:before {
+    background-color: $clr-tertiary;
+  }
+}
+
+.rbc-off-range-bg {
+  background-color: $gray-80;
+}
+
+.rbc-event--disabled {
+  background-color: $gray-20;
+}

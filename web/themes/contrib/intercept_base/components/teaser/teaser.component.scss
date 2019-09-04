@@ -1,0 +1,385 @@
+@import "_partials";
+
+.teaser {
+  display: flex;
+  transition: opacity .7s ease-out;
+
+  @include bp(medium) {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.teaser__image {
+  align-self: flex-start;
+  background-color: $clr-secondary;
+  flex: none;
+  position: relative;
+
+  @include bp(none medium) {
+    margin-right: rem(20px);
+    width: rem(65px);
+  }
+
+  @include bp(small) {
+    width: rem(75px);
+  }
+
+  @include bp(medium) {
+    margin-right: 30px;
+    width: percentage(2/6);
+
+    .teaser--without-image & {
+      height: 0;
+      padding-top: percentage(2/6);
+    }
+  }
+
+  @include bp(large) {
+    margin-right: percentage(1/23);
+    width: percentage(5/23);
+
+    .teaser--without-image & {
+      height: 0;
+      padding-top: percentage(3/4 * 5/23);
+    }
+  }
+}
+
+.teaser__images {
+  background: $gray-80;
+  align-items: center;
+  display: flex;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+
+  &::after {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
+}
+
+.teaser__images-image {
+  margin-left: -.25rem;
+  margin-top: 0;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+
+  @include bp(medium) {
+    margin-top: .4rem;
+  }
+
+  @include bp(large) {
+    margin-top: .5rem;
+  }
+
+  @include bp(x-large) {
+  }
+
+  a {
+    line-height: 0;
+    display: block;
+  }
+
+  img {
+    display: inline;
+    max-width: 45%;
+    transition: all $duration $easing;
+  }
+
+  &:nth-of-type(1) {
+    transform: rotate(0deg);
+  }
+
+  &:nth-of-type(2) {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    z-index: -1;
+
+    img {
+      transform: rotate(7deg);
+      transform-origin: right bottom;
+      margin-right: -#{rem(15px)};
+      margin-top: rem(10px);
+
+      @include bp(medium) {
+        margin-right: -#{rem(25px)};
+        margin-top: rem(36px);
+      }
+
+      @include bp(large) {
+        margin-right: -#{rem(15px)};
+        margin-top: rem(20px);
+      }
+
+      @include bp(x-large) {
+        margin-top: rem(25px);
+      }
+    }
+  }
+}
+
+.teaser__main {
+  max-width: 100%;
+
+  @include bp(medium) {
+    display: flex;
+  }
+
+  .teaser--narrow & {
+    @include bp(none large) {
+      display: block;
+    }
+  }
+}
+
+.teaser__content {
+  flex: auto;
+
+  .teaser--narrow & {
+    @include bp(none large) {
+      &:not(:last-child) {
+        margin-bottom: 1em;
+      }
+    }
+  }
+}
+
+.teaser__footer {
+  @include bp(none medium) {
+    &:not(:first-child) {
+      margin-top: 1em;
+    }
+  }
+
+  @include bp(medium) {
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @include bp(large) {
+    flex: none;
+    margin-left: percentage(1/23);
+    min-width: 8em;
+    text-align: right;
+    width: percentage(4/23);
+  }
+}
+
+.teaser__image + .teaser__main {
+  flex: 1;
+
+  @include bp(large) {
+    width: percentage(4/7);
+  }
+}
+
+.teaser__date-wrapper {
+  padding: 1em;
+
+  @include bp(medium) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  .teaser--with-image & {
+    background-image: linear-gradient(to right, rgba($black, .75), rgba($black, 0) 50%);
+  }
+}
+
+.teaser__date {
+  color: $white;
+}
+
+.teaser__date-month {
+  @include fs(x-small);
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: .0625em;
+}
+
+.teaser__date-date {
+  @include fs(large);
+  display: block;
+}
+
+.teaser__date-time {
+  @include fs(x-small);
+  display: block;
+}
+
+.teaser__title {
+  @include fs(h4);
+  @include lh(0);
+
+  &:not(:last-child) {
+    margin-bottom: .5em;
+  }
+}
+
+.teaser__supertitle {
+  @include fs(tiny);
+  @include lh(0);
+}
+
+a.teaser__title {
+  @include link--primary;
+}
+
+.teaser__title-link {
+  @include link--primary;
+}
+
+.teaser__meta {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: .5em;
+
+  > :not(:last-child) {
+    margin-right: 1.5em;
+  }
+}
+
+.teaser__type {
+  @include fs(tiny);
+
+  &:not(:last-child) {
+    margin-bottom: rem($sp-tight);
+  }
+}
+
+.teaser__reservation-date {
+  @include fs(small);
+}
+
+.teaser__reservation-date-date {
+  display: inline-block;
+  font-weight: $fw-bold;
+  margin-right: .625em;
+
+  // Dotted separator
+  &:after {
+    background-image: radial-gradient(circle, $gray-40 .0825em, transparent .0876em);
+    background-repeat: repeat-y;
+    background-size: .3125em .3125em;
+    background-position: top center;
+    content: "";
+    display: inline-block;
+    height: 1.5625em;
+    position: relative;
+    left: .5em;
+    width: .325em;
+    top: .3625em;
+  }
+}
+
+.teaser__reservation-date-time {
+  display: inline-block;
+}
+
+.teaser__subtitle {
+  @include fs(tiny);
+  @include lh(0);
+}
+
+.teaser__description {
+  // @include fs(small);
+  width: 100%; // Prevent tags from wrapping
+}
+
+.teaser__dateline {
+  @include fs(small);
+  white-space: nowrap;
+}
+
+.teaser__author {
+  @include fs(small);
+
+  &:not(:last-child) {
+    margin-bottom: .5em;
+  }
+}
+
+.teaser__more-link {
+  &:not(:first-child) {
+    margin-top: $sp-tight;
+  }
+}
+
+.teaser__tags {
+  @include fs(small);
+  margin-top: 1em;
+
+  a:not([class]) {
+    @include link--secondary;
+  }
+}
+
+//
+// Modifiers
+//
+.teaser--no-image {
+  .teaser__main {
+    width: 100%; // IE11 fix for content spilling outside the bounds of the teaser.
+  }
+}
+
+.teaser--has-image {
+  .teaser__image {
+    img {
+      min-height: 6em;
+    }
+  }
+}
+
+@mixin stub--bg {
+  background-color: $gray-80;
+}
+
+.teaser--canceled {
+  opacity: .6;
+}
+
+.teaser--stub {
+  align-items: stretch;
+
+  .teaser__supertitle,
+  .teaser__title {
+    @include stub--bg;
+    height: 1em;
+  }
+
+  .teaser__type {
+    @include stub--bg;
+    height: 1em;
+    display: block;
+    width: 6em;
+  }
+
+  .teaser__image {
+    @include stub--bg;
+    align-self: auto;
+  }
+
+  .teaser__description {
+    @include stub--bg;
+    height: 4em;
+  }
+}
+
+.teaser--reservation {
+  @include bp(none small) {
+    .teaser__image {
+      display: none;
+    }
+  }
+}

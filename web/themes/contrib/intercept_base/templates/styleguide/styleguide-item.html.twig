@@ -1,0 +1,12 @@
+<div class="styleguide__toc-group">
+  <a name="{{ key }}"></a>
+  <h2 class="styleguide__toc-heading">{{ item.title }}</h2>
+  {% if item.description %}
+    <p class="styleguide__toc-description">
+      {{ item.description }}
+    </p>
+  {% endif %}
+  <div class="styleguide__toc-items">
+    {{ content }}
+  </div>
+</div>

@@ -1,0 +1,206 @@
+@import "_partials";
+
+.footer {
+  @include box--padded;
+  @include spacing(margin-top, sparse);
+  align-self: stretch;
+  background: $gray-80;
+
+  @include bp(m-large) {
+    padding: 0;
+  }
+
+  .l--offset > div {
+    display: flex;
+
+    @include bp(none m-large) {
+      flex-direction: column;
+    }
+
+    @include bp(m-large) {
+      align-items: center;
+      flex-direction: row;
+    }
+  }
+
+  .menu {
+    li {
+    }
+
+    a {
+      text-decoration: none;
+      transition: all $duration $easing;
+
+      @include bp(m-large) {
+        display: block;
+      }
+    }
+  }
+}
+
+// Footer Menu (Primary)
+.menu--footer-menu {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+
+  @include bp(none medium) {
+    flex-direction: row;
+  }
+
+  @include bp(none m-large) {
+    margin-bottom: 1rem;
+  }
+
+  @include bp(medium) {
+    flex-direction: row;
+  }
+
+  @include bp(m-large) {
+    margin: 0;
+  }
+
+  li {
+    display: inline-block;
+    margin-right: .5rem;
+    margin-left: .5rem;
+
+    @include bp(m-large) {
+      margin-left: 0;
+      margin-right: 1.5rem;
+    }
+  }
+
+  a {
+    background-color: transparent;
+    color: $clr-secondary-dark;
+
+    @include bp(none m-large) {
+      display: block;
+      padding: 0;
+    }
+
+    @include bp(m-large) {
+      display: inline;
+      padding: 0 0;
+    }
+  }
+}
+
+// Secondary Menu
+#block-footermenusecondary {
+  order: 5;
+
+  @include bp(m-large) {
+    margin-left: .5rem;
+    order: initial;
+  }
+}
+
+// Copyright
+#block-copyrightblock {
+  @include fs(tiny);
+  text-align: center;
+
+  @include bp(none m-large) {
+    order: 3;
+  }
+
+  @include bp(m-large) {
+    margin-left: .5rem;
+    position: relative;
+    top: .18rem;
+  }
+
+  // Copyright Text
+  span {
+    @include bp(m-large x-large) {
+      display: block;
+    }
+  }
+
+  // Privacy Policy
+  a {
+    margin-left: .5rem;
+    text-decoration: none;
+  }
+}
+
+// Footer Menu (Social)
+#block-socialmediamenu {
+  margin-bottom: 1rem;
+
+  @include bp(small) {
+  }
+
+  @include bp(m-large) {
+    margin-bottom: 0;
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+.menu--social-media-menu {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: .5rem 0;
+  padding: 0;
+
+  @include bp(m-large) {
+    margin: 0;
+  }
+
+  li:last-of-type {
+    margin-left: .5rem;
+  }
+
+  a {
+    @include fs(x-small);
+    background-color: $clr-primary;
+    color: $white;
+    font-weight: bold;
+    display: block;
+    padding: .5rem;
+
+    @include bp(small) {
+      padding: 1rem 1.5rem;
+    }
+  }
+
+  [href*="facebook.com"],
+  [href*="twitter.com"],
+  [href*="instagram.com"] {
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    text-indent: -9999px;
+    width: rem(32px);
+
+    @include bp(small) {
+      width: rem(50px);
+    }
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  // Facebook
+  [href*="facebook.com"] {
+    background-image: url("/themes/contrib/intercept_base/images/icons/facebook.svg");
+  }
+
+  // Twitter
+  [href*="twitter.com"] {
+    background-image: url("/themes/contrib/intercept_base/images/icons/twitter.svg");
+  }
+
+  // Instagram
+  [href*="instagram.com"] {
+    background-image: url("/themes/contrib/intercept_base/images/icons/instagram.svg");
+  }
+}

@@ -1,0 +1,56 @@
+{% extends '@intercept-base-components/teaser/teaser--reservation.twig' %}
+
+{% import '@intercept-base-components/metadata/metadata.twig' as metadata %}
+{% set equipment = equipment_reservation.field_equipment.entity %}
+{% set room = equipment_reservation.field_room.entity %}
+{% set location = equipment_reservation.field_location.entity %}
+
+{% set title = equipment.label %}
+
+{% set date = {
+  date: "@start @starttime"|t({
+      '@start': equipment_reservation.field_dates.start_date|date("F j, Y"),
+      '@starttime': equipment_reservation.field_dates.start_date|date("g:i a"),
+    })|replace({'am':'a.m.'})|replace({'pm':'p.m.'})|replace({':00':''}),
+  time: "@end @endtime"|t({
+      '@end': equipment_reservation.field_dates.end_date|date("F j, Y"),
+      '@endtime': equipment_reservation.field_dates.end_date|date("g:i a"),
+    })|replace({'am':'a.m.'})|replace({'pm':'p.m.'})|replace({':00':''})
+  }
+%}
+
+{% set image = drupal_entity('media', equipment.image_primary.0.target_id, 'teaser') %}
+
+{% block tags %}
+  {% if content.field_location|field_value %}
+    {% include metadata with {
+      title: "Location"|t(),
+      data: content.field_location|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+  {% if content.field_room|field_value %}
+    {% include metadata with {
+      title: "Room"|t(),
+      data: content.field_room|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+  {% if content.field_event|field_value %}
+    {% include metadata with {
+      title: "Event"|t(),
+      data: content.field_event|field_value,
+      modifiers: ['inline', 'small']
+    } %}
+  {% endif %}
+{% endblock %}
+
+{# TODO: Better colors on buttons? #}
+{% block footer %}
+  <footer class="teaser__footer">
+    <div class="action-button">
+      <a class="action-button__button button" href="/equipment-reservation/{{ equipment_reservation.id.value }}/edit?destination=/account/equipment-reservations">Edit</a><br>
+      <a class="action-button__button button" href="/equipment-reservation/{{ equipment_reservation.id.value }}/delete?destination=/account/equipment-reservations" style="margin-top: 8px;">Cancel</a>
+    </div>
+  </footer>
+{% endblock %}

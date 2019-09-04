@@ -1,0 +1,50 @@
+//
+// @file
+// Form Styles
+//
+// Classes to support form elements
+//
+
+// Form Item Wrapper
+.field {
+  // margin-bottom: 2em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.field__label {
+  @include lh(0);
+  color: $gray-00;
+  margin-bottom: .25em;
+}
+
+.field__items {
+  // @include lh(0);
+}
+
+.field__item {
+  // @include lh(0);
+
+  > a:not([class]) {
+    font-weight: inherit;
+    line-height: inherit;
+  }
+}
+
+.field--inline {
+  @include fs(x-small);
+  margin-bottom: .666em;
+
+  > .field__label {
+    display: inline;
+    font-size: inherit;
+    font-weight: $fw-bold;
+  }
+
+  > .field__items {
+    display: inline;
+    font-size: inherit;
+  }
+}

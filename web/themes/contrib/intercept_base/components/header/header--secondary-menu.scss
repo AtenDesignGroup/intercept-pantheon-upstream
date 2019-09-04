@@ -1,0 +1,229 @@
+@import "_partials";
+
+// Utilities Menu (REGION)
+.header__utilities {
+  display: flex;
+  grid-column: 2;
+
+  @include bp(large) {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.header__utilities > div {
+  background-color: $clr-secondary-dark;
+
+  @include bp(none large) {
+    @include box--gutters();
+    @include box--padded;
+    box-shadow: 0 1rem 0.5rem 0 rgba(0, 0, 0, 0.25);
+    height: 75vh;
+    left: 0;
+    opacity: 0;
+    padding-bottom: rem(60px);
+    position: absolute;
+    right: 0;
+    top: rem(60px);
+    transform: translateY(-100%);
+    transition: all $duration * 1.5 ease-in-out;
+    width: 100%;
+    z-index: -1;
+  }
+
+  //
+  // Desktop
+  //
+  @include bp(large) {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    position: relative;
+  }
+}
+
+// MENU
+.menu--account {
+  @include fs(secondary-menu);
+  @include nav;
+  display: flex;
+  flex-direction: column;
+
+  @include bp(large) {
+    flex-wrap: wrap;
+    max-height: 195px;
+    overflow-x: hidden;
+  }
+
+  @include bp(x-large) {
+    flex-direction: column;
+    max-height: rem(115px);
+  }
+
+  li {
+    @include bp(large) {
+      min-width: percentage(1/2);
+    }
+
+    @include bp(x-large) {
+      min-width: percentage(1/4);
+      padding-right: rem(20px);
+    }
+  }
+
+  a {
+    color: $white;
+    line-height: 1.8;
+    padding: .25rem 0;
+    text-decoration: none;
+
+    @include bp(none large) {
+      display: block;
+      margin-bottom: .75rem;
+    }
+  }
+}
+
+// My Account Trigger
+.account-trigger {
+  clip: rect(0, 0, 0, 0);
+  position: absolute;
+
+  // Menu Contents
+  ~ div {
+    display: none;
+
+    @include bp(large) {
+      background: $clr-secondary-dark;
+      display: none;
+      padding: 2.5rem;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      width: 34rem;
+    }
+
+    @include bp(x-large) {
+      width: 50rem;
+    }
+  }
+
+  &:checked {
+    ~ div {
+      display: block;
+      opacity: 1;
+      overflow-y: auto;
+      transform: translateY(0);
+    }
+
+    ~ label {
+      @include bp(none large) {
+        background: $clr-secondary-dark;
+      }
+
+      &:after {
+        transform: rotate(180deg);
+      }
+
+      .nav-trigger__icon--collapse {
+        left: 45%;
+        opacity: 1;
+        transform: rotate(0) scale(1);
+        width: rem(30px);
+      }
+
+      .nav-trigger__icon--expand {
+        opacity: 0;
+        transform: rotate(90deg) scale(0);
+      }
+    }
+  }
+}
+
+// Account Trigger (button / icon)
+label[for="account-trigger"],
+.account-trigger--logged-out {
+  @include fs(small);
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0;
+  transition: all $duration $easing;
+
+  @include bp(default) {
+    margin-right: 6.25%;
+  }
+
+  @include bp(none large) {
+    align-items: center;
+    background: transparent;
+    display: flex;
+    height: 100%;
+    position: absolute;
+    right: rem(60px);
+    text-align: center;
+    top: 0;
+    width: rem(60px);
+  }
+
+  @include bp(large) {
+    align-items: center;
+    background: $clr-primary;
+    color: $white;
+    display: flex;
+    height: auto;
+    letter-spacing: rem(1.5px);
+    min-width: 15.25rem;
+    padding: 0 4rem 0 2.5rem;
+    position: relative;
+    text-transform: uppercase;
+  }
+
+  &::after {
+    border-top: rem(8px) solid #fff;
+    border-left: rem(8px) solid transparent;
+    border-right: rem(8px) solid transparent;
+    height: 0;
+    margin-left: .5rem;
+    margin-top: -#{rem(4px)};
+    position: absolute;
+    right: 2.5rem;
+    top: 50%;
+    width: 0;
+
+    @include bp(large) {
+      content: "";
+    }
+  }
+
+  span {
+    align-items: center;
+    display: flex;
+  }
+
+  .mobile {
+    @include bp(none large) {
+      width: 100%;
+    }
+
+    @include bp(large) {
+      display: none;
+    }
+
+    svg {
+      width: 1.25rem;
+
+      .st0 {
+        fill: $clr-primary;
+      }
+    }
+  }
+
+  .desktop {
+    display: none;
+
+    @include bp(large) {
+      display: inline;
+    }
+  }
+}

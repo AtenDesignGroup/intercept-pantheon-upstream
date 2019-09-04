@@ -1,0 +1,10 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% import '@intercept-base-components/icons/icon.twig' as icon %}
+{{ attach_library('intercept_base/save-link') }}
+{% set attr = attributes|default({}) %}
+<div class="{{ classes|join(' ') }}">
+    <a {{ component.attributes('save-link', modifiers, attr) }}>
+        <span class="save-link__star">{{ icon.inline('star') }}</span>
+        <span class="save-link__title">{{ title }}</span>
+    </a>
+</div>

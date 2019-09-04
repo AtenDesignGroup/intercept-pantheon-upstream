@@ -1,0 +1,20 @@
+.location {
+  background: #4C4D4F; }
+
+.location__content {
+  color: #fff; }
+
+.location__title,
+.location__subtitle {
+  color: inherit;
+  font-weight: 900; }
+
+.location__address > a:not([class]) {
+  color: #fff;
+  font-weight: normal;
+  opacity: .8;
+  -webkit-transition: all ease-out .2s;
+  transition: all ease-out .2s; }
+  .location__address > a:not([class]):hover, .location__address > a:not([class]):focus {
+    color: #fff;
+    opacity: 1; }

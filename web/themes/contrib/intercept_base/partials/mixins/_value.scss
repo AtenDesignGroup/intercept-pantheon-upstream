@@ -1,0 +1,83 @@
+//
+// Returns a scale for a specific breakpoint.
+//
+// @param $breakpoint;
+//   The name of the breakpoint who's scale we need.
+// @param $map;
+//   A sizing map. Defaults to "none"
+// @return
+//   Sass map of sizes.
+@function get-breakpoint-from-map($map, $breakpoint: "none") {
+  @if map-has-key($map, $breakpoint) {
+    @return map-get($map, $breakpoint);
+  }
+
+  @else {
+    @warn "Unfortunately, no breakpoint could be retrieved for `#{$breakpoint}`. "
+        + "Please make sure it is defined in `$map` map.";
+  }
+};
+
+//
+// Returns a specific size from a scale.
+//
+// @param $size;
+//   The named size to look for.
+// @param $map;
+//   A scale map.
+// @return
+//   Size value.
+@function get-value($size, $map) {
+  @if map-has-key($map, $size) {
+    // Always return the first size item.
+    @return nth(map-get($map, $size), 1);
+  }
+
+  @else {
+    @warn "Unfortunately, no size could be retrieved for `#{$size}`. "
+        + "Please make sure it is defined in `$map` map.";
+  }
+}
+
+//
+// Returns a specific size, for a specific breakpoint from a map.
+//
+// @param $size;
+//   The named size to look for.
+// @param $breakpoint;
+//   The named breakpoint to look through. Defaults to 'none'.
+// @param $map;
+//   The scale map to use.
+// @return
+//   Size value.
+@function get-value-from-breakpoint($size, $map, $breakpoint: "none") {
+  @return get-value($size, get-breakpoint-from-map($map, $breakpoint));
+}
+
+//
+// Outputs styles for a full scale across breakpoints.
+//
+// @param $size;
+//   The named size to look for.
+// @param $breakpoint;
+//   The named breakpoint to look through. Defaults to 'none'.
+// @param $map;
+//   The map to use.
+@mixin get-value($property, $size, $map, $breakpoint: null) {
+  @if $breakpoint != null {
+    @include bp($breakpoint) {
+      #{$property}: get-value-from-breakpoint($size, $map, $breakpoint);
+    }
+  }
+
+  @else {
+    @each $bp, $scale in $map {
+      // If the size exists in the current scale, set our styles.
+      @if map-has-key($scale, $size) {
+        @include bp($bp) {
+          #{$property}: get-value-from-breakpoint($size, $map, $bp);
+        }
+      }
+    }
+  }
+}

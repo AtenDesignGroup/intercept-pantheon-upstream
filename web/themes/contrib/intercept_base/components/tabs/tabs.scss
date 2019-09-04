@@ -1,0 +1,16 @@
+//
+// @file
+// Tabs Container Styles
+//
+
+@import "_partials";
+
+// Tabs ul
+.tabs {
+  @include tabs-container;
+}
+
+// Tabs item
+.tabs__item {
+  @include tabs-item;
+}

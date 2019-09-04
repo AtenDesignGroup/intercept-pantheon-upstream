@@ -1,0 +1,22 @@
+//
+// @file
+// Cart Component Styles
+//
+
+@import "_partials";
+
+.card--gray {
+  background: $gray-80;
+}
+
+.card__content {
+  padding: 2rem;
+}
+
+.card__title-link {
+  @include link--primary;
+}
+
+.card__dateline-date {
+  font-weight: $fw-bold;
+}

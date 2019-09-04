@@ -1,0 +1,11 @@
+//
+// @file
+// Breakpoint Function
+//
+
+// Returns the breakpoint value for the provided key.
+//
+// $breakpoint-name - The breakpoint map key.
+@function get-breakpoint($breakpoint-name) {
+  @return map-get($breakpoints, $breakpoint-name);
+}

@@ -1,0 +1,534 @@
+//
+// @file
+// Basic HTML tag styles
+//
+// This file outputs to global.css, the primary stylesheet for the theme
+//
+
+// Make everything border-box
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 20px;
+
+  @include bp(medium) {
+    font-size: calc((16 / 768) * 100vw);
+  }
+
+  @include bp(x-medium) {
+    font-size: calc((16 / 850) * 100vw);
+  }
+
+  @include bp(large) {
+    font-size: calc((16 / 1200) * 100vw);
+  }
+
+  @include bp(x-large) {
+    font-size: calc((16 / 1440) * 100vw);
+  }
+
+  @include bp(xx-large) {
+    font-size: calc((16 / 1550) * 100vw);
+  }
+
+  @include bp(xxx-large) {
+    font-size: calc((16 / 1700) * 100vw);
+  }
+
+  @include bp(xxxx-large) {
+    font-size: calc((16 / 1900) * 100vw);
+  }
+
+  @include bp(w-max) {
+    font-size: 18px;
+  }
+}
+
+body {
+  @include fs(body);
+  color: $clr-text;
+  font-family: $ff-sans;
+  font-weight: $fw-regular;
+  line-height: $base-line-height;
+
+  // Hide svg sprite.
+  > svg {
+    display: none;
+  }
+}
+
+//
+// Headings
+//
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $clr-heading;
+  font-weight: $fw-medium;
+  // line-height: 1;
+  margin: 0;
+}
+
+h1:not([class]) {
+  @include fs(h1);
+  color: $clr-heading;
+  font-family: $ff-heading;
+  margin: 1em 0 .5em;
+}
+
+h2:not([class]) {
+  @include fs(h2);
+  color: $clr-heading;
+  font-family: $ff-heading;
+  margin: 1em 0 .5em;
+}
+
+h3:not([class]) {
+  @include fs(h3);
+  @include lh(0);
+  color: $clr-heading;
+  font-family: $ff-heading;
+  margin: 1.5em 0 .5em;
+}
+
+h4:not([class]) {
+  @include fs(h4);
+  color: $clr-heading;
+  font-family: $ff-heading;
+  margin: 1.5em 0 .5em;
+}
+
+h5:not([class]) {
+  @include fs(h5);
+  color: $clr-heading;
+  font-family: $ff-heading;
+  margin: 1.5em 0 .5em;
+}
+
+h6:not([class]) {
+  @include fs(body);
+  color: $clr-heading;
+  font-family: $ff-heading;
+  margin: 1.5em 0 .5em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+ol {
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Rule
+hr {
+  border: 0;
+  border-bottom: rem(8px) solid $clr-border;
+  margin: 1em 0 1em;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+//
+// Links
+//
+a:not([class]) {
+  color: $clr-primary-dark;
+  font-weight: $fw-bold;
+  text-decoration-skip: ink;
+  transition: color .2s ease-out;
+
+  &:visited {
+    text-decoration-style: dotted;
+  }
+
+  &:hover,
+  &:focus {
+    color: $clr-primary;
+    text-decoration-style: solid;
+  }
+
+  &:active {
+    color: $clr-primary-light;
+    text-decoration-style: solid;
+  }
+
+  h1 > &,
+  h2 > &,
+  h3 > &,
+  h4 > &,
+  h5 > &,
+  h6 > & {
+    text-decoration: none;
+  }
+}
+
+strong,
+b {
+}
+
+del {
+  opacity: .6;
+}
+
+q {
+  font-style: italic;
+}
+
+
+//
+// Copy
+//
+p {
+  line-height: inherit;
+  margin-top: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+p:not([class]) {
+  margin: 1em 0 1em;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+blockquote:not([class]) {
+  @include fs(small);
+  border-top: solid $gray-80 .333em;
+  font-style: italic;
+  margin: 2em 0 2em;
+  padding-top: .666em;
+}
+
+
+//
+// Images
+//
+img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+figure {
+  margin: 0;
+
+  img {
+    display: block;
+  }
+}
+
+audio {
+  display: block;
+  height: rem(72px);
+  width: 100%;
+
+  &::-webkit-media-controls-enclosure {
+    background-color: $gray-80;
+    height: rem(72px);
+    padding: rem(20px);
+  }
+
+  &::-webkit-media-controls-panel {
+    background-color: $gray-80;
+  }
+
+  &::-webkit-media-controls-volume-slider,
+  &::-webkit-media-controls-timeline {
+    // background-color: $gray-20;
+  }
+
+  &::-webkit-media-slider-thumb {
+    cursor: pointer;
+  }
+
+  &::-internal-media-controls-download-button,
+  &::-webkit-media-controls-mute-button,
+  &::-webkit-media-controls-pause-button,
+  &::-webkit-media-controls-play-button {
+    cursor: pointer;
+  }
+
+
+  &::-webkit-media-controls-current-time-display,
+  &::-webkit-media-controls-time-remaining-display {
+    @include fs(tiny);
+    font-weight: $fw-medium;
+  }
+}
+
+//
+// Caption
+//
+
+figcaption:not([class]) {
+  @include fs(x-small);
+  color: $gray-40;
+  font-style: italic;
+  margin: 1em 0;
+}
+
+//
+// Lists
+//
+ul:not([class]) {
+  @include list--bullets;
+}
+
+ol:not([class]) {
+  @include list--numbered;
+}
+
+li {
+}
+
+ul,
+ol,
+dl {
+  margin: 2em 0 1em;
+}
+
+//
+// Definition Lists
+//
+dl {
+}
+
+dt {
+  font-weight: $fw-bold;
+}
+
+dd {
+}
+
+form,
+fieldset {
+  max-width: 100%;
+}
+
+button,
+input[type="submit"],
+.button {
+  @include fs(medium);
+  background-color: $clr-primary;
+  border: 0;
+  border-radius: 0;
+  color: $white;
+  display: inline-block;
+  font-family: $ff-sans;
+  font-weight: $fw-bold;
+  letter-spacing: ce(1.5, 18);
+  line-height: 1;
+  padding: ce(11, 18) 1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all $duration $easing;
+
+  &:hover,
+  &:focus {
+    background-color: $clr-primary-light;
+  }
+
+  &:active {
+    background-color: $clr-primary-lighter;
+  }
+
+  &[disabled] {
+    background-color: $gray-60;
+  }
+}
+
+.button {
+  &--prominent {
+    background: $gray-80;
+    color: $clr-text;
+    font-weight: normal;
+    padding-bottom: 1.15rem;
+    padding-top: 1.15rem;
+    position: relative;
+    text-transform: none;
+    width: 100%;
+
+    &:hover {
+      background: $gray-70;
+
+      &::after {
+        background-color: $clr-primary-dark;
+      }
+    }
+
+    &::after {
+      background-color: $clr-primary;
+      background-image: url("/themes/contrib/intercept_base/images/icons/arrow--white.svg");
+      background-position: center;
+      background-repeat: no-repeat;
+      content: "";
+      display: block;
+      height: 1em;
+      padding: 1.1rem;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transition: background-color $duration $easing;
+      width: 1em;
+    }
+  }
+
+  // Button Types
+  &--download {
+    &::after {
+      background-image: url("/themes/contrib/intercept_base/images/icons/download--white.svg");
+    }
+  }
+}
+
+input,
+textarea {
+  @include fs(tiny);
+  border: 1px solid $clr-border;
+  border-radius: 0;
+  box-shadow: none;
+  line-height: ce(18, 14);
+  max-width: 100%;
+  padding: ce(11, 14) 1rem;
+}
+
+input[type="file"] {
+  height: inherit;
+}
+
+input[type="checkbox"] {
+  height: auto;
+}
+
+label,
+legend {
+  margin: 2em 0 .75em;
+}
+
+select {
+  @include fs(tiny);
+  appearance: none;
+  background: $white;
+  border-color: $clr-border;
+  border-radius: 0;
+  line-height: ce(18, 14);
+  padding: ce(11, 14) 1rem;
+  max-width: 100%;
+  text-indent: .01px;
+  text-overflow: "";
+}
+
+// Remove default IE arrow
+select::-ms-expand { display: none; }
+
+//
+// Tables
+//
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  caption-side: bottom;
+  margin: 2em 0 1em;
+  max-width: 100%;
+  text-align: left;
+  width: 100%;
+}
+
+thead {
+  th {
+    vertical-align: bottom;
+    text-transform: uppercase;
+    font-weight: $fw-bold;
+  }
+
+  th,
+  td {
+    @include fs(micro);
+    border-bottom: 2px solid $clr-table-border;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+}
+
+th,
+td {
+  // border: 1px solid $clr-table-border;
+  @include fs(x-small);
+  padding: 1rem;
+  vertical-align: top;
+
+  &:first-child {
+    padding-left: 0;
+  }
+
+  &:last-child {
+    padding-right: 0;
+  }
+}
+
+th {
+  background: transparent;
+  color: $clr-heading;
+  font-weight: $fw-bold;
+}
+
+caption {
+  padding: 1rem;
+}
+
+// Account for multiple tbody instances
+tbody + tbody {
+  border-top: 2px solid $clr-table-border;
+}
+
+tr {
+}
+
+// tr:nth-of-type(odd) { background-color: $clr-table-odd; }
+// tr:nth-of-type(even) { background-color: $clr-table-even; }
+
+:focus {
+  outline-width: 1px;
+  outline-style: dashed;
+  outline-color: $clr-secondary-light;
+  outline-color: rgba($clr-secondary-light, .6);
+}
+
+:active {
+  outline: 0;
+}

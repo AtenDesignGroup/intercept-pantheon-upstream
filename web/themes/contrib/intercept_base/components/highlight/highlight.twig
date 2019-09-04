@@ -1,0 +1,6 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/highlight') }}
+
+{% if text %}
+<span class="highlight">{{ text }}</span>
+{% endif %}

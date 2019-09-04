@@ -1,0 +1,74 @@
+@import '_partials';
+
+h2.styleguide {
+  font: 16px bold helvetica, arial, sans-serif;
+  margin: 2em 0 .5em 0;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.styleguide__header {
+  background: $gray-80;
+  border: 1px solid $clr-border;
+  padding: .5em 1em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-bottom: 4em;
+
+  .list--bullets {
+    margin-top: .5em;
+
+    > li {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.styleguide__header .item-list {
+  margin: 0 3em 4em 0;
+  @include fs(x-small);
+  flex-grow: 1;
+}
+
+// #styleguide-header h3 {
+//   font: 16px bold helvetica, arial, sans-serif;
+//   margin: .5em 0 0;
+//   text-transform: uppercase;
+// }
+
+// #styleguide-header a,
+// #styleguide-header li a.active {
+//   color: #0071b3;
+// }
+
+// #styleguide-header .break {
+//   margin-bottom: 1em;
+//   clear: both;
+// }
+
+// .styleguide-description {
+//   font: 12px helvetica, arial, sans-serif;
+//   margin: 0 0 .5em;
+// }
+
+// div.styleguide {
+//   border-top: 1px solid #777;
+//   padding-top: 1em;
+// }
+
+
+.styleguide__toc-group {
+  &:not(:last-child) {
+    margin-bottom: 4em;
+  }
+}
+
+.styleguide__toc-heading {
+  @include fs(tiny);
+  border-bottom: 1px solid $clr-border;
+  padding-bottom: .5em;
+  margin-bottom: 2em;
+  text-transform: uppercase;
+  font-weight: $fw-bold;
+}

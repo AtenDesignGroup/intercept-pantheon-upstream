@@ -1,0 +1,14 @@
+{% if content.field_room %}
+  {% set subtitle = content.field_location|field_value|render ~ ' | ' ~ content.field_room|field_value|render %}
+{% else %}
+  {% set subtitle = content.field_location|field_value|render %}
+{% endif %}
+
+{% include '@intercept-base-components/summary/summary.twig' with {
+  subtitle: subtitle,
+  title: label|field_value,
+  date: {
+    date: node.field_date_time.start_date|date("l, F j, Y"),
+    time: (node.field_date_time.start_date|date("g:i a") ~ ' – ' ~ node.field_date_time.end_date|date("g:i a"))|replace({'m':'.m.'})|replace({':00':''})
+  },
+} %}

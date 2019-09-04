@@ -1,0 +1,13 @@
+{{ attach_library('intercept_base/header') }}
+
+<header class="header header--minimal" role="banner">
+  <div class="header__inner l--offset">
+    <div class="header__logo">
+      {%
+        include '@intercept-base-components/logo/logo.twig' with {
+        logo_path: logo_path,
+        alt: site_name ~ ' logo'
+        } only
+      %}
+    </div>
+</header>

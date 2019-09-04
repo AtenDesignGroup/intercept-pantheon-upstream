@@ -1,0 +1,6 @@
+@import "_partials";
+
+.dialog__panel {
+  @include spacing(padding-top, loose);
+  @include spacing(padding-bottom, normal);
+}

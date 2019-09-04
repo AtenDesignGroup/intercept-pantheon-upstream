@@ -1,0 +1,12 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/view-switcher') }}
+
+{% macro view_switcher__item(link) %}
+  <a class="view-switcher__button" href="{{link.href}}">{{ link.text }}</a>
+{% endmacro %}
+
+<div {{ component.attributes('view-switcher', modifiers, attr) }}>
+  {% for link in links %}
+    {{ _self.view_switcher__item(link) }}
+  {% endfor %}
+</div>

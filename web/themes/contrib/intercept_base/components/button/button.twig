@@ -1,0 +1,8 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/button') }}
+
+{% if url %}
+  <a href="{{ url }}" component.attributes('button', modifiers, attr)>{{ text }}</a>
+{% else %}
+  <button component.attributes('button', modifiers, attr)>{{ text }}</a>
+{% endif %}

@@ -1,0 +1,57 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/content-header') }}
+
+<header {{ component.attributes('l--section content-header', modifiers, attr) }}>
+  {% if image %}
+    <div class="content-header__image" style="background-image: url({{ image }});">
+      {% if decorative %}
+        <div role="presentation"></div>
+        <div role="presentation"></div>
+        <div role="presentation"></div>
+        <div role="presentation"></div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="content-header__text">
+    {% if type %}
+    <div class="content-header__highlight">
+      {% include '@intercept-base-components/highlight/highlight.twig' with {
+        text: type
+      } only %}
+    </div>
+    {% endif %}
+
+    {% if supertitle %}
+      <p class="content-header__supertitle">{{ supertitle }}</p>
+    {% endif %}
+
+    <div class="content-header__title">
+      {% include '@intercept-base-components/page-title/page-title.twig' with {
+        text: title,
+        modifiers: ['reversed'],
+        url: url
+      } only %}
+    </div>
+
+    {% if description %}
+    <div class="content-header__description">
+      {{ description }}
+    </div>
+    {% endif %}
+
+    {% if date %}
+      <p class="content-header__date">
+        <span class="content-header__date-date">{{date.date}}</span>
+        <span class="content-header__date-time">{{date.time}}</span>
+      </p>
+    {% endif %}
+
+    {% if byline %}
+    {% include '@intercept-base-components/byline/byline.twig' with {
+      author: byline.author,
+      date: byline.date
+    } only %}
+    {% endif %}
+  </div>
+</header>

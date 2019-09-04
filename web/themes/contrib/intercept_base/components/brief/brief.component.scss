@@ -1,0 +1,11 @@
+@import "_partials";
+
+.brief {
+  &__title {
+    margin-bottom: 1rem;
+  }
+
+  &__body {
+    margin-bottom: 1rem;
+  }
+}

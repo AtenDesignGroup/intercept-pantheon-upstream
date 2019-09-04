@@ -1,0 +1,15 @@
+.dialog__panel {
+  padding-top: 2.0625rem;
+  padding-bottom: 1.5625rem; }
+  @media (min-width: 48em) {
+    .dialog__panel {
+      padding-top: 4.125rem; } }
+  @media (min-width: 62em) {
+    .dialog__panel {
+      padding-top: 6.25rem; } }
+  @media (min-width: 48em) {
+    .dialog__panel {
+      padding-bottom: 2.0625rem; } }
+  @media (min-width: 62em) {
+    .dialog__panel {
+      padding-bottom: 3.125rem; } }

@@ -1,0 +1,17 @@
+{% include '@intercept-base-components/teaser/teaser.twig' with {
+  description: content.field_text_teaser|field_value,
+  supertitle: content.field_location|field_value,
+  image: content.image_primary|field_value,
+  date: {
+    month: node.field_date_time.start_date|date("M"),
+    date: node.field_date_time.start_date|date("d"),
+    time: node.field_date_time.start_date|date("g:i a")|replace({'m':'.m.'})
+  },
+  title: label|field_value,
+  title_url: url,
+  tags: [
+    content.field_event_type,
+    content.field_event_audience,
+  ],
+  registration: content.evaluation,
+} %}

@@ -1,0 +1,14 @@
+.content-header {
+  background: #4C4D4F; }
+
+.content-header__text {
+  color: #fff; }
+
+.content-header__supertitle,
+.content-header__date-date {
+  font-weight: 900; }
+
+.content-header__description {
+  color: #fff; }
+  .content-header__description .intro {
+    color: #fff; }

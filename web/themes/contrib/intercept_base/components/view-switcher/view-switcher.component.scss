@@ -1,0 +1,36 @@
+@import "_partials";
+
+.view-switcher {
+  display: flex;
+  justify-content: flex-end;
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+
+  .visually-hidden {
+    margin: 0;
+  }
+}
+
+.view-switcher__button {
+  @include fs(x-small);
+  background-color: transparent;
+  padding: 0;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    background-color: transparent;
+  }
+
+  &:disabled {
+    color: $clr-text;
+  }
+
+  &:not(:last-child) {
+    @include spacing(padding-right, tight);
+    @include spacing(margin-right, tight);
+    border-right: 1px solid $clr-border;
+  }
+}

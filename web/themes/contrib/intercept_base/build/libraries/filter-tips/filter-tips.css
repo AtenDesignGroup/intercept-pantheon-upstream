@@ -1,0 +1,39 @@
+.filter-tips {
+  background: #EEF1F4;
+  border: 1px solid #D3D8DF;
+  overflow-x: auto;
+  padding: 1em;
+  clear: both; }
+  .filter-tips:not(:last-child) {
+    margin-bottom: 4em; }
+  .filter-tips .list--bullets {
+    margin-top: .5em; }
+    .filter-tips .list--bullets > li {
+      margin-bottom: 0; }
+
+.filter-tips__heading {
+  font-size: 0.84375rem;
+  font-weight: 900;
+  margin-bottom: 1em; }
+  @media (min-width: 48em) {
+    .filter-tips__heading {
+      font-size: 1.09375rem; } }
+  @media (min-width: 62em) {
+    .filter-tips__heading {
+      font-size: 1.3125rem; } }
+
+.filter-tips__name {
+  font-size: 0.72917rem;
+  text-transform: uppercase;
+  margin-bottom: 1em; }
+  @media (min-width: 48em) {
+    .filter-tips__name {
+      font-size: 0.9375rem; } }
+  @media (min-width: 62em) {
+    .filter-tips__name {
+      font-size: 1.125rem; } }
+
+.filter-tips__list {
+  margin-top: 0; }
+  .filter-tips__list:not(:last-child) {
+    margin-bottom: 2em; }

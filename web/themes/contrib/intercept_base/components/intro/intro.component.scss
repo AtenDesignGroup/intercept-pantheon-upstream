@@ -1,0 +1,7 @@
+@import '_partials';
+
+.intro {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, tight);
+  }
+}

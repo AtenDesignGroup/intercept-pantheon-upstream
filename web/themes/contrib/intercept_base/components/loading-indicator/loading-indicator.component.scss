@@ -1,0 +1,56 @@
+@import "_partials";
+
+.loading-indicator {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  transition: all .3s ease-out;
+
+  &:not(:first-child) {
+    @include spacing(margin-top, compact);
+  }
+
+  &:not(:last-child) {
+    @include spacing(margin-bottom, compact);
+  }
+
+  &__label {
+    @include fs(x-small);
+    color: $gray-50;
+    font-weight: $fw-bold;
+    letter-spacing: .1em;
+    margin-left: 1em;
+    text-transform: uppercase;
+  }
+
+  &-appear {
+    opacity: 0;
+  }
+
+  &-appear-active {
+    opacity: 1;
+  }
+
+  &-enter {
+    opacity: 0;
+  }
+
+  &-enter-active {
+    opacity: 1;
+  }
+
+  &-exit {
+    opacity: 1;
+    position: absolute;
+  }
+
+  &-exit-active {
+    opacity: 0;
+
+  }
+
+  &-exit-done {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,26 @@
+@import "_partials";
+
+.media {
+  &__media {
+    // margin-bottom: 2rem;
+  }
+
+  &__caption {
+    background-color: $gray-90;
+    bottom: 0;
+    padding: 1em;
+  }
+
+  &__caption-caption {
+  }
+
+  &__caption-credit {
+    @include fs(tiny);
+    margin-top: .5rem;
+  }
+
+  // Layout
+  &--l--section {
+    @include spacing(margin-bottom, loose);
+  }
+}

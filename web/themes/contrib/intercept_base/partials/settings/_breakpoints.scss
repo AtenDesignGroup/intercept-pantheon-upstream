@@ -1,0 +1,24 @@
+//
+// Breakpoint variables.
+//
+
+// Breakpoint settings
+@include breakpoint-set('to ems', true);
+
+// Breakpoint mapping
+$breakpoints: (
+  none:     0,
+  tiny:     400px,
+  default:  500px,
+  small:    600px,
+  smallish: 700px,
+  medium:   768px,
+  x-medium: 850px,
+  large:    992px,
+  m-large:  1100px,
+  x-large:  1200px,
+  xx-large: 1400px,
+  xxx-large: 1600px,
+  xxxx-large: 1800px,
+  w-max: 2200px
+);

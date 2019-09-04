@@ -1,0 +1,136 @@
+.summary--card {
+  max-width: 24em; }
+  .summary--card .summary__content {
+    padding: 0.9375rem; }
+    @media (min-width: 48em) {
+      .summary--card .summary__content {
+        padding: 1.2375rem; } }
+    @media (min-width: 62em) {
+      .summary--card .summary__content {
+        padding: 1.875rem; } }
+
+.summary__header:not(:last-child) {
+  margin-bottom: 0.9375rem; }
+  @media (min-width: 48em) {
+    .summary__header:not(:last-child) {
+      margin-bottom: 1.2375rem; } }
+  @media (min-width: 62em) {
+    .summary__header:not(:last-child) {
+      margin-bottom: 1.875rem; } }
+
+.summary__body {
+  font-size: 0.72917rem;
+  margin-top: 0.9375rem; }
+  @media (min-width: 48em) {
+    .summary__body {
+      font-size: 0.9375rem; } }
+  @media (min-width: 62em) {
+    .summary__body {
+      font-size: 1.125rem; } }
+  @media (min-width: 48em) {
+    .summary__body {
+      margin-top: 1.2375rem; } }
+  @media (min-width: 62em) {
+    .summary__body {
+      margin-top: 1.875rem; } }
+  .summary__body:not(:last-child) {
+    margin-bottom: 0.9375rem; }
+    @media (min-width: 48em) {
+      .summary__body:not(:last-child) {
+        margin-bottom: 1.2375rem; } }
+    @media (min-width: 62em) {
+      .summary__body:not(:last-child) {
+        margin-bottom: 1.875rem; } }
+
+.summary__link {
+  color: #130f13;
+  text-decoration: none;
+  -webkit-transition: color .2s ease-out;
+  transition: color .2s ease-out;
+  text-decoration: none; }
+  .summary__link:hover, .summary__link:focus {
+    color: #7A7D81; }
+  .summary__link:active, .summary__link.active--trail {
+    color: #7A7D81; }
+
+.summary__title {
+  font-size: 0.95833rem;
+  line-height: 1.2; }
+  @media (min-width: 48em) {
+    .summary__title {
+      font-size: 1.25rem; } }
+  @media (min-width: 62em) {
+    .summary__title {
+      font-size: 1.5rem; } }
+
+.summary__supertitle {
+  font-size: 0.5rem;
+  line-height: 1.2; }
+  @media (min-width: 48em) {
+    .summary__supertitle {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .summary__supertitle {
+      font-size: 0.75rem; } }
+
+.summary__subtitle {
+  font-size: 0.5rem;
+  line-height: 1.2; }
+  @media (min-width: 48em) {
+    .summary__subtitle {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .summary__subtitle {
+      font-size: 0.75rem; } }
+
+.summary__dateline-date {
+  font-size: 0.72917rem;
+  font-weight: 900; }
+  @media (min-width: 48em) {
+    .summary__dateline-date {
+      font-size: 0.9375rem; } }
+  @media (min-width: 62em) {
+    .summary__dateline-date {
+      font-size: 1.125rem; } }
+
+.summary__label {
+  font-size: 0.65278rem;
+  font-style: italic; }
+  @media (min-width: 48em) {
+    .summary__label {
+      font-size: 0.83333rem; } }
+  @media (min-width: 62em) {
+    .summary__label {
+      font-size: 1rem; } }
+
+.summary__dateline-time {
+  font-size: 0.65278rem; }
+  @media (min-width: 48em) {
+    .summary__dateline-time {
+      font-size: 0.83333rem; } }
+  @media (min-width: 62em) {
+    .summary__dateline-time {
+      font-size: 1rem; } }
+
+.summary__dateline-date,
+.summary__dateline-time {
+  line-height: 1.2;
+  display: block; }
+
+.summary__dateline:not(:last-child),
+.summary__dateline-date:not(:last-child),
+.summary__title:not(:last-child),
+.summary__label:not(:last-child) {
+  margin-bottom: 0.25rem; }
+  @media (min-width: 48em) {
+    .summary__dateline:not(:last-child),
+    .summary__dateline-date:not(:last-child),
+    .summary__title:not(:last-child),
+    .summary__label:not(:last-child) {
+      margin-bottom: 0.33rem; } }
+  @media (min-width: 62em) {
+    .summary__dateline:not(:last-child),
+    .summary__dateline-date:not(:last-child),
+    .summary__title:not(:last-child),
+    .summary__label:not(:last-child) {
+      margin-bottom: 0.5rem; } }

@@ -1,0 +1,4 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% if text %}
+<h2 {{ component.attributes('subtitle', modifiers, attr) }}>{{text}}</h2>
+{% endif %}

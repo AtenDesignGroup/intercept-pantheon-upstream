@@ -1,0 +1,114 @@
+name: Intercept Base
+type: theme
+description: Prototype Sub-Theme
+package: intercept_base
+core: 8.x
+base theme: prototype
+
+regions:
+  header: Header
+  primary_menu: Primary Menu
+  secondary_menu: Secondary Menu
+  highlighted: Highlighted
+  help: Help
+  content: Content
+  sidebar_first: First Sidebar
+  sidebar_second: Second Sidebar
+  footer: Footer
+  breadcrumb: Breadcrumb
+
+libraries:
+  - intercept_base/global
+
+libraries-override:
+  addtocalendar/base: intercept_event/eventAddToCalendar
+  styleguide/styleguide_css: intercept_base/styleguide
+  intercept_core/bigCalendar: intercept_base/bigCalendar
+
+libraries-extend:
+  core/drupal.dropbutton:
+    - intercept_base/dropbutton
+  intercept_event/eventList:
+    - intercept_base/action-button
+    - intercept_base/current-filters
+    - intercept_base/content-list
+    - intercept_base/filters
+    - intercept_base/loading-indicator
+    - intercept_base/page-spinner
+    - intercept_base/page-title
+    - intercept_base/print-cal
+    - intercept_base/teaser
+    - intercept_base/view-switcher
+    - intercept_base/summary
+  intercept_event/eventRegister:
+    - intercept_base/action-button
+    - intercept_base/content-list
+    - intercept_base/filters
+    - intercept_base/loading-indicator
+    - intercept_base/metadata
+    - intercept_base/page-spinner
+    - intercept_base/teaser
+  intercept_event/eventRegisterButton:
+    - intercept_base/action-button
+  intercept_event/eventCustomerEvaluation:
+    - intercept_base/evaluation
+  intercept_event/eventCustomerEvaluations:
+    - intercept_base/evaluation-summary
+    - intercept_base/loading-indicator
+  intercept_room_reservation/RoomReservationActionButton:
+    - intercept_base/action-button
+  intercept_event/manageEventRegistrations:
+    - intercept_base/action-button
+    - intercept_base/content-list
+    - intercept_base/filters
+    - intercept_base/loading-indicator
+    - intercept_base/page-spinner
+    - intercept_base/teaser
+    - intercept_base/view-switcher
+  intercept_room_reservation/reserveRoom:
+    - intercept_base/action-button
+    - intercept_base/app-bar
+    - intercept_base/button
+    - intercept_base/call-prompt
+    - intercept_base/current-filters
+    - intercept_base/content-list
+    - intercept_base/dialog
+    - intercept_base/filters
+    - intercept_base/loading-indicator
+    - intercept_base/page-spinner
+    - intercept_base/page-title
+    - intercept_base/reservation-summary
+    - intercept_base/section-title
+    - intercept_base/summary
+    - intercept_base/teaser
+    - intercept_base/value-summary
+    - intercept_base/view-switcher
+  intercept_room_reservation/manageRoomReservations:
+    - intercept_base/current-filters
+    - intercept_base/content-list
+    - intercept_base/filters
+    - intercept_base/page-spinner
+    - intercept_base/teaser
+    - intercept_base/view-switcher
+  intercept_room_reservation/roomReservationActionButton:
+    - intercept_base/action-button
+    - intercept_base/loading-indicator
+  intercept_event/eventAddToCalendar:
+    - intercept_base/action-button
+    - intercept_base/addtocalendar
+  addtocaledar/base:
+    - intercept_base/action-button
+    - intercept_base/addtocalendar
+
+component-libraries:
+  intercept-base-components:
+    paths:
+      - components
+  intercept-base-icons:
+    paths:
+      - images/icons
+
+# Information added by Drupal.org packaging script on 2019-08-22
+version: '8.x-1.0-alpha8'
+project: 'intercept_base'
+datestamp: 1566488000

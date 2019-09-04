@@ -1,0 +1,25 @@
+@import "_partials";
+
+.filters__inputs {
+  background-color: $clr-gray-bg;
+  padding: percentage(.5/23) percentage(1/23) percentage(1/23);
+}
+
+.filters__inputs--uniform-padding {
+  padding: percentage(.5/23) percentage(1/23);
+}
+
+.input--textarea {
+  .input__label {
+    font-weight: $fw-bold;
+  }
+
+  .input__description {
+    font-style: italic;
+  }
+
+  textarea::placeholder {
+    color: $gray-60;
+    font-weight: $fw-bold;
+  }
+}

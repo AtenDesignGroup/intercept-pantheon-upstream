@@ -1,0 +1,62 @@
+.current-filters__wrapper {
+  margin-top: 0.9375rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; }
+  @media (min-width: 48em) {
+    .current-filters__wrapper {
+      margin-top: 1.2375rem; } }
+  @media (min-width: 62em) {
+    .current-filters__wrapper {
+      margin-top: 1.875rem; } }
+
+.current-filter__label {
+  font-size: 0.65278rem;
+  color: #7A7D81;
+  margin-right: .5em; }
+  @media (min-width: 48em) {
+    .current-filter__label {
+      font-size: 0.83333rem; } }
+  @media (min-width: 62em) {
+    .current-filter__label {
+      font-size: 1rem; } }
+
+.current-filter {
+  margin-right: 1.5em;
+  margin-bottom: 0.375rem; }
+  @media (min-width: 48em) {
+    .current-filter {
+      margin-bottom: 0.495rem; } }
+  @media (min-width: 62em) {
+    .current-filter {
+      margin-bottom: 0.75rem; } }
+
+.current-filter--embedded {
+  white-space: normal;
+  margin-bottom: 0; }
+
+.current-filter .option-chip {
+  font-size: 0.5rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: 0;
+  font-weight: 900;
+  height: 2.125em;
+  padding-left: .75em;
+  padding-right: .75em; }
+  @media (min-width: 48em) {
+    .current-filter .option-chip {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .current-filter .option-chip {
+      font-size: 0.75rem; } }
+  .current-filter .option-chip:not(:last-child) {
+    margin-right: .75em; }
+  .current-filter .option-chip > span {
+    padding: 0; }
+  .current-filter .option-chip > svg {
+    margin-left: .5em; }
+
+.current-filter--embedded .option-chip {
+  margin: .25em .25em .25em 0; }

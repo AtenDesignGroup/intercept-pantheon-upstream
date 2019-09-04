@@ -1,0 +1,77 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{% import '@intercept-base-components/icons/icon.twig' as icon %}
+{{ attach_library('intercept_base/teaser') }}
+{{ attach_library('intercept_base/action-button')}}
+
+{# Set up variables for use below #}
+{% set description = content.field_text_content|field_value %}
+{% set image = content.image_primary|field_value %}
+{% set title = label|field_value %}
+{% set equipment = label|field_value %}
+{# set title_url = url #}
+{% set tags = [content.field_equipment_type] %}
+{% set checkout = [content.field_duration_min] %}
+
+{% set modifiers = modifiers|default([])|merge([image ? 'with-image' : 'without-image']) %}
+<{{ tag|default('article') }} {{ component.attributes('teaser', modifiers, attr) }}>
+    {% if image or equipment %}
+        <div class="teaser__image">
+            {% if image %}
+                {% if title_url %}
+                    <a href="{{ title_url }}" class="teaser__image-link" aria-hidden="true">{{ image }}</a>
+                {% else %}
+                    {{ image }}
+                {% endif %}
+            {% elseif equipment %}
+                <div class="teaser__date-wrapper">
+                    <p class="teaser__date">
+                        <span class="teaser__date-month">{{ equipment }}</span></p>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="teaser__main clearfix">
+        <div class="teaser__content">
+            {% if type %}
+                <div class="teaser__highlight">
+                    {% include '@intercept-base-components/highlight/highlight.twig' with { text: type } only %}
+                </div>
+            {% endif %}
+
+            {% if supertitle %}
+                <span class="teaser__supertitle">{{ supertitle }}</span>
+            {% endif %}
+
+            <h3 class="teaser__title">
+                {% if title_url %}
+                    <a href="{{ title_url }}" class="teaser__title-link">{{ title }}</a>
+                {% else %}
+                    {{ title }}
+                {% endif %}
+            </h3>
+
+            {% if subtitle %}
+                <div class="teaser__subtitle">{{ subtitle }}</div>
+            {% endif %}
+
+            {% if description %}
+                <div class="teaser__description">{{ description }}</div>
+            {% endif %}
+
+            {% if tags %}
+                <div class="teaser__tags">{{ tags }}</div>
+            {% endif %}
+
+            {% if checkout %}
+                <div class="teaser__tags">{{ checkout }}</div>
+            {% endif %}
+
+        </div>
+
+        <div class="teaser__footer">
+            <div class="action-button">
+                <a class="action-button__button button" href="/equipment-reservation/add?id={{ node.id }}">Reserve</a>
+            </div>
+        </div>
+    </div>
+</{{ tag|default('article') }}>

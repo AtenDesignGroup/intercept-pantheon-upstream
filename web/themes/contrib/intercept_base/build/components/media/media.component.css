@@ -1,0 +1,23 @@
+.media__caption {
+  background-color: #F6F8F9;
+  bottom: 0;
+  padding: 1em; }
+
+.media__caption-credit {
+  font-size: 0.57639rem;
+  margin-top: .5rem; }
+  @media (min-width: 48em) {
+    .media__caption-credit {
+      font-size: 0.72917rem; } }
+  @media (min-width: 62em) {
+    .media__caption-credit {
+      font-size: 0.875rem; } }
+
+.media--l--section {
+  margin-bottom: 2.0625rem; }
+  @media (min-width: 48em) {
+    .media--l--section {
+      margin-bottom: 4.125rem; } }
+  @media (min-width: 62em) {
+    .media--l--section {
+      margin-bottom: 6.25rem; } }

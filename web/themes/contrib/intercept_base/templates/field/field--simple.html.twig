@@ -1,0 +1,32 @@
+
+{%
+  set classes = [
+    'field',
+    'field--name-' ~ field_name|clean_class,
+    'field--type-' ~ field_type|clean_class,
+    'field--label-' ~ label_display,
+  ]
+%}
+{%
+  set title_classes = [
+    'field__label',
+    label_display == 'visually_hidden' ? 'visually-hidden',
+  ]
+%}
+
+{% if label_hidden %}
+  <ul{{ attributes.addClass(classes, 'list--simple') }}>
+    {% for item in items %}
+      <li{{ item.attributes.addClass('list__item') }}>{{ item.content }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div{{ attributes.addClass(classes) }}>
+    <div{{ title_attributes.addClass(title_classes) }}>{{ label }}</div>
+      <ul class="list--simple">
+      {% for item in items %}
+        <li{{ item.attributes.addClass('list__item') }}>{{ item.content }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

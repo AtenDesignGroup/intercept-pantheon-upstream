@@ -1,0 +1,5 @@
+.byline {
+  margin: 0;
+  padding: 0; }
+  .byline > li {
+    list-style: none; }

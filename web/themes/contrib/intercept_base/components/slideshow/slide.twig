@@ -1,0 +1,14 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/slideshow') }}
+
+{# <figure {{ component.attributes('slide', modifiers, attr) }} style="background-image: url({{background}})"> #}
+<figure {{ component.attributes('slide', modifiers, attr) }}>
+  {{ media }}
+  {% if caption or credit %}
+  <figcaption class="slide__description">
+    {% if caption %} <div class="slide__caption">{{caption}}</div>{% endif %}
+    {% if credit %} <div class="slide__credit">{{credit}}</div>{% endif %}
+  </figcaption>
+  {% endif %}
+</figure>
+

@@ -1,0 +1,48 @@
+@import '_partials';
+
+.current-filters__wrapper {
+  @include spacing(margin-top, tight);
+  display: flex;
+}
+
+.current-filter__label {
+  @include fs(x-small);
+  color: $clr-secondary;
+  margin-right: .5em;
+}
+
+.current-filter {
+  margin-right: 1.5em;
+  @include spacing(margin-bottom, compact);
+}
+
+.current-filter--embedded {
+  white-space: normal;
+  margin-bottom: 0;
+}
+
+.current-filter .option-chip {
+  @include fs(micro);
+  align-items: center;
+  border-radius: 0;
+  font-weight: $fw-bold;
+  height: 2.125em;
+  padding-left: .75em;
+  padding-right: .75em;
+
+  &:not(:last-child) {
+    margin-right: .75em;
+  }
+
+  > span {
+    padding: 0;
+  }
+
+  > svg {
+    margin-left: .5em;
+  }
+}
+
+.current-filter--embedded .option-chip {
+  margin: .25em .25em .25em 0;
+}

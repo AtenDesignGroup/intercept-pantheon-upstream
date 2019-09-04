@@ -1,0 +1,51 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/card') }}
+<article {{ component.attributes('card', modifiers, attr) }}>
+
+  {% if image %}
+  {% if title_link.url %}
+  <a href="{{ title_link.url }}" title="{{ title }}">
+  {% endif %}
+  <figure class="card__image">
+    {{ image }}
+  </figure>
+
+  {% if title_link.url %}
+  </a>
+  {% endif %}
+  {% endif %}
+
+  <div class="card__content">
+
+    <header class="card__header">
+      <h3 class="card__title">
+        {% if title_link %}
+        <a href="{{ title_link.url }}" title="{{ title }}" class="{{ title_link.class }}">
+        {% endif %}
+
+        {{ title }}
+
+        {% if title_link %}
+        </a>
+        {% endif %}
+      </h3>
+      {% if subTitle %}<h4 class="card__subtitle">{{ subTitle }}</h4>{% endif %}
+    </header>
+
+    {% if body %}<div class="card__body">{{ body }}</div>{% endif %}
+
+    {% if link %}
+    <footer class="card__footer">
+      {% if link_text %}
+      <a href="{{ link }}">{{ link_text }}</a>
+      {% else %}
+      <a href="{{ link }}">{{ 'More'|t }}</a>
+      {% endif %}
+      {% if phone %}
+      {{ phone }}
+      {% endif %}
+    </footer>
+    {% endif %}
+
+  </div>
+</article>

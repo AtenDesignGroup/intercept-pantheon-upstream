@@ -10,10 +10,12 @@ This upstream requires that you have a Pantheon account and the ability to creat
 ## Creating a site on Pantheon with this upstream
 
 1. Visit https://dashboard.pantheon.io/sites/create?upstream_id=57c6a03c-45ff-4249-b708-0cef6470c599
-1. Enter your site name and region and click "Continue"
-1. Switch the Pantheon site to SFTP mode.
-1. Go to the Pantheon site and install the site.
-1. Switch the site back to GIT mode.
+2. Enter your site name and region and click "Continue".
+![Create website from Pantheon upstream](https://i.imgur.com/vfE2a6y.jpg)
+3. In the Pantheon dashboard, navigate to your new website.
+![Navigate to the development website](https://i.imgur.com/WzYx8dE.jpg)
+4.  Proceed through the installation process.
+![Proceed through the installation process](https://i.imgur.com/7DeU32W.jpg)
 
 ## Updating Your Site
 
@@ -21,7 +23,7 @@ Updates can be applied either directly on Pantheon, by using Terminus, or on you
 
 ### Update with Terminus
 
-Install [Terminus 1](https://pantheon.io/docs/terminus/) and the [Terminus Composer plugin](https://github.com/pantheon-systems/terminus-composer-plugin).  Then, to update your site, ensure it is in SFTP mode, and then run:
+Install [Terminus 2](https://pantheon.io/docs/terminus/) and the [Terminus Composer plugin](https://github.com/pantheon-systems/terminus-composer-plugin).  Then, to update your site, ensure it is in SFTP mode, and then run:
 ```
 terminus composer <sitename>.<dev> update
 ```

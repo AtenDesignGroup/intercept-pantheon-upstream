@@ -21,6 +21,14 @@ $settings['container_yamls'][] = __DIR__ . '/services.yml';
  */
 include __DIR__ . "/settings.pantheon.php";
 
+if (isset($databases['default']['default'])) {
+  if (defined('PANTHEON_ENVIRONMENT')) {
+    // Keeps performance fast with JSON:API and MariaDB.
+    // See https://www.drupal.org/project/drupal/issues/3022864#comment-13256190.
+    $databases['default']['default']['init_commands']['optimizer_search_depth'] = 'SET SESSION optimizer_search_depth = 0';
+  }
+}
+
 /**
  * Place the config directory outside of the Drupal root.
  */

@@ -3,14 +3,16 @@ services:
     class: Drupal\consumer_image_styles\ImageStylesProvider
     arguments:
       - '@entity_type.manager'
+      - '@image.factory'
 
-  serializer.normalizer.image_entity.consumer_image_styles:
-    class: Drupal\consumer_image_styles\Normalizer\ImageEntityNormalizer
+  serializer.normalizer.link_collection.consumer_image_styles:
+    class: Drupal\consumer_image_styles\Normalizer\LinkCollectionNormalizer
+    decorates: serializer.normalizer.link_collection.jsonapi
     arguments:
-      - '@jsonapi.link_manager'
-      - '@jsonapi.resource_type.repository'
-      - '@entity_type.manager'
+      - '@serializer.normalizer.link_collection.consumer_image_styles.inner'
       - '@consumer.negotiator'
       - '@consumer_image_styles.image_styles_provider'
+      - '@image.factory'
+      - '@request_stack'
     tags:
-      - { name: jsonapi_normalizer_do_not_use_removal_imminent, priority: 24 }
+      - { name: normalizer, priority: 1025, format: api_json }

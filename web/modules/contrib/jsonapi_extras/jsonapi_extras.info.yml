@@ -1,0 +1,13 @@
+name: JSON:API Extras
+type: module
+description: Builds on top of JSON:API to deliver extra functionality.
+core: 8.x
+package: Web services
+configure: jsonapi_extras.settings
+dependencies:
+  - jsonapi
+
+# Information added by Drupal.org packaging script on 2019-09-11
+version: '8.x-3.12'
+project: 'jsonapi_extras'
+datestamp: 1568182086

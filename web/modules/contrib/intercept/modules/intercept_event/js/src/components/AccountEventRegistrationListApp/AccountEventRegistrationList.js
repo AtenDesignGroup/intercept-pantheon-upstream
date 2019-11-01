@@ -64,7 +64,7 @@ class AccountEventList extends Component {
   componentDidMount() {
     this.props.fetchAudiences({
       fields: {
-        [c.TYPE_AUDIENCE]: ['uuid', 'name'],
+        [c.TYPE_AUDIENCE]: ['name'],
       },
     });
     this.doFetch(this.props.view);
@@ -79,7 +79,7 @@ class AccountEventList extends Component {
     this.props.fetchRegistrations({
       filters: {
         user: {
-          path: 'field_user.uuid',
+          path: 'field_user.id',
           value: uuid,
         },
         ...getDateFilters(view, 'field_event.field_date_time.end_value'),
@@ -101,7 +101,7 @@ class AccountEventList extends Component {
     this.props.fetchSavedEvents({
       filters: {
         user: {
-          path: 'uid.uuid',
+          path: 'uid.uid',
           value: uuid,
         },
         // ...getDateFilters(view, 'flagged_entity.field_date_time.end_value'),

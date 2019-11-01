@@ -65,7 +65,7 @@ const currentFiltersConfig = filters =>
     type: key,
   }));
 
-class EventFilters extends PureComponent {
+class RoomFilters extends PureComponent {
   onFilterChange = (key, value) => {
     const newFilters = { ...this.props.filters, [key]: value };
     this.props.onChange(newFilters);
@@ -117,11 +117,23 @@ class EventFilters extends PureComponent {
   };
 
   render() {
-    const { showDate, filters } = this.props;
+    const {
+      dateLimits,
+      showDate,
+      filters
+    } = this.props;
+
     let currentFilters = currentFiltersConfig(filters);
+
     if (!showDate) {
       currentFilters = currentFilters.filter(f => f.key !== c.DATE);
     }
+
+    const {
+      maxDate,
+      minDate,
+      maxDateDescription,
+    } = dateLimits;
 
     return (
       <div className="">
@@ -187,6 +199,8 @@ class EventFilters extends PureComponent {
               handleChange={this.onDateChange}
               defaultValue={null}
               value={filters[c.DATE] || null}
+              maxDate={maxDate}
+              minDate={minDate}
               name={c.DATE}
               clearable
               validations="isFutureDate"
@@ -218,15 +232,15 @@ class EventFilters extends PureComponent {
   }
 }
 
-EventFilters.propTypes = {
+RoomFilters.propTypes = {
   onChange: PropTypes.func.isRequired,
   showDate: PropTypes.bool,
   filters: PropTypes.object,
 };
 
-EventFilters.defaultProps = {
+RoomFilters.defaultProps = {
   showDate: true,
   filters: {},
 };
 
-export default EventFilters;
+export default RoomFilters;

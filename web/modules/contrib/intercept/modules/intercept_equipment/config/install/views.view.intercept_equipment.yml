@@ -8,7 +8,11 @@ dependencies:
     - image.style.0_85_1_275x324
     - node.type.equipment
     - taxonomy.vocabulary.equipment_type
+    - user.role.administrator
     - user.role.intercept_equipment_reservation_manager
+    - user.role.intercept_event_manager
+    - user.role.intercept_event_organizer
+    - user.role.intercept_room_reservation_approver
     - user.role.intercept_staff
     - user.role.intercept_system_admin
   module:
@@ -17,7 +21,7 @@ dependencies:
     - taxonomy
     - user
 id: intercept_equipment
-label: 'InterCEPT Equipment'
+label: 'Intercept Equipment'
 module: views
 description: 'Lists all pieces of equipment in the site.'
 tag: ''
@@ -35,8 +39,12 @@ display:
         type: role
         options:
           role:
+            intercept_event_manager: intercept_event_manager
+            intercept_event_organizer: intercept_event_organizer
             intercept_staff: intercept_staff
             intercept_system_admin: intercept_system_admin
+            administrator: administrator
+            intercept_room_reservation_approver: intercept_room_reservation_approver
             intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
       cache:
         type: tag
@@ -345,7 +353,7 @@ display:
           exposed: true
           expose:
             operator_id: title_op
-            label: Item
+            label: 'Item Name'
             description: ''
             use_operator: false
             operator: title_op
@@ -356,8 +364,13 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
@@ -402,8 +415,12 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
+              intercept_room_reservation_approver: '0'
             reduce: false
           is_grouped: false
           group_info:

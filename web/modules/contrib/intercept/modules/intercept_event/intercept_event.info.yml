@@ -1,4 +1,4 @@
-name: InterCEPT Event
+name: Intercept Event
 description: 'Provides Event content type and related configuration. '
 type: module
 core: 8.x
@@ -15,9 +15,4 @@ dependencies:
   - intercept:intercept_location
   - tally:tally
   - votingapi:votingapi
-package: 'InterCEPT'
-
-# Information added by Drupal.org packaging script on 2019-08-22
-version: '8.x-1.0-alpha9'
-project: 'intercept'
-datestamp: 1566489190
+package: 'Intercept'

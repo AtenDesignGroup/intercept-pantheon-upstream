@@ -6,7 +6,7 @@ dependencies:
   module:
     - user
 id: user_remove_role_action.intercept_event_manager
-label: 'Remove the InterCEPT Event Manager role from the selected user(s)'
+label: 'Remove the Intercept Event Manager role from the selected user(s)'
 type: user
 plugin: user_remove_role_action
 configuration:

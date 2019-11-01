@@ -245,7 +245,7 @@ class EventManager implements EventManagerInterface {
       $data = array_values($data);
       $event->field_attendees->setValue($data);
       $event->save();
-      $jsonapi = \Drupal::service('jsonapi.entity.to_jsonapi');
+      $jsonapi = \Drupal::service('jsonapi_extras.entity.to_jsonapi');
       $response = $jsonapi->normalize($event);
     }
     return $this->jsonResponse(['response' => $response]);
@@ -256,7 +256,7 @@ class EventManager implements EventManagerInterface {
     if ($barcode = $this->getRequestData($request, 'barcode')) {
       $user = \Drupal::service('intercept_ils.mapping_manager')->loadByBarcode($barcode);
       if ($user) {
-        $jsonapi = \Drupal::service('jsonapi.entity.to_jsonapi');
+        $jsonapi = \Drupal::service('jsonapi_extras.entity.to_jsonapi');
         $response = $jsonapi->normalize($user);
       }
     }

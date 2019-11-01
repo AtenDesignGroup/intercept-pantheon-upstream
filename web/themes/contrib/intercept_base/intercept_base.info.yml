@@ -4,6 +4,10 @@ description: Prototype Sub-Theme
 package: intercept_base
 core: 8.x
 base theme: prototype
+dependencies:
+  - components
+  - twig_field_value
+  - twig_tweak
 
 regions:
   header: Header

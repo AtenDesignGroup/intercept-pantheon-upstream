@@ -16,7 +16,7 @@ dependencies:
     - user
     - votingapi
 id: intercept_user_events
-label: 'InterCEPT User Events'
+label: 'Intercept User Events'
 module: views
 description: ''
 tag: ''
@@ -542,7 +542,7 @@ display:
           table: node__field_date_time
           field: field_date_time_end_value
           plugin_id: datetime
-      title: 'InterCEPT User Events'
+      title: 'Intercept User Events'
       header: {  }
       footer: {  }
       empty:

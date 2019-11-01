@@ -32,12 +32,11 @@ class FlagViewsFilter extends BooleanOperator {
     $form['value']['#type'] = 'radios';
     $form['value']['#title'] = t('Status');
     $form['value']['#options'] = [
+      'All' => t('All'),
       1 => $this->t('Flagged'),
       0 => $this->t('Not flagged'),
-      // @todo Find out what in the hell filter type ALL is supposed to do.
-      // 'All' => t('All'),
     ];
-    $form['value']['#default_value'] = empty($this->options['value']) ? FALSE : $this->options['value'];
+    $form['value']['#default_value'] = isset($this->options['value']) ? $this->options['value'] : 0;
     $form['value']['#description'] = '<p>' . $this->t('This filter is only needed if the relationship used has the "Include only flagged content" option <strong>unchecked</strong>. Otherwise, this filter is useless, because all records are already limited to flagged content.') . '</p><p>' . $this->t('By choosing <em>Not flagged</em>, it is possible to create a list of content <a href="@unflagged-url">that is specifically not flagged</a>.', ['@unflagged-url' => 'http://drupal.org/node/299335']) . '</p>';
 
     // Workaround for bug in Views: $no_operator class property has no effect.

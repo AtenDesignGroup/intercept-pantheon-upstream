@@ -54,7 +54,7 @@ class FlagActionTest extends UnitTestCase {
     $flag_service->getFlagById($this->flag->id())->willReturn($this->flag);
     $entity = $this->prophesize(EntityInterface::class)->reveal();
     $flag_service->flag($this->flag, $entity)->shouldBeCalled();
-    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '.flag', [], $flag_service->reveal());
+    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '_flag', [], $flag_service->reveal());
     $plugin->execute($entity);
 
     // Test 'uflag' op.
@@ -66,7 +66,7 @@ class FlagActionTest extends UnitTestCase {
     $flag_service->getFlagById($this->flag->id())->willReturn($this->flag);
     $entity = $this->prophesize(EntityInterface::class)->reveal();
     $flag_service->unflag($this->flag, $entity)->shouldBeCalled();
-    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '.flag', [], $flag_service->reveal());
+    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '_flag', [], $flag_service->reveal());
     $plugin->execute($entity);
   }
 
@@ -93,7 +93,7 @@ class FlagActionTest extends UnitTestCase {
       'flag_id' => $this->flag->id(),
       'flag_action' => 'flag',
     ];
-    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '.flag', [], $flag_service->reveal());
+    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '_flag', [], $flag_service->reveal());
     $this->assertFalse($plugin->access($entity, $account));
     $this->assertEquals($denied, $plugin->access($entity, $account, TRUE));
 
@@ -112,7 +112,7 @@ class FlagActionTest extends UnitTestCase {
       'flag_id' => $this->flag->id(),
       'flag_action' => 'flag',
     ];
-    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '.flag', [], $flag_service->reveal());
+    $plugin = new FlagAction($config, 'flag_action:' . $this->flag->id() . '_flag', [], $flag_service->reveal());
     $this->assertTrue($plugin->access($entity, $account));
     $this->assertEquals($allowed, $plugin->access($entity, $account, TRUE));
   }

@@ -15,8 +15,8 @@ use Drupal\Core\TypedData\TraversableTypedDataInterface;
  *
  * @FieldType(
  *   id = "intercept_computed",
- *   label = @Translation("InterCEPT Computed"),
- *   description = @Translation("A field type for computed InterCEPT fields."),
+ *   label = @Translation("Intercept Computed"),
+ *   description = @Translation("A field type for computed Intercept fields."),
  *   no_ui = TRUE,
  *   list_class = "\Drupal\intercept_core\Plugin\Field\FieldType\ComputedItemList",
  * )

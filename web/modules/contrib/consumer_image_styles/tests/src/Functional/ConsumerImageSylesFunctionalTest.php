@@ -3,14 +3,18 @@
 namespace Drupal\Tests\consumer_image_styles\Functional;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\consumer_image_styles\ImageStylesProvider;
 use Drupal\consumers\Entity\Consumer;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
-use Drupal\simpletest\ContentTypeCreationTrait;
+use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\image\Kernel\ImageFieldCreationTrait;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Drupal\Tests\jsonapi\Functional\JsonApiRequestTestTrait;
+use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+use GuzzleHttp\RequestOptions;
 
 /**
  * @group consumer_image_styles
@@ -19,11 +23,13 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
 
   use ContentTypeCreationTrait;
   use ImageFieldCreationTrait;
+  use JsonApiRequestTestTrait;
 
   public static $modules = [
     'consumers',
     'consumer_image_styles',
     'jsonapi',
+    'jsonapi_extras',
     'serialization',
     'node',
     'image',
@@ -63,12 +69,16 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
    */
   protected $consumer;
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp() {
     parent::setUp();
     $this->contentType = $this->createContentType();
     $this->imageFieldName = $this->getRandomGenerator()->word(8);
     $this->user = $this->drupalCreateUser();
     $this->createImageField($this->imageFieldName, $this->contentType->id());
+    $this->overrideResources();
     drupal_flush_all_caches();
   }
 
@@ -77,6 +87,8 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
    *
    * @param int $num_nodes
    *   Number of articles to create.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function createDefaultContent($num_nodes) {
     $random = $this->getRandomGenerator();
@@ -84,6 +96,11 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       $file = File::create([
         'uri' => 'public://' . $random->name() . '.png',
       ]);
+      // We need to create an actual empty PNG, or the GD toolkit will not
+      // consider the image valid.
+      $png_resource = imagecreate(300, 300);
+      imagefill($png_resource, 0, 0, imagecolorallocate($png_resource, 0, 0, 0));
+      imagepng($png_resource, $file->getFileUri());
       $file->setPermanent();
       $file->save();
       $this->files[] = $file;
@@ -93,7 +110,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       ];
       $values[$this->imageFieldName] = [
         'target_id' => $file->id(),
-        'alt' => 'alt text'
+        'alt' => 'alt text',
       ];
       $node = $this->createNode($values);
       $this->nodes[] = $node;
@@ -123,42 +140,122 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
     $this->createDefaultContent(1);
 
     // 1. Check the request for the image directly.
-    $path = sprintf('/jsonapi/file/file/%s', $this->files[0]->uuid());
-    $query = ['_consumer_id' => $this->consumer->uuid()];
-    $raw = $this->drupalGet($path, ['query' => $query]);
-    $output = Json::decode($raw);
-    $this->assertSession()->statusCodeEquals(200);
-    $derivatives = $output['data']['meta']['derivatives'];
-    $this->assertContains('/files/styles/foo/public/', $derivatives['foo']);
-    $this->assertContains('/files/styles/bar/public/', $derivatives['bar']);
-    $this->assertContains('itok=', $derivatives['foo']);
-    $this->assertContains('itok=', $derivatives['bar']);
+    $url = Url::fromRoute('jsonapi.file--file.individual', ['entity' => $this->files[0]->uuid()]);
+    $request_options = [
+      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->uuid()],
+    ];
+    $response = $this->request('GET', $url, $request_options);
+    $output = Json::decode($response->getBody());
+    $this->assertEquals(200, $response->getStatusCode());
+    $links = $output['data']['links'];
+    $derivatives = array_filter($links, function ($link) {
+      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
+      return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
+    });
+    $this->assertNotEmpty($derivatives);
+    $this->assertContains('/files/styles/foo/public/', $derivatives['foo']['href']);
+    $this->assertContains('/files/styles/bar/public/', $derivatives['bar']['href']);
+    $this->assertContains('itok=', $derivatives['foo']['href']);
+    $this->assertContains('itok=', $derivatives['bar']['href']);
 
     // 2. Check the request via the node.
-    $path = sprintf(
-      '/jsonapi/node/%s/%s',
-      $this->contentType->id(),
-      $this->nodes[0]->uuid()
+    $url = Url::fromRoute(
+      sprintf('jsonapi.node--%s.individual', $this->contentType->id()),
+      ['entity' => $this->nodes[0]->uuid()]
     );
-    $query = [
-      '_consumer_id' => $this->consumer->uuid(),
-      'include' => $this->imageFieldName,
+    $request_options = [
+      RequestOptions::QUERY => ['include' => $this->imageFieldName],
+      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->uuid()],
     ];
-    $raw = $this->drupalGet($path, ['query' => $query]);
-    $output = Json::decode($raw);
-    $this->assertSession()->statusCodeEquals(200);
-    $derivatives = $output['included'][0]['meta']['derivatives'];
-    $this->assertContains(file_create_url('public://styles/foo/public/'), $derivatives['foo']);
-    $this->assertContains(file_create_url('public://styles/bar/public/'), $derivatives['bar']);
-    $this->assertContains('itok=', $derivatives['foo']);
-    $this->assertContains('itok=', $derivatives['bar']);
+    $response = $this->request('GET', $url, $request_options);
+    $output = Json::decode($response->getBody());
+    $this->assertEquals(200, $response->getStatusCode());
+    $links = $output['included'][0]['links'];
+    $derivatives = array_filter($links, function ($link) {
+      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
+      return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
+    });
+    $this->assertContains(file_create_url('public://styles/foo/public/'), $derivatives['foo']['href']);
+    $this->assertContains(file_create_url('public://styles/bar/public/'), $derivatives['bar']['href']);
+    $this->assertContains('itok=', $derivatives['foo']['href']);
+    $this->assertContains('itok=', $derivatives['bar']['href']);
 
     // 3. Check the request for the image directly without consumer.
-    $path = sprintf('/jsonapi/file/file/%s',$this->files[0]->uuid());
-    $raw = $this->drupalGet($path);
-    $output = Json::decode($raw);
-    $this->assertSession()->statusCodeEquals(200);
-    $this->assertTrue(empty($output['data']['meta']['derivatives']));
+    $url = Url::fromRoute('jsonapi.file--file.individual', ['entity' => $this->files[0]->uuid()]);
+    $response = $this->request('GET', $url, []);
+    $output = Json::decode($response->getBody());
+    $this->assertEquals(200, $response->getStatusCode());
+    $links = $output['data']['links'];
+    $derivatives = array_filter($links, function ($link) {
+      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
+      return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
+    });
+    $this->assertEmpty(empty($derivatives));
+
+    // 4. Apply the field enhancer and check the image field.
+    $url = Url::fromRoute(
+      sprintf('jsonapi.node--%s.individual', $this->contentType->id()),
+      ['entity' => $this->nodes[0]->uuid()]
+    );
+    $request_options = [
+      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->uuid()],
+    ];
+    $response = $this->request('GET', $url, $request_options);
+    $output = Json::decode($response->getBody());
+    $this->assertEquals(200, $response->getStatusCode());
+    $links = NestedArray::getValue($output, [
+      'data',
+      'relationships',
+      $this->imageFieldName,
+      'data',
+      'meta',
+      'imageDerivatives',
+      'links',
+    ]);
+    $derivatives = array_filter($links, function ($link) {
+      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
+      return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
+    });
+    $this->assertContains(
+      file_create_url('public://styles/foo/public/'),
+      $derivatives['foo']['href']
+    );
+    $this->assertContains(
+      ImageStylesProvider::DERIVATIVE_LINK_REL,
+      $derivatives['foo']['meta']['rel']
+    );
+    $this->assertTrue(empty($derivatives['bar']));
+    $this->assertContains('itok=', $derivatives['foo']['href']);
+  }
+
+  /**
+   * Creates the JSON API Resource Config entities to override the resources.
+   */
+  protected function overrideResources() {
+    // Override paths and fields in the articles resource.
+    $content_type = $this->contentType->id();
+    JsonapiResourceConfig::create([
+      'id' => 'node--' . $content_type,
+      'disabled' => FALSE,
+      'path' => 'node/' . $content_type,
+      'resourceType' => 'node--' . $content_type,
+      'resourceFields' => [
+        $this->imageFieldName => [
+          'fieldName' => $this->imageFieldName,
+          'publicName' => $this->imageFieldName,
+          'enhancer' => [
+            'id' => 'image_styles',
+            'settings' => [
+              'styles' => [
+                'refine' => TRUE,
+                'custom_selection' => ['foo'],
+              ],
+            ],
+          ],
+          'disabled' => FALSE,
+        ],
+      ],
+    ])->save();
   }
 
 }

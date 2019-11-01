@@ -2,7 +2,7 @@ intercept_location.general:
   path: '/admin/config/intercept/location'
   defaults:
     _form: '\Drupal\intercept_location\Form\SettingsForm'
-    _title: 'InterCEPT General'
+    _title: 'Intercept General'
   requirements:
     _permission: 'administer intercept_core'
 

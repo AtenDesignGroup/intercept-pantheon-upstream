@@ -82,13 +82,23 @@ class AggregateField extends EntityField {
 
     $values = [];
     if ($type == 'node') {
-      foreach ($field_item_list as $field_item) {
-        $term = Term::load($field_item->target_id);
-        $term_name = $term->getName();
-        $count = $field_item->count ? $field_item->count : 0;
-        $values[] = $term_name . ': ' . $count;
+      if ($this->options['delta_limit'] == 1) { // Just show 1 value as specified.
+        $offset = $this->options['delta_offset'];
+        foreach ($field_item_list as $index => $field_item) {
+          if ($index == $offset) {
+            $values = $count = $field_item->count ? $field_item->count : 0;
+          }
+        }
       }
-      $values = implode('; ', $values);
+      else { // Show all of the values in one column together.
+        foreach ($field_item_list as $field_item) {
+          $term = Term::load($field_item->target_id);
+          $term_name = $term->getName();
+          $count = $field_item->count ? $field_item->count : 0;
+          $values[] = $term_name . ': ' . $count;
+        }
+        $values = implode('; ', $values);
+      }
     }
     elseif ($type = 'event_attendance') {
       foreach ($field_item_list as $field_item) {

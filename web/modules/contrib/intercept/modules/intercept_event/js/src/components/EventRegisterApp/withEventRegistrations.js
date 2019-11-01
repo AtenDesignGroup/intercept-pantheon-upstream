@@ -60,10 +60,10 @@ function withEventRegistrations(WrappedComponent, debounceTime = 200) {
         id,
         fields: {
           [c.TYPE_EVENT]: [
-            'uuid',
             'field_capacity_max',
             'field_waitlist_max',
             'field_event_register_period',
+            'field_event_user_reg_max',
             'field_has_waitlist',
             'field_must_register',
             'registration',

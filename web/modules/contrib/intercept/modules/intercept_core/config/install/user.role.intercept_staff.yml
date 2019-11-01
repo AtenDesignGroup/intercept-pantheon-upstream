@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: intercept_staff
-label: 'InterCEPT Staff'
+label: 'Intercept Staff'
 weight: 4
 is_admin: null
 permissions:

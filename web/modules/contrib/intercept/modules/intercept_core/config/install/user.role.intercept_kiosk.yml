@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: intercept_kiosk
-label: 'InterCEPT Kiosk'
+label: 'Intercept Kiosk'
 weight: 3
 is_admin: null
 permissions:

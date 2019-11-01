@@ -243,7 +243,7 @@ class FlagCountsTest extends FlagKernelTestBase {
     $article1_count_before = $this->flagCountService->getEntityFlagCounts($article1);
     $this->assertEqual($article1_count_before[$this->flag->id()], 1, 'The article1 has been flagged.');
     $article2_count_before = $this->flagCountService->getEntityFlagCounts($article2);
-    $this->assertEqual(count($article2_count_before[$this->flag->id()]), 1, 'The article2 has been flagged.');
+    $this->assertEqual($article2_count_before[$this->flag->id()], 1, 'The article2 has been flagged.');
 
     // Confirm the flagging have been created.
     $flaggings_before = $this->getFlagFlaggings($this->flag);
@@ -290,7 +290,7 @@ class FlagCountsTest extends FlagKernelTestBase {
     $article1_count_before = $this->flagCountService->getEntityFlagCounts($article1);
     $this->assertEqual($article1_count_before[$this->flag->id()], 1, 'The article1 has been flagged.');
     $article2_count_before = $this->flagCountService->getEntityFlagCounts($article2);
-    $this->assertEqual(count($article2_count_before[$this->flag->id()]), 1, 'The article2 has been flagged.');
+    $this->assertEqual($article2_count_before[$this->flag->id()], 1, 'The article2 has been flagged.');
 
     // Confirm the flagging have been created.
     $flaggings_before = $this->getFlagFlaggings($this->flag);

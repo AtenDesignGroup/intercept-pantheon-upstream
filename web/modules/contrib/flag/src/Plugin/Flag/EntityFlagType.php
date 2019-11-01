@@ -133,7 +133,7 @@ class EntityFlagType extends FlagTypeBase {
         user has access to contextual links and to this flag. This means that
         those users will get no cache hits for render elements rendering flaggable
         entities with contextual links."),
-      '#access' => \Drupal::moduleHandler()->moduleExists('contextual'),
+      '#access' => $this->moduleHandler->moduleExists('contextual'),
       '#weight' => 10,
     ];
 

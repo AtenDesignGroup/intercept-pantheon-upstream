@@ -11,7 +11,7 @@ const c = constants;
 
 class RoomTeaser extends PureComponent {
   render() {
-    const { id, room, image, footer } = this.props;
+    const { id, room, footer } = this.props;
 
     const termMap = item => ({
       id: item.id,
@@ -40,6 +40,8 @@ class RoomTeaser extends PureComponent {
       />
     ) : null;
 
+    const image = get(room, 'attributes.room_thumbnail');
+
     return (
       <Teaser
         key={id}
@@ -60,12 +62,10 @@ class RoomTeaser extends PureComponent {
 RoomTeaser.propTypes = {
   id: PropTypes.string.isRequired,
   room: PropTypes.object.isRequired,
-  image: PropTypes.string,
   footer: PropTypes.func,
 };
 
 RoomTeaser.defaultProps = {
-  image: null,
   footer: null,
 };
 
@@ -74,7 +74,6 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     room: select.bundle(identifier)(state),
-    image: select.resourceImageStyle(identifier, '4to3_740x556')(state),
   };
 };
 

@@ -6,7 +6,7 @@ dependencies:
   module:
     - user
 id: user_add_role_action.intercept_event_manager
-label: 'Add the InterCEPT Event Manager role to the selected user(s)'
+label: 'Add the Intercept Event Manager role to the selected user(s)'
 type: user
 plugin: user_add_role_action
 configuration:

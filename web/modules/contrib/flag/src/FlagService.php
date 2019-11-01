@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\SessionManagerInterface;
+use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
 /**
@@ -89,6 +90,19 @@ class FlagService implements FlagServiceInterface {
   }
 
   /**
+   * Makes sure session is started.
+   */
+  protected function ensureSession() {
+    if ($this->currentUser->isAnonymous() && !$this->sessionManager->isStarted()) {
+      // Add something to $_SESSION so the session ID will persist.
+      // TODO: Replace this with something cleaner once core provides it.
+      // See https://www.drupal.org/node/2865991.
+      $_SESSION['flag'] = TRUE;
+      $this->sessionManager->start();
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function populateFlaggerDefaults(AccountInterface &$account = NULL, &$session_id = NULL) {
@@ -97,27 +111,18 @@ class FlagService implements FlagServiceInterface {
     // also, it must be optional to allow a variable that is NULL to pass the
     // type-hint check.
 
-    // Get the current user if the account is NULL.
-    if ($account == NULL) {
+    if (!isset($account)) {
+      // If there isn't an account, set it to the current user.
       $account = $this->currentUser;
-
-      // If the user is anonymous, get the session ID.
-      if ($account->isAnonymous()) {
-        // Ensure something is in $_SESSION, otherwise the session ID will
-        // not persist.
-        // TODO: Replace this with something cleaner once core provides it.
-        // See https://www.drupal.org/node/2865991.
-        $_SESSION['flag'] = TRUE;
-
-        $this->sessionManager->start();
-
-        // Intentionally clobber $session_id; it makes no sense to specify that
-        // but not $account.
+      // If the user is anonymous, get the session ID. Note that this does not
+      // always mean that the session is started. Session is started explicitly
+      // from FlagService->ensureSession() method.
+      if (!isset($session_id) && $account->isAnonymous()) {
         $session_id = $this->sessionManager->getId();
       }
     }
-    elseif ($account->isAnonymous() && is_null($session_id)) {
-      throw new \LogicException('Anonymous users must be identifed by session_id');
+    elseif ($account->isAnonymous() && $session_id === NULL) {
+      throw new \LogicException('Anonymous users must be identified by session_id');
     }
   }
 
@@ -229,6 +234,7 @@ class FlagService implements FlagServiceInterface {
   public function flag(FlagInterface $flag, EntityInterface $entity, AccountInterface $account = NULL, $session_id = NULL) {
     $bundles = $flag->getBundles();
 
+    $this->ensureSession();
     $this->populateFlaggerDefaults($account, $session_id);
 
     // Check the entity type corresponds to the flag type.

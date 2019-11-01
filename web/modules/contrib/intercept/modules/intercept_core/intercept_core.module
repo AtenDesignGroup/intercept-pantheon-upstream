@@ -2,6 +2,7 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_page_attachments.
@@ -178,4 +179,17 @@ function intercept_core_user_load(array $entities) {
       $entity->addCacheTags($profile->getCacheTags());
     }
   }
+}
+
+/**
+ * Gets the nested file attached to the image_primary field.
+ */
+function intercept_core_get_primary_image_file(Node $node) {
+  if (!$node->hasField('image_primary')) {
+    return NULL;
+  }
+  if (($image_primary = $node->image_primary->referencedEntities()) && ($files = $image_primary[0]->field_media_image->referencedEntities())) {
+    return $files[0];
+  }
+  return NULL;
 }

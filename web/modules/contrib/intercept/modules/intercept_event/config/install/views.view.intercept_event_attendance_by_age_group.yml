@@ -22,7 +22,7 @@ dependencies:
     - tally
     - user
 id: intercept_event_attendance_by_age_group
-label: 'InterCEPT Event Attendance By Age Group'
+label: 'Intercept Event Attendance By Age Group'
 module: views
 description: 'Shows overall attendance by age groups for each event.'
 tag: ''
@@ -255,7 +255,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: Attendees
+          label: 'Attendees - Population Segment 1'
           exclude: false
           alter:
             alter_text: false
@@ -302,12 +302,198 @@ display:
           group_column: ''
           group_columns: {  }
           group_rows: 1
-          delta_limit: '0'
+          delta_limit: '1'
           delta_offset: '0'
           delta_reversed: 0
           delta_first_last: 0
           multi_type: ul
           separator: '|'
+          field_api_classes: 0
+          plugin_id: tally_field
+        field_attendees_1:
+          id: field_attendees_1
+          table: node__field_attendees
+          field: field_attendees
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Attendees - Population Segment 2'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: count
+          type: tally_default
+          settings: {  }
+          group_column: ''
+          group_columns: {  }
+          group_rows: 1
+          delta_limit: '1'
+          delta_offset: '1'
+          delta_reversed: 0
+          delta_first_last: 0
+          multi_type: ul
+          separator: ', '
+          field_api_classes: 0
+          plugin_id: tally_field
+        field_attendees_2:
+          id: field_attendees_2
+          table: node__field_attendees
+          field: field_attendees
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Attendees - Population Segment 3'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: count
+          type: tally_default
+          settings: {  }
+          group_column: ''
+          group_columns: {  }
+          group_rows: 1
+          delta_limit: '1'
+          delta_offset: '2'
+          delta_reversed: 0
+          delta_first_last: 0
+          multi_type: ul
+          separator: ', '
+          field_api_classes: 0
+          plugin_id: tally_field
+        field_attendees_3:
+          id: field_attendees_3
+          table: node__field_attendees
+          field: field_attendees
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Attendees - Population Segment 4'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: count
+          type: tally_default
+          settings: {  }
+          group_column: ''
+          group_columns: {  }
+          group_rows: 1
+          delta_limit: '1'
+          delta_offset: '3'
+          delta_reversed: 0
+          delta_first_last: 0
+          multi_type: ul
+          separator: ', '
           field_api_classes: 0
           plugin_id: tally_field
         field_date_time:
@@ -776,48 +962,6 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
-        field_attendees_count:
-          id: field_attendees_count
-          table: node__field_attendees
-          field: field_attendees_count
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: '1'
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: ''
-            min_placeholder: ''
-            max_placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          plugin_id: numeric
         field_date_time_value:
           id: field_date_time_value
           table: node__field_date_time
@@ -1099,8 +1243,10 @@ display:
     display_title: 'REST export'
     position: 2
     display_options:
-      display_extenders: {  }
-      path: data/export/attendance-by-age-group
+      display_extenders:
+        views_ajax_history:
+          history: true
+      path: data/export/attendance-by-age-group.csv
       pager:
         type: none
         options:

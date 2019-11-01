@@ -1,24 +1,24 @@
 intercept_core.settings:
-  title: 'InterCEPT Settings'
-  description: 'Administer InterCEPT specific settings.'
+  title: 'Intercept Settings'
+  description: 'Administer Intercept specific settings.'
   route_name: intercept_core.settings
   parent: system.admin_config
 
 intercept_core.general:
-  title: 'InterCEPT Settings'
-  description: 'InterCEPT general settings.'
+  title: 'Intercept Settings'
+  description: 'Intercept general settings.'
   route_name: intercept_core.general
   parent: intercept_core.settings
 
 intercept_core.permissions:
-  title: 'InterCEPT Permissions'
-  description: 'InterCEPT specific permissions.'
+  title: 'Intercept Permissions'
+  description: 'Intercept specific permissions.'
   route_name: intercept_core.admin_permissions
   parent: intercept_core.settings
 
 intercept_core.admin_structure:
-  title: 'InterCEPT'
-  description: 'Configure InterCEPT entity structures.'
+  title: 'Intercept'
+  description: 'Configure Intercept entity structures.'
   route_name: intercept_core.admin_structure
   parent: system.admin_structure
 

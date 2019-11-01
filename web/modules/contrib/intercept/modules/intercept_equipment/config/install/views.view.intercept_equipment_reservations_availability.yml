@@ -14,7 +14,7 @@ dependencies:
     - node
     - user
 id: intercept_equipment_reservations_availability
-label: 'InterCEPT Equipment Reservations Availability'
+label: 'Intercept Equipment Reservations Availability'
 module: views
 description: 'Show availability information about a particular piece of equipment.'
 tag: ''

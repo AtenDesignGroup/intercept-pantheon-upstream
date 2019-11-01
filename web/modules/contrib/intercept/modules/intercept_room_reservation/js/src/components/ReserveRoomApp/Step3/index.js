@@ -57,9 +57,8 @@ function getFilters(values) {
   }
 
   const types = [
-    { id: c.TYPE_ROOM_TYPE, path: 'field_room_type.uuid', conjunction: 'OR' },
-    { id: c.TYPE_LOCATION, path: 'field_location.uuid', conjunction: 'OR' },
-    // { id: c.TYPE_AUDIENCE, path: 'field_event_audience.uuid', conjunction: 'OR' },
+    { id: c.TYPE_ROOM_TYPE, path: 'field_room_type.id', conjunction: 'OR' },
+    { id: c.TYPE_LOCATION, path: 'field_location.id', conjunction: 'OR' },
   ];
 
   types.forEach((type) => {

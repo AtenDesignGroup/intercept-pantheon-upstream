@@ -6,28 +6,19 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\Core\Url;
 use Drupal\flag\Ajax\ActionLinkFlashCommand;
 use Drupal\flag\FlagInterface;
 use Drupal\flag\FlagServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Utility\Html;
 
 /**
  * Controller responses to flag and unflag action links.
  *
- * If the action_link is a normal link then after an update the response to a
- *  valid request is a redirect to the entity with drupal update message.
- *
- * For an ajax_action_link the response is a set of AJAX commands to update the
- * link in the page. If the user agent has javascript disabled then the
- * behaviour reverts to that of a normal link.
+ * The response is a set of AJAX commands to update the
+ * link in the page.
  */
-
 class ActionLinkController implements ContainerInjectionInterface {
   /**
    * The flag service.
@@ -46,8 +37,10 @@ class ActionLinkController implements ContainerInjectionInterface {
   /**
    * Constructor.
    *
-   * @param FlagServiceInterface $flag
+   * @param \Drupal\flag\FlagServiceInterface $flag
    *   The flag service.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer service.
    */
   public function __construct(FlagServiceInterface $flag, RendererInterface $renderer) {
     $this->flagService = $flag;
@@ -71,15 +64,13 @@ class ActionLinkController implements ContainerInjectionInterface {
    *   The flag entity.
    * @param int $entity_id
    *   The flaggable entity ID.
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
    *
-   * @return \Drupal\Core\Ajax\AjaxResponse|\Symfony\Component\HttpFoundation\RedirectResponse|null
+   * @return \Drupal\Core\Ajax\AjaxResponse|null
    *   The response object, only if successful.
    *
    * @see \Drupal\flag\Plugin\Reload
    */
-  public function flag(FlagInterface $flag, $entity_id, Request $request) {
+  public function flag(FlagInterface $flag, $entity_id) {
     /* @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $this->flagService->getFlaggableById($flag, $entity_id);
 
@@ -91,7 +82,7 @@ class ActionLinkController implements ContainerInjectionInterface {
       // link for the existing state of the flag.
     }
 
-    return $this->generateResponse($flag, $entity, $request, $flag->getMessage('flag'));
+    return $this->generateResponse($flag, $entity, $flag->getMessage('flag'));
   }
 
   /**
@@ -101,15 +92,13 @@ class ActionLinkController implements ContainerInjectionInterface {
    *   The flag entity.
    * @param int $entity_id
    *   The flaggable entity ID.
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
    *
-   * @return \Drupal\Core\Ajax\AjaxResponse|\Symfony\Component\HttpFoundation\RedirectResponse|null
+   * @return \Drupal\Core\Ajax\AjaxResponse|null
    *   The response object, only if successful.
    *
    * @see \Drupal\flag\Plugin\Reload
    */
-  public function unflag(FlagInterface $flag, $entity_id, Request $request) {
+  public function unflag(FlagInterface $flag, $entity_id) {
     /* @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $this->flagService->getFlaggableById($flag, $entity_id);
 
@@ -121,7 +110,7 @@ class ActionLinkController implements ContainerInjectionInterface {
       // link for the existing state of the flag.
     }
 
-    return $this->generateResponse($flag, $entity, $request, $flag->getMessage('unflag'));
+    return $this->generateResponse($flag, $entity, $flag->getMessage('unflag'));
   }
 
   /**
@@ -134,49 +123,29 @@ class ActionLinkController implements ContainerInjectionInterface {
    * @param string $message
    *   (optional) The message to flash.
    *
-   * @return \Drupal\Core\Ajax\AjaxResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+   * @return \Drupal\Core\Ajax\AjaxResponse
    *   The response object.
    */
-  protected function generateResponse(FlagInterface $flag, EntityInterface $entity, Request $request, $message = NULL) {
-    if ($request->get(MainContentViewSubscriber::WRAPPER_FORMAT) == 'drupal_ajax') {
-      // Create a new AJAX response.
-      $response = new AjaxResponse();
+  private function generateResponse(FlagInterface $flag, EntityInterface $entity, $message) {
+    // Create a new AJAX response.
+    $response = new AjaxResponse();
 
-      // Get the link type plugin.
-      $link_type = $flag->getLinkTypePlugin();
+    // Get the link type plugin.
+    $link_type = $flag->getLinkTypePlugin();
 
-      // Generate the link render array.
-      $link = $link_type->getAsFlagLink($flag, $entity);
+    // Generate the link render array.
+    $link = $link_type->getAsFlagLink($flag, $entity);
 
-      // Generate a CSS selector to use in a JQuery Replace command.
-      $selector = '.js-flag-' . Html::cleanCssIdentifier($flag->id()) . '-' . $entity->id();
+    // Generate a CSS selector to use in a JQuery Replace command.
+    $selector = '.js-flag-' . Html::cleanCssIdentifier($flag->id()) . '-' . $entity->id();
 
-      // Create a new JQuery Replace command to update the link display.
-      $replace = new ReplaceCommand($selector, $this->renderer->renderPlain($link));
-      $response->addCommand($replace);
+    // Create a new JQuery Replace command to update the link display.
+    $replace = new ReplaceCommand($selector, $this->renderer->renderPlain($link));
+    $response->addCommand($replace);
 
-      if ($message) {
-        // Push a message pulsing command onto the stack.
-        $pulse = new ActionLinkFlashCommand($selector, $message);
-        $response->addCommand($pulse);
-     }
-    }
-    elseif ($entity->hasLinkTemplate('canonical')) {
-      // Redirect back to the entity. A passed in destination query parameter
-      // will automatically override this.
-      $url_info = $entity->toUrl();
-
-      $options['absolute'] = TRUE;
-      $url = Url::fromRoute($url_info->getRouteName(), $url_info->getRouteParameters(), $options);
-      $response = new RedirectResponse($url->toString());
-
-    }
-    else {
-      // For entities that don't have a canonical URL (like paragraphs),
-      // redirect to the front page.
-      $front = Url::fromUri('internal:/');
-      $response = new RedirectResponse($front);
-    }
+    // Push a message pulsing command onto the stack.
+    $pulse = new ActionLinkFlashCommand($selector, $message);
+    $response->addCommand($pulse);
 
     return $response;
   }

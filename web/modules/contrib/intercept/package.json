@@ -11,10 +11,10 @@
     "build:js-helpers": "./node_modules/.bin/babel-external-helpers | ./node_modules/.bin/uglifyjs > modules/intercept_core/js/dist/babelHelpers.js"
   },
   "dependencies": {
-    "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/polyfill": "^7.0.0",
+    "@babel/runtime": "^7.6.3",
     "@material-ui/codemod": "^1.0.0-rc.0",
-    "@material-ui/core": "^1.0.0",
+    "@material-ui/core": "^1.5.1",
     "@material-ui/icons": "^1.0.0",
     "babel-eslint": "^10.0.1",
     "core-js": "^2.5.7",
@@ -43,8 +43,10 @@
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-transform-parameters": "^7.1.0",
+    "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
+    "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
     "babel-minify-webpack-plugin": "^0.3.1",
     "eslint": "^4.17.0",

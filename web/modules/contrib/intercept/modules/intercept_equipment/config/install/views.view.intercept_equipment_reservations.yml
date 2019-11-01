@@ -18,7 +18,7 @@ dependencies:
     - taxonomy
     - user
 id: intercept_equipment_reservations
-label: 'InterCEPT Equipment Reservations'
+label: 'Intercept Equipment Reservations'
 module: views
 description: 'Shows all current equipment reservations in the system.'
 tag: ''

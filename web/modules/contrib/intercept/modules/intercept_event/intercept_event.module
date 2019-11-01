@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -8,6 +9,7 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
@@ -260,7 +262,8 @@ function intercept_event_entity_presave(EntityInterface $entity) {
         $keywords .= ' ' . $tag->getName();
       }
       // Clean up the keywords string to remove punctuation & extra white space.
-      $keywords = preg_replace("/[^a-zA-Z 0-9\-]/", ' ', $keywords);
+      $keywords = preg_replace('/[Rr]ésumé/', 'résumé resume', $keywords); // Résumé
+      $keywords = preg_replace("/[^a-zA-Z 0-9\-]/", '', $keywords);
       $keywords = preg_replace('/\s+/', ' ', $keywords);
       $keywords = trim($keywords);
       // Setting the value into the keywords field.
@@ -559,11 +562,11 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
 function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
   $fields = [];
   if ($entity_type->id() == 'vote' && $bundle == 'evaluation') {
-    $fields['vote_criteria'] = \Drupal\Core\Field\BaseFieldDefinition::create('map')
+    $fields['vote_criteria'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Vote criteria'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
-    $fields['feedback'] = \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+    $fields['feedback'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Feedback'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
@@ -571,7 +574,7 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
     return $fields;
   }
   if ($entity_type->id() == 'node' && $bundle == 'event') {
-    $fields['registration'] = \Drupal\Core\Field\BaseFieldDefinition::create('intercept_computed')
+    $fields['registration'] = BaseFieldDefinition::create('intercept_computed')
       ->setLabel(t('Registration details'))
       ->setComputed(TRUE)
       ->setSetting('properties', [
@@ -582,11 +585,20 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
       ])
       ->setClass(\Drupal\intercept_event\EventRegistrationField::class);
 
-    $fields['event_recurrence'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $fields['event_recurrence'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Event recurrence'))
       ->setSetting('target_type', 'event_recurrence')
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
+
+    // @TODO: Make this configurable by privileged user accounts.
+    $fields['event_thumbnail'] = BaseFieldDefinition::create('intercept_computed')
+      ->setLabel(new TranslatableMarkup('Image Thumbnail'))
+      ->setComputed(TRUE)
+      ->setSetting('properties', [
+        'thumbnail' => DataDefinition::create('string')->setLabel(t('Image Thumbnail')),
+      ])
+      ->setClass(\Drupal\intercept_core\EntityImageThumbnailUriField::class);
   }
   return $fields;
 }
@@ -624,6 +636,24 @@ function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type
 }
 
 /**
+ * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
+ */
+function intercept_event_jsonapi_event_attendance_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+  return ([
+    JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view event_attendance', 'view referenced user event_attendance'], 'OR'),
+  ]);
+}
+
+/**
+ * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
+ */
+function intercept_event_jsonapi_event_registration_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+  return ([
+    JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view event_registration', 'view referenced user event_registration'], 'OR'),
+  ]);
+}
+
+/**
  * Implements hook_views_query_alter().
  */
 function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
@@ -653,6 +683,14 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
     $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
     $query->addGroupBy('node.nid');
   }
+  elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
+    $query_params = \Drupal::request()->query->all();
+    if ($query_params['field_date_time_value'] == 1) { // Past events
+      // Past events under My Account need to be sorted DESC instead of ASC.
+      $query->orderby[0]['direction'] = 'DESC';
+    }
+
+  }
 }
 
 /**
@@ -679,5 +717,30 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
       'plugin_id' => 'text_custom',
     ];
     $view->setHandler('page', 'header', 'area_text_custom', $options);
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function intercept_event_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'intercept_event_attendance_by_age_group'){
+    foreach ($view->field as $field_name => $field) {
+      if (strpos($field_name, 'field_attendees') === 0) {
+        $terms =\Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadTree('population_segment');
+        foreach ($terms as $index => $term) {
+          if ($index == $field->options['delta_offset']) {
+            // Re-style the headers to use whatever Population Segments are
+            // configured in the site. It should be the same order that they're
+            // in in that taxonomy vocabulary. That would match up with the
+            // "offset" that the person used in the views UI.
+            $view->field[$field_name]->options['label'] = $term->name;
+            $view->style_plugin->view->field[$field_name]->options['label'] = $term->name;
+          }
+        }
+      }
+    }
   }
 }

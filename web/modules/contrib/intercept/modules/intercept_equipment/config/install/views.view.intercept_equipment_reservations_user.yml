@@ -12,7 +12,7 @@ dependencies:
     - node
     - user
 id: intercept_equipment_reservations_user
-label: 'InterCEPT Equipment Reservations for User'
+label: 'Intercept Equipment Reservations for User'
 module: views
 description: 'Shows all equipment reservations for the specified user id.'
 tag: ''

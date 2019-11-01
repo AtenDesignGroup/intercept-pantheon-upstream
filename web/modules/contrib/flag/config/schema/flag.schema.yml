@@ -29,7 +29,7 @@ flag.flag.*:
       type: label
       label: 'Flag link description text'
     flag_message:
-      type: string
+      type: label
       label: 'Flag message'
     unflag_short:
       type: label
@@ -146,7 +146,7 @@ flag.link_type.plugin.field_entry:
       type: string
       label: 'Where should the form open (new page, modal, etc)'
 
-action.configuration.flag_action:*.*:
+action.configuration.flag_action:*:
   type: mapping
   label: 'Configuration for flag actions'
   mapping:

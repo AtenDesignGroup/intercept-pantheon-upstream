@@ -1,11 +1,11 @@
-name: InterCEPT Core
+name: Intercept Core
 description: 'Provides core components required by other features.'
 type: module
 core: 8.x
 dependencies:
   - address:address
   - consumers:consumers
-  - drupal:consumer_image_styles
+  - consumer_image_styles:consumer_image_styles
   - drupal:field
   - drupal:file
   - drupal:jsonapi
@@ -24,9 +24,4 @@ dependencies:
   - intercept:intercept
   - intercept:intercept_ils
   - profile:profile
-package: 'InterCEPT'
-
-# Information added by Drupal.org packaging script on 2019-08-22
-version: '8.x-1.0-alpha9'
-project: 'intercept'
-datestamp: 1566489190
+package: 'Intercept'

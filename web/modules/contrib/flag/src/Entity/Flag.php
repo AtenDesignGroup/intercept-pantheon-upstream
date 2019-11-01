@@ -504,6 +504,7 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
       // Rebuild views data to invalidate flag relationships.
       \Drupal::service('views.views_data')->clear();
     }
+    \Drupal::service('plugin.manager.action')->clearCachedDefinitions();
   }
 
   /**
@@ -515,6 +516,7 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
       // Rebuild views data to invalidate flag relationships.
       \Drupal::service('views.views_data')->clear();
     }
+    \Drupal::service('plugin.manager.action')->clearCachedDefinitions();
   }
 
   /**

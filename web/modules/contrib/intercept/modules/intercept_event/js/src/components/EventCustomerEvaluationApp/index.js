@@ -251,7 +251,6 @@ const mapDispatchToProps = dispatch => ({
         fields: {
           [c.TYPE_EVENT_TYPE]: [
             'name',
-            'uuid',
             'field_evaluation_criteria_neg',
             'field_evaluation_criteria_pos',
           ],
@@ -269,7 +268,7 @@ const mapDispatchToProps = dispatch => ({
           },
         },
         fields: {
-          [c.TYPE_EVALUATION_CRITERIA]: ['name', 'uuid'],
+          [c.TYPE_EVALUATION_CRITERIA]: ['name'],
         },
       }),
     );

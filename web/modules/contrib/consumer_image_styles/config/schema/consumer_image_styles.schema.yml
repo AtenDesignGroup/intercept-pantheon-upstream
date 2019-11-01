@@ -1,0 +1,14 @@
+jsonapi_extras.enhancer_plugin.image_styles:
+  type: mapping
+  mapping:
+    styles:
+      type: mapping
+      mapping:
+        refine:
+          type: boolean
+        custom_selection:
+          type: sequence
+          label: Custom Selection
+          sequence:
+            type: string
+            label: Image Style ID

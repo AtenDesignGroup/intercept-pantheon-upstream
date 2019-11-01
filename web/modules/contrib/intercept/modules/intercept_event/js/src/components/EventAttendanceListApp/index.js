@@ -58,7 +58,7 @@ class EventAttendanceListApp extends Component {
     this.props.fetchAttendance({
       filters: {
         event: {
-          path: 'field_event.uuid',
+          path: 'field_event.id',
           value: this.props.event.uuid,
         },
       },
@@ -73,7 +73,7 @@ class EventAttendanceListApp extends Component {
     this.props.fetchRegistrations({
       filters: {
         event: {
-          path: 'field_event.uuid',
+          path: 'field_event.id',
           value: this.props.event.uuid,
         },
         status: {
@@ -180,7 +180,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   fetchSegments: (
     options = {
       fields: {
-        [c.TYPE_POPULATION_SEGMENT]: ['name', 'uuid', 'weight'],
+        [c.TYPE_POPULATION_SEGMENT]: ['name', 'weight'],
       },
     },
   ) => {

@@ -6,12 +6,16 @@
  */
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Drupal\node\NodeInterface;
@@ -27,7 +31,7 @@ function intercept_room_reservation_help($route_name, RouteMatchInterface $route
     case 'help.page.intercept_room_reservation':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('Room reservation functionality for the InterCEPT library') . '</p>';
+      $output .= '<p>' . t('Room reservation functionality for the Intercept library') . '</p>';
       return $output;
 
     default:
@@ -35,16 +39,16 @@ function intercept_room_reservation_help($route_name, RouteMatchInterface $route
 }
 
 /**
- * Implements hook_node_access().
+ * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
  */
-function intercept_room_reservation_node_access(NodeInterface $node, $op, AccountInterface $account) {
-  if ($node->bundle() == 'room' && $op == 'view') {
-    if ($node->field_staff_use_only->getString() === "1" && !$account->hasPermission('view staff use room reservation')) {
-      return AccessResult::forbidden()->cachePerPermissions()->cachePerUser()->addCacheableDependency($node);
-    }
-  }
-  // No opinion.
-  return AccessResult::neutral();
+function intercept_room_reservation_jsonapi_room_reservation_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+  return ([
+    // @todo CRL-163: The 'view referenced user room_reservation' permission does not yet exist.
+    // Once it has been implemented, the AMONG_ALL should be commented out and AMONG_OWN deleted.
+    // JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view room_reservation', 'view referenced user room_reservation'], 'OR'),
+    JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view room_reservation'], 'OR'),
+    JSONAPI_FILTER_AMONG_OWN => AccessResult::allowedIfHasPermission($account, 'view own room_reservation'),
+  ]);
 }
 
 /**
@@ -189,7 +193,7 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
       ->sort('title')
       ->execute();
 
-    // If there are no nodes, move on.
+    // If there are no nodes, move on
     if (!$nids) {
       return FALSE;
     }
@@ -198,7 +202,7 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $options = [];
     $nodes = $storage->loadMultiple($nids);
 
-    // Push titles into select list.
+    // Push titles into select list
     foreach ($nodes as $node) {
       $title = $node->getTitle();
       $options[$title] = $title;
@@ -319,6 +323,24 @@ function intercept_room_reservation_entity_extra_field_info() {
 }
 
 /**
+ * Implements hook_entity_bundle_field_info().
+ */
+function intercept_room_reservation_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  $fields = [];
+  if ($entity_type->id() == 'node' && $bundle == 'room') {
+    // @TODO: Make this configurable by privileged user accounts.
+    $fields['room_thumbnail'] = BaseFieldDefinition::create('intercept_computed')
+      ->setLabel(new TranslatableMarkup('Image Thumbnail'))
+      ->setComputed(TRUE)
+      ->setSetting('properties', [
+        'thumbnail' => DataDefinition::create('string')->setLabel(t('Image Thumbnail')),
+      ])
+      ->setClass(\Drupal\intercept_core\EntityImageThumbnailUriField::class);
+  }
+  return $fields;
+}
+
+/**
  * Implements hook_ENTITY_TYPE_view().
  */
 function intercept_room_reservation_room_reservation_view(array &$build, RoomReservationInterface $room_reservation, EntityViewDisplayInterface $display, $view_mode) {
@@ -371,8 +393,20 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
           preg_match("/BETWEEN DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}' \+ (INTERVAL [-+]?\d* SECOND)\).*AND DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})/", $multi_date_reservation_or, $matches);
           // Need 3 captures from the original value of the condition.
           // 1) Start date, 2) Interval and 3) end date
-          $multi_date_reservation_or = "DATE_FORMAT((room_reservation__field_dates.field_dates_value + " . $matches[2] . "), '%Y-%m-%d\T%H:%i:%s') <= DATE_FORMAT(('" . $matches[1] . "T00:00:00' + " . $matches[2] . "), '%Y-%m-%d\T%H:%i:%s') AND DATE_FORMAT((room_reservation__field_dates.field_dates_end_value + " . $matches[2] . "), '%Y-%m-%d\T%H:%i:%s') >= DATE_FORMAT(('" . $matches[3] . "T00:00:00' + " . $matches[2] . "), '%Y-%m-%d\T%H:%i:%s')";
-          $condition['field'] = '(' . $condition['field'] . ') OR (' . $multi_date_reservation_or . ')';
+          // Need # seconds exactly.
+          preg_match("/INTERVAL ([-+]?\d*) SECOND/", $matches[2], $matches_seconds);
+          if ($matches_seconds) {
+            if ($matches_seconds[1] < 0) { // The number is negative.
+              $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') + abs($matches_seconds[1]));
+              $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') + abs($matches_seconds[1]));
+            }
+            else { // The number is positive.
+              $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') - abs($matches_seconds[1]));
+              $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') - abs($matches_seconds[1]));
+            }
+            $multi_date_reservation_or = "DATE_FORMAT((room_reservation__field_dates.field_dates_value), '%Y-%m-%d\T%H:%i:%s') <= DATE_FORMAT(('" . $start_date . "'), '%Y-%m-%d\T%H:%i:%s') AND DATE_FORMAT((room_reservation__field_dates.field_dates_end_value), '%Y-%m-%d\T%H:%i:%s') >= DATE_FORMAT(('" . $end_date . "'), '%Y-%m-%d\T%H:%i:%s')";
+            $condition['field'] = '(' . $condition['field'] . ') OR (' . $multi_date_reservation_or . ')';
+          }
         }
       }
     }

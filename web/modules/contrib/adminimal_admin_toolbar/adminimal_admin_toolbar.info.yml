@@ -1,5 +1,5 @@
 name: Adminimal Admin Toolbar
-# core: 8.x
+core: 8.x
 description: Adminimal styling brought to admin toolbar.
 package: Administration
 configure: adminimal_admin_toolbar.settings
@@ -7,8 +7,7 @@ type: module
 dependencies:
   - admin_toolbar:admin_toolbar
 
-# Information added by Drupal.org packaging script on 2019-01-23
-version: '8.x-1.9'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2019-10-16
+version: '8.x-1.10'
 project: 'adminimal_admin_toolbar'
-datestamp: 1548270795
+datestamp: 1571249592

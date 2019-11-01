@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: intercept_room_reservation_approver
-label: 'InterCEPT Room Reservation Approver'
+label: 'Intercept Room Reservation Approver'
 weight: 4
 is_admin: null
 permissions:
@@ -13,11 +13,14 @@ permissions:
   - 'approve room_reservation entities'
   - 'bypass room reservation agreement'
   - 'bypass room reservation limit'
+  - 'cancel referenced user room_reservation'
   - 'cancel room_reservation'
   - 'create room_reservation'
   - 'update any room_reservation'
   - 'update own room_reservation'
+  - 'update referenced user room_reservation'
   - 'view own room_reservation'
+  - 'view referenced user room_reservation'
   - 'view reservation content'
   - 'view room_reservation'
   - 'view staff use room reservation'

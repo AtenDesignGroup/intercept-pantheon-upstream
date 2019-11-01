@@ -195,11 +195,15 @@ trait FlagCreateTrait {
    */
   protected function randomHTMLString($length = 8) {
     // A safe string.
-   $str = Html::decodeEntities(Xss::filter($this->randomString($length * 2), []));
-   // Remove all whitespaces.
-   $no_space = preg_replace('/\s+/', '', $str);
-   // Trim to the required length;
-   return substr($no_space, 0, $length);
-  }
+    $str = Html::decodeEntities(Xss::filter($this->randomString($length * 2), []));
 
+    // Remove all whitespaces.
+    $no_space = preg_replace('/\s+/', '', $str);
+
+    // Remove all angle brackets.
+    $no_brackets = preg_replace('/[<>]/', '_', $no_space);
+
+    // Trim to the required length;
+    return substr($no_brackets, 0, $length);
+  }
 }

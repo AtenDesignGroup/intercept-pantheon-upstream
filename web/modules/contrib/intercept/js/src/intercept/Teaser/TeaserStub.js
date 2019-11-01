@@ -42,32 +42,11 @@ const TeaserStub = (props) => {
 };
 
 TeaserStub.propTypes = {
-  // uuid: PropTypes.string,
-  // date: PropTypes.object,
-  // description: PropTypes.string,
-  // footer: PropTypes.func,
-  // image: PropTypes.string,
   modifiers: PropTypes.arrayOf(PropTypes.string),
-  // supertitle: PropTypes.string,
-  // subtitle: PropTypes.string,
-  // tags: PropTypes.arrayOf(PropTypes.element),
-  // title: PropTypes.string.isRequired,
-  // titleUrl: PropTypes.string,
-  // type: PropTypes.string,
 };
 
 TeaserStub.defaultProps = {
-  // date: null,
-  // description: null,
   modifiers: [],
-  // footer: null,
-  // image: null,
-  // subtitle: null,
-  // supertitle: null,
-  // titleUrl: null,
-  // tags: null,
-  // type: null,
-  // uuid: null,
 };
 
 export default TeaserStub;

@@ -8,7 +8,7 @@ dependencies:
   module:
     - node
 id: intercept_event_templates
-label: 'InterCEPT Event templates'
+label: 'Intercept Event templates'
 module: views
 description: ''
 tag: ''

@@ -14,7 +14,7 @@ dependencies:
     - node
     - user
 id: intercept_events
-label: 'InterCEPT Events'
+label: 'Intercept Events'
 module: views
 description: ''
 tag: ''

@@ -47,6 +47,7 @@ const babelLoader = {
     plugins: [
       '@babel/plugin-proposal-class-properties',
       '@babel/plugin-external-helpers',
+      '@babel/plugin-transform-runtime',
     ],
   },
 };
@@ -88,6 +89,7 @@ module.exports = function config(env) {
       output: {
         filename: '[name].js',
         path: path.resolve(__dirname),
+        jsonpFunction: 'wpJsonpIntercept',
       },
       resolve: {
         // Allow common modules in the root module to be referenced.
@@ -115,7 +117,6 @@ module.exports = function config(env) {
             new Minify({
               deadcode: false,
             }),
-            // new BundleAnalyzerPlugin(),
           );
         }
 

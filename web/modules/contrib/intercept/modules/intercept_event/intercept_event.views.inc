@@ -6,7 +6,7 @@
 function intercept_event_views_data_alter(&$data) {
   $data['users_field_data']['uid_current'] = [
     'real field' => 'uid',
-    'title' => t('InterCEPT Current'),
+    'title' => t('Intercept Current'),
     'help' => t('Filter the view to the currently logged in user but avoid an INNER join.'),
     'filter' => [
       'id' => 'user_current',

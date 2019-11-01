@@ -19,9 +19,6 @@ class SuggestedEventsQuery extends Query {
    */
   protected function compile() {
     parent::compile();
-    // TODO: Refactor this to not be hardcoded.
-    $this->sqlQuery->addJoin('LEFT', 'flagging', 'f', "f.flag_id = 'saved_event' AND f.entity_id = base_table.nid");
-    $this->sqlQuery->isNull('f.id');
     return $this;
   }
 

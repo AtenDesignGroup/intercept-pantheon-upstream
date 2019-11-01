@@ -244,7 +244,7 @@ const mapDispatchToProps = dispatch => ({
         filters: {
           uuid: {
             value: id,
-            path: 'uuid',
+            path: 'id',
           },
         },
         include: ['image_primary', 'image_primary.field_media_image', 'field_room'],
@@ -258,11 +258,11 @@ const mapDispatchToProps = dispatch => ({
         filters: {
           event: {
             value: id,
-            path: 'field_event.uuid',
+            path: 'field_event.id',
           },
           user: {
             value: utils.getUserUuid(),
-            path: 'field_user.uuid',
+            path: 'field_user.id',
           },
         },
       }),

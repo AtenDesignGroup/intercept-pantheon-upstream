@@ -4,20 +4,16 @@ import PropTypes from 'prop-types';
 // Redux
 import { connect } from 'react-redux';
 
-// Lodash
-import get from 'lodash/get';
-
 // Material UI
 import Button from '@material-ui/core/Button';
 
 /* eslint-disable */
 import interceptClient from 'interceptClient';
-import drupalSettings from 'drupalSettings';
 /* eslint-enable */
 
-const { select } = interceptClient;
+const { select, utils } = interceptClient;
 
-const defaultUserId = get(drupalSettings, 'intercept.user.uuid');
+const defaultUserId = utils.getUserUuid();
 
 function ButtonRegister(props) {
   const { onClick, mustRegister, registerUrl, text, registrationAllowed } = props;

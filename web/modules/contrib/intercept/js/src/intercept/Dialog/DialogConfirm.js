@@ -1,4 +1,5 @@
 import React from 'react';
+import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,6 +8,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
+
+// Click debounce options to prevent click happy multi-confirmations.
+const DEBOUNCE_WAIT = 1000;
+const DEBOUNCE_OPTIONS = {
+  trailing: false,
+  leading: true,
+};
 
 class DialogConfirm extends React.PureComponent {
   render() {
@@ -47,13 +55,13 @@ class DialogConfirm extends React.PureComponent {
           <DialogActions>
             {onCancel &&
               cancelText && (
-                <Button onClick={onCancel} color="secondary">
+                <Button onClick={debounce(onCancel, DEBOUNCE_WAIT, DEBOUNCE_OPTIONS)} color="secondary">
                   {cancelText}
                 </Button>
               )}
             {onConfirm &&
               confirmText && (
-                <Button onClick={onConfirm} color="primary" autoFocus>
+                <Button onClick={debounce(onConfirm, DEBOUNCE_WAIT, DEBOUNCE_OPTIONS)} color="primary" autoFocus>
                   {confirmText}
                 </Button>
               )}

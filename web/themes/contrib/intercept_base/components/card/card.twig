@@ -3,14 +3,14 @@
 <article {{ component.attributes('card', modifiers, attr) }}>
 
   {% if image %}
-  {% if title_link.url %}
+  {% if title_link.url is not empty %}
   <a href="{{ title_link.url }}" title="{{ title }}">
   {% endif %}
   <figure class="card__image">
     {{ image }}
   </figure>
 
-  {% if title_link.url %}
+  {% if title_link.url is not empty %}
   </a>
   {% endif %}
   {% endif %}
@@ -19,13 +19,13 @@
 
     <header class="card__header">
       <h3 class="card__title">
-        {% if title_link %}
+        {% if title_link.url is not empty %}
         <a href="{{ title_link.url }}" title="{{ title }}" class="{{ title_link.class }}">
         {% endif %}
 
         {{ title }}
 
-        {% if title_link %}
+        {% if title_link.url is not empty %}
         </a>
         {% endif %}
       </h3>

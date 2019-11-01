@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: intercept_event_organizer
-label: 'InterCEPT Event Organizer'
+label: 'Intercept Event Organizer'
 weight: 4
 is_admin: null
 permissions:

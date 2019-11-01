@@ -160,6 +160,20 @@ function prototype_theme_suggestions_taxonomy_term_alter(array &$suggestions, ar
 
 /**
  * Implements hook_theme_suggestions_HOOK_alter().
+ *
+ * @Todo remove after these are resolved:
+ * https://www.drupal.org/project/drupal/issues/2270883
+ * https://www.drupal.org/project/drupal/issues/2766379
+ */
+function prototype_theme_suggestions_user_alter(array &$suggestions, array $variables) {
+  $view_mode = $variables['elements']['#view_mode'] ?? '';
+  if ($view_mode) {
+    $suggestions[] = 'user__' . $view_mode;
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
  */
 function prototype_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
   $id = $variables['view']->id();

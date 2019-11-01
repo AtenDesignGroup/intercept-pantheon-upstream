@@ -14,6 +14,11 @@ entity.event_recurrence.edit_form:
   base_route: entity.event_recurrence.canonical
   title: 'Edit'
 
+entity.event_recurrence.version_history:
+  route_name: entity.event_recurrence.version_history
+  base_route: entity.event_recurrence.canonical
+  title: 'Revisions'
+
 entity.node.recurrence_form:
   route_name: entity.node.recurrence_form
   base_route: entity.node.canonical

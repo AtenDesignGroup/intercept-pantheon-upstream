@@ -116,14 +116,14 @@ abstract class FlagTestBase extends WebTestBase {
     // Create an array of defaults.
     $default_edit = [
       'id' => strtolower($this->randomMachineName()),
-      'label' => $this->randomString(),
-      'flag_short' => $this->randomString(),
-      'unflag_short' => $this->randomString(),
-      'flag_long' => $this->randomString(16),
-      'unflag_long' => $this->randomString(16),
-      'flag_message' => $this->randomString(32),
-      'unflag_message' => $this->randomString(32),
-      'unflag_denied_text' => $this->randomString(),
+      'label' => $this->randomHTMLString(),
+      'flag_short' => $this->randomHTMLString(),
+      'unflag_short' => $this->randomHTMLString(),
+      'flag_long' => $this->randomHTMLString(16),
+      'unflag_long' => $this->randomHTMLString(16),
+      'flag_message' => $this->randomHTMLString(32),
+      'unflag_message' => $this->randomHTMLString(32),
+      'unflag_denied_text' => $this->randomHTMLString(),
     ];
 
     // Merge the default values with the edit array.

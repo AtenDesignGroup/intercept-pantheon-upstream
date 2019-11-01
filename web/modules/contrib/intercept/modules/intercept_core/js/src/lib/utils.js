@@ -39,12 +39,18 @@ export const newUserDate = (date = new Date()) =>
     .toDate();
 
 // Make sure the current value is a valid date object.
-export const ensureDate = date => {
+export const ensureDate = (date, offset) => {
   if (date instanceof moment) {
     return date.toDate();
   }
   if (date instanceof Date) {
+    if (offset === true) {
+      return new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    }
     return new Date(date);
+  }
+  if (offset === true) {
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
   }
   return new Date(date);
 };
@@ -138,21 +144,24 @@ export const getDurationInMinutes = (start, end) =>
 
 // Converts a Date object to a Drupal compatible string.
 //   Trims `.000Z` off the end.
-export const dateToDrupal = date =>
-  ensureDate(date)
+export const dateToDrupal = (date, offset) => {
+  offset = (typeof(offset) !== 'undefined') ? offset : false;
+  return ensureDate(date, offset)
     .toISOString()
     .replace(".000Z", "")
     .replace(".999Z", ""); // @todo Replace with regex
+}
 
 // Converts a Drupal compatible string to a Date object.
 export const dateFromDrupal = date =>
-  moment(`${date}Z`, moment.ISO_8601).toDate();
+  moment.utc(date).toDate();
+  // moment.utc(date, 'YYYY-MM-DDTHH:mm:ss').toDate();
 
 export const roundTo = (
   date,
   value = 15,
-  units = "minutes",
-  method = "ceil"
+  units = 'minutes',
+  method = 'ceil',
 ) => {
   const duration = moment.duration(value, units);
   return moment(Math[method](+date / +duration) * +duration);

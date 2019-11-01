@@ -218,15 +218,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     fetchReservation: (id) => {
       dispatch(
-        // @todo: Add support for fetching a single entity rather than fetching all filtered by uuid.
-        api[c.TYPE_ROOM_RESERVATION].fetchAll({
-          filters: {
-            uuid: {
-              value: id,
-              path: 'uuid',
-            },
-          },
-        }),
+        api[c.TYPE_ROOM_RESERVATION].fetchResource(id),
       );
     },
   };

@@ -52,7 +52,7 @@ function getRoomsWithLocationsFilters() {
       conjunction: 'AND',
     },
     withLocation: {
-      path: 'field_location',
+      path: 'field_location.id',
       value: null,
       operator: '<>',
       memberOf: 'locations',
@@ -107,8 +107,8 @@ function getFilters(values) {
   }
 
   const types = [
-    { id: c.TYPE_ROOM_TYPE, path: 'field_room_type.uuid', conjunction: 'OR' },
-    { id: c.TYPE_LOCATION, path: 'field_location.uuid', conjunction: 'OR' },
+    { id: c.TYPE_ROOM_TYPE, path: 'field_room_type.id', conjunction: 'OR' },
+    { id: c.TYPE_LOCATION, path: 'field_location.id', conjunction: 'OR' },
   ];
 
   types.forEach((type) => {
@@ -177,7 +177,7 @@ class ReserveRoomStep1 extends React.Component {
         meetingDetails: '',
         refreshments: false,
         refreshmentsDesc: '',
-        user: drupalSettings.intercept.user.uuid,
+        user: utils.getUserUuid(),
       },
       room: {
         current: null,
@@ -391,7 +391,12 @@ class ReserveRoomStep1 extends React.Component {
 
   render() {
     const { handleFilterChange, handleRoomSelect } = this;
-    const { rooms, roomsLoading, filters } = this.props;
+    const {
+      dateLimits,
+      rooms,
+      roomsLoading,
+      filters
+    } = this.props;
 
     const roomToShow = this.state.room[this.state.room.exiting ? 'previous' : 'current'];
     const roomFooter = (roomProps) => {
@@ -444,7 +449,11 @@ class ReserveRoomStep1 extends React.Component {
       <div className="l--sidebar-before">
         <div className="l__main">
           <div className="l__secondary">
-            <RoomFilters onChange={handleFilterChange} filters={filters} />
+            <RoomFilters
+              onChange={handleFilterChange}
+              filters={filters}
+              dateLimits={dateLimits}
+            />
           </div>
           <div className="l__primary">
             <PageSpinner loading={roomsLoading} />

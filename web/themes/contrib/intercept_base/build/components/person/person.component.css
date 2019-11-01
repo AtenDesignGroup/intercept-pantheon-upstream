@@ -51,3 +51,6 @@
         content: none; }
   .person__bio {
     margin-top: 1rem; }
+
+a.person__url {
+  text-decoration: none; }

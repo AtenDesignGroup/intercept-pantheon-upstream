@@ -15,6 +15,10 @@
   min-height: 100vh;
   align-items: center;
 
+  @media print {
+    display: block; // fix for Firefox only printing the first page of event registrations
+  }
+
   > .l--page {
     margin-left: auto;
     margin-right: auto;
@@ -47,7 +51,7 @@
 // Gutters
 //
 .l--offset {
-  @include box--gutters(percentage(.5/7));
+  @include box--gutters(percentage(0.5/7));
 
   @include bp(medium) {
     @include box--gutters(percentage(1/16));
@@ -59,7 +63,7 @@
 }
 
 .l--offset-left {
-  @include box--gutters(percentage(.5/7), 0);
+  @include box--gutters(percentage(0.5/7), 0);
 
   @include bp(medium) {
     @include box--gutters(percentage(1/16), 0);
@@ -71,7 +75,7 @@
 }
 
 .l--offset-right {
-  @include box--gutters(0, percentage(.5/7));
+  @include box--gutters(0, percentage(0.5/7));
 
   @include bp(medium) {
     @include box--gutters(0, percentage(1/16));
@@ -95,13 +99,11 @@
   }
 }
 
-
 //
 // Sidebars
 //
 .l--sidebar-after,
 .l--sidebar-before {
-
   > .l__header,
   > .l__main {
     &:not(:last-child) {
@@ -158,6 +160,13 @@
   }
 }
 
+.l--sidebar-after > .l__main > .l__secondary {
+  @media screen and (min-height: 800px) and (min-width: 768px) {
+    position: sticky;
+    top: 1em;
+  }
+}
+
 //
 // Sidebar Before
 //
@@ -172,7 +181,6 @@
     }
   }
 }
-
 
 //
 // Sidebars
@@ -217,18 +225,18 @@
 
       @include bp(medium) {
         &:after {
-          background-image: radial-gradient(circle, #818487 .0825em, transparent .0876em);
+          background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
           background-position: top center;
           background-repeat: repeat-y;
-          background-size: .3125em .3125em;
+          background-size: 0.3125em 0.3125em;
           bottom: 0;
-          content: "";
+          content: '';
           display: block;
-          left: percentage(-.5/6);
+          left: percentage(-0.5/6);
           margin: auto;
           position: absolute;
           top: 0;
-          width: .325em;
+          width: 0.325em;
         }
       }
 
@@ -261,6 +269,6 @@
 
 // This is reserve space while content is loading
 // So linking to this anchor is a little less jarring.
-[id="eventRegisterRoot"] {
+[id='eventRegisterRoot'] {
   min-height: rem(200px);
 }

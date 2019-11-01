@@ -21,7 +21,7 @@ const styles = {
 };
 
 function EventSummary(props) {
-  const { id, event, image } = props;
+  const { id, event } = props;
 
   // Return if bundle has not loaded.
   if (!event.attributes) {
@@ -30,6 +30,7 @@ function EventSummary(props) {
 
   const dateStart = utils.dateFromDrupal(event.attributes['field_date_time'].value);
   const dateEnd = utils.dateFromDrupal(event.attributes['field_date_time'].end_value);
+  const image = get(event, 'attributes.event_thumbnail');
 
   return (
     <div>
@@ -59,7 +60,6 @@ EventSummary.propTypes = {
   classes: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   event: PropTypes.object.isRequired,
-  image: PropTypes.string,
 };
 
 EventSummary.defaultProps = {
@@ -71,7 +71,6 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     event: select.bundle(identifier)(state),
-    image: select.resourceImageStyle(identifier, '4to3_740x556')(state),
   };
 };
 

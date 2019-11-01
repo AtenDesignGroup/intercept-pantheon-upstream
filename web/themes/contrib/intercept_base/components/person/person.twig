@@ -1,6 +1,9 @@
 {% import '@intercept-base-components/component.twig' as component %}
 {{ attach_library('intercept_base/person') }}
 
+{% if url %}
+<a href="{{ url }}" class="person__url">
+{% endif %}
 <div {{ component.attributes('person', modifiers, attr) }}>
 
   {% if type %}
@@ -12,8 +15,7 @@
   {% endif %}
   
   {% if image %}
-  <div class="person__image" style="background-image: url({{ image }});">
-  </div>
+  <div class="person__image" style="background-image: url({{ image }});"></div>
   {% endif %}
 
   <div class="person__text">
@@ -36,3 +38,6 @@
   </div>
 
 </div>
+{% if url %}
+</a>
+{% endif %}

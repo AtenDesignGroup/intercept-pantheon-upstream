@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: intercept_registered_customer
-label: 'InterCEPT Registered Customer'
+label: 'Intercept Registered Customer'
 weight: 2
 is_admin: null
 permissions:

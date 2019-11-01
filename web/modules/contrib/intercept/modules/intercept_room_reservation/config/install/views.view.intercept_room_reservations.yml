@@ -16,7 +16,7 @@ dependencies:
     - options
     - user
 id: intercept_room_reservations
-label: 'InterCEPT Room Reservations'
+label: 'Intercept Room Reservations'
 module: views
 description: ''
 tag: intercept

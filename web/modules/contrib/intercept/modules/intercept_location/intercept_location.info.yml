@@ -1,4 +1,4 @@
-name: InterCEPT Location
+name: Intercept Location
 description: 'Provides Location content type and related configuration. Buildings or Branches'
 type: module
 core: 8.x
@@ -14,9 +14,4 @@ dependencies:
   - pathauto:pathauto
   - stories:stories_media
   - drupal:telephone
-package: 'InterCEPT'
-
-# Information added by Drupal.org packaging script on 2019-08-22
-version: '8.x-1.0-alpha9'
-project: 'intercept'
-datestamp: 1566489190
+package: 'Intercept'

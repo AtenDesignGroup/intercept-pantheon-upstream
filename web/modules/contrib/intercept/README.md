@@ -1325,6 +1325,7 @@ at Manage > Structure > Content Types > Manage Fields.
   * `field_event_is_template`
   * `field_has_waitlist`
   * `field_waitlist_max`
+  * `field_event_user_reg_max`
   * `field_presented_by_non_staff`
 * Rooms
   * `field_approval_required`

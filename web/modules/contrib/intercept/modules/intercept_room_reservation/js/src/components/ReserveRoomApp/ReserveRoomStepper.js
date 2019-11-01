@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 /* eslint-disable */
 import interceptClient from 'interceptClient';
+import { isFutureTime } from './ReserveRoom';
 /* eslint-enable */
 const { select, utils } = interceptClient;
 
@@ -34,7 +35,10 @@ const styles = theme => ({
     letterSpacing: 0,
     paddingBottom: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
-
+    '&:disabled': {
+      opacity: '.5',
+      backgroundColor: 'transparent'
+    },
   },
 });
 
@@ -125,6 +129,20 @@ class HorizontalNonLinearStepper extends React.Component {
     }
   }
 
+  getStepDisabledState = (step) => {
+    const { date, start, end } = this.props.values;
+
+    switch (step) {
+      case 0:
+      case 1:
+        return false;
+      case 2:
+        return !(date && start && isFutureTime(start, date));
+      default:
+        return false;
+    }
+  }
+
   render() {
     const { classes, step, width } = this.props;
     const steps = getSteps();
@@ -141,6 +159,7 @@ class HorizontalNonLinearStepper extends React.Component {
                 className={classes.labelButton}
                 onClick={this.handleStep(index)}
                 completed={this.state.completed[index]}
+                disabled={this.getStepDisabledState(index)}
               >
                 {label}
                 {<Typography variant="caption">{this.getStepCaption(index, this.props)}</Typography>}

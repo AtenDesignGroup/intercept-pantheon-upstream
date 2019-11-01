@@ -8,7 +8,7 @@ use Drupal\user\Form\UserPermissionsForm as CoreUserPermissionsForm;
 class UserPermissionsForm extends CoreUserPermissionsForm {
 
   /**
-   * Get InterCEPT specific roles.
+   * Get Intercept specific roles.
    *
    * @eturn array
    */

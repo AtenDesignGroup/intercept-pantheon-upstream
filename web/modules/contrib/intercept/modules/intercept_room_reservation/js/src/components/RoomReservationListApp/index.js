@@ -5,9 +5,6 @@ import PropTypes from 'prop-types';
 // Redux
 import { connect } from 'react-redux';
 
-// Drupal
-import drupalSettings from 'drupalSettings';
-
 // Lodash
 import debounce from 'lodash/debounce';
 
@@ -22,10 +19,10 @@ import DialogConfirm from 'intercept/Dialog/DialogConfirm';
 // Local Components
 import ReservationTeaser from './../ReservationTeaser';
 
-const { constants, api, select } = interceptClient;
+const { constants, api, select, utils } = interceptClient;
 const c = constants;
 
-const uuid = drupalSettings.intercept.user.uuid;
+const userId = utils.getUserUuid();
 
 class AccountRoomReservations extends React.Component {
   constructor(props) {
@@ -44,8 +41,8 @@ class AccountRoomReservations extends React.Component {
     this.props.fetchReservations({
       filters: {
         user: {
-          path: 'field_user.uuid',
-          value: uuid,
+          path: 'field_user.id',
+          value: userId,
         },
       },
       include: [

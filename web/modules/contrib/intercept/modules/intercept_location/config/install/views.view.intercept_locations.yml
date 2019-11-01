@@ -9,7 +9,7 @@ dependencies:
     - node
     - user
 id: intercept_locations
-label: 'InterCEPT Locations'
+label: 'Intercept Locations'
 module: views
 description: ''
 tag: ''

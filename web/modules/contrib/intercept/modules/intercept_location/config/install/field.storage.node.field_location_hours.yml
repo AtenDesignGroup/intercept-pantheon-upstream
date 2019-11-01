@@ -9,12 +9,12 @@ field_name: field_location_hours
 entity_type: node
 type: office_hours
 settings:
-  cardinality_per_day: '2'
+  cardinality_per_day: 2
   time_format: g
   element_type: office_hours_datetime
-  increment: '30'
-  comment: 1
-  valhrs: 1
+  increment: 30
+  comment: true
+  valhrs: true
   limit_start: ''
   limit_end: ''
 module: office_hours

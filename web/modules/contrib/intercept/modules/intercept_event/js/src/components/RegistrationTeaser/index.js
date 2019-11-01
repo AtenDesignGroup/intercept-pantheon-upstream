@@ -26,11 +26,11 @@ import ButtonRegister from 'intercept/ButtonRegister';
 const { select, constants, utils } = interceptClient;
 const c = constants;
 
-const userId = get(drupalSettings, 'intercept.user.uuid');
+const userId = utils.getUserUuid();
 
 class RegistrationTeaser extends React.PureComponent {
   render() {
-    const { id, registration, event, image } = this.props;
+    const { id, registration, event } = this.props;
 
     // Render a stub teaser until the entity has fully loaded.
     if (!event.attributes) {
@@ -38,6 +38,7 @@ class RegistrationTeaser extends React.PureComponent {
     }
     const status = get(registration, 'attributes.status');
     const date = moment(utils.dateFromDrupal(event.attributes['field_date_time'].value));
+    const image = event.attributes.event_thumbnail;
 
     return (
       <Teaser
@@ -71,11 +72,9 @@ RegistrationTeaser.propTypes = {
   id: PropTypes.string.isRequired,
   registration: PropTypes.object.isRequired,
   event: PropTypes.object,
-  image: PropTypes.string,
 };
 
 RegistrationTeaser.defaultProps = {
-  image: null,
   event: null,
 };
 
@@ -83,11 +82,9 @@ const mapStateToProps = (state, ownProps) => {
   const identifier = select.getIdentifier(c.TYPE_EVENT_REGISTRATION, ownProps.id);
   const registration = select.bundle(identifier)(state);
   const event = get(registration, 'relationships.field_event');
-  const eventIdentifier = select.getIdentifier(c.TYPE_EVENT, event.id);
 
   return {
     registration,
-    image: select.resourceImageStyle(eventIdentifier, '4to3_740x556')(state),
     event,
   };
 };

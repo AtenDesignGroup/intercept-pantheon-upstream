@@ -188,7 +188,7 @@ class TablefieldFormatter extends FormatterBase implements ContainerFactoryPlugi
 
           $route_params = [
             'entity_type' => $entity_type,
-            'entity_id' => $entity_id,
+            'entity' => $entity_id,
             'field_name' => $field_name,
             'langcode' => $items->getLangcode(),
             'delta' => $delta,

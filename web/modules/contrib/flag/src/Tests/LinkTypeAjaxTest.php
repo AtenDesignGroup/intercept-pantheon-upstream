@@ -5,6 +5,11 @@ namespace Drupal\flag\Tests;
 /**
  * Tests the AJAX link type.
  *
+ * Links should still function on browsers with javascript disabled.
+ *
+ * For test with javascript enabled see
+ * Drupal\Tests\flag\FunctionalJavascript\AjaxLinkTest
+ *
  * @group flag
  */
 class LinkTypeAjaxTest extends FlagTestBase {
@@ -34,17 +39,9 @@ class LinkTypeAjaxTest extends FlagTestBase {
   }
 
   /**
-   * Test the AJAX link type.
+   * Tests the no-js fallback behavior for the AJAX link type.
    */
-  public function testAjaxLinkType() {
-    $this->doCreateAjaxFlag();
-    $this->doUseAjaxFlag();
-  }
-
-  /**
-   * Create a flag using the ajax_link link type using the UI.
-   */
-  public function doCreateAjaxFlag() {
+  public function testNoJavascriptResponse() {
     // Login as the admin user.
     $this->drupalLogin($this->adminUser);
 
@@ -53,12 +50,7 @@ class LinkTypeAjaxTest extends FlagTestBase {
 
     // Grant flag permissions.
     $this->grantFlagPermissions($this->flag);
-  }
 
-  /**
-   * Test an AJAX flag link.
-   */
-  public function doUseAjaxFlag() {
     // Create and login as an authenticated user.
     $auth_user = $this->drupalCreateUser();
     $this->drupalLogin($auth_user);
@@ -81,43 +73,6 @@ class LinkTypeAjaxTest extends FlagTestBase {
     $this->clickLink($this->flag->getShortText('unflag'));
     $this->assertUrl($node_url);
     $this->assertLink($this->flag->getShortText('flag'));
-
-    /* Assert that initially a flag action link is displayed within a wrapper.
-     *
-     * NB the xpath template to search for a div with a class member of a
-     * flag :-
-     *
-     * div[contains(concat(' ',normalize-space(@class),' '),' flag ')]
-     */
-    $links = $this->xpath('//div[contains(concat(" ",normalize-space(@class)," ")," flag ")]/a[normalize-space()=:label]', [':label' => $this->flag->getShortText('flag')]);
-    // Use the same logic as clickLink() to get an AJAX response.
-    $link_target = $this->getAbsoluteUrl($links[0]['href']);
-    $flag_response = $this->drupalGetAjax($link_target);
-
-    // $flag_response is a AJAX replace command with a string as the data
-    // payload. Convert the payload string into a HTML fragment for inspection.
-    $flag_xml_data = new \SimpleXMLElement($flag_response[0]['data']);
-
-    // The replace command in the AJAX response has a selector.
-    // Assert the selector identifies the div wrapping action link.
-    $id_class_position = strpos($flag_xml_data['class']->__toString(), ltrim($flag_response[0]['selector'], '.'));
-    $this->assertTrue($id_class_position !== FALSE);
-
-    // Assert the flag response contains a wrapped unflag action link.
-    $this->assertEqual($this->flag->getShortText('unflag'), $flag_xml_data->a->__toString());
-
-    // From the payload extract a unflag action link href.
-    // Act as if the unflag link has been clicked.
-    $unflag_response = $this->drupalGetAjax($this->getAbsoluteUrl($flag_xml_data->a['href']));
-    $unflag_xml_data = new \SimpleXMLElement($unflag_response[0]['data']);
-
-    // Assert that the replace selector is correct.
-    $unflag_class_position = strpos($unflag_xml_data['class'], ltrim($unflag_response[0]['selector'], '.'));
-    $this->assertTrue($unflag_class_position !== FALSE);
-
-    // Assert the unflag response contains a wrapped flag action link.
-    $this->assertEqual($this->flag->getShortText('flag'), $unflag_xml_data->a->__toString());
-
   }
 
 }

@@ -16,17 +16,16 @@ import TableRow from '@material-ui/core/TableRow';
 import get from 'lodash/get';
 
 /* eslint-disable */
-import drupalSettings from 'drupalSettings';
 import interceptClient from 'interceptClient';
 import RegistrationTallySummary from 'intercept/RegistrationTallySummary';
 import RegistrationStatus from 'intercept/RegistrationStatus';
 /* eslint-enable */
 import EventRegistrationActions from '../EventRegistrationActions';
 
-const { constants, select } = interceptClient;
+const { constants, select, utils } = interceptClient;
 const c = constants;
 
-const defaultUserId = get(drupalSettings, 'intercept.user.uuid');
+const defaultUserId = utils.getUserUuid();
 
 const styles = theme => ({
   root: {

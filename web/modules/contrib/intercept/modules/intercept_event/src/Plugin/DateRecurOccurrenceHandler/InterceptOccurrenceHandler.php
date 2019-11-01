@@ -12,7 +12,7 @@ use Drupal\intercept_event\DateRecurRRule;
 /**
  * @DateRecurOccurrenceHandler(
  *  id = "intercept_occurrence_handler",
- *  label = @Translation("InterCEPT occurrence handler"),
+ *  label = @Translation("Intercept occurrence handler"),
  * )
  */
 class InterceptOccurrenceHandler extends DefaultDateRecurOccurrenceHandler {

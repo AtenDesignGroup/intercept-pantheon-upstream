@@ -21,7 +21,7 @@ const styles = {
 };
 
 function RoomDetail(props) {
-  const { id, resource, image } = props;
+  const { id, resource } = props;
 
   // Return if bundle has not loaded.
   if (!resource.attributes) {
@@ -73,6 +73,8 @@ function RoomDetail(props) {
     />
   ) : null;
 
+  const image = get(resource, 'attributes.room_thumbnail');
+
   return (
     <div>
       <Summary
@@ -99,11 +101,6 @@ RoomDetail.propTypes = {
   classes: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   resource: PropTypes.object.isRequired,
-  image: PropTypes.string,
-};
-
-RoomDetail.defaultProps = {
-  image: null,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -111,7 +108,6 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     resource: select.bundle(identifier)(state),
-    image: select.resourceImageStyle(identifier, '4to3_740x556')(state),
   };
 };
 

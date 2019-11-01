@@ -2,10 +2,9 @@
 
 namespace Drupal\Tests\video_embed_media\Kernel;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\media\Entity\Media;
-use Drupal\media\Entity\MediaType;
 use Drupal\Tests\media\Kernel\MediaKernelTestBase;
-use Drupal\video_embed_media\Plugin\media\Source\VideoEmbedField;
 
 /**
  * Test the provided fields.
@@ -122,7 +121,7 @@ class ProvidedFieldsTest extends MediaKernelTestBase {
     $this->plugin = $this->entityType->getSource();
 
     $dir = 'public://video_thumbnails';
-    file_prepare_directory($dir, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+    $this->container->get('file_system')->prepareDirectory($dir, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
   }
 
 }

@@ -2,7 +2,7 @@ name: STARTER_KIT
 type: theme
 description: Prototype Sub-Theme
 package: STARTER_KIT
-# core: 8.x
+core: 8.x
 base theme: prototype
 
 regions:
@@ -27,9 +27,3 @@ component-libraries:
   STARTER-KIT-icons:
     paths:
       - images/icons
-
-# Information added by Drupal.org packaging script on 2019-05-08
-version: '8.x-2.x-dev'
-core: '8.x'
-project: 'prototype'
-datestamp: 1557355086

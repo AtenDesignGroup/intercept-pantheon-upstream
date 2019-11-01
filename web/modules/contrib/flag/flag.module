@@ -231,8 +231,14 @@ function flag_form_save(EntityInterface $entity, $values) {
   foreach ($flags as $flag) {
     // Get the flag_id from the Flag.
     $flag_id = $flag->id();
+
+    // If the flag_id is not part of the form values, no need to do anything.
+    if (!isset($values[$flag_id])) {
+      continue;
+    }
+
     // Get the form flag value.
-    $value = isset($values[$flag_id]) ? $values[$flag_id] : FALSE;
+    $value = $values[$flag_id];
 
     // Determine if the flagging exists.
     $flagging_exists = in_array($flag_id, $flagging_ids);
@@ -599,13 +605,13 @@ function flag_flag_insert(FlagInterface $flag) {
   $action_manager->clearCachedDefinitions();
 
   // Add the flag/unflag actions for this flag and entity combination.
-  $flag_id = 'flag_action.' . $flag->id() . '.flag';
+  $flag_id = 'flag_action.' . $flag->id() . '_flag';
   if (!Action::load($flag_id)) {
     $action = Action::create([
       'id' => $flag_id,
       'type' => $flag->getFlaggableEntityTypeId(),
       'label' => $flag->getShortText('flag'),
-      'plugin' => 'flag_action:' . $flag->id() . '.flag',
+      'plugin' => 'flag_action:' . $flag->id() . '_flag',
       'configuration' => [
         'flag_id' => $flag->id(),
         'flag_action' => 'flag',
@@ -613,13 +619,13 @@ function flag_flag_insert(FlagInterface $flag) {
     ]);
     $action->trustData()->save();
   }
-  $unflag_id = 'flag_action.' . $flag->id() . '.unflag';
+  $unflag_id = 'flag_action.' . $flag->id() . '_unflag';
   if (!Action::load($unflag_id)) {
     $action = Action::create([
       'id' => $unflag_id,
       'type' => $flag->getFlaggableEntityTypeId(),
       'label' => $flag->getShortText('unflag'),
-      'plugin' => 'flag_action:' . $flag->id() . '.unflag',
+      'plugin' => 'flag_action:' . $flag->id() . '_unflag',
       'configuration' => [
         'flag_id' => $flag->id(),
         'flag_action' => 'unflag',
@@ -639,8 +645,8 @@ function flag_flag_delete(FlagInterface $flag) {
   }
 
   $actions = Action::loadMultiple([
-    'flag_action.' . $flag->id() . '.flag',
-    'flag_action.' . $flag->id() . '.unflag',
+    'flag_action.' . $flag->id() . '_flag',
+    'flag_action.' . $flag->id() . '_unflag',
   ]);
 
   // Remove the flag/unflag actions for this flag and entity combination.

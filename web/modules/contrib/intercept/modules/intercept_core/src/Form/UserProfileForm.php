@@ -150,6 +150,10 @@ class UserProfileForm extends \Drupal\user\ProfileForm {
       $patron = $form_state->get('patron');
       if (!empty($pin)) {
         $patron->Password = $pin;
+        // Also update Drupal password to match.
+        $user = $form_state->getFormObject()->getEntity();
+        $user->setPassword($pin);
+        $user->save();
       }
       if (!empty($phone)) {
         $patron->PhoneVoice1 = $phone;

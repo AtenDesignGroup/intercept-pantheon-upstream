@@ -19,6 +19,19 @@ use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 
 /**
+ * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
+ */
+function intercept_equipment_reservation_jsonapi_equipment_reservation_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+  return ([
+    // @todo CRL-163: The 'view referenced user equipment_reservation' permission does not yet exist.
+    // Once it has been implemented, the AMONG_ALL should be commented out and AMONG_OWN deleted.
+    // JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view equipment_reservation', 'view referenced user equipment_reservation'], 'OR'),
+    JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view equipment_reservation'], 'OR'),
+    JSONAPI_FILTER_AMONG_OWN => AccessResult::allowedIfHasPermission($account, 'view own equipment_reservation'),
+  ]);
+}
+
+/**
  * Implements hook_node_access().
  */
 function intercept_equipment_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
@@ -34,7 +47,7 @@ function intercept_equipment_node_access(\Drupal\node\NodeInterface $node, $op, 
 
 /**
  * Implements hook_update_N().
- * 
+ *
  * Install temporary database table so that we can uninstall and reinstall
  * module with new equipment reservation entity.
  */
@@ -55,7 +68,7 @@ function intercept_equipment_update_8001() {
       ),
     ),
     'primary key' => array('id'),
-  ); 
+  );
   $schema = Database::getConnection()->schema();
   if ($schema->tableExists('equipment_reservation') == FALSE) {
     $schema->createTable('equipment_reservation', $spec);
@@ -200,36 +213,36 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, \Drupal\Core\
     // Query nodes
     $storage = Drupal::getContainer()->get('entity_type.manager')->getStorage('node');
     $nids = $storage->getQuery();
- 
+
     // Gather published location nodes and sort by title
     $nids = $nids->condition('type', 'location')
       ->condition('status', 1)
       ->sort('title')
       ->execute();
- 
+
     // If there are no nodes, move on
     if (!$nids) {
       return FALSE;
     }
- 
+
     // Start building out the options for our select list
     $options = [];
     $nodes = $storage->loadMultiple($nids);
- 
+
     // Push titles into select list
     foreach ($nodes as $node) {
       $title = $node->getTitle();
       $options[$title] = $title;
     }
- 
+
     // Start building out our new form element
     $location_field = 'title_1';
     $form[$location_field]['#type'] = 'select';
     $form[$location_field]['#multiple'] = FALSE;
- 
+
     // Specify the empty option for our select list
     $form[$location_field]['#empty_option'] = t('Any');
- 
+
     // Add the $options from above to our select list
     $form[$location_field]['#options'] = $options;
     unset($form[$location_field]['#size']);

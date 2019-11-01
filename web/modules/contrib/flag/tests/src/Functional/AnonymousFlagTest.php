@@ -65,6 +65,11 @@ class AnonymousFlagTest extends BrowserTestBase {
    */
   public function testAnonymousFlagging() {
     $this->drupalGet(Url::fromRoute('entity.node.canonical', ['node' => $this->node->id()]));
+
+    // Assert that just visiting a page as anonymous user does not initialize
+    // the session.
+    $this->assertEmpty($this->getSession()->getCookie($this->getSessionName()));
+
     $this->getSession()->getPage()->clickLink('switch_this_on');
     $this->assertNotEmpty($this->getSession()->getPage()->findLink('switch_this_off'));
     // Warning: $this->getDatabaseConnection() is the original database
@@ -76,6 +81,7 @@ class AnonymousFlagTest extends BrowserTestBase {
     // Check that the session ID value in the flagging is the same as the user's
     // cookie ID.
     $session_id = $this->getSession()->getCookie($this->getSessionName());
+    $this->assertNotEmpty($session_id);
     $this->assertEqual($flagging->get('session_id')->value, $session_id, "The flagging entity has the session ID set.");
 
     // Try another anonymous user.

@@ -31,13 +31,6 @@ const roomIncludes = ['image_primary', 'image_primary.field_media_image'];
 const ROOM_RESERVATION_MEETING_BUFFER = 30;
 const ROOM_RESERVATION_DEFAULT_ATTENDEES_COUNT = 10;
 
-addValidationRule(
-  'isFutureDate',
-  (values, value) =>
-    // return true;
-    !value || value >= utils.getUserStartOfDay(),
-);
-
 function getDateSpan(value, view = 'day') {
   const start = moment(value).startOf(view);
   const end = moment(value).endOf(view);
@@ -100,9 +93,8 @@ function getFilters(values, view = 'list', calView = 'day', date = new Date()) {
   }
 
   const types = [
-    { id: c.TYPE_ROOM_TYPE, path: 'field_room_type.uuid', conjunction: 'OR' },
-    { id: c.TYPE_LOCATION, path: 'field_location.uuid', conjunction: 'OR' },
-    // { id: c.TYPE_AUDIENCE, path: 'field_event_audience.uuid', conjunction: 'OR' },
+    { id: c.TYPE_ROOM_TYPE, path: 'field_room_type.id', conjunction: 'OR' },
+    { id: c.TYPE_LOCATION, path: 'field_location.id', conjunction: 'OR' },
   ];
 
   types.forEach((type) => {
@@ -135,12 +127,104 @@ function getFilters(values, view = 'list', calView = 'day', date = new Date()) {
   return filter;
 }
 
+const daysInAdvance = get(drupalSettings, 'intercept.room_reservations.customer_advanced_limit', '10');
+const daysInAdvanceText = get(drupalSettings, 'intercept.room_reservations.customer_advanced_text');
+
+const getMaxDate = () => {
+  if (utils.userIsStaff()) {
+    return undefined;
+  }
+
+  return (daysInAdvance && daysInAdvance !== '0')
+    ? moment()
+      .tz(utils.getUserTimezone())
+      .add(daysInAdvance, 'days')
+      .format('YYYY-MM-DD')
+    : undefined;
+};
+
+const getMinDate = () => {
+  if (utils.userIsStaff()) {
+    return undefined;
+  }
+
+  return moment()
+    .tz(utils.getUserTimezone())
+    .format('YYYY-MM-DD');
+};
+
+const getMaxDateDescription = () => {
+  if (utils.userIsStaff()) {
+    return undefined;
+  }
+
+  return daysInAdvanceText;
+};
+
+const MAX_DATE = getMaxDate();
+const MAX_DATE_DESCRIPTION = getMaxDateDescription();
+const MIN_DATE = getMinDate();
+
+export const isFutureTime = (time, date) => {
+  if (time === null) {
+    return true;
+  }
+  const now = new Date();
+  return utils.getDateFromTime(time, date) >= now;
+};
+
+export const isLessThanMaxTime = (time, date) => {
+  if (!MAX_DATE) {
+    return true;
+  }
+
+  if (time === null) {
+    return true;
+  }
+
+  return utils.getDateFromTime(time, date) <= utils.getDateFromTime(time, MAX_DATE);
+};
+
+export const isLessThanMaxDate = (date) => {
+  if (!MAX_DATE) {
+    return true;
+  }
+
+  return utils.getDayTimeStamp(date) <= MAX_DATE;
+};
+
+/**
+ * Checks to see if the entered start and end times are valid reservation times.
+ * @param {*} date
+ * @param {*} start
+ * @param {*} end
+ */
+export const isValidDateTime = (date, start, end) => {
+  if (start === null || end === null || date === null) {
+    return false;
+  }
+  return isFutureTime(start, date) && isLessThanMaxTime(end, date);
+};
+
+addValidationRule(
+  'isFutureDate',
+  (values, value) =>
+    // return true;
+    !value || value >= utils.getUserStartOfDay(),
+);
+
+addValidationRule(
+  'isLessThanMaxDate',
+  (values, value) =>
+    // return true;
+    !value || isLessThanMaxDate(value),
+);
+
 class ReserveRoom extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      // date: props.date,
       date: null,
       filters: props.filters,
       formValues: {
@@ -155,6 +239,7 @@ class ReserveRoom extends React.Component {
         meetingDetails: '',
         refreshmentsDesc: '',
         user: utils.getUserUuid(),
+        showClosed: false,
       },
       room: {
         current: null,
@@ -169,7 +254,7 @@ class ReserveRoom extends React.Component {
     if (this.props.event) {
       const filters = {
         uuid: {
-          path: 'uuid',
+          path: 'id',
           value: this.props.event,
         },
       };
@@ -182,7 +267,7 @@ class ReserveRoom extends React.Component {
     if (this.props.room) {
       const filters = {
         uuid: {
-          path: 'uuid',
+          path: 'id',
           value: this.props.room,
         },
       };
@@ -213,7 +298,7 @@ class ReserveRoom extends React.Component {
         },
       },
       fields: {
-        [c.TYPE_LOCATION]: ['uuid', 'title', 'field_location_hours', 'field_branch_location'],
+        [c.TYPE_LOCATION]: ['title', 'field_location_hours', 'field_branch_location'],
       },
     });
 
@@ -320,11 +405,28 @@ class ReserveRoom extends React.Component {
       step,
       onChangeStep,
       detail,
+      room,
       roomDetail,
       onChangeDetail,
       onChangeRoomDetail,
       userStatus,
     } = this.props;
+
+    const {
+      formValues
+    } = this.state;
+
+    const {
+      date,
+      end,
+      start
+    } = formValues;
+
+    const dateLimits = {
+      maxDate: MAX_DATE,
+      minDate: MIN_DATE,
+      maxDateDescription: MAX_DATE_DESCRIPTION,
+    };
 
     const steps = [
       <ReserveRoomStep1
@@ -332,19 +434,31 @@ class ReserveRoom extends React.Component {
           onChangeRoomDetail(id);
           onChangeDetail(true);
         }}
+        dateLimits={dateLimits}
         {...this.props}
       />,
       <ReserveRoomStep2
         {...this.props}
+        dateLimits={dateLimits}
         onChange={this.handleFormChange}
         formValues={this.state.formValues}
       />,
       <ReserveRoomStep3
         {...this.props}
+        dateLimits={dateLimits}
         onChange={this.handleFormChange}
         formValues={this.state.formValues}
       />,
     ];
+
+    let currentStep = step;
+
+    // Redirect to step 1 if the date is invalid
+    if (step === 2 && !isValidDateTime(date, start, end)) {
+      currentStep = 1;
+    } else if (step === 2 && room === null) {
+      currentStep = 0;
+    }
 
     return (
       <div className="l--offset">
@@ -352,7 +466,7 @@ class ReserveRoom extends React.Component {
           <h1 className="page-title">Reserve a Room</h1>
           <ReserveRoomStepper
             {...this.props}
-            step={step}
+            step={currentStep}
             onChangeStep={(s) => {
               this.props.fetchUserStatus();
               onChangeStep(s);
@@ -363,7 +477,7 @@ class ReserveRoom extends React.Component {
           <RoomLimitWarning userStatus={userStatus} />
         </header>
         <div className="l__main">
-          <div className="l__primary">{steps[step]}</div>
+          <div className="l__primary">{steps[currentStep]}</div>
         </div>
         <RoomDetailDialog
           open={!!(detail && roomDetail)}

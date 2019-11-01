@@ -59,13 +59,6 @@ function flag_schema() {
 }
 
 /**
- * Implements hook_uninstall().
- */
-function flag_uninstall() {
-  drupal_set_message(t('Flag has been uninstalled.'));
-}
-
-/**
  * Implements hook_requirements().
  */
 function flag_requirements($phase) {

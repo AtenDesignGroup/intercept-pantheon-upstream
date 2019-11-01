@@ -76,6 +76,13 @@ class EventsController extends ControllerBase {
       '#content' => [],
     ];
     $content = &$build['#content'];
+    if ($node->hasField('field_event_user_reg_max')) {
+      $content['max_registrations_per_user'] = [
+        '#type' => 'item',
+        '#title' => 'Maximum registrations per user:',
+        '#markup' => $node->field_event_user_reg_max->value ?: "No maximum",
+      ];
+    }
     $content['add'] = [
       '#title' => 'Add event registration',
       '#type' => 'link',

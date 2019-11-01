@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: intercept_event_manager
-label: 'InterCEPT Event Manager'
+label: 'Intercept Event Manager'
 weight: 4
 is_admin: null
 permissions:

@@ -2,6 +2,10 @@
 
 namespace Drupal\tablefield\Controller;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -10,12 +14,36 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class TablefieldController {
 
   /**
+   * Check access to the export page.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account to check.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to check the permission for view.
+   * @param string $field_name
+   *   The machine name of the field to load.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The Access check results.
+   */
+  public function access(AccountInterface $account, EntityInterface $entity, $field_name) {
+    if (!$entity instanceof FieldableEntityInterface) {
+      return AccessResult::forbidden();
+    }
+
+    // Check if field is a tablefield.
+    if ((!$fieldDefinition = $entity->getFieldDefinition($field_name)) || $fieldDefinition->getType() !== 'tablefield') {
+      return AccessResult::forbidden();
+    }
+
+    return $entity->access('view', $account, TRUE);
+  }
+
+  /**
    * Menu callback to export a table as a CSV.
    *
-   * @param string $entity_type
-   *   The type of entity, e.g. node.
-   * @param string $entity_id
-   *   The id of the entity.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object.
    * @param string $field_name
    *   The machine name of the field to load.
    * @param string $langcode
@@ -23,14 +51,12 @@ class TablefieldController {
    * @param string $delta
    *   The field delta to load.
    *
-   * @return array
-   *   A render array representing the administrative page content.
+   * @return \Symfony\Component\HttpFoundation\StreamedResponse
+   *   A streamed response containing tablefield data as a CSV.
    */
-  public function exportCsv($entity_type, $entity_id, $field_name, $langcode, $delta) {
+  public function exportCsv(EntityInterface $entity, $field_name, $langcode, $delta) {
+    $filename = sprintf('%s_%s_%s_%s_%s.csv', $entity->getEntityTypeId(), $entity->id(), $field_name, $langcode, $delta);
 
-    $filename = sprintf('%s_%s_%s_%s_%s.csv', $entity_type, $entity_id, $field_name, $langcode, $delta);
-
-    $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($entity_id);
     // Tablefield::rationalizeTable($entity->{$field_name}[$delta]->value);.
     $table = $entity->{$field_name}[$delta]->value;
     $separator = \Drupal::config('tablefield.settings')->get('csv_separator');

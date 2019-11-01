@@ -116,14 +116,19 @@ class RoomAvailabilityCalendar extends React.Component {
 
   startDateAccessor = prop => (item) => {
     const dateFromDrupal = moment(utils.dateFromDrupal(item[prop]));
-    const midnight = moment(this.props.date).set({ hour: 0, minute: 0, second: 0 });
+    const midnight = moment(this.props.date)
+      .tz(utils.getUserTimezone())
+      .startOf('day');
     const startDate = moment.max(dateFromDrupal, midnight);
     return startDate.toISOString();
   };
 
   endDateAccessor = prop => (item) => {
     const dateFromDrupal = moment(utils.dateFromDrupal(item[prop]));
-    const midnight = moment(this.props.date).set({ hour: 23, minute: 59, second: 59 });
+    const midnight = moment(this.props.date)
+      .tz(utils.getUserTimezone())
+      .endOf('day')
+      .subtract(1, 'seconds');
     const endDate = moment.min(dateFromDrupal, midnight);
     if (endDate.get('hour') === 0) {
       endDate.subtract(1, 'seconds');

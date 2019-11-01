@@ -7,6 +7,7 @@ Contents:
  * Installation
  * Configuration
  * Support
+ * Themimg
 
 Introduction
 ------------
@@ -82,3 +83,16 @@ software or obligated in any way to correct problems you may experience.
 
 Licensed under the GPL 2.0.
 http://www.gnu.org/licenses/gpl-2.0.txt
+
+Theming
+-------
+
+Like other modules, copy twig templates from the `templates/` subdirectory
+into your theme. You can rename the file to be more or less specific:
+
+* `flag.html.twig` -- all flag types and nodes.
+* `flag--flagID.html.twig` -- flags with the type of *flagId*.
+* `flag--flagID--nodeID.html.twig` -- flags with a type of *flagId* only for content with the given ID.
+
+Alternatively, Themers can also implement their own @ActionLinkType that can be used
+for theming specific flags (for more info you can see the flag_count submodule).

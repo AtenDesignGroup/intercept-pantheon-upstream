@@ -9,7 +9,6 @@ import { connect } from 'react-redux';
 import debounce from 'lodash/debounce';
 import difference from 'lodash/difference';
 import xor from 'lodash/xor';
-import get from 'lodash/get';
 import pick from 'lodash/pick';
 import throttle from 'lodash/throttle';
 import uniq from 'lodash/uniq';
@@ -18,7 +17,6 @@ import uniq from 'lodash/uniq';
 import moment from 'moment';
 
 /* eslint-disable */
-import drupalSettings from 'drupalSettings';
 import interceptClient from 'interceptClient';
 import ViewSwitcher from 'intercept/ViewSwitcher';
 import LoadingIndicator from 'intercept/LoadingIndicator';
@@ -36,17 +34,15 @@ const DESIGNATION = 'designation';
 const DESIGNATION_FIELD = 'field_event_designation';
 
 const eventIncludes = (view = 'list') =>
-  (view === 'list' ? ['image_primary', 'image_primary.field_media_image', 'field_room'] : null);
+  (view === 'list' ? ['field_room'] : null);
 
 const viewOptions = [{ key: 'list', value: 'List' }, { key: 'calendar', value: 'Calendar' }];
-const userId = get(drupalSettings, 'intercept.user.uuid');
 
 const sparseFieldsets = (view = 'list') =>
   (view === 'list'
     ? {
       [c.TYPE_EVENT]: [
-        'nid',
-        'uuid',
+        'drupal_internal__nid',
         'status',
         'title',
         'path',
@@ -61,22 +57,14 @@ const sparseFieldsets = (view = 'list') =>
         'field_location',
         DESIGNATION_FIELD,
         'field_room',
-        'image_primary',
+        'event_thumbnail',
       ],
-      [c.TYPE_EVENT_REGISTRATION]: ['uuid', 'field_event', 'field_user', 'status'],
-      [c.TYPE_ROOM]: ['nid', 'uuid', 'title', 'field_location'],
-      [c.TYPE_MEDIA_IMAGE]: [
-        'mid',
-        'uuid',
-        'field_media_caption',
-        'field_media_credit',
-        'field_media_image',
-      ],
-      [c.TYPE_FILE]: ['fid', 'uuid', 'uri', 'url'],
+      [c.TYPE_EVENT_REGISTRATION]: ['field_event', 'field_user', 'status'],
+      [c.TYPE_ROOM]: ['drupal_internal__nid', 'title', 'field_location'],
+      [c.TYPE_FILE]: ['drupal_internal__fid', 'uri', 'url'],
     }
     : {
       [c.TYPE_EVENT]: [
-        'uuid',
         'title',
         'path',
         'field_date_time',
@@ -201,9 +189,9 @@ function getFilters(values, view = 'list', calView = 'day', date = new Date()) {
   }
 
   const types = [
-    { id: c.TYPE_EVENT_TYPE, path: 'field_event_type.uuid', conjunction: 'OR' },
-    { id: c.TYPE_LOCATION, path: 'field_location.uuid', conjunction: 'OR' },
-    { id: c.TYPE_AUDIENCE, path: 'field_event_audience.uuid', conjunction: 'OR' },
+    { id: c.TYPE_EVENT_TYPE, path: 'field_event_type.id', conjunction: 'OR' },
+    { id: c.TYPE_LOCATION, path: 'field_location.id', conjunction: 'OR' },
+    { id: c.TYPE_AUDIENCE, path: 'field_event_audience.id', conjunction: 'OR' },
   ];
 
   types.forEach((type) => {
@@ -295,7 +283,6 @@ class BrowseEvents extends Component {
       replace: true,
       fields: pick(sparseFieldsets(view), [
         c.TYPE_EVENT,
-        c.TYPE_MEDIA_IMAGE,
         c.TYPE_FILE,
         c.TYPE_ROOM,
       ]),
@@ -506,7 +493,7 @@ const mapDispatchToProps = dispatch => ({
           filters: {
             user: {
               value: utils.getUserUuid(),
-              path: 'field_user.uuid',
+              path: 'field_user.id',
             },
             status: {
               path: 'status',

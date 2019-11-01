@@ -118,7 +118,7 @@ class ManagementController extends ManagementControllerBase {
           ],
           '#content' => $lists->toArray(),
         ],
-        'taxonomies' => $this->getTaxonomyVocabularyTable(['audience', 'evaluation_criteria', 'event_type', 'tag']),
+        'taxonomies' => $this->getTaxonomyVocabularyTable(['audience', 'evaluation_criteria', 'event_type', 'population_segment', 'tag']),
       ]
     ];
   }

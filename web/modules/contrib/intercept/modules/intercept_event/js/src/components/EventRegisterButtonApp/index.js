@@ -47,29 +47,20 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = dispatch => ({
   fetchEvent: (id) => {
     dispatch(
-      // @todo: Add support for fetching a single entity rather than fetching all filtered by uuid.
-      api[c.TYPE_EVENT].fetchAll({
-        filters: {
-          uuid: {
-            value: id,
-            path: 'uuid',
-          },
-        },
-      }),
+      api[c.TYPE_EVENT].fetchResource(id),
     );
   },
   fetchRegistration: (id, user) => {
     dispatch(
-      // @todo: Add support for fetching a single entity rather than fetching all filtered by uuid.
       api[c.TYPE_EVENT_REGISTRATION].fetchAll({
         filters: {
           uuid: {
             value: id,
-            path: 'field_event.uuid',
+            path: 'field_event.id',
           },
           user: {
             value: user.uuid,
-            path: 'field_user.uuid',
+            path: 'field_user.id',
           },
         },
       }),

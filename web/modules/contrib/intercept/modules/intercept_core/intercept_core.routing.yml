@@ -9,7 +9,7 @@ intercept_core.settings:
   path: '/admin/config/intercept'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-    _title: 'InterCEPT Settings'
+    _title: 'Intercept Settings'
   requirements:
     _permission: 'access administration pages'
 
@@ -17,7 +17,7 @@ intercept_core.general:
   path: '/admin/config/intercept/general'
   defaults:
     _form: '\Drupal\intercept_core\Form\SettingsForm'
-    _title: 'InterCEPT General'
+    _title: 'Intercept General'
   requirements:
     _permission: 'administer intercept_core'
 
@@ -25,7 +25,7 @@ intercept_core.admin_structure:
   path: '/admin/structure/intercept'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-    _title: 'InterCEPT'
+    _title: 'Intercept'
   requirements:
     _permission: 'access administration pages'
 

@@ -6,7 +6,7 @@ dependencies:
   module:
     - user
 id: user_add_role_action.intercept_event_organizer
-label: 'Add the InterCEPT Event Organizer role to the selected user(s)'
+label: 'Add the Intercept Event Organizer role to the selected user(s)'
 type: user
 plugin: user_add_role_action
 configuration:

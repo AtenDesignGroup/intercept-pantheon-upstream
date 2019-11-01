@@ -1190,6 +1190,9 @@ tbody + tbody {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center; }
+  @media print {
+    .l--page-wrapper {
+      display: block; } }
   .l--page-wrapper > .l--page {
     margin-left: auto;
     margin-right: auto;
@@ -1335,6 +1338,12 @@ tbody + tbody {
   .l--sidebar-after > .l__main > .l__secondary {
     float: right; } }
 
+@media screen and (min-height: 800px) and (min-width: 768px) {
+  .l--sidebar-after > .l__main > .l__secondary {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 1em; } }
+
 @media (min-width: 48em) {
   .l--sidebar-before > .l__main > .l__primary {
     float: right; }
@@ -1385,15 +1394,15 @@ tbody + tbody {
       background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
       background-position: top center;
       background-repeat: repeat-y;
-      background-size: .3125em .3125em;
+      background-size: 0.3125em 0.3125em;
       bottom: 0;
-      content: "";
+      content: '';
       display: block;
       left: -8.33333%;
       margin: auto;
       position: absolute;
       top: 0;
-      width: .325em; } }
+      width: 0.325em; } }
   @media (min-width: 68.75em) {
     .l--2-col--ruled > .l__main > .l__secondary:after {
       left: -15%; } }
@@ -1434,7 +1443,7 @@ tbody + tbody {
     .l--subsection--tight {
       margin-bottom: 1.875rem; } }
 
-[id="eventRegisterRoot"] {
+[id='eventRegisterRoot'] {
   min-height: 12.5rem; }
 
 .align-left {

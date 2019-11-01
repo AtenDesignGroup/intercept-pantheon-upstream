@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies: {  }
 id: intercept_equipment_reservation_manager
-label: 'InterCEPT Equipment Reservation Manager'
+label: 'Intercept Equipment Reservation Manager'
 weight: 4
 is_admin: null
 permissions:

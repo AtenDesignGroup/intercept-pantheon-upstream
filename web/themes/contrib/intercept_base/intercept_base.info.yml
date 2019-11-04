@@ -113,6 +113,11 @@ component-libraries:
       - images/icons
 
 # Information added by Drupal.org packaging script on 2019-08-22
-version: '8.x-1.0-alpha8'
+# version: '8.x-1.0-alpha8'
+# project: 'intercept_base'
+# datestamp: 1566488000
+
+# Information added by Drupal.org packaging script on 2019-11-01
+version: '8.x-1.0-alpha11'
 project: 'intercept_base'
-datestamp: 1566488000
+datestamp: 1572624489

@@ -20,6 +20,7 @@ use Behat\Mink\Mink,
 
 use Selenium\Client as SeleniumClient;
 
+$browser = 'firefox';
 $url = 'http://example.com';
 
 $mink = new Mink(array(
@@ -47,6 +48,29 @@ Installation
 $> curl -sS http://getcomposer.org/installer | php
 $> php composer.phar install
 ```
+
+Testing
+------------
+
+1. Start WebDriver
+    1. If you have Docker installed, run
+    ```bash
+    docker run -p 4444:4444 selenium/standalone-firefox:2.53.1
+    ```
+    2. If you do not have Docker, but you have Java
+    ```bash
+    curl -L http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar > selenium-server-standalone-2.53.1.jar
+    java -jar selenium-server-standalone-2.53.1.jar
+    ```
+2. Start WebServer by running
+    ``` bash
+    ./vendor/bin/mink-test-server
+    ```
+3. Start PhpUnit
+    ```bash
+    composer require --dev phpunit/phpunit
+    ./vendor/bin/phpunit -v --coverage-clover=coverage.clover
+    ```
 
 Copyright
 ---------

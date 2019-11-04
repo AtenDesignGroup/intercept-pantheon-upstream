@@ -14,7 +14,7 @@
     "rvtraveller/qs-composer-installer": "^1.1",
     "drupal-composer/drupal-scaffold": "^2.0.1",
     "cweagans/composer-patches": "^1.0",
-    "drupal/core": "8.7.6",
+    "drupal/core": "^8.7",
     "drush/drush": "~8",
     "drupal/config_direct_save": "^1.0",
     "drupal/adminimal_admin_toolbar": "^1.0",
@@ -27,18 +27,8 @@
     "drupal/externalauth": "^1.1"
   },
   "require-dev": {
-    "mikey179/vfsstream": "^1.2",
-    "behat/behat": "3.*",
-    "behat/mink": "^1.7",
-    "behat/mink-extension": "^2.2",
-    "behat/mink-goutte-driver": "^1.2",
-    "jcalderonzumba/gastonjs": "^1.0.2",
-    "jcalderonzumba/mink-phantomjs-driver": "^0.3.1",
-    "drupal/drupal-extension": "^3.1",
-    "drush-ops/behat-drush-endpoint": "^0.0.4",
     "pantheon-systems/quicksilver-pushback": "~1",
-    "phpunit/phpunit": "^4.8",
-    "symfony/css-selector": "^2.8"
+    "webflo/drupal-core-require-dev": "^8.7"
   },
   "conflict": {
       "drupal/drupal": "*"

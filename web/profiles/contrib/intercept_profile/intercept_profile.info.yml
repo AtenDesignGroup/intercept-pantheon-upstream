@@ -1,7 +1,7 @@
 name: Intercept Profile
 type: profile
 description: 'The Intercept profile helps setup Drupal with the Intercept module and theme.'
-# core: 8.x
+core: 8.x
 distribution:
   name: Intercept Profile
 dependencies:
@@ -32,20 +32,12 @@ dependencies:
   - drupal:automated_cron
   - admin_toolbar:admin_toolbar
   - adminimal_admin_toolbar:adminimal_admin_toolbar
-  - components:components
   - inline_entity_form:inline_entity_form
   - intercept:intercept
   - intercept_event:intercept_event
   - intercept_room_reservation:intercept_room_reservation
   - intercept_equipment:intercept_equipment
-  - twig_tweak:twig_tweak
-  - twig_field_value:twig_field_value
+  - components:components
 themes:
   - adminimal_theme
   - intercept_base
-
-# Information added by Drupal.org packaging script on 2019-08-19
-version: '8.x-1.x-dev'
-core: '8.x'
-project: 'intercept_profile'
-datestamp: 1566219637

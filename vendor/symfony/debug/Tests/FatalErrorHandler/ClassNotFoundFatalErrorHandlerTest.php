@@ -19,7 +19,7 @@ use Symfony\Component\Debug\FatalErrorHandler\ClassNotFoundFatalErrorHandler;
 
 class ClassNotFoundFatalErrorHandlerTest extends TestCase
 {
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         foreach (spl_autoload_functions() as $function) {
             if (!\is_array($function)) {
@@ -32,7 +32,7 @@ class ClassNotFoundFatalErrorHandlerTest extends TestCase
             }
 
             if ($function[0] instanceof ComposerClassLoader) {
-                $function[0]->add('Symfony_Component_Debug_Tests_Fixtures', \dirname(__DIR__, 5));
+                $function[0]->add('Symfony_Component_Debug_Tests_Fixtures', \dirname(\dirname(\dirname(\dirname(\dirname(__DIR__))))));
                 break;
             }
         }

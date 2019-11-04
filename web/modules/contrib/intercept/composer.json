@@ -46,20 +46,7 @@
     "drupal/tally": "1.x-dev",
     "drupal/votingapi": "^3.0@beta"
   },
-  "require-dev": {
-    "bower-asset/dropzone": "^5.1"
-  },
   "extra": {
-    "installer-paths": {
-      "docroot/libraries/{$name}": [
-        "type:bower-asset",
-        "type:npm-asset"
-      ]
-    },
-    "installer-types": [
-      "bower-asset",
-      "npm-asset"
-    ],
     "patches": {
       "drupal/field_group": {
         "Fixes Field Group incompatibility with Inline Entity Form": "https://www.drupal.org/files/issues/2018-10-30/field_group-inline_entity_form_compatibility-2986704-3.patch"

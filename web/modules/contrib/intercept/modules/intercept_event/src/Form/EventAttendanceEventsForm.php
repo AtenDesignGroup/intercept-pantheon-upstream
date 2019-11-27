@@ -8,14 +8,10 @@ use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\date_recur\DateRecurRRule;
-use Drupal\date_recur\Plugin\DateRecurOccurrenceHandler\DefaultDateRecurOccurrenceHandler;
-use Drupal\date_recur\Plugin\DateRecurOccurrenceHandlerInterface;
-use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
+use Drupal\inline_entity_form\ElementSubmit;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Utility\Dates;
-use Drupal\intercept_event\Entity\EventRecurrenceInterface;
 use Drupal\intercept_event\RecurringEventManager;
-use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -28,17 +24,17 @@ class EventAttendanceEventsForm extends ContentEntityForm {
   use DateRangeFormatterTrait;
 
   /**
-   * @var EventRecurrenceInterface
+   * @var \Drupal\intercept_event\Entity\EventRecurrenceInterface
    */
   private $eventRecurrence;
 
   /**
-   * @var RecurringEventManager
+   * @var \Drupal\intercept_event\RecurringEventManager
    */
   protected $recurringEventManager;
 
   /**
-   * @var Dates
+   * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
 
@@ -73,13 +69,11 @@ class EventAttendanceEventsForm extends ContentEntityForm {
 
     $form = parent::buildForm($form, $form_state);
 
-    //$form['#theme'] = 'event_recurrence_event_form';
-
-  $form['revision']['#access'] = FALSE;
-  $form['revision_information']['#access'] = FALSE;
-  $form['revision_log']['#access'] = FALSE;
-  $form['advanced']['#access'] = FALSE;
-  $form['#process'][] = '::processNodeForm';
+    $form['revision']['#access'] = FALSE;
+    $form['revision_information']['#access'] = FALSE;
+    $form['revision_log']['#access'] = FALSE;
+    $form['advanced']['#access'] = FALSE;
+    $form['#process'][] = '::processNodeForm';
 
     return $form;
   }
@@ -98,28 +92,28 @@ class EventAttendanceEventsForm extends ContentEntityForm {
   private function compensate($date, $timezone = 'default') {
     $converted = $this->dateUtility->convertTimezone($date, 'storage')
       ->format($this->dateUtility->getStorageFormat());
-     $new_date = $this->dateUtility->getDrupalDate($converted, 'default');
+    $new_date = $this->dateUtility->getDrupalDate($converted, 'default');
     return $timezone == 'default' ? $new_date : $this->dateUtility->convertTimezone($new_date, 'storage');
   }
 
   /**
-   * @param DateRecurItem $item
+   * @param \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item
    *
    * @return array
    * @throws \Exception
    */
   private function getDates($item, $timezone = 'default') {
-    /** @var DateRecurOccurrenceHandlerInterface $handler */
-    $handler = $item->getOccurrenceHandler();
     $storage_format = $item->getDateStorageFormat();
-    if (!$handler->isRecurring()) {
+    if (!$item->isRecurring()) {
       if (empty($item->end_date)) {
         $item->end_date = $item->start_date;
       }
-      return [[
-        'value' => DateRecurRRule::massageDateValueForStorage($item->start_date, $storage_format),
-        'end_value' => DateRecurRRule::massageDateValueForStorage($item->end_date, $storage_format),
-      ]];
+      return [
+        [
+          'value' => DateRecurRRule::massageDateValueForStorage($item->start_date, $storage_format),
+          'end_value' => DateRecurRRule::massageDateValueForStorage($item->end_date, $storage_format),
+        ],
+      ];
     }
     else {
       $occurrences = $item->occurrences;
@@ -131,18 +125,6 @@ class EventAttendanceEventsForm extends ContentEntityForm {
       }
       return $occurrences;
     }
-  }
-
-  protected function getEvent() {
-    if (!empty($this->entity->event->entity)) {
-      return $this->entity->event->entity;
-    }
-    $values = [
-      'type' => 'event',
-      'event_recurrence' => $this->entity->id(),
-    ];
-
-    return $this->entityTypeManager->getStorage('node')->create($values);
   }
 
   /**
@@ -185,7 +167,7 @@ class EventAttendanceEventsForm extends ContentEntityForm {
    * Submit handler to generate events.
    */
   public function generateEvents(array &$form, FormStateInterface $form_state) {
-      /** @var NodeInterface $base_event */
+    /** @var Drupal\node\NodeInterface $base_event */
     $base_event = $form_state->getFormObject()->getEntity();
 
     $recurring_rule_field = $this->eventRecurrence->getRecurField();
@@ -222,7 +204,8 @@ class EventAttendanceEventsForm extends ContentEntityForm {
   }
 
   protected function submitHandlers($extra = []) {
-    $ief = [[\Drupal\inline_entity_form\ElementSubmit::class, 'trigger']];
+    $ief = [[ElementSubmit::class, 'trigger']];
     return array_merge($ief, $extra);
   }
+
 }

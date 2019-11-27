@@ -33,6 +33,7 @@ use Drupal\consumers\EntityOwnerTrait;
  *     },
  *     "views_data" = "\Drupal\views\EntityViewsData",
  *     "access" = "Drupal\consumers\AccessControlHandler",
+ *     "storage" = "Drupal\consumers\ConsumerStorage",
  *   },
  *   base_table = "consumer",
  *   data_table = "consumer_field_data",

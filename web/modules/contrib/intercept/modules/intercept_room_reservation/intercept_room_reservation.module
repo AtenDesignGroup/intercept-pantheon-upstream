@@ -410,5 +410,10 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
         }
       }
     }
+    if (!isset($matches)) { // Nothing in $matches means that no dates are specified.
+      // Let's make sure that we display future events by default.
+      $date = gmdate("Y-m-d\TH:i:s");
+      $query->addWhereExpression(1, "DATE_FORMAT((room_reservation__field_dates.field_dates_end_value), '%Y-%m-%d\T%H:%i:%s') >= DATE_FORMAT(('" . $date . "'), '%Y-%m-%d\T%H:%i:%s')", []);
+    }
   }
 }

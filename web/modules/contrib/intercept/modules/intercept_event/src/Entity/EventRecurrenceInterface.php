@@ -14,7 +14,21 @@ use Drupal\user\EntityOwnerInterface;
  */
 interface EventRecurrenceInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
 
-  // Add get/set methods for your configuration properties here.
+  /**
+   * Gets the Event Node.
+   *
+   * @return \Drupal\node\NodeInterface
+   *   The event node.
+   */
+  public function getBaseEvent();
+
+  /**
+   * Gets the Event Node ID.
+   *
+   * @return int
+   *   The event node ID.
+   */
+  public function getBaseEventId();
 
   /**
    * Gets the Event Recurrence creation timestamp.

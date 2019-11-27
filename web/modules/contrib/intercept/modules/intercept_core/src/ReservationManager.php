@@ -143,20 +143,8 @@ class ReservationManager implements ReservationManagerInterface {
   public function nodeFormAlter(&$form, FormStateInterface $form_state) {
     // Since all of this functionality centers around the reservation element
     // we can avoid this alter if it's not displayed.
-    $form_display = $form_state->getFormObject()->getFormDisplay($form_state);
     $node = $form_state->getFormObject()->getEntity();
     $reservation = $this->getEventReservation($node);
-    $form['field_date_time']['widget'][0]['value']['#ajax'] = $this->updateStatusAjax() + [
-      'event' => 'change',
-      // Keep the refocus from re-activating the date select widget.
-      'disable-refocus' => TRUE,
-    ];
-
-    $form['field_date_time']['widget'][0]['end_value']['#ajax'] = $this->updateStatusAjax() + [
-      'event' => 'change',
-      // Keep the refocus from re-activating the date select widget.
-      'disable-refocus' => TRUE,
-    ];
 
     $form['reservation'] = [
       '#title' => $this->t('Reservation'),
@@ -180,8 +168,8 @@ class ReservationManager implements ReservationManagerInterface {
       '#ajax' => $this->updateStatusAjax(),
     ];
 
-    $start_date_object = $node->field_date_time->start_date ?: new \DateTime();
-    $end_date_object = $node->field_date_time->end_date ?: new \DateTime();
+    $start_date_object = NULL;
+    $end_date_object = NULL;
     if (!empty($reservation)) {
       $start_date_object = $this->dateUtility
         ->convertTimezone($reservation->field_dates->start_date, 'default');
@@ -190,8 +178,8 @@ class ReservationManager implements ReservationManagerInterface {
     }
 
     $params = [
-      'start' => $start_date_object->format(self::FORMAT),
-      'end' => $end_date_object->format(self::FORMAT),
+      'start' => $start_date_object ? $start_date_object->format(self::FORMAT) : NULL,
+      'end' => $end_date_object ? $end_date_object->format(self::FORMAT) : NULL,
     ];
     if ($room = $node->field_room->entity) {
       $params['rooms'] = [$room->id()];
@@ -214,12 +202,24 @@ class ReservationManager implements ReservationManagerInterface {
       '#title' => t('Reservation start time'),
       '#type' => 'datetime',
       '#default_value' => $start_date_object,
+      '#ajax' => [
+        'callback' => [$this, 'updateFormStatusField'],
+        'event' => 'change',
+        'disable-refocus' => TRUE,
+        'wrapper' => 'event-room-reservation-status-ajax-wrapper',
+      ],
     ];
 
     $form['reservation']['dates']['end'] = [
       '#title' => t('Reservation end time'),
       '#type' => 'datetime',
       '#default_value' => $end_date_object,
+      '#ajax' => [
+        'callback' => [$this, 'updateFormStatusField'],
+        'event' => 'change',
+        'disable-refocus' => TRUE,
+        'wrapper' => 'event-room-reservation-status-ajax-wrapper',
+      ],
     ];
 
     $form['reservation']['dates']['status'] = [
@@ -229,8 +229,8 @@ class ReservationManager implements ReservationManagerInterface {
       '#suffix' => '</div>',
     ];
 
-    if ($form_state->getValue('field_room') && !empty($reservation) && $form_state->getValue(['reservation', 'dates'])) {
-      // If there is already a reservation just check if date or room was changed.
+    if ($form_state->getValue('field_room') && $form_state->getValue(['reservation', 'dates'])) {
+      // Check if date or room was changed.
       $this->updateFormStatusField($form, $form_state);
     }
     if ($form_state->getValue('field_room') && $form_state->getValue(['reservation', 'create'])) {
@@ -305,23 +305,32 @@ class ReservationManager implements ReservationManagerInterface {
   /**
    * Update the inline element from $form_state changes.
    */
-  private function updateFormStatusField(&$form, FormStateInterface $form_state) {
+  public function updateFormStatusField(&$form, FormStateInterface $form_state) {
     $event = $form_state->getFormObject()->getEntity();
     $room = $form_state->getValue('field_room');
     $status_element = &$form['reservation']['dates']['status'];
-    $reservation = $form_state->getValue('reservation');
-    // They clicked create reservation before the event date was set.
-    $dates = $form_state->getValue('field_date_time');
-    if (empty($dates) || empty($dates[0]['value']) || empty($dates[0]['end_value'])) {
-      return;
+    // They clicked create reservation before the reservation date was set.
+    $dates = $form_state->getValue(['reservation', 'dates']);
+    if (empty($dates) || empty($dates['start']) || empty($dates['end'])) {
+      $dates = $form_state->getValue('field_date_time');
+      if (empty($dates) || empty($dates[0]['value']) || empty($dates[0]['end_value'])) {
+        return [];
+      }
+      $start_date = $dates[0]['value'];
+      $end_date = $dates[0]['end_value'];
     }
-    $start_date = $dates[0]['value'];
-    $end_date = $dates[0]['end_value'];
+    else {
+      if (is_array($dates['start'])) {
+        return [];
+      }
+      $start_date = $dates['start'];
+      $end_date = $dates['end'];
+    }
     $params = [
       'debug' => TRUE,
       'rooms' => [$room[0]['target_id']],
-      'start' => $start_date->format(self::FORMAT),
-      'end' => $end_date->format(self::FORMAT),
+      'start' => $this->dateUtility()->convertTimezone($start_date)->format(self::FORMAT),
+      'end' => $this->dateUtility()->convertTimezone($end_date)->format(self::FORMAT),
     ];
     if (!$event->isNew()) {
       $params['event'] = $event->id();
@@ -344,6 +353,8 @@ class ReservationManager implements ReservationManagerInterface {
       $status_element['#value'] = $this->t('The selected reservation times are invalid.');
       $status_element['#attributes']['class'][] = 'error-text-color';
     }
+
+    return $status_element;
   }
 
   /**
@@ -430,8 +441,8 @@ class ReservationManager implements ReservationManagerInterface {
   public function userReservationCount(AccountInterface $user) {
     $reservations = $this->reservations('room', function ($query) use ($user) {
       $query->condition('field_user', $user->id(), '=');
-      $date = new DrupalDateTime('now', $this->dateUtility->getUtcTimezone());
-      $query->condition('field_dates.end_value', $date->format('Y-m-d\TH:i:s'), '>');
+      $date = new DrupalDateTime('now', $this->dateUtility->getDefaultTimezone());
+      $query->condition('field_dates.end_value', $date->format('Y-m-d\TH:i:sP'), '>');
       $query->condition('field_status', ['requested', 'approved'], 'IN');
     });
     return count($reservations);
@@ -470,10 +481,6 @@ class ReservationManager implements ReservationManagerInterface {
     $data = $this->reservationsByNode('room', function ($query) use ($params) {
       $start_date = $this->dateUtility->getDate($params['start']);
       $end_date = $this->dateUtility->getDate($params['end']);
-      // Add period to end to send to query.
-      $period = 'PT' . (int) $params['duration'] . 'M';
-      $end_date->add(new \DateInterval($period));
-      $params['end'] = $end_date->format(self::FORMAT);
       if (!empty($params['rooms'])) {
         $query->condition('field_room', $params['rooms'], 'IN');
       }

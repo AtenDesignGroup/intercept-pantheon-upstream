@@ -209,7 +209,7 @@ function intercept_event_pathauto_alias_alter(&$alias, array &$context) {
     $alias_uniquifier = new AliasUniquifier($config_factory, $alias_storage_helper, $module_handler, $route_provider, $alias_manager);
     $unique_alias = $alias_uniquifier->uniquify($alias, $context['source'], $langcode);
     // Then ultimately make the alias for registration.
-    \Drupal::service('intercept_event.manager')->addRegisterAlias($context['data']['node'], $alias);
+    \Drupal::service('intercept_event.manager')->addRegisterAlias($context['data']['node'], $unique_alias);
   }
 }
 
@@ -230,6 +230,13 @@ function intercept_event_node_update(NodeInterface $node) {
  */
 function intercept_event_node_insert(NodeInterface $node) {
   if ($node->bundle() == 'event') {
+    $event_recurrences = $node->get('event_recurrence')->referencedEntities();
+    foreach ($event_recurrences as $recurrence) {
+      if (!$recurrence->get('event')->target_id) {
+        $recurrence->set('event', $node->id());
+        $recurrence->save();
+      }
+    }
     if ($node->path->pathauto) {
       return;
     }
@@ -268,6 +275,10 @@ function intercept_event_entity_presave(EntityInterface $entity) {
       $keywords = trim($keywords);
       // Setting the value into the keywords field.
       $entity->field_keywords->value = $keywords;
+
+      // Translation waitlisted attendees to an active state in case capacity was increased.
+      \Drupal::service('intercept_event.manager')->fillEventOpenCapacity($entity);
+
       break;
 
     case 'audience':
@@ -295,7 +306,7 @@ function intercept_event_entity_presave(EntityInterface $entity) {
         // Trigger a re-save of all of those (thus updating keywords field data).
         if (count($nodes) > 0) {
           $eventQueue = Drupal::service('intercept_event.queue');
-          foreach($nodes as $node) {
+          foreach ($nodes as $node) {
             $eventQueue->add($node->id());
           }
         }
@@ -328,7 +339,7 @@ function intercept_event_theme_suggestions_form_element_alter(&$suggestions, $va
   if ($evaluation_form_position !== FALSE && $evaluation_form_position >= 0) {
     $suggestions[] = "form_element__type__" . $variables['element']['#type'] . "__event_evaluation_staff_form";
   }
-  else if ($form_id == 'views_exposed_form') {
+  elseif ($form_id == 'views_exposed_form') {
     if ($variables['element']['#attributes']['id'] == 'edit-title' && $variables['element']['#title'] == 'Title') {
       $suggestions[] = "form_element__type__" . $variables['element']['#type'] . "__event_attendance_export_form";
     }
@@ -393,19 +404,19 @@ function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterfac
     ];
     $form['date']['#type'] = 'hidden';
   }
-  else if ($view->id() == 'intercept_event_attendance' && $view->current_display == 'embed') {
+  elseif ($view->id() == 'intercept_event_attendance' && $view->current_display == 'embed') {
     // Remove autocomplete from the form's date fields.
     $form['date_start']['#attributes']['autocomplete'] = 'off';
     $form['date_end']['#attributes']['autocomplete'] = 'off';
     $form['attendance_date']['min']['#attributes']['autocomplete'] = 'off';
     $form['attendance_date']['max']['#attributes']['autocomplete'] = 'off';
   }
-  else if ($view->id() == 'intercept_event_attendance_by_age_group' && $view->current_display == 'page') {
+  elseif ($view->id() == 'intercept_event_attendance_by_age_group' && $view->current_display == 'page') {
     // Remove autocomplete from the form's date fields.
     $form['field_date_time_value']['min']['#attributes']['autocomplete'] = 'off';
     $form['field_date_time_value']['max']['#attributes']['autocomplete'] = 'off';
   }
-  
+
 }
 
 /**
@@ -435,7 +446,7 @@ function intercept_event_form_node_form_alter(&$form, FormStateInterface $form_s
  * Implements hook_form_alter().
  */
 function intercept_event_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
-  switch($form_id) {
+  switch ($form_id) {
     case 'node_event_attendance_form':
       $form['#attached']['library'][] = 'intercept_event/eventNumberAttendees';
       break;
@@ -541,7 +552,7 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
     }
   }
 
-  if ($values['field_event_designation'][0]['value'] == 'events') {
+  if (isset($values['field_event_designation']) && $values['field_event_designation'][0]['value'] == 'events') {
     $required_fields = [
       'field_event_type_primary' => 'Primary Event Type',
       'field_event_type' => 'Event Type(s)',
@@ -609,11 +620,11 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
 function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type) {
   if ($entity_type->id() == 'vote') {
     $definitions = [];
-    $definitions['vote_criteria'] = \Drupal\Core\Field\BaseFieldDefinition::create('map')
+    $definitions['vote_criteria'] = BaseFieldDefinition::create('map')
       ->setName('vote_criteria')
       ->setLabel(t('Vote criteria'))
       ->setCardinality(1);
-    $definitions['feedback'] = \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+    $definitions['feedback'] = BaseFieldDefinition::create('text_long')
       ->setName('feedback')
       ->setLabel(t('Feedback'))
       ->setCardinality(1);
@@ -621,7 +632,7 @@ function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type
   }
   if ($entity_type->id() == 'node') {
     $definitions = [];
-    $definitions['event_recurrence'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $definitions['event_recurrence'] = BaseFieldDefinition::create('entity_reference')
       ->setName('event_reccurence')
       ->setLabel(t('Event recurrence'))
       ->setTargetEntityTypeId($entity_type->id())
@@ -724,10 +735,10 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
  * Implements hook_views_pre_render().
  */
 function intercept_event_views_pre_render(ViewExecutable $view) {
-  if ($view->id() == 'intercept_event_attendance_by_age_group'){
+  if ($view->id() == 'intercept_event_attendance_by_age_group') {
     foreach ($view->field as $field_name => $field) {
       if (strpos($field_name, 'field_attendees') === 0) {
-        $terms =\Drupal::entityTypeManager()
+        $terms = \Drupal::entityTypeManager()
           ->getStorage('taxonomy_term')
           ->loadTree('population_segment');
         foreach ($terms as $index => $term) {

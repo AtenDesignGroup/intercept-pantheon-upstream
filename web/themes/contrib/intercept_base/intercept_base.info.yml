@@ -108,7 +108,7 @@ component-libraries:
     paths:
       - images/icons
 
-# Information added by Drupal.org packaging script on 2019-11-01
-version: '8.x-1.0-alpha11'
+# Information added by Drupal.org packaging script on 2019-11-27
+version: '8.x-1.0-alpha12'
 project: 'intercept_base'
-datestamp: 1572624489
+datestamp: 1574872397

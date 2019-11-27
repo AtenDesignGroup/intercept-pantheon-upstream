@@ -7,8 +7,13 @@ dependencies:
     - field.storage.node.image_primary
     - image.style.0_85_1_275x324
     - node.type.equipment
+    - system.menu.main
     - taxonomy.vocabulary.equipment_type
+    - user.role.administrator
     - user.role.intercept_equipment_reservation_manager
+    - user.role.intercept_event_manager
+    - user.role.intercept_event_organizer
+    - user.role.intercept_room_reservation_approver
     - user.role.intercept_staff
     - user.role.intercept_system_admin
   module:
@@ -35,9 +40,13 @@ display:
         type: role
         options:
           role:
+            administrator: administrator
+            intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
+            intercept_event_manager: intercept_event_manager
+            intercept_event_organizer: intercept_event_organizer
+            intercept_room_reservation_approver: intercept_room_reservation_approver
             intercept_staff: intercept_staff
             intercept_system_admin: intercept_system_admin
-            intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
       cache:
         type: tag
         options: {  }
@@ -357,7 +366,11 @@ display:
               authenticated: authenticated
               anonymous: '0'
               intercept_registered_customer: '0'
+              intercept_kiosk: '0'
               intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
@@ -401,9 +414,13 @@ display:
               authenticated: authenticated
               anonymous: '0'
               intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              intercept_room_reservation_approver: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -472,7 +489,6 @@ display:
       tags:
         - 'config:field.storage.node.field_equipment_type'
         - 'config:field.storage.node.image_primary'
-        - extensions
   page:
     display_plugin: page
     id: page
@@ -481,6 +497,15 @@ display:
     display_options:
       display_extenders: {  }
       path: reserve-equipment
+      menu:
+        type: normal
+        title: 'Reserve Equipment'
+        description: ''
+        expanded: false
+        parent: ''
+        weight: 0
+        context: '0'
+        menu_name: main
     cache_metadata:
       max-age: -1
       contexts:
@@ -494,4 +519,3 @@ display:
       tags:
         - 'config:field.storage.node.field_equipment_type'
         - 'config:field.storage.node.image_primary'
-        - extensions

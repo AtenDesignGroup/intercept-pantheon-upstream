@@ -24,7 +24,17 @@ class RoomReservationForm extends ContentEntityForm {
     $form = parent::buildForm($form, $form_state);
 
     $form['#attached'] = [
-      'library' => ['intercept_room_reservation/room-reservations']
+      'library' => ['intercept_room_reservation/room-reservations'],
+    ];
+
+    $form['field_room']['widget'][0]['target_id']['#ajax'] = [
+      'callback' => '::checkAvailability',
+      'event' => 'change',
+      'wrapper' => 'edit-field-dates-0-message',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t('Verifying reservation dates...'),
+      ],
     ];
 
     $form['field_dates']['widget'][0]['message'] = [
@@ -102,6 +112,7 @@ class RoomReservationForm extends ContentEntityForm {
    */
   public function checkAvailability(array &$form, FormStateInterface $form_state) {
     $field_dates = $form_state->getValue('field_dates');
+    $field_room = $form_state->getValue('field_room');
     if (($start_date = $field_dates[0]['value']['date']) && ($start_time = $field_dates[0]['value']['time']) && ($end_date = $field_dates[0]['end_value']['date']) && ($end_time = $field_dates[0]['end_value']['time'])) {
       $date_utility = \Drupal::service('intercept_core.utility.dates');
       $start = $date_utility->convertDate($start_date . 'T' . $start_time);
@@ -110,7 +121,7 @@ class RoomReservationForm extends ContentEntityForm {
       $reservation_params = [
         'start' => $start->format('Y-m-d\TH:i:s'),
         'end' => $end->format('Y-m-d\TH:i:s'),
-        'rooms' => [$reservation->field_room->target_id],
+        'rooms' => [$field_room[0]['target_id']],
         'exclude' => [$reservation->id()],
         'debug' => TRUE,
       ];

@@ -7,15 +7,11 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\date_recur\DateRecurRRule;
-use Drupal\date_recur\Plugin\DateRecurOccurrenceHandler\DefaultDateRecurOccurrenceHandler;
-use Drupal\date_recur\Plugin\DateRecurOccurrenceHandlerInterface;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
+use Drupal\inline_entity_form\ElementSubmit;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Utility\Dates;
-use Drupal\intercept_event\Entity\EventRecurrenceInterface;
 use Drupal\intercept_event\RecurringEventManager;
-use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -28,17 +24,17 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   use DateRangeFormatterTrait;
 
   /**
-   * @var EventRecurrenceInterface
+   * @var \Drupal\intercept_event\Entity\EventRecurrenceInterface
    */
   private $eventRecurrence;
 
   /**
-   * @var RecurringEventManager
+   * @var \Drupal\intercept_event\RecurringEventManager
    */
   protected $recurringEventManager;
 
   /**
-   * @var Dates
+   * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
 
@@ -75,11 +71,6 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     $form = parent::buildForm($form, $form_state);
 
     $form['#theme'] = 'event_recurrence_event_form';
-
-    if ($recurring_rule_field = $this->eventRecurrence->getRecurField()) {
-      $handler = $recurring_rule_field->getOccurrenceHandler();
-      $storage_format = $recurring_rule_field->getDateStorageFormat();
-    }
 
     $form['title'] = [
       '#type' => 'html_tag',
@@ -127,29 +118,18 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       }
     }
     else {
-      $dates = $this->getDates($recurring_rule_field, 'default');
+      $recurring_rule_field = $this->eventRecurrence->getRecurField();
+      $dates = $this->getDates($recurring_rule_field);
       // If the first computed recurrence date is the same as the base event
       // then label it as such. If not, then we add in the base event date
       // to make sure that is clear that that is an occurrence as well.
-      $first_date = $dates[0];
-      if ($first_date['value'] != $this->entity->field_date_time->start_date) {
-        $base_event_date = $this->entity->field_date_time;
-        array_unshift($dates, [
-          'value' => $this->dateUtility->convertTimezone($base_event_date->start_date, 'default'),
-          'end_value' => $this->dateUtility->convertTimezone($base_event_date->end_date, 'default'),
-          'base_event' => TRUE,
-        ]);
-      }
-      else {
-        $dates[0]['base_event'] = TRUE;
-      }
-      foreach ($dates as $date) {
+      foreach ($dates as $index => $date) {
         $column = [
-          !empty($date['base_event']) ? $this->t('Base event') : $this->t('Date preview, not created yet'),
+          $index == 0 ? $this->t('Base event') : $this->t('Date preview, not created yet'),
           $this->formatDateRange([
-            '@date' => $date['value']->format($this->startDateFormat),
-            '@time_start' => $date['value']->format($this->startTimeFormat),
-            '@time_end' => $date['end_value']->format($this->endTimeFormat),
+            '@date' => $date->getStart()->format($this->startDateFormat),
+            '@time_start' => $date->getStart()->format($this->startTimeFormat),
+            '@time_end' => $date->getEnd()->format($this->endTimeFormat),
           ]),
           '',
           '',
@@ -181,55 +161,26 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   private function compensate($date, $timezone = 'default') {
     $converted = $this->dateUtility->convertTimezone($date, 'storage')
       ->format($this->dateUtility->getStorageFormat());
-     $new_date = $this->dateUtility->getDrupalDate($converted, 'default');
+    $new_date = $this->dateUtility->getDrupalDate($converted, 'default');
     return $timezone == 'default' ? $new_date : $this->dateUtility->convertTimezone($new_date, 'storage');
   }
 
   /**
-   * @param DateRecurItem $item
+   * @param \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item
    *
    * @return array
    * @throws \Exception
    */
-  private function getDates($item, $timezone = 'default') {
-    /** @var DateRecurOccurrenceHandlerInterface $handler */
-    $handler = $item->getOccurrenceHandler();
-    $storage_format = $item->getDateStorageFormat();
-    if ($handler->isInfinite() || !$handler->isRecurring()) {
-      if (empty($item->end_date)) {
-        $item->end_date = $item->start_date;
-      }
-      return [[
-        'value' => $this->dateUtility->convertTimezone($item->start_date, 'default'),
-        'end_value' => $this->dateUtility->convertTimezone($item->end_date, 'default'),
-      ]];
+  private function getDates(DateRecurItem $item) {
+    /** @var Drupal\date_recur\DateRecurHelperInterface $handler */
+    $helper = $item->getHelper();
+    if ($helper->isInfinite() || !$item->isRecurring()) {
+      return $helper->generateOccurrences();
     }
     else {
-      $occurrences = $item->occurrences;
-      foreach ($occurrences as &$occurrence) {
-        $occurrence['value'] = $this->dateUtility
-          ->convertTimezone($occurrence['value'], $timezone);
-        $occurrence['end_value'] = $this->dateUtility
-          ->convertTimezone($occurrence['end_value'], $timezone);
-      }
+      $occurrences = $helper->getOccurrences();
       return $occurrences;
     }
-  }
-
-  /**
-   * DO NOT USE
-   * @deprecated
-   */
-  protected function getEvent() {
-    if (!empty($this->entity->event->entity)) {
-      return $this->entity->event->entity;
-    }
-    $values = [
-      'type' => 'event',
-      'event_recurrence' => $this->entity->id(),
-    ];
-
-    return $this->entityTypeManager->getStorage('node')->create($values);
   }
 
   /**
@@ -272,48 +223,66 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    * Submit handler to generate events.
    */
   public function generateEvents(array &$form, FormStateInterface $form_state) {
-      /** @var NodeInterface $base_event */
+    /** @var Drupal\node\NodeInterface $base_event */
     $base_event = $form_state->getFormObject()->getEntity();
 
     $recurring_rule_field = $this->eventRecurrence->getRecurField();
     $storage_format = $recurring_rule_field->getDateStorageFormat();
-    $dates = $this->getDates($recurring_rule_field, 'storage');
+    $dates = $this->getDates($recurring_rule_field);
     $first_date = $dates[0];
-    if ($first_date['value'] == $base_event->field_date_time->start_date) {
+    if ($this->compensate($first_date->getStart())->format($storage_format) == $base_event->field_date_time->start_date->format($storage_format)) {
       array_shift($dates);
     }
     foreach ($dates as $date) {
       $event = $base_event->createDuplicate();
       $event->set('field_date_time', [
-        'value' => $date['value']->format($storage_format),
-        'end_value' => $date['end_value']->format($storage_format),
+        'value' => $this->compensate($date->getStart())->format($storage_format),
+        'end_value' => $this->compensate($date->getEnd())->format($storage_format),
       ]);
       $event->set('event_recurrence', $this->eventRecurrence->id());
       $event->save();
-      $this->generateReservation($event, $base_event);
+      $manager = \Drupal::service('intercept_core.reservation.manager');
+      if ($reservation = $manager->getEventReservation($base_event)) {
+        $this->generateReservation($event, $reservation);
+      }
     }
     drupal_set_message($this->t('@count events created.', ['@count' => count($dates)]));
   }
 
-  protected function generateReservation($new_event, $base_event) {
+  protected function generateReservation($new_event, $reservation) {
     $manager = \Drupal::service('intercept_core.reservation.manager');
-    if (!$base_reservation = $manager->getEventReservation($base_event)) {
-      // No base reservation exists, do not clone.
-      return FALSE;
-    }
+    $recurring_rule_field = $this->eventRecurrence->getRecurField();
+    $storage_format = $recurring_rule_field->getDateStorageFormat();
     // This field originates from the value entered in on the event form. We
     // need to preserve the time that was entered, but change the date to the
-    // recuring date that was calculated.
-    $year = $new_event->field_date_time->start_date->format('Y');
-    $month = $new_event->field_date_time->start_date->format('n');
-    $day = $new_event->field_date_time->start_date->format('j');
-    $dates = clone $base_reservation->field_dates;
-    $dates->start_date->setDate($year, $month, $day);
-    $dates->end_date->setDate($year, $month, $day);
+    // recurring date that was calculated.
+    $start_date = $this->dateUtility->convertTimezone($new_event->field_date_time->start_date, 'default');
+    $end_date = $this->dateUtility->convertTimezone($new_event->field_date_time->end_date, 'default');
+    $dates = clone $reservation->field_dates;
+    $start_time = $this->dateUtility->convertTimezone($dates->start_date, 'default');
+    $end_time = $this->dateUtility->convertTimezone($dates->end_date, 'default');
+    $reservation_start = $this->dateUtility
+      ->createDateFromArray(
+        $start_date->format('Y'),
+        $start_date->format('n'),
+        $start_date->format('j'),
+        $start_time->format('H'),
+        $start_time->format('i'),
+        $start_time->format('s')
+      );
+    $reservation_end = $this->dateUtility
+      ->createDateFromArray(
+        $end_date->format('Y'),
+        $end_date->format('n'),
+        $end_date->format('j'),
+        $end_time->format('H'),
+        $end_time->format('i'),
+        $end_time->format('s')
+      );
     $manager->createEventReservation($new_event, [
       'field_dates' => [
-        'value' => $dates->start_date->format('Y-m-d\TH:i:s'),
-        'end_value' => $dates->end_date->format('Y-m-d\TH:i:s'),
+        'value' => $this->compensate($reservation_start)->format($storage_format),
+        'end_value' => $this->compensate($reservation_end)->format($storage_format),
       ],
     ]);
   }
@@ -368,7 +337,8 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   }
 
   protected function submitHandlers($extra = []) {
-    $ief = [[\Drupal\inline_entity_form\ElementSubmit::class, 'trigger']];
+    $ief = [[ElementSubmit::class, 'trigger']];
     return array_merge($ief, $extra);
   }
+
 }

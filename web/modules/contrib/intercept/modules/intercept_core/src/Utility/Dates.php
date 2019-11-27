@@ -147,4 +147,34 @@ class Dates {
     return $date;
   }
 
+  /**
+   * Creates a DateTime object based on a keyed array of date parts.
+   *
+   * @param int $year
+   *   The year formatted as PHP 'Y'.
+   * @param int $month
+   *   The month formatted as PHP 'n'.
+   * @param int $day
+   *   The day formatted as PHP 'j'.
+   * @param int $hour
+   *   The hour formatted as PHP 'H'.
+   * @param int $minute
+   *   The minute formatted as PHP 'i'.
+   * @param int $second
+   *   The second formatted as PHP 's'.
+   */
+  public function createDateFromArray($year = NULL, $month = 1, $day = 1, $hour = 12, $minute = 0, $second = 0) {
+    $now = new \DateTime();
+    $year = $year ?: $now->format('Y');
+    $partsArray = [
+      'year' => $year,
+      'month' => $month,
+      'day' => $day,
+      'hour' => $hour,
+      'minute' => $minute,
+      'second' => $second,
+    ];
+    return DrupalDateTime::createFromArray($partsArray);
+  }
+
 }

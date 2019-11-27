@@ -40,11 +40,13 @@ class MappingManager {
   public function loadByEntity(EntityInterface $entity) {
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
-    if ($entity_type == 'node' && $bundle == 'location') {
-      return $this->loadByNodeLocation($entity);
-    }
-    if ($entity_type == 'user') {
-      return $this->loadByUser($entity);
+    if ($this->client) {
+      if ($entity_type == 'node' && $bundle == 'location') {
+        return $this->loadByNodeLocation($entity);
+      }
+      if ($entity_type == 'user') {
+        return $this->loadByUser($entity);
+      }
     }
     return FALSE;
   }
@@ -59,7 +61,7 @@ class MappingManager {
   }
 
   private function loadByUser(EntityInterface $entity) {
-    if (!$patron =  $this->client->patron->getByUser($entity)) {
+    if (!$patron = $this->client->patron->getByUser($entity)) {
       return FALSE;
     }
     $basic_data = $patron->data(); 

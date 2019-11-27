@@ -51,17 +51,15 @@ class Negotiator {
   /**
    * Obtains the consumer from the request.
    *
-   * @param \Symfony\Component\HttpFoundation\Request|null $request
-   *   The request. NULL to use the current request.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request.
    *
    * @return \Drupal\consumers\Entity\Consumer|null
    *   The consumer.
    *
    * @throws \Drupal\consumers\MissingConsumer
    */
-  protected function doNegotiateFromRequest(Request $request = NULL) {
-    // If the request is not provided, use the request from the stack.
-    $request = $request ? $request : $this->requestStack->getCurrentRequest();
+  protected function doNegotiateFromRequest(Request $request) {
     // There are several ways to negotiate the consumer:
     // 1. Via a custom header.
     $consumer_uuid = $request->headers->get('X-Consumer-ID');
@@ -69,7 +67,7 @@ class Negotiator {
       // 2. Via a query string parameter.
       $consumer_uuid = $request->query->get('consumerId');
       if (!$consumer_uuid && $request->query->has('_consumer_id')) {
-        $this->logger->warning('The "_consumer_id" query string parameter is deprecated and it will be removed in the next major version of the module, please use "consumer_id" instead.');
+        $this->logger->warning('The "_consumer_id" query string parameter is deprecated and it will be removed in the next major version of the module, please use "consumerId" instead.');
         $consumer_uuid = $request->query->get('_consumer_id');
       }
     }
@@ -91,7 +89,8 @@ class Negotiator {
    * Obtains the consumer from the request.
    *
    * @param \Symfony\Component\HttpFoundation\Request|null $request
-   *   The request. NULL to use the current request.
+   *   The request object to inspect for a consumer. Set to NULL to use the
+   *   current request.
    *
    * @return \Drupal\consumers\Entity\Consumer|null
    *   The consumer.
@@ -99,6 +98,8 @@ class Negotiator {
    * @throws \Drupal\consumers\MissingConsumer
    */
   public function negotiateFromRequest(Request $request = NULL) {
+    // If the request is not provided, use the request from the stack.
+    $request = $request ? $request : $this->requestStack->getCurrentRequest();
     $consumer = $this->doNegotiateFromRequest($request);
     $request->attributes->set('consumer_uuid', $consumer->uuid());
     return $consumer;

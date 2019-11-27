@@ -1,4 +1,4 @@
-@import "_partials";
+@import '_partials';
 
 %filter {
   display: flex;
@@ -16,8 +16,8 @@
         margin-right: 0;
       }
 
-      &:nth-child(2n+1):nth-last-child(-n+2),
-      &:nth-child(2n+1):nth-last-child(-n+2) ~ * {
+      &:nth-child(2n + 1):nth-last-child(-n + 2),
+      &:nth-child(2n + 1):nth-last-child(-n + 2) ~ * {
         margin-bottom: 0;
       }
     }
@@ -34,8 +34,8 @@
     }
 
     .filters--3up .filters__inputs > & {
-      &:nth-child(3n+1):nth-last-child(-n+3),
-      &:nth-child(3n+1):nth-last-child(-n+3) ~ * {
+      &:nth-child(3n + 1):nth-last-child(-n + 3),
+      &:nth-child(3n + 1):nth-last-child(-n + 3) ~ * {
         margin-bottom: 0;
       }
     }
@@ -52,8 +52,8 @@
         margin-right: 0;
       }
 
-      &:nth-child(4n+1):nth-last-child(-n+4),
-      &:nth-child(4n+1):nth-last-child(-n+4) ~ * {
+      &:nth-child(4n + 1):nth-last-child(-n + 4),
+      &:nth-child(4n + 1):nth-last-child(-n + 4) ~ * {
         margin-bottom: 0;
       }
     }
@@ -121,11 +121,11 @@
       width: rem(14px);
     }
 
-    &[data-depth="1"] {
+    &[data-depth='1'] {
       padding-left: rem(35px);
     }
 
-    &[data-depth="2"] {
+    &[data-depth='2'] {
       padding-left: rem(70px);
     }
   }
@@ -133,23 +133,21 @@
   .select-filter__checkbox {
     color: $clr-text;
 
-    &[class*="checked"] {
+    &[class*='checked'] {
       color: $clr-primary;
     }
 
-    + [class^="MuiListItemText"] {
+    + [class^='MuiListItemText'] {
       padding-left: 0;
     }
   }
 }
-
 
 .keyword-filter {
   @extend %filter;
 
   .keyword-filter__label {
     @extend %filter__label;
-
   }
 
   input {
@@ -291,18 +289,18 @@
 // The widget for the attendence form on /event/[nid]/analysis is not final.
 // These styles are to clean up the spacing until the
 // markup can be improved.
-table[id="edit-field-attendees"] {
+table[id='edit-field-attendees'] {
   margin-top: 0;
 
   tr[data-drupal-selector] {
     // Input
     td:nth-child(1) {
-      width: 2em;
+      width: 4em;
 
       > .form-item {
         margin-bottom: 0 !important;
         margin-top: 0 !important;
-        width: 2em;
+        width: 4em;
 
         > input {
           height: auto !important;

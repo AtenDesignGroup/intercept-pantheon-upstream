@@ -1,14 +1,13 @@
 name: Consumers
 type: module
 description: 'Declare all the consumers of your API'
-# core: 8.x
+core: 8.x
 package: Authentication
 configure: entity.consumer.collection
 dependencies:
   - drupal:image
 
-# Information added by Drupal.org packaging script on 2019-02-10
-version: '8.x-1.9'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2019-11-19
+version: '8.x-1.10'
 project: 'consumers'
-datestamp: 1549832285
+datestamp: 1574140691

@@ -1,0 +1,32 @@
+field.storage_settings.tally_reference:
+  type: mapping
+  label: 'Tally reference field storage settings'
+  mapping:
+    target_type:
+      type: string
+      label: 'Type of item to reference'
+
+field.field_settings.tally_reference:
+  type: mapping
+  label: 'Tally reference field settings'
+  mapping:
+    handler:
+      type: string
+      label: 'Reference method'
+    handler_settings:
+      type: entity_reference_selection.[%parent.handler]
+      label: 'Tally reference selection plugin settings'
+
+field.value.tally_reference:
+  type: mapping
+  label: 'Default value'
+  mapping:
+    count:
+      type: string
+      label: 'Count'
+    target_uuid:
+      type: uuid
+
+views.field.tally_field:
+  type: views.field.field
+  label: 'Aggregate field'

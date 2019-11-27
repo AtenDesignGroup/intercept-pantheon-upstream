@@ -252,8 +252,14 @@ class ReserveRoomStep3 extends React.Component {
       <div className="l--default">
         <div className="l__header">
           <div className="value-summary__wrapper">
-            <RoomSummary value={room} onClickChange={() => onChangeStep(0)} />
-            <DateSummary value={dateValues} onClickChange={() => onChangeStep(1)} />
+            <RoomSummary value={room} onClickChange={() => {
+              this.props.fetchUserStatus();
+              onChangeStep(0);
+            }} />
+            <DateSummary value={dateValues} onClickChange={() => {
+              this.props.fetchUserStatus();
+              onChangeStep(1);
+            }} />
           </div>
           {hasConflict && (
             <ValueSummaryFooter

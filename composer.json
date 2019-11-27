@@ -20,8 +20,8 @@
     "drupal/adminimal_admin_toolbar": "^1.0",
     "drupal/inline_entity_form": "^1.0",
     "drupal/adminimal_theme": "^1.0",
-    "drupal/intercept_base": "1.0-alpha-11",
-    "drupal/intercept": "1.0-alpha-11",
+    "drupal/intercept_base": "1.0-alpha-12",
+    "drupal/intercept": "1.0-alpha-12",
     "drupal/intercept_profile": "1.x-dev",
     "drupal/twig_tweak": "^2.3",
     "drupal/externalauth": "^1.1"

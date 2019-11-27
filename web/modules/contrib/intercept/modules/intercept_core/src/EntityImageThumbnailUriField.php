@@ -43,7 +43,12 @@ class EntityImageThumbnailUriField extends ComputedItemList {
     if (!$entity->isNew() && $image_file = intercept_core_get_primary_image_file($this->getEntity())) {
       $thumbnail_style = \Drupal::service('entity_type.manager')->getStorage('image_style')->load('4to3_740x556');
       $image_uri = $image_file->getFileUri();
-      return file_create_url($thumbnail_style->buildUri($image_uri));
+      $derivative_uri = $thumbnail_style->buildUri($image_uri);
+      // Create derivative if necessary.
+      if (!file_exists($derivative_uri)) {
+        $thumbnail_style->createDerivative($image_uri, $derivative_uri);
+      }
+      return file_create_url($derivative_uri);
     }
   }
 

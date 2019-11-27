@@ -153,7 +153,7 @@ class FieldGroupAddForm extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Add a new group'),
       '#options' => $formatter_options,
-      '#empty_option' => $this->t('- Select a group type -'),
+      '#empty_option' => $this->t('- Select a field group type -'),
       '#required' => TRUE,
     ];
 
@@ -272,6 +272,7 @@ class FieldGroupAddForm extends FormBase {
         'parent_name' => '',
         'weight' => 20,
         'format_type' => $form_state->get('group_formatter'),
+        'region' => 'hidden',
       ];
 
       $new_group->format_settings = $form_state->getValue('format_settings');

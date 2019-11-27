@@ -1,5 +1,5 @@
 langcode: en
-status: false
+status: true
 dependencies:
   config:
     - core.entity_view_mode.room_reservation.teaser
@@ -94,7 +94,6 @@ display:
             field_group_name: field_group_name
             field_dates_1: field_dates_1
             field_dates: field_dates
-            field_meeting_dates: field_meeting_dates
             field_status: field_status
             author: author
             operations: operations
@@ -146,13 +145,6 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            field_meeting_dates:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
             field_status:
               sortable: true
               default_sort_order: asc
@@ -172,7 +164,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-          default: field_dates_1
+          default: '-1'
           empty_table: false
       row:
         type: 'entity:room_reservation'
@@ -960,7 +952,20 @@ display:
             group_items: {  }
           reduce_duplicates: false
           plugin_id: list_field
-      sorts: {  }
+      sorts:
+        field_dates_value:
+          id: field_dates_value
+          table: room_reservation__field_dates
+          field: field_dates_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          plugin_id: datetime
       title: 'Room Reservations'
       header: {  }
       footer: {  }
@@ -1643,6 +1648,7 @@ display:
         fields: false
         exposed_form: false
         empty: false
+        sorts: false
       exposed_form:
         type: bef
         options:
@@ -1715,6 +1721,20 @@ display:
             value: 'No existing reservations were found.'
             format: basic_html
           plugin_id: text
+      sorts:
+        field_dates_value:
+          id: field_dates_value
+          table: room_reservation__field_dates
+          field: field_dates_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          plugin_id: datetime
     cache_metadata:
       max-age: 0
       contexts:
@@ -1734,7 +1754,9 @@ display:
     display_title: Upcoming
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        views_ajax_history:
+          history: 0
       style:
         type: html_list
         options:
@@ -1753,6 +1775,7 @@ display:
         title: false
         fields: false
         empty: false
+        sorts: false
       row:
         type: 'entity:room_reservation'
         options:
@@ -1770,7 +1793,7 @@ display:
           value:
             min: ''
             max: ''
-            value: now
+            value: today
             type: date
           group: 1
           exposed: false
@@ -1802,46 +1825,6 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: datetime
-        field_status_value:
-          id: field_status_value
-          table: room_reservation__field_status
-          field: field_status_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: or
-          value:
-            requested: requested
-            approved: approved
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          plugin_id: list_field
       filter_groups:
         operator: AND
         groups:
@@ -2285,6 +2268,20 @@ display:
             format: basic_html
           plugin_id: text
       display_description: ''
+      sorts:
+        field_dates_value:
+          id: field_dates_value
+          table: room_reservation__field_dates
+          field: field_dates_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          plugin_id: datetime
     cache_metadata:
       max-age: -1
       contexts:

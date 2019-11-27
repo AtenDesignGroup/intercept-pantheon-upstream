@@ -5,10 +5,8 @@ namespace Drupal\intercept_event;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\intercept_core\Plugin\Field\FieldType\ComputedItemList;
 use Drupal\node\NodeStorageInterface;
-use Drupal\user\UserInterface;
 
 class EventRegistrationField extends ComputedItemList implements CacheableDependencyInterface {
 

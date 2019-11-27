@@ -4,11 +4,6 @@ namespace Drupal\intercept_event\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\date_recur\DateRecurRRule;
-use Drupal\date_recur\Plugin\DateRecurOccurrenceHandler\DefaultDateRecurOccurrenceHandler;
-use Drupal\date_recur\Plugin\DateRecurOccurrenceHandlerInterface;
-use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
-use Drupal\node\NodeInterface;
 
 /**
  * Form controller for Event Recurrence edit forms.
@@ -76,4 +71,5 @@ class EventRecurrenceForm extends ContentEntityForm {
     }
     $form_state->setRedirect('entity.event_recurrence.edit_form', ['event_recurrence' => $entity->id()]);
   }
+
 }

@@ -94,6 +94,7 @@ class UserProfileForm extends \Drupal\user\ProfileForm {
       }
       $entity_form['field_phone']['widget'][0]['value']['#default_value'] = $patron->basicData()->PhoneNumber;
       $entity_form['field_email_address']['widget'][0]['value']['#default_value'] = $patron->basicData()->EmailAddress;
+      $entity_form['#element_validate'][] = [$this, 'validateInlineEntityForm'];
       $entity_form['#ief_element_submit'][] = [$this, 'saveInlineEntityForm'];
       foreach (['field_first_name', 'field_last_name'] as $field) {
         $entity_form[$field]['widget'][0]['#disabled'] = TRUE;
@@ -137,6 +138,23 @@ class UserProfileForm extends \Drupal\user\ProfileForm {
   }
 
   /**
+   * Custom validation callback for UserProfileForm.
+   */
+  public function validateInlineEntityForm(&$form, $form_state) {
+    $patron = $form_state->get('patron');
+    // Update ILS username if requested.
+    $ils_username = $form_state->cleanValues()->getValue(['customer_profile', 'field_ils_username']);
+    $ils_username = $ils_username[0]['value'];
+    $response = $patron->updateUsername($ils_username);
+    if ($response->PAPIErrorCode == -3607) {
+      $form_state->setError($form['field_ils_username'], 'The username you entered is unavailable. Please try another username.');
+    }
+    elseif ($response->PAPIErrorCode == -3606) {
+      $form_state->setError($form['field_ils_username'], 'The username must be at least 4 characters but not longer than 50 characters.');
+    }
+  }
+
+  /**
    * Custom submit callback for #ief_element_submit.
    */
   public function saveInlineEntityForm(&$form, $form_state) {
@@ -165,12 +183,9 @@ class UserProfileForm extends \Drupal\user\ProfileForm {
 
       if (!empty($this->interceptILSPlugin)) {
         $plugin_id = $this->interceptILSPlugin->getId();
-        // Also update externalauth authdata
+        // Also update externalauth authdata.
         $user = $form_state->getFormObject()->getEntity();
-        $externalauth = \Drupal::service('externalauth.externalauth');
         $authmap = \Drupal::service('externalauth.authmap');
-        $authdata = $authmap->getAuthdata($user->id(), $plugin_id);
-        $authdata_data = unserialize($authdata['data']);
 
         // Update the authdata & user account based on the latest ILS info.
         if ($patron = $this->client->patron->getByUser($user)) {
@@ -179,10 +194,6 @@ class UserProfileForm extends \Drupal\user\ProfileForm {
         }
       }
     }
-    // Update ILS username if requested.
-    $ils_username = $form_state->cleanValues()->getValue(['customer_profile', 'field_ils_username']);
-    $ils_username = $ils_username[0]['value'];
-    $patron->updateUsername($ils_username);
   }
 
   protected function getProfileEntity(UserInterface $user) {

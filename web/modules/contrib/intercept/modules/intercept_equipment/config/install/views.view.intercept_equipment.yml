@@ -9,7 +9,6 @@ dependencies:
     - node.type.equipment
     - system.menu.main
     - taxonomy.vocabulary.equipment_type
-    - user.role.administrator
     - user.role.intercept_equipment_reservation_manager
     - user.role.intercept_event_manager
     - user.role.intercept_event_organizer

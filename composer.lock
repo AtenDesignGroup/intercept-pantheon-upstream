@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d83264f394d4eef25d46f97ada9c8335",
+    "content-hash": "6903d0ee6e758a26836f551cce37b501",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3454,17 +3454,17 @@
         },
         {
             "name": "drupal/intercept",
-            "version": "1.0.0-alpha12",
+            "version": "1.0.0-alpha13",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept.git",
-                "reference": "8.x-1.0-alpha12"
+                "reference": "8.x-1.0-alpha13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/intercept-8.x-1.0-alpha12.zip",
-                "reference": "8.x-1.0-alpha12",
-                "shasum": "5b468e66aa8eceb6b2164354052aa21bdf6f6ec3"
+                "url": "https://ftp.drupal.org/files/projects/intercept-8.x-1.0-alpha13.zip",
+                "reference": "8.x-1.0-alpha13",
+                "shasum": "dc2e426fc370dc72fd78508bce8e162168950870"
             },
             "require": {
                 "drupal/address": "^1.3",
@@ -3529,8 +3529,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha12",
-                    "datestamp": "1574873580",
+                    "version": "8.x-1.0-alpha13",
+                    "datestamp": "1574885280",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Alpha releases are not covered by Drupal security advisories."
@@ -6199,16 +6199,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.9.9",
+            "version": "v0.9.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "9aaf29575bb8293206bb0420c1e1c87ff2ffa94e"
+                "reference": "5442009e4ac8ad01ed7e06823350bd75e692257a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/9aaf29575bb8293206bb0420c1e1c87ff2ffa94e",
-                "reference": "9aaf29575bb8293206bb0420c1e1c87ff2ffa94e",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/5442009e4ac8ad01ed7e06823350bd75e692257a",
+                "reference": "5442009e4ac8ad01ed7e06823350bd75e692257a",
                 "shasum": ""
             },
             "require": {
@@ -6218,8 +6218,8 @@
                 "jakub-onderka/php-console-highlighter": "0.3.*|0.4.*",
                 "nikic/php-parser": "~1.3|~2.0|~3.0|~4.0",
                 "php": ">=5.4.0",
-                "symfony/console": "~2.3.10|^2.4.2|~3.0|~4.0",
-                "symfony/var-dumper": "~2.7|~3.0|~4.0"
+                "symfony/console": "~2.3.10|^2.4.2|~3.0|~4.0|~5.0",
+                "symfony/var-dumper": "~2.7|~3.0|~4.0|~5.0"
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.2",
@@ -6269,7 +6269,7 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2018-10-13T15:16:03+00:00"
+            "time": "2019-11-27T19:51:19+00:00"
         },
         {
             "name": "ralouphie/getallheaders",

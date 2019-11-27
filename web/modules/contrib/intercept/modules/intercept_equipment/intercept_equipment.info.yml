@@ -10,6 +10,6 @@ dependencies:
 package: 'Intercept'
 
 # Information added by Drupal.org packaging script on 2019-11-27
-version: '8.x-1.0-alpha13'
+version: '8.x-1.0-alpha14'
 project: 'intercept'
-datestamp: 1574885287
+datestamp: 1574888300

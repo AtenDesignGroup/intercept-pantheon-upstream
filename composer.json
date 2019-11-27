@@ -21,7 +21,7 @@
     "drupal/inline_entity_form": "^1.0",
     "drupal/adminimal_theme": "^1.0",
     "drupal/intercept_base": "1.0-alpha-12",
-    "drupal/intercept": "1.0-alpha-13",
+    "drupal/intercept": "1.0-alpha-14",
     "drupal/intercept_profile": "1.x-dev",
     "drupal/twig_tweak": "^2.3",
     "drupal/externalauth": "^1.1"

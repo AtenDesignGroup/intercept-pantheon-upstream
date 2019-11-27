@@ -10,9 +10,6 @@ dependencies:
     - system.menu.main
     - taxonomy.vocabulary.equipment_type
     - user.role.intercept_equipment_reservation_manager
-    - user.role.intercept_event_manager
-    - user.role.intercept_event_organizer
-    - user.role.intercept_room_reservation_approver
     - user.role.intercept_staff
     - user.role.intercept_system_admin
   module:

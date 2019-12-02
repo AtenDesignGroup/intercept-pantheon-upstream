@@ -24,7 +24,8 @@
     "drupal/intercept": "1.0-alpha-14",
     "drupal/intercept_profile": "1.x-dev",
     "drupal/twig_tweak": "^2.3",
-    "drupal/externalauth": "^1.1"
+    "drupal/externalauth": "^1.1",
+    "drupal/quick_node_clone": "^1.12"
   },
   "require-dev": {
     "pantheon-systems/quicksilver-pushback": "~1",

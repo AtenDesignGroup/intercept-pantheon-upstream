@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Contains quick_node_clone.module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function quick_node_clone_entity_type_build(array &$entity_types) {
+  if (isset($entity_types['node'])) {
+    $entity_types['node']->setFormClass('quick_node_clone', 'Drupal\quick_node_clone\Form\QuickNodeCloneNodeForm');
+  }
+
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function quick_node_clone_entity_operation(EntityInterface $entity) {
+  $operations = [];
+  $bundle = $entity->bundle();
+
+  // Only add an operation for node entities.
+  if ($entity->getEntityTypeId() !== 'node') {
+    return $operations;
+  }
+
+  if (!_quick_node_clone_has_clone_permission($bundle)) {
+    return $operations;
+  }
+
+  $path = '/clone/' . $entity->id() . '/quick_clone';
+  $operations['quick_clone'] = [
+    'title' => t('Clone'),
+    'weight' => '100',
+    'url' => Url::fromUri('internal:/' . trim($path, '/')),
+  ];
+
+  return $operations;
+}
+
+/**
+ * Determine if the current user has permission to clone a specified bundle.
+ *
+ * @param string $bundle
+ *   The bundle machine name to examine.
+ *
+ * @return bool
+ *   TRUE or FALSE
+ */
+function _quick_node_clone_has_clone_permission($bundle) {
+  if (!is_string($bundle)) {
+    throw new InvalidArgumentException('Argument 1 passed to _quick_node_clone_has_clone_permission() must be of type string, ' . gettype($bundle) . ' given.');
+  }
+  $current_user = \Drupal::currentUser();
+  if ($current_user->hasPermission("administer nodes")) {
+    return TRUE;
+  }
+  if ($current_user->hasPermission("bypass node access")) {
+    return TRUE;
+  }
+  if ($current_user->hasPermission("clone $bundle content") && $current_user->hasPermission("create $bundle content")) {
+    return TRUE;
+  }
+  return FALSE;
+}

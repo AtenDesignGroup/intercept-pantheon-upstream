@@ -1,0 +1,13 @@
+{
+  "name": "drupal/quick_node_clone",
+  "type": "drupal-module",
+  "description": "Quickly clone a node with regular fields.",
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/quick_node_clone",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/quick_node_clone",
+    "source": "https://cgit.drupalcode.org/quick_node_clone"
+  },
+  "require": { }
+}

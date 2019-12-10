@@ -44,8 +44,3 @@ dependencies:
 themes:
   - adminimal_theme
   - intercept_base
-
-# Information added by Drupal.org packaging script on 2019-12-05
-version: '8.x-1.0-alpha1'
-project: 'intercept_profile'
-datestamp: 1575576788

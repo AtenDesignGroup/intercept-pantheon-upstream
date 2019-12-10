@@ -48,15 +48,16 @@ class EventRecurrenceHtmlRouteProvider extends AdminHtmlRouteProvider {
 
     return $collection;
   }
-    /**
-     * Gets the events-form route.
-     *
-     * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-     *   The entity type.
-     *
-     * @return \Symfony\Component\Routing\Route|null
-     *   The generated route, if available.
-     */
+
+  /**
+   * Gets the events-form route.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
   protected function getEventsFormRoute(EntityTypeInterface $entity_type) {
     if ($entity_type->hasLinkTemplate('events-form')) {
       $entity_type_id = $entity_type->id();
@@ -69,7 +70,7 @@ class EventRecurrenceHtmlRouteProvider extends AdminHtmlRouteProvider {
       $route
         ->setDefaults([
           '_entity_form' => "{$entity_type_id}.{$operation}",
-          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::editTitle',
         ])
         ->setRequirement('_entity_access', "{$entity_type_id}.update")
         ->setOption('parameters', [

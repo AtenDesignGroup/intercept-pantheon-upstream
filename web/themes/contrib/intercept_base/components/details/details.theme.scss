@@ -1,0 +1,97 @@
+@import "_partials";
+
+.content-details {
+  background-color: $gray-80;
+  padding: percentage(1/16);
+
+  @include bp(smallish) {
+    display: flex;
+  }
+
+  @include bp(x-medium) {
+    padding: rem(60px);
+  }
+
+  @include bp(x-large) {
+    flex-direction: row;
+  }
+
+  .detail {
+    @include lh(1);
+    padding-bottom: percentage(1/16);
+
+    @include bp(smallish) {
+      padding-bottom: 0;
+      width: calc(50% - 100px);
+    }
+
+    @include bp(large) {
+      display: flex;
+      flex-direction: row;
+    }
+
+    &__header {
+      @include bp(large) {
+        flex: 1 0 30%;
+      }
+    }
+    &__heading {
+      @include fs(medium);
+      @include lh(0);
+      color: $blue-60;
+    }
+
+    &__content {
+      @include fs(label);
+      color: $gray-30;
+
+      &__item {
+        @include lh(0);
+        padding-bottom: rem(20px);
+
+        &:last-of-type {
+          padding-bottom: 0;
+        }
+      }
+
+      .country {
+        display: none;
+      }
+
+      span {
+        @include lh(1);
+        vertical-align: text-top;
+      }
+
+      .office-hours__item-label {
+        font-weight: normal;
+      }
+
+      .office-hours__item:first-child,
+      .office-hours__item:first-child .office-hours__item-label {
+        font-weight: $fw-bold;
+      }
+    }
+  }
+}
+
+.content-details--solicitation {
+  .detail__content {
+    .detail__content__files {
+      span {
+        vertical-align: initial;
+  
+        a:not([class]) {
+          &::after {
+            background-image: url("/themes/contrib/intercept_base/images/icons/download--white.svg");
+            padding: 0px rem(10px);
+            width: rem(5px);
+          }
+          &:hover::after {
+            background-position: center;
+          }
+        }
+      }
+    }
+  }
+}

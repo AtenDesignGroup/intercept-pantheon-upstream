@@ -2,14 +2,16 @@
 
 namespace Drupal\intercept_event;
 
-use Drupal\Core\Form\FormStateInterface;
-
+/**
+ * Provides form functions for customer searching.
+ */
 trait CustomerSearchFormTrait {
 
   /**
    * Convert form element keys if they differ from the search query.
    *
    * @return array
+   *   The form element.
    */
   protected function mapValues(array $values) {
     $output = [];
@@ -26,6 +28,7 @@ trait CustomerSearchFormTrait {
    * Search client for first, last and email.
    *
    * @return array
+   *   The customer value array.
    */
   protected function searchQuery(array $values = []) {
     $query = [];
@@ -35,7 +38,7 @@ trait CustomerSearchFormTrait {
     if (!empty($values['last_name'])) {
       $query['PATNL'] = $values['last_name'] . '*';
     }
-    if (!empty($values['email'])) { 
+    if (!empty($values['email'])) {
       $query['EM'] = $values['email'];
     }
     if ($this->client()) {
@@ -50,7 +53,8 @@ trait CustomerSearchFormTrait {
   /**
    * Get ILS Client.
    *
-   * @return object $client
+   * @return object
+   *   The ILS client.
    */
   protected function client() {
     $config_factory = \Drupal::service('config.factory');
@@ -69,9 +73,12 @@ trait CustomerSearchFormTrait {
    * Build form element "tableselect" and populate options.
    *
    * @param array $results
+   *   The results array.
+   *
    * @return array
+   *   The form element array.
    */
-  protected function buildTableElement($results = []) {
+  protected function buildTableElement(array $results = []) {
     $element = [
       '#type' => 'tableselect',
       '#multiple' => FALSE,
@@ -95,9 +102,13 @@ trait CustomerSearchFormTrait {
   }
 
   /**
-   * Use \Drupal\intercept_core\Utility\Obfuscate
+   * Obfuscate the email.
    *
-   * @deprecated
+   * @param string $email
+   *   The email to obfuscate.
+   *
+   * @return string
+   *   The obfuscated email.
    */
   protected function obfuscateEmail($email) {
     if (empty($email)) {
@@ -108,9 +119,13 @@ trait CustomerSearchFormTrait {
   }
 
   /**
-   * Use \Drupal\intercept_core\Utility\Obfuscate
+   * Obfuscate the barcode.
    *
-   * @deprecated
+   * @param string $barcode
+   *   The barcode to obfuscate.
+   *
+   * @return string
+   *   The obfuscated barcode.
    */
   protected function obfuscateBarcode($barcode) {
     if (empty($barcode)) {
@@ -118,12 +133,16 @@ trait CustomerSearchFormTrait {
     }
     $replace = str_repeat('*', strlen($barcode) - 4);
     return substr_replace($barcode, $replace, 0, strlen($barcode) - 4);
-  } 
+  }
 
   /**
    * Format ILS-returned name to readable.
    *
-   * @deprecated
+   * @param string $name
+   *   The name to format.
+   *
+   * @return string
+   *   The formatted ILS name.
    */
   protected function formatName($name) {
     if (empty($name)) {
@@ -133,4 +152,5 @@ trait CustomerSearchFormTrait {
     $name = array_map('trim', $name);
     return implode(' ', $name);
   }
+
 }

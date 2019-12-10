@@ -8,9 +8,8 @@ use Drupal\Core\Entity\RevisionableContentEntityBase;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\StringTranslation\TranslationManager;
-use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\user\UserInterface;
 
@@ -87,35 +86,60 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
    * {@inheritdoc}
    */
   public function label() {
-    $label = t('Event Recurrence: %label', [
+    $label = $this->t('Event Recurrence: %label', [
       '%label' => $this->id(),
     ]);
     return $label;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getDate() {
     if (!$date = $this->field_event_rrule->first()) {
       return '';
     }
-    return $this->getDateRange($date);
-  }
-
-  public function getEvents() {
-    if ($this->isNew()) {
-      return [];
-    }
-    return $this->entityTypeManager()->getStorage('node')->loadByProperties([
-      'event_recurrence' => $this->id(),
-    ]);
+    $timezone = $date->get('timezone')->getValue();
+    return $this->getDateRange($date, $timezone);
   }
 
   /**
-   * Delete all events associated with this recurrence entity.
+   * {@inheritdoc}
+   */
+  public function getBaseEvent() {
+    return $this->get('event')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBaseEventId() {
+    return $this->get('event')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEvents() {
+    $base_event_id = $this->getBaseEventId();
+    if (!$base_event_id || $this->isNew()) {
+      return [];
+    }
+    $events = $this->entityTypeManager()->getStorage('node')->loadByProperties([
+      'event_recurrence' => $this->id(),
+    ]);
+    return array_filter($events, function ($event) use ($base_event_id) {
+      return $base_event_id != $event->id();
+    });
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function deleteEvents() {
     $nodes = $this->getEvents();
     $base_node = $this->event->entity;
-    $nodes = array_filter($nodes, function($node) use ($base_node) {
+    $nodes = array_filter($nodes, function ($node) use ($base_node) {
       return $base_node->id() != $node->id();
     });
     $this->entityTypeManager()->getStorage('node')->delete($nodes);
@@ -153,20 +177,42 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
       }
     }
 
-    // If no revision author has been set explicitly, make the event_recurrence owner the
-    // revision author.
+    // If no revision author has been set explicitly, make the
+    // event_recurrence owner the revision author.
     if (!$this->getRevisionUser()) {
       $this->setRevisionUserId($this->getOwnerId());
     }
-  }
-
-  public function getRecurHandler() {
-    if (!$this->getRecurField()) {
-      return FALSE;
+    if (($event = $this->getBaseEvent()) && !$event->get('event_recurrence')->getValue()) {
+      $event->set('event_recurrence', $this->id());
+      $event->save();
     }
-    return $this->getRecurField()->getOccurrenceHandler();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getRecurReadable() {
+    $display_settings = [
+      'label' => 'hidden',
+      'settings' => [
+        'timezone_override' => '',
+        'format_type' => 'medium',
+        'separator' => '-',
+        'show_next' => 0,
+        'count_per_item' => TRUE,
+        'occurrence_format_type' => 'medium',
+        'same_end_date_format_type' => 'medium',
+        'interpreter' => 'default_interpreter',
+      ],
+      'type' => 'date_recur_basic_formatter',
+    ];
+    $display = $this->field_event_rrule->view($display_settings);
+    return \Drupal::service('renderer')->render($display);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getRecurField() {
     if (!$this->hasField('field_event_rrule')) {
       return FALSE;
@@ -226,8 +272,8 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
     $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Authored by'))
-      ->setDescription(t('The user ID of author of the Event Recurrence entity.'))
+      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setDescription(new TranslatableMarkup('The user ID of author of the Event Recurrence entity.'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
@@ -251,15 +297,15 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
+      ->setLabel(new TranslatableMarkup('Created'))
+      ->setDescription(new TranslatableMarkup('The time that the entity was created.'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the entity was last edited.'));
+      ->setLabel(new TranslatableMarkup('Changed'))
+      ->setDescription(new TranslatableMarkup('The time that the entity was last edited.'));
 
-    $fields['event'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Base event node'))
+    $fields['event'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(new TranslatableMarkup('Base event node'))
       ->setSetting('target_type', 'node')
       ->setDisplayConfigurable('view', FALSE)
       ->setDisplayConfigurable('form', TRUE);

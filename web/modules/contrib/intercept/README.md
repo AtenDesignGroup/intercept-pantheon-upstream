@@ -1263,10 +1263,10 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter[status][valu
                 "fid": 812,
                 "uuid": "0e6b1677-cb13-48c7-80d3-dc5dbc05b53a",
                 "uri": {
-                    "value": "public://2018-08/studio_services_2.jpg",
-                    "url": "/sites/default/files/2018-08/studio_services_2.jpg"
+                    "value": "public://2018-08/studio_services.jpg",
+                    "url": "/sites/default/files/2018-08/studio_services.jpg"
                 },
-                "url": "/sites/default/files/2018-08/studio_services_2.jpg"
+                "url": "/sites/default/files/2018-08/studio_services.jpg"
             },
             "links": {
                 "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/0e6b1677-cb13-48c7-80d3-dc5dbc05b53a"

@@ -10,12 +10,11 @@ use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a form for reverting a Room reservation revision for a single translation.
+ * Provides a form for reverting a reservation revision for a translation.
  *
  * @ingroup intercept_room_reservation
  */
 class RoomReservationRevisionRevertTranslationForm extends RoomReservationRevisionRevertForm {
-
 
   /**
    * The language to be reverted.
@@ -68,7 +67,7 @@ class RoomReservationRevisionRevertTranslationForm extends RoomReservationRevisi
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Are you sure you want to revert @language translation to the revision from %revision-date?', ['@language' => $this->languageManager->getLanguageName($this->langcode), '%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime())]);
+    return $this->t('Are you sure you want to revert @language translation to the revision from %revision-date?', ['@language' => $this->languageManager->getLanguageName($this->langcode), '%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime())]);
   }
 
   /**

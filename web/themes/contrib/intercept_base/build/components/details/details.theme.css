@@ -1,0 +1,82 @@
+.content-details {
+  background-color: #EEF1F4;
+  padding: 6.25%; }
+  @media (min-width: 43.75em) {
+    .content-details {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex; } }
+  @media (min-width: 53.125em) {
+    .content-details {
+      padding: 3.75rem; } }
+  @media (min-width: 75em) {
+    .content-details {
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+              flex-direction: row; } }
+  .content-details .detail {
+    line-height: 1.5;
+    padding-bottom: 6.25%; }
+    @media (min-width: 43.75em) {
+      .content-details .detail {
+        padding-bottom: 0;
+        width: -webkit-calc(50% - 100px);
+        width: calc(50% - 100px); } }
+    @media (min-width: 62em) {
+      .content-details .detail {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+            -ms-flex-direction: row;
+                flex-direction: row; } }
+    @media (min-width: 62em) {
+      .content-details .detail__header {
+        -webkit-box-flex: 1;
+            -ms-flex: 1 0 30%;
+                flex: 1 0 30%; } }
+    .content-details .detail__heading {
+      font-size: 0.88194rem;
+      line-height: 1.2;
+      color: #03A9F4; }
+      @media (min-width: 48em) {
+        .content-details .detail__heading {
+          font-size: 1.14583rem; } }
+      @media (min-width: 62em) {
+        .content-details .detail__heading {
+          font-size: 1.5rem; } }
+    .content-details .detail__content {
+      font-size: 0.84375rem;
+      color: #7A7D81; }
+      @media (min-width: 48em) {
+        .content-details .detail__content {
+          font-size: 1.09375rem; } }
+      @media (min-width: 62em) {
+        .content-details .detail__content {
+          font-size: 1.3125rem; } }
+      .content-details .detail__content__item {
+        line-height: 1.2;
+        padding-bottom: 1.25rem; }
+        .content-details .detail__content__item:last-of-type {
+          padding-bottom: 0; }
+      .content-details .detail__content .country {
+        display: none; }
+      .content-details .detail__content span {
+        line-height: 1.5;
+        vertical-align: text-top; }
+      .content-details .detail__content .office-hours__item-label {
+        font-weight: normal; }
+      .content-details .detail__content .office-hours__item:first-child,
+      .content-details .detail__content .office-hours__item:first-child .office-hours__item-label {
+        font-weight: 900; }
+
+.content-details--solicitation .detail__content .detail__content__files span {
+  vertical-align: initial; }
+  .content-details--solicitation .detail__content .detail__content__files span a:not([class])::after {
+    background-image: url("/themes/contrib/intercept_base/images/icons/download--white.svg");
+    padding: 0px 0.625rem;
+    width: 0.3125rem; }
+  .content-details--solicitation .detail__content .detail__content__files span a:not([class]):hover::after {
+    background-position: center; }

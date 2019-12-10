@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\intercept_ils\Annotation\ILS.
- */
-
 namespace Drupal\intercept_ils\Annotation;
 
 use Drupal\Component\Annotation\Plugin;
@@ -12,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines an ILS item annotation object.
  *
- * Plugin Namespace: Plugin\intercept_ils\ils
+ * Plugin Namespace: Plugin\intercept_ils\ils.
  *
  * @see \Drupal\intercept_ils\ILSManager
  * @see plugin_api
@@ -41,4 +36,5 @@ class ILS extends Plugin {
    * @var object
    */
   public $client;
+
 }

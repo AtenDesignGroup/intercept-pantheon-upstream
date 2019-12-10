@@ -17,7 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class RoomReservationRevisionRevertForm extends ConfirmFormBase {
 
-
   /**
    * The Room reservation revision.
    *
@@ -73,7 +72,7 @@ class RoomReservationRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Are you sure you want to revert to the revision from %revision-date?', ['%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime())]);
+    return $this->t('Are you sure you want to revert to the revision from %revision-date?', ['%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime())]);
   }
 
   /**
@@ -87,7 +86,7 @@ class RoomReservationRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return t('Revert');
+    return $this->t('Revert');
   }
 
   /**

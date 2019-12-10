@@ -2,7 +2,6 @@
 
 namespace Drupal\intercept_equipment;
 
-use Drupal\Core\Entity\EntityType;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
@@ -34,8 +33,19 @@ class EquipmentReservationHtmlRouteProvider extends AdminHtmlRouteProvider {
     return $collection;
   }
 
-  protected function getUpdateStatusFormRoutes($entity_type, $operation) {
-    /** @var $entity_type EntityTypeInterface */
+  /**
+   * Builds a new route to modify the status of an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type to modify routes for.
+   * @param string $operation
+   *   The entity operation.
+   *
+   * @return \Symfony\Component\Routing\Route
+   *   The modified route.
+   */
+  protected function getUpdateStatusFormRoutes(EntityTypeInterface $entity_type, $operation) {
+    /* @var $entity_type EntityTypeInterface */
     if ($entity_type->hasLinkTemplate("{$operation}-form")) {
       $entity_type_id = $entity_type->id();
       $operation_label = ucwords($operation);
@@ -48,7 +58,7 @@ class EquipmentReservationHtmlRouteProvider extends AdminHtmlRouteProvider {
         ])
         ->setRequirement('_entity_access', "{$entity_type_id}.{$operation}")
         ->setOption('parameters', [
-            $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
         ]);
 
       // Entity types with serial IDs can specify this in their route
@@ -83,6 +93,7 @@ class EquipmentReservationHtmlRouteProvider extends AdminHtmlRouteProvider {
       return $route;
     }
   }
+
   /**
    * Gets the settings form route.
    *

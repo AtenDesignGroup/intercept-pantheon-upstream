@@ -3,18 +3,13 @@
 namespace Drupal\intercept_event\Controller;
 
 use Drupal\Component\Serialization\Json;
-use Drupal\Core\Access\AccessResultForbidden;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\Core\Url;
 use Drupal\intercept_event\EventEvaluationManager;
-use Drupal\node\NodeInterface;
-use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class EventEvaluationController.
@@ -24,17 +19,23 @@ class EventEvaluationController extends ControllerBase {
   use \Drupal\intercept_core\EntityUuidConverterTrait;
 
   /**
-   * @var EntityTypeManagerInterface
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * @var EntityFormBuilderInterface
+   * The entity form builder.
+   *
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
    */
   protected $entityFormBuilder;
 
   /**
-   * @var EventEvaluationManager
+   * The Intercept event evaluation manager.
+   *
+   * @var \Drupal\intercept_event\EventEvaluationManager
    */
   protected $eventEvaluationManager;
 
@@ -61,7 +62,7 @@ class EventEvaluationController extends ControllerBase {
   /**
    * Analysis api callback to get event evaluation data.
    */
-  public function analysis(\Symfony\Component\HttpFoundation\Request $request) {
+  public function analysis(Request $request) {
     $events = $request->query->get('events');
     if (empty($events)) {
       $content = Json::decode($request->getContent());
@@ -82,7 +83,7 @@ class EventEvaluationController extends ControllerBase {
       $result[$event->uuid()] = [
         'id' => $event->id(),
         'title' => $event->label(),
-        'url' =>  $event->url(),
+        'url' => $event->url(),
       ];
       if ($analysis = $this->eventEvaluationManager->uuid()->loadAnalysis($event)) {
         $result[$event->uuid()] += $analysis;
@@ -94,17 +95,17 @@ class EventEvaluationController extends ControllerBase {
   /**
    * Evaluation api callback to evaluate an event node.
    */
-  public function evaluate(\Symfony\Component\HttpFoundation\Request $request) {
+  public function evaluate(Request $request) {
     $method = $request->getMethod();
     $post = Json::decode($request->getContent());
-    $current_user = $this->currentUser();
+
     if (!is_array($post) || !($evaluation = $this->getEvaluationFromPost($post))) {
       return JsonResponse::create(['error' => 'Invalid data'], 200);
-    } 
+    }
 
     if (!$evaluation->access()->isAllowed()) {
       return JsonResponse::create(['error' => 'Access denied'], 200);
-    } 
+    }
 
     if ($method == 'DELETE') {
       $evaluation->delete();
@@ -129,7 +130,8 @@ class EventEvaluationController extends ControllerBase {
     $user_id = !empty($post['user'])
       ? $this->convertUuid($post['user'], 'user')
       : '<current>';
-    // If they sent a user uuid but now the variable is blank, it's an invalid ID.
+    // If they sent a user uuid but now the variable is blank,
+    // it's an invalid ID.
     if (!empty($post['user']) && empty($user_id)) {
       return FALSE;
     }

@@ -18,7 +18,7 @@ use Drupal\intercept_event\Entity\EventRecurrenceInterface;
 interface EventRecurrenceStorageInterface extends ContentEntityStorageInterface {
 
   /**
-   * Gets a list of Event Recurrence revision IDs for a specific Event Recurrence.
+   * Gets a list of Event Recurrence revision IDs for a Event Recurrence.
    *
    * @param \Drupal\intercept_event\Entity\EventRecurrenceInterface $entity
    *   The Event Recurrence entity.

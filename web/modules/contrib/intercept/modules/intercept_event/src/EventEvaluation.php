@@ -2,20 +2,15 @@
 
 namespace Drupal\intercept_event;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\intercept_event\EventEvaluationManager;
-use Drupal\node\NodeInterface;
-use Drupal\votingapi\VoteStorageInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\user\UserInterface;
 
+/**
+ * Manager functions for a single Event Evaluation.
+ */
 class EventEvaluation {
 
   use DependencySerializationTrait;
@@ -23,17 +18,23 @@ class EventEvaluation {
   use StringTranslationTrait;
 
   /**
-   * @var AccountProxyInterface
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $currentUser;
 
   /**
-   * @var EntityTypeManagerInterface
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterfaceEntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * @var EventEvaluationManager
+   * The event evaluation manager.
+   *
+   * @var \Drupal\intercept_event\EventEvaluationManager
    */
   protected $manager;
 
@@ -47,11 +48,12 @@ class EventEvaluation {
   /**
    * Set the EventEvaluationManager service.
    *
-   * @param EventEvaluationManager $manager
+   * @param \Drupal\intercept_event\EventEvaluationManager $manager
+   *   The Event evaluation manager service.
    *
    * @return $this
    */
-  public function setManager($manager) {
+  public function setManager(EventEvaluationManager $manager) {
     $this->manager = $manager;
     return $this;
   }
@@ -59,20 +61,30 @@ class EventEvaluation {
   /**
    * The main evaluation callback to cast a vote.
    *
-   * @param $value
+   * @param string $value
+   *   The vote value.
    * @param array $data
+   *   The vote_criteria data.
    *
    * @return $this
    */
-  public function evaluate($value, $data = []) {
+  public function evaluate($value, array $data = []) {
     $this->vote->setValue($value)
       ->set('vote_criteria', $data)
       ->save();
-      // TODO: Finish calculating results.
-      //$this->resultManager->recalculateResults($entity_type_id, $entity_id, $vote_type_id);
+    // @TODO: Finish calculating results.
     return $this;
   }
 
+  /**
+   * Builds the vote render array.
+   *
+   * @param string $view_mode
+   *   (optional) The view mode that should be used to render the entity.
+   *
+   * @return array
+   *   A render array for the entity.
+   */
   public function view($view_mode = 'default') {
     $manager = \Drupal::service('entity_type.manager');
     return $manager->getViewBuilder('vote')->view($this->vote, $view_mode);
@@ -82,6 +94,7 @@ class EventEvaluation {
    * Get voteapi staff feedback value.
    *
    * @return string
+   *   The voteapi staff feedback value.
    */
   public function getFeedback() {
     $feedback = $this->vote->feedback;
@@ -100,20 +113,48 @@ class EventEvaluation {
     return $this;
   }
 
-  public function setOwner(\Drupal\user\UserInterface $account) {
+  /**
+   * Sets the vote owner.
+   *
+   * @param \Drupal\user\UserInterface $account
+   *   The user to set as owner.
+   *
+   * @return $this
+   */
+  public function setOwner(UserInterface $account) {
     $this->vote->setOwner($account);
     return $this;
   }
 
+  /**
+   * Sets the vote owner ID.
+   *
+   * @param int $id
+   *   The user ID to set as owner.
+   *
+   * @return $this
+   */
   public function setOwnerId($id) {
     $this->vote->setOwnerId($id);
     return $this;
   }
 
+  /**
+   * Sets the vote owner.
+   *
+   * @return \Drupal\user\UserInterface
+   *   The vote owner.
+   */
   public function getOwner() {
     return $this->vote->getOwner();
   }
 
+  /**
+   * Sets the vote owner.
+   *
+   * @return int
+   *   The vote owner ID.
+   */
   public function getOwnerId() {
     return $this->vote->getOwnerId();
   }
@@ -135,7 +176,8 @@ class EventEvaluation {
   /**
    * Get the event node being voted on.
    *
-   * @return NodeInterface
+   * @return \Drupal\node\NodeInterface
+   *   The event node.
    */
   public function getEvent() {
     return $this->vote->get('entity_id')->entity;
@@ -145,6 +187,7 @@ class EventEvaluation {
    * Get the criteria terms for this evaluation.
    *
    * @return array
+   *   The criteria terms.
    */
   public function getVoteCriteria() {
     return $this->vote->get('vote_criteria')->taxonomy_term;
@@ -154,6 +197,7 @@ class EventEvaluation {
    * Are there criteria set for this event type.
    *
    * @return bool
+   *   Whether criteria are set for this event type.
    */
   public function hasCriteria() {
     $event = $this->getEvent();
@@ -161,6 +205,12 @@ class EventEvaluation {
       && !empty($this->manager->getCriteria($event));
   }
 
+  /**
+   * Gets the primary event type.
+   *
+   * @return object
+   *   The primary event type.
+   */
   public function getPrimaryEventType() {
     if (!$event = $this->getEvent()) {
       return FALSE;
@@ -168,6 +218,12 @@ class EventEvaluation {
     return $this->manager->getPrimaryEventType($event);
   }
 
+  /**
+   * Gets an array of negative criteria taxonomy Terms.
+   *
+   * @return array
+   *   The array of negative criteria taxonomy Terms.
+   */
   public function getNegativeCriteria() {
     if (!$event = $this->getEvent()) {
       return FALSE;
@@ -175,6 +231,12 @@ class EventEvaluation {
     return $this->manager->getNegativeCriteria($event);
   }
 
+  /**
+   * Gets an array of negative criteria taxonomy Term names.
+   *
+   * @return array
+   *   The array of negative criteria taxonomy Term names.
+   */
   public function getNegativeCriteriaOptions() {
     if (!$event = $this->getEvent()) {
       return FALSE;
@@ -182,6 +244,12 @@ class EventEvaluation {
     return $this->manager->getNegativeCriteriaOptions($event);
   }
 
+  /**
+   * Gets an array of positive criteria taxonomy Terms.
+   *
+   * @return array
+   *   The array of positive criteria taxonomy Terms.
+   */
   public function getPositiveCriteria() {
     if (!$event = $this->getEvent()) {
       return FALSE;
@@ -189,6 +257,12 @@ class EventEvaluation {
     return $this->manager->getPositiveCriteria($event);
   }
 
+  /**
+   * Gets an array of positive criteria taxonomy Term names.
+   *
+   * @return array
+   *   The array of positive criteria taxonomy Term names.
+   */
   public function getPositiveCriteriaOptions() {
     if (!$event = $this->getEvent()) {
       return FALSE;
@@ -196,6 +270,12 @@ class EventEvaluation {
     return $this->manager->getPositiveCriteriaOptions($event);
   }
 
+  /**
+   * Gets an array of criteria taxonomy Terms.
+   *
+   * @return array
+   *   The array of criteria taxonomy Terms.
+   */
   public function getCriteria() {
     if (!$event = $this->getEvent()) {
       return FALSE;
@@ -203,7 +283,13 @@ class EventEvaluation {
     return $this->manager->getCriteria($event);
   }
 
-  public function access(\Drupal\Core\Session\AccountInterface $account = NULL) {
+  /**
+   * Access callback for an Event Evaluation.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The current user account.
+   */
+  public function access(AccountInterface $account = NULL) {
     if (!$account) {
       $account = \Drupal::service('current_user');
     }
@@ -213,7 +299,7 @@ class EventEvaluation {
     if (!$account->hasPermission('evaluate own events')) {
       return AccessResult::neutral();
     }
-    // TODO: Move this to the event manager.
+    // @TODO: Move this to the event manager.
     $flaggings = \Drupal::service('entity_type.manager')
       ->getStorage('flagging')
       ->loadByProperties([
@@ -249,4 +335,5 @@ class EventEvaluation {
 
     return AccessResult::neutral();
   }
+
 }

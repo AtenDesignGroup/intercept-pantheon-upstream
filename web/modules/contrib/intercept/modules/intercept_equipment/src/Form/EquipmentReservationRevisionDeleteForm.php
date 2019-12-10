@@ -73,7 +73,7 @@ class EquipmentReservationRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Are you sure you want to delete the revision from %revision-date?', ['%revision-date' => format_date($this->revision->getRevisionCreationTime())]);
+    return $this->t('Are you sure you want to delete the revision from %revision-date?', ['%revision-date' => format_date($this->revision->getRevisionCreationTime())]);
   }
 
   /**
@@ -87,7 +87,7 @@ class EquipmentReservationRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return t('Delete');
+    return $this->t('Delete');
   }
 
   /**
@@ -107,7 +107,7 @@ class EquipmentReservationRevisionDeleteForm extends ConfirmFormBase {
     $this->EquipmentReservationStorage->deleteRevision($this->revision->getRevisionId());
 
     $this->logger('content')->notice('Equipment reservation: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
-    drupal_set_message(t('Revision from %revision-date of Equipment reservation %title has been deleted.', ['%revision-date' => format_date($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));
+    drupal_set_message($this->t('Revision from %revision-date of Equipment reservation %title has been deleted.', ['%revision-date' => format_date($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));
     $form_state->setRedirect(
       'entity.equipment_reservation.canonical',
        ['equipment_reservation' => $this->revision->id()]

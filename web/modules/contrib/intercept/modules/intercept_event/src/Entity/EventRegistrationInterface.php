@@ -14,6 +14,22 @@ use Drupal\user\EntityOwnerInterface;
 interface EventRegistrationInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
   /**
+   * Gets the Event Registration title based on the name and date.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup|string
+   *   The Event Registration title.
+   */
+  public function getTitle();
+
+  /**
+   * Gets the total event registrants.
+   *
+   * @return int
+   *   The total number of registrants.
+   */
+  public function total();
+
+  /**
    * Gets the Event Registration creation timestamp.
    *
    * @return int

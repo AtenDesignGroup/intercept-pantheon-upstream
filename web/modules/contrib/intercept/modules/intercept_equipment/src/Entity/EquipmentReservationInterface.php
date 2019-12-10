@@ -47,7 +47,7 @@ interface EquipmentReservationInterface extends ContentEntityInterface, Revision
    * Sets the published status of a Equipment reservation.
    *
    * @param bool $published
-   *   TRUE to set this Equipment reservation to published, FALSE to set it to unpublished.
+   *   TRUE to set this entity to published, FALSE to set it to unpublished.
    *
    * @return \Drupal\intercept_equipment\Entity\EquipmentReservationInterface
    *   The called Equipment reservation entity.

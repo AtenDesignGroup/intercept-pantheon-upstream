@@ -69,10 +69,16 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
 
   use DateRangeFormatterTrait;
 
+  /**
+   * {@inheritdoc}
+   */
   public function label() {
     return $this->getTitle();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getTitle() {
     if (!$event = $this->get('field_event')->entity) {
       return $this->t('Event registration');
@@ -88,6 +94,9 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
     return !empty($values) ? $this->t('@title @date', $values) : '';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function total() {
     return $this->get('field_registrants')->getTotal();
   }
@@ -193,7 +202,7 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
       ->setSetting('allowed_values', [
         'canceled' => 'Canceled',
         'active' => 'Active',
-        'waitlist' => 'Waitlist'
+        'waitlist' => 'Waitlist',
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -220,7 +229,7 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
   }
 
   /**
-   * Invalidate the cache tag for an event associated with an event registration.
+   * Invalidate cache tag for an event associated with an event registration.
    */
   public static function invalidateEventCacheTag(EventRegistrationInterface $registration) {
     if ($registration->hasField('field_event') && !$registration->field_event->isEmpty()) {

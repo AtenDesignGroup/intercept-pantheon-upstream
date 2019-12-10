@@ -63,6 +63,9 @@ class ManagementManager extends DefaultPluginManager implements ManagementManage
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getPages() {
     $return = [];
     foreach ($this->getDefinitions() as $definition) {

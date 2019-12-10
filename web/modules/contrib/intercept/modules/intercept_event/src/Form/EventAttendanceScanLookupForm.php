@@ -2,15 +2,9 @@
 
 namespace Drupal\intercept_event\Form;
 
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\externalauth\ExternalAuth;
+use Drupal\Core\Url;
 use Drupal\intercept_event\CustomerSearchFormTrait;
-use Drupal\user\UserInterface;
-use Drupal\user\UserStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,13 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
 
   use CustomerSearchFormTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(EntityManagerInterface $entity_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, ExternalAuth $external_auth) {
-    parent::__construct($entity_manager, $entity_type_bundle_info, $time, $external_auth);
-  }
 
   /**
    * {@inheritdoc}
@@ -72,6 +59,14 @@ class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
     return $form;
   }
 
+  /**
+   * Builds the search form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
   protected function buildSearchForm(array &$form, FormStateInterface $form_state) {
     $form['actions']['#access'] = FALSE;
 
@@ -104,6 +99,14 @@ class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
     $form['cancel'] = $this->cancelButton();
   }
 
+  /**
+   * Validation callback for the search form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
   public function search(array $form, FormStateInterface $form_state) {
     $values = $form_state->cleanValues()->getValues();
     $form_state->setTemporaryValue('results', []);
@@ -117,6 +120,14 @@ class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
     $form_state->setRebuild();
   }
 
+  /**
+   * Builds the results form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
   protected function buildResultsForm(array &$form, FormStateInterface $form_state) {
     $results = $form_state->getTemporaryValue('results');
     $form['results'] = $this->buildTableElement($results);
@@ -128,7 +139,7 @@ class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
     $form['retry'] = [
       '#type' => 'link',
       '#title' => $this->t('Try another search'),
-      '#url' => \Drupal\Core\Url::fromRoute('entity.node.scan_lookup', [
+      '#url' => Url::fromRoute('entity.node.scan_lookup', [
         'node' => $this->event()->id(),
       ]),
     ];

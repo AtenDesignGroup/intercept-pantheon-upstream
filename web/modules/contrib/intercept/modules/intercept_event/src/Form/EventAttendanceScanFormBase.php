@@ -7,10 +7,9 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\externalauth\ExternalAuth;
-use Drupal\intercept_event\Entity\EventAttendanceInterface;
 use Drupal\user\UserInterface;
-use Drupal\user\UserStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -25,7 +24,9 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
   const ATTENDANCE_EXISTS_MESSAGE = 'You\'ve already scanned in.';
 
   /**
-   * @var ExternalAuth
+   * The ExternalAuth object.
+   *
+   * @var \Drupal\externalauth\ExternalAuth
    */
   protected $externalAuth;
 
@@ -62,6 +63,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
   protected function instructionsText() {
     return '';
   }
+
   /**
    * {@inheritdoc}
    */
@@ -70,7 +72,6 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
     $form = parent::buildForm($form, $form_state);
 
     $form['#theme'] = 'event_attendance_scan_form';
-    $entity = $this->entity;
 
     $event = $this->entity->field_event->entity;
     $node_view = \Drupal::service('entity_type.manager')->getHandler('node', 'view_builder');
@@ -94,6 +95,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
    * Get related event node.
    *
    * @return NodeInterface
+   *   The Event Node.
    */
   protected function event() {
     return $this->entity->field_event->entity;
@@ -128,9 +130,11 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
   /**
    * Load or create a Drupal user from barcode/ils username.
    *
-   * @param $barcode
+   * @param mixed $barcode
    *   The library barcode or ILS username.
-   * @return bool|UserInterface
+   *
+   * @return bool|\Drupal\user\UserInterface
+   *   The Drupal user, or FALSE;
    */
   protected function createAttendee($barcode) {
     $user = \Drupal::service('intercept_ils.mapping_manager')->loadByBarcode($barcode);
@@ -141,8 +145,11 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
    * Populate event attendance from registration if applicable and set user.
    *
    * @param array $form
-   * @param FormStateInterface $form_state
-   * @param UserInterface $user
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param \Drupal\user\UserInterface $user
+   *   The User.
    */
   protected function populateAttendance(array $form, FormStateInterface $form_state, UserInterface $user) {
     $form_state->setValue('field_user', $user->id());
@@ -159,9 +166,11 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
   /**
    * Check if the attendance exists by field_event and field_user.
    *
-   * @param $uid
+   * @param int $uid
    *   User id derived from the barcode.
-   * @return bool|EventAttendanceInterface
+   *
+   * @return bool|\Drupal\intercept_event\Entity\EventAttendanceInterface
+   *   The Event Attendance entity, or FALSE.
    */
   protected function attendanceExists($uid) {
     $storage = \Drupal::service('entity_type.manager')->getStorage('event_attendance');
@@ -175,12 +184,14 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
   /**
    * Common function to set an error for the barcode and clear the form.
    *
-   * @param $message
+   * @param string $message
    *   Text to display to the user.
-   * @param $form
-   * @param FormStateInterface $form_state
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
-  protected function setBarcodeError($message, &$form, FormStateInterface $form_state) {
+  protected function setBarcodeError($message, array &$form, FormStateInterface $form_state) {
     $form_state->setErrorByName('barcode', $this->t($message));
     // Reset completely so it can be re-scanned.
     $form['barcode']['#value'] = '';
@@ -191,12 +202,13 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
    * Cancel link to return to base scan form.
    *
    * @return array
+   *   The link render array.
    */
   protected function cancelButton() {
     return [
       '#type' => 'link',
       '#title' => $this->t('Cancel'),
-      '#url' => \Drupal\Core\Url::fromRoute('entity.node.scan', [
+      '#url' => Url::fromRoute('entity.node.scan', [
         'node' => $this->event()->id(),
       ]),
     ];
@@ -204,10 +216,14 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
 
   /**
    * Redirect form submission to base scan form.
+   *
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   protected function redirectToBaseForm(FormStateInterface $form_state) {
     $form_state->setRedirect('entity.node.scan', [
       'node' => $this->event()->id(),
     ]);
   }
+
 }

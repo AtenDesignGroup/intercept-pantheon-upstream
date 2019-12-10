@@ -74,13 +74,20 @@ class EventAttendance extends ContentEntityBase implements EventAttendanceInterf
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function label() {
     return $this->t('Event attendance');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function total() {
     return $this->get('field_attendees')->getTotal();
   }
+
   /**
    * {@inheritdoc}
    */

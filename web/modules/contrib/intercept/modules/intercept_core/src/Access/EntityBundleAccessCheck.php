@@ -8,6 +8,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
+/**
+ * Access check for entity bundles.
+ */
 class EntityBundleAccessCheck implements AccessInterface {
 
   /**
@@ -26,4 +29,5 @@ class EntityBundleAccessCheck implements AccessInterface {
     }
     return AccessResult::forbidden();
   }
+
 }

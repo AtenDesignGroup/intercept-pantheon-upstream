@@ -70,8 +70,6 @@ Drupal.behaviors.eventRecurring = {
         if (value) {
           if ($dataName == 'until') {
             value = new Date(Date.parse($value.val()));
-//            var day = value.getDate();
-//            value.setDate(day + 1);
           }
           $root.options[elid][$dataName] = value;
         }

@@ -2,14 +2,21 @@
 
 namespace Drupal\intercept_event;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\date_recur\Rl\RlHelper;
+use Drupal\node\NodeInterface;
 use Drupal\intercept_core\Utility\Dates;
+use Drupal\intercept_event\Entity\EventRecurrence;
 
+/**
+ * Recurring event manager.
+ */
 class RecurringEventManager {
 
   use DependencySerializationTrait;
@@ -17,22 +24,30 @@ class RecurringEventManager {
   use StringTranslationTrait;
 
   /**
-   * @var AccountProxyInterface
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $currentUser;
 
   /**
-   * @var EntityTypeManagerInterface
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * @var MessengerInterface
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
 
   /**
-   * @var Dates
+   * The Intercept Dates utility.
+   *
+   * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
 
@@ -47,12 +62,21 @@ class RecurringEventManager {
   }
 
   /**
-   * @return MessengerInterface
+   * The messenger service.
+   *
+   * @return \Drupal\Core\Messenger\MessengerInterface
+   *   The messenger service.
    */
   public function messenger() {
     return $this->messenger;
   }
 
+  /**
+   * The Intercept Dates utility.
+   *
+   * @return \Drupal\intercept_core\Utility\Dates
+   *   The Intercept Dates utility.
+   */
   public function dateUtility() {
     return $this->dateUtility;
   }
@@ -60,14 +84,14 @@ class RecurringEventManager {
   /**
    * Check bundle access and permissions.
    */
-  public function isRecurrenceBaseEvent(\Drupal\node\NodeInterface $node) {
-    return \Drupal\Core\Access\AccessResult::allowedIf($this->getBaseEventRecurrence($node));
+  public function isRecurrenceBaseEvent(NodeInterface $node) {
+    return AccessResult::allowedIf($this->getBaseEventRecurrence($node));
   }
 
   /**
    * Gets the event recurrence if this event is a base event.
    */
-  public function getBaseEventRecurrence(\Drupal\node\NodeInterface $node) {
+  public function getBaseEventRecurrence(NodeInterface $node) {
     $storage = \Drupal::service('entity_type.manager')->getStorage('event_recurrence');
     $recurrences = $storage->loadByProperties([
       'event' => $node->id(),
@@ -75,7 +99,17 @@ class RecurringEventManager {
     return $recurrences ? reset($recurrences) : FALSE;
   }
 
-  private function eventRecurrenceBaseForm(&$form, FormStateInterface $form_state, $node) {
+  /**
+   * Creates an event recurrence base form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param \Drupal\node\NodeInterface $node
+   *   The Event node.
+   */
+  private function eventRecurrenceBaseForm(array &$form, FormStateInterface $form_state, NodeInterface $node) {
     $r = &$form['recurring_event'];
 
     $recurrence = NULL;
@@ -86,9 +120,9 @@ class RecurringEventManager {
       ]);
       $recurrence = $recurrences ? reset($recurrences) : NULL;
     }
-    $form['recurring_event']['#entity'] = $recurrence;
+    $r['#entity'] = $recurrence;
 
-    $form['recurring_event']['#attributes'] = [
+    $r['#attributes'] = [
       'class' => 'intercept-event-recurring-container',
       'data-intercept-event-recurring-name' => 'interval',
       'data-event-id' => $node->id(),
@@ -104,9 +138,9 @@ class RecurringEventManager {
       'recurringEventCount' => $recurrence ? count($recurrence->getEvents()) : 0,
     ];
 
-    $form['recurring_event']['enabled'] = [
+    $r['enabled'] = [
       '#type' => 'checkbox',
-      '#title' => t('Enabled'),
+      '#title' => $this->t('Enabled'),
       '#default_value' => !empty($recurrence),
       '#attributes' => [
         'class' => [
@@ -114,31 +148,25 @@ class RecurringEventManager {
         ],
       ],
     ];
-    $readable = $recurrence ? $recurrence->getRecurHandler()->humanReadable() : '';
-    $handler = $recurrence ? $recurrence->getRecurHandler() : FALSE;
+    $readable = $recurrence ? $recurrence->getRecurReadable() : '';
     $rule_string = $recurrence ? $recurrence->field_event_rrule->rrule : '';
     $start_date = $recurrence && $recurrence->field_event_rrule->value ? $recurrence->field_event_rrule->value : 'now';
-    $start_date_object = new \Drupal\Core\Datetime\DrupalDateTime($start_date, 'UTC');
+    $start_date_object = new \DateTime($start_date, new \DateTimeZone('UTC'));
     $end_date = $recurrence && $recurrence->field_event_rrule->end_value ? $recurrence->field_event_rrule->end_value : 'now';
-    $end_date_object = new \Drupal\Core\Datetime\DrupalDateTime($end_date, 'UTC');
+    $end_date_object = new \DateTime($end_date, new \DateTimeZone('UTC'));
     $data_name = 'data-intercept-event-recurring-name';
 
     if ($rule_string) {
-      $rule = new \Drupal\date_recur\DateRecurRRule($rule_string, $start_date_object, $end_date_object, 'UTC');
-      $parts = $rule->getParts();
+      $rule = new RlHelper($rule_string, $start_date_object, $end_date_object);
+      $rules = $rule->getRules();
+      $parts = $rules[0]->getParts();
       $freq = $this->getFrequencyOption($parts['FREQ'], 1);
       $end_type = !empty($parts['UNTIL']) ? 1 : 0;
     }
 
-    $enabled_state = [
-      'visible' => [
-        ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
-      ]
-    ];
-
     $r['readable_value'] = [
       '#type' => 'textfield',
-      '#title' => t('Summary'),
+      '#title' => $this->t('Summary'),
       '#disabled' => TRUE,
       '#default_value' => isset($readable) ? $readable : '',
       '#attributes' => [
@@ -146,23 +174,31 @@ class RecurringEventManager {
           'intercept-event-recurring-readable',
         ],
       ],
-      '#states' => $enabled_state,
+      '#states' => [
+        'visible' => [
+          ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
     ];
 
     $r['date'] = [
       '#type' => 'container',
-      '#states' => $enabled_state,
+      '#states' => [
+        'visible' => [
+          ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
     ];
 
     $r['date']['start'] = [
-      '#title' => t('Start date'),
+      '#title' => $this->t('Start date'),
       '#type' => 'date',
       '#default_value' => $start_date_object->format('Y-m-d'),
     ];
 
     $r['raw_value'] = [
       '#type' => 'hidden',
-      '#title' => t('Raw value'),
+      '#title' => $this->t('Raw value'),
       '#attributes' => [
         'class' => [
           'intercept-event-recurring-raw',
@@ -173,7 +209,7 @@ class RecurringEventManager {
 
     $r['interval'] = [
       '#type' => 'number',
-      '#title' => t('Repeat every'),
+      '#title' => $this->t('Repeat every'),
       '#default_value' => 1,
       '#attributes' => [
         'class' => ['intercept-event-recurring-value'],
@@ -182,14 +218,14 @@ class RecurringEventManager {
       '#states' => [
         'visible' => [
           ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
-        ]
+        ],
       ],
     ];
 
     $r['freq'] = [
       '#type' => 'select',
-      '#title' => t('Frequency'),
-      '#options' => ['Years', 'Months', 'Weeks', 'Days', 'Hours', 'Minutes', 'Seconds'],
+      '#title' => $this->t('Frequency'),
+      '#options' => ['Years', 'Months', 'Weeks', 'Days', 'Hours', 'Minutes'],
       '#attributes' => [
         'class' => ['intercept-event-recurring-value'],
         $data_name => 'freq',
@@ -198,13 +234,13 @@ class RecurringEventManager {
       '#states' => [
         'visible' => [
           ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
-        ]
+        ],
       ],
     ];
 
     $r['end_type'] = [
       '#type' => 'select',
-      '#options' => [t('End after number of times'), t('End on date')],
+      '#options' => [$this->t('End after number of times'), $this->t('End on date')],
       '#attributes' => [
         'class' => ['intercept-event-recurring-end-type'],
       ],
@@ -212,13 +248,13 @@ class RecurringEventManager {
       '#states' => [
         'visible' => [
           ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
-        ]
+        ],
       ],
     ];
 
     $r['end']['count'] = [
       '#type' => 'number',
-      '#title' => t('Number of times'),
+      '#title' => $this->t('Number of times'),
       '#attributes' => [
         'class' => ['intercept-event-recurring-value'],
         $data_name => 'count',
@@ -227,12 +263,12 @@ class RecurringEventManager {
         'visible' => [
           ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
           ':input[name="recurring_event[end_type]"]' => ['value' => 0],
-        ]
+        ],
       ],
     ];
 
     $r['end']['until'] = [
-      '#title' => t('End date'),
+      '#title' => $this->t('End date'),
       '#type' => 'date',
       '#attributes' => [
         'class' => ['intercept-event-recurring-value'],
@@ -243,7 +279,7 @@ class RecurringEventManager {
         'visible' => [
           ':input[name="recurring_event[enabled]"]' => ['checked' => TRUE],
           ':input[name="recurring_event[end_type]"]' => ['value' => 1],
-        ]
+        ],
       ],
     ];
 
@@ -254,25 +290,46 @@ class RecurringEventManager {
     $form['recurring_event']['#attached']['library'][] = 'intercept_event/event_recurring';
   }
 
-  private function eventRecurrenceForm(&$form, FormStateInterface $form_state, $recurrence) {
+  /**
+   * Creates a form for the event recurrence.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param \Drupal\intercept_event\Entity\EventRecurrenceInterface $recurrence
+   *   The Event Recurrence entity.
+   */
+  private function eventRecurrenceForm(array &$form, FormStateInterface $form_state, EventRecurrenceInterface $recurrence) {
     $form['recurring_event']['message'] = [
       '#type' => 'html_tag',
       '#tag' => 'div',
       '#value' => $this->t('This event is part of an event recurrence.'),
     ];
+
     $form['recurring_event']['link'] = [
       '#markup' => $this->t('Edit the @link', [
         '@link' => $recurrence->event->entity->link('original', 'edit-form'),
-      ])
+      ]),
     ];
 
     $form['recurring_event']['remove_from_recurrence'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Remove from recurrence'),
     ];
+
+    $form['event_recurrence']['#access'] = FALSE;
   }
 
-  public function nodeFormAlter(&$form, FormStateInterface $form_state) {
+  /**
+   * Alter callback for the event form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function nodeFormAlter(array &$form, FormStateInterface $form_state) {
     if (!$form_state->getFormObject()->getFormDisplay($form_state)->getComponent('recurring_event')) {
       return;
     }
@@ -281,12 +338,12 @@ class RecurringEventManager {
 
     $form['recurring_event'] = [
       '#type' => 'fieldset',
-      '#title' => t('Recurring'),
+      '#title' => $this->t('Recurring'),
       '#weight' => 10,
       '#tree' => TRUE,
     ];
 
-    if ($recurrence = $node->event_recurrence->entity) {
+    if (($recurrence = $node->event_recurrence->entity) && $recurrence->event->entity != $node) {
       $this->eventRecurrenceForm($form, $form_state, $recurrence);
     }
     else {
@@ -298,16 +355,33 @@ class RecurringEventManager {
     $form['actions']['submit']['#submit'][] = [static::class, 'nodeFormSubmit'];
   }
 
-  public static function nodeFormValidate(&$form, FormStateInterface $form_state) {
+  /**
+   * Form validation for the event.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public static function nodeFormValidate(array &$form, FormStateInterface $form_state) {
     $recurring = $form_state->getValue('recurring_event');
     if (!empty($recurring['enabled']) && empty($recurring['end']['count']) && empty($recurring['end']['until'])) {
-      $message = t('Enabling recurring events requires either an end date, or a total repeat count.');
+      $message = $this->t('Enabling recurring events requires either an end date, or a total repeat count.');
       $form_state->setError($form['recurring_event']['end_type'], $message);
     }
   }
 
-  public static function nodeFormSubmit(&$form, $form_state) {
+  /**
+   * Form submit handler for the event.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public static function nodeFormSubmit(array &$form, FormStateInterface $form_state) {
     $recurring = $form_state->getValue('recurring_event');
+    $recurrence = $form_state->getValue('event_recurrence');
 
     $manager = $form_state->get('recurring_event_manager');
     $node = $form_state->getFormObject()->getEntity();
@@ -317,7 +391,7 @@ class RecurringEventManager {
       $existing_events = $recurrence->getEvents();
       if (!empty($existing_events)) {
         $nodes = $recurrence->deleteEvents();
-        $manager->messenger->addStatus(t('@count recurring events deleted.', ['@count' => count($nodes)]));
+        $manager->messenger->addStatus($this->t('@count recurring events deleted.', ['@count' => count($nodes)]));
       }
       $recurrence->delete();
     }
@@ -327,49 +401,44 @@ class RecurringEventManager {
       $node->save();
       return;
     }
+
     if ($recurring['enabled']) {
       $recurring_event = $form['recurring_event']['#entity'];
       if (!$recurring_event) {
-        $recurring_event = \Drupal\intercept_event\Entity\EventRecurrence::create([
+        $recurring_event = EventRecurrence::create([
           'event' => $form_state->getFormObject()->getEntity()->id(),
         ]);
       }
 
       $node = $form_state->getFormObject()->getEntity();
 
-      $submitted_start_date = new \DateTime($recurring['date']['start'], new \DateTimeZone('UTC'));
       $recurring_start_datetime = clone $node->field_date_time->start_date;
-      $recurring_start_datetime->setDate(
-        $submitted_start_date->format('Y'),
-        $submitted_start_date->format('m'),
-        $submitted_start_date->format('d'));
 
       $recurring_end_datetime = clone $node->field_date_time->end_date;
-      $recurring_end_datetime->setDate(
-        $submitted_start_date->format('Y'),
-        $submitted_start_date->format('m'),
-        $submitted_start_date->format('d'));
 
       $recurring_event->field_event_rrule->setValue([
-        //'value' => $recurring_start_datetime->format(DATETIME_DATETIME_STORAGE_FORMAT),
-        //'end_value' => $recurring_end_datetime->format(DATETIME_DATETIME_STORAGE_FORMAT),
-        'value' => $manager->dateUtility()
-          ->convertTimezone($recurring_start_datetime, 'default')
+        'value' => $recurring_start_datetime
           ->format(DATETIME_DATETIME_STORAGE_FORMAT),
-        'end_value' => $manager->dateUtility()
-          ->convertTimezone($recurring_end_datetime, 'default')
+        'end_value' => $recurring_end_datetime
           ->format(DATETIME_DATETIME_STORAGE_FORMAT),
         'rrule' => $recurring['raw_value'],
         // TODO: This should be customizable.
         'infinit' => 0,
-        // FIXME
         'timezone' => $manager->dateUtility()->getDefaultTimezone()->getName(),
       ]);
 
       $recurring_event->save();
+
+      $node->event_recurrence->setValue($recurring_event->id());
     }
   }
 
+  /**
+   * Get the mapped frequency options.
+   *
+   * @return array
+   *   The mapped frequency options.
+   */
   private function getFrequencies() {
     $options = [
       0 => ['Years', 'YEARLY'],
@@ -378,17 +447,23 @@ class RecurringEventManager {
       3 => ['Days', 'DAILY'],
       4 => ['Hours', 'HOURLY'],
       5 => ['Minutes', 'MINUTELY'],
-      6 => ['Seconds', 'SECONDLY'],
     ];
     return $options;
   }
 
+  /**
+   * Gets a single frequency option.
+   */
   private function getFrequencyOption($value, $type = 0) {
     $options = array_flip($this->getFrequencyOptions($type));
     return !empty($options[$value]) ? $options[$value] : FALSE;
   }
 
+  /**
+   * Gets the frequency options.
+   */
   private function getFrequencyOptions($type = 0) {
     return array_column($this->getFrequencies(), $type);
   }
+
 }

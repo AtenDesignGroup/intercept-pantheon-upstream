@@ -1,0 +1,55 @@
+@import "_partials";
+
+.features {
+  clear: both;
+  margin-bottom: rem(80px);
+
+  &__header {
+    padding-bottom: 1.25rem;
+  }
+
+  &__heading {
+    @include fs(large);
+    @include lh(0);
+    color: $blue-60;
+  }
+
+  &__list {
+    columns: 2;
+    padding-left: 0;
+
+    .feature {
+      break-inside: avoid;
+      list-style: none;
+      margin-bottom: rem(15px);
+
+      article {
+        margin-bottom: rem(30px);
+      }
+
+      h5:not([class]) {
+        @include fs(secondary-menu);
+        font-family: $ff-sans;
+        margin-bottom: rem(5px);
+
+        a:not([class]) {
+          color: $blue-60;
+        }
+      }
+
+      .field--label-inline {
+        @include lh(1);
+        @include fs(secondary-menu);
+
+        > div {
+          display: inline;
+        }
+        .field__label {
+          &::after {
+            content: ':';
+          }
+        }
+      }
+    }
+  }
+}

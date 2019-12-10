@@ -50,7 +50,7 @@ class EventRegistrationEventForm extends ContentEntityForm {
         'wrapper' => 'edit-results',
         'progress' => [
           'type' => 'throbber',
-          'message' => t('Searching ILS...'),
+          'message' => $this->t('Searching ILS...'),
         ],
       ],
     ];
@@ -62,10 +62,27 @@ class EventRegistrationEventForm extends ContentEntityForm {
     return $form;
   }
 
+  /**
+   * Returns the results table element.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The results table element.
+   */
   public static function searchAjax(array &$form, FormStateInterface $form_state) {
     return $form['results'];
   }
 
+  /**
+   * Maps customer values.
+   *
+   * @return array
+   *   The customer value array.
+   */
   protected function map() {
     return [
       'customer_first_name' => 'first_name',

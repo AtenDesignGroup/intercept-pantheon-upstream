@@ -3,14 +3,20 @@
 namespace Drupal\intercept_event\Controller;
 
 use Drupal\Core\Url;
-use Drupal\intercept_core\Controller\ManagementControllerBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\intercept_core\Controller\ManagementControllerBase;
 use Drupal\views\Element\View;
 use Drupal\views\Views;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * The management controller for intercept_event.
+ */
 class ManagementController extends ManagementControllerBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function alter(array &$build, $page_name) {
     if ($page_name == 'system_configuration') {
       $build['sections']['main']['#actions']['events'] = [
@@ -19,7 +25,6 @@ class ManagementController extends ManagementControllerBase {
       ];
     }
     if ($page_name == 'default') {
-      $route = "intercept_event.management.event_templates";
       $build['sections']['main']['#actions']['event'] = [
         '#link' => $this->getCreateEventButton(),
         '#weight' => -15,
@@ -42,6 +47,17 @@ class ManagementController extends ManagementControllerBase {
     ]);
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewEventAttendanceExport(AccountInterface $user, Request $request) {
     return [
       'title' => $this->title('Event Attendance'),
@@ -60,7 +76,17 @@ class ManagementController extends ManagementControllerBase {
       ],
     ];
   }
-  public static function preRenderEventAttendance($element) {
+
+  /**
+   * Overrides the event attendance element.
+   *
+   * @param array $element
+   *   The event attendance element.
+   *
+   * @return array
+   *   The modified event attendance element.
+   */
+  public static function preRenderEventAttendance(array $element) {
     $view = !isset($element['#view']) ? Views::getView($element['#name']) : $element['#view'];
     $view->override_path = 'test';
     $view->override_url = Url::fromRoute('<current>');
@@ -68,7 +94,18 @@ class ManagementController extends ManagementControllerBase {
     return $element;
   }
 
-  public function viewEvents(AccountInterface $user, Request $request, $is_admin = FALSE) {
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
+  public function viewEvents(AccountInterface $user, Request $request) {
     return [
       'title' => $this->title('Events'),
       'event_create' => $this->getCreateEventButton(),
@@ -80,6 +117,17 @@ class ManagementController extends ManagementControllerBase {
     ];
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewEventConfiguration(AccountInterface $user, Request $request) {
     $lists = $this->table();
     $link = $this->getButton('Event Series', 'system.admin_content', [
@@ -111,18 +159,35 @@ class ManagementController extends ManagementControllerBase {
                 'Add Event Series',
                 'node.add',
                 [
-                  'node_type' => 'event_series'
+                  'node_type' => 'event_series',
                 ]
               ),
             ],
           ],
           '#content' => $lists->toArray(),
         ],
-        'taxonomies' => $this->getTaxonomyVocabularyTable(['audience', 'evaluation_criteria', 'event_type', 'population_segment', 'tag']),
-      ]
+        'taxonomies' => $this->getTaxonomyVocabularyTable([
+          'audience',
+          'evaluation_criteria',
+          'event_type',
+          'population_segment',
+          'tag',
+        ]),
+      ],
     ];
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewEventTemplates(AccountInterface $user, Request $request) {
     return [
       '#type' => 'view',
@@ -130,4 +195,5 @@ class ManagementController extends ManagementControllerBase {
       '#display_id' => 'embed',
     ];
   }
+
 }

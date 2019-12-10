@@ -19,7 +19,6 @@ permissions:
   - 'access staff management page event_templates'
   - 'access staff management page events'
   - 'access staff management page room_reservations'
-  - 'access stories_image_uploader entity browser pages'
   - 'access user profiles'
   - 'add equipment reservation entities'
   - 'add event registration entities'

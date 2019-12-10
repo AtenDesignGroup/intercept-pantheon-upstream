@@ -7,6 +7,9 @@ use Drupal\date_recur\DateRecurDefaultRSet;
 use Drupal\date_recur\DateRecurRRule as DateRecurRRuleContrib;
 use RRule\RfcParser;
 
+/**
+ * Extends date_recur calculations.
+ */
 class DateRecurRRule extends DateRecurRRuleContrib {
 
   /**
@@ -35,14 +38,16 @@ class DateRecurRRule extends DateRecurRRuleContrib {
         foreach ($type_parts as $part) {
           list(, $part) = explode(':', $part);
           switch ($type) {
-          case 'RDATE':
-            $this->rrule->addDate($part);
-            break;
-          case 'EXDATE':
-            $this->rrule->addExDate($part);
-            break;
-          case 'EXRULE':
-            $this->rrule->addExRule($part);
+            case 'RDATE':
+              $this->rrule->addDate($part);
+              break;
+
+            case 'EXDATE':
+              $this->rrule->addExDate($part);
+              break;
+
+            case 'EXRULE':
+              $this->rrule->addExRule($part);
           }
         }
       }
@@ -57,49 +62,49 @@ class DateRecurRRule extends DateRecurRRuleContrib {
     }
   }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function parseRrule($rrule, $startDate, $check_only = FALSE) {
-        // Correct formatting.
-        if (strpos($rrule, "\n") === FALSE && strpos($rrule, 'RRULE:') !== 0) {
-            $rrule = "RRULE:$rrule";
-        }
-
-        //$dtstart = 'DTSTART:' . $startDate->format(SELF::RFC_DATE_FORMAT);
-        $dtstart = '';
-
-        // Check for unsupported parts.
-        $set_keys = ['RDATE', 'EXRULE', 'EXDATE'];
-        $rules = $set_parts = [];
-        foreach (explode("\n", $rrule) as $key => $part) {
-            $els = explode(':', $part);
-            if (in_array($els[0], $set_keys)) {
-                $set_parts[$els[0]][] = $part;
-            }
-            else if ($els[0] == 'RRULE') {
-                $rules[] = $part;
-            }
-            else if ($els[0] == 'DTSTART') {
-                $dtstart = $part;
-            }
-            else {
-                throw new \InvalidArgumentException("Unsupported line: " . $part);
-            }
-        }
-
-        if (!count($rules)) {
-            throw new \InvalidArgumentException("Missing RRULE line: " . $rrule);
-        }
-        if (count($rules) > 1) {
-            throw new \InvalidArgumentException("More than one RRULE line is not supported.");
-        }
-        $rrule = $dtstart . "\n" . $rules[0];
-
-        if (empty($parts['WKST'])) {
-            $parts['WKST'] = 'MO';
-        }
-        $this->parts = RfcParser::parseRRule($rrule, $startDate);
-        $this->setParts = $set_parts;
+  /**
+   * {@inheritdoc}
+   */
+  public function parseRrule($rrule, $startDate, $check_only = FALSE) {
+    // Correct formatting.
+    if (strpos($rrule, "\n") === FALSE && strpos($rrule, 'RRULE:') !== 0) {
+      $rrule = "RRULE:$rrule";
     }
+
+    $dtstart = '';
+
+    // Check for unsupported parts.
+    $set_keys = ['RDATE', 'EXRULE', 'EXDATE'];
+    $rules = $set_parts = [];
+    foreach (explode("\n", $rrule) as $part) {
+      $els = explode(':', $part);
+      if (in_array($els[0], $set_keys)) {
+        $set_parts[$els[0]][] = $part;
+      }
+      elseif ($els[0] == 'RRULE') {
+        $rules[] = $part;
+      }
+      elseif ($els[0] == 'DTSTART') {
+        $dtstart = $part;
+      }
+      else {
+        throw new \InvalidArgumentException("Unsupported line: " . $part);
+      }
+    }
+
+    if (!count($rules)) {
+      throw new \InvalidArgumentException("Missing RRULE line: " . $rrule);
+    }
+    if (count($rules) > 1) {
+      throw new \InvalidArgumentException("More than one RRULE line is not supported.");
+    }
+    $rrule = $dtstart . "\n" . $rules[0];
+
+    if (empty($parts['WKST'])) {
+      $parts['WKST'] = 'MO';
+    }
+    $this->parts = RfcParser::parseRRule($rrule, $startDate);
+    $this->setParts = $set_parts;
+  }
+
 }

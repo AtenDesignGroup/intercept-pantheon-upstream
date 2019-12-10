@@ -2,13 +2,12 @@
 
 namespace Drupal\intercept_event\Form;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\UserInterface;
-use Drupal\user\UserStorage;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\intercept_event\EventEvaluationManager;
 
+/**
+ * The Event Evaluation Attendee form.
+ */
 class EventEvaluationAttendeeForm extends EventEvaluationFormBase {
 
   /**
@@ -22,7 +21,7 @@ class EventEvaluationAttendeeForm extends EventEvaluationFormBase {
    * {@inheritdoc}
    */
   protected function getVoteType() {
-    return \Drupal\intercept_event\EventEvaluationManager::VOTE_TYPE_ID;
+    return EventEvaluationManager::VOTE_TYPE_ID;
   }
 
   /**
@@ -50,7 +49,7 @@ class EventEvaluationAttendeeForm extends EventEvaluationFormBase {
       ],
     ];
     $form['evaluation'] = [
-      '#title' => $this->t('How\'d the Event Go?'),
+      '#title' => $this->t("How'd the Event Go?"),
       '#type' => 'radios',
       '#options' => [
         0 => $this->t('Dislike'),
@@ -69,7 +68,7 @@ class EventEvaluationAttendeeForm extends EventEvaluationFormBase {
         '#title' => $this->t('Tell us Why'),
         '#type' => 'select',
         '#options' => $options,
-        '#prefix' => '<div id="' . $wrapper_id . '">', 
+        '#prefix' => '<div id="' . $wrapper_id . '">',
         '#suffix' => '</div>',
         '#multiple' => TRUE,
         '#default_value' => $evaluation->getVoteCriteria(),
@@ -85,8 +84,13 @@ class EventEvaluationAttendeeForm extends EventEvaluationFormBase {
 
   /**
    * Form ajax handler for repopulating evaluation criteria select.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
-  public function ajaxCallback(&$form, FormStateInterface $form_state) {
+  public function ajaxCallback(array &$form, FormStateInterface $form_state) {
     return $form['evaluation_criteria'];
   }
 

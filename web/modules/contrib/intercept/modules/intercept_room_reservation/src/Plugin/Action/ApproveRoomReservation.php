@@ -3,7 +3,6 @@
 namespace Drupal\intercept_room_reservation\Plugin\Action;
 
 use Drupal\Core\Field\FieldUpdateActionBase;
-use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 
 /**
  * Approves a room reservation.

@@ -56,7 +56,7 @@ class EquipmentReservationController extends ControllerBase implements Container
    */
   public function revisionPageTitle($equipment_reservation_revision) {
     $equipment_reservation = $this->entityManager()->getStorage('equipment_reservation')->loadRevision($equipment_reservation_revision);
-    return $this->t('Revision of %title from %date', ['%title' => $equipment_reservation->label(), '%date' => format_date($equipment_reservation->getRevisionCreationTime())]);
+    return $this->t('Revision of %title from %date', ['%title' => $equipment_reservation->label(), '%date' => \Drupal::service('date.formatter')->format($equipment_reservation->getRevisionCreationTime())]);
   }
 
   /**
@@ -141,7 +141,11 @@ class EquipmentReservationController extends ControllerBase implements Container
             $links['revert'] = [
               'title' => $this->t('Revert'),
               'url' => $has_translations ?
-              Url::fromRoute('entity.equipment_reservation.translation_revert', ['equipment_reservation' => $equipment_reservation->id(), 'equipment_reservation_revision' => $vid, 'langcode' => $langcode]) :
+              Url::fromRoute('entity.equipment_reservation.translation_revert', [
+                'equipment_reservation' => $equipment_reservation->id(),
+                'equipment_reservation_revision' => $vid,
+                'langcode' => $langcode,
+              ]) :
               Url::fromRoute('entity.equipment_reservation.revision_revert', ['equipment_reservation' => $equipment_reservation->id(), 'equipment_reservation_revision' => $vid]),
             ];
           }

@@ -10,7 +10,7 @@ use Drupal\intercept_equipment\Entity\EquipmentReservationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a form for reverting a Equipment reservation revision for a single translation.
+ * Provides a form for reverting a Equipment reservation for a translation.
  *
  * @ingroup intercept_equipment_reservation
  */
@@ -68,7 +68,7 @@ class EquipmentReservationRevisionRevertTranslationForm extends EquipmentReserva
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Are you sure you want to revert @language translation to the revision from %revision-date?', ['@language' => $this->languageManager->getLanguageName($this->langcode), '%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime())]);
+    return $this->t('Are you sure you want to revert @language translation to the revision from %revision-date?', ['@language' => $this->languageManager->getLanguageName($this->langcode), '%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime())]);
   }
 
   /**

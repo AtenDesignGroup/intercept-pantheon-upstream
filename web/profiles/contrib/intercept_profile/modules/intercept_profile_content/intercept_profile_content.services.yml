@@ -1,0 +1,6 @@
+services:
+  events_import_subscriber:
+    class: '\Drupal\intercept_profile_content\EventSubscriber\EventImportSubscriber'
+    arguments: ['@intercept_core.reservation.manager', '@intercept_event.recurring_manager']
+    tags:
+      - { name: 'event_subscriber' }

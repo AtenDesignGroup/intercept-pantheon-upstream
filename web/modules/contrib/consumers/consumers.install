@@ -58,73 +58,7 @@ function consumers_update_8102() {
  * Make consumers translatable.
  */
 function consumers_update_8103() {
-  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
-  $entity_type = $entity_definition_update_manager->getEntityType('consumer');
-  $last_installed_field_storage_definitions = \Drupal::service('entity.last_installed_schema.repository')->getLastInstalledFieldStorageDefinitions('consumer');
-
-  /** @var \Drupal\Core\Entity\Sql\SqlContentEntityStorage $storage */
-
-  // Initialize the storage with the currently installed entity type and field storage definitions.
-  $storage = \Drupal::entityTypeManager()->getStorage('consumer');
-  $storage->setEntityType($entity_type);
-  $storage->setTableMapping($storage->getTableMapping($last_installed_field_storage_definitions));
-
-  // Load all consumers and convert them to raw arrays. The entity always loads the live field definitions, so we
-  // have to explicitly unset the langcode and default_langcode keys so that it will create proper default values for
-  // those.
-  $consumers = array_map(function (Consumer $consumer) {
-    $values = $consumer->toArray();
-    unset($values['langcode'], $values['default_langcode']);
-    return $values;
-  }, $storage->loadMultiple());
-
-  // Now, truncate the table to delete the data.
-  \Drupal::database()->truncate('consumer')->execute();
-
-  // Make the entity type translatable.
-  $entity_type->set('translatable', TRUE);
-  $entity_type->set('data_table', 'consumer_field_data');
-  $keys = $entity_type->getKeys();
-  $keys['langcode'] = 'langcode';
-  $entity_type->set('entity_keys', $keys);
-
-  $entity_definition_update_manager->updateEntityType($entity_type);
-
-  // Create the new fields.
-  $langcode_field = BaseFieldDefinition::create('language')
-    ->setLabel(t('Language'))
-    ->setDisplayOptions('view', [
-      'region' => 'hidden',
-    ])
-    ->setDisplayOptions('form', [
-      'type' => 'language_select',
-      'weight' => 2,
-    ])
-    ->setRevisionable(TRUE)
-    ->setTranslatable(TRUE);
-
-  $default_langcode_field = BaseFieldDefinition::create('boolean')
-    ->setLabel(t('Default translation'))
-    ->setDescription(t('A flag indicating whether this is the default translation.'))
-    ->setTranslatable(TRUE)
-    ->setRevisionable(TRUE)
-    ->setDefaultValue(TRUE);
-
-  $entity_definition_update_manager->installFieldStorageDefinition('langcode', $entity_type->id(), 'consumers', $langcode_field);
-  $entity_definition_update_manager->installFieldStorageDefinition('default_langcode', $entity_type->id(), 'consumers', $default_langcode_field);
-
-  // Resave all consumers, make sure they are treated as new entities and get the new default values and so on.
-  foreach ($consumers as $values) {
-    $new_consumer = Consumer::create($values);
-
-    // Special handling for the secret field added by simple_oauth, make sure that it is not hashed again.
-    if ($new_consumer->hasField('secret')) {
-      $new_consumer->get('secret')->pre_hashed = TRUE;
-    }
-
-    $new_consumer->save();
-  }
-
+  // Replaced by consumers_post_update_make_consumer_entity_type_translatable().
 }
 
 /**
@@ -180,7 +114,7 @@ function consumers_update_8106() {
   $field_storage_definition = $field_definition
     ->getFieldStorageDefinition();
   $has_original = (bool) $edum->getFieldStorageDefinition(
-    $field_storage_definition->getName(),
+    $owner_key,
     $field_storage_definition->getTargetEntityTypeId()
   );
   $has_original

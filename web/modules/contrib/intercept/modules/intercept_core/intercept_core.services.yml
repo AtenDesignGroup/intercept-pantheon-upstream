@@ -14,7 +14,7 @@ services:
     arguments: ['@module_handler', '@cache.discovery']
   intercept_core.reservation.manager:
     class: Drupal\intercept_core\ReservationManager
-    arguments: ['@entity_type.manager', '@config.factory', '@plugin.manager.mail', '@intercept_core.utility.dates', '@token', '@current_user']
+    arguments: ['@entity_type.manager', '@config.factory', '@plugin.manager.mail', '@intercept_core.utility.dates', '@token', '@current_user', '@module_handler']
   intercept_core.utility.dates:
     class: Drupal\intercept_core\Utility\Dates
     arguments: ['@config.factory']

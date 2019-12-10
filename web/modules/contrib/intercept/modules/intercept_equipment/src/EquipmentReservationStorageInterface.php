@@ -18,7 +18,7 @@ use Drupal\intercept_equipment\Entity\EquipmentReservationInterface;
 interface EquipmentReservationStorageInterface extends ContentEntityStorageInterface {
 
   /**
-   * Gets a list of Equipment reservation revision IDs for a specific Equipment reservation.
+   * Gets a list of Equipment reservation revision IDs for a reservation.
    *
    * @param \Drupal\intercept_equipment\Entity\EquipmentReservationInterface $entity
    *   The Equipment reservation entity.
@@ -29,7 +29,7 @@ interface EquipmentReservationStorageInterface extends ContentEntityStorageInter
   public function revisionIds(EquipmentReservationInterface $entity);
 
   /**
-   * Gets a list of revision IDs having a given user as Equipment reservation author.
+   * Gets a list of revision IDs having a given user as reservation author.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user entity.

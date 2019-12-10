@@ -2,14 +2,8 @@
 
 namespace Drupal\intercept_event\Form;
 
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\externalauth\ExternalAuth;
-use Drupal\user\UserStorage;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
 
 /**
  * Form controller for Event Attendance edit forms.
@@ -52,13 +46,13 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
       '#type' => 'html_tag',
       '#tag' => 'div',
       '#attributes' => ['class' => ['instructions-footer']],
-      '#value' => $this->t('If you don\'t know your account number or username, but want to get recommendations, please talk with library staff.'),
+      '#value' => $this->t("If you don't know your account number or username, but want to get recommendations, please talk with library staff."),
     ];
 
     $form['guest'] = [
       '#type' => 'link',
       '#title' => $this->t("Don't have an account? Attend as a guest"),
-      '#url' => \Drupal\Core\Url::fromRoute('entity.node.scan_guest', [
+      '#url' => Url::fromRoute('entity.node.scan_guest', [
         'node' => $event->id(),
       ]),
     ];
@@ -66,7 +60,7 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
     $form['lookup'] = [
       '#type' => 'link',
       '#title' => $this->t("Don't have your library card? Scan in by name or email."),
-      '#url' => \Drupal\Core\Url::fromRoute('entity.node.scan_lookup', [
+      '#url' => Url::fromRoute('entity.node.scan_lookup', [
         'node' => $event->id(),
       ]),
     ];

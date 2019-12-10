@@ -12,11 +12,11 @@ equipment_reservation.admin.structure.settings:
   route_name: equipment_reservation.settings
   parent: intercept_core.admin_structure
 
-equipment_reservation.reserve_equipment:
-  title: Reserve Equipment
-  description: 'Make an Equipment reservation'
-  route_name: intercept_equipment.reserve_equipment
-  menu_name: main
+# equipment_reservation.reserve_equipment:
+#   title: Reserve Equipment
+#   description: 'Make an Equipment reservation'
+#   route_name: intercept_equipment.reserve_equipment
+#   menu_name: main
 
 intercept_equipment.account.equipment_reservations:
   title: 'Equipment Reservations'

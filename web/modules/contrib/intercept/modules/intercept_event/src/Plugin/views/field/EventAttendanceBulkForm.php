@@ -12,11 +12,10 @@ use Drupal\system\Plugin\views\field\BulkForm;
 class EventAttendanceBulkForm extends BulkForm {
 
   /**
-   *    * {@inheritdoc}
-   *       */
+   * {@inheritdoc}
+   */
   protected function emptySelectedMessage() {
     return $this->t('No event attendance selected.');
   }
 
 }
-

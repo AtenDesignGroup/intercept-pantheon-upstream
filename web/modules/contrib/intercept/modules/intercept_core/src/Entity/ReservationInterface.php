@@ -15,6 +15,99 @@ use Drupal\user\EntityOwnerInterface;
 interface ReservationInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
 
   /**
+   * Set the type of reservation, either room or equipment.
+   *
+   * @return string
+   *   The type of reservation.
+   */
+  public static function reservationType();
+
+  /**
+   * Gets an array of start and end dates.
+   *
+   * @param string $timezone
+   *   String timezone name. Defaults to UTC.
+   *
+   * @return array
+   *   The array representation of the reservation date range.
+   */
+  public function getDateRange($timezone = 'UTC');
+
+  /**
+   * Gets the start date for a reservation.
+   *
+   * @return \Drupal\Component\Datetime\DateTimePlus
+   *   The start date.
+   */
+  public function getStartDate();
+
+  /**
+   * Gets the end date for a reservation.
+   *
+   * @return \Drupal\Component\Datetime\DateTimePlus
+   *   The end date.
+   */
+  public function getEndDate();
+
+  /**
+   * Gets the duration in minutes between the start and end date.
+   *
+   * @return int
+   *   The duration in minutes.
+   */
+  public function getDuration();
+
+  /**
+   * Gets the DateInterval difference between the start and end date.
+   *
+   * @return \DateInterval|string
+   *   A DateInterval object, or an empty string.
+   */
+  public function getInterval();
+
+  /**
+   * Gets the location entity associated with the reservation.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The location entity.
+   */
+  public function getLocation();
+
+  /**
+   * Gets the original reservation status.
+   *
+   * @return string|bool
+   *   The original reservation status, or FALSE.
+   */
+  public function getOriginalStatus();
+
+  /**
+   * Gets the current reservation status.
+   *
+   * @return string|bool
+   *   The current reservation status, or FALSE.
+   */
+  public function getNewStatus();
+
+  /**
+   * Whether the reservation status is changing on save.
+   *
+   * @return bool
+   *   Whether the reservation status is changing on save.
+   */
+  public function statusHasChanged();
+
+  /**
+   * A string for the location node associated with this reservation.
+   *
+   * @TODO: Change this to locationString();
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The location node title string.
+   */
+  public function location();
+
+  /**
    * Gets the Room reservation creation timestamp.
    *
    * @return int
@@ -47,7 +140,7 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
    * Sets the published status of a Room reservation.
    *
    * @param bool $published
-   *   TRUE to set this Room reservation to published, FALSE to set it to unpublished.
+   *   TRUE to set this entity to published, FALSE to set it to unpublished.
    *
    * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface
    *   The called Room reservation entity.
@@ -92,16 +185,12 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
    */
   public function setRevisionUserId($uid);
 
-  public function getStartDate();
-
-  public function getEndDate();
-
-  public function getDateRange($timezone = 'UTC');
-
   /**
    * Get the user the registration is for.
    *
-   * @return AccountInterface|bool
+   * @return \Drupal\Core\Session\AccountInterface|bool
+   *   The current session user, or FALSE.
    */
   public function getRegistrant();
+
 }

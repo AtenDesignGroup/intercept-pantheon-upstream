@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Link;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
@@ -27,8 +28,18 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class RoomReservationController extends ControllerBase implements ContainerInjectionInterface {
 
+  /**
+   * The reservation manager.
+   *
+   * @var \Drupal\intercept_core\ReservationManagerInterface
+   */
   protected $reservationManager;
 
+  /**
+   * The private temp store factory.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
   protected $tempStoreFactory;
 
   /**
@@ -59,35 +70,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    *   Return Room reservation page.
    */
   public function reserve(Request $request) {
-    $step = $request->query->get('step');
     $build = [];
-
-    // if ($this->reservationManager->userExceededReservationLimit($this->currentUser())) {
-    //   $config = $this->config('intercept_room_reservation.settings');
-    //   $limit_text = $config->get('reservation_limit_text');
-    //   $text = !empty($limit_text['value']) ? $limit_text['value'] : '';
-    //   $build['message'] = [
-    //     '#type' => 'html_tag',
-    //     '#tag' => 'div',
-    //     '#attributes' => [
-    //       'id' => 'reserveRoomRoot',
-    //       // TODO: Move this into the theme layer with the react.js version of this page.
-    //       'class' => ['l--offset'],
-    //     ],
-    //   ];
-
-    //   $build['message']['text'] = [
-    //     '#type' => 'processed_text',
-    //     '#text' => $this->t($text, [
-    //       '@account-link' => \Drupal\Core\Link::createFromRoute('your account', 'entity.user.room_reservations', [
-    //         'user' => $this->currentUser()->id(),
-    //       ])->toString(),
-    //       '@max-room-reservations' => $config->get('reservation_limit'),
-    //     ]),
-    //     '#format' => !empty($limit_text['format']) ? $limit_text['format'] : 'basic_html',
-    //   ];
-    //   return $build;
-    // }
 
     // @TODO: Move this to the reservation manager.
     $bypass_agreement = $this->currentUser()->hasPermission('bypass room reservation agreement');
@@ -118,7 +101,6 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       '#tag' => 'div',
       '#attributes' => [
         'id' => 'reserveRoomRoot',
-        // TODO: Move this into the theme layer with the react.js version of this page.
         'class' => ['l--offset'],
       ],
     ];
@@ -276,7 +258,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
               Url::fromRoute('entity.room_reservation.translation_revert', [
                 'room_reservation' => $room_reservation->id(),
                 'room_reservation_revision' => $vid,
-                'langcode' => $langcode
+                'langcode' => $langcode,
               ]) :
               Url::fromRoute('entity.room_reservation.revision_revert', ['room_reservation' => $room_reservation->id(), 'room_reservation_revision' => $vid]),
             ];
@@ -349,7 +331,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     ], [
       'attributes' => ['class' => ['button button-action']],
     ]);
-    $form_state = new \Drupal\Core\Form\FormState();
+    $form_state = new FormState();
     $form_state->set('node', $node);
     $form = $this->formBuilder()->buildForm(RoomReservationAvailabilityForm::class, $form_state);
     return [

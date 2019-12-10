@@ -1,0 +1,23 @@
+{
+  "name": "drupal/intercept_profile",
+  "description": "Installation profile for Intercept.",
+  "type": "drupal-profile",
+  "license": "GPL-2.0+",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
+    }
+  ],
+  "require": {
+    "drupal/adminimal_admin_toolbar": "^1.0",
+    "drupal/adminimal_theme": "^1.0",
+    "drupal/better_normalizers": "^1.0",
+    "drupal/default_content": "^1.0",
+    "drupal/intercept_base": "~1.0",
+    "drupal/intercept": "~1.0",
+    "drupal/quick_node_clone": "^1.12",
+    "drupal/stories": "^2.0"
+  },
+  "minimum-stability": "dev"
+}

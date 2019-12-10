@@ -4,10 +4,21 @@ namespace Drupal\intercept_event;
 
 use Drupal\Core\Entity\Query\Sql\Query;
 
+/**
+ * SQL Query for suggested Events.
+ */
 class SuggestedEventsQuery extends Query {
 
+  /**
+   * The sort expressions.
+   *
+   * @var array
+   */
   protected $sortExpressions = [];
 
+  /**
+   * {@inheritdoc}
+   */
   protected function addSort() {
     parent::addSort();
     $this->addSortExpressions();
@@ -22,11 +33,17 @@ class SuggestedEventsQuery extends Query {
     return $this;
   }
 
+  /**
+   * Adds sort expressions.
+   */
   public function sortExpression($field_name, $values = []) {
     $this->sortExpressions[$field_name] = $values;
     return $this;
   }
 
+  /**
+   * Add sort expressions to the query.
+   */
   protected function addSortExpressions() {
     if (!isset($this->tables)) {
       $this->tables = $this->getTables($this->sqlQuery);
@@ -40,23 +57,6 @@ class SuggestedEventsQuery extends Query {
       $this->sqlQuery->groupBy($expr_alias);
       $this->sqlQuery->orderBy($expr_alias, 'DESC');
     }
-    // $this->debug();
   }
 
-  private function debug() {
-    $query = $this->sqlQuery;
-    if (method_exists($query, 'preExecute')) {
-      $query->preExecute();
-    }
-    $sql = (string) $query;
-    $quoted = array();
-    $connection = \Drupal::database();
-    foreach ((array) $query->arguments() as $key => $val) {
-      $val = is_array($val) ? join(',', $val) : $connection->quote($val);
-      $quoted[$key] = is_null($val) ? 'NULL' : $val;
-    }
-    $sql = strtr($sql, $quoted);
-    ksm($sql);
-  }
 }
-

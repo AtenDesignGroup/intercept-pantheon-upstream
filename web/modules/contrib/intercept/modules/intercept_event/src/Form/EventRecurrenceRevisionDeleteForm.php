@@ -16,7 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
 
-
   /**
    * The Event Recurrence revision.
    *
@@ -73,7 +72,7 @@ class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Are you sure you want to delete the revision from %revision-date?', ['%revision-date' => format_date($this->revision->getRevisionCreationTime())]);
+    return $this->t('Are you sure you want to delete the revision from %revision-date?', ['%revision-date' => format_date($this->revision->getRevisionCreationTime())]);
   }
 
   /**
@@ -87,7 +86,7 @@ class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return t('Delete');
+    return $this->t('Delete');
   }
 
   /**
@@ -107,7 +106,7 @@ class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
     $this->EventRecurrenceStorage->deleteRevision($this->revision->getRevisionId());
 
     $this->logger('content')->notice('Event Recurrence: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
-    drupal_set_message(t('Revision from %revision-date of Event Recurrence %title has been deleted.', ['%revision-date' => format_date($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));
+    drupal_set_message($this->t('Revision from %revision-date of Event Recurrence %title has been deleted.', ['%revision-date' => format_date($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));
     $form_state->setRedirect(
       'entity.event_recurrence.canonical',
        ['event_recurrence' => $this->revision->id()]

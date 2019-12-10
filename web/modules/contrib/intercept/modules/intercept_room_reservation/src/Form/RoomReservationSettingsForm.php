@@ -6,8 +6,12 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\intercept_core\AlterableFormTrait;
+use Drupal\intercept_core\Form\UserPermissionsForm;
+use Drupal\intercept_core\ReservationManager;
+use Drupal\intercept_room_reservation\Entity\RoomReservation;
+use Drupal\user\RoleInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class RoomReservationSettingsForm.
@@ -20,10 +24,25 @@ class RoomReservationSettingsForm extends ConfigFormBase {
 
   protected const CONFIG_NAME = 'intercept_room_reservation.settings';
 
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
 
+  /**
+   * The user role storage.
+   *
+   * @var \Drupal\user\RoleStorageInterface
+   */
   protected $roleStorage;
 
+  /**
+   * The room reservation storage.
+   *
+   * @var \Drupal\node\NodeStorageInterface
+   */
   protected $roomReservationStorage;
 
   /**
@@ -31,6 +50,8 @@ class RoomReservationSettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
   public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($config_factory);
@@ -79,7 +100,6 @@ class RoomReservationSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $config = $this->config(self::CONFIG_NAME);
 
     $form['agreement_text'] = [
       '#title' => $this->t('Terms and conditions agreement'),
@@ -109,8 +129,8 @@ class RoomReservationSettingsForm extends ConfigFormBase {
       '#description' => $this->t('Set the number of days in advance in which customers may submit room reservations. Example: entering "30" will allow customers to reserve rooms up to 30 days ahead of time. Enter "0" for no limit.'),
       '#attributes' => [
         'step' => 1,
-        'min' => 0
-      ]
+        'min' => 0,
+      ],
     ];
 
     $form['advanced_reservation_limit_text'] = [
@@ -127,9 +147,9 @@ class RoomReservationSettingsForm extends ConfigFormBase {
       '#tree' => TRUE,
     ];
 
-    $emails = \Drupal\intercept_core\ReservationManager::emails();
+    $emails = ReservationManager::emails();
 
-    $room_reservation = \Drupal\intercept_room_reservation\Entity\RoomReservation::create([]);
+    $room_reservation = RoomReservation::create([]);
     $status_options = \Drupal::service('entity_field.manager')
       ->getFieldStorageDefinitions('room_reservation')['field_status']
       ->getOptionsProvider('value', $room_reservation)
@@ -204,15 +224,24 @@ class RoomReservationSettingsForm extends ConfigFormBase {
     return $form;
   }
 
+  /**
+   * Gets the current User roles.
+   *
+   * @return array
+   *   The user_role options.
+   */
   private function userRoleOptions() {
-    $intercept_roles = \Drupal\intercept_core\Form\UserPermissionsForm::roles();
+    $intercept_roles = UserPermissionsForm::roles();
 
-    $options = array_map(function(\Drupal\user\RoleInterface $role) {
+    $options = array_map(function (RoleInterface $role) {
       return $role->label();
     }, $this->roleStorage->loadMultiple($intercept_roles));
     return $options;
   }
 
+  /**
+   * Gets the text format for a config field.
+   */
   private function getTextFormat($config_name, $subfield) {
     $config = $this->config(self::CONFIG_NAME)->get($config_name);
     $default_value = $subfield == 'value' ? '' : 'basic_html';
@@ -241,6 +270,7 @@ class RoomReservationSettingsForm extends ConfigFormBase {
    * Helper function to traverse into the email config values.
    *
    * @return mixed
+   *   The config value.
    */
   private function getConfigValue($key, $key1 = NULL, $key2 = NULL, $default = '') {
     $value = $default;

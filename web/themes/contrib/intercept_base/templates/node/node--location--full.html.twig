@@ -1,0 +1,82 @@
+<article{{ attributes.addClass(['page']) }}>
+  <div class="l--sidebar-after">
+    {% set primary_image = content.image_primary|render %}
+
+    {% set directions = content.field_link_directions.0 %}
+    {% if directions is not empty %}
+    {% set directions = directions|merge({'#title' : 'Get Directions'}) %}
+    {% endif %}
+
+    {% if primary_image is not empty %}
+    <div class="l__header l--offset">
+
+      {# Header Type #}
+      {% set header_type = 'large' %}
+      
+      {# Primary Image #}
+      {% set image = file_url(content.image_primary|field_target_entity.field_media_image.entity.uri.value|image_style('maximum')) %}
+
+      {# Content Header #}
+      {% include '@intercept-base-components/content-header/content-header.twig' with {
+        image: image,
+        title: label,
+        decorative: header_type,
+        description: content.field_text_intro,
+        modifiers: [ header_type, 'location' ]
+      } only %}
+
+      {# Details #}
+
+      {% set details = {
+          contact: {
+            heading: 'Contact us'|t,
+            content: {
+              address: content.field_address,
+              phone: content.field_contact_number,
+              link: directions
+            }
+          },
+          hours: {
+            heading: 'Hours'|t,
+            content: {
+              hours: content.field_location_hours
+            }
+          }
+        }
+      %}
+      {% include '@intercept-base-components/details/details.twig' with {
+        details: details
+      } only %}
+    </div>
+    {% endif %}
+    <div class="l__main l--offset">
+      <div class="l--section">
+        {% if content.field_text_content[0] is not empty %}
+        <div class="l--section">
+          {{ content.field_text_content }}
+        </div>
+        {% endif %}
+        {% if content.field_virtual_tour[0] is not empty %}
+        <div class="l--section">
+          <h4 class="features__heading">Virtual Tour</h4>  
+          {{ content.field_virtual_tour }}
+        </div>
+        {% endif %}
+        
+        {% include '@intercept-base-components/features/features.twig' with {
+          heading: 'Features'|t,
+          features: content.field_features|field_value
+        } only %}
+        {{ drupal_view('departments', 'block_1', node.id) }}
+      </div>
+    </div>
+  </div>
+  <div class="l--section l--offset">
+  {% if content.field_gallery['#items'] is not empty %}
+  {# Slideshow #}
+  {% include '@intercept-base-components/slideshow/slideshow.twig' with {
+    slides: content.field_gallery
+  } only %}
+  {% endif %}
+  </div>
+</article>

@@ -7,8 +7,16 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * The Room Reservation Agreement Form.
+ */
 class RoomReservationAgreementForm extends FormBase {
 
+  /**
+   * The private temp store factory.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
   protected $tempStoreFactory;
 
   /**
@@ -27,10 +35,16 @@ class RoomReservationAgreementForm extends FormBase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'room_reservation_agreement_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['agree'] = [
       '#type' => 'submit',
@@ -41,16 +55,17 @@ class RoomReservationAgreementForm extends FormBase {
     return $form;
   }
 
+  /**
+   * Sets the room reservation agreement.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
   public function agree(array &$form, FormStateInterface $form_state) {
     $temp_store = $this->tempStoreFactory->get('reservation_agreement');
     $temp_store->set('room', 1);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Generic submit handler.
   }
 
 }

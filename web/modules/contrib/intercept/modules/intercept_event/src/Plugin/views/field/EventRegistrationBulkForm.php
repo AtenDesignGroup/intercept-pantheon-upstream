@@ -12,11 +12,10 @@ use Drupal\system\Plugin\views\field\BulkForm;
 class EventRegistrationBulkForm extends BulkForm {
 
   /**
-   *    * {@inheritdoc}
-   *       */
+   * {@inheritdoc}
+   */
   protected function emptySelectedMessage() {
     return $this->t('No event registration selected.');
   }
 
 }
-

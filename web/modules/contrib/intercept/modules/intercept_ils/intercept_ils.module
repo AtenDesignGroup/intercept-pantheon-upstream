@@ -1,13 +1,21 @@
 <?php
 
 /**
+ * @file
+ * Defines common functionality for intercept_ils.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
  * Implements hook_entity_bundle_field_info().
  */
-function intercept_ils_entity_bundle_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+function intercept_ils_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
   $fields = [];
 
   if ($entity_type->id() == 'node' && $bundle == 'location') {
-    $fields['ils'] = \Drupal\Core\Field\BaseFieldDefinition::create('ils_mapping')
+    $fields['ils'] = BaseFieldDefinition::create('ils_mapping')
       ->setLabel(t('ILS Mapping'))
       ->setComputed(TRUE)
       ->setCardinality(1)
@@ -15,7 +23,7 @@ function intercept_ils_entity_bundle_field_info(\Drupal\Core\Entity\EntityTypeIn
   }
 
   if ($entity_type->id() == 'user') {
-    $fields['ils'] = \Drupal\Core\Field\BaseFieldDefinition::create('ils_mapping')
+    $fields['ils'] = BaseFieldDefinition::create('ils_mapping')
       ->setLabel(t('ILS Mapping'))
       ->setComputed(TRUE)
       ->setCardinality(1)

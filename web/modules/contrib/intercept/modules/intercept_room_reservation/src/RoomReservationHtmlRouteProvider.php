@@ -2,7 +2,6 @@
 
 namespace Drupal\intercept_room_reservation;
 
-use Drupal\Core\Entity\EntityType;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\intercept_core\InterceptHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
@@ -63,6 +62,7 @@ class RoomReservationHtmlRouteProvider extends InterceptHtmlRouteProvider {
       return $route;
     }
   }
+
   /**
    * Gets the settings form route.
    *

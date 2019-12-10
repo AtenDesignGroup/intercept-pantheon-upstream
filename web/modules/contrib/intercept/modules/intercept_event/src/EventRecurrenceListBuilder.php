@@ -13,7 +13,6 @@ use Drupal\Core\Link;
  */
 class EventRecurrenceListBuilder extends EntityListBuilder {
 
-
   /**
    * {@inheritdoc}
    */
@@ -36,10 +35,9 @@ class EventRecurrenceListBuilder extends EntityListBuilder {
       'entity.event_recurrence.edit_form',
       ['event_recurrence' => $entity->id()]
     );
-    $row['base'] = $entity->event->entity ? $entity->event->entity->label() : '';
+    $row['base'] = $entity->event->entity ? $entity->event->entity->toLink() : '';
     $row['date'] = $entity->getDate();
-    $handler = $entity->getRecurHandler();
-    $row['rule'] = $handler ? $handler->humanReadable() : '';
+    $row['rule'] = $entity->getRecurReadable();
     $row['events'] = count($entity->getEvents());
     return $row + parent::buildRow($entity);
   }

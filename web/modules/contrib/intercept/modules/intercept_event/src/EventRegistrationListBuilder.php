@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,8 +21,18 @@ class EventRegistrationListBuilder extends EntityListBuilder {
 
   use EventListBuilderTrait;
 
+  /**
+   * The ILS client.
+   *
+   * @var object
+   */
   protected $client;
 
+  /**
+   * Gets the plugin ID string.
+   *
+   * @var string
+   */
   protected $pluginId;
 
   /**
@@ -38,6 +49,8 @@ class EventRegistrationListBuilder extends EntityListBuilder {
    *   The entity type definition.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The entity storage class.
+   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
+   *   The date formatter service.
    */
   public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, DateFormatter $date_formatter) {
     parent::__construct($entity_type, $storage);
@@ -89,8 +102,8 @@ class EventRegistrationListBuilder extends EntityListBuilder {
     $user = $entity->get('field_user')->entity;
     $guest_name = $entity->get('field_guest_name')->getValue();
     if ($user) {
-      // Use the $entity information to pull the customer's actual name instead of
-      // the name of the event registration.
+      // Use the $entity information to pull the customer's actual name
+      // instead of the name of the event registration.
       $uid = $entity->get('field_user')->entity->id();
       // Use the UID now to get the barcode and name of the customer.
       $authdata = $this->getAuthdata($uid);
@@ -103,12 +116,12 @@ class EventRegistrationListBuilder extends EntityListBuilder {
         ],
       ];
     }
-    else if (!empty($uid)) {
+    elseif (!empty($uid)) {
       // Backup info can come from $user if it's a non-customer.
-      $user = \Drupal\user\Entity\User::load($uid);
+      $user = User::load($uid);
       $row['name'] = $user->getUsername();
     }
-    else if (!empty($guest_name)) {
+    elseif (!empty($guest_name)) {
       $guest_email = $entity->get('field_guest_email')->getValue();
       $guest_phone_number = $entity->get('field_guest_phone_number')->getValue();
       $email_link = Link::fromTextAndUrl($guest_email[0]['value'], Url::fromUri('mailto:' . $guest_email[0]['value']))->toString();
@@ -134,18 +147,14 @@ class EventRegistrationListBuilder extends EntityListBuilder {
    * Get authdata for user in the row in order to display customer info.
    */
   protected function getAuthdata($uid) {
-    $debug = true;
     if ($this->pluginId) {
       $authmap = \Drupal::service('externalauth.authmap');
       $authdata = $authmap->getAuthdata($uid, $this->pluginId);
       $authdata_data = unserialize($authdata['data']);
-      if (isset($authdata_data->Barcode)) {
-        $barcode = $authdata_data->Barcode;
-        $result = $this->client->patron->searchByBarcode($barcode);
-      }
+
       return $authdata_data;
     }
-    return null;
+    return NULL;
   }
 
 }

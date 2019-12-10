@@ -12,6 +12,5 @@ dependencies:
   - intercept:intercept_core
   - office_hours:office_hours
   - pathauto:pathauto
-  - stories:stories_media
   - drupal:telephone
 package: 'Intercept'

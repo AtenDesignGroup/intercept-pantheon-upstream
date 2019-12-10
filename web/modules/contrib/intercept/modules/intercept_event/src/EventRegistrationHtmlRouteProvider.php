@@ -65,10 +65,13 @@ class EventRegistrationHtmlRouteProvider extends InterceptHtmlRouteProvider {
   /**
    * Builds a new route to modify the status of an entity.
    *
-   * @param $entity_type
-   * @return Route
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type object.
+   *
+   * @return \Symfony\Component\Routing\Route
+   *   The new Route.
    */
-  protected function getEventFormRoutes($entity_type) {
+  protected function getEventFormRoutes(EntityTypeInterface $entity_type) {
     /** @var $entity_type EntityTypeInterface */
     if ($entity_type->hasLinkTemplate("event-form")) {
       $entity_type_id = $entity_type->id();
@@ -81,9 +84,9 @@ class EventRegistrationHtmlRouteProvider extends InterceptHtmlRouteProvider {
         ])
         ->setRequirement('_entity_create_access', "{$entity_type_id}")
         ->setOption('parameters', [
-            $entity_type_id => ['type' => 'entity:' . $entity_type_id],
-            'node' => ['type' => 'entity:node'],
-            'admin_route' => FALSE,
+          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+          'node' => ['type' => 'entity:node'],
+          'admin_route' => FALSE,
         ]);
 
       // Entity types with serial IDs can specify this in their route
@@ -94,4 +97,5 @@ class EventRegistrationHtmlRouteProvider extends InterceptHtmlRouteProvider {
       return $route;
     }
   }
+
 }

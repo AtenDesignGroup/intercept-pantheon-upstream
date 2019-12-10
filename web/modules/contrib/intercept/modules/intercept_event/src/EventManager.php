@@ -47,17 +47,30 @@ class EventManager implements EventManagerInterface {
     $this->entityTypeManager = $entity_type_manager;
   }
 
+  /**
+   * Deletes an event register alias.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Event node.
+   */
   public function deleteRegisterAlias(NodeInterface $node) {
-    $alias = $node->path->alias . '/register';
     $storage = \Drupal::service('path.alias_storage');
     $conditions = [
       'source' => '/event/' . $node->id() . '/register',
     ];
-    if ($path = $storage->load($conditions)) {
+    if ($storage->load($conditions)) {
       $storage->delete($conditions);
     }
   }
 
+  /**
+   * Adds an event register alias.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Event node.
+   * @param string $alias
+   *   The register alias.
+   */
   public function addRegisterAlias(NodeInterface $node, $alias = NULL) {
     $alias = $alias ?: $node->path->alias;
     if (empty($alias)) {
@@ -80,8 +93,10 @@ class EventManager implements EventManagerInterface {
    * Create an event node clone with certain changes.
    *
    * @param \Drupal\node\NodeInterface $node
+   *   The Event Node to clone.
    *
    * @return \Drupal\node\NodeInterface
+   *   The cloned Event Node.
    */
   private function cloneify(NodeInterface $node) {
     $new_node = $node->createDuplicate();
@@ -98,8 +113,10 @@ class EventManager implements EventManagerInterface {
    * View a node cloned from a template.
    *
    * @param \Drupal\node\NodeInterface $node
+   *   The Event Node.
    *
    * @return array
+   *   The Event Node render array.
    */
   public function previewFromTemplate(NodeInterface $node) {
     $new_node = $this->cloneify($node);
@@ -115,8 +132,10 @@ class EventManager implements EventManagerInterface {
    * Edit a node cloned from a template.
    *
    * @param \Drupal\node\NodeInterface $node
+   *   The Event Node.
    *
    * @return mixed
+   *   The Event edit form.
    */
   public function addFromTemplate(NodeInterface $node) {
     $form = \Drupal::service('entity.form_builder')->getForm($this->cloneify($node));
@@ -186,8 +205,13 @@ class EventManager implements EventManagerInterface {
 
   /**
    * Alter a node edit form to add template functionality.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
-  public function nodeEditFormAlter(&$form, FormStateInterface $form_state) {
+  public function nodeEditFormAlter(array &$form, FormStateInterface $form_state) {
     if (!$this->currentUser->hasPermission('edit event field field_event_is_template')) {
       return;
     }
@@ -195,18 +219,26 @@ class EventManager implements EventManagerInterface {
     $is_template = $node->field_event_is_template->getString();
     $form['actions']['template_create'] = [
       '#type' => 'submit',
-      '#value' => t('Use as template'),
+      '#value' => $this->t('Use as template'),
       '#access' => empty($is_template),
       '#weight' => 15,
       '#submit' => array_merge($form['actions']['submit']['#submit'], [[static::class, 'nodeEditFormSubmit']]),
     ];
 
     if ($is_template) {
-      $form['actions']['submit']['#value'] = t('Save template');
+      $form['actions']['submit']['#value'] = $this->t('Save template');
     }
   }
 
-  public static function nodeEditFormSubmit(&$form, FormStateInterface $form_state) {
+  /**
+   * Submit handler for node edit form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public static function nodeEditFormSubmit(array &$form, FormStateInterface $form_state) {
     $event = $form_state->getFormObject()->getEntity();
     $event_template = $event->createDuplicate();
     // This is to separate it from other events in the admin/content menu.
@@ -214,15 +246,24 @@ class EventManager implements EventManagerInterface {
     $event_template->event_recurrence->setValue(NULL);
     $event_template->save();
     // TODO: Use the message service.
-    drupal_set_message(t('Event template @link has been created.', [
+    drupal_set_message($this->t('Event template @link has been created.', [
       '@link' => $event_template->link(),
     ]));
     // TODO: Fix this so that this overrides the admin/content destination.
     $form_state->setRedirect('entity.node.edit_form', [
-      'node' => $event_template->id()
+      'node' => $event_template->id(),
     ]);
   }
 
+  /**
+   * Loads a Node entity by ID or UUID.
+   *
+   * @param int $id
+   *   The node ID or UUID.
+   *
+   * @return \Drupal\node\NodeInterface
+   *   The loaded Node.
+   */
   public function load($id) {
     // First try to see if the id provided is a uuid.
     if ($entities = $this->entityTypeManager->getStorage('node')->loadByProperties(['uuid' => $id])) {
@@ -231,6 +272,14 @@ class EventManager implements EventManagerInterface {
     return Node::load($id);
   }
 
+  /**
+   * Updates the attendance for an Event.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   Deprecated.  The user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request.
+   */
   public function updateAttendance(UserInterface $user = NULL, Request $request) {
     $response = NULL;
     $event_id = $this->getRequestData($request, 'event');
@@ -251,6 +300,14 @@ class EventManager implements EventManagerInterface {
     return $this->jsonResponse(['response' => $response]);
   }
 
+  /**
+   * Creates an attendee for an event.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user to create as an attendee.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request.
+   */
   public function createAttendee(UserInterface $user = NULL, Request $request) {
     $response = NULL;
     if ($barcode = $this->getRequestData($request, 'barcode')) {
@@ -479,6 +536,14 @@ class EventManager implements EventManagerInterface {
     }
   }
 
+  /**
+   * Gets the HTTP request data for a given key.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request.
+   * @param string $key
+   *   The Request data key string.
+   */
   private function getRequestData(Request $request, $key) {
     $data = $request->getContent();
     if (!empty($data) && ($data = Json::decode($data))) {

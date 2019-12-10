@@ -2,14 +2,23 @@
 
 namespace Drupal\intercept_room_reservation\Controller;
 
-use Drupal\intercept_core\Controller\ManagementControllerBase;
-use Drupal\intercept_room_reservation\Form\RoomReservationSettingsForm;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\intercept_core\Controller\ManagementControllerBase;
+use Drupal\intercept_core\ReservationManager;
+use Drupal\intercept_room_reservation\Form\RoomReservationSettingsForm;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * The management controller for intercept_room_reservation.
+ */
 class ManagementController extends ManagementControllerBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function alter(array &$build, $page_name) {
     if ($page_name == 'system_configuration') {
       $build['sections']['main']['#actions']['room_reservations'] = [
@@ -25,6 +34,17 @@ class ManagementController extends ManagementControllerBase {
     }
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewRoomReservations(AccountInterface $user, Request $request) {
     return [
       '#type' => 'view',
@@ -33,14 +53,23 @@ class ManagementController extends ManagementControllerBase {
     ];
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewRoomReservationConfiguration(AccountInterface $user, Request $request) {
-    // This can also be moved into a separate function, for example:
-    // 'reservation_canceled' - viewRoomReservationConfigurationReservationCanceled()
     if ($form_key = $request->query->get('view')) {
       $form_object = $this->classResolver
         ->getInstanceFromDefinition(RoomReservationSettingsForm::class)
         ->addAlter(self::class . '::alterEmailReservationSettingsForm');
-      $form_state = new \Drupal\Core\Form\FormState();
+      $form_state = new FormState();
       $form_state->set('show_form_key', $form_key);
       $form = $this->formBuilder()->buildForm($form_object, $form_state);
       return $form;
@@ -59,7 +88,7 @@ class ManagementController extends ManagementControllerBase {
     $build['sections']['taxonomies'] = $this->getTaxonomyVocabularyTable(['meeting_purpose']);
 
     $table = $this->table();
-    $emails = \Drupal\intercept_core\ReservationManager::emails();
+    $emails = ReservationManager::emails();
     foreach ($emails as $key => $name) {
       $table->row($this->getButtonSubpage($key, $name), '');
     }
@@ -72,9 +101,17 @@ class ManagementController extends ManagementControllerBase {
     return $build;
   }
 
+  /**
+   * Alters the email reservation settings form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
   public static function alterEmailReservationSettingsForm(array &$form, FormStateInterface $form_state) {
     $show = $form_state->get('show_form_key');
-    $children = \Drupal\Core\Render\Element::children($form);
+    $children = Element::children($form);
     $skip = ['actions', 'email'];
 
     $form['email']['#type'] = 'container';
@@ -89,4 +126,5 @@ class ManagementController extends ManagementControllerBase {
       $form[$name]['#access'] = FALSE;
     }
   }
+
 }

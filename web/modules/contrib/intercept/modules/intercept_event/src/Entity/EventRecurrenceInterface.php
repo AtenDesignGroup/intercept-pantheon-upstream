@@ -14,7 +14,61 @@ use Drupal\user\EntityOwnerInterface;
  */
 interface EventRecurrenceInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityOwnerInterface {
 
-  // Add get/set methods for your configuration properties here.
+  /**
+   * Gets the Event Node.
+   *
+   * @return \Drupal\node\NodeInterface
+   *   The event node.
+   */
+  public function getBaseEvent();
+
+  /**
+   * Gets the Event Node ID.
+   *
+   * @return int
+   *   The event node ID.
+   */
+  public function getBaseEventId();
+
+  /**
+   * Gets the Event Recurrence date range string.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The date range string.
+   */
+  public function getDate();
+
+  /**
+   * Gets the Nodes referencing this Event recurrence.
+   *
+   * @return array
+   *   The array of Nodes.
+   */
+  public function getEvents();
+
+  /**
+   * Delete all events associated with this recurrence entity.
+   *
+   * @return array
+   *   The deleted events.
+   */
+  public function deleteEvents();
+
+  /**
+   * Gets the date_recur interpreted readable rule.
+   *
+   * @return \Drupal\Component\Render\MarkupInterface
+   *   The rendered HTML.
+   */
+  public function getRecurReadable();
+
+  /**
+   * Gets the date_recur field.
+   *
+   * @return \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem
+   *   The date_recur field.
+   */
+  public function getRecurField();
 
   /**
    * Gets the Event Recurrence creation timestamp.

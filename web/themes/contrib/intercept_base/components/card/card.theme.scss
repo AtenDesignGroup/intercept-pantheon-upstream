@@ -20,3 +20,62 @@
 .card__dateline-date {
   font-weight: $fw-bold;
 }
+
+.card--location {
+  display: flex;
+  flex-direction: column;
+
+  @include bp(none smallish) {
+    margin-bottom: rem(20px);
+  }
+  @include bp(smallish) {
+    flex-grow: 1;
+  }
+
+  h3 {
+    @include fs(h3);
+    @include lh(0);
+    width: 100%;
+  }
+
+  .office-hours__item-label {
+    font-weight: normal;
+  }
+
+  .office-hours__item:first-child,
+  .office-hours__item:first-child .office-hours__item-label {
+    font-weight: 800;
+  }
+
+  .card__content {
+    display: flex;
+    flex-grow: 1;
+    height: calc(100% - 2rem);
+    min-height: 0;
+    padding: rem(20px);
+    flex-direction: column;
+
+    @include bp(large) {
+      padding: rem(50px);
+    }
+  }
+
+  .card__footer {
+    margin-top: auto;
+
+    a:not([class]) {
+      @include fs(x-small);
+      letter-spacing: rem(1px);
+      text-transform: unset;
+
+      .country {
+        display: none;
+      }
+
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+}

@@ -10,7 +10,7 @@ entity_type: event_recurrence
 type: date_recur
 settings:
   datetime_type: datetime
-  occurrence_handler_plugin: intercept_occurrence_handler
+  rrule_max_length: 256
 module: date_recur
 locked: false
 cardinality: 1

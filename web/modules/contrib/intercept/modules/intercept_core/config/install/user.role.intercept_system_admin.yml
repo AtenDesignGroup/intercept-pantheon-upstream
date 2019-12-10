@@ -26,7 +26,6 @@ permissions:
   - 'access management page room_reservations'
   - 'access management page settings'
   - 'access management page system_configuration'
-  - 'access stories_image_uploader entity browser pages'
   - 'access taxonomy overview'
   - 'access user profiles'
   - 'add equipment reservation entities'

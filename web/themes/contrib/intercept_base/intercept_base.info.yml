@@ -4,10 +4,6 @@ description: Prototype Sub-Theme
 package: intercept_base
 core: 8.x
 base theme: prototype
-dependencies:
-  - components
-  - twig_field_value
-  - twig_tweak
 
 regions:
   header: Header
@@ -112,7 +108,7 @@ component-libraries:
     paths:
       - images/icons
 
-# Information added by Drupal.org packaging script on 2019-08-22
-version: '8.x-1.0-alpha8'
+# Information added by Drupal.org packaging script on 2019-11-27
+version: '8.x-1.0-alpha12'
 project: 'intercept_base'
-datestamp: 1566488000
+datestamp: 1574872397

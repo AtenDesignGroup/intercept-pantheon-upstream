@@ -33,7 +33,9 @@ class VoteViewsRelationship extends RelationshipPluginBase {
   protected $currentUser;
 
   /**
-   * @var ConfigEntityStorageInterface
+   * The Vote type storage.
+   *
+   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
    */
   protected $voteTypeStorage;
 
@@ -50,6 +52,8 @@ class VoteViewsRelationship extends RelationshipPluginBase {
    *   The kill switch.
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
+   * @param \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $vote_type_storage
+   *   The Vote type storage.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, KillSwitch $page_cache_kill_switch, AccountProxyInterface $current_user, ConfigEntityStorageInterface $vote_type_storage) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -114,9 +118,7 @@ class VoteViewsRelationship extends RelationshipPluginBase {
     $form['required']['#description'] = $this->t('If checked, only content that
       has this vote will be included. Leave unchecked to include all content;
  or, in combination with the <em>Flagged</em> filter, <a href="@unflagged-url">
-to limit the results to specifically unflagged content</a>.', [
-  '@unflagged-url' => 'http://drupal.org/node/299335'
-    ]);
+to limit the results to specifically unflagged content</a>.', ['@unflagged-url' => 'http://drupal.org/node/299335']);
 
     if (!$form['vote']['#options']) {
       $form = [
@@ -152,7 +154,7 @@ to limit the results to specifically unflagged content</a>.', [
         // Disable page caching for anonymous users.
         $this->pageCacheKillSwitch->trigger();
 
-        // Add a condition to the join on the PHP session id for anonymous users.
+        // Add condition to the join on the PHP session id for anonymous users.
         $this->definition['extra'][] = [
           'field' => 'session_id',
           'value' => '***FLAG_CURRENT_USER_SID***',
@@ -185,4 +187,3 @@ to limit the results to specifically unflagged content</a>.', [
   }
 
 }
-

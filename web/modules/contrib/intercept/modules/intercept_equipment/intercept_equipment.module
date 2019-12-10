@@ -6,14 +6,15 @@
  */
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Render\Element;
-use Drupal\intercept_equipment\Entity\EquipmentReservationInterface;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
@@ -21,7 +22,7 @@ use Drupal\views\Plugin\views\query\QueryPluginBase;
 /**
  * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
  */
-function intercept_equipment_reservation_jsonapi_equipment_reservation_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+function intercept_equipment_reservation_jsonapi_equipment_reservation_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
   return ([
     // @todo CRL-163: The 'view referenced user equipment_reservation' permission does not yet exist.
     // Once it has been implemented, the AMONG_ALL should be commented out and AMONG_OWN deleted.
@@ -34,14 +35,14 @@ function intercept_equipment_reservation_jsonapi_equipment_reservation_filter_ac
 /**
  * Implements hook_node_access().
  */
-function intercept_equipment_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
+function intercept_equipment_node_access(NodeInterface $node, $op, AccountInterface $account) {
   if ($node->bundle() == 'equipment' && $op == 'view') {
     return AccessResult::forbiddenIf(!$account->hasPermission('view reservation content'))
       ->cachePerPermissions()
       ->cachePerUser()
       ->addCacheableDependency($node);
   }
-   // No opinion.
+  // No opinion.
   return AccessResult::neutral();
 }
 
@@ -52,23 +53,23 @@ function intercept_equipment_node_access(\Drupal\node\NodeInterface $node, $op, 
  * module with new equipment reservation entity.
  */
 function intercept_equipment_update_8001() {
-  $spec = array(
+  $spec = [
     'description' => 'Equipment Reservations',
-    'fields' => array(
-      'id' => array(
+    'fields' => [
+      'id' => [
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'vid' => array(
+      ],
+      'vid' => [
         'type' => 'int',
         'length' => 11,
         'not null' => TRUE,
         'default' => 0,
-      ),
-    ),
-    'primary key' => array('id'),
-  );
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
   $schema = Database::getConnection()->schema();
   if ($schema->tableExists('equipment_reservation') == FALSE) {
     $schema->createTable('equipment_reservation', $spec);
@@ -79,30 +80,36 @@ function intercept_equipment_update_8001() {
  * Implements hook_mail().
  */
 function intercept_equipment_mail($key, &$message, $params) {
-  $options = array(
+  $options = [
     'langcode' => $message['langcode'],
-  );
+  ];
   switch ($key) {
     case 'created':
       $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Equipment Request - @equipment_title for @username', array('@username' => $params['username'], '@equipment_title' => $params['equipment_title']), $options);
+      $message['subject'] = t('Equipment Request - @equipment_title for @username', ['@username' => $params['username'], '@equipment_title' => $params['equipment_title']], $options);
       $message['body'] = [];
-      $message['body'][] = t("The following request was submitted:\n\nContact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", array('@email_address' => $params['email_address'], '@username' => $params['username'], '@equipment_title' => $params['equipment_title'], '@reservation_start_date' => $params['reservation_start_date'], '@reservation_end_date' => $params['reservation_end_date'], '@location_title' => $params['location_title'], '@room_title' => $params['room_title'], '@event_title' => $params['event_title']), $options);
+      $message['body'][] = t("The following request was submitted:\n\nContact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
+        '@email_address' => $params['email_address'],
+        '@username' => $params['username'],
+        '@equipment_title' => $params['equipment_title'],
+        '@reservation_start_date' => $params['reservation_start_date'],
+        '@reservation_end_date' => $params['reservation_end_date'],
+        '@location_title' => $params['location_title'],
+        '@room_title' => $params['room_title'],
+        '@event_title' => $params['event_title'],
+      ], $options);
       // Do we need a notification for the requestor? Legacy system did it but
-      // ...we also have an equipment reservations listing page. Let's not do
-      // ...this for launch. -MJ
+      // we also have an equipment reservations listing page. Let's not do
+      // this for launch.
       break;
   }
-  //https://valuebound.com/resources/blog/how-to-send-mail-programmatically-drupal-8
-  //https://valuebound.com/resources/blog/how-to-send-custom-formatted-html-mail-drupal-8-using-hook-mail-alter
 }
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function intercept_equipment_equipment_reservation_insert(Drupal\Core\Entity\EntityInterface $entity) {
-  // NOTIFICATIONS
-
+function intercept_equipment_equipment_reservation_insert(EntityInterface $entity) {
+  // NOTIFICATIONS.
   // Get the "to" email address.
   $equipment_nid = $entity->get('field_equipment')->getValue();
   $equipment_node = Node::load($equipment_nid[0]['target_id']);
@@ -121,21 +128,21 @@ function intercept_equipment_equipment_reservation_insert(Drupal\Core\Entity\Ent
     // Get requestor/current user's email address.
     $user = \Drupal::currentUser();
     $email = $user->getEmail();
-    // Username of requestor
+    // Username of requestor.
     $username = $user->getUsername();
-    // Equipment title
+    // Equipment title.
     $equipment_title = $equipment_node->getTitle();
-    // Dates/times of reservation
+    // Dates/times of reservation.
     $reservation_dates = $entity->get('field_dates')->getValue();
     $dateTime = new DrupalDateTime($reservation_dates[0]['value'], 'UTC');
     $reservation_start_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
     $dateTime = new DrupalDateTime($reservation_dates[0]['end_value'], 'UTC');
     $reservation_end_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
-    // Location
+    // Location.
     $location_nid = $entity->get('field_location')->getValue();
     $location_node = Node::load($location_nid[0]['target_id']);
     $location_title = $location_node->getTitle();
-    // Room
+    // Room.
     $room_nid = $entity->get('field_room')->getValue();
     if ($room_nid) {
       $room_node = Node::load($room_nid[0]['target_id']);
@@ -144,7 +151,7 @@ function intercept_equipment_equipment_reservation_insert(Drupal\Core\Entity\Ent
     else {
       $room_title = '';
     }
-    // Event
+    // Event.
     $event_nid = $entity->get('field_event')->getValue();
     if ($event_nid) {
       $event_node = Node::load($event_nid[0]['target_id']);
@@ -169,10 +176,10 @@ function intercept_equipment_equipment_reservation_insert(Drupal\Core\Entity\Ent
       'room_title' => $room_title,
       'event_title' => $event_title,
     ];
-    $send = true;
-    foreach($email_addresses as $email_address) {
+    $send = TRUE;
+    foreach ($email_addresses as $email_address) {
       $to = $email_address;
-      $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+      $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
     }
   }
 
@@ -181,10 +188,10 @@ function intercept_equipment_equipment_reservation_insert(Drupal\Core\Entity\Ent
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function intercept_equipment_form_views_exposed_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->get('view');
   if ($view->id() == 'intercept_equipment_reservations' && $view->current_display == 'embed') {
-    $link = function($d, $o, $t) {
+    $link = function ($d, $o, $t) {
       $query = \Drupal::request()->query->all();
       // 2 is upcoming dates combined filter.
       $query['field_dates_value'] = $d;
@@ -210,40 +217,40 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, \Drupal\Core\
 
     // Change the locations field to be a dropdown.
     // See: https://atendesigngroup.com/blog/drupal-8-views-entity-reference-exposed-filter-select-list
-    // Query nodes
+    // Query nodes.
     $storage = Drupal::getContainer()->get('entity_type.manager')->getStorage('node');
     $nids = $storage->getQuery();
 
-    // Gather published location nodes and sort by title
+    // Gather published location nodes and sort by title.
     $nids = $nids->condition('type', 'location')
       ->condition('status', 1)
       ->sort('title')
       ->execute();
 
-    // If there are no nodes, move on
+    // If there are no nodes, move on.
     if (!$nids) {
       return FALSE;
     }
 
-    // Start building out the options for our select list
+    // Start building out the options for our select list.
     $options = [];
     $nodes = $storage->loadMultiple($nids);
 
-    // Push titles into select list
+    // Push titles into select list.
     foreach ($nodes as $node) {
       $title = $node->getTitle();
       $options[$title] = $title;
     }
 
-    // Start building out our new form element
+    // Start building out our new form element.
     $location_field = 'title_1';
     $form[$location_field]['#type'] = 'select';
     $form[$location_field]['#multiple'] = FALSE;
 
-    // Specify the empty option for our select list
+    // Specify the empty option for our select list.
     $form[$location_field]['#empty_option'] = t('Any');
 
-    // Add the $options from above to our select list
+    // Add the $options from above to our select list.
     $form[$location_field]['#options'] = $options;
     unset($form[$location_field]['#size']);
   }
@@ -302,10 +309,11 @@ function intercept_equipment_theme_suggestions_equipment_reservation(array $vari
 function intercept_equipment_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == 'intercept_equipment_reservations' && $view->current_display == 'embed') {
     foreach ($query->where as &$condition_group) {
-      // For each condition in condition group
+      // For each condition in condition group.
       foreach ($condition_group['conditions'] as &$condition) {
         if (isset($condition['field']) && strstr($condition['field'], 'field_dates_value')) {
-          // Run the query from the beginning of the start date until the end of the end date.
+          // Run the query from the beginning of the start date
+          // until the end of the end date.
           $condition['field'] = preg_replace("/(?<=AND DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "23:59:59')", $condition['field']);
           $condition['field'] = preg_replace("/(?<=BETWEEN DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "00:00:00')", $condition['field']);
         }

@@ -5,20 +5,28 @@ namespace Drupal\intercept_core\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ * The Intercept core settings form.
+ */
 class SettingsForm extends ConfigFormBase {
 
+  /**
+   * {@inheritdoc}
+   */
   protected function getEditableConfigNames() {
     return ['intercept_core.settings'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'intercept_settings';
   }
 
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    return parent::buildForm($form, $form_state);
-  }
-
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->cleanValues()->getValues();
     $config = $this->config('intercept_core.settings');

@@ -4,17 +4,21 @@ namespace Drupal\intercept_core;
 
 use Drupal\Core\Entity\EntityStorageException;
 
+/**
+ * A trait for converting entity UUIDs to entity IDs.
+ */
 trait EntityUuidConverterTrait {
 
   /**
    * Convert single entity uuid to id.
    *
-   * @param $uuid
+   * @param string $uuid
    *   Drupal entity uuid.
-   * @param $entity_type
+   * @param string $entity_type_id
    *   Entity type machine name.
    *
    * @return mixed|null
+   *   The entity ID, or NULL.
    */
   public function convertUuid($uuid, $entity_type_id) {
     $uuids = $this->convertUuids([$uuid], $entity_type_id);
@@ -26,10 +30,12 @@ trait EntityUuidConverterTrait {
    *
    * @param array $uuids
    *   Numeric array of uuids.
-   * @param $entity_type_id
+   * @param string $entity_type_id
    *   Entity type machine name.
    *
    * @return array
+   *   The array of entity IDs.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
@@ -46,10 +52,12 @@ trait EntityUuidConverterTrait {
   /**
    * Check entity type definition for the actual uuid key.
    *
-   * @param $entity_type_id
+   * @param string $entity_type_id
    *   Entity type machine name.
    *
    * @return bool|string
+   *   The UUID key name, or FALSE.
+   *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function getUuidKey($entity_type_id) {
@@ -71,4 +79,5 @@ trait EntityUuidConverterTrait {
   protected function getEntityTypeManager() {
     return $this->entityTypeManager ?: \Drupal::service('entity_type.manager');
   }
+
 }

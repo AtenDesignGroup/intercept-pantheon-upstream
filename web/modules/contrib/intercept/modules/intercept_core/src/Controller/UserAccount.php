@@ -5,14 +5,24 @@ namespace Drupal\intercept_core\Controller;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\intercept_core\Utility\Obfuscate;
-use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Defines a controller for user account routes.
+ */
 class UserAccount extends ControllerBase {
 
+  /**
+   * ILS client object.
+   *
+   * @var object
+   */
   private $client;
 
+  /**
+   * Constructs a new UserAccount controller.
+   */
   public function __construct() {
     $config_factory = \Drupal::service('config.factory');
     $settings = $config_factory->get('intercept_ils.settings');
@@ -22,6 +32,17 @@ class UserAccount extends ControllerBase {
     $this->client = $ils_plugin->getClient();
   }
 
+  /**
+   * Returns a redirect response object for the specified route.
+   *
+   * @param string $route_name
+   *   The name of the route to which to redirect.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current Request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   A redirect response object that may be returned by the controller.
+   */
   public function userRedirect($route_name, Request $request) {
     $params = \Drupal::service('current_route_match')->getParameters();
     $options = [];
@@ -34,6 +55,15 @@ class UserAccount extends ControllerBase {
     return $this->redirect($route_name, $params->all(), $options);
   }
 
+  /**
+   * Gets a user's uuid and name by barcode.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current Request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JsonResponse object with keys uuid and name.
+   */
   public function customerRegisterApi(Request $request) {
     $params = $this->getParams($request);
     $user = FALSE;
@@ -46,6 +76,15 @@ class UserAccount extends ControllerBase {
     ] : [], 200);
   }
 
+  /**
+   * Searches for a customer's email.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current Request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JsonResponse object with obfuscated emails.
+   */
   public function customerSearchApi(Request $request) {
     $params = $this->getParams($request);
     $search = $this->client->patron->searchBasic($params);
@@ -55,8 +94,17 @@ class UserAccount extends ControllerBase {
     return JsonResponse::create($search, 200);
   }
 
+  /**
+   * Gets a Request object's parameters.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current Request object.
+   *
+   * @return array
+   *   The Request object query and post parameters.
+   */
   protected function getParams(Request $request) {
-    // Accept query sring params, and then also accept a post request.
+    // Accept query string params, and then also accept a post request.
     $params = $request->query->get('filter');
 
     if ($post = Json::decode($request->getContent())) {

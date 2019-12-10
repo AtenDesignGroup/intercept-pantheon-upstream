@@ -13,26 +13,22 @@ use Drupal\views\Plugin\views\filter\NumericFilter;
  * @ViewsFilter("numeric_reference")
  */
 class NumericReferenceFilter extends NumericFilter {
+
+  /**
+   * {@inheritdoc}
+   */
   protected function valueForm(&$form, FormStateInterface $form_state) {
     parent::valueForm($form, $form_state);
     $which = 'all';
-    if (!empty($form['operator'])) {
-      $source = ':input[name="options[operator]"]';
-    }
 
-    if ($exposed = $form_state->get('exposed')) {
-      $identifier = $this->options['expose']['identifier'];
+    if ($form_state->get('exposed')) {
 
       if (empty($this->options['expose']['use_operator']) || empty($this->options['expose']['operator_id'])) {
-        // exposed and locked.
+        // Exposed and locked.
         $which = in_array($this->operator, $this->operatorValues(2)) ? 'minmax' : 'value';
-      }
-      else {
-        $source = ':input[name="' . $this->options['expose']['operator_id'] . '"]';
       }
     }
 
-    $user_input = $form_state->getUserInput();
     if ($which == 'value') {
       $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', 'event');
       $settings = $fields['field_location']->getSettings();
@@ -44,7 +40,7 @@ class NumericReferenceFilter extends NumericFilter {
         ->sort('title')
         ->condition('status', 1)
         ->execute();
-      $options = array_map(function($entity) {
+      $options = array_map(function ($entity) {
         return $entity->getTitle();
       }, $storage->loadMultiple($ids));
 
@@ -57,7 +53,16 @@ class NumericReferenceFilter extends NumericFilter {
     }
 
   }
-  public static function afterBuild($element, FormStateInterface $form_state) {
+
+  /**
+   * Adds an afterBuild handler.
+   *
+   * @param array $element
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public static function afterBuild(array $element, FormStateInterface $form_state) {
     unset($element['#options']['All']);
     return $element;
   }

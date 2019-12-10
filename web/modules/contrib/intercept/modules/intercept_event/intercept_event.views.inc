@@ -1,6 +1,13 @@
 <?php
 
 /**
+ * @file
+ * Contains intercept_event.views.inc.
+ *
+ * Views callback for Events.
+ */
+
+/**
  * Implements hook_views_data_alter().
  */
 function intercept_event_views_data_alter(&$data) {
@@ -22,7 +29,8 @@ function intercept_event_views_data_alter(&$data) {
     ],
   ];
 
-  // TODO: Create this definition for all entity types and create a votingapi ticket.
+  // TODO: Create this definition for all entity types and create a
+  // votingapi ticket.
   $entity_type_manager = \Drupal::service('entity_type.manager');
   $entity_type = $entity_type_manager
     ->getDefinition('node');

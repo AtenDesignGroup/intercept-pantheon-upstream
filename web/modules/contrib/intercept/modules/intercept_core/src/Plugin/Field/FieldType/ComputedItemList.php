@@ -2,9 +2,7 @@
 
 namespace Drupal\intercept_core\Plugin\Field\FieldType;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Field\FieldItemList;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 
 /**

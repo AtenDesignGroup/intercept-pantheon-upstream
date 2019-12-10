@@ -1,0 +1,20 @@
+{% set closed = content.field_closed_for_renovations|field_value[0]['#markup'] %}
+{% set modifiers = closed ? ['disabled', 'location'] : ['blue', 'location'] %}
+{% set body = closed ? 'Closed for Renovations'|t : content.field_location_hours|field_value %}
+{% set link = closed ? url : content.field_map_link[0]['#url'] %}
+{% set link_text = closed ? 'See updates'|t : content.field_address %}
+{% set phone = content.field_contact_number %}
+
+{% include '@intercept-base-components/card/card.twig' with { 
+  image: content.image_primary|field_value,
+  title: label|field_value,
+  body: body,
+  modifiers: modifiers,
+  title_link: {
+      url: url,
+      class: "link--white"
+  },
+  phone: phone,
+  link: link,
+  link_text: link_text
+} only %}

@@ -19,8 +19,6 @@ class EventAttendanceForm extends ContentEntityForm {
     /* @var $entity \Drupal\intercept_event\Entity\EventAttendance */
     $form = parent::buildForm($form, $form_state);
 
-    $entity = $this->entity;
-
     return $form;
   }
 

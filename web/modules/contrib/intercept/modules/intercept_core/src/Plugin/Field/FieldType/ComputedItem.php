@@ -2,13 +2,8 @@
 
 namespace Drupal\intercept_core\Plugin\Field\FieldType;
 
-use Drupal\Component\Utility\Random;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
-use Drupal\Core\TypedData\DataDefinition;
-use Drupal\Core\TypedData\MapDataDefinition;
-use Drupal\Core\TypedData\TraversableTypedDataInterface;
 
 /**
  * Defines the 'intercept_computed' entity field type.

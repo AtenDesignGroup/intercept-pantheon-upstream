@@ -434,9 +434,7 @@ display:
     display_title: Embed
     position: 1
     display_options:
-      display_extenders:
-        views_ajax_history:
-          history: 0
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:

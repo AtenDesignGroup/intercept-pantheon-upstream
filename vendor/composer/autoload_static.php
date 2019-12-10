@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd9abae146184080062e878ee55edbab0
+class ComposerStaticInite124f108d7c1f61534e530c3a6c13399
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -560,13 +560,6 @@ class ComposerStaticInitd9abae146184080062e878ee55edbab0
                 0 => __DIR__ . '/..' . '/stack/builder/src',
             ),
         ),
-        'P' => 
-        array (
-            'PEAR' => 
-            array (
-                0 => __DIR__ . '/..' . '/pear/pear_exception',
-            ),
-        ),
         'E' => 
         array (
             'EasyRdf_' => 
@@ -635,6 +628,7 @@ class ComposerStaticInitd9abae146184080062e878ee55edbab0
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',
+        'PEAR_Exception' => __DIR__ . '/..' . '/pear/pear_exception/PEAR/Exception.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/AssertionFailedError.php',
@@ -1182,11 +1176,11 @@ class ComposerStaticInitd9abae146184080062e878ee55edbab0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd9abae146184080062e878ee55edbab0::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd9abae146184080062e878ee55edbab0::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitd9abae146184080062e878ee55edbab0::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitd9abae146184080062e878ee55edbab0::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitd9abae146184080062e878ee55edbab0::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$classMap;
 
         }, null, ClassLoader::class);
     }

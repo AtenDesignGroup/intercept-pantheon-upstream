@@ -688,11 +688,8 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
             placeholder: ''
           is_grouped: false
@@ -736,11 +733,8 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
             placeholder: ''
           is_grouped: false
@@ -784,11 +778,8 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
             placeholder: ''
           is_grouped: false
@@ -832,11 +823,8 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
             placeholder: ''
           is_grouped: false
@@ -882,11 +870,8 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
             placeholder: ''
             min_placeholder: ''
@@ -931,11 +916,8 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
             reduce: false
           is_grouped: false
@@ -1023,9 +1005,7 @@ display:
     display_title: Embed
     position: 2
     display_options:
-      display_extenders:
-        views_ajax_history:
-          history: 0
+      display_extenders: {  }
       fields:
         room_reservation_bulk_form:
           id: room_reservation_bulk_form
@@ -1666,7 +1646,6 @@ display:
               allow_secondary: false
               secondary_label: 'Advanced options'
               autosubmit: false
-              autosubmit_debounce_delay: 500
               autosubmit_exclude_textfield: false
               autosubmit_hide: false
             title:

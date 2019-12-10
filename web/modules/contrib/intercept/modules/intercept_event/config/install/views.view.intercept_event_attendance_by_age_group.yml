@@ -69,7 +69,6 @@ display:
               secondary_label: 'Advanced options'
               autosubmit: false
               autosubmit_exclude_textfield: false
-              autosubmit_textfield_delay: 500
               autosubmit_hide: false
             field_date_time_value:
               bef_format: bef_datepicker
@@ -301,14 +300,14 @@ display:
           settings: {  }
           group_column: ''
           group_columns: {  }
-          group_rows: 1
-          delta_limit: '1'
-          delta_offset: '0'
-          delta_reversed: 0
-          delta_first_last: 0
+          group_rows: true
+          delta_limit: 1
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
           multi_type: ul
           separator: '|'
-          field_api_classes: 0
+          field_api_classes: false
           plugin_id: tally_field
         field_attendees_1:
           id: field_attendees_1
@@ -363,14 +362,14 @@ display:
           settings: {  }
           group_column: ''
           group_columns: {  }
-          group_rows: 1
-          delta_limit: '1'
-          delta_offset: '1'
-          delta_reversed: 0
-          delta_first_last: 0
+          group_rows: true
+          delta_limit: 1
+          delta_offset: 1
+          delta_reversed: false
+          delta_first_last: false
           multi_type: ul
           separator: ', '
-          field_api_classes: 0
+          field_api_classes: false
           plugin_id: tally_field
         field_attendees_2:
           id: field_attendees_2
@@ -425,14 +424,14 @@ display:
           settings: {  }
           group_column: ''
           group_columns: {  }
-          group_rows: 1
-          delta_limit: '1'
-          delta_offset: '2'
-          delta_reversed: 0
-          delta_first_last: 0
+          group_rows: true
+          delta_limit: 1
+          delta_offset: 2
+          delta_reversed: false
+          delta_first_last: false
           multi_type: ul
           separator: ', '
-          field_api_classes: 0
+          field_api_classes: false
           plugin_id: tally_field
         field_attendees_3:
           id: field_attendees_3
@@ -487,14 +486,14 @@ display:
           settings: {  }
           group_column: ''
           group_columns: {  }
-          group_rows: 1
-          delta_limit: '1'
-          delta_offset: '3'
-          delta_reversed: 0
-          delta_first_last: 0
+          group_rows: true
+          delta_limit: 1
+          delta_offset: 3
+          delta_reversed: false
+          delta_first_last: false
           multi_type: ul
           separator: ', '
-          field_api_classes: 0
+          field_api_classes: false
           plugin_id: tally_field
         field_date_time:
           id: field_date_time
@@ -1160,16 +1159,13 @@ display:
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
-        - extensions
   page:
     display_plugin: page
     id: page
     display_title: Page
     position: 1
     display_options:
-      display_extenders:
-        views_ajax_history:
-          history: true
+      display_extenders: { }
       path: account/manage/intercept_event_attendance_by_age_group
       style:
         type: table
@@ -1236,16 +1232,13 @@ display:
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
-        - extensions
   rest_export:
     display_plugin: rest_export
     id: rest_export
     display_title: 'REST export'
     position: 2
     display_options:
-      display_extenders:
-        views_ajax_history:
-          history: true
+      display_extenders: { }
       path: data/export/attendance-by-age-group.csv
       pager:
         type: none
@@ -1279,4 +1272,3 @@ display:
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
-        - extensions

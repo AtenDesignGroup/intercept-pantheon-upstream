@@ -933,9 +933,7 @@ display:
     display_title: Feed
     position: 1
     display_options:
-      display_extenders:
-        views_ajax_history:
-          history: true
+      display_extenders: {  }
       row:
         type: rss_fields
         options:

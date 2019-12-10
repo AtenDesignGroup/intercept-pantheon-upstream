@@ -13,7 +13,13 @@ use Drupal\user\EntityOwnerInterface;
  */
 interface EventAttendanceInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-  // Add get/set methods for your configuration properties here.
+  /**
+   * Gets the number of Event attendees.
+   *
+   * @return int
+   *   The total of event_attendees.
+   */
+  public function total();
 
   /**
    * Gets the Event Attendance name.
@@ -67,7 +73,7 @@ interface EventAttendanceInterface extends ContentEntityInterface, EntityChanged
    * Sets the published status of a Event Attendance.
    *
    * @param bool $published
-   *   TRUE to set this Event Attendance to published, FALSE to set it to unpublished.
+   *   TRUE to set this entity to published, FALSE to set it to unpublished.
    *
    * @return \Drupal\intercept_event\Entity\EventAttendanceInterface
    *   The called Event Attendance entity.

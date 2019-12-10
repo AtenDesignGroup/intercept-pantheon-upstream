@@ -3,6 +3,8 @@
 namespace Drupal\intercept_core;
 
 /**
+ * Trait for modifiable list builder.
+ *
  * @TODO: combine this with EventListBuilderTrait.
  */
 trait SettableListBuilderTrait {
@@ -37,7 +39,7 @@ trait SettableListBuilderTrait {
   /**
    * Override the limit of 50 set in the parent class.
    *
-   * @param $limit
+   * @param int $limit
    *   Integer to pass to the query.
    *
    * @return $this
@@ -61,16 +63,10 @@ trait SettableListBuilderTrait {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function buildHeader() {
-    return parent::buildHeader();
-  }
-
-  /**
    * Process header array and hide keys.
    *
    * @return array
+   *   The modified header array.
    */
   protected function hideHeaderColumns($header) {
     foreach ($this->hideColumns as $key) {
@@ -99,4 +95,5 @@ trait SettableListBuilderTrait {
     }
     return parent::getEntityIds();
   }
+
 }

@@ -2,12 +2,6 @@
 
 namespace Drupal\intercept_event\Plugin\views\field;
 
-use Drupal\views\Plugin\views\display\DisplayPluginBase;
-use Drupal\views\Plugin\views\field\NumericField;
-use Drupal\views\ResultRow;
-use Drupal\views\ViewExecutable;
-use Drupal\views\Views;
-
 /**
  * Event attendance count.
  *
@@ -29,4 +23,5 @@ class EventAttendanceCount extends EventRelatedEntityCountBase {
     ];
     $this->addExpressionField($data);
   }
-} 
+
+}

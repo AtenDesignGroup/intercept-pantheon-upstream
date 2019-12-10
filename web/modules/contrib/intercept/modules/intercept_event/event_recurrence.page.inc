@@ -20,9 +20,6 @@ use Drupal\Core\Render\Element;
  *   - attributes: HTML attributes for the containing element.
  */
 function template_preprocess_event_recurrence(array &$variables) {
-  // Fetch EventRecurrence Entity Object.
-  $event_recurrence = $variables['elements']['#event_recurrence'];
-
   // Helpful $content variable for templates.
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];

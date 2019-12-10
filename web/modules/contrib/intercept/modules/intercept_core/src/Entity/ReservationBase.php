@@ -14,6 +14,9 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\user\UserInterface;
 
+/**
+ * Base class for Equipment and Room Reservations.
+ */
 abstract class ReservationBase extends RevisionableContentEntityBase {
 
   use EntityChangedTrait;
@@ -31,13 +34,6 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
   }
 
   /**
-   * Set the type of reservation, either room or equipment.
-   *
-   * @return string
-   */
-  public static function reservationType() {}
-
-  /**
    * {@inheritdoc}
    */
   public function label() {
@@ -45,6 +41,16 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
     return $this->getDateRange($timezone);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public static function reservationType() {
+    return '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getDateRange($timezone = 'UTC') {
     if (!$this->getStartDate() || !$this->getEndDate()) {
       return '';
@@ -59,24 +65,33 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
     return !empty($values) ? $this->t('@date from @time_start to @time_end', $values) : '';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getStartDate() {
     return $this->get('field_dates')->start_date;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getEndDate() {
     return $this->get('field_dates')->end_date;
   }
 
-  private function hasBothDates() {
-    return $this->getStartDate() && $this->getEndDate();
-  }
-
+  /**
+   * {@inheritdoc}
+   */
   public function getDuration() {
     if ($this->hasBothDates()) {
       return Dates::duration($this->getStartDate(), $this->getEndDate());
     }
     return '';
   }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getInterval() {
     if ($this->getDuration() > 0) {
       $int = Dates::interval($this->getStartDate(), $this->getEndDate());
@@ -85,34 +100,40 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
     return '';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getLocation() {
     $type = $this->reservationType();
     return $this->get("{$type}_location")->entity;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOriginalStatus() {
     return isset($this->original) ? $this->original->field_status->getString() : FALSE;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getNewStatus() {
     return $this->field_status->getString();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function statusHasChanged() {
     if ($this->isNew()) {
       return TRUE;
     }
-    $original_status = $this->original->field_status->getString();
-    $new_status = $this->field_status->getString();
     return $this->getOriginalStatus() != $this->getNewStatus();
   }
 
   /**
-   * A string for the location node associated with this reservation.
-   *
-   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
-   *
-   * TODO: Change this to locationString();
+   * {@inheritdoc}
    */
   public function location() {
     $type = $this->reservationType();
@@ -122,7 +143,7 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
         '@reservation_type' => $this->get("field_{$type}")->entity ? $this->get("field_{$type}")->entity->label() : '',
       ]);
     }
-    else if ($type == 'equipment') {
+    elseif ($type == 'equipment') {
       return $this->t('At @location @reservation_type', [
         '@location' => $this->get("field_location")->entity ? $this->get("field_location")->entity->label() : '',
         '@reservation_type' => $this->get("field_{$type}")->entity ? $this->get("field_{$type}")->entity->label() : '',
@@ -151,9 +172,10 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
    */
   public function preSave(EntityStorageInterface $storage) {
     if (!empty($this->original) && !isset($this->original->values['field_status'])) {
-      $this->setNewRevision(TRUE); // Equipment reservations dont' have status.
+      // Equipment reservations don't have status.
+      $this->setNewRevision(TRUE);
     }
-    else if (!empty($this->original) && !$this->original->get('field_status')->equals($this->get('field_status'))){
+    elseif (!empty($this->original) && !$this->original->get('field_status')->equals($this->get('field_status'))) {
       $this->setNewRevision(TRUE);
     }
     parent::preSave($storage);
@@ -175,14 +197,14 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
     parent::preSaveRevision($storage, $record);
 
     $is_new_revision = $this->isNewRevision();
-      // @see \Drupal\media\Entity\Media::preSaveRevision()
+    // @see \Drupal\media\Entity\Media::preSaveRevision()
     if (!$is_new_revision && isset($this->original) && empty($record->revision_log_message)) {
       $record->revision_log_message = $this->original->revision_log_message->value;
     }
 
     if ($is_new_revision) {
       $record->revision_created = \Drupal::time()->getRequestTime();
-      $record->revision_user =  \Drupal::currentUser()->id();
+      $record->revision_user = \Drupal::currentUser()->id();
     }
   }
 
@@ -276,7 +298,7 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Authored by'))
       ->setDescription(t('The user ID of author of the @label entity.', [
-        '@label' => $entity_type->getLabel(), 
+        '@label' => $entity_type->getLabel(),
       ]))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
@@ -304,20 +326,24 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
 
     $fields['image'] = BaseFieldDefinition::create('image')
       ->setLabel(t('Image'))
-      ->setDescription(t('The related @label entity\'s image.', [
+      ->setDescription(t("The related @label entity's image.", [
         '@label' => $reservation_type,
       ]))
       ->setComputed(TRUE)
       ->setClass(FileFieldItemList::class)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE)
-      ->setSetting('target_fields', ["field_$reservation_type", 'image_primary', 'field_media_image'])
+      ->setSetting('target_fields', [
+        "field_$reservation_type",
+        'image_primary',
+        'field_media_image',
+      ])
       ->setReadOnly(TRUE);
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Publishing status'))
       ->setDescription(t('A boolean indicating whether the @label is published.', [
-        '@label' > $entity_type->getLabel(), 
+        '@label' > $entity_type->getLabel(),
       ]))
       ->setRevisionable(TRUE)
       ->setDefaultValue(TRUE);
@@ -339,4 +365,15 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
 
     return $fields;
   }
+
+  /**
+   * Checks that a reservation has both a start and end date.
+   *
+   * @return bool
+   *   Whether the reservation has both a start and end date.
+   */
+  private function hasBothDates() {
+    return $this->getStartDate() && $this->getEndDate();
+  }
+
 }

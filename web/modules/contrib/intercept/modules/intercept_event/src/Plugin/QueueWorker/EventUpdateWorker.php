@@ -5,10 +5,11 @@ namespace Drupal\intercept_event\Plugin\QueueWorker;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * The Intercept Event Update Queue Worker.
+ *
  * @QueueWorker(
  *   id = "intercept_event_update_worker",
  *   title = @Translation("Intercept Event Update Queue Worker"),

@@ -1,0 +1,48 @@
+{% import '@intercept-base-components/more-link/more-link.twig' as more_link %}
+{% 
+  set classes = [
+    dom_id ? 'js-view-dom-id-' ~ dom_id,
+    'l--offset',
+  ]
+%}
+<div{{ attributes.addClass(classes) }}>
+  {% include '@intercept-base-components/page-title/page-title.twig' with {
+    text: 'Locations'|t
+  } only %}
+
+  {% if header %}
+    <header>
+      {{ header }}
+    </header>
+  {% endif %}
+
+  {{ exposed }}
+  {{ attachment_before }}
+
+  {% if rows %}
+    <div class="view__content">
+      {{ rows }}
+    </div>
+  {% elseif empty %}
+    <div class="view__empty">
+      {{ empty }}
+    </div>
+  {% endif %}
+  {{ pager }}
+
+  {{ attachment_after }}
+  {% if more %}
+  {% include more_link with {
+    text: more['#title'],
+    url: more['#url']|render
+  } %}
+  {% endif %}
+
+  {% if footer %}
+    <footer>
+      {{ footer }}
+    </footer>
+  {% endif %}
+
+  {{ feed_icons }}
+</div>

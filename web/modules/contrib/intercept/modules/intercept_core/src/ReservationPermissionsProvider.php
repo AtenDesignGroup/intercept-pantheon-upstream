@@ -7,6 +7,9 @@ use Drupal\entity\EntityPermissionProvider;
 use Drupal\Component\Utility\Unicode;
 use Drupal\user\EntityOwnerInterface;
 
+/**
+ * Provides permissions information for Reservations.
+ */
 class ReservationPermissionsProvider extends EntityPermissionProvider {
 
   /**
@@ -46,7 +49,6 @@ class ReservationPermissionsProvider extends EntityPermissionProvider {
     $permissions = parent::buildEntityTypePermissions(($entity_type));
     $entity_type_id = $entity_type->id();
     $has_owner = $entity_type->entityClassImplements(EntityOwnerInterface::class);
-    $singular_label = $entity_type->getSingularLabel();
     $plural_label = $entity_type->getPluralLabel();
 
     if ($has_owner) {
@@ -58,4 +60,5 @@ class ReservationPermissionsProvider extends EntityPermissionProvider {
     }
     return $permissions;
   }
+
 }

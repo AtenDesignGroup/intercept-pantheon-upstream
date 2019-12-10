@@ -5,7 +5,6 @@ namespace Drupal\intercept_event\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -15,21 +14,27 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EventAttendanceController extends ControllerBase {
 
   /**
-   * @var EntityTypeManagerInterface
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * @var EntityFormBuilderInterface
+   * The entity form builder.
+   *
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
    */
   protected $entityFormBuilder;
+
   /**
    * EventsController constructor.
    *
-   * @param EntityTypeManagerInterface $entity_type_manager
-   * @param EntityFormBuilderInterface $entity_form_builder
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
+   *   The entity form builder.
    */
-
   public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFormBuilder = $entity_form_builder;
@@ -46,6 +51,17 @@ class EventAttendanceController extends ControllerBase {
     );
   }
 
+  /**
+   * Gets the EventAttendanceScanForm.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node to be created or edited.
+   * @param string $type
+   *   The operation identifying the form variation to be returned.
+   *
+   * @return array
+   *   The processed form for the given entity and operation.
+   */
   private function buildScanForm(NodeInterface $node, $type) {
     $values = [
       'field_event' => $node,
@@ -58,18 +74,54 @@ class EventAttendanceController extends ControllerBase {
     return $this->entityFormBuilder->getForm($event_attendance, $type);
   }
 
+  /**
+   * Gets the EventAttendanceScanLookupForm.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node to be created or edited.
+   *
+   * @return array
+   *   The processed form for the given entity and operation.
+   */
   public function scanLookupForm(NodeInterface $node) {
     return $this->buildScanForm($node, 'scan_lookup');
   }
 
+  /**
+   * Gets the EventAttendanceScanGuestForm.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node to be created or edited.
+   *
+   * @return array
+   *   The processed form for the given entity and operation.
+   */
   public function scanGuestForm(NodeInterface $node) {
     return $this->buildScanForm($node, 'scan_guest');
   }
 
+  /**
+   * Gets the EventAttendanceScanForm.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node to be created or edited.
+   *
+   * @return array
+   *   The processed form for the given entity and operation.
+   */
   public function scanForm(NodeInterface $node) {
     return $this->buildScanForm($node, 'scan');
   }
 
+  /**
+   * Gets the EventAttendanceScanForm.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node to be created or edited.
+   *
+   * @return array
+   *   The processed form for the given entity and operation.
+   */
   public function overview(NodeInterface $node) {
     $values = [
       'field_event' => $node,

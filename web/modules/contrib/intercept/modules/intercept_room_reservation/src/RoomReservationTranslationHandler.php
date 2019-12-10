@@ -9,6 +9,4 @@ use Drupal\content_translation\ContentTranslationHandler;
  */
 class RoomReservationTranslationHandler extends ContentTranslationHandler {
 
-  // Override here the needed methods from ContentTranslationHandler.
-
 }

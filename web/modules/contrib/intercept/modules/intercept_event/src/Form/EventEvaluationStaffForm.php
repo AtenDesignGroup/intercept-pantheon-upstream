@@ -2,13 +2,12 @@
 
 namespace Drupal\intercept_event\Form;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\UserInterface;
-use Drupal\user\UserStorage;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\intercept_event\EventEvaluationManager;
 
+/**
+ * The Event Evaluation Staff form.
+ */
 class EventEvaluationStaffForm extends EventEvaluationFormBase {
 
   /**
@@ -22,7 +21,7 @@ class EventEvaluationStaffForm extends EventEvaluationFormBase {
    * {@inheritdoc}
    */
   protected function getVoteType() {
-    return \Drupal\intercept_event\EventEvaluationManager::VOTE_TYPE_STAFF_ID;
+    return EventEvaluationManager::VOTE_TYPE_STAFF_ID;
   }
 
   /**
@@ -36,8 +35,6 @@ class EventEvaluationStaffForm extends EventEvaluationFormBase {
     $form['evaluation'] = [
       '#description_display' => 'before',
     ];
-
-    $wrapper_id = \Drupal\Component\Utility\Html::getUniqueId('evaluation-criteria-wrapper');
 
     $is_owner = $this->entity->getOwnerId() == $user->id();
     $feedback = $evaluation->getFeedback();
@@ -54,13 +51,13 @@ class EventEvaluationStaffForm extends EventEvaluationFormBase {
         '#access' => $user->hasPermission('create any event feedback'),
       ];
       $form['evaluation'] += [
-        '#title' => $this->t('How\'d the Event Go?'),
+        '#title' => $this->t("How'd the Event Go?"),
         '#type' => 'textarea',
         '#attributes' => [
           'placeholder' => $this->t('Add thoughts about your event here to use in the future.'),
         ],
         '#default_value' => $feedback,
-        '#description' => $this->t('Ask yourself questions like: Did the event meet your expectations? How does it differ from other events you\'ve held? Did you receive any feedback from attendees?'),
+        '#description' => $this->t("Ask yourself questions like: Did the event meet your expectations? How does it differ from other events you've held? Did you receive any feedback from attendees?"),
       ];
       $form['actions'] = $this->buildActions();
     }

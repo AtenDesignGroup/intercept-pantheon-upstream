@@ -1,0 +1,25 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/details') }}
+
+{% if details %}
+<div {{ component.attributes('content-details', modifiers, attr) }}>
+{% for detail in details %}
+  <div class="detail">
+    <header class="detail__header">
+      <h4 class="detail__heading">{{ detail.heading|default('Contact Us') }}</h4>
+    </header>
+    {% if detail.content %}
+    <div class="detail__content">
+      {% for key, value in detail.content %}
+      {% if value['#items'] is not empty %}
+      <div class="detail__content__item detail__content__{{ key }}">
+        {{ value }}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+{% endfor %}
+</div>
+{% endif %}

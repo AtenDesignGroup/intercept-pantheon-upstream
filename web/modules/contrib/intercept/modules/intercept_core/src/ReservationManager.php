@@ -6,16 +6,17 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Utility\Token;
-use Drupal\node\NodeInterface;
 use Drupal\intercept_core\Utility\Dates;
-use Drupal\intercept_room_reservation\Entity\RoomReservation;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
+use Drupal\office_hours\OfficeHoursDateHelper;
+use Drupal\node\NodeInterface;
 
 /**
  * Class ReservationManager.
@@ -31,46 +32,87 @@ class ReservationManager implements ReservationManagerInterface {
   const FORMAT = 'Y-m-d\TH:i:s';
 
   /**
+   * The entity type manager.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
+   * The config factory.
+   *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
   /**
+   * The mail manager.
+   *
+   * @var \Drupal\Core\Mail\MailManagerInterface
+   */
+  protected $mailManager;
+
+  /**
+   * The Intercept dates utility.
+   *
    * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
 
   /**
+   * The token utility service.
+   *
    * @var \Drupal\Core\Utility\Token
    */
   protected $token;
 
   /**
+   * The current session account.
+   *
    * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $currentUser;
 
   /**
-   * Constructs a new ReservationManager object.
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory, MailManagerInterface $mail_manager, Dates $date_utility, Token $token, AccountProxyInterface $current_user) {
+  protected $moduleHandler;
+
+  /**
+   * Constructs a new ReservationManager object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Mail\MailManagerInterface $mail_manager
+   *   The mail manager.
+   * @param \Drupal\intercept_core\Utility\Dates $date_utility
+   *   The Intercept dates utility.
+   * @param \Drupal\Core\Utility\Token $token
+   *   The token utility service.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current session account.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory, MailManagerInterface $mail_manager, Dates $date_utility, Token $token, AccountProxyInterface $current_user, ModuleHandlerInterface $module_handler) {
     $this->entityTypeManager = $entity_type_manager;
     $this->configFactory = $config_factory;
     $this->mailManager = $mail_manager;
     $this->dateUtility = $date_utility;
     $this->token = $token;
     $this->currentUser = $current_user;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
    * Expose the date utility for functions that use this service.
    *
    * @return \Drupal\intercept_core\Utility\Dates
+   *   The Intercept Dates utility.
    */
   public function dateUtility() {
     return $this->dateUtility;
@@ -80,8 +122,10 @@ class ReservationManager implements ReservationManagerInterface {
    * Get a reservation entity for an event node.
    *
    * @param \Drupal\node\NodeInterface $event
+   *   The event node entity.
    *
    * @return bool|RoomReservationInterface
+   *   The Room Reservation entity, or FALSE.
    */
   public function getEventReservation(NodeInterface $event) {
     if ($event->isNew()) {
@@ -139,8 +183,13 @@ class ReservationManager implements ReservationManagerInterface {
 
   /**
    * Adds reservation functionality to the node edit form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
-  public function nodeFormAlter(&$form, FormStateInterface $form_state) {
+  public function nodeFormAlter(array &$form, FormStateInterface $form_state) {
     // Since all of this functionality centers around the reservation element
     // we can avoid this alter if it's not displayed.
     $node = $form_state->getFormObject()->getEntity();
@@ -199,7 +248,7 @@ class ReservationManager implements ReservationManagerInterface {
     ];
 
     $form['reservation']['dates']['start'] = [
-      '#title' => t('Reservation start time'),
+      '#title' => $this->t('Reservation start time'),
       '#type' => 'datetime',
       '#default_value' => $start_date_object,
       '#ajax' => [
@@ -211,7 +260,7 @@ class ReservationManager implements ReservationManagerInterface {
     ];
 
     $form['reservation']['dates']['end'] = [
-      '#title' => t('Reservation end time'),
+      '#title' => $this->t('Reservation end time'),
       '#type' => 'datetime',
       '#default_value' => $end_date_object,
       '#ajax' => [
@@ -255,16 +304,19 @@ class ReservationManager implements ReservationManagerInterface {
   /**
    * Custom form validate handler to process a reservation for an event node.
    *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
    * @see self::nodeFormAlter()
    *
    * @internal
    */
-  public function nodeFormValidate(&$form, FormStateInterface $form_state) {
+  public function nodeFormValidate(array &$form, FormStateInterface $form_state) {
     // Validate the requested room reservation.
-    $event = $form_state->getFormObject()->getEntity();
     $room = $form_state->getValue('field_room');
-    $status_element = &$form['reservation']['dates']['status'];
-    $reservation = $form_state->getValue('reservation');
+
     // They clicked create reservation before the event date was set.
     $dates = $form_state->getValue('field_date_time');
     if (empty($dates) || empty($dates[0]['value']) || empty($dates[0]['end_value'])) {
@@ -275,26 +327,19 @@ class ReservationManager implements ReservationManagerInterface {
     }
     $start_date = $dates[0]['value'];
     $end_date = $dates[0]['end_value'];
-    $params = [
-      'debug' => TRUE,
-      'rooms' => [$room[0]['target_id']],
-      'start' => $start_date->format(self::FORMAT),
-      'end' => $end_date->format(self::FORMAT),
-    ];
-    if (!$event->isNew()) {
-      $params['event'] = $event->id();
-    }
-    // @TODO: Re-enable this when issue in CRL-149 is resolved.
-    // else if ($status['has_open_hours_conflict']) {
-    //  $message = t('Reservation times conflict with location open hours.');
-    //  $form_state->setError($form['reservation'], $message);
-    //}
+
     if ($start_date > $end_date) {
-      $message = t('The selected reservation times are invalid.');
+      $message = $this->t('The selected reservation times are invalid.');
       $form_state->setError($form['reservation'], $message);
     }
   }
 
+  /**
+   * Provides the form ajax callback information.
+   *
+   * @return array
+   *   The form ajax callback array.
+   */
   private function updateStatusAjax() {
     return [
       'callback' => [$this, 'ajaxCallback'],
@@ -304,8 +349,13 @@ class ReservationManager implements ReservationManagerInterface {
 
   /**
    * Update the inline element from $form_state changes.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
-  public function updateFormStatusField(&$form, FormStateInterface $form_state) {
+  public function updateFormStatusField(array &$form, FormStateInterface $form_state) {
     $event = $form_state->getFormObject()->getEntity();
     $room = $form_state->getValue('field_room');
     $status_element = &$form['reservation']['dates']['status'];
@@ -360,9 +410,14 @@ class ReservationManager implements ReservationManagerInterface {
   /**
    * Internal helper function to create a reservation for the node add form.
    *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
    * @internal
    */
-  public function createEventReservationSubmit(&$form, FormStateInterface $form_state) {
+  public function createEventReservationSubmit(array &$form, FormStateInterface $form_state) {
     $node_event = $form_state->getFormObject()->getEntity();
     $dates = $form_state->getValue(['reservation', 'dates']);
     return $this->createEventReservation($node_event, [
@@ -374,11 +429,16 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
-   * Internal helper function to update an existing reservation for the node edit form.
+   * Helper function to update an existing reservation for the node edit form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    *
    * @internal
    */
-  public function updateEventReservationSubmit(&$form, FormStateInterface $form_state) {
+  public function updateEventReservationSubmit(array &$form, FormStateInterface $form_state) {
     $node_event = $form_state->getFormObject()->getEntity();
     $reservation = $form_state->get('reservation');
     $dates = $form_state->getValue(['reservation', 'dates']);
@@ -392,11 +452,16 @@ class ReservationManager implements ReservationManagerInterface {
   /**
    * Custom form submit handler to process a reservation for an event node.
    *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
    * @see self::nodeFormAlter()
    *
    * @internal
    */
-  public static function nodeFormAlterSubmit(&$form, FormStateInterface $form_state) {
+  public static function nodeFormAlterSubmit(array &$form, FormStateInterface $form_state) {
     if ($form_state->getValue(['reservation', 'create'])) {
       $form_state->get('reservation_manager')->createEventReservationSubmit($form, $form_state);
     }
@@ -408,9 +473,14 @@ class ReservationManager implements ReservationManagerInterface {
   /**
    * Custom ajax form submit handler to update reservation status.
    *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
    * @internal
    */
-  public function ajaxCallback(&$form, $form_state) {
+  public function ajaxCallback(array &$form, FormStateInterface $form_state) {
     return $form['reservation']['dates']['status'];
   }
 
@@ -421,15 +491,24 @@ class ReservationManager implements ReservationManagerInterface {
    */
   public static function emails() {
     return [
-      'reservation_requested' => t('Reservation requested'),
-      'reservation_canceled' => t('Reservation canceled'),
-      'reservation_approved_staff' => t('Reservation approved (by staff)'),
-      'reservation_approved_auto' => t('Reservation approved (auto)'),
-      'reservation_canceled_staff' => t('Reservation canceled (by staff)'),
-      'reservation_denied_staff' => t('Reservation denied (by staff)'),
+      'reservation_requested' => $this->t('Reservation requested'),
+      'reservation_canceled' => $this->t('Reservation canceled'),
+      'reservation_approved_staff' => $this->t('Reservation approved (by staff)'),
+      'reservation_approved_auto' => $this->t('Reservation approved (auto)'),
+      'reservation_canceled_staff' => $this->t('Reservation canceled (by staff)'),
+      'reservation_denied_staff' => $this->t('Reservation denied (by staff)'),
     ];
   }
 
+  /**
+   * Determines whether a user has exceeded the global room reservation limit.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The user to check.
+   *
+   * @return bool
+   *   Whether the user has exceeded the global room reservation limit.
+   */
   public function userExceededReservationLimit(AccountInterface $user) {
     if ($user->hasPermission('bypass room reservation limit')) {
       return FALSE;
@@ -438,6 +517,15 @@ class ReservationManager implements ReservationManagerInterface {
     return $this->userReservationCount($user) >= $config->get('reservation_limit');
   }
 
+  /**
+   * Gets the number of room reservations made by a user.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The user to check.
+   *
+   * @return int
+   *   The number of room reservations made by a user.
+   */
   public function userReservationCount(AccountInterface $user) {
     $reservations = $this->reservations('room', function ($query) use ($user) {
       $query->condition('field_user', $user->id(), '=');
@@ -499,7 +587,8 @@ class ReservationManager implements ReservationManagerInterface {
         ->condition('field_dates.value', $range, 'BETWEEN')
         // OR Date end value is in between start / end params.
         ->condition('field_dates.end_value', $range, 'BETWEEN')
-        // OR Date start and date end values span larger than the start / end params.
+        // OR Date start and date end values span larger
+        // than the start / end params.
         ->condition($query->andConditionGroup()
           ->condition('field_dates.value', $range[0], '<=')
           ->condition('field_dates.end_value', $range[1], '>=')
@@ -517,12 +606,12 @@ class ReservationManager implements ReservationManagerInterface {
 
     $param_info = [];
     foreach (['start', 'end'] as $param) {
-      $date = $this->dateUtility->getDate($params[$param]);
+      $date = $this->dateUtility->getDrupalDate($params[$param]);
       $param_info[$param]['storage_timezone'] = $date->format(self::FORMAT);
       $param_info[$param]['default_timezone'] = $this->dateUtility->convertTimezone($date, 'default')->format(self::FORMAT);
     }
 
-    foreach ($nodes as $nid => $node) {
+    foreach ($nodes as $node) {
       $uuid = $node->uuid();
       if ($debug) {
         $return[$uuid]['debug'] = [];
@@ -566,7 +655,16 @@ class ReservationManager implements ReservationManagerInterface {
     return $return;
   }
 
-  public function getDates($reservations) {
+  /**
+   * Gets an array of start and end dates, keyed by reservation UUID.
+   *
+   * @param array $reservations
+   *   An array of Reservation entities.
+   *
+   * @return array
+   *   An array of start and end dates, keyed by reservation UUID.
+   */
+  public function getDates(array $reservations) {
     $return = [];
     foreach ($reservations as $reservation) {
       $return[$reservation->uuid()] = [
@@ -577,6 +675,15 @@ class ReservationManager implements ReservationManagerInterface {
     return $return;
   }
 
+  /**
+   * Converts an array of UUIDs to Node IDs.
+   *
+   * @param array $uuids
+   *   An array of UUIDs.
+   *
+   * @return array
+   *   An array of Node IDs.
+   */
   public function convertIds(array $uuids) {
     $nodes = $this->entityTypeManager->getStorage('node')->loadByProperties([
       'uuid' => $uuids,
@@ -584,6 +691,17 @@ class ReservationManager implements ReservationManagerInterface {
     return !empty($nodes) ? array_keys($nodes) : [];
   }
 
+  /**
+   * Gets all Reservations of a type keyed by room UUID.
+   *
+   * @param string $type
+   *   The type of Reservation entity.
+   * @param mixed $exec
+   *   A query function, or NULL.
+   *
+   * @return array
+   *   An array of Reservation entities keyed by room UUID.
+   */
   public function reservationsByNode($type, $exec = NULL) {
     $reservations = [];
     foreach ($this->reservations($type, $exec) as $reservation) {
@@ -592,6 +710,17 @@ class ReservationManager implements ReservationManagerInterface {
     return $reservations;
   }
 
+  /**
+   * Gets all Reservations of a type.
+   *
+   * @param string $type
+   *   The type of Reservation entity.
+   * @param mixed $exec
+   *   A query function, or NULL.
+   *
+   * @return array
+   *   An array of Reservation entities.
+   */
   public function reservations($type, $exec = NULL) {
     $storage = $this->entityTypeManager->getStorage($type . '_reservation');
     $query = $storage->getQuery();
@@ -603,12 +732,36 @@ class ReservationManager implements ReservationManagerInterface {
     return $reservations;
   }
 
+  /**
+   * Determines if a start and end date conflicts with existing reservations.
+   *
+   * @param array $reservations
+   *   An array of existing reservations.
+   * @param array $params
+   *   An array of reservation parameters.
+   *
+   * @return bool
+   *   Whether a start and end date conflicts with existing reservations.
+   */
   public function hasReservationConflict(array $reservations, array $params) {
     return empty($this->getOpeningsByDuration($reservations, $params));
   }
 
-  public function hasOpeningHoursConflict(array $reservations, array $params, $node) {
-    if (!$params = $this->getOpenHoursParams($reservations, $params, $node)) {
+  /**
+   * Determines if a start and end date conflicts with a Location's hours.
+   *
+   * @param array $reservations
+   *   An array of existing reservations.
+   * @param array $params
+   *   An array of reservation parameters.
+   * @param \Drupal\node\NodeInterface $node
+   *   A Location node.
+   *
+   * @return bool
+   *   Whether a start and end date conflicts with a Location's hours.
+   */
+  public function hasOpeningHoursConflict(array $reservations, array $params, NodeInterface $node) {
+    if (!$params = $this->getOpenHoursParams($params, $node)) {
       // Appears to be closed.
       return TRUE;
     }
@@ -641,20 +794,25 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
+   * Gets openings for a range of dates given existing Room Reservations.
+   *
    * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface[] $reservations
-   *
+   *   An array of Room Reservation entities.
    * @param array $params
-   *
+   *   The requested start and end times.
    * @param bool $open_only
+   *   Whether a booked range of dates should return the reservation schedule.
    *
    * @return array
+   *   An array of openings.
    */
   protected function getOpenings(array $reservations, array $params, $open_only = TRUE) {
     $openings = [];
     // Check if there is open space between existing reservations.
     $preceding = [];
     array_reduce($reservations, function ($datetime, $reservation) use (&$openings, &$preceding) {
-      // Diff between current res start time and (either start time param or end date of last reservation).
+      // Diff between current res start time and
+      // (either start time param or end date of last reservation).
       if ($opening = $this->getOpening($datetime, $reservation->getStartDate())) {
         if (!empty($preceding)) {
           $opening['preceding_reservations'] = $preceding;
@@ -669,7 +827,8 @@ class ReservationManager implements ReservationManagerInterface {
       return $reservation->getEndDate();
     }, $this->dateUtility->getDrupalDate($params['start']));
 
-    // Now check open space between (start time or last reservation) and end time.
+    // Now check open space between
+    // (start time or last reservation) and end time.
     $last_date = empty($reservations) ? $this->dateUtility->getDrupalDate($params['start']) : end($reservations)->getEndDate();
     $slot_end = $this->dateUtility->getDrupalDate($params['end']);
     if ($opening = $this->getOpening($last_date, $slot_end)) {
@@ -687,16 +846,40 @@ class ReservationManager implements ReservationManagerInterface {
     return $open_only ? [] : $preceding;
   }
 
-  protected function getOpeningsByOpenHours(array $reservations, array $params, $node) {
-    if (!$params = $this->getOpenHoursParams($reservations, $params, $node)) {
+  /**
+   * Gets openings based on a Location's open hours.
+   *
+   * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface[] $reservations
+   *   An array of Room Reservation entities.
+   * @param array $params
+   *   The requested start and end times.
+   * @param \Drupal\node\NodeInterface $node
+   *   The Room node.
+   *
+   * @return array
+   *   An array of openings.
+   */
+  protected function getOpeningsByOpenHours(array $reservations, array $params, NodeInterface $node) {
+    if (!$params = $this->getOpenHoursParams($params, $node)) {
       return [];
     }
     return $this->getOpenings($reservations, $params);
   }
 
-  protected function getOpeningsByDuration(array $reservation, array $params) {
+  /**
+   * Gets openings based on a Location's open hours.
+   *
+   * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface[] $reservations
+   *   An array of Room Reservation entities.
+   * @param array $params
+   *   An array of parameters that must include duration.
+   *
+   * @return array
+   *   An array of openings.
+   */
+  protected function getOpeningsByDuration(array $reservations, array $params) {
     $openings = [];
-    foreach ($this->getOpenings($reservation, $params) as $id => $opening) {
+    foreach ($this->getOpenings($reservations, $params) as $id => $opening) {
       if ($opening['duration'] >= $params['duration']) {
         $openings[$id] = $opening;
       }
@@ -704,7 +887,15 @@ class ReservationManager implements ReservationManagerInterface {
     return $openings;
   }
 
-  private function getOpening($start, $end) {
+  /**
+   * Formats an opening array based on a start and end date.
+   *
+   * @param \Drupal\Core\Datetime\DrupalDateTime $start
+   *   The start DrupalDateTime object.
+   * @param \Drupal\Core\Datetime\DrupalDateTime $end
+   *   The end DrupalDateTime object.
+   */
+  private function getOpening(DrupalDateTime $start, DrupalDateTime $end) {
     if ($start > $end) {
       return FALSE;
     }
@@ -721,35 +912,66 @@ class ReservationManager implements ReservationManagerInterface {
     return FALSE;
   }
 
+  /**
+   * Gets all reservations for a date range.
+   *
+   * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface[] $reservations
+   *   An array of Room Reservation entities.
+   * @param array $params
+   *   The requested start and end times.
+   *
+   * @return array
+   *   An array of openings.
+   */
   protected function getSchedule(array $reservations, array $params) {
     return $this->getOpenings($reservations, $params, FALSE);
   }
 
-  protected function getScheduleByOpenHours(array $reservations, array $params, $node) {
-    if (!$params = $this->getOpenHoursParams($reservations, $params, $node)) {
+  /**
+   * Gets all reservations during a Location's open hours.
+   *
+   * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface[] $reservations
+   *   An array of Room Reservation entities.
+   * @param array $params
+   *   The requested start and end times.
+   * @param \Drupal\node\NodeInterface $node
+   *   A Location node.
+   *
+   * @return array
+   *   An array of openings.
+   */
+  protected function getScheduleByOpenHours(array $reservations, array $params, NodeInterface $node) {
+    if (!$params = $this->getOpenHoursParams($params, $node)) {
       return [];
     }
     return $this->getSchedule($reservations, $params);
   }
 
   /**
-   * @param $reservations
-   * @param $params
-   * @param $node
+   * Returns the open and close time of a Location as a parameter array.
+   *
+   * @param array $params
+   *   The requested start and end times.
+   * @param \Drupal\node\NodeInterface $node
+   *   The Location node.
+   *
    * @return bool|array
+   *   The parameter array, or FALSE.
    */
-  private function getOpenHoursParams($reservations, $params, $node) {
+  private function getOpenHoursParams(array $params, NodeInterface $node) {
     // No changes if the location has no hours.
     if (!$hours = $this->getHours($params, $node)) {
       return FALSE;
     }
     foreach (['start', 'end'] as $type) {
       // Get location start/end hours for location.
-      // Convert to date objects using the start date param as a base, but default timezone.
+      // Convert to date objects using the start date param as a base,
+      // but default timezone.
       // Convert timezone to UTC.
       // Return dates.
       $selected_date = $this->dateUtility->getDrupalDate($params[$type]);
-      // Hardcode get start date here because the end date might span into another day.
+      // Hardcode get start date here because the end date might span
+      // into another day.
       // @TODO: Make this less error prone by defining a way to specify the current searched "day".
       $date = $this->timeToDate($hours[$type . 'hours'], $this->dateUtility->getDate($params['start']));
       $converted_date = $this->dateUtility->convertTimezone($date);
@@ -763,6 +985,15 @@ class ReservationManager implements ReservationManagerInterface {
     return $params;
   }
 
+  /**
+   * Gets the Location Node attached to a Node.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node with a field_location reference.
+   *
+   * @return \Drupal\node\NodeInterface
+   *   The Location node.
+   */
   protected function getLocation(NodeInterface $node) {
     return !empty($node->field_location->entity) ? $node->field_location->entity : FALSE;
   }
@@ -786,6 +1017,17 @@ class ReservationManager implements ReservationManagerInterface {
     return FALSE;
   }
 
+  /**
+   * Gets the open hours for a Location.
+   *
+   * @param array $params
+   *   The requested start and end times.
+   * @param \Drupal\node\NodeInterface $node
+   *   The Location node.
+   *
+   * @return array
+   *   An array of open hours.
+   */
   protected function getHours(array $params, NodeInterface $node) {
     if (!$location = $this->getLocation($node)) {
       return FALSE;
@@ -828,7 +1070,7 @@ class ReservationManager implements ReservationManagerInterface {
   protected function isClosed(array $params, NodeInterface $node) {
     $closed = empty($this->getHours($params, $node));
 
-    \Drupal::moduleHandler()->alter('intercept_location_closed', $closed, $params, $node);
+    $this->moduleHandler->alter('intercept_location_closed', $closed, $params, $node);
 
     return $closed;
   }
@@ -842,17 +1084,28 @@ class ReservationManager implements ReservationManagerInterface {
    *   The room node.
    */
   protected function closedMessage(array $params, NodeInterface $node) {
-    $closed_message = t('Location Closed');
+    $closed_message = $this->t('Location Closed');
 
-    \Drupal::moduleHandler()->alter('intercept_location_closed_message', $closed_message, $params, $node);
+    $this->moduleHandler->alter('intercept_location_closed_message', $closed_message, $params, $node);
 
     return $closed_message;
   }
 
-  protected function timeToDate($time, $base_date) {
-    // Then just covert that time to a full date using the date part specified.
+  /**
+   * Converts a time string to a DrupalDateTime.
+   *
+   * @param string $time
+   *   The time string.
+   * @param \DateTime $base_date
+   *   The DateTime object to convert a time for.
+   *
+   * @return \Drupal\Core\Datetime\DrupalDateTime
+   *   A DrupalDateTime object.
+   */
+  protected function timeToDate($time, \DateTime $base_date) {
+    // Then just convert that time to a full date using the date part specified.
     // Make sure it's 4 digits.
-    $time = \Drupal\office_hours\OfficeHoursDateHelper::datePad($time, 4);
+    $time = OfficeHoursDateHelper::datePad($time, 4);
     // Parse to be in the format for a date format.
     if (!strstr($time, ':')) {
       $time = substr('0000' . $time, -4);
@@ -864,7 +1117,18 @@ class ReservationManager implements ReservationManagerInterface {
     return $new_date_time;
   }
 
-  protected function nodes($type, $ids = []) {
+  /**
+   * Gets the loaded Nodes given an array.
+   *
+   * @param string $type
+   *   The Node bundle name.
+   * @param array $ids
+   *   An array of Node IDs.
+   *
+   * @return \Drupal\node\NodeInterface[]
+   *   An array of loaded Node objects.
+   */
+  protected function nodes($type, array $ids = []) {
     $properties = [
       'type' => $type,
       'status' => 1,
@@ -876,6 +1140,15 @@ class ReservationManager implements ReservationManagerInterface {
     return $this->entityTypeManager->getStorage('node')->loadByProperties($properties);
   }
 
+  /**
+   * Gets the intercept_room_reservation email settings config.
+   *
+   * @param string $type
+   *   The key of the email settings config.
+   *
+   * @return array
+   *   The intercept_room_reservation email settings config.
+   */
   protected function getEmailConfig($type) {
     $config = $this->configFactory->get('intercept_room_reservation.settings')->get('email');
     return !empty($config[$type]) ? $config[$type] : FALSE;
@@ -891,7 +1164,8 @@ class ReservationManager implements ReservationManagerInterface {
     $config = $this->configFactory->get('intercept_room_reservation.settings')->get('email');
     $emails = [];
     foreach ($config as $mail_key => $settings) {
-      // Check if this email should be only sent out for certain logged in users.
+      // Check if this email should be only sent out
+      // for certain logged in users.
       $pass = FALSE;
       if (!empty($settings['user'])) {
         switch ($settings['user']) {
@@ -934,11 +1208,28 @@ class ReservationManager implements ReservationManagerInterface {
     }
   }
 
+  /**
+   * Whether the provided uid matches the currently logged-in user.
+   *
+   * @param int $uid
+   *   The user ID to check.
+   *
+   * @return bool
+   *   Whether the provided uid matches the currently logged-in user.
+   */
   private function matchesCurrentUser($uid) {
     return $uid == $this->currentUser->id();
   }
 
-  public function email($key, RoomReservation $room_reservation) {
+  /**
+   * Generates an email for Room Reservations.
+   *
+   * @param string $key
+   *   The type of email to generate.
+   * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $room_reservation
+   *   The Room Reservation entity.
+   */
+  public function email($key, RoomReservationInterface $room_reservation) {
     if (!$config = $this->getEmailConfig($key)) {
       return;
     }
@@ -965,10 +1256,6 @@ class ReservationManager implements ReservationManagerInterface {
     $headers['content-type'] = 'text/html';
     $message['headers'] = $headers;
     $email_config = $params['email_config'];
-    $variables = [
-      '%site_name' => \Drupal::config('system.site')->get('name'),
-      '%username' => 'username',
-    ];
 
     $token_replacements = [
       'room_reservation' => $params['room_reservation'],

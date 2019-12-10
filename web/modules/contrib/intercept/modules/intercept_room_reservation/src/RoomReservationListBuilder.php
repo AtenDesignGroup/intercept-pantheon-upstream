@@ -4,7 +4,6 @@ namespace Drupal\intercept_room_reservation;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Link;
 use Drupal\intercept_core\SettableListBuilderTrait;
 
 /**
@@ -65,6 +64,12 @@ class RoomReservationListBuilder extends EntityListBuilder {
     return $query->execute();
   }
 
+  /**
+   * Gets the Room Reservation label.
+   *
+   * @return string
+   *   The Room Reservation label.
+   */
   private function getEntityLabel(EntityInterface $entity = NULL, $default = '') {
     return $entity ? $entity->link() : $default;
   }

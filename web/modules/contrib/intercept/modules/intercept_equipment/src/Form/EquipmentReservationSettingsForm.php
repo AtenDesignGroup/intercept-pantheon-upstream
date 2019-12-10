@@ -3,7 +3,6 @@
 namespace Drupal\intercept_equipment\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -43,7 +42,6 @@ class EquipmentReservationSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $config = $this->config('intercept_core.equipment_reservations');
 
     $form['email'] = [
       '#type' => 'vertical_tabs',
@@ -78,14 +76,41 @@ class EquipmentReservationSettingsForm extends ConfigFormBase {
     return $form;
   }
 
+  /**
+   * Gets the equipment reservation email config.
+   *
+   * @param string $key
+   *   The email config key.
+   *
+   * @return array
+   *   The equipment reservation email config array.
+   */
   private function getEmailConfig($key) {
     return $this->config('intercept_core.equipment_reservations')->get("email.$key");
   }
 
+  /**
+   * Gets the equipment reservation email config subject.
+   *
+   * @param string $key
+   *   The email config key.
+   *
+   * @return string
+   *   The equipment reservation email config subject.
+   */
   private function getSubject($key) {
     return !empty($this->getEmailConfig($key)) ? $this->getEmailConfig($key)['subject'] : '';
   }
 
+  /**
+   * Gets the equipment reservation email config body.
+   *
+   * @param string $key
+   *   The email config key.
+   *
+   * @return string
+   *   The equipment reservation email config body.
+   */
   private function getBody($key) {
     return !empty($this->getEmailConfig($key)) ? $this->getEmailConfig($key)['body'] : '';
   }

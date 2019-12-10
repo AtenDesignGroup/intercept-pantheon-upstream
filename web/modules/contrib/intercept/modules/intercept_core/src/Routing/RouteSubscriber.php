@@ -16,16 +16,30 @@ use Symfony\Component\Routing\RouteCollection;
 class RouteSubscriber extends RouteSubscriberBase {
 
   /**
-   * @var ManagementManagerInterface
+   * The Intercept management plugin manager.
+   *
+   * @var \Drupal\intercept_core\ManagementManagerInterface
    */
   protected $managementManager;
 
   use StringTranslationTrait;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(ManagementManagerInterface $management_manager) {
     $this->managementManager = $management_manager;
   }
 
+  /**
+   * Creates a route given a local URL.
+   *
+   * @param string $name
+   *   The local URL string.
+   *
+   * @return \Symfony\Component\Routing\Route
+   *   A Route object.
+   */
   protected function createRoute($name) {
     return new Route(strtr($name, '_', '-'));
   }
@@ -41,7 +55,7 @@ class RouteSubscriber extends RouteSubscriberBase {
       ];
       // Add a basic permission for the default page and the menu item.
       $permissions[] = ($page->key == 'default') ? "access management" : "access management page {$page->key}";
-      // Build a route that is indpendent of a user id context. 
+      // Build a route that is independent of a user id context.
       $collection->add("$id.redirect", $this->createRoute("/account/manage/{$page->key}")
         ->addDefaults([
           '_controller' => '\Drupal\intercept_core\Controller\UserAccount::userRedirect',
@@ -66,4 +80,5 @@ class RouteSubscriber extends RouteSubscriberBase {
         ]));
     }
   }
+
 }

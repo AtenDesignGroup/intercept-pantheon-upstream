@@ -2,10 +2,6 @@
 
 namespace Drupal\intercept_core;
 
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\TypedData\DataDefinition;
 use Drupal\intercept_core\Plugin\Field\FieldType\ComputedItemList;
 
 /**

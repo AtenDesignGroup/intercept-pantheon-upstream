@@ -3,9 +3,7 @@
 namespace Drupal\intercept_equipment\Form;
 
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
 
 /**
  * Class UpdateStatusForm.
@@ -19,6 +17,9 @@ class EquipmentReservationUpdateStatusForm extends ContentEntityConfirmFormBase 
     return 'equipment_reservation_update_status_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getQuestion() {
     return $this->t('Do you really want to @action this reservation?', [
       '@action' => $this->getStatus()->action,

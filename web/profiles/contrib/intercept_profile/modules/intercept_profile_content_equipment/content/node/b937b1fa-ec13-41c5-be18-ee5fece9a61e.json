@@ -1,0 +1,207 @@
+{
+    "_links": {
+        "self": {
+            "href": "http:\/\/default\/equipment\/music-stand-2?_format=hal_json"
+        },
+        "type": {
+            "href": "http:\/\/drupal.org\/rest\/type\/node\/equipment"
+        },
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/revision_uid": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/uid": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json",
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/field_equipment_type": [
+            {
+                "href": "http:\/\/default\/taxonomy\/term\/16?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/image_primary": [
+            {
+                "href": "http:\/\/default\/media\/20\/edit?_format=hal_json",
+                "lang": "en"
+            }
+        ]
+    },
+    "nid": [
+        {
+            "value": 21
+        }
+    ],
+    "uuid": [
+        {
+            "value": "b937b1fa-ec13-41c5-be18-ee5fece9a61e"
+        }
+    ],
+    "vid": [
+        {
+            "value": 30
+        }
+    ],
+    "langcode": [
+        {
+            "value": "en",
+            "lang": "en"
+        }
+    ],
+    "type": [
+        {
+            "target_id": "equipment"
+        }
+    ],
+    "revision_timestamp": [
+        {
+            "value": "2019-12-06T18:31:55+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "_embedded": {
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/revision_uid": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "42ad0db1-755d-4b3e-8c04-cbe0fee85b9f"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/uid": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "42ad0db1-755d-4b3e-8c04-cbe0fee85b9f"
+                    }
+                ],
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/field_equipment_type": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/taxonomy\/term\/16?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/taxonomy_term\/equipment_type"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "b39c1f74-bae5-44a8-93d8-749712a2ba47"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/equipment\/image_primary": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/media\/20\/edit?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/media\/image"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "88928df8-fd0c-4865-aa66-0db7c7409cc1"
+                    }
+                ],
+                "lang": "en"
+            }
+        ]
+    },
+    "status": [
+        {
+            "value": true,
+            "lang": "en"
+        }
+    ],
+    "title": [
+        {
+            "value": "Music Stand 2",
+            "lang": "en"
+        }
+    ],
+    "created": [
+        {
+            "value": "2019-12-06T18:31:32+00:00",
+            "lang": "en",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "changed": [
+        {
+            "value": "2019-12-06T18:31:55+00:00",
+            "lang": "en",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "promote": [
+        {
+            "value": false,
+            "lang": "en"
+        }
+    ],
+    "sticky": [
+        {
+            "value": false,
+            "lang": "en"
+        }
+    ],
+    "default_langcode": [
+        {
+            "value": true,
+            "lang": "en"
+        }
+    ],
+    "revision_translation_affected": [
+        {
+            "value": true,
+            "lang": "en"
+        }
+    ],
+    "path": [
+        {
+            "alias": "\/equipment\/music-stand-2",
+            "pid": 25,
+            "langcode": "en",
+            "lang": "en"
+        }
+    ],
+    "field_duration_min": [
+        {
+            "value": "P6D"
+        }
+    ],
+    "field_text_content": [
+        {
+            "value": "<p>Please reserve this item one week at a time, with the reservation starting on a Monday and ending on a Sunday. You can reserve this item for multiple weeks, if needed.<\/p>\r\n",
+            "format": "basic_html",
+            "processed": "<p>Please reserve this item one week at a time, with the reservation starting on a Monday and ending on a Sunday. You can reserve this item for multiple weeks, if needed.<\/p>",
+            "lang": "en"
+        }
+    ]
+}

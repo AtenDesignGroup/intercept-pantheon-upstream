@@ -1,11 +1,4 @@
 <?php
-/**
- * @file
- * Contains ILSManager.
- * This defines a new plugin type based on Joe Shindelar's DC 2015 example.
- * See: https://youtu.be/gd6s4wC_bP4?t=2979
- * See: https://drupalize.me/blog/201409/unravelling-drupal-8-plugin-system
- */
 
 namespace Drupal\intercept_ils;
 
@@ -15,6 +8,10 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * ILS plugin manager.
+ *
+ * This defines a new plugin type based on Joe Shindelar's DC 2015 example.
+ * See: https://youtu.be/gd6s4wC_bP4?t=2979
+ * See: https://drupalize.me/blog/201409/unravelling-drupal-8-plugin-system.
  */
 class ILSManager extends DefaultPluginManager {
 
@@ -23,7 +20,7 @@ class ILSManager extends DefaultPluginManager {
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
-   *   keyed by the corresponding namespace to look for plugin implementations,
+   *   keyed by the corresponding namespace to look for plugin implementations.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
    *   Cache backend instance to use.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
@@ -35,4 +32,5 @@ class ILSManager extends DefaultPluginManager {
     $this->alterInfo('intercept_ils_info');
     $this->setCacheBackend($cache_backend, 'intercept_ils');
   }
+
 }

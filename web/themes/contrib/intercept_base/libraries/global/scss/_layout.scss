@@ -272,3 +272,32 @@
 [id='eventRegisterRoot'] {
   min-height: rem(200px);
 }
+
+// Locations layout
+.view-locations {
+  .view__content {
+    width: 100%;
+  }
+
+  @include bp(smallish) {
+    .views-row {
+      display: flex;
+      flex-direction: column;
+      padding: rem(10px);
+      width: 50%;
+    }
+    .view__content {
+      align-content: stretch;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+  }
+  @include bp(x-large) {
+    .views-row {
+      padding: 0 0 50px 0;
+      width: calc(33.33% - 30px);
+    }
+  }
+}

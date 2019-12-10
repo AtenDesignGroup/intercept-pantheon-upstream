@@ -17,7 +17,7 @@
     %}
 
     {% block main %}
-    <main role="main" {{ main_attributes.addClass('l--section') }}>
+    <main role="main" class="l--section l--offset">
       {% include '@intercept-base-components/page-title/page-title.twig' with {
         text: page['#title'],
         modifiers: ['ruled'],

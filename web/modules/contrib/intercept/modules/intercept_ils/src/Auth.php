@@ -3,26 +3,49 @@
 namespace Drupal\intercept_ils;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\DependencyInjection\ContainerBuilder;
-use Drupal\Core\DependencyInjection\ServiceProviderBase;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Password\PasswordInterface;
 use Drupal\externalauth\Authmap;
 use Drupal\externalauth\ExternalAuth;
 use Drupal\intercept_ils\ILSManager;
 use Drupal\user\UserAuth;
-use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Authenticates with Drupal and External Auth.
+ */
 class Auth extends UserAuth {
 
+  /**
+   * Validates user authentication credentials.
+   *
+   * @var \Drupal\user\UserAuth
+   */
   private $userAuth;
 
+  /**
+   * The ILS client.
+   *
+   * @var object
+   */
   private $client;
 
+  /**
+   * Validates external authentication.
+   *
+   * @var \Drupal\externalauth\ExternalAuth
+   */
   private $externalAuth;
 
+  /**
+   * The Intercept ILS Plugin.
+   *
+   * @var object
+   */
   protected $interceptILSPlugin;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(EntityManagerInterface $entity_manager, PasswordInterface $password_checker, UserAuth $user_auth, ExternalAuth $external_auth, Authmap $external_authmap, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
     $this->userAuth = $user_auth;
     $settings = $config_factory->get('intercept_ils.settings');
@@ -40,7 +63,7 @@ class Auth extends UserAuth {
    * {@inheritdoc}
    */
   public function authenticate($username, $password) {
-  
+
     // 1) Let Drupal authenticate first to speed up authentication.
     $auth = parent::authenticate($username, $password);
     if ($auth) {
@@ -83,13 +106,11 @@ class Auth extends UserAuth {
     return $auth;
   }
 
-  private function isValidUsername($username) {
-    return \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => $username]);
-  }
   /**
    * Automatically inherit methods if they are public.
    */
   public function __call($method, $args) {
-    return call_user_func_array(array($this->innerService, $method), $args);
+    return call_user_func_array([$this->innerService, $method], $args);
   }
+
 }

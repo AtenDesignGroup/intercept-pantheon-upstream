@@ -1,16 +1,22 @@
 <?php
 
+/**
+ * @file
+ * Functions supporting intercept_core.
+ */
+
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\Node;
+use Drupal\user\Entity\User;
 
 /**
- * Implements hook_page_attachments.
+ * Implements hook_page_attachments().
  */
 function intercept_core_page_attachments(array &$attachments) {
   // Add the intercept_client consumer id.
-  $consumer_id = Drupal::state()->get('intercept_client.id');
-  $consumer = Drupal::service('entity_type.manager')->getStorage('consumer')->load($consumer_id);
+  $consumer_id = \Drupal::state()->get('intercept_client.id');
+  $consumer = \Drupal::service('entity_type.manager')->getStorage('consumer')->load($consumer_id);
   if ($consumer) {
     $consumer_token = $consumer ? $consumer->uuid() : NULL;
     $attachments['#attached']['drupalSettings']['intercept']['consumer'] = $consumer_token;
@@ -18,7 +24,7 @@ function intercept_core_page_attachments(array &$attachments) {
 
   // Add user info to drupalSettings.
   $current_user = \Drupal::currentUser();
-  $user = \Drupal\user\Entity\User::load($current_user->id());
+  $user = User::load($current_user->id());
   $user_timezone = new \DateTimeZone(drupal_get_user_timezone());
   $utc = new \DateTime('UTC');
   $user_utc_offset = $user_timezone->getOffset($utc) / 3600;
@@ -72,7 +78,7 @@ function intercept_core_theme() {
       ],
       'template' => 'intercept-management-action',
       'base hook' => 'intercept_management_action',
-    ]
+    ],
   ];
 }
 
@@ -80,7 +86,7 @@ function intercept_core_theme() {
  * Implements hook_entity_type_build().
  */
 function intercept_core_entity_type_build(array &$entity_types) {
-  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
   $entity_types['user']->setFormClass('customer', '\Drupal\intercept_core\Form\UserProfileForm');
 }
 
@@ -90,27 +96,27 @@ function intercept_core_entity_type_build(array &$entity_types) {
 function intercept_core_menu_links_discovered_alter(&$links) {
   // Change the title of the default user view menu link.
   if (isset($links['user.page'])) {
-    $links['user.page']['title'] = t('Dashboard');
+    $links['user.page']['title'] = new TranslatableMarkup('Dashboard');
   }
 }
 
 /**
- * Implements hook_preprocess_input__date
+ * Implements hook_preprocess_input__date().
  */
 function intercept_core_preprocess_input__date(&$variables) {
   // Attach pickadate library to fix ajax submit issues.
-  $variables['#attached']['library'][] =  'intercept_core/pickadate';
+  $variables['#attached']['library'][] = 'intercept_core/pickadate';
 }
 
 /**
  * Perform alterations before an entity form is included in the IEF widget.
  *
- * @param $entity_form
+ * @param array $entity_form
  *   Nested array of form elements that comprise the entity form.
- * @param $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state of the parent form.
  */
-function intercept_core_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+function intercept_core_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state) {
   if ($entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
     $form_state->getFormObject()->alterProfileForm($entity_form, $form_state);
   }
@@ -127,14 +133,14 @@ function intercept_core_entity_extra_field_info() {
   $extra = [];
 
   $extra['user']['user']['form']['customer_profile'] = [
-    'label' => t('Customer profile form'),
-    'description' => t('An inline entity form for the customer profile entity.'),
+    'label' => new TranslatableMarkup('Customer profile form'),
+    'description' => new TranslatableMarkup('An inline entity form for the customer profile entity.'),
     'visible' => FALSE,
   ];
 
   $extra['profile']['customer']['form']['pin'] = [
-    'label' => t('PIN'),
-    'description' => t('ILS PIN'),
+    'label' => new TranslatableMarkup('PIN'),
+    'description' => new TranslatableMarkup('ILS PIN'),
     'visible' => FALSE,
   ];
 
@@ -153,7 +159,7 @@ function intercept_core_user_load(array $entities) {
   ]);
   foreach ($entities as $entity) {
     $uid = $entity->id();
-    $profile = array_filter($profiles, function($profile) use ($uid) {
+    $profile = array_filter($profiles, function ($profile) use ($uid) {
       $profile_uid = $profile->uid->first()->getValue()['target_id'];
       return $uid == $profile_uid;
     });
@@ -168,7 +174,7 @@ function intercept_core_user_load(array $entities) {
       if (!empty($first_name)) {
         $entity->first_name = $first_name;
       }
-      $full_name = join(' ', [
+      $full_name = implode(' ', [
         $first_name,
         trim($profile->field_last_name->getString()),
       ]);

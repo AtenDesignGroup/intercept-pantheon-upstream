@@ -47,7 +47,7 @@ class RoomReservationForm extends ContentEntityForm {
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
-        'message' => t('Verifying reservation dates...'),
+        'message' => $this->t('Verifying reservation dates...'),
       ],
     ];
     $form['field_dates']['widget'][0]['end_value']['#ajax'] = [
@@ -56,7 +56,7 @@ class RoomReservationForm extends ContentEntityForm {
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
-        'message' => t('Verifying reservation dates...'),
+        'message' => $this->t('Verifying reservation dates...'),
       ],
     ];
 

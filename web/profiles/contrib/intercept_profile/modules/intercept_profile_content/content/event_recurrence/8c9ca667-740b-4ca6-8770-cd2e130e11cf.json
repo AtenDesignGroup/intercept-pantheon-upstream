@@ -1,0 +1,127 @@
+{
+    "_links": {
+        "self": {
+            "href": "http:\/\/default\/event-recurrence\/1?_format=hal_json"
+        },
+        "type": {
+            "href": "http:\/\/drupal.org\/rest\/type\/event_recurrence\/event_recurrence"
+        },
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/revision_user": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/author": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json",
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/event": [
+            {
+                "href": "http:\/\/default\/event\/2019-12-11\/family-storytime?_format=hal_json"
+            }
+        ]
+    },
+    "id": [
+        {
+            "value": 1
+        }
+    ],
+    "uuid": [
+        {
+            "value": "8c9ca667-740b-4ca6-8770-cd2e130e11cf"
+        }
+    ],
+    "vid": [
+        {
+            "value": 1
+        }
+    ],
+    "langcode": [
+        {
+            "value": "en"
+        }
+    ],
+    "revision_created": [
+        {
+            "value": "2019-12-07T22:55:20+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "_embedded": {
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/revision_user": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "4530c8d8-aaa3-41dd-b7eb-6759ed9c9b59"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/author": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "4530c8d8-aaa3-41dd-b7eb-6759ed9c9b59"
+                    }
+                ],
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/event": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/event\/2019-12-11\/family-storytime?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "7c624f50-0b62-472e-aea8-e37f31fca9f0"
+                    }
+                ]
+            }
+        ]
+    },
+    "created": [
+        {
+            "value": "2019-12-07T22:55:20+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "changed": [
+        {
+            "value": "2019-12-09T19:29:31+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "field_event_rrule": [
+        {
+            "value": "2019-12-11T09:00:00+00:00",
+            "end_value": "2019-12-11T12:00:00+00:00",
+            "rrule": "INTERVAL=1;FREQ=WEEKLY;COUNT=8",
+            "timezone": "UTC",
+            "infinite": false
+        }
+    ]
+}

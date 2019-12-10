@@ -20,9 +20,6 @@ use Drupal\Core\Render\Element;
  *   - attributes: HTML attributes for the containing element.
  */
 function template_preprocess_event_attendance(array &$variables) {
-  // Fetch EventAttendance Entity Object.
-  $event_attendance = $variables['elements']['#event_attendance'];
-
   // Helpful $content variable for templates.
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];

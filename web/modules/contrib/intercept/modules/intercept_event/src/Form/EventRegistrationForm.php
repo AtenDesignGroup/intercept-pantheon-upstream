@@ -19,8 +19,6 @@ class EventRegistrationForm extends ContentEntityForm {
     /* @var $entity \Drupal\intercept_event\Entity\EventRegistration */
     $form = parent::buildForm($form, $form_state);
 
-    $entity = $this->entity;
-
     return $form;
   }
 

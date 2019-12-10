@@ -32,8 +32,6 @@ class EventRecurrenceForm extends ContentEntityForm {
       ];
     }
 
-    $entity = $this->entity;
-
     return $form;
   }
 

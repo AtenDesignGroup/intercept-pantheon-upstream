@@ -3,14 +3,19 @@
 namespace Drupal\intercept_core\Form;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\user\Form\UserPermissionsForm as CoreUserPermissionsForm;
 
+/**
+ * Builds a permissions form for Intercept-specific roles.
+ */
 class UserPermissionsForm extends CoreUserPermissionsForm {
 
   /**
-   * Get Intercept specific roles.
+   * Get Intercept-specific roles.
    *
-   * @eturn array
+   * @return array
+   *   An array of Intercept-specific user roles.
    */
   public static function roles() {
     return [
@@ -45,9 +50,9 @@ class UserPermissionsForm extends CoreUserPermissionsForm {
       }
     }
     $build = parent::buildForm($form, $form_state);
-    foreach (\Drupal\Core\Render\Element::getVisibleChildren($build['permissions'], TRUE) as $name) {
+    foreach (Element::getVisibleChildren($build['permissions'], TRUE) as $name) {
       // Leave the header rows.
-      if (!empty($providers[$name])) {
+      if (!empty($intercept_providers[$name])) {
         continue;
       }
       if (empty($intercept_permissions[$name])) {
@@ -56,4 +61,5 @@ class UserPermissionsForm extends CoreUserPermissionsForm {
     }
     return $build;
   }
+
 }

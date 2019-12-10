@@ -6,17 +6,23 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
 
+/**
+ * Class to modify Intercept admin routes.
+ */
 class InterceptHtmlRouteProvider extends AdminHtmlRouteProvider {
 
   /**
    * Builds a new route to modify the status of an entity.
    *
-   * @param $entity_type
-   * @param $operation
-   * @return Route
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type to modify routes for.
+   * @param string $operation
+   *   The entity operation.
+   *
+   * @return \Symfony\Component\Routing\Route
+   *   The modified route.
    */
-  protected function getUpdateStatusFormRoutes($entity_type, $operation) {
-    /** @var $entity_type EntityTypeInterface */
+  protected function getUpdateStatusFormRoutes(EntityTypeInterface $entity_type, string $operation) {
     if ($entity_type->hasLinkTemplate("{$operation}-form")) {
       $entity_type_id = $entity_type->id();
       $operation_label = ucwords($operation);
@@ -29,7 +35,7 @@ class InterceptHtmlRouteProvider extends AdminHtmlRouteProvider {
         ])
         ->setRequirement('_entity_access', "{$entity_type_id}.{$operation}")
         ->setOption('parameters', [
-            $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
         ]);
 
       // Entity types with serial IDs can specify this in their route
@@ -40,4 +46,5 @@ class InterceptHtmlRouteProvider extends AdminHtmlRouteProvider {
       return $route;
     }
   }
+
 }

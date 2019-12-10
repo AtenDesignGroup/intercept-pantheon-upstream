@@ -5,27 +5,37 @@ namespace Drupal\intercept_room_reservation\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\DateTime\DrupalDateTime;
-// TODO: Replace this with the interface once it is fully developed.
 use Drupal\intercept_core\ReservationManager;
 use Drupal\intercept_core\Utility\Dates;
+use Drupal\intercept_room_reservation\Entity\RoomReservation;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * The Room Reservation availability form.
+ */
 class RoomReservationAvailabilityForm extends FormBase {
 
   /**
-   * @var Drupal\intercept_core\ReservationManager
+   * The Reservation manager.
+   *
+   * @var \Drupal\intercept_core\ReservationManager
    */
   protected $reservationManager;
 
   /**
-   * @var Drupal\intercept_core\Utility\Dates
+   * The Intercept Dates utility.
+   *
+   * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
 
   /**
    * RoomReservationAvailabilityForm constructor.
    *
-   * @param Drupal\intercept_core\ReservationManager $reservation_manager
+   * @param \Drupal\intercept_core\ReservationManager $reservation_manager
+   *   The Reservation manager.
+   * @param \Drupal\intercept_core\Utility\Dates $date_utility
+   *   The Intercept Dates utility.
    */
   public function __construct(ReservationManager $reservation_manager, Dates $date_utility) {
     $this->reservationManager = $reservation_manager;
@@ -42,10 +52,16 @@ class RoomReservationAvailabilityForm extends FormBase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'room_reservation_availability_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $input = $form_state->getUserInput();
 
@@ -86,6 +102,14 @@ class RoomReservationAvailabilityForm extends FormBase {
     return $form;
   }
 
+  /**
+   * Builds the results form.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
   protected function buildResultsForm(array &$form, FormStateInterface $form_state) {
     $node = $form_state->get('node');
     $results = $form_state->get('availability')[$node->uuid()];
@@ -130,7 +154,7 @@ class RoomReservationAvailabilityForm extends FormBase {
           'Start time',
           'Location',
           'End time',
-          'Location'
+          'Location',
         ],
       ],
     ];
@@ -138,10 +162,10 @@ class RoomReservationAvailabilityForm extends FormBase {
     foreach (['default', 'storage'] as $tz) {
       $method = 'get' . ucwords($tz) . 'Timezone';
 
-      $param_start    = $this->rf($param_info['start'][$tz . '_timezone'], $tz);
+      $param_start = $this->rf($param_info['start'][$tz . '_timezone'], $tz);
       $location_start = $hours ? $this->rf($hours['start'][$tz . '_timezone'], $tz) : 'Closed';
-      $param_end      = $this->rf($param_info['end'][$tz . '_timezone'], $tz);
-      $location_end   = $hours ? $this->rf($hours['end'][$tz . '_timezone'], $tz) : 'Closed';
+      $param_end = $this->rf($param_info['end'][$tz . '_timezone'], $tz);
+      $location_end = $hours ? $this->rf($hours['end'][$tz . '_timezone'], $tz) : 'Closed';
       $column = [
         $this->dateUtility->{$method}()->getName(),
         $param_start,
@@ -173,7 +197,6 @@ class RoomReservationAvailabilityForm extends FormBase {
           'Start',
           'End',
           '',
-          //'Location',
           'Duration',
         ],
         '#rows' => [],
@@ -190,7 +213,6 @@ class RoomReservationAvailabilityForm extends FormBase {
           'Start',
           'End',
           '',
-          //'Location',
           'Duration',
         ],
         '#rows' => [],
@@ -205,17 +227,31 @@ class RoomReservationAvailabilityForm extends FormBase {
    * Reformat date string for simpler display.
    *
    * @return string
+   *   The reformatted date string.
    */
   private function rf($string, $tz) {
     $new = $this->dateUtility->getDate($string, $tz);
     return $new->format('m/d - G:i');
   }
 
+  /**
+   * Gets the reservation format.
+   */
   private function format() {
     return ReservationManager::FORMAT;
   }
 
-  private function scheduleTable(array $openings , array &$rows, $duration) {
+  /**
+   * Creates a schedule table.
+   *
+   * @param array $openings
+   *   The room openings.
+   * @param array $rows
+   *   The open hours rows.
+   * @param int $duration
+   *   The reservation duration.
+   */
+  private function scheduleTable(array $openings, array &$rows, $duration) {
     foreach ($openings as $dates) {
       // This should change to be more consistent.
       // @see ReservationManager::getOpenings()
@@ -244,8 +280,12 @@ class RoomReservationAvailabilityForm extends FormBase {
       }
     }
   }
+
+  /**
+   * Creates a schedule table row.
+   */
   private function scheduleTableRow($id, &$rows) {
-    $reservation = \Drupal\intercept_room_reservation\Entity\RoomReservation::load($id);
+    $reservation = RoomReservation::load($id);
     $int = $reservation->getInterval();
     $other = [];
     foreach (['h' => 'hours', 'd' => 'days', 'm' => 'months'] as $prop => $label) {
@@ -256,7 +296,7 @@ class RoomReservationAvailabilityForm extends FormBase {
     }
     $duration = $this->t('@minutes min@other', [
       '@minutes' => $reservation->getDuration(),
-      '@other' => !empty($other) ? ' (' . join(', ', $other) . ')' : '',
+      '@other' => !empty($other) ? ' (' . implode(', ', $other) . ')' : '',
     ]);
     $column = [
       $reservation->getStartDate()->format($this->format()),
@@ -268,6 +308,9 @@ class RoomReservationAvailabilityForm extends FormBase {
     $rows[] = $column;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->setRebuild(TRUE);
     $values = $form_state->getValues();

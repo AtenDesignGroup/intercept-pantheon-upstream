@@ -17,6 +17,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
+use Drupal\intercept_core\EntityImageThumbnailUriField;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Drupal\node\NodeInterface;
 use Drupal\views\ViewExecutable;
@@ -41,7 +42,7 @@ function intercept_room_reservation_help($route_name, RouteMatchInterface $route
 /**
  * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
  */
-function intercept_room_reservation_jsonapi_room_reservation_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+function intercept_room_reservation_jsonapi_room_reservation_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
   return ([
     // @todo CRL-163: The 'view referenced user room_reservation' permission does not yet exist.
     // Once it has been implemented, the AMONG_ALL should be commented out and AMONG_OWN deleted.
@@ -55,11 +56,11 @@ function intercept_room_reservation_jsonapi_room_reservation_filter_access(\Drup
  * Implements hook_preprocess_page().
  */
 function intercept_room_reservation_preprocess_page(array &$variables) {
-  // Add customer room reservation limit
+  // Add customer room reservation limit.
   $limit = \Drupal::config('intercept_room_reservation.settings')->get('reservation_limit', 0);
   $variables['#attached']['drupalSettings']['intercept']['room_reservations']['customer_limit'] = $limit;
 
-  // Add customer room reservation limit
+  // Add customer room reservation limit.
   $advanced_limit = \Drupal::config('intercept_room_reservation.settings')->get('advanced_reservation_limit', 0);
   $variables['#attached']['drupalSettings']['intercept']['room_reservations']['customer_advanced_limit'] = $advanced_limit;
   if (isset($advanced_limit) && $advanced_limit !== '0') {
@@ -67,7 +68,7 @@ function intercept_room_reservation_preprocess_page(array &$variables) {
       'Reservations may be made up to @limit days in advance', ['@limit' => $advanced_limit]);
   }
 
-  // Add publicize field
+  // Add publicize field.
   $reservation_fields = Drupal::service('entity_field.manager')->getFieldDefinitions('room_reservation', 'room_reservation');
   if (array_key_exists('field_publicize', $reservation_fields)) {
     $publicize_settings = $reservation_fields['field_publicize']->getSettings();
@@ -160,8 +161,6 @@ function intercept_room_reservation_theme() {
  */
 function intercept_room_reservation_mail($key, &$message, $params) {
   if (!empty($params['reservation_manager'])) {
-    /* @var \Drupal\intercept_core\ReservationManager $reservation_manager */
-    $reservation_manager = $params['reservation_manager'];
     $params['reservation_manager']->buildEmail($key, $message, $params);
   }
 }
@@ -193,7 +192,7 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
       ->sort('title')
       ->execute();
 
-    // If there are no nodes, move on
+    // If there are no nodes, move on.
     if (!$nids) {
       return FALSE;
     }
@@ -202,7 +201,7 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $options = [];
     $nodes = $storage->loadMultiple($nids);
 
-    // Push titles into select list
+    // Push titles into select list.
     foreach ($nodes as $node) {
       $title = $node->getTitle();
       $options[$title] = $title;
@@ -335,7 +334,7 @@ function intercept_room_reservation_entity_bundle_field_info(EntityTypeInterface
       ->setSetting('properties', [
         'thumbnail' => DataDefinition::create('string')->setLabel(t('Image Thumbnail')),
       ])
-      ->setClass(\Drupal\intercept_core\EntityImageThumbnailUriField::class);
+      ->setClass(EntityImageThumbnailUriField::class);
   }
   return $fields;
 }
@@ -385,22 +384,26 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
       foreach ($condition_group['conditions'] as &$condition) {
         if (isset($condition['field']) && strstr($condition['field'], 'field_dates_value')) {
           $multi_date_reservation_or = $condition['field'];
-          // Run the query from the beginning of the start date until the end of the end date.
+          // Run the query from the beginning of the start date
+          // until the end of the end date.
           $condition['field'] = preg_replace("/(?<=BETWEEN DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "00:00:00')", $condition['field']);
           $condition['field'] = preg_replace("/(?<=AND DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "23:59:59')", $condition['field']);
 
-          // Also we need to account for the user asking for a time period in the middle of a multi-day reservation.
+          // We need to account for the user asking for a time period
+          // in the middle of a multi-day reservation.
           preg_match("/BETWEEN DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}' \+ (INTERVAL [-+]?\d* SECOND)\).*AND DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})/", $multi_date_reservation_or, $matches);
           // Need 3 captures from the original value of the condition.
           // 1) Start date, 2) Interval and 3) end date
           // Need # seconds exactly.
           preg_match("/INTERVAL ([-+]?\d*) SECOND/", $matches[2], $matches_seconds);
           if ($matches_seconds) {
-            if ($matches_seconds[1] < 0) { // The number is negative.
+            if ($matches_seconds[1] < 0) {
+              // The number is negative.
               $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') + abs($matches_seconds[1]));
               $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') + abs($matches_seconds[1]));
             }
-            else { // The number is positive.
+            else {
+              // The number is positive.
               $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') - abs($matches_seconds[1]));
               $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') - abs($matches_seconds[1]));
             }
@@ -410,7 +413,8 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
         }
       }
     }
-    if (!isset($matches)) { // Nothing in $matches means that no dates are specified.
+    // Nothing in $matches means that no dates are specified.
+    if (!isset($matches)) {
       // Let's make sure that we display future events by default.
       $date = gmdate("Y-m-d\TH:i:s");
       $query->addWhereExpression(1, "DATE_FORMAT((room_reservation__field_dates.field_dates_end_value), '%Y-%m-%d\T%H:%i:%s') >= DATE_FORMAT(('" . $date . "'), '%Y-%m-%d\T%H:%i:%s')", []);

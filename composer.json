@@ -12,24 +12,23 @@
   "require": {
     "composer/installers": "^1.0.20",
     "rvtraveller/qs-composer-installer": "^1.1",
-    "drupal-composer/drupal-scaffold": "^2.0.1",
     "cweagans/composer-patches": "^1.0",
-    "drupal/core": "^8.7",
-    "drush/drush": "~8",
     "drupal/config_direct_save": "^1.0",
-    "drupal/adminimal_admin_toolbar": "^1.0",
-    "drupal/inline_entity_form": "^1.0",
+    "drupal/core": "8.7.10",
+    "drupal/intercept_profile": "^1.0@alpha",
+    "drupal-composer/drupal-scaffold": "^2.0.1",
+    "drush/drush": "~8",
+    "drupal/adminimal_admin_toolbar": "^1.10",
     "drupal/adminimal_theme": "^1.0",
-    "drupal/intercept_base": "1.0-alpha-12",
-    "drupal/intercept": "1.0-alpha-14",
-    "drupal/intercept_profile": "1.x-dev",
-    "drupal/twig_tweak": "^2.3",
-    "drupal/externalauth": "^1.1",
-    "drupal/quick_node_clone": "^1.12"
+    "drupal/default_content": "^1.0",
+    "drupal/intercept_base": "1.x-dev",
+    "drupal/intercept": "1.x-dev",
+    "drupal/quick_node_clone": "^1.12",
+    "drupal/better_normalizers": "^1.0@beta"
   },
   "require-dev": {
     "pantheon-systems/quicksilver-pushback": "~1",
-    "webflo/drupal-core-require-dev": "^8.7"
+    "drupal/core-dev": "8.7.10"
   },
   "conflict": {
       "drupal/drupal": "*"

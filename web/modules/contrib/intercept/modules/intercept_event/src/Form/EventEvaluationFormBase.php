@@ -2,24 +2,36 @@
 
 namespace Drupal\intercept_event\Form;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\intercept_event\EventEvaluationManager;
-use Drupal\user\UserInterface;
-use Drupal\user\UserStorage;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * The form base for Event Evaluations.
+ */
 abstract class EventEvaluationFormBase extends FormBase {
 
+  /**
+   * The Event node.
+   *
+   * @var \Drupal\node\NodeInterface
+   */
   protected $entity;
 
+  /**
+   * The event evaluation manager.
+   *
+   * @var \Drupal\intercept_event\EventEvaluationManager
+   */
   protected $eventEvaluationManager;
 
   /**
    * Set votingapi entity bundle for new evaluations.
    *
    * @return string
+   *   The vote type string.
    */
   abstract protected function getVoteType();
 
@@ -42,11 +54,12 @@ abstract class EventEvaluationFormBase extends FormBase {
   /**
    * Set the current event entity.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
+   * @param \Drupal\node\NodeInterface $entity
+   *   The Event node.
    *
    * @return $this
    */
-  public function setEntity(\Drupal\Core\Entity\EntityInterface $entity) {
+  public function setEntity(NodeInterface $entity) {
     $this->entity = $entity;
     return $this;
   }
@@ -71,8 +84,9 @@ abstract class EventEvaluationFormBase extends FormBase {
    * Create or load the evaluation for this entity and user.
    *
    * @return \Drupal\intercept_event\EventEvaluation
+   *   The Event Evaluation entity.
    */
-  protected function getEvaluation(){
+  protected function getEvaluation() {
     if (!$evaluation = $this->eventEvaluationManager->loadByEntity($this->entity, ['type' => $this->getVoteType()])) {
       $evaluation = $this->eventEvaluationManager->create([
         'entity_id' => $this->entity->id(),
@@ -87,6 +101,7 @@ abstract class EventEvaluationFormBase extends FormBase {
    * Create form submit buttons.
    *
    * @return array
+   *   The form submit buttons array.
    */
   protected function buildActions() {
     $actions = [];
@@ -103,4 +118,5 @@ abstract class EventEvaluationFormBase extends FormBase {
     ];
     return $actions;
   }
+
 }

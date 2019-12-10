@@ -1,0 +1,413 @@
+{
+    "_links": {
+        "self": {
+            "href": "http:\/\/default\/event\/2019-12-10\/east-branch-book-group?_format=hal_json"
+        },
+        "type": {
+            "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
+        },
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/revision_uid": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/uid": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json",
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/event_recurrence": [
+            {
+                "href": "http:\/\/default\/event-recurrence\/3?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_audience_primary": [
+            {
+                "href": "http:\/\/default\/taxonomy\/term\/1?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_event_audience": [
+            {
+                "href": "http:\/\/default\/taxonomy\/term\/1?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_event_type": [
+            {
+                "href": "http:\/\/default\/taxonomy\/term\/56?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_event_type_primary": [
+            {
+                "href": "http:\/\/default\/taxonomy\/term\/56?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_location": [
+            {
+                "href": "http:\/\/default\/east-branch?_format=hal_json",
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_room": [
+            {
+                "href": "http:\/\/default\/location\/east-branch\/east-study-room-2?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/image_primary": [
+            {
+                "href": "http:\/\/default\/media\/16\/edit?_format=hal_json",
+                "lang": "en"
+            }
+        ]
+    },
+    "nid": [
+        {
+            "value": 16
+        }
+    ],
+    "uuid": [
+        {
+            "value": "98187eb0-ac71-421f-a225-840ce4587ef9"
+        }
+    ],
+    "vid": [
+        {
+            "value": 35
+        }
+    ],
+    "langcode": [
+        {
+            "value": "en",
+            "lang": "en"
+        }
+    ],
+    "type": [
+        {
+            "target_id": "event"
+        }
+    ],
+    "revision_timestamp": [
+        {
+            "value": "2019-12-09T19:35:45+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "_embedded": {
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/revision_uid": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "4530c8d8-aaa3-41dd-b7eb-6759ed9c9b59"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/uid": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "4530c8d8-aaa3-41dd-b7eb-6759ed9c9b59"
+                    }
+                ],
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/event_recurrence": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/event-recurrence\/3?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/event_recurrence\/event_recurrence"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "3e3bb642-8360-4cd2-8aad-3cfc408692eb"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_audience_primary": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/taxonomy\/term\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/taxonomy_term\/audience"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "49cd3d65-006e-4f5d-ab6d-a085df7600f4"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_event_audience": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/taxonomy\/term\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/taxonomy_term\/audience"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "49cd3d65-006e-4f5d-ab6d-a085df7600f4"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_event_type": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/taxonomy\/term\/56?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/taxonomy_term\/event_type"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "8ec88d61-ced5-46e0-bf6f-73d3fff3f3fc"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_event_type_primary": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/taxonomy\/term\/56?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/taxonomy_term\/event_type"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "8ec88d61-ced5-46e0-bf6f-73d3fff3f3fc"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_location": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/east-branch?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/node\/location"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "eda3f4f5-970d-449e-a349-1fdd07f9a3c7"
+                    }
+                ],
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_room": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/location\/east-branch\/east-study-room-2?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/node\/room"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "3b31df28-0a08-438e-b7c9-a08f96381139"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/node\/event\/image_primary": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/media\/16\/edit?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/media\/image"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "2e0b961c-e0d3-455f-a0be-134bb947bedc"
+                    }
+                ],
+                "lang": "en"
+            }
+        ]
+    },
+    "status": [
+        {
+            "value": true,
+            "lang": "en"
+        }
+    ],
+    "title": [
+        {
+            "value": "East Branch Book Group",
+            "lang": "en"
+        }
+    ],
+    "created": [
+        {
+            "value": "2019-12-06T17:59:38+00:00",
+            "lang": "en",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "changed": [
+        {
+            "value": "2019-12-09T19:35:45+00:00",
+            "lang": "en",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "promote": [
+        {
+            "value": false,
+            "lang": "en"
+        }
+    ],
+    "sticky": [
+        {
+            "value": false,
+            "lang": "en"
+        }
+    ],
+    "default_langcode": [
+        {
+            "value": true,
+            "lang": "en"
+        }
+    ],
+    "revision_translation_affected": [
+        {
+            "value": true,
+            "lang": "en"
+        }
+    ],
+    "path": [
+        {
+            "alias": "\/event\/2019-12-10\/east-branch-book-group",
+            "pid": 8,
+            "langcode": "en",
+            "lang": "en"
+        }
+    ],
+    "field_add_to_cal": [
+        {
+            "value": true
+        }
+    ],
+    "field_date_time": [
+        {
+            "value": "2019-12-10T18:00:00+00:00",
+            "end_value": "2019-12-10T19:00:00+00:00"
+        }
+    ],
+    "field_event_designation": [
+        {
+            "value": "events"
+        }
+    ],
+    "field_event_is_template": [
+        {
+            "value": false
+        }
+    ],
+    "field_event_user_reg_max": [
+        {
+            "value": 0
+        }
+    ],
+    "field_featured": [
+        {
+            "value": false
+        }
+    ],
+    "field_has_waitlist": [
+        {
+            "value": false
+        }
+    ],
+    "field_keywords": [
+        {
+            "value": "East Branch Book Group Join us for a discussion of this months East Branch Book Club title For more information or to get a copy of the book please call the checkout desk at the East Branch Join us for a discussion of this months East Branch Book Club title For more information or to get a copy of the book please call the checkout desk at the East Branch Clubs and Groups Adults"
+        }
+    ],
+    "field_must_register": [
+        {
+            "value": false
+        }
+    ],
+    "field_presented_by_non_staff": [
+        {
+            "value": false
+        }
+    ],
+    "field_text_intro": [
+        {
+            "value": "<p>Join us for a discussion of this month's East Branch Book Club title. For more information or to get a copy of the book, please call the checkout desk at the East Branch.<\/p>\r\n",
+            "format": "basic_html",
+            "processed": "<p>Join us for a discussion of this month's East Branch Book Club title. For more information or to get a copy of the book, please call the checkout desk at the East Branch.<\/p>",
+            "lang": "en"
+        }
+    ],
+    "field_text_teaser": [
+        {
+            "value": "Join us for a discussion of this month's East Branch Book Club title. For more information or to get a copy of the book, please call the checkout desk at the East Branch.",
+            "format": null,
+            "processed": "<p>Join us for a discussion of this month&#039;s East Branch Book Club title. For more information or to get a copy of the book, please call the checkout desk at the East Branch.<\/p>\n",
+            "lang": "en"
+        }
+    ],
+    "field_waitlist_max": [
+        {
+            "value": 0
+        }
+    ],
+    "registration": [
+        {
+            "total": 0,
+            "total_waitlist": 0,
+            "status": "open",
+            "status_user": null
+        }
+    ],
+    "event_thumbnail": [
+        {
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/east%20book%20group.jpg"
+        }
+    ]
+}

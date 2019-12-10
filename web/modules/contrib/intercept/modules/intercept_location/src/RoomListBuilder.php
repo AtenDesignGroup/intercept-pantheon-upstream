@@ -7,8 +7,16 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\node\NodeListBuilder;
 
+/**
+ * List builder for Room Nodes.
+ */
 class RoomListBuilder extends NodeListBuilder {
 
+  /**
+   * A list of Locations.
+   *
+   * @var array
+   */
   private $locations = [];
 
   /**
@@ -65,9 +73,9 @@ class RoomListBuilder extends NodeListBuilder {
     if (!$entity->isPublished()) {
       $row['title']['#suffix'] = ' ' . $this->t('(not published)');
     }
-    $row['capacity'] = join('-', [
+    $row['capacity'] = implode('-', [
       $entity->field_capacity_min->getString(),
-      $entity->field_capacity_max->getString()
+      $entity->field_capacity_max->getString(),
     ]);
     $row['type'] = !empty($entity->field_room_type->entity) ? $entity->field_room_type->entity->label() : '';
     $row['operations']['data'] = $this->buildOperations($entity);
@@ -82,7 +90,6 @@ class RoomListBuilder extends NodeListBuilder {
    */
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery()
-      //->sort($this->entityType->getKey('id'))
       ->sort('field_location')
       ->condition('type', 'room', '=');
 

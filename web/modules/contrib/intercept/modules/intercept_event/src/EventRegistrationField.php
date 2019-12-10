@@ -6,10 +6,17 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\intercept_core\Plugin\Field\FieldType\ComputedItemList;
-use Drupal\node\NodeStorageInterface;
 
+/**
+ * Provides a computed event registration field.
+ */
 class EventRegistrationField extends ComputedItemList implements CacheableDependencyInterface {
 
+  /**
+   * The event registration storage manager.
+   *
+   * @var \Drupal\node\NodeStorageInterface
+   */
   private $registrationManager;
 
   /**
@@ -42,6 +49,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Get current event status machine name.
    *
    * @return string
+   *   The current event status machine name.
    */
   protected function getStatus() {
     $default_status = 'open';
@@ -57,7 +65,8 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
       return 'expired';
     }
 
-    // Skip further dates if there is no registration date, or if it's not required.
+    // Skip further dates if there is no registration date,
+    // or if it's not required.
     if (!$this->mustRegister() || !$this->regDate()) {
       return $default_status;
     }
@@ -85,6 +94,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Get total related event_registration entities.
    *
    * @return int
+   *   The total related event_registration entities
    */
   protected function getTotal() {
     $node = $this->getEntity();
@@ -106,6 +116,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Event has waitlist field is enabled.
    *
    * @return bool
+   *   Whether the waitlist field is enabled.
    */
   protected function hasWaitlist() {
     $field = $this->getEntity()->get('field_has_waitlist');
@@ -116,6 +127,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Number of waitlisted registrations is more than the limit.
    *
    * @return bool
+   *   Whether the number of waitlisted registrations is more than the limit.
    */
   protected function waitlistFull() {
     $has_waitlist = $this->hasWaitlist();
@@ -134,9 +146,10 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
   }
 
   /**
-   * Number of registrations is more than limit.
+   * Number of registrations is more than the limit.
    *
    * @return bool
+   *   Whether the number of registrations is more than the limit.
    */
   protected function capacityFull() {
     $capacity_max = $this->getEntity()->get('field_capacity_max')->value;
@@ -150,6 +163,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Get event date value and end_value array.
    *
    * @return bool|object
+   *   An object with the start and end date.
    */
   protected function eventDate() {
     $date = $this->getEntity()->get('field_date_time');
@@ -166,6 +180,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Get event registration date value and end_value array.
    *
    * @return bool|object
+   *   An object with the start and end date.
    */
   protected function regDate() {
     $date = $this->getEntity()->get('field_event_register_period');
@@ -182,6 +197,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Event end date is later than current date.
    *
    * @return bool|int
+   *   Whether the event end date is later than current date.
    */
   protected function eventEnded() {
     if ($this->eventDate()) {
@@ -195,6 +211,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Current date is between registration start and end dates.
    *
    * @return bool
+   *   Whether the current date is between registration start and end dates.
    */
   protected function regInProcess() {
     return !$this->regPending() && !$this->regEnded();
@@ -204,6 +221,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Current date is after registration end date.
    *
    * @return bool|int
+   *   Whether the current date is after registration end date.
    */
   protected function regEnded() {
     if ($this->regDate()) {
@@ -217,6 +235,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Current date is before registration start date.
    *
    * @return bool
+   *   Whether the current date is before registration start date.
    */
   protected function regPending() {
     if ($this->regDate()) {
@@ -230,6 +249,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Number of related waitlisted event registration entities.
    *
    * @return int
+   *   The number of related waitlisted event registration entities.
    */
   protected function getTotalWaitlist() {
     $node = $this->getEntity();
@@ -251,6 +271,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * Field must register is enabled.
    *
    * @return bool
+   *   Whether the field must register is enabled.
    */
   private function mustRegister() {
     return !empty($this->getEntity()->get('field_must_register')->value);
@@ -259,7 +280,8 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
   /**
    * Entity type manager helper function.
    *
-   * @return NodeStorageInterface
+   * @return \Drupal\node\NodeStorageInterface
+   *   The Node storage manager.
    */
   private function getStorage() {
     if (!isset($this->registrationManager)) {
@@ -298,7 +320,8 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
       return $this->eventEnded() ? Cache::PERMANENT : $this->eventDate()->end->format('U') - $date->format('U');
     }
 
-    // Do not cache if registration is required but for some reason there is no date.
+    // Do not cache if registration is required but
+    // for some reason there is no date.
     if (!$this->regDate()) {
       return 0;
     }

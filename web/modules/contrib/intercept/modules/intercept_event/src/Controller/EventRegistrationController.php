@@ -2,7 +2,6 @@
 
 namespace Drupal\intercept_event\Controller;
 
-use Drupal\Core\Access\AccessResultForbidden;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -18,20 +17,26 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class EventRegistrationController extends ControllerBase {
 
   /**
-   * @var EntityTypeManagerInterface
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * @var EntityFormBuilderInterface
+   * The entity form builder.
+   *
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
    */
   protected $entityFormBuilder;
 
   /**
    * EventsController constructor.
    *
-   * @param EntityTypeManagerInterface $entity_type_manager
-   * @param EntityFormBuilderInterface $entity_form_builder
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
+   *   The entity form builder.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder) {
     $this->entityTypeManager = $entity_type_manager;
@@ -51,6 +56,9 @@ class EventRegistrationController extends ControllerBase {
 
   /**
    * Event registration form.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The event Node entity.
    */
   public function register(NodeInterface $node) {
     if ($this->currentUser()->isAnonymous()) {
@@ -65,11 +73,11 @@ class EventRegistrationController extends ControllerBase {
 
     $build = [];
 
-    // Add Event Header
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder('node');
+    // Add Event Header.
+    $view_builder = $this->entityTypeManager()->getViewBuilder('node');
     $build['header'] = $view_builder->view($node, 'header');
 
-    // Add Registration Form
+    // Add Registration Form.
     $build['#attached']['library'][] = 'intercept_event/eventRegister';
     $build['#markup'] = '';
     $build['intercept_event_register']['#markup'] = '<div id="eventRegisterRoot" data-uuid="' . $node->uuid() . '"></div>';
@@ -79,6 +87,9 @@ class EventRegistrationController extends ControllerBase {
 
   /**
    * Not used right now, here for reference.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The User entity.
    */
   public function manageJs(UserInterface $user) {
     $build = [];
@@ -93,6 +104,9 @@ class EventRegistrationController extends ControllerBase {
 
   /**
    * Menu callback for user/{user}/events.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The User entity.
    */
   public function manage(UserInterface $user) {
     $build = [];
@@ -109,7 +123,4 @@ class EventRegistrationController extends ControllerBase {
     return $build;
   }
 
-  public function overview() {
-
-  }
 }

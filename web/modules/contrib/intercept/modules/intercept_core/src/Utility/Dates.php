@@ -2,14 +2,18 @@
 
 namespace Drupal\intercept_core\Utility;
 
-use Drupal\Component\Datetime\DateTimePlus;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
+/**
+ * A helper utility for Date object information.
+ */
 class Dates {
 
   /**
+   * The config factory.
+   *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
@@ -24,9 +28,15 @@ class Dates {
   /**
    * Calculate the duration in minutes between two dates.
    *
+   * @param \Drupal\Core\Datetime\DrupalDateTime $date1
+   *   The first DrupalDateTime object.
+   * @param \Drupal\Core\Datetime\DrupalDateTime $date2
+   *   The second DrupalDateTime object.
+   *
    * @return int
+   *   The duration in minutes.
    */
-  public static function duration(DateTimePlus $date1, DateTimePlus $date2) {
+  public static function duration(DrupalDateTime $date1, DrupalDateTime $date2) {
     $total = 0;
     if ($int = self::interval($date1, $date2)) {
       $hours = $int->h;
@@ -38,7 +48,13 @@ class Dates {
     return $total;
   }
 
-  public static function interval(DateTimePlus $date1, DateTimePlus $date2) {
+  /**
+   * Gets the difference between two DrupalDateTime objects.
+   *
+   * @return \DateInterval|false
+   *   A DateInterval object, or FALSE.
+   */
+  public static function interval(DrupalDateTime $date1, DrupalDateTime $date2) {
     if ($date1 > $date2) {
       return FALSE;
     }
@@ -49,6 +65,7 @@ class Dates {
    * Get date storage format string.
    *
    * @return string
+   *   The date storage format.
    */
   public static function storageFormat() {
     return DateTimeItemInterface::DATETIME_STORAGE_FORMAT;
@@ -58,6 +75,7 @@ class Dates {
    * Alias for static::storageFormat()
    *
    * @return string
+   *   The date storage format.
    */
   public function getStorageFormat() {
     return self::storageFormat();
@@ -70,6 +88,7 @@ class Dates {
    *   PHP Timezone name.
    *
    * @return \DateTimeZone
+   *   The DateTimeZone object.
    */
   protected function getTimezone($name = 'UTC') {
     if ($name == 'default') {
@@ -83,49 +102,77 @@ class Dates {
   }
 
   /**
+   * Gets the UTC timezone object.
+   *
    * @return \DateTimeZone
+   *   The DateTimeZone object.
    */
   public function getUtcTimezone() {
     return $this->getTimezone();
   }
 
   /**
-   * Date field storage timezone.
+   * Gets the date field storage timezone.
    *
    * @return \DateTimeZone
+   *   The DateTimeZone object.
    */
   public function getStorageTimezone() {
     return $this->getTimezone('storage');
   }
 
   /**
-   * Default site timezone.
+   * Gets the default site timezone object.
    *
    * @return \DateTimeZone
+   *   The DateTimeZone object.
    */
   public function getDefaultTimezone() {
     return $this->getTimezone('default');
   }
 
   /**
-   * @param $string
+   * Creates a DateTime object.
+   *
+   * @param string $time
+   *   A date/time string.
    * @param string $timezone
+   *   A DateTimeZone object representing the timezone of $time.
+   *
    * @return \DateTime
+   *   The DateTime object.
    */
-  public function getDate($string, $timezone = 'storage') {
-    return new \DateTime($string, $this->getTimezone($timezone));
+  public function getDate($time, $timezone = 'storage') {
+    return new \DateTime($time, $this->getTimezone($timezone));
   }
 
   /**
-   * @param $string
+   * Creates a DrupalDateTime object.
+   *
+   * @param string $time
+   *   A date/time string.
    * @param string $timezone
-   * @return DrupalDateTime
+   *   A DateTimeZone object representing the timezone of $time.
+   *
+   * @return \Drupal\Core\Datetime\DrupalDateTime
+   *   The DrupalDateTime object.
    */
-  public function getDrupalDate($string, $timezone = 'storage') {
-    return DrupalDateTime::createFromDateTime($this->getDate($string, $timezone));
+  public function getDrupalDate($time, $timezone = 'storage') {
+    return DrupalDateTime::createFromDateTime($this->getDate($time, $timezone));
   }
 
-  public function convertTimezone($date, $new_timezone = 'UTC') {
+  /**
+   * Converts the timezone for a date object.
+   *
+   * @param \Drupal\Core\Datetime\DrupalDateTime $date
+   *   The DrupalDateTime object.
+   * @param string $new_timezone
+   *   PHP Timezone name.
+   *
+   * @return \Drupal\Core\Datetime\DrupalDateTime
+   *   The converted DrupalDateTime object.
+   */
+  public function convertTimezone(DrupalDateTime $date, $new_timezone = 'UTC') {
     $new_date = clone $date;
     $new_date->setTimezone($this->getTimezone($new_timezone));
     return $new_date;
@@ -138,6 +185,9 @@ class Dates {
    *   The datetime string.
    * @param bool $from_default
    *   TRUE if converting from default to UTC, FALSE if opposite.
+   *
+   * @return \Drupal\Core\Datetime\DrupalDateTime
+   *   The converted DrupalDateTime object.
    */
   public function convertDate($string, $from_default = TRUE) {
     $from = $from_default ? $this->getDefaultTimezone() : $this->getUtcTimezone();

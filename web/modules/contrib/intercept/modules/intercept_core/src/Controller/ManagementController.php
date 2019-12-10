@@ -6,10 +6,13 @@ use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class ManagementController.
+ * Defines a controller for management routes.
  */
 class ManagementController extends ManagementControllerBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function alter(array &$build, $page_name) {
     if ($page_name == 'default') {
       $build['sections']['main']['#actions']['configuration'] = [
@@ -28,15 +31,35 @@ class ManagementController extends ManagementControllerBase {
     }
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewDefault(AccountInterface $user, Request $request) {
+    $title = $this->t('Welcome, @name', ['@name' => $user->getDisplayName()]);
     return [
-      'title' => $this->title('Welcome, @name', ['@name' => $user->getDisplayName()]),
+      'title' => $this->title($title),
       'links' => [],
     ];
   }
 
   /**
    * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
    */
   public function viewSettingsSite(AccountInterface $user, Request $request) {
     $build = [
@@ -58,6 +81,14 @@ class ManagementController extends ManagementControllerBase {
 
   /**
    * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
    */
   public function viewSettingsLogo(AccountInterface $user, Request $request) {
     $build = [
@@ -69,6 +100,17 @@ class ManagementController extends ManagementControllerBase {
     return $build;
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewSettings(AccountInterface $user, Request $request) {
     $build = [
       'title' => $this->title('Site Settings'),
@@ -81,6 +123,17 @@ class ManagementController extends ManagementControllerBase {
     return $build;
   }
 
+  /**
+   * Subpage of viewSettings.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current HTTP request.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function viewSystemConfiguration(AccountInterface $user, Request $request) {
     $build = [
       'title' => $this->title('System configuration'),
@@ -90,9 +143,9 @@ class ManagementController extends ManagementControllerBase {
             'settings' => [
               '#link' => $this->getManagementButton('Site Settings', 'settings'),
               '#weight' => 50,
-            ]
-          ]
-        ]
+            ],
+          ],
+        ],
       ],
     ];
     return $build;

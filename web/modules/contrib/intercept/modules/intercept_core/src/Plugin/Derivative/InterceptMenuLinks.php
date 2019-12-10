@@ -8,12 +8,24 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\intercept_core\ManagementManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Derives menu links from Intercept management manager pages.
+ */
 class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterface {
 
+  /**
+   * The Intercept management manager.
+   *
+   * @var \Drupal\intercept_core\ManagementManagerInterface
+   *   The Intercept management manager.
+   */
   protected $managementManager;
 
   use StringTranslationTrait;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(ManagementManagerInterface $management_manager) {
     $this->managementManager = $management_manager;
   }

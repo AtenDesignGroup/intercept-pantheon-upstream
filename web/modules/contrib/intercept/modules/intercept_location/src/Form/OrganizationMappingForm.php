@@ -7,12 +7,18 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Entity\EntityFormBuilder;
+use Drupal\node\Entity\Node;
 
 /**
  * Class OrganizationMappingForm.
  */
 class OrganizationMappingForm extends FormBase {
 
+  /**
+   * The ILS client.
+   *
+   * @var object
+   */
   protected $client;
 
   /**
@@ -86,7 +92,7 @@ class OrganizationMappingForm extends FormBase {
       '#maxlength' => 64,
       '#size' => 64,
     ];
-    
+
     $form['ils_id'] = [
       '#type' => 'select',
       '#empty_option' => $this->t(' - No mapping - '),
@@ -106,33 +112,38 @@ class OrganizationMappingForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $node = $this->getNode();
     $node->field_polaris_id->setValue($form_state->getValue('ils_id'));
     $node->save();
   }
 
+  /**
+   * Gets a keyed array of ILS organizations.
+   *
+   * @return array
+   *   The ILS organizations array, keyed by OrganizationID.
+   */
   private function getOptions() {
     $options = [];
     if ($this->client) {
       $organizations = $this->client->organization->getAll();
-      array_walk($organizations, function($item, $key) use (&$options) {
+      array_walk($organizations, function ($item, $key) use (&$options) {
         $options[$item->OrganizationID] = $item->Name;
       });
     }
-    return $options; 
+    return $options;
   }
 
+  /**
+   * Gets the current Node.
+   *
+   * @return \Drupal\node\NodeInterface
+   *   The loaded Node.
+   */
   private function getNode() {
     $id = \Drupal::service('current_route_match')->getParameter('node');
-    return $id ? \Drupal\node\Entity\Node::load($id) : FALSE; 
+    return $id ? Node::load($id) : FALSE;
   }
 
 }

@@ -18,7 +18,7 @@ use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 interface RoomReservationStorageInterface extends ContentEntityStorageInterface {
 
   /**
-   * Gets a list of Room reservation revision IDs for a specific Room reservation.
+   * Gets a list of Reservation revision IDs for a specific Room reservation.
    *
    * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $entity
    *   The Room reservation entity.

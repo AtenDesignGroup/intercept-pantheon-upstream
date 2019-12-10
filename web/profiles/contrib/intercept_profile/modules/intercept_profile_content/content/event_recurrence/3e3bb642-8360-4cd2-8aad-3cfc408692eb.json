@@ -1,0 +1,127 @@
+{
+    "_links": {
+        "self": {
+            "href": "http:\/\/default\/event-recurrence\/3?_format=hal_json"
+        },
+        "type": {
+            "href": "http:\/\/drupal.org\/rest\/type\/event_recurrence\/event_recurrence"
+        },
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/revision_user": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/author": [
+            {
+                "href": "http:\/\/default\/user\/1?_format=hal_json",
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/event": [
+            {
+                "href": "http:\/\/default\/event\/2019-12-10\/east-branch-book-group?_format=hal_json"
+            }
+        ]
+    },
+    "id": [
+        {
+            "value": 3
+        }
+    ],
+    "uuid": [
+        {
+            "value": "3e3bb642-8360-4cd2-8aad-3cfc408692eb"
+        }
+    ],
+    "vid": [
+        {
+            "value": 3
+        }
+    ],
+    "langcode": [
+        {
+            "value": "en"
+        }
+    ],
+    "revision_created": [
+        {
+            "value": "2019-12-07T22:57:02+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "_embedded": {
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/revision_user": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "4530c8d8-aaa3-41dd-b7eb-6759ed9c9b59"
+                    }
+                ]
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/author": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/user\/1?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/user\/user"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "4530c8d8-aaa3-41dd-b7eb-6759ed9c9b59"
+                    }
+                ],
+                "lang": "en"
+            }
+        ],
+        "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/event": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http:\/\/default\/event\/2019-12-10\/east-branch-book-group?_format=hal_json"
+                    },
+                    "type": {
+                        "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
+                    }
+                },
+                "uuid": [
+                    {
+                        "value": "98187eb0-ac71-421f-a225-840ce4587ef9"
+                    }
+                ]
+            }
+        ]
+    },
+    "created": [
+        {
+            "value": "2019-12-07T22:57:02+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "changed": [
+        {
+            "value": "2019-12-09T19:29:12+00:00",
+            "format": "Y-m-d\\TH:i:sP"
+        }
+    ],
+    "field_event_rrule": [
+        {
+            "value": "2019-12-10T18:00:00+00:00",
+            "end_value": "2019-12-10T19:00:00+00:00",
+            "rrule": "INTERVAL=1;FREQ=MONTHLY;COUNT=4",
+            "timezone": "UTC",
+            "infinite": false
+        }
+    ]
+}

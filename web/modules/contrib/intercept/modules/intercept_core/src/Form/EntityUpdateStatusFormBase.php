@@ -6,10 +6,24 @@ use Drupal\Core\Entity\ContentEntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
-abstract class EntityUpdateStatusFormBase extends ContentEntityConfirmFormBase{
+/**
+ * Abstract class for entity update status forms.
+ */
+abstract class EntityUpdateStatusFormBase extends ContentEntityConfirmFormBase {
 
+  /**
+   * Gets the name of the status field.
+   */
   abstract protected function getStatusField();
 
+  /**
+   * Gets the message to display to the user on submit.
+   */
+  abstract protected function getMessage();
+
+  /**
+   * {@inheritdoc}
+   */
   public function getCancelUrl() {
     // This should be the redirect URL.
     $entity_type_id = $this->entity->getEntityTypeId();
@@ -18,6 +32,9 @@ abstract class EntityUpdateStatusFormBase extends ContentEntityConfirmFormBase{
     ]);
   }
 
+  /**
+   * Gets the status label for the current action.
+   */
   protected function getStatus() {
     $prefix = "entity.{$this->entity->getEntityTypeId()}.";
     $map = [
@@ -68,6 +85,5 @@ abstract class EntityUpdateStatusFormBase extends ContentEntityConfirmFormBase{
       $entity_type_id => $this->entity->id(),
     ]);
   }
-
 
 }

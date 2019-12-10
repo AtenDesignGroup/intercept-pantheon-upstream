@@ -2,13 +2,10 @@
 
 namespace Drupal\intercept_ils\Plugin\Field\FieldType;
 
-use Drupal\Component\Utility\Random;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\MapDataDefinition;
-use Drupal\Core\TypedData\TraversableTypedDataInterface;
 
 /**
  * Defines the 'ils_mapping' entity field type.
@@ -37,8 +34,11 @@ class MappingItem extends FieldItemBase {
     return $properties;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setValue($values, $notify = TRUE) {
-    // TODO: Eventually make this a dynamic property definition.
+    // @TODO: Eventually make this a dynamic property definition.
     foreach ($values['data'] as $key => $value) {
       if ($key == 'data') {
         continue;

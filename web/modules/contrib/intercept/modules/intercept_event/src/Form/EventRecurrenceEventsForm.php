@@ -12,6 +12,7 @@ use Drupal\inline_entity_form\ElementSubmit;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\RecurringEventManager;
+use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,16 +25,22 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   use DateRangeFormatterTrait;
 
   /**
+   * The Event Recurrence entity.
+   *
    * @var \Drupal\intercept_event\Entity\EventRecurrenceInterface
    */
   private $eventRecurrence;
 
   /**
+   * The Intercept recurring event manager.
+   *
    * @var \Drupal\intercept_event\RecurringEventManager
    */
   protected $recurringEventManager;
 
   /**
+   * The Intercept dates utility.
+   *
    * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
@@ -147,6 +154,11 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     return $form;
   }
 
+  /**
+   * Process callback for EventAttendanceEvents form.
+   *
+   * @see \Drupal\Core\Entity\EntityForm::form()
+   */
   public function processNodeForm($element, FormStateInterface $form_state, $form) {
     if (!empty($element['actions']['template_create'])) {
       $element['actions']['template_create']['#access'] = FALSE;
@@ -158,6 +170,17 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     return $element;
   }
 
+  /**
+   * Converts a date to the storage format's timezone.
+   *
+   * @param object $date
+   *   The DateTime object.
+   * @param string $timezone
+   *   PHP Timezone name.
+   *
+   * @return \Drupal\Core\Datetime\DrupalDateTime
+   *   The converted DrupalDateTime object.
+   */
   private function compensate($date, $timezone = 'default') {
     $converted = $this->dateUtility->convertTimezone($date, 'storage')
       ->format($this->dateUtility->getStorageFormat());
@@ -166,9 +189,14 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   }
 
   /**
+   * Gets the dates for a DateRecurItem field.
+   *
    * @param \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item
+   *   The DateRecurItem field.
    *
    * @return array
+   *   The dates, keyed by 'value' and 'end_value'.
+   *
    * @throws \Exception
    */
   private function getDates(DateRecurItem $item) {
@@ -185,6 +213,11 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
 
   /**
    * Submit handler to delete all events.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function deleteEvents(array &$form, FormStateInterface $form_state) {
     $nodes = $this->eventRecurrence->deleteEvents();
@@ -193,6 +226,11 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
 
   /**
    * Submit handler to update existing events.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function updateEvents(array &$form, FormStateInterface $form_state) {
     // Cycle through events connected to this recurrence.
@@ -207,8 +245,16 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       }
       // Copy the fields over to the other events from the base event.
       foreach ($this->entity->getFields(FALSE) as $field_name => $field) {
-        // TODO: This should be grabbed from form_state and processed through EntityFormDisplay.
-        if (in_array($field_name, ['event_recurrence', 'nid', 'vid', 'type', 'uuid', 'field_date_time'])) {
+        // TODO: This should be grabbed from form_state and processed
+        // through EntityFormDisplay.
+        if (in_array($field_name, [
+          'event_recurrence',
+          'nid',
+          'vid',
+          'type',
+          'uuid',
+          'field_date_time',
+        ])) {
           continue;
         }
         $node->set($field_name, $field->getValue());
@@ -221,6 +267,11 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
 
   /**
    * Submit handler to generate events.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function generateEvents(array &$form, FormStateInterface $form_state) {
     /** @var Drupal\node\NodeInterface $base_event */
@@ -249,7 +300,15 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     drupal_set_message($this->t('@count events created.', ['@count' => count($dates)]));
   }
 
-  protected function generateReservation($new_event, $reservation) {
+  /**
+   * Generates a new event cloned from the base event.
+   *
+   * @param \Drupal\node\NodeInterface $new_event
+   *   The new event node entity.
+   * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $reservation
+   *   The base reservation entity to clone.
+   */
+  protected function generateReservation(NodeInterface $new_event, RoomReservationInterface $reservation) {
     $manager = \Drupal::service('intercept_core.reservation.manager');
     $recurring_rule_field = $this->eventRecurrence->getRecurField();
     $storage_format = $recurring_rule_field->getDateStorageFormat();
@@ -289,6 +348,11 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
 
   /**
    * Submit handler to delete all events and regenerate.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function regenerateEvents(array &$form, FormStateInterface $form_state) {
     $this->deleteEvents($form, $form_state);
@@ -336,7 +400,16 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     return $actions;
   }
 
-  protected function submitHandlers($extra = []) {
+  /**
+   * Attaches the inline_entity_form submit to the form.
+   *
+   * @param array $extra
+   *   Additional submit handlers.
+   *
+   * @return array
+   *   The submit handlers.
+   */
+  protected function submitHandlers(array $extra = []) {
     $ief = [[ElementSubmit::class, 'trigger']];
     return array_merge($ief, $extra);
   }

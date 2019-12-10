@@ -67,6 +67,15 @@ class EventAccessControlHandler extends EntityAccessControlHandler {
     return $return;
   }
 
+  /**
+   * Whether the entity has an field_user field.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity for which to check.
+   *
+   * @return bool
+   *   Whether the entity has an field_user field.
+   */
   protected function hasReferencedUser(EntityInterface $entity) {
     return $entity->hasField('field_user');
   }

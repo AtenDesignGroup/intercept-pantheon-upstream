@@ -9,5 +9,9 @@ use Drupal\Component\Plugin\PluginManagerInterface;
  */
 interface ManagementManagerInterface extends PluginManagerInterface {
 
+  /**
+   * Gets management plugin page information.
+   */
   public function getPages();
+
 }

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @file
+ * Defines common functionality for intercept_event.
+ */
+
+use Drupal\Component\Datetime\DateTimePlus;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityInterface;
@@ -8,10 +14,13 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
+use Drupal\intercept_core\EntityImageThumbnailUriField;
+use Drupal\intercept_event\EventRegistrationField;
 use Drupal\node\NodeInterface;
 use Drupal\pathauto\AliasUniquifier;
 use Drupal\views\ViewExecutable;
@@ -83,7 +92,7 @@ function intercept_event_entity_operation(EntityInterface $entity) {
   if ($entity->getEntityTypeId() == 'event_registration') {
     $operation = function ($op) use ($entity) {
       return [
-        'title' => t(ucwords($op)),
+        'title' => new TranslatableMarkup(ucwords($op)),
         'url' => Url::fromRoute("entity.event_registration.{$op}_form", [
           'event_registration' => $entity->id(),
           'destination' => Url::fromRoute('<current>')->toString(),
@@ -269,14 +278,15 @@ function intercept_event_entity_presave(EntityInterface $entity) {
         $keywords .= ' ' . $tag->getName();
       }
       // Clean up the keywords string to remove punctuation & extra white space.
-      $keywords = preg_replace('/[Rr]ésumé/', 'résumé resume', $keywords); // Résumé
+      $keywords = preg_replace('/[Rr]ésumé/', 'résumé resume', $keywords);
       $keywords = preg_replace("/[^a-zA-Z 0-9\-]/", '', $keywords);
       $keywords = preg_replace('/\s+/', ' ', $keywords);
       $keywords = trim($keywords);
       // Setting the value into the keywords field.
       $entity->field_keywords->value = $keywords;
 
-      // Translation waitlisted attendees to an active state in case capacity was increased.
+      // Translation waitlisted attendees to an active state in case
+      // capacity was increased.
       \Drupal::service('intercept_event.manager')->fillEventOpenCapacity($entity);
 
       break;
@@ -303,7 +313,7 @@ function intercept_event_entity_presave(EntityInterface $entity) {
             'field_event_tags' => $tid,
           ]);
         }
-        // Trigger a re-save of all of those (thus updating keywords field data).
+        // Trigger a re-save (thus updating keywords field data).
         if (count($nodes) > 0) {
           $eventQueue = Drupal::service('intercept_event.queue');
           foreach ($nodes as $node) {
@@ -357,7 +367,7 @@ function intercept_event_views_post_execute(ViewExecutable $view) {
     if (empty($conditions)) {
       // For this particular filter group if they have none of the checkboxes
       // then views will remove all of those filters.
-      // The proper solution would be that at least one in the group is required.
+      // The proper solution would be that one in the group is required.
       $view->total_rows = 0;
       $view->result = [];
       $view->pager->destroy();
@@ -416,7 +426,6 @@ function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterfac
     $form['field_date_time_value']['min']['#attributes']['autocomplete'] = 'off';
     $form['field_date_time_value']['max']['#attributes']['autocomplete'] = 'off';
   }
-
 }
 
 /**
@@ -513,7 +522,7 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
       if (empty($date_array['value']) || empty($date_array['end_value'])) {
         return FALSE;
       }
-      if (!($date_array['value'] instanceof \Drupal\Component\Datetime\DateTimePlus) || !($date_array['end_value'] instanceof \Drupal\Component\Datetime\DateTimePlus)) {
+      if (!($date_array['value'] instanceof DateTimePlus) || !($date_array['end_value'] instanceof DateTimePlus)) {
         return FALSE;
       }
       return TRUE;
@@ -527,7 +536,8 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
       return;
     }
     if (!$valid_dates($dates_event)) {
-      // This should not be possible, but just in case so further validation does not break.
+      // This should not be possible,
+      // but just in case so further validation does not break.
       $form_state->setErrorByName('field_event_register_period[0', t('Event date is invalid.'));
     }
 
@@ -574,11 +584,11 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
   $fields = [];
   if ($entity_type->id() == 'vote' && $bundle == 'evaluation') {
     $fields['vote_criteria'] = BaseFieldDefinition::create('map')
-      ->setLabel(t('Vote criteria'))
+      ->setLabel(new TranslatableMarkup('Vote criteria'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
     $fields['feedback'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(t('Feedback'))
+      ->setLabel(new TranslatableMarkup('Feedback'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
@@ -586,7 +596,7 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
   }
   if ($entity_type->id() == 'node' && $bundle == 'event') {
     $fields['registration'] = BaseFieldDefinition::create('intercept_computed')
-      ->setLabel(t('Registration details'))
+      ->setLabel(new TranslatableMarkup('Registration details'))
       ->setComputed(TRUE)
       ->setSetting('properties', [
         'total' => DataDefinition::create('integer')->setLabel(t('Total registrations:')),
@@ -594,10 +604,10 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
         'status' => DataDefinition::create('string')->setLabel(t('Registration Status:')),
         'status_user' => DataDefinition::create('string')->setLabel(t('Status for current user:')),
       ])
-      ->setClass(\Drupal\intercept_event\EventRegistrationField::class);
+      ->setClass(EventRegistrationField::class);
 
     $fields['event_recurrence'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Event recurrence'))
+      ->setLabel(new TranslatableMarkup('Event recurrence'))
       ->setSetting('target_type', 'event_recurrence')
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
@@ -609,7 +619,7 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
       ->setSetting('properties', [
         'thumbnail' => DataDefinition::create('string')->setLabel(t('Image Thumbnail')),
       ])
-      ->setClass(\Drupal\intercept_core\EntityImageThumbnailUriField::class);
+      ->setClass(EntityImageThumbnailUriField::class);
   }
   return $fields;
 }
@@ -622,11 +632,11 @@ function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type
     $definitions = [];
     $definitions['vote_criteria'] = BaseFieldDefinition::create('map')
       ->setName('vote_criteria')
-      ->setLabel(t('Vote criteria'))
+      ->setLabel(new TranslatableMarkup('Vote criteria'))
       ->setCardinality(1);
     $definitions['feedback'] = BaseFieldDefinition::create('text_long')
       ->setName('feedback')
-      ->setLabel(t('Feedback'))
+      ->setLabel(new TranslatableMarkup('Feedback'))
       ->setCardinality(1);
     return $definitions;
   }
@@ -634,7 +644,7 @@ function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type
     $definitions = [];
     $definitions['event_recurrence'] = BaseFieldDefinition::create('entity_reference')
       ->setName('event_reccurence')
-      ->setLabel(t('Event recurrence'))
+      ->setLabel(new TranslatableMarkup('Event recurrence'))
       ->setTargetEntityTypeId($entity_type->id())
       ->setSettings([
         'unsigned' => FALSE,
@@ -649,7 +659,7 @@ function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type
 /**
  * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
  */
-function intercept_event_jsonapi_event_attendance_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+function intercept_event_jsonapi_event_attendance_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
   return ([
     JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view event_attendance', 'view referenced user event_attendance'], 'OR'),
   ]);
@@ -658,7 +668,7 @@ function intercept_event_jsonapi_event_attendance_filter_access(\Drupal\Core\Ent
 /**
  * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
  */
-function intercept_event_jsonapi_event_registration_filter_access(\Drupal\Core\Entity\EntityTypeInterface $entity_type, \Drupal\Core\Session\AccountInterface $account) {
+function intercept_event_jsonapi_event_registration_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
   return ([
     JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view event_registration', 'view referenced user event_registration'], 'OR'),
   ]);
@@ -674,7 +684,8 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
       foreach ($condition_group['conditions'] as &$condition) {
         // Attendance dates.
         if (isset($condition['field']) && strstr($condition['field'], 'event_attendance.created')) {
-          // Run the query from the beginning of the start date until the end of the end date.
+          // Run the query from the beginning of the start date
+          // until the end of the end date.
           // First, find the end date chosen (timestamp).
           preg_match('/(\d{10}) AND (\d{10})/', $condition['field'], $matches);
           if (!empty($matches)) {
@@ -684,7 +695,8 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
         }
         // Event dates.
         elseif (isset($condition['field']) && strstr($condition['field'], 'field_date_time_value') && strstr($condition['field'], '<=')) {
-          // Run the query from the beginning of the start date until the end of the end date.
+          // Run the query from the beginning of the start date
+          // until the end of the end date.
           $condition['field'] = preg_replace("/(?<=\<\= DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "23:59:59')", $condition['field']);
         }
       }
@@ -696,7 +708,7 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
   }
   elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
     $query_params = \Drupal::request()->query->all();
-    if ($query_params['field_date_time_value'] == 1) { // Past events
+    if ($query_params['field_date_time_value'] == 1) {
       // Past events under My Account need to be sorted DESC instead of ASC.
       $query->orderby[0]['direction'] = 'DESC';
     }
@@ -711,7 +723,7 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
   if ($view->id() == 'intercept_event_attendance_by_age_group' && $display_id == 'page') {
     // Build the link to download the CSV.
     $request = \Drupal::request();
-    $link_renderable = \Drupal\Core\Link::createFromRoute('Download CSV', 'view.intercept_event_attendance_by_age_group.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_event_attendance_by_age_group.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
     $link = \Drupal::service('renderer')->render($link_renderable);
     $options = [
       'id' => 'area_text_custom',

@@ -2,18 +2,21 @@
 
 namespace Drupal\intercept_event;
 
-use Drupal\Component\Serialization\Json;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Link;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\intercept_event\Form\EventEvaluationAttendeeForm;
+use Drupal\intercept_event\Form\EventEvaluationStaffForm;
 use Drupal\node\NodeInterface;
-use Drupal\votingapi\VoteStorageInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\votingapi\VoteInterface;
 
+/**
+ * The Event Evaluation manager.
+ */
 class EventEvaluationManager {
 
   use DependencySerializationTrait;
@@ -30,7 +33,9 @@ class EventEvaluationManager {
 
 
   /**
-   * @var AccountProxyInterface
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $currentUser;
 
@@ -42,13 +47,17 @@ class EventEvaluationManager {
   protected $useUuid;
 
   /**
-   * @var EntityTypeManagerInterface
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
-    /**
-     * @var VoteStorageInterface
-     */
+  /**
+   * The votingapi vote storage manager.
+   *
+   * @var \Drupal\votingapi\VoteStorageInterface
+   */
   protected $voteStorage;
 
   /**
@@ -63,7 +72,8 @@ class EventEvaluationManager {
   /**
    * Create a new EventEvaluation object.
    *
-   * @return EventEvaluation
+   * @return \Drupal\intercept_event\EventEvaluation
+   *   An Event Evaluation entity.
    */
   public function create(array $values = []) {
     $vote_storage = $this->entityTypeManager->getStorage('vote');
@@ -77,7 +87,16 @@ class EventEvaluationManager {
     return $this->createEventEvaluationInstance($vote);
   }
 
-  private function getUserFromParams($params) {
+  /**
+   * Gets the current user ID.
+   *
+   * @param array $params
+   *   An votingapi Vote entity array.
+   *
+   * @return int
+   *   The user ID.
+   */
+  private function getUserFromParams(array $params) {
     if (empty($params['user_id'])) {
       return $this->currentUser->id();
     }
@@ -87,7 +106,18 @@ class EventEvaluationManager {
     return $params['user_id'];
   }
 
-  public function createFromEntity(EntityInterface $entity, $values = []) {
+  /**
+   * Creates an Event Evaluation given an Event Node.
+   *
+   * @param \Drupal\node\NodeInterface $entity
+   *   The Event node.
+   * @param array $values
+   *   (optional) Additional entity values.
+   *
+   * @return bool|\Drupal\intercept_event\EventEvaluation
+   *   The Event Evaluation entity.
+   */
+  public function createFromEntity(NodeInterface $entity, array $values = []) {
     $params = [
       'entity_type' => $entity->getEntityTypeId(),
       'entity_id' => $entity->id(),
@@ -101,12 +131,15 @@ class EventEvaluationManager {
   /**
    * Load an EventEvaluation by votingapi entity properties.
    *
-   * @param EntityInterface $entity
-   * @param null $type
+   * @param \Drupal\node\NodeInterface $entity
+   *   The Event node.
+   * @param array $values
+   *   (optional) Additional entity values.
    *
-   * @return bool|EventEvaluation
+   * @return bool|\Drupal\intercept_event\EventEvaluation
+   *   The Event Evaluation entity.
    */
-  public function loadByEntity(EntityInterface $entity, array $values = []) {
+  public function loadByEntity(NodeInterface $entity, array $values = []) {
     $values += [
       'entity_type' => $entity->getEntityTypeId(),
       'entity_id' => $entity->id(),
@@ -118,8 +151,10 @@ class EventEvaluationManager {
    * Load an EventEvaluation by votingapi entity properties.
    *
    * @param array $properties
+   *   The votingapi entity properties.
    *
-   * @return bool|EventEvaluation
+   * @return bool|\Drupal\intercept_event\EventEvaluation
+   *   The Event Evaluation entity.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -151,21 +186,31 @@ class EventEvaluationManager {
     return $this->createEventEvaluationInstance($vote);
   }
 
+  /**
+   * Whether the event has ended.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Event Node.
+   *
+   * @return bool
+   *   Whether the event has ended.
+   */
   public function eventHasEnded(EntityInterface $entity) {
     if (!$end_date = $entity->field_date_time->end_value) {
       return FALSE;
     }
-    $end_date = new \Drupal\Core\Datetime\DrupalDateTime($end_date, 'UTC');
-    $now = new \Drupal\Core\Datetime\DrupalDateTime('now', 'UTC');
+    $end_date = new DrupalDateTime($end_date, 'UTC');
+    $now = new DrupalDateTime('now', 'UTC');
     return $now->diff($end_date)->invert;
   }
 
   /**
    * Helper function for the EventEvaluation instantiation.
    *
-   * @return EventEvaluation
+   * @return \Drupal\intercept_event\EventEvaluation
+   *   The Event Evaluation entity.
    */
-  protected function createEventEvaluationInstance(\Drupal\votingapi\VoteInterface $vote) {
+  protected function createEventEvaluationInstance(VoteInterface $vote) {
     $evaluation = new EventEvaluation($vote);
     return $evaluation->setManager($this);
   }
@@ -175,6 +220,7 @@ class EventEvaluationManager {
    *
    * @param bool $use
    *   Boolean to set the value with.
+   *
    * @return $this
    */
   public function uuid($use = TRUE) {
@@ -185,14 +231,16 @@ class EventEvaluationManager {
   /**
    * Load analysis info by event node.
    *
-   * @param EntityInterface $entity
+   * @param \Drupal\node\NodeInterface $entity
+   *   The Event Node.
    *
    * @return array
+   *   The analysis info array for an event.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function loadAnalysis(EntityInterface $entity) {
+  public function loadAnalysis(NodeInterface $entity) {
     $vote_storage = $this->entityTypeManager->getStorage('vote');
     $votes = $vote_storage->loadByProperties([
       'type' => self::VOTE_TYPE_ID,
@@ -201,7 +249,7 @@ class EventEvaluationManager {
     ]);
     $data = [];
     foreach ([$this->t('Dislike'), $this->t('Like')] as $index => $label) {
-      $count = count(array_filter($votes, function($vote) use ($index) {
+      $count = count(array_filter($votes, function ($vote) use ($index) {
         return $index == $vote->getValue();
       }));
       $data[$index] = [
@@ -210,7 +258,7 @@ class EventEvaluationManager {
       ];
     }
     $criteria_terms = $this->getPositiveCriteria($entity) + $this->getNegativeCriteria($entity);
-    $data = array_reduce($votes, function($carry, $vote) use ($criteria_terms) {
+    $data = array_reduce($votes, function ($carry, $vote) use ($criteria_terms) {
       $e = $this->createEventEvaluationInstance($vote);
       $values = &$carry[$e->getVote()]['criteria'];
       foreach ($e->getVoteCriteria() as $tid) {
@@ -236,11 +284,13 @@ class EventEvaluationManager {
   /**
    * Build the React.js widget for voting on an event view mode.
    *
-   * @param EntityInterface $entity
+   * @param \Drupal\node\NodeInterface $entity
+   *   The Event Node.
    *
    * @return array
+   *   The renderable build array.
    */
-  public function buildJsWidget(EntityInterface $entity) {
+  public function buildJsWidget(NodeInterface $entity) {
     if (!$evaluation = $this->loadByEntity($entity, [
       'type' => self::VOTE_TYPE_ID,
       'user_id' => '<current>',
@@ -271,16 +321,17 @@ class EventEvaluationManager {
   /**
    * Attendee evaluation form.
    *
-   * @param EntityInterface $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Event Evaluation.
    *
    * @return array
    *   Form render array.
    */
   public function getAttendeeForm(EntityInterface $entity) {
-    $class = \Drupal\intercept_event\Form\EventEvaluationAttendeeForm::class;
+    $class = EventEvaluationAttendeeForm::class;
     $form_arg = \Drupal::service('class_resolver')->getInstanceFromDefinition($class)
       ->setEntity($entity);
-    $form_state = new \Drupal\Core\Form\FormState();
+    $form_state = new FormState();
     return \Drupal::service('form_builder')
       ->buildForm($form_arg, $form_state);
   }
@@ -288,24 +339,29 @@ class EventEvaluationManager {
   /**
    * Staff evaluation form.
    *
-   * @param EntityInterface $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Event Evaluation.
    *
    * @return array
    *   Form render array.
    */
   public function getStaffForm(EntityInterface $entity) {
-    $class = \Drupal\intercept_event\Form\EventEvaluationStaffForm::class;
+    $class = EventEvaluationStaffForm::class;
     $form_arg = \Drupal::service('class_resolver')->getInstanceFromDefinition($class)
       ->setEntity($entity);
-    $form_state = new \Drupal\Core\Form\FormState();
+    $form_state = new FormState();
     return \Drupal::service('form_builder')
       ->buildForm($form_arg, $form_state);
   }
 
   /**
-   * @param NodeInterface $event
+   * Gets the primary event type entity.
+   *
+   * @param \Drupal\node\NodeInterface $event
+   *   The event Node.
    *
    * @return bool|string
+   *   The event type string.
    */
   public function getPrimaryEventType(NodeInterface $event) {
     if (!$event_type = $event->get('field_event_type_primary')->entity) {
@@ -315,9 +371,13 @@ class EventEvaluationManager {
   }
 
   /**
-   * @param NodeInterface $event
+   * Gets an array of negative criteria taxonomy Terms.
+   *
+   * @param \Drupal\node\NodeInterface $event
+   *   The event Node.
    *
    * @return array
+   *   The array of negative criteria taxonomy Terms.
    */
   public function getNegativeCriteria(NodeInterface $event) {
     $criteria = $this->getCriteria($event);
@@ -328,21 +388,29 @@ class EventEvaluationManager {
   }
 
   /**
-   * @param NodeInterface $event
+   * Gets an array of negative criteria taxonomy Term names.
+   *
+   * @param \Drupal\node\NodeInterface $event
+   *   The event Node.
    *
    * @return array
+   *   The array of negative criteria taxonomy Term names.
    */
   public function getNegativeCriteriaOptions(NodeInterface $event) {
     $criteria = $this->getNegativeCriteria($event);
-    return array_map(function($term) {
+    return array_map(function ($term) {
       return $term->label();
     }, $criteria);
   }
 
   /**
-   * @param NodeInterface $event
+   * Gets an array of positive criteria taxonomy Terms.
+   *
+   * @param \Drupal\node\NodeInterface $event
+   *   The event Node.
    *
    * @return array
+   *   The array of positive criteria taxonomy Terms.
    */
   public function getPositiveCriteria(NodeInterface $event) {
     $criteria = $this->getCriteria($event);
@@ -353,21 +421,29 @@ class EventEvaluationManager {
   }
 
   /**
-   * @param NodeInterface $event
+   * Gets an array of positive criteria taxonomy Term names.
+   *
+   * @param \Drupal\node\NodeInterface $event
+   *   The event Node.
    *
    * @return array
+   *   The array of positive criteria taxonomy Term names.
    */
   public function getPositiveCriteriaOptions(NodeInterface $event) {
     $criteria = $this->getPositiveCriteria($event);
-    return array_map(function($term) {
+    return array_map(function ($term) {
       return $term->label();
     }, $criteria);
   }
 
   /**
-   * @param NodeInterface $event
+   * Gets an array of criteria taxonomy Terms.
+   *
+   * @param \Drupal\node\NodeInterface $event
+   *   The Event Node.
    *
    * @return array
+   *   The array of criteria taxonomy Terms.
    */
   public function getCriteria(NodeInterface $event) {
     $criteria = [];
@@ -386,4 +462,5 @@ class EventEvaluationManager {
     }
     return $criteria;
   }
+
 }

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Install functions for intercept_core.
+ */
+
 use Drupal\consumers\Entity\Consumer;
 
 /**

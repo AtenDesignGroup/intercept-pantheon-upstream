@@ -127,6 +127,12 @@ current-filters:
     component:
       build/components/current-filters/current-filters.component.css: {}
 
+# Details
+details:
+  css:
+    theme:
+      build/components/details/details.theme.css: {}
+
 # Dialog
 dialog:
   css:
@@ -171,6 +177,12 @@ event-eval-feedback:
   css:
     theme:
       build/components/event-eval-feedback/event-eval-feedback.theme.css: {}
+
+# Features
+features:
+  css:
+    theme:
+      build/components/features/features.theme.css: {}
 
 # Filters
 filters:

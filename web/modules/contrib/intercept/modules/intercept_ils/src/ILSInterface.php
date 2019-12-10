@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Provides Drupal\intercept_ils\ILSInterface
- */
-
 namespace Drupal\intercept_ils;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
@@ -18,6 +13,7 @@ interface ILSInterface extends PluginInspectionInterface {
    * Return the id of the Intercept ILS.
    *
    * @return string
+   *   The Intercept ILS ID.
    */
   public function getId();
 
@@ -25,6 +21,7 @@ interface ILSInterface extends PluginInspectionInterface {
    * Return the name of the Intercept ILS.
    *
    * @return string
+   *   The Intercept ILS name.
    */
   public function getName();
 
@@ -32,7 +29,8 @@ interface ILSInterface extends PluginInspectionInterface {
    * Return a client object for interacting with the ILS.
    *
    * @return object
+   *   The client object.
    */
-  public function getClient();  
-  
+  public function getClient();
+
 }

@@ -5,6 +5,9 @@ namespace Drupal\intercept_event;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\entity\EntityPermissionProvider;
 
+/**
+ * Permissions provider for Events.
+ */
 class EventPermissionProvider extends EntityPermissionProvider {
 
   /**
@@ -12,7 +15,6 @@ class EventPermissionProvider extends EntityPermissionProvider {
    */
   public function buildPermissions(EntityTypeInterface $entity_type) {
     $entity_type_id = $entity_type->id();
-    $has_owner = $entity_type->entityClassImplements(EntityOwnerInterface::class);
     $plural_label = $entity_type->getPluralLabel();
 
     $permissions = parent::buildPermissions($entity_type);

@@ -4,12 +4,8 @@ namespace Drupal\intercept_event\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityFormBuilderInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class EventsController.
@@ -46,10 +42,30 @@ class EventsController extends ControllerBase {
     return AccessResult::allowedIf($this->isEventBundle($node) && $has_permission);
   }
 
+  /**
+   * Whether the node is an Event type.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node entity to check.
+   *
+   * @return bool
+   *   Whether the node is an Event type.
+   */
   private function isEventBundle(NodeInterface $node) {
     return $node->bundle() == 'event';
   }
 
+  /**
+   * Gets the list builder for a Node.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID for this view builder.
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node entity.
+   *
+   * @return \Drupal\Core\Entity\EntityViewBuilderInterface
+   *   A view builder instance.
+   */
   protected function getListBuilder($entity_type_id, NodeInterface $node = NULL) {
     $list_builder = $this->entityTypeManager()->getListBuilder($entity_type_id);
     if ($node) {
@@ -70,6 +86,15 @@ class EventsController extends ControllerBase {
     }
   }
 
+  /**
+   * Gets the node_event_registrations build array.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node entity.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function registrations(NodeInterface $node) {
     $build = [
       '#theme' => 'node_event_registrations',
@@ -91,13 +116,14 @@ class EventsController extends ControllerBase {
         'destination' => Url::fromRoute('<current>')->toString(),
       ]),
       '#attributes' => [
-        'class' => ['button button-action']
+        'class' => ['button button-action'],
       ],
     ];
     $properties = $node->registration->getItemDefinition()->getSetting('properties');
     $field = $node->registration;
     foreach ($properties as $name => $property) {
-      // This property doesn't need to be seen by staff when viewing Registrations tab.
+      // This property doesn't need to be seen by staff
+      // when viewing Registrations tab.
       if ($name == 'status_user' || $name == 'status') {
         continue;
       }
@@ -111,18 +137,19 @@ class EventsController extends ControllerBase {
     return $build;
   }
 
+  /**
+   * Gets the event_attendance list build array.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Node entity.
+   *
+   * @return array
+   *   The build render array.
+   */
   public function attendance(NodeInterface $node) {
     $build = [];
     $build['list'] = $this->getListBuilder('event_attendance', $node)->render();
     return $build;
-  }
-
-  private function title($text) {
-    return [
-      '#type' => 'html_tag',
-      '#tag' => 'h2',
-      '#value' => $this->t($text),
-    ];
   }
 
   /**
@@ -135,8 +162,8 @@ class EventsController extends ControllerBase {
 
     return [
       '#theme' => 'node_event_analysis',
-      '#content' => [    // Add Event Header
-        'header' => $build['header'] = $view_builder->view($node, 'header'),
+      '#content' => [
+        'header' => $view_builder->view($node, 'header'),
         'attendance' => [
           'title' => $this->t('Number of Attendees'),
           'form' => \Drupal::service('entity.form_builder')->getForm($node, 'attendance'),
@@ -148,16 +175,17 @@ class EventsController extends ControllerBase {
         'attendance_list' => [
           '#markup' => '<div id="eventAttendanceListRoot" data-event-uuid="' . $event_uuid . '" data-event-nid="' . $event_nid . '"></div>',
           '#attached' => [
-            'library' => ['intercept_event/eventAttendanceList']
+            'library' => ['intercept_event/eventAttendanceList'],
           ],
         ],
         'customer_evaluations' => [
           '#markup' => '<div class="js-event-evaluations--attendee" data-event-uuid="' . $event_uuid . '" data-event-nid="' . $event_nid . '"></div>',
           '#attached' => [
-            'library' => ['intercept_event/eventCustomerEvaluations']
+            'library' => ['intercept_event/eventCustomerEvaluations'],
           ],
         ],
       ],
     ];
   }
+
 }

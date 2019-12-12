@@ -24,8 +24,7 @@
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept": "1.x-dev",
     "drupal/quick_node_clone": "^1.12",
-    "drupal/better_normalizers": "^1.0@beta",
-    "drupal/tally": "1.x-dev"
+    "drupal/better_normalizers": "^1.0@beta"
   },
   "require-dev": {
     "pantheon-systems/quicksilver-pushback": "~1",

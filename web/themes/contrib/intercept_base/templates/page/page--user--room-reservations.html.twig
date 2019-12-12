@@ -9,9 +9,9 @@
   } %}
 
   <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
-  {%
+  {% 
     include '@intercept-base-components/content/content.twig' with {
-      content: page.content|without('richland_local_tasks')
+      content: page.content|without('intercept_base_local_tasks')
     }
   %}
 </main>

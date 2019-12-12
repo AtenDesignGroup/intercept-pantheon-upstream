@@ -117,7 +117,7 @@ function intercept_core_preprocess_input__date(&$variables) {
  *   The form state of the parent form.
  */
 function intercept_core_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state) {
-  if ($entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
+  if (array_key_exists('#form_id', $entity_form) && $entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
     $form_state->getFormObject()->alterProfileForm($entity_form, $form_state);
   }
   if ($entity_form['#entity_type'] == 'media') {

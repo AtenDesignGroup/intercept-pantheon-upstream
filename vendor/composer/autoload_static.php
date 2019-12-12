@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite124f108d7c1f61534e530c3a6c13399
+class ComposerStaticInit27f03dface896ca8df05c4cb998e5272
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -147,6 +147,7 @@ class ComposerStaticInite124f108d7c1f61534e530c3a6c13399
             'Drupal\\Core\\' => 12,
             'Drupal\\Component\\' => 17,
             'DrupalComposer\\DrupalScaffold\\' => 30,
+            'Doctrine\\Persistence\\' => 21,
             'Doctrine\\Instantiator\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Inflector\\' => 26,
@@ -451,6 +452,10 @@ class ComposerStaticInite124f108d7c1f61534e530c3a6c13399
         'DrupalComposer\\DrupalScaffold\\' => 
         array (
             0 => __DIR__ . '/..' . '/drupal-composer/drupal-scaffold/src',
+        ),
+        'Doctrine\\Persistence\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/persistence/lib/Doctrine/Persistence',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
@@ -1176,11 +1181,11 @@ class ComposerStaticInite124f108d7c1f61534e530c3a6c13399
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInite124f108d7c1f61534e530c3a6c13399::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$classMap;
 
         }, null, ClassLoader::class);
     }

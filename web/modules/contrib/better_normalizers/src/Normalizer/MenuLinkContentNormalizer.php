@@ -4,8 +4,11 @@ namespace Drupal\better_normalizers\Normalizer;
 
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\EntityTypeRepositoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\hal\Normalizer\ContentEntityNormalizer;
 use Drupal\hal\LinkManager\LinkManagerInterface;
@@ -43,11 +46,19 @@ class MenuLinkContentNormalizer extends ContentEntityNormalizer {
   protected $uuidReference;
 
   /**
+   * The entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(LinkManagerInterface $link_manager, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, UuidReferenceInterface $uuid_reference) {
-    parent::__construct($link_manager, $entity_manager, $module_handler);
+  public function __construct(LinkManagerInterface $link_manager, EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EntityTypeRepositoryInterface $entity_type_repository, EntityFieldManagerInterface $entity_field_manager, UuidReferenceInterface $uuid_reference, EntityRepositoryInterface $entity_repository) {
+    parent::__construct($link_manager, $entity_type_manager, $module_handler, $entity_type_repository, $entity_field_manager);
     $this->uuidReference = $uuid_reference;
+    $this->entityRepository = $entity_repository;
   }
 
   /**
@@ -60,7 +71,7 @@ class MenuLinkContentNormalizer extends ContentEntityNormalizer {
         try {
           $stub = EntityStub::fromEntityUri($link['uri']);
           try {
-            if ($target_entity = $this->entityManager->getStorage($stub->getEntityTypeId())->load($stub->getEntityId())) {
+            if ($target_entity = $this->entityTypeManager->getStorage($stub->getEntityTypeId())->load($stub->getEntityId())) {
               $normalized = $this->embedEntity($entity, $format, $context, $target_entity, $normalized, self::PSUEDO_FIELD_NAME);
               $normalized['link'][$key] += [
                 'target_uuid' => $target_entity->uuid(),
@@ -87,7 +98,7 @@ class MenuLinkContentNormalizer extends ContentEntityNormalizer {
       foreach ($normalized['parent'] as $parent) {
         if (strpos($parent['value'], PluginBase::DERIVATIVE_SEPARATOR) !== FALSE) {
           list($plugin_id, $parent_uuid) = explode(PluginBase::DERIVATIVE_SEPARATOR, $parent['value']);
-          if ($plugin_id === 'menu_link_content' && $parent_entity = $this->entityManager->loadEntityByUuid('menu_link_content', $parent_uuid)) {
+          if ($plugin_id === 'menu_link_content' && $parent_entity = $this->entityRepository->loadEntityByUuid('menu_link_content', $parent_uuid)) {
             // This entity has a parent menu link entity, we embed it.
             $normalized = $this->embedEntity($entity, $format, $context, $parent_entity, $normalized, self::PSUEDO_PARENT_FIELD_NAME);
           }
@@ -106,7 +117,7 @@ class MenuLinkContentNormalizer extends ContentEntityNormalizer {
         try {
           $stub = EntityStub::fromEntityUri($link['uri']);
           if (isset($link['target_uuid'])) {
-            if ($entity = $this->entityManager->loadEntityByUuid($stub->getEntityTypeId(), $link['target_uuid'])) {
+            if ($entity = $this->entityRepository->loadEntityByUuid($stub->getEntityTypeId(), $link['target_uuid'])) {
               $data['link'][$key]['uri'] = 'entity:' . $stub->getEntityTypeId() . '/' . $entity->id();
             }
           }

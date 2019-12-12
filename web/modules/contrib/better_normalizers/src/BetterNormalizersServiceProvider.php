@@ -19,8 +19,11 @@ class BetterNormalizersServiceProvider extends ServiceProviderBase {
     // Add a normalizer service for file entities.
     $service_definition = new Definition('Drupal\better_normalizers\Normalizer\FileEntityNormalizer', array(
       new Reference('hal.link_manager'),
-      new Reference('entity.manager'),
+      new Reference('entity_type.manager'),
       new Reference('module_handler'),
+      new Reference('entity_type.repository'),
+      new Reference('entity_field.manager'),
+      new Reference('file_system'),
     ));
     // The priority must be higher than that of
     // serializer.normalizer.file_entity.hal in hal.services.yml.
@@ -31,6 +34,7 @@ class BetterNormalizersServiceProvider extends ServiceProviderBase {
     $service_definition = new Definition('Drupal\better_normalizers\Normalizer\FileItemNormalizer', array(
       new Reference('hal.link_manager'),
       new Reference('serializer.entity_resolver'),
+      new Reference('entity_type.manager'),
     ));
     // Supersede EntityReferenceItemNormalizer.
     $service_definition->addTag('normalizer', array('priority' => 20));
@@ -41,9 +45,12 @@ class BetterNormalizersServiceProvider extends ServiceProviderBase {
       // Add a normalizer service for menu-link-content entities.
       $service_definition = new Definition('Drupal\better_normalizers\Normalizer\MenuLinkContentNormalizer', array(
         new Reference('hal.link_manager'),
-        new Reference('entity.manager'),
+        new Reference('entity_type.manager'),
         new Reference('module_handler'),
+        new Reference('entity_type.repository'),
+        new Reference('entity_field.manager'),
         new Reference('serializer.normalizer.entity_reference_item.hal'),
+        new Reference('entity.repository'),
       ));
       // The priority must be higher than that of
       // serializer.normalizer.entity.hal in hal.services.yml, but lower than

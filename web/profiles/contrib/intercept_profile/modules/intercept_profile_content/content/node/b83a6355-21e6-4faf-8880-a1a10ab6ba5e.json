@@ -1,7 +1,7 @@
 {
     "_links": {
         "self": {
-            "href": "http:\/\/default\/event\/2019-12-13\/i-am-creative?_format=hal_json"
+            "href": "http:\/\/default\/event\/2019-12-14\/i-am-creative?_format=hal_json"
         },
         "type": {
             "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
@@ -324,7 +324,7 @@
     ],
     "changed": [
         {
-            "value": "2019-12-09T19:16:13+00:00",
+            "value": "2019-12-10T20:03:48+00:00",
             "lang": "en",
             "format": "Y-m-d\\TH:i:sP"
         }
@@ -355,7 +355,7 @@
     ],
     "path": [
         {
-            "alias": "\/event\/2019-12-13\/i-am-creative",
+            "alias": "\/event\/2019-12-14\/i-am-creative",
             "pid": 22,
             "langcode": "en",
             "lang": "en"
@@ -374,8 +374,8 @@
     ],
     "field_date_time": [
         {
-            "value": "2019-12-13T10:30:00+00:00",
-            "end_value": "2019-12-13T12:00:00+00:00"
+            "value": "2019-12-14T10:30:00+00:00",
+            "end_value": "2019-12-14T12:00:00+00:00"
         }
     ],
     "field_event_designation": [
@@ -449,13 +449,13 @@
         {
             "total": 0,
             "total_waitlist": 0,
-            "status": "open",
+            "status": "closed",
             "status_user": null
         }
     ],
     "event_thumbnail": [
         {
-            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/main%20i%20am%20creative.jpg"
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/main%20i%20am%20creative_8.jpg"
         }
     ]
 }

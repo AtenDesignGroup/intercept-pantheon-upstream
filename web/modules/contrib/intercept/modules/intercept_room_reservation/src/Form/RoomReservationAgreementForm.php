@@ -49,21 +49,15 @@ class RoomReservationAgreementForm extends FormBase {
     $form['agree'] = [
       '#type' => 'submit',
       '#value' => $this->t('Agree'),
-      '#submit' => ['::agree'],
     ];
 
     return $form;
   }
 
   /**
-   * Sets the room reservation agreement.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
+   * {@inheritdoc}
    */
-  public function agree(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $temp_store = $this->tempStoreFactory->get('reservation_agreement');
     $temp_store->set('room', 1);
   }

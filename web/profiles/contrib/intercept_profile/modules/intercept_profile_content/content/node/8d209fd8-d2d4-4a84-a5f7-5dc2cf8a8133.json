@@ -1,7 +1,7 @@
 {
     "_links": {
         "self": {
-            "href": "http:\/\/default\/event\/2019-12-14\/computer-basics?_format=hal_json"
+            "href": "http:\/\/default\/event\/2019-12-15\/computer-basics?_format=hal_json"
         },
         "type": {
             "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
@@ -284,7 +284,7 @@
     ],
     "changed": [
         {
-            "value": "2019-12-09T19:16:13+00:00",
+            "value": "2019-12-10T20:03:48+00:00",
             "lang": "en",
             "format": "Y-m-d\\TH:i:sP"
         }
@@ -315,7 +315,7 @@
     ],
     "path": [
         {
-            "alias": "\/event\/2019-12-14\/computer-basics",
+            "alias": "\/event\/2019-12-15\/computer-basics",
             "pid": 24,
             "langcode": "en",
             "lang": "en"
@@ -334,8 +334,8 @@
     ],
     "field_date_time": [
         {
-            "value": "2019-12-14T16:00:00+00:00",
-            "end_value": "2019-12-14T17:30:00+00:00"
+            "value": "2019-12-15T16:00:00+00:00",
+            "end_value": "2019-12-15T17:30:00+00:00"
         }
     ],
     "field_event_designation": [
@@ -407,7 +407,7 @@
     ],
     "event_thumbnail": [
         {
-            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/east%20computer%20basics.jpg"
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/east%20computer%20basics_8.jpg"
         }
     ]
 }

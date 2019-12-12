@@ -11,7 +11,7 @@ var incPaths = [
   './node_modules/breakpoint-sass/stylesheets',
   themeDir + '/partials'
 ];
-var host = 'richland.test';
+var host = 'intercept.test';
 
 module.exports = {
   css: {

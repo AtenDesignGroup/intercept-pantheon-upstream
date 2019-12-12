@@ -38,9 +38,6 @@ class MenuLinkContentNormalizerTest extends KernelTestBase {
     $this->installEntitySchema('node');
     $this->installEntitySchema('user');
     $this->installEntitySchema('menu_link_content');
-    $this->installSchema('system', 'router');
-    $this->installSchema('node', 'node_access');
-    $this->container->get('router.builder')->rebuild();
   }
 
   /**

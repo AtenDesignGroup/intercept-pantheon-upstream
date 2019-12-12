@@ -48,14 +48,3 @@ if (file_exists($local_settings)) {
  * See: tests/installer-features/installer.feature.
  */
 $settings['install_profile'] = 'intercept_profile';
-$databases['default']['default'] = array (
-  'database' => 'intercept_upstream',
-  'username' => 'drupaluser',
-  'password' => '',
-  'prefix' => '',
-  'host' => '127.0.0.1',
-  'port' => '33067',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-  'driver' => 'mysql',
-);
-$settings['hash_salt'] = 'VjVC-Xp_U9qYXQUhXhesnpb_pn6lycgeZSMIcMX5s1_zl3FWg8OnIbvn6MIPo281oW-XwhXYlg';

@@ -10,7 +10,7 @@ dependencies:
 id: intercept_base_mainnavigation
 theme: intercept_base
 region: primary_menu
-weight: 0
+weight: 1
 provider: null
 plugin: 'system_menu_block:main'
 settings:

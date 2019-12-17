@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit3380810921592f075fc51280e14747e4
+class ComposerStaticInit27f03dface896ca8df05c4cb998e5272
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -147,6 +147,7 @@ class ComposerStaticInit3380810921592f075fc51280e14747e4
             'Drupal\\Core\\' => 12,
             'Drupal\\Component\\' => 17,
             'DrupalComposer\\DrupalScaffold\\' => 30,
+            'Doctrine\\Persistence\\' => 21,
             'Doctrine\\Instantiator\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Inflector\\' => 26,
@@ -452,6 +453,10 @@ class ComposerStaticInit3380810921592f075fc51280e14747e4
         array (
             0 => __DIR__ . '/..' . '/drupal-composer/drupal-scaffold/src',
         ),
+        'Doctrine\\Persistence\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/persistence/lib/Doctrine/Persistence',
+        ),
         'Doctrine\\Instantiator\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
@@ -560,13 +565,6 @@ class ComposerStaticInit3380810921592f075fc51280e14747e4
                 0 => __DIR__ . '/..' . '/stack/builder/src',
             ),
         ),
-        'P' => 
-        array (
-            'PEAR' => 
-            array (
-                0 => __DIR__ . '/..' . '/pear/pear_exception',
-            ),
-        ),
         'E' => 
         array (
             'EasyRdf_' => 
@@ -635,6 +633,7 @@ class ComposerStaticInit3380810921592f075fc51280e14747e4
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',
+        'PEAR_Exception' => __DIR__ . '/..' . '/pear/pear_exception/PEAR/Exception.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/AssertionFailedError.php',
@@ -1182,11 +1181,11 @@ class ComposerStaticInit3380810921592f075fc51280e14747e4
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit3380810921592f075fc51280e14747e4::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit3380810921592f075fc51280e14747e4::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit3380810921592f075fc51280e14747e4::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit3380810921592f075fc51280e14747e4::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit3380810921592f075fc51280e14747e4::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit27f03dface896ca8df05c4cb998e5272::$classMap;
 
         }, null, ClassLoader::class);
     }

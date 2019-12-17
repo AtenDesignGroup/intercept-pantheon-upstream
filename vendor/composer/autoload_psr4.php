@@ -74,6 +74,7 @@ return array(
     'Drupal\\Core\\' => array($baseDir . '/web/core/lib/Drupal/Core'),
     'Drupal\\Component\\' => array($baseDir . '/web/core/lib/Drupal/Component'),
     'DrupalComposer\\DrupalScaffold\\' => array($vendorDir . '/drupal-composer/drupal-scaffold/src'),
+    'Doctrine\\Persistence\\' => array($vendorDir . '/doctrine/persistence/lib/Doctrine/Persistence'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib/Doctrine/Common/Lexer'),
     'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib/Doctrine/Common/Inflector'),

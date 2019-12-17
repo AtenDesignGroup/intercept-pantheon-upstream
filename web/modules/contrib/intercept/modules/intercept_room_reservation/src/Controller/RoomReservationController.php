@@ -357,7 +357,10 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    *   The HTTP request object.
    */
   public function reserveRoom(Request $request) {
-    $decode = \Drupal::service('serializer.encoder.jsonapi')->decode($request->getContent(), 'api_json');
+    $decode = \Drupal::service('serializer')->encode($request->getContent(), 'json');
+    if (!array_key_exists('data', $decode)) {
+      return JsonResponse::create();
+    }
     $dates = $decode['data']['attributes']['field_dates'];
     $room = $decode['data']['relationships']['field_room']['data']['id'];
     $manager = \Drupal::service('intercept_core.reservation.manager');

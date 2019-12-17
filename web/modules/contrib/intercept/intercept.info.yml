@@ -1,5 +1,5 @@
 name: Intercept
 description: 'Provides core components required by other features.'
 type: module
-core_version_requirement: '>=8.7.7'
+core: 8.x
 package: 'Intercept'

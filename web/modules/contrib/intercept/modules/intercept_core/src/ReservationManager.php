@@ -12,6 +12,7 @@ use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Utility\Token;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
@@ -491,12 +492,12 @@ class ReservationManager implements ReservationManagerInterface {
    */
   public static function emails() {
     return [
-      'reservation_requested' => $this->t('Reservation requested'),
-      'reservation_canceled' => $this->t('Reservation canceled'),
-      'reservation_approved_staff' => $this->t('Reservation approved (by staff)'),
-      'reservation_approved_auto' => $this->t('Reservation approved (auto)'),
-      'reservation_canceled_staff' => $this->t('Reservation canceled (by staff)'),
-      'reservation_denied_staff' => $this->t('Reservation denied (by staff)'),
+      'reservation_requested' => new TranslatableMarkup('Reservation requested'),
+      'reservation_canceled' => new TranslatableMarkup('Reservation canceled'),
+      'reservation_approved_staff' => new TranslatableMarkup('Reservation approved (by staff)'),
+      'reservation_approved_auto' => new TranslatableMarkup('Reservation approved (auto)'),
+      'reservation_canceled_staff' => new TranslatableMarkup('Reservation canceled (by staff)'),
+      'reservation_denied_staff' => new TranslatableMarkup('Reservation denied (by staff)'),
     ];
   }
 

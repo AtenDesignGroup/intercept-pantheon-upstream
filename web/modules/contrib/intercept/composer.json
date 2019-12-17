@@ -32,7 +32,6 @@
     "drupal/entity": "^1.0",
     "drupal/existing_values_autocomplete_widget": "^1.2",
     "drupal/externalauth": "^1.1",
-    "drupal/features": "^3.5",
     "drupal/field_group": "^3.0",
     "drupal/focal_point": "1.0-beta6",
     "drupal/flag": "^4.0@alpha",

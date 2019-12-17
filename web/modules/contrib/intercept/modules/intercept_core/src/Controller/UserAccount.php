@@ -89,11 +89,14 @@ class UserAccount extends ControllerBase {
    */
   public function customerSearchApi(Request $request) {
     $params = $this->getParams($request);
-    $search = $this->client->patron->searchBasic($params);
-    foreach ($search as &$result) {
-      $result['email'] = Obfuscate::email($result['email']);
+    if ($this->client) {
+      $search = $this->client->patron->searchBasic($params);
+      foreach ($search as &$result) {
+        $result['email'] = Obfuscate::email($result['email']);
+      }
+      return JsonResponse::create($search, 200);
     }
-    return JsonResponse::create($search, 200);
+    return JsonResponse::create();
   }
 
   /**

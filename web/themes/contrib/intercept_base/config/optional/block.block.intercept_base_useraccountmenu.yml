@@ -7,7 +7,7 @@ dependencies:
     - system
   theme:
     - intercept_base
-id: useraccountmenu
+id: intercept_base_useraccountmenu
 theme: intercept_base
 region: secondary_menu
 weight: 0

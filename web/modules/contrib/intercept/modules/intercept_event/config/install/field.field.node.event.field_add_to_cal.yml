@@ -48,8 +48,8 @@ settings:
     atc_privacy: public
     data_secure: auto
     data_calendars:
-      'Google Calendar': 'Google Calendar'
-      'Outlook Online': 'Outlook Online'
+      'Google Calendar': 1
+      'Outlook Online': 1
       iCalendar: 0
       Outlook: 0
       'Yahoo! Calendar': 0

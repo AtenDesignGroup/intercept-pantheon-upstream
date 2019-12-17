@@ -428,7 +428,6 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
           is_grouped: false
           group_info:
@@ -474,7 +473,6 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
           is_grouped: false
           group_info:
@@ -520,7 +518,6 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
           is_grouped: false
           group_info:
@@ -912,7 +909,6 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
           is_grouped: false
           group_info:
@@ -958,7 +954,6 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
           is_grouped: false
           group_info:
@@ -1004,7 +999,6 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
               intercept_room_reservation_approver: '0'
           is_grouped: false
           group_info:

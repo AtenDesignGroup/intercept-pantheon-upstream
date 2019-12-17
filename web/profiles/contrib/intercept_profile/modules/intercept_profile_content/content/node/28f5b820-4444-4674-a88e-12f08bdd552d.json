@@ -45,7 +45,7 @@
     ],
     "vid": [
         {
-            "value": 18
+            "value": 12
         }
     ],
     "langcode": [
@@ -272,7 +272,7 @@
     ],
     "room_thumbnail": [
         {
-            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/north%20multisensory%20room.jpg"
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/north%20multisensory%20room_8.jpg"
         }
     ]
 }

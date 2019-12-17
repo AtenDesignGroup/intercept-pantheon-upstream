@@ -33,7 +33,7 @@
     "drupal/existing_values_autocomplete_widget": "^1.2",
     "drupal/externalauth": "^1.1",
     "drupal/features": "^3.5",
-    "drupal/field_group": "^3.0@RC",
+    "drupal/field_group": "^3.0",
     "drupal/focal_point": "1.0-beta6",
     "drupal/flag": "^4.0@alpha",
     "drupal/inline_entity_form": "^1.0@RC",
@@ -44,15 +44,5 @@
     "drupal/simple_oauth": "^3.5",
     "drupal/tally": "1.x-dev",
     "drupal/votingapi": "^3.0@beta"
-  },
-  "extra": {
-    "patches": {
-      "drupal/field_group": {
-        "Fixes Field Group incompatibility with Inline Entity Form": "https://www.drupal.org/files/issues/2018-10-30/field_group-inline_entity_form_compatibility-2986704-3.patch"
-      },
-      "drupal/office_hours": {
-        "Missing Group Annotation for Kernel Test": "https://www.drupal.org/files/issues/2019-06-27/group-annotation-in-test-class-3064545-1.patch"
-      }
-    }
   }
 }

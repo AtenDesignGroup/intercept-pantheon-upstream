@@ -40,7 +40,7 @@
     ],
     "vid": [
         {
-            "value": 9
+            "value": 6
         }
     ],
     "langcode": [
@@ -244,7 +244,7 @@
     ],
     "room_thumbnail": [
         {
-            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/north%20meeting%20room.jpg"
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/north%20meeting%20room_8.jpg"
         }
     ]
 }

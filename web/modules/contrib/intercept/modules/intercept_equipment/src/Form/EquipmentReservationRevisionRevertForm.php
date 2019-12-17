@@ -6,6 +6,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\intercept_equipment\Entity\EquipmentReservationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -15,7 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ingroup intercept_equipment_reservation
  */
 class EquipmentReservationRevisionRevertForm extends ConfirmFormBase {
-
 
   /**
    * The Equipment reservation revision.
@@ -29,7 +29,7 @@ class EquipmentReservationRevisionRevertForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $EquipmentReservationStorage;
+  protected $equipmentReservationStorage;
 
   /**
    * The date formatter service.
@@ -47,7 +47,7 @@ class EquipmentReservationRevisionRevertForm extends ConfirmFormBase {
    *   The date formatter service.
    */
   public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter) {
-    $this->EquipmentReservationStorage = $entity_storage;
+    $this->equipmentReservationStorage = $entity_storage;
     $this->dateFormatter = $date_formatter;
   }
 
@@ -85,6 +85,13 @@ class EquipmentReservationRevisionRevertForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
+  public function getCancelUrl() {
+    return new Url('entity.equipment_reservation.version_history', ['equipment_reservation' => $this->revision->id()]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getDescription() {
     return '';
   }
@@ -93,7 +100,7 @@ class EquipmentReservationRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $equipment_reservation_revision = NULL) {
-    $this->revision = $this->EquipmentReservationStorage->loadRevision($equipment_reservation_revision);
+    $this->revision = $this->equipmentReservationStorage->loadRevision($equipment_reservation_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -112,7 +119,7 @@ class EquipmentReservationRevisionRevertForm extends ConfirmFormBase {
     $this->revision->save();
 
     $this->logger('content')->notice('Equipment reservation: reverted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
-    drupal_set_message($this->t('Equipment reservation %title has been reverted to the revision from %revision-date.', ['%title' => $this->revision->label(), '%revision-date' => $this->dateFormatter->format($original_revision_timestamp)]));
+    $this->messenger()->addMessage($this->t('Equipment reservation %title has been reverted to the revision from %revision-date.', ['%title' => $this->revision->label(), '%revision-date' => $this->dateFormatter->format($original_revision_timestamp)]));
     $form_state->setRedirect(
       'entity.equipment_reservation.version_history',
       ['equipment_reservation' => $this->revision->id()]

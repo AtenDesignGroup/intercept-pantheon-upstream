@@ -1,7 +1,7 @@
 {
     "_links": {
         "self": {
-            "href": "http:\/\/default\/event\/2019-12-10\/east-branch-book-group?_format=hal_json"
+            "href": "http:\/\/default\/event\/2019-11-11\/east-branch-book-group?_format=hal_json"
         },
         "type": {
             "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
@@ -15,11 +15,6 @@
             {
                 "href": "http:\/\/default\/user\/1?_format=hal_json",
                 "lang": "en"
-            }
-        ],
-        "http:\/\/drupal.org\/rest\/relation\/node\/event\/event_recurrence": [
-            {
-                "href": "http:\/\/default\/event-recurrence\/3?_format=hal_json"
             }
         ],
         "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_audience_primary": [
@@ -72,7 +67,7 @@
     ],
     "vid": [
         {
-            "value": 35
+            "value": 16
         }
     ],
     "langcode": [
@@ -126,23 +121,6 @@
                     }
                 ],
                 "lang": "en"
-            }
-        ],
-        "http:\/\/drupal.org\/rest\/relation\/node\/event\/event_recurrence": [
-            {
-                "_links": {
-                    "self": {
-                        "href": "http:\/\/default\/event-recurrence\/3?_format=hal_json"
-                    },
-                    "type": {
-                        "href": "http:\/\/drupal.org\/rest\/type\/event_recurrence\/event_recurrence"
-                    }
-                },
-                "uuid": [
-                    {
-                        "value": "3e3bb642-8360-4cd2-8aad-3cfc408692eb"
-                    }
-                ]
             }
         ],
         "http:\/\/drupal.org\/rest\/relation\/node\/event\/field_audience_primary": [
@@ -319,7 +297,7 @@
     ],
     "path": [
         {
-            "alias": "\/event\/2019-12-10\/east-branch-book-group",
+            "alias": "\/event\/2019-11-11\/east-branch-book-group",
             "pid": 8,
             "langcode": "en",
             "lang": "en"
@@ -332,8 +310,8 @@
     ],
     "field_date_time": [
         {
-            "value": "2019-12-10T18:00:00+00:00",
-            "end_value": "2019-12-10T19:00:00+00:00"
+            "value": "2019-11-11T18:00:00+00:00",
+            "end_value": "2019-11-11T19:00:00+00:00"
         }
     ],
     "field_event_designation": [
@@ -401,13 +379,13 @@
         {
             "total": 0,
             "total_waitlist": 0,
-            "status": "open",
+            "status": "expired",
             "status_user": null
         }
     ],
     "event_thumbnail": [
         {
-            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/east%20book%20group.jpg"
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/east%20book%20group_8.jpg"
         }
     ]
 }

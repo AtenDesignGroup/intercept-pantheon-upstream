@@ -19,7 +19,7 @@
         ],
         "http:\/\/drupal.org\/rest\/relation\/event_recurrence\/event_recurrence\/event": [
             {
-                "href": "http:\/\/default\/event\/2019-12-09\/notary-services-session?_format=hal_json"
+                "href": "http:\/\/default\/event\/2019-11-10\/notary-services-session?_format=hal_json"
             }
         ]
     },
@@ -89,7 +89,7 @@
             {
                 "_links": {
                     "self": {
-                        "href": "http:\/\/default\/event\/2019-12-09\/notary-services-session?_format=hal_json"
+                        "href": "http:\/\/default\/event\/2019-11-10\/notary-services-session?_format=hal_json"
                     },
                     "type": {
                         "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
@@ -111,14 +111,14 @@
     ],
     "changed": [
         {
-            "value": "2019-12-09T19:28:36+00:00",
+            "value": "2019-12-10T20:03:48+00:00",
             "format": "Y-m-d\\TH:i:sP"
         }
     ],
     "field_event_rrule": [
         {
-            "value": "2019-12-09T13:00:00+00:00",
-            "end_value": "2019-12-09T15:00:00+00:00",
+            "value": "2019-11-10T13:00:00+00:00",
+            "end_value": "2019-11-10T15:00:00+00:00",
             "rrule": "INTERVAL=1;FREQ=WEEKLY;COUNT=8",
             "timezone": "UTC",
             "infinite": false

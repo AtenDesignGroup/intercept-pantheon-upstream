@@ -40,7 +40,7 @@
     ],
     "vid": [
         {
-            "value": 12
+            "value": 4
         }
     ],
     "langcode": [
@@ -263,7 +263,7 @@
     ],
     "room_thumbnail": [
         {
-            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/main%20auditorium.jpg"
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/main%20auditorium_8.jpg"
         }
     ]
 }

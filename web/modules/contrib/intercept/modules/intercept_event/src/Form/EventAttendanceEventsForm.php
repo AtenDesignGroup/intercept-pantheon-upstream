@@ -7,7 +7,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\date_recur\DateRecurRRule;
+use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\RecurringEventManager;
@@ -135,8 +135,8 @@ class EventAttendanceEventsForm extends ContentEntityForm {
       }
       return [
         [
-          'value' => DateRecurRRule::massageDateValueForStorage($item->start_date, $storage_format),
-          'end_value' => DateRecurRRule::massageDateValueForStorage($item->end_date, $storage_format),
+          'value' => $this->compensate($item->start_date)->format($storage_format),
+          'end_value' => $this->compensate($item->end_date)->format($storage_format),
         ],
       ];
     }
@@ -203,7 +203,7 @@ class EventAttendanceEventsForm extends ContentEntityForm {
       $node->save();
       $count++;
     }
-    drupal_set_message($this->t('@count events updated.', ['@count' => $count]));
+    $this->messenger()->addMessage($this->t('@count events updated.', ['@count' => $count]));
   }
 
   /**
@@ -230,7 +230,7 @@ class EventAttendanceEventsForm extends ContentEntityForm {
       $event->set('event_recurrence', $this->eventRecurrence->id());
       $event->save();
     }
-    drupal_set_message($this->t('@count events created.', ['@count' => count($dates)]));
+    $this->messenger()->addMessage($this->t('@count events created.', ['@count' => count($dates)]));
   }
 
   /**

@@ -43,9 +43,17 @@
       <main role="main" {{ main_attributes.addClass('l--section') }}>
         <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
 
+        {% block localtasks %}
+          {% if page.content.intercept_base_local_tasks %}
+            <div class="l--section l--offset">
+              {{ page.content.intercept_base_local_tasks }}
+            </div>
+          {% endif %}
+        {% endblock %}
+
         {%
           include '@intercept-base-components/content/content.twig' with {
-            content: page.content
+            content: page.content|without('intercept_base_local_tasks')
           }
         %}
 

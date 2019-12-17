@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.intercept-manage
+  module:
+    - system
+  theme:
+    - intercept_base
+id: intercept_manage_menu
+theme: intercept_base
+region: primary_menu
+weight: 0
+provider: null
+plugin: 'system_menu_block:intercept-manage'
+settings:
+  id: 'system_menu_block:intercept-manage'
+  label: 'Intercept Management'
+  provider: system
+  label_display: '0'
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility:
+  request_path:
+    id: request_path
+    pages: "/user/*/manage\r\n/user/*/manage/*"
+    negate: false
+    context_mapping: {  }

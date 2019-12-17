@@ -16,7 +16,7 @@ class LocationListBuilder extends NodeListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     $row = parent::buildRow($entity);
-    $row['type'] = $entity->field_polaris_id->getString();
+    $row['type'] = $entity->field_polaris_id ? $entity->field_polaris_id->getString() : '';
     return $row;
   }
 

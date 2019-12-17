@@ -13,6 +13,7 @@ use Drupal\date_recur\Rl\RlHelper;
 use Drupal\node\NodeInterface;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\Entity\EventRecurrence;
+use Drupal\intercept_event\Entity\EventRecurrenceInterface;
 
 /**
  * Recurring event manager.

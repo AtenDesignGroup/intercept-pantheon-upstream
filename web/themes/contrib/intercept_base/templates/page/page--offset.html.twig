@@ -1,2 +1,10 @@
 {% extends '@intercept_base/page/page.html.twig' %}
 {% set main_attributes = create_attribute().addClass('l--offset') %}
+
+{% block localtasks %}
+  {% if page.content.intercept_base_local_tasks %}
+    <div class="l--section">
+      {{ page.content.intercept_base_local_tasks }}
+    </div>
+  {% endif %}
+{% endblock %}

@@ -27,9 +27,11 @@ class UserAccount extends ControllerBase {
     $config_factory = \Drupal::service('config.factory');
     $settings = $config_factory->get('intercept_ils.settings');
     $intercept_ils_plugin = $settings->get('intercept_ils_plugin', '');
-    $ils_manager = \Drupal::service('plugin.manager.intercept_ils');
-    $ils_plugin = $ils_manager->createInstance($intercept_ils_plugin);
-    $this->client = $ils_plugin->getClient();
+    if ($intercept_ils_plugin) {
+      $ils_manager = \Drupal::service('plugin.manager.intercept_ils');
+      $ils_plugin = $ils_manager->createInstance($intercept_ils_plugin);
+      $this->client = $ils_plugin->getClient();
+    }
   }
 
   /**

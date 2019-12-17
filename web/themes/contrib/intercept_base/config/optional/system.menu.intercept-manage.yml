@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+id: intercept-manage
+label: Management
+description: ''
+locked: false

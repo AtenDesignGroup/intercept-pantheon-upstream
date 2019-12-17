@@ -1,7 +1,7 @@
 {
     "_links": {
         "self": {
-            "href": "http:\/\/default\/event\/2019-12-12\/staff-favorite-out-past?_format=hal_json"
+            "href": "http:\/\/default\/event\/2019-12-13\/staff-favorite-out-past?_format=hal_json"
         },
         "type": {
             "href": "http:\/\/drupal.org\/rest\/type\/node\/event"
@@ -70,7 +70,7 @@
     ],
     "vid": [
         {
-            "value": 26
+            "value": 18
         }
     ],
     "langcode": [
@@ -284,7 +284,7 @@
     ],
     "changed": [
         {
-            "value": "2019-12-09T19:16:13+00:00",
+            "value": "2019-12-10T20:03:48+00:00",
             "lang": "en",
             "format": "Y-m-d\\TH:i:sP"
         }
@@ -315,7 +315,7 @@
     ],
     "path": [
         {
-            "alias": "\/event\/2019-12-12\/staff-favorite-out-past",
+            "alias": "\/event\/2019-12-13\/staff-favorite-out-past",
             "pid": 15,
             "langcode": "en",
             "lang": "en"
@@ -328,8 +328,8 @@
     ],
     "field_date_time": [
         {
-            "value": "2019-12-12T18:00:00+00:00",
-            "end_value": "2019-12-12T19:45:00+00:00"
+            "value": "2019-12-13T18:00:00+00:00",
+            "end_value": "2019-12-13T19:45:00+00:00"
         }
     ],
     "field_event_designation": [
@@ -411,7 +411,7 @@
     ],
     "event_thumbnail": [
         {
-            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/main%20theater%20with%20people.jpg"
+            "thumbnail": "http:\/\/default\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-12\/main%20theater%20with%20people_8.jpg"
         }
     ]
 }

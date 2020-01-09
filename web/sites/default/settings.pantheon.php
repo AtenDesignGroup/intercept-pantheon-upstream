@@ -149,6 +149,12 @@ if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
   $settings["file_temp_path"] = $_SERVER['HOME'] .'/tmp';
 }
 
+// Keeps performance fast with JSON:API and MariaDB.
+// See https://www.drupal.org/project/drupal/issues/3022864#comment-13256190.
+if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
+  $databases['default']['default']['init_commands']['optimizer_search_depth'] = 'SET SESSION optimizer_search_depth = 0';
+}
+
 /**
  * Place Twig cache files in the Pantheon rolling temporary directory.
  * A new rolling temporary directory is provided on every code deploy,
@@ -201,4 +207,3 @@ if (empty($settings['file_scan_ignore_directories'])) {
     'bower_components',
   ];
 }
-

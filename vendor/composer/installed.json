@@ -3990,7 +3990,7 @@
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/intercept_base.git",
-            "reference": "f0a38ab9c4c4775b80f44b9f0f6b23b4f72267f4"
+            "reference": "dd8ac01875b8fe06b4e2fa07ec1681ee3f60904e"
         },
         "require": {
             "drupal/components": "^1.0",
@@ -4006,7 +4006,7 @@
             },
             "drupal": {
                 "version": "8.x-1.x-dev",
-                "datestamp": "1578588783",
+                "datestamp": "1578597183",
                 "security-coverage": {
                     "status": "not-covered",
                     "message": "Project has not opted into security advisory coverage!"

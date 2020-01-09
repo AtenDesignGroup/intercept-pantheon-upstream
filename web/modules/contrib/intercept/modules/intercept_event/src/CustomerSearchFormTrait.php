@@ -41,6 +41,9 @@ trait CustomerSearchFormTrait {
     if (!empty($values['email'])) {
       $query['EM'] = $values['email'];
     }
+    if (!empty($values['barcode'])) { 
+      $query['PATB'] = $values['barcode'];
+    }
     if ($this->client()) {
       $results = $this->client()->patron->searchAnd($query);
     }

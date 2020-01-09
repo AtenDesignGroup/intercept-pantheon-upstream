@@ -27,12 +27,16 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
       return [
         'total' => NULL,
         'total_waitlist' => NULL,
+        'remaining_registration' => NULL,
+        'remaining_waitlist' => NULL,
         'status' => NULL,
       ];
     }
     $this->getEntity()->addCacheableDependency($this->setValue([
       'total' => $this->getTotal(),
       'total_waitlist' => $this->getTotalWaitlist(),
+      'remaining_registration' => $this->getRemainingRegistrationCapacity(),
+      'remaining_waitlist' => $this->getRemainingWaitlist(),
       'status' => $this->getStatus(),
     ]));
   }
@@ -75,6 +79,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
     if ($this->regEnded()) {
       return 'closed';
     }
+
     // Has a capacity and it's filled.
     if ($this->regInProcess() && $this->capacityFull()) {
       // Has a waiting list and it's not full.
@@ -83,10 +88,12 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
       }
       return 'full';
     }
+
     // Registration date has not started.
     if ($this->regPending()) {
       return 'open_pending';
     }
+
     return $default_status;
   }
 
@@ -124,6 +131,16 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
   }
 
   /**
+   * Gets the waitlist maximum capacity.
+   *
+   * @return int
+   *   Whether the waitlist field is enabled.
+   */
+  protected function waitlistCapacity() {
+    return $this->getEntity()->get('field_waitlist_max')->getString();
+  }
+
+  /**
    * Number of waitlisted registrations is more than the limit.
    *
    * @return bool
@@ -131,7 +148,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    */
   protected function waitlistFull() {
     $has_waitlist = $this->hasWaitlist();
-    $waitlist_max = $this->getEntity()->get('field_waitlist_max')->getString();
+    $waitlist_max = $this->waitlistCapacity();
 
     // We treat an event with no waitlist as being full.
     if (!$has_waitlist) {
@@ -146,13 +163,23 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
   }
 
   /**
+   * Gets the waitlist maximum capacity.
+   *
+   * @return int
+   *   Whether the waitlist field is enabled.
+   */
+  protected function registrationCapacity() {
+    return $this->getEntity()->get('field_capacity_max')->value;
+  }
+
+  /**
    * Number of registrations is more than the limit.
    *
    * @return bool
    *   Whether the number of registrations is more than the limit.
    */
   protected function capacityFull() {
-    $capacity_max = $this->getEntity()->get('field_capacity_max')->value;
+    $capacity_max = $this->registrationCapacity();
     if (is_null($capacity_max)) {
       return FALSE;
     }
@@ -265,6 +292,32 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
       $waitlist += (int) $registration->total();
     }
     return $waitlist;
+  }
+
+  /**
+   * Number of remaining waitlisted event registration spots.
+   *
+   * @return int
+   *   The number of remaining waitlisted event registration spots.
+   */
+  protected function getRemainingRegistrationCapacity() {
+    $registered = $this->getTotal();
+    $registration_capacity = $this->registrationCapacity();
+
+    return $registration_capacity - $registered;
+  }
+
+  /**
+   * Number of remaining waitlisted event registration spots.
+   *
+   * @return int
+   *   The number of remaining waitlisted event registration spots.
+   */
+  protected function getRemainingWaitlist() {
+    $waitlisted = $this->getTotalWaitlist();
+    $waitlist_capacity = $this->waitlistCapacity();
+
+    return $waitlist_capacity - $waitlisted;
   }
 
   /**

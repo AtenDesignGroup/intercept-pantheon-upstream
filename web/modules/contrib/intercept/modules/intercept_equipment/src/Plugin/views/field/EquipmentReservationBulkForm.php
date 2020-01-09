@@ -2,7 +2,7 @@
 
 namespace Drupal\intercept_equipment\Plugin\views\field;
 
-use Drupal\system\Plugin\views\field\BulkForm;
+use Drupal\views\Plugin\views\field\BulkForm;
 
 /**
  * Defines a equipment reservation operations bulk form element.

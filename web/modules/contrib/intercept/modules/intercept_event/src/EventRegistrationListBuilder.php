@@ -119,7 +119,7 @@ class EventRegistrationListBuilder extends EntityListBuilder {
     elseif (!empty($uid)) {
       // Backup info can come from $user if it's a non-customer.
       $user = User::load($uid);
-      $row['name'] = $user->getUsername();
+      $row['name'] = $user->getDisplayName();
     }
     elseif (!empty($guest_name)) {
       $guest_email = $entity->get('field_guest_email')->getValue();

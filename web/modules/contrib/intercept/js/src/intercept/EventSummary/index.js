@@ -38,7 +38,7 @@ function EventSummary(props) {
         key={id}
         modifiers={[image ? 'with-image' : 'without-image', 'constrained', 'card']}
         image={image}
-        subtitle={get(event, 'relationships.field_location.attributes.title')}
+        subtitle={get(event, 'relationships.field_location.0.attributes.title')}
         title={get(event, 'attributes.title')}
         titleUrl={
           event.attributes.path ? event.attributes.path.alias : `/node/${event.attributes.nid}`

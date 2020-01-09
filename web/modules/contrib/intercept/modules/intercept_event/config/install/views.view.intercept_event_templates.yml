@@ -551,7 +551,20 @@ display:
             format: basic_html
           plugin_id: text
       footer: {  }
-      empty: {  }
+      empty:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content:
+            value: 'No event templates created.  <a href="/node/add/event?destination=[current-page:url:path]">Create an event ></a>'
+            format: basic_html
+          plugin_id: text
       relationships: {  }
       arguments: {  }
       display_extenders: {  }
@@ -565,7 +578,6 @@ display:
       tags:
         - 'config:field.storage.node.field_event_audience'
         - 'config:field.storage.node.field_event_type'
-        - extensions
   embed:
     display_plugin: embed
     id: embed
@@ -583,4 +595,3 @@ display:
       tags:
         - 'config:field.storage.node.field_event_audience'
         - 'config:field.storage.node.field_event_type'
-        - extensions

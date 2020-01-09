@@ -111,7 +111,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t(self::SUCCESS_MESSAGE, [
+        \Drupal::messenger()->addMessage($this->t(self::SUCCESS_MESSAGE, [
           '%label' => $entity->label(),
         ]));
         break;

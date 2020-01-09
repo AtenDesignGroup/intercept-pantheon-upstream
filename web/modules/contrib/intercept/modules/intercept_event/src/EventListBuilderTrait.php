@@ -130,7 +130,7 @@ trait EventListBuilderTrait {
     if (empty($entity)) {
       return '';
     }
-    return $title ? $entity->link($title) : $entity->link();
+    return $title ? $entity->toLink($title)->toString() : $entity->toLink()->toString();
   }
 
 }

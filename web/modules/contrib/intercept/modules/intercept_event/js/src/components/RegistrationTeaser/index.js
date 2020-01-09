@@ -49,7 +49,7 @@ class RegistrationTeaser extends React.PureComponent {
           event.attributes.path ? event.attributes.path.alias : `/node/${event.attributes.nid}`
         }
         image={image}
-        supertitle={get(event, 'relationships.field_location.attributes.title')}
+        supertitle={get(event, 'relationships.field_location.0.attributes.title')}
         date={{
           month: date.utcOffset(utils.getUserUtcOffset()).format('MMM'),
           date: date.utcOffset(utils.getUserUtcOffset()).format('D'),

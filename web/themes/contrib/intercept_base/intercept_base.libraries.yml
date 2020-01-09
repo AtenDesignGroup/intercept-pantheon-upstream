@@ -36,6 +36,15 @@ styleguide:
   css:
     theme:
       build/libraries/styleguide/styleguide.css: {}
+
+# User Events
+userEvents:
+  js:
+    build/libraries/userEvents/userEvents.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+
 #
 # Component Library
 #

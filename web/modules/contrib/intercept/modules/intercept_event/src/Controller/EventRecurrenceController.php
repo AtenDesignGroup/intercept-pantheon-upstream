@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\intercept_event\Entity\EventRecurrenceInterface;
 
 /**
@@ -25,8 +26,8 @@ class EventRecurrenceController extends ControllerBase implements ContainerInjec
    *   An array suitable for drupal_render().
    */
   public function revisionShow($event_recurrence_revision) {
-    $event_recurrence = $this->entityManager()->getStorage('event_recurrence')->loadRevision($event_recurrence_revision);
-    $view_builder = $this->entityManager()->getViewBuilder('event_recurrence');
+    $event_recurrence = $this->entityTypeManager()->getStorage('event_recurrence')->loadRevision($event_recurrence_revision);
+    $view_builder = $this->entityTypeManager()->getViewBuilder('event_recurrence');
 
     return $view_builder->view($event_recurrence);
   }
@@ -41,8 +42,8 @@ class EventRecurrenceController extends ControllerBase implements ContainerInjec
    *   The page title.
    */
   public function revisionPageTitle($event_recurrence_revision) {
-    $event_recurrence = $this->entityManager()->getStorage('event_recurrence')->loadRevision($event_recurrence_revision);
-    return $this->t('Revision of %title from %date', ['%title' => $event_recurrence->label(), '%date' => format_date($event_recurrence->getRevisionCreationTime())]);
+    $event_recurrence = $this->entityTypeManager()->getStorage('event_recurrence')->loadRevision($event_recurrence_revision);
+    return $this->t('Revision of %title from %date', ['%title' => $event_recurrence->label(), '%date' => \Drupal::service('date.formatter')->format($event_recurrence->getRevisionCreationTime())]);
   }
 
   /**
@@ -60,7 +61,7 @@ class EventRecurrenceController extends ControllerBase implements ContainerInjec
     $langname = $event_recurrence->language()->getName();
     $languages = $event_recurrence->getTranslationLanguages();
     $has_translations = (count($languages) > 1);
-    $event_recurrence_storage = $this->entityManager()->getStorage('event_recurrence');
+    $event_recurrence_storage = $this->entityTypeManager()->getStorage('event_recurrence');
 
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $event_recurrence->label()]) : $this->t('Revisions for %title', ['%title' => $event_recurrence->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
@@ -88,10 +89,10 @@ class EventRecurrenceController extends ControllerBase implements ContainerInjec
         // Use revision link to link to revisions that are not active.
         $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $event_recurrence->getRevisionId()) {
-          $link = $this->l($date, new Url('entity.event_recurrence.revision', ['event_recurrence' => $event_recurrence->id(), 'event_recurrence_revision' => $vid]));
+          $link = Link::fromTextAndUrl($date, new Url('entity.event_recurrence.revision', ['event_recurrence' => $event_recurrence->id(), 'event_recurrence_revision' => $vid]));
         }
         else {
-          $link = $event_recurrence->link($date);
+          $link = $event_recurrence->toLink($date)->toString();
         }
 
         $row = [];

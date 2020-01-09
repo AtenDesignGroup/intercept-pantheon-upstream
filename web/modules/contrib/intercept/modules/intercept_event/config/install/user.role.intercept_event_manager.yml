@@ -6,10 +6,9 @@ label: 'Intercept Event Manager'
 weight: 4
 is_admin: null
 permissions:
-  - 'access  management'
-  - 'access  management page default'
   - 'access event registrations tab'
   - 'access management'
+  - 'access management page default'
   - 'access management page equipment_reservations'
   - 'access management page event_templates'
   - 'access management page events'

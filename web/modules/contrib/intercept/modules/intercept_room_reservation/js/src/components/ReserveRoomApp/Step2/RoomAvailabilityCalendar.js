@@ -146,7 +146,7 @@ class RoomAvailabilityCalendar extends React.Component {
     if (reservations) {
       events = map(reservations, (item, key) => ({
         key,
-        title: 'Booked',
+        title: item.message || 'Booked',
         ...item,
       }));
     }

@@ -768,6 +768,45 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+        field_event_designation_value:
+          id: field_event_designation_value
+          table: node__field_event_designation
+          field: field_event_designation_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: or
+          value:
+            events: events
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          plugin_id: list_field
         uid_current_6:
           id: uid_current_6
           table: users_field_data
@@ -1023,7 +1062,7 @@ display:
           admin_label: ''
           operator: '!='
           value: canceled
-          group: 1
+          group: 4
           exposed: false
           expose:
             operator_id: ''
@@ -1053,17 +1092,16 @@ display:
           entity_type: event_registration
           entity_field: status
           plugin_id: string
-        field_event_designation_value:
-          id: field_event_designation_value
-          table: node__field_event_designation
-          field: field_event_designation_value
-          relationship: none
+        status_2:
+          id: status_2
+          table: event_registration
+          field: status
+          relationship: reverse__event_registration__field_event
           group_type: group
           admin_label: ''
-          operator: or
-          value:
-            events: events
-          group: 1
+          operator: empty
+          value: ''
+          group: 4
           exposed: false
           expose:
             operator_id: ''
@@ -1077,7 +1115,7 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-            reduce: false
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -1090,8 +1128,9 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          reduce_duplicates: false
-          plugin_id: list_field
+          entity_type: event_registration
+          entity_field: status
+          plugin_id: string
       defaults:
         filters: false
         filter_groups: false
@@ -1104,6 +1143,7 @@ display:
           1: AND
           2: OR
           3: OR
+          4: OR
       pager:
         type: full
         options:

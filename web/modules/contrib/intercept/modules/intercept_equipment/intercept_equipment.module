@@ -129,7 +129,7 @@ function intercept_equipment_equipment_reservation_insert(EntityInterface $entit
     $user = \Drupal::currentUser();
     $email = $user->getEmail();
     // Username of requestor.
-    $username = $user->getUsername();
+    $username = $user->getDisplayName();
     // Equipment title.
     $equipment_title = $equipment_node->getTitle();
     // Dates/times of reservation.

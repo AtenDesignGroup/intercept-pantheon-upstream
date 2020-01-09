@@ -209,7 +209,7 @@ class ManagementControllerBase extends ControllerBase {
       $vocabulary = $taxonomy_storage->load($id);
       $output['#content']['table'][] = [
         'name' => [
-          '#markup' => $vocabulary->link(NULL, 'overview-form')->__toString(),
+          '#markup' => $vocabulary->toLink(NULL, 'overview-form')->toString(),
         ],
         'description' => [
           '#markup' => $vocabulary->get('description'),

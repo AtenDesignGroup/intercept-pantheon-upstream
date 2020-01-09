@@ -153,8 +153,8 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    *   An array suitable for drupal_render().
    */
   public function revisionShow($room_reservation_revision) {
-    $room_reservation = $this->entityManager()->getStorage('room_reservation')->loadRevision($room_reservation_revision);
-    $view_builder = $this->entityManager()->getViewBuilder('room_reservation');
+    $room_reservation = $this->entityTypeManager()->getStorage('room_reservation')->loadRevision($room_reservation_revision);
+    $view_builder = $this->entityTypeManager()->getViewBuilder('room_reservation');
 
     return $view_builder->view($room_reservation);
   }
@@ -169,8 +169,8 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    *   The page title.
    */
   public function revisionPageTitle($room_reservation_revision) {
-    $room_reservation = $this->entityManager()->getStorage('room_reservation')->loadRevision($room_reservation_revision);
-    return $this->t('Revision of %title from %date', ['%title' => $room_reservation->label(), '%date' => format_date($room_reservation->getRevisionCreationTime())]);
+    $room_reservation = $this->entityTypeManager()->getStorage('room_reservation')->loadRevision($room_reservation_revision);
+    return $this->t('Revision of %title from %date', ['%title' => $room_reservation->label(), '%date' => \Drupal::service('date.formatter')->format($room_reservation->getRevisionCreationTime())]);
   }
 
   /**
@@ -188,7 +188,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     $langname = $room_reservation->language()->getName();
     $languages = $room_reservation->getTranslationLanguages();
     $has_translations = (count($languages) > 1);
-    $room_reservation_storage = $this->entityManager()->getStorage('room_reservation');
+    $room_reservation_storage = $this->entityTypeManager()->getStorage('room_reservation');
 
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $room_reservation->label()]) : $this->t('Revisions for %title', ['%title' => $room_reservation->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
@@ -216,10 +216,10 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
         // Use revision link to link to revisions that are not active.
         $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $room_reservation->getRevisionId()) {
-          $link = $this->l($date, new Url('entity.room_reservation.revision', ['room_reservation' => $room_reservation->id(), 'room_reservation_revision' => $vid]));
+          $link = Link::fromTextAndUrl($date, new Url('entity.room_reservation.revision', ['room_reservation' => $room_reservation->id(), 'room_reservation_revision' => $vid]));
         }
         else {
-          $link = $room_reservation->link($date);
+          $link = $room_reservation->toLink($date)->toString();
         }
 
         $row = [];

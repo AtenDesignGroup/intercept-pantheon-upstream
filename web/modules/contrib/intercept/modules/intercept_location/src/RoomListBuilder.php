@@ -51,7 +51,7 @@ class RoomListBuilder extends NodeListBuilder {
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\node\NodeInterface $entity */
     if ($entity->bundle() == 'location') {
-      $row['title'] = Unicode::strtoupper($entity->label());
+      $row['title'] = Unicode::mb_strtoupper($entity->label());
       $row['capacity'] = [
         'data' => '',
         'colspan' => 2,
@@ -61,7 +61,7 @@ class RoomListBuilder extends NodeListBuilder {
     }
 
     $langcode = $entity->language()->getId();
-    $uri = $entity->urlInfo();
+    $uri = $entity->toUrl();
     $options = $uri->getOptions();
     $options += ($langcode != LanguageInterface::LANGCODE_NOT_SPECIFIED && isset($languages[$langcode]) ? ['language' => $languages[$langcode]] : []);
     $uri->setOptions($options);

@@ -44,7 +44,7 @@ class EventTeaser extends PureComponent {
         key={id}
         modifiers={[image ? 'with-image' : 'without-image']}
         image={image}
-        supertitle={get(event, 'relationships.field_location.attributes.title')}
+        supertitle={get(event, 'relationships.field_location.0.attributes.title')}
         title={event.attributes.title}
         titleUrl={
           event.attributes.path ? event.attributes.path.alias : `/node/${event.attributes.nid}`

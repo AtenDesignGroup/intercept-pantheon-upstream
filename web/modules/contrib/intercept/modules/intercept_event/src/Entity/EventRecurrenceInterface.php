@@ -39,6 +39,24 @@ interface EventRecurrenceInterface extends ContentEntityInterface, RevisionLogIn
   public function getDate();
 
   /**
+   * Gets the recurring dates for this Event recurrence.
+   *
+   * @return \Generator|\Drupal\date_recur\DateRange[]
+   *   The occurrences.
+   *
+   * @throws \Exception
+   */
+  public function getDateOccurrences();
+
+  /**
+   * Get the date storage format of this Event recurrence.
+   *
+   * @return string
+   *   A date format string.
+   */
+  public function getDateStorageFormat();
+
+  /**
    * Gets the Nodes referencing this Event recurrence.
    *
    * @return array

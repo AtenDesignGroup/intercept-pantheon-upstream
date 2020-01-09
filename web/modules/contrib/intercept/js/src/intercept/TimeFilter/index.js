@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import TimePicker from 'material-ui-pickers/TimePicker';
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider';
 
 const styles = theme => ({
   container: {

@@ -33,7 +33,7 @@ class EventAttendanceListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row = [];
     $this->addEventRow($row, $entity);
-    $row['name'] = $entity->link();
+    $row['name'] = $entity->toLink()->toString();
     $row['count'] = $entity->total();
     $zip = $entity->field_guest_zip_code->getString();
     $link = !empty($zip) ? $this->t('Guest: @zip', ['@zip' => $zip]) : $this->getUserLink($entity);

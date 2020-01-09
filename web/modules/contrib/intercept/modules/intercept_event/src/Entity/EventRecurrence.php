@@ -120,6 +120,30 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
   /**
    * {@inheritdoc}
    */
+  public function getDateStorageFormat() {
+    return $this->getRecurField()->getDateStorageFormat();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDateOccurrences() {
+    $recurring_rule_field = $this->getRecurField();
+
+    /** @var Drupal\date_recur\DateRecurHelperInterface $handler */
+    $helper = $recurring_rule_field->getHelper();
+    if ($helper->isInfinite() || !$recurring_rule_field->isRecurring()) {
+      return $helper->generateOccurrences();
+    }
+    else {
+      $occurrences = $helper->getOccurrences();
+      return $occurrences;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getEvents() {
     $base_event_id = $this->getBaseEventId();
     if (!$base_event_id || $this->isNew()) {

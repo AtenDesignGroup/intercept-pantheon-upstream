@@ -6,8 +6,6 @@ label: 'Intercept Equipment Reservation Manager'
 weight: 4
 is_admin: null
 permissions:
-  - 'access  management'
-  - 'access  management page default'
   - 'access management'
   - 'access management page equipment_reservations'
   - 'access staff management'

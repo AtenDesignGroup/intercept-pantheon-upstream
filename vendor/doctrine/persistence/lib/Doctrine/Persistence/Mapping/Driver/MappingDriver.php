@@ -38,3 +38,4 @@ interface MappingDriver
 }
 
 interface_exists(\Doctrine\Common\Persistence\Mapping\Driver\MappingDriver::class);
+interface_exists(ClassMetadata::class);

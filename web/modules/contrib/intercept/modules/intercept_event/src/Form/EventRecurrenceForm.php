@@ -57,13 +57,13 @@ class EventRecurrenceForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Event Recurrence.', [
+        \Drupal::messenger()->addMessage($this->t('Created the %label Event Recurrence.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Event Recurrence.', [
+        \Drupal::messenger()->addMessage($this->t('Saved the %label Event Recurrence.', [
           '%label' => $entity->label(),
         ]));
     }

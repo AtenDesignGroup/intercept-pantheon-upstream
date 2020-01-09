@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Theme override to present all user data.
+ *
+ * This template is used when viewing a registered user's page,
+ * e.g., example.com/user/123. 123 being the user's ID.
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.field_example'. Fields attached to a user
+ *   such as 'user_picture' are available as 'content.user_picture'.
+ * - attributes: HTML attributes for the container element.
+ * - user: A Drupal User entity.
+ *
+ * @see template_preprocess_user()
+ */
+#}
+<article{{ attributes }}>
+  <h1>Welcome!</h1>
+  <div class="l--section">
+    <h2>{{ "Upcoming Room Reservation"|t }}</h2>
+    {{- content.room_reservation -}}
+  </div>
+
+  {{- content.recent_events -}}
+
+  {% if content.suggested_events is not empty %}
+  <div class="l--section">
+    <h2>{{ "Events Recommended for You"|t }}</h2>
+    {{- content.suggested_events -}}
+  </div>
+  {% endif %}
+</article>

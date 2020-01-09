@@ -3,7 +3,7 @@
  * @file event_recommended.html.twig
  * Default theme implementation to present Event Recommended data.
  *
- * This template is used when viewing Event Recommended pages.
+ * This template is used when viewing recommended events.
  *
  *
  * Available variables:
@@ -18,5 +18,7 @@
 <div{{ attributes.addClass('events-recommended') }}>
   {% if content %}
     {{- content -}}
+  {% else %}
+    No recommended events.
   {% endif %}
 </div>

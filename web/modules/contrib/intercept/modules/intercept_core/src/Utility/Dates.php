@@ -164,15 +164,15 @@ class Dates {
   /**
    * Converts the timezone for a date object.
    *
-   * @param \Drupal\Core\Datetime\DrupalDateTime $date
-   *   The DrupalDateTime object.
+   * @param \Drupal\Core\Datetime\DrupalDateTime|\DateTime $date
+   *   The DrupalDateTime or DateTime object.
    * @param string $new_timezone
    *   PHP Timezone name.
    *
    * @return \Drupal\Core\Datetime\DrupalDateTime
    *   The converted DrupalDateTime object.
    */
-  public function convertTimezone(DrupalDateTime $date, $new_timezone = 'UTC') {
+  public function convertTimezone($date, $new_timezone = 'UTC') {
     $new_date = clone $date;
     $new_date->setTimezone($this->getTimezone($new_timezone));
     return $new_date;

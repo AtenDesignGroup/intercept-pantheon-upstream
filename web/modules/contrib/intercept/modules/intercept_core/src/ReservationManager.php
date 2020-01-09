@@ -172,14 +172,12 @@ class ReservationManager implements ReservationManagerInterface {
    *   The reservation entity to update.
    * @param \Drupal\node\NodeInterface $event
    *   The event node that also has been updated.
-   * @param array $params
-   *   Additional info to pass to the reservation entity. (not used)
    */
-  public function updateEventReservation(RoomReservationInterface $reservation, NodeInterface $event, array $params = []) {
+  public function updateEventReservation(RoomReservationInterface $reservation, NodeInterface $event) {
     if (!$event->field_room->equals($reservation->field_room)) {
       $reservation->field_room = $event->field_room;
-      $reservation->save();
     }
+    $reservation->save();
   }
 
   /**
@@ -254,7 +252,7 @@ class ReservationManager implements ReservationManagerInterface {
       '#default_value' => $start_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
-        'event' => 'change',
+        'event' => 'blur',
         'disable-refocus' => TRUE,
         'wrapper' => 'event-room-reservation-status-ajax-wrapper',
       ],
@@ -266,7 +264,7 @@ class ReservationManager implements ReservationManagerInterface {
       '#default_value' => $end_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
-        'event' => 'change',
+        'event' => 'blur',
         'disable-refocus' => TRUE,
         'wrapper' => 'event-room-reservation-status-ajax-wrapper',
       ],
@@ -534,6 +532,9 @@ class ReservationManager implements ReservationManagerInterface {
       $query->condition('field_dates.end_value', $date->format('Y-m-d\TH:i:sP'), '>');
       $query->condition('field_status', ['requested', 'approved'], 'IN');
     });
+
+    $this->moduleHandler->alter('intercept_room_reservation_limit', $reservations);
+
     return count($reservations);
   }
 
@@ -561,8 +562,6 @@ class ReservationManager implements ReservationManagerInterface {
    *   The parameters to check availability for.
    */
   public function availability(array $params = []) {
-    // Show debug information in return.
-    $debug = !empty($params['debug']);
     // Reservations keyed by room uuid.
     if (empty($params['duration'])) {
       $params['duration'] = $this->duration($params['start'], $params['end']);
@@ -600,11 +599,6 @@ class ReservationManager implements ReservationManagerInterface {
     $nodes = $this->nodes('room', isset($params['rooms']) ? $params['rooms'] : []);
     $return = [];
 
-    $timezone_info = [
-      'default_timezone' => $this->dateUtility->getDefaultTimezone()->getName(),
-      'storage_timezone' => $this->dateUtility->getStorageTimezone()->getName(),
-    ];
-
     $param_info = [];
     foreach (['start', 'end'] as $param) {
       $date = $this->dateUtility->getDrupalDate($params[$param]);
@@ -614,10 +608,6 @@ class ReservationManager implements ReservationManagerInterface {
 
     foreach ($nodes as $node) {
       $uuid = $node->uuid();
-      if ($debug) {
-        $return[$uuid]['debug'] = [];
-        $debug_data = &$return[$uuid]['debug'];
-      }
       $reservations = !empty($data[$node->uuid()]) ? $data[$node->uuid()] : [];
       $return[$uuid]['has_reservation_conflict'] = $this->hasReservationConflict($reservations, $params);
       $return[$uuid]['has_open_hours_conflict'] = $this->hasOpeningHoursConflict($reservations, $params, $node);
@@ -626,32 +616,7 @@ class ReservationManager implements ReservationManagerInterface {
       $return[$uuid]['is_closed'] = $is_closed;
       $return[$uuid]['closed_message'] = $this->closedMessage($params, $node);
       $return[$uuid]['has_location'] = !empty($this->getLocation($node));
-      if ($debug) {
-        $debug_data['schedule'] = $this->getSchedule($reservations, $params);
-        $debug_data['schedule_by_open_hours'] = $this->getScheduleByOpenHours($reservations, $params, $node);
-        $debug_data['hours'] = FALSE;
-        if (!$this->isClosed($params, $node)) {
-          $hours = $this->getHours($params, $node);
-          $hours_start = $this->timeToDate($hours['starthours'], $this->dateUtility->getDate($params['start']));
-          $hours_end = $this->timeToDate($hours['endhours'], $this->dateUtility->getDate($params['end']));
-          $debug_data['hours'] = [
-            'start' => ['raw' => $hours['starthours']],
-            'end' => ['raw' => $hours['endhours']],
-          ];
-
-          $debug_data['hours']['start']['default_timezone'] = $hours_start->format(self::FORMAT);
-          $debug_data['hours']['start']['storage_timezone'] = $this->dateUtility->convertTimezone($hours_start, 'storage')->format(self::FORMAT);
-          $debug_data['hours']['end']['default_timezone'] = $hours_end->format(self::FORMAT);
-          $debug_data['hours']['end']['storage_timezone'] = $this->dateUtility->convertTimezone($hours_end, 'storage')->format(self::FORMAT);
-        }
-      }
-      $return[$uuid]['dates'] = $this->getDates($reservations);
-      if ($debug) {
-        $debug_data['room_nid'] = $node->id();
-        $debug_data['location_nid'] = !empty($this->getLocation($node)) ? $this->getLocation($node)->id() : FALSE;
-        $debug_data['param_info'] = $param_info;
-        $debug_data['timezone_info'] = $timezone_info;
-      }
+      $return[$uuid]['dates'] = $this->getDates($reservations, $params, $node);
     }
     return $return;
   }
@@ -660,20 +625,27 @@ class ReservationManager implements ReservationManagerInterface {
    * Gets an array of start and end dates, keyed by reservation UUID.
    *
    * @param array $reservations
-   *   An array of Reservation entities.
+   *   An array of existing reservations.
+   * @param array $params
+   *   An array of reservation parameters.
+   * @param \Drupal\node\NodeInterface $node
+   *   A Location node.
    *
    * @return array
    *   An array of start and end dates, keyed by reservation UUID.
    */
-  public function getDates(array $reservations) {
-    $return = [];
+  public function getDates(array $reservations, array $params, NodeInterface $node) {
+    $dates = [];
     foreach ($reservations as $reservation) {
-      $return[$reservation->uuid()] = [
+      $dates[$reservation->uuid()] = [
         'start' => $reservation->getStartDate()->format(self::FORMAT),
         'end' => $reservation->getEndDate()->format(self::FORMAT),
       ];
     }
-    return $return;
+
+    $this->moduleHandler->alter('intercept_room_reservation_dates', $dates, $params, $node);
+
+    return $dates;
   }
 
   /**

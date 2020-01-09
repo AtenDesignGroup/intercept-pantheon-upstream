@@ -11,6 +11,8 @@
 
 .header__utilities > div {
   background-color: #4C4D4F; }
+  .header__utilities > div label {
+    color: #fff; }
   @media (max-width: 61.9375em) {
     .header__utilities > div {
       padding-left: 30px;
@@ -236,3 +238,68 @@ label[for="account-trigger"],
       label[for="account-trigger"] .desktop,
       .account-trigger--logged-out .desktop {
         display: inline; } }
+
+label[for="account-trigger"].account-trigger--logged-out {
+  text-decoration: none; }
+  @media (min-width: 62em) {
+    label[for="account-trigger"].account-trigger--logged-out {
+      margin-right: 0;
+      padding: 0;
+      text-align: center;
+      width: 100%; } }
+  label[for="account-trigger"].account-trigger--logged-out::after {
+    display: none; }
+  label[for="account-trigger"].account-trigger--logged-out ~ div {
+    background: #EEF1F4; }
+    @media (min-width: 62em) {
+      label[for="account-trigger"].account-trigger--logged-out ~ div {
+        background: #4C4D4F;
+        width: 25rem; } }
+  label[for="account-trigger"].account-trigger--logged-out span {
+    width: 100%; }
+
+@media (max-width: 61.9375em) {
+  .account-trigger:checked ~ label[for="account-trigger"].account-trigger--logged-out {
+    background: #EEF1F4; } }
+
+.header #user-login-form .form-item {
+  margin: 0 0 1rem; }
+
+.header #user-login-form .field-suffix {
+  font-size: 14px;
+  margin: .25rem 0 0 0; }
+  .header #user-login-form .field-suffix a {
+    text-decoration: none;
+    font-weight: normal; }
+
+.header #user-login-form label {
+  color: #7A7D81;
+  display: block;
+  font-weight: bold;
+  margin: 0 0 .25rem; }
+  @media (min-width: 62em) {
+    .header #user-login-form label {
+      font-size: 0.72917rem;
+      color: #fff;
+      font-weight: normal; } }
+  @media (min-width: 62em) and (min-width: 48em) {
+    .header #user-login-form label {
+      font-size: 0.9375rem; } }
+  @media (min-width: 62em) and (min-width: 62em) {
+    .header #user-login-form label {
+      font-size: 1.125rem; } }
+
+.header #user-login-form input {
+  border: 0;
+  display: block;
+  padding: 1rem;
+  width: 100%; }
+  .header #user-login-form input[type="submit"] {
+    font-weight: 600;
+    padding-bottom: 1.25rem;
+    padding-top: 1.25rem; }
+
+.header #user-login-form + .item-list ul > li {
+  margin-bottom: 0.5rem; }
+  .header #user-login-form + .item-list ul > li a {
+    color: #fff; }

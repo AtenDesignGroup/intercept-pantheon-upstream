@@ -171,6 +171,37 @@ function _intercept_base_add_grunticon_support(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_user().
+ */
+function intercept_base_preprocess_user(array &$variables) {
+  $block_manager = \Drupal::service('plugin.manager.block');
+  $blocks = [
+    'suggested_events' => [
+      'id' => 'user_suggested_events',
+      'params' => ['results' => 3],
+    ],
+  ];
+
+  foreach ($blocks as $key => $config) {
+    $params = isset($config['params']) ? $config['params'] : [];
+    $block = $block_manager->createInstance($config['id'], $params);
+    $variables['content'][$key] = $block->build();
+  }
+
+  $variables['content']['recent_events'] = [
+    '#type' => 'view',
+    '#name' => 'intercept_user_events',
+    '#display_id' => 'embed_recent_events',
+  ];
+
+  $variables['content']['room_reservation'] = [
+    '#type' => 'view',
+    '#name' => 'intercept_room_reservations',
+    '#display_id' => 'upcoming',
+  ];
+}
+
+/**
  * Implements hook_preprocess_views_view_field().
  */
 function intercept_base_preprocess_views_view_field(&$variables) {

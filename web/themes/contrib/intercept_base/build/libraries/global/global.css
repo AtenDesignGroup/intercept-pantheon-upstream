@@ -231,7 +231,7 @@ h4,
 h5,
 h6 {
   color: #4C4D4F;
-  font-weight: 500;
+  font-weight: 900;
   margin: 0; }
 
 h1:not([class]) {
@@ -1514,6 +1514,11 @@ tbody + tbody {
 
 .form-item {
   margin: 1em 0; }
+  .form-item label {
+    font-size: 1rem; }
+
+.form-checkbox + label {
+  padding-left: 0.3125rem; }
 
 .form-item--inline {
   display: -webkit-box;

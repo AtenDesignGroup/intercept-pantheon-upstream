@@ -310,7 +310,7 @@ class RecurringEventManager {
 
     $form['recurring_event']['link'] = [
       '#markup' => $this->t('Edit the @link', [
-        '@link' => $recurrence->event->entity->link('original', 'edit-form'),
+        '@link' => $recurrence->event->entity->toLink('original', 'edit-form')->toString(),
       ]),
     ];
 

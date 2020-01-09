@@ -301,7 +301,7 @@ class RoomReservationAvailabilityForm extends FormBase {
     $column = [
       $reservation->getStartDate()->format($this->format()),
       $reservation->getEndDate()->format($this->format()),
-      $reservation->link('Reservation'),
+      $reservation->toLink('Reservation')->toString,
       $duration,
     ];
 

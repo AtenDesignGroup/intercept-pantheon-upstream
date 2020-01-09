@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Class EquipmentReservationController.
@@ -39,8 +40,8 @@ class EquipmentReservationController extends ControllerBase implements Container
    *   An array suitable for drupal_render().
    */
   public function revisionShow($equipment_reservation_revision) {
-    $equipment_reservation = $this->entityManager()->getStorage('equipment_reservation')->loadRevision($equipment_reservation_revision);
-    $view_builder = $this->entityManager()->getViewBuilder('equipment_reservation');
+    $equipment_reservation = $this->entityTypeManager()->getStorage('equipment_reservation')->loadRevision($equipment_reservation_revision);
+    $view_builder = $this->entityTypeManager()->getViewBuilder('equipment_reservation');
 
     return $view_builder->view($equipment_reservation);
   }
@@ -55,7 +56,7 @@ class EquipmentReservationController extends ControllerBase implements Container
    *   The page title.
    */
   public function revisionPageTitle($equipment_reservation_revision) {
-    $equipment_reservation = $this->entityManager()->getStorage('equipment_reservation')->loadRevision($equipment_reservation_revision);
+    $equipment_reservation = $this->entityTypeManager()->getStorage('equipment_reservation')->loadRevision($equipment_reservation_revision);
     return $this->t('Revision of %title from %date', ['%title' => $equipment_reservation->label(), '%date' => \Drupal::service('date.formatter')->format($equipment_reservation->getRevisionCreationTime())]);
   }
 
@@ -74,7 +75,7 @@ class EquipmentReservationController extends ControllerBase implements Container
     $langname = $equipment_reservation->language()->getName();
     $languages = $equipment_reservation->getTranslationLanguages();
     $has_translations = (count($languages) > 1);
-    $equipment_reservation_storage = $this->entityManager()->getStorage('equipment_reservation');
+    $equipment_reservation_storage = $this->entityTypeManager()->getStorage('equipment_reservation');
 
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $equipment_reservation->label()]) : $this->t('Revisions for %title', ['%title' => $equipment_reservation->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
@@ -102,7 +103,7 @@ class EquipmentReservationController extends ControllerBase implements Container
         // Use revision link to link to revisions that are not active.
         $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $equipment_reservation->getRevisionId()) {
-          $link = $this->l($date, new Url('entity.equipment_reservation.revision', ['equipment_reservation' => $equipment_reservation->id(), 'equipment_reservation_revision' => $vid]));
+          $link = Link::fromTextAndUrl($date, new Url('entity.equipment_reservation.revision', ['equipment_reservation' => $equipment_reservation->id(), 'equipment_reservation_revision' => $vid]));
         }
         else {
           $link = $equipment_reservation->link($date);

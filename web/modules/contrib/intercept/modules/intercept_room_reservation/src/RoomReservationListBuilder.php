@@ -33,7 +33,7 @@ class RoomReservationListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\intercept_room_reservation\Entity\RoomReservation */
-    $row['name'] = $entity->link($entity->getDateRange('UTC'));
+    $row['name'] = $entity->toLink($entity->getDateRange('UTC'))->toString();
     $row['room'] = $this->getEntityLabel($entity->field_room->entity, $this->t('No room'));
     $row['location'] = $entity->getLocation() ? $entity->getLocation()->link() : '';
     $row['user'] = $this->getEntityLabel($entity->field_user->entity, $this->t('No user'));
@@ -71,7 +71,7 @@ class RoomReservationListBuilder extends EntityListBuilder {
    *   The Room Reservation label.
    */
   private function getEntityLabel(EntityInterface $entity = NULL, $default = '') {
-    return $entity ? $entity->link() : $default;
+    return $entity ? $entity->toLink()->toString() : $default;
   }
 
 }

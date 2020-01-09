@@ -19,10 +19,6 @@
   }
 %}
 
-{% if room.field_room_fees %}
-  {% set fees = drupal_field('field_room_fees', 'node', room.id) %}
-{% endif %}
-
 {% set image = drupal_entity('media', room.image_primary.0.target_id, 'teaser') %}
 
 {% block tags %}
@@ -62,7 +58,9 @@
       modifiers: ['inline', 'small']
     } %}
   {% endif %}
-  {{fees}}
+  {% if room.field_room_fees %}
+    {{ drupal_field('field_room_fees', 'node', room.id) }}
+  {% endif %}
   {% if content.field_publicize|field_value %}
     {% include metadata with {
       title: "Publicize"|t(),

@@ -252,7 +252,9 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
       elseif (count($audiences_historical) > 0) {
         $audiences = $audiences_historical;
       }
-      $query->condition('field_event_audience', array_unique($audiences), 'IN');
+      if (!empty($audiences)) {
+        $query->condition('field_event_audience', array_unique($audiences), 'IN');
+      }
     }
 
     // Preferred Locations.
@@ -287,11 +289,18 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
     // Fallback - If we still have no events, try using all ORs in query.
     if (count($nodes) == 0) {
       if (!empty($audiences) || !empty($locations) || !empty($event_types)) {
+        $preferences = [
+          'field_event_audience' => $audiences,
+          'field_location' => $locations,
+          'field_event_type' => $event_types,
+        ];
         // Create the orConditionGroup.
-        $orGroup = $query_fallback->orConditionGroup()
-          ->condition('field_event_audience', array_unique($audiences), 'IN')
-          ->condition('field_location', array_unique($locations), 'IN')
-          ->condition('field_event_type', array_unique($event_types), 'IN');
+        $orGroup = $query_fallback->orConditionGroup();
+        foreach ($preferences as $field_name => $preference) {
+          if (!empty($preference)) {
+            $orGroup->condition($field_name, array_unique($preference), 'IN');
+          }
+        }
         // Add the group to the query.
         $query_fallback->condition($orGroup);
         $result = $query_fallback->execute();
@@ -311,14 +320,19 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
       }
     }
 
-    $build['results'] = [
-      '#theme' => 'events_recommended',
-      '#content' => $view->viewMultiple($nodes, $this->configuration['view_mode']),
-      '#cache' => [
-        'tags' => $this->getUser()->getCacheTags(),
-      ],
-    ];
-    $build['#cache']['tags'][] = 'flagging_list';
+    if (!empty($nodes)) {
+      $build['results'] = [
+        '#theme' => 'events_recommended',
+        '#content' => $view->viewMultiple($nodes, $this->configuration['view_mode']),
+        '#cache' => [
+          'tags' => $this->getUser()->getCacheTags(),
+        ],
+      ];
+      $build['#cache']['tags'][] = 'flagging_list';
+    }
+    else {
+      $build = [];
+    }
 
     return $build;
   }

@@ -40,9 +40,16 @@
 
       {% if header.utilities %}
       <div class="header__utilities">
+
         <input type="checkbox" id="account-trigger" class="account-trigger js-mobile-nav-trigger" value="expanded" />
+
+        {% if logged_in %}
         <label for="account-trigger">
           <span class="desktop">{{ "My Account"|t }}</span>
+        {% else %}
+          <label for="account-trigger" class="account-trigger--logged-out">
+          <span class="desktop">{{ "Log In / Sign Up"|t }}</span>
+        {% endif %}
           <span class="mobile">
             <svg class="nav-trigger__icon nav-trigger__icon--expand" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
               viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">

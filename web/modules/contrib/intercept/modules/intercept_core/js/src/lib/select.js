@@ -388,6 +388,10 @@ function getRegisterButtonText(mustRegister, statusEvent, cancelAllowed) {
   }
 }
 
+function getRegistrationRemaining(eventResource) {
+  return get(eventResource, 'data.attributes.registration.remaining_registration');
+}
+
 function getRegistrationOpenDate(eventResource) {
   const value = get(eventResource, 'data.attributes.field_event_register_period.value');
   return utils.getDateDisplay(value);
@@ -418,6 +422,8 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
     return 'You are on the waitlist';
   }
 
+  const availableCapacity = getRegistrationRemaining(eventResource);
+
   switch (statusEvent) {
     case 'open_pending':
       return `Registration opens ${getRegistrationOpenDate(eventResource)}`;
@@ -429,6 +435,15 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
       return 'Registration is closed';
     case 'expired':
       return 'This event has ended';
+    case 'open':
+      switch (availableCapacity) {
+        case 0:
+          return 'This event is full.';
+        case 1:
+          return `There is ${availableCapacity} seat available.`;
+        default:
+          return `There are ${availableCapacity} seats available.`;
+      }
     default:
       return null;
   }
@@ -565,8 +580,14 @@ export const roomsAscending = createSelector(roomsArray, items =>
 export const roomLabel = id =>
   createSelector(room(id), item => get(item, 'data.attributes.title') || '');
 
-export const roomLocation = id =>
-  createSelector(room(id), item => get(item, 'data.relationships.field_location.data.id'));
+export const roomLocation = id => createSelector(room(id), (item) => {
+  const fieldLocation = get(item, 'data.relationships.field_location.data');
+  // Handle field_location whether or not it's a multi-value field.
+  if (Array.isArray(fieldLocation) && fieldLocation.length > 0) {
+    return get(fieldLocation[0], 'id');
+  }
+  return get(fieldLocation, 'id');
+});
 
 export const roomCapacity = id =>
   createSelector(room(id), item => ({

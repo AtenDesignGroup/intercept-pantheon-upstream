@@ -79,7 +79,7 @@ abstract class EntityUpdateStatusFormBase extends ContentEntityConfirmFormBase {
     $status_field = $this->getStatusField();
     $this->entity->{$status_field}->setValue([$this->getStatus()->value]);
     $this->entity->save();
-    drupal_set_message($this->getMessage(), 'status');
+    \Drupal::messenger()->addMessage($this->getMessage(), 'status');
     $entity_type_id = $this->entity->getEntityTypeId();
     $form_state->setRedirect("entity.$entity_type_id.canonical", [
       $entity_type_id => $this->entity->id(),

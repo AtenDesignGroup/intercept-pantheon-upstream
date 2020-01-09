@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\npq\Plugin\QueueWorker;
+namespace Drupal\intercept_ils\Plugin\QueueWorker;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;

@@ -83,7 +83,7 @@ class EventEvaluationController extends ControllerBase {
       $result[$event->uuid()] = [
         'id' => $event->id(),
         'title' => $event->label(),
-        'url' => $event->url(),
+        'url' => $event->toUrl(),
       ];
       if ($analysis = $this->eventEvaluationManager->uuid()->loadAnalysis($event)) {
         $result[$event->uuid()] += $analysis;

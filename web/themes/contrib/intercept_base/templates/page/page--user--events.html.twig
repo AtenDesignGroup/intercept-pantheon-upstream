@@ -1,0 +1,57 @@
+{{ attach_library('intercept_base/page-header') }}
+{{ attach_library('intercept_base/userEvents') }}
+
+<div class="l--page-wrapper">
+  <div class="l--page">
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.header
+    } only %}
+
+    {% include '@intercept-base-components/header/header.twig' with {
+      header: {
+        menu: page.primary_menu,
+        utilities: page.secondary_menu
+      }
+    } %}
+
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.breadcrumb
+    } only %}
+
+    {% include '@intercept-base-components/region/region--offset.twig' with {
+      content: page.highlighted
+    } only %}
+
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.help
+    } only %}
+
+    {% block main %}
+    <main role="main" class="l--section l--offset">
+      <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
+
+      <header class="page-header">
+        {% include '@intercept-base-components/page-title/page-title.twig' with {
+          text: page['#title'],
+          modifiers: ['inline']
+        } only %}
+
+        {% include '@intercept-base-components/view-switcher/view-switcher.twig' with {
+          links: [
+            { text: 'Past'|t, href: '?field_date_time_value=1'},
+            { text: 'Upcoming'|t, href: '?field_date_time_value=2'},
+          ],
+          attr: {
+            class: 'js-user-events-switcher'
+          }
+        } only %}
+      </header>
+
+      {% include '@intercept-base-components/content/content.twig' with { content: page.content
+      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_first, class: 'layout-sidebar-first'
+      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_second, class: 'layout-sidebar-second'
+      } %}
+    </main>
+    {% endblock %}
+  </div>{# /.layout-container #} {% include '@intercept-base-components/footer/footer.twig' with { footer: page.footer } only %}
+</div>

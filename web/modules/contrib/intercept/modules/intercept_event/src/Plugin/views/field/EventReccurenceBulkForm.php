@@ -2,7 +2,7 @@
 
 namespace Drupal\intercept_event\Plugin\views\field;
 
-use Drupal\system\Plugin\views\field\BulkForm;
+use Drupal\views\Plugin\views\field\BulkForm;
 
 /**
  * Defines an event recurrence operations bulk form element.

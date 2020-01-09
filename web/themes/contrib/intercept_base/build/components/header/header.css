@@ -69,7 +69,7 @@
   .header__logo img {
     display: block;
     max-height: 6.875rem;
-    width: 100%; }
+    width: auto; }
 
 @media (min-width: 62em) {
   .header__site-navigation {

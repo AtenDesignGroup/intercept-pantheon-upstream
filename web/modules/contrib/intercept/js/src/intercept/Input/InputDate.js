@@ -54,6 +54,18 @@ class InputDate extends React.Component {
     return d;
   }
 
+  /**
+   * Denormalize a date to the user's timezone.
+   * @param {Date} date
+   */
+  static denormalize(date) {
+    if (!date || date === '') {
+      return null;
+    }
+
+    return moment.tz(date, utils.getUserTimezone());
+  }
+
   componentDidUpdate() {
     // Force this component to be treated like a controlled component
     // by updating formsy with passed prop values.
@@ -84,8 +96,12 @@ class InputDate extends React.Component {
       minDateMessage
     } = this.props;
 
-    const value = this.props.getValue();
-    const inputValue = value === '' ? null : value;
+
+    // const value = this.props.getValue();
+    // const inputValue = value === '' ? null : value;
+    const inputValue = this.constructor.denormalize(this.props.getValue())
+
+
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
         <DatePicker

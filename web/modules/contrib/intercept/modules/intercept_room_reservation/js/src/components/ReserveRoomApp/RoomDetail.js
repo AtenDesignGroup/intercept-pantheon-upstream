@@ -81,7 +81,7 @@ function RoomDetail(props) {
         key={id}
         modifiers={[image ? 'with-image' : 'without-image', 'constrained', 'card']}
         image={image}
-        supertitle={get(resource, 'relationships.field_location.attributes.title')}
+        supertitle={get(resource, 'relationships.field_location.0.attributes.title')}
         subtitle={get(resource, 'relationships.field_room_type.attributes.name')}
         title={resource.attributes.title}
         label={resource.attributes.field_must_register ? 'Registration Required' : null}

@@ -32,13 +32,13 @@ class EventAttendanceForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Event Attendance.', [
+        \Drupal::messenger()->addMessage($this->t('Created the %label Event Attendance.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Event Attendance.', [
+        \Drupal::messenger()->addMessage($this->t('Saved the %label Event Attendance.', [
           '%label' => $entity->label(),
         ]));
     }

@@ -601,6 +601,8 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
       ->setSetting('properties', [
         'total' => DataDefinition::create('integer')->setLabel(t('Total registrations:')),
         'total_waitlist' => DataDefinition::create('integer')->setLabel(t('Total waitlisted:')),
+        'remaining_registration' => DataDefinition::create('integer')->setLabel(t('Seats remaining:')),
+        'remaining_waitlist' => DataDefinition::create('integer')->setLabel(t('Waitlist spots remaining:')),
         'status' => DataDefinition::create('string')->setLabel(t('Registration Status:')),
         'status_user' => DataDefinition::create('string')->setLabel(t('Status for current user:')),
       ])

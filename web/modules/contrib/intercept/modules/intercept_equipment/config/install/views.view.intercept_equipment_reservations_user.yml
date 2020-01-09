@@ -3,9 +3,6 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.equipment_reservation.teaser
-    - user.role.intercept_equipment_reservation_manager
-    - user.role.intercept_staff
-    - user.role.intercept_system_admin
   module:
     - datetime
     - intercept_equipment
@@ -27,12 +24,9 @@ display:
     position: 0
     display_options:
       access:
-        type: role
+        type: perm
         options:
-          role:
-            intercept_staff: intercept_staff
-            intercept_system_admin: intercept_system_admin
-            intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
+          perm: 'view referenced user equipment_reservation'
       cache:
         type: tag
         options: {  }
@@ -276,7 +270,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user.roles
+        - user.permissions
       tags: {  }
   account:
     display_plugin: page
@@ -303,5 +297,5 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user.roles
+        - user.permissions
       tags: {  }

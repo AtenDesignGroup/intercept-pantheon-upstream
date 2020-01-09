@@ -120,7 +120,7 @@ class EventManager implements EventManagerInterface {
    */
   public function previewFromTemplate(NodeInterface $node) {
     $new_node = $this->cloneify($node);
-    drupal_set_message($this->t('This is a preview. @use_link.', [
+    \Drupal::messenger()->addMessage($this->t('This is a preview. @use_link.', [
       '@use_link' => Link::createFromRoute('Use this template', 'entity.node.template', [
         'node' => $node->id(),
       ])->toString(),
@@ -246,7 +246,7 @@ class EventManager implements EventManagerInterface {
     $event_template->event_recurrence->setValue(NULL);
     $event_template->save();
     // TODO: Use the message service.
-    drupal_set_message($this->t('Event template @link has been created.', [
+    \Drupal::messenger()->addMessage(t('Event template @link has been created.', [
       '@link' => $event_template->link(),
     ]));
     // TODO: Fix this so that this overrides the admin/content destination.

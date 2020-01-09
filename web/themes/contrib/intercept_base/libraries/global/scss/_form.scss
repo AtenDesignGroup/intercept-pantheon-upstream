@@ -20,6 +20,14 @@
 // Form Item Wrapper
 .form-item {
   margin: 1em 0;
+
+  label {
+    font-size: 1rem;
+  }
+}
+
+.form-checkbox + label {
+  padding-left: 0.3125rem;
 }
 
 .form-item--inline {
@@ -97,10 +105,6 @@
 
 .input-checkboxes__checkbox {
   margin: 0;
-
-  &:not(:last-child) {
-    // margin-bottom: rem(12px);
-  }
 }
 
 .input-checkboxes__checkbox-text {

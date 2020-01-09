@@ -7,12 +7,13 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\inline_entity_form\ElementSubmit;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\RecurringEventManager;
+use Drupal\intercept_event\Entity\EventRecurrenceInterface;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -125,8 +126,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       }
     }
     else {
-      $recurring_rule_field = $this->eventRecurrence->getRecurField();
-      $dates = $this->getDates($recurring_rule_field);
+      $dates = $this->eventRecurrence->getDateOccurrences();
       // If the first computed recurrence date is the same as the base event
       // then label it as such. If not, then we add in the base event date
       // to make sure that is clear that that is an occurrence as well.
@@ -189,29 +189,6 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   }
 
   /**
-   * Gets the dates for a DateRecurItem field.
-   *
-   * @param \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item
-   *   The DateRecurItem field.
-   *
-   * @return array
-   *   The dates, keyed by 'value' and 'end_value'.
-   *
-   * @throws \Exception
-   */
-  private function getDates(DateRecurItem $item) {
-    /** @var Drupal\date_recur\DateRecurHelperInterface $handler */
-    $helper = $item->getHelper();
-    if ($helper->isInfinite() || !$item->isRecurring()) {
-      return $helper->generateOccurrences();
-    }
-    else {
-      $occurrences = $helper->getOccurrences();
-      return $occurrences;
-    }
-  }
-
-  /**
    * Submit handler to delete all events.
    *
    * @param array $form
@@ -262,7 +239,68 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       $node->save();
       $count++;
     }
-    drupal_set_message($this->t('@count events updated.', ['@count' => $count]));
+    \Drupal::messenger()->addMessage($this->t('@count events updated.', ['@count' => $count]));
+  }
+
+  /**
+   * Batch callback; initialize the number of events.
+   */
+  public static function batchStart($total, &$context) {
+    $context['results']['events'] = 0;
+    $context['sandbox']['count'] = $total;
+  }
+
+  /**
+   * Batch finished callback.
+   */
+  public static function batchFinished($success, $results, $operations) {
+    if ($success) {
+      if ($results['events']) {
+        \Drupal::service('messenger')->addMessage(\Drupal::translation()
+          ->formatPlural($results['events'], 'Generated 1 event.', 'Generated @count events.'));
+      }
+      else {
+        \Drupal::service('messenger')
+          ->addMessage(t('No new events to generate.'));
+      }
+    }
+    else {
+      $error_operation = reset($operations);
+      \Drupal::service('messenger')
+        ->addMessage(t('An error occurred while processing @operation with arguments : @args'), [
+          '@operation' => $error_operation[0],
+          '@args' => print_r($error_operation[0]),
+        ]);
+    }
+  }
+
+  /**
+   * Create event batch processing callback.
+   */
+  public function createProcess($base_event, array $date_time, $recurrence, &$context) {
+    if (!isset($context['sandbox']['current'])) {
+      $context['sandbox']['count'] = 0;
+      $context['sandbox']['current'] = 0;
+    }
+    // Get the total amount of items to process.
+    if (!isset($context['sandbox']['total'])) {
+      $context['sandbox']['total'] = count($recurrence->getDateOccurrences);
+    }
+    $event = $base_event->createDuplicate();
+    $event->set('field_date_time', $date_time);
+    $event->set('event_recurrence', $recurrence->id());
+    $event->save();
+    $manager = \Drupal::service('intercept_core.reservation.manager');
+    if ($reservation = $manager->getEventReservation($base_event)) {
+      $this->generateReservation($event, $reservation, $recurrence);
+    }
+    $context['sandbox']['count'] += 1;
+    $context['sandbox']['current'] += 1;
+    $context['results']['events'] += 1;
+
+    if ($context['sandbox']['count'] != $context['sandbox']['total']) {
+      $context['finished'] = $context['sandbox']['count'] / $context['sandbox']['total'];
+    }
   }
 
   /**
@@ -275,29 +313,36 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    */
   public function generateEvents(array &$form, FormStateInterface $form_state) {
     /** @var Drupal\node\NodeInterface $base_event */
-    $base_event = $form_state->getFormObject()->getEntity();
+    $base_event = $this->entity;
+    $storage_format = $this->eventRecurrence->getDateStorageFormat();
+    $recurrence = $this->eventRecurrence;
 
-    $recurring_rule_field = $this->eventRecurrence->getRecurField();
-    $storage_format = $recurring_rule_field->getDateStorageFormat();
-    $dates = $this->getDates($recurring_rule_field);
+    $dates = $this->eventRecurrence->getDateOccurrences();
     $first_date = $dates[0];
     if ($this->compensate($first_date->getStart())->format($storage_format) == $base_event->field_date_time->start_date->format($storage_format)) {
       array_shift($dates);
     }
+
+    $batch = [
+      'title' => $this->t('Bulk generating recurring events.'),
+      'operations' => [
+        ['Drupal\intercept_event\Form\EventRecurrenceEventsForm::batchStart', [count($dates)]],
+      ],
+      'finished' => 'Drupal\intercept_event\Form\EventRecurrenceEventsForm::batchFinished',
+    ];
+
     foreach ($dates as $date) {
-      $event = $base_event->createDuplicate();
-      $event->set('field_date_time', [
+      $date_time = [
         'value' => $this->compensate($date->getStart())->format($storage_format),
         'end_value' => $this->compensate($date->getEnd())->format($storage_format),
-      ]);
-      $event->set('event_recurrence', $this->eventRecurrence->id());
-      $event->save();
-      $manager = \Drupal::service('intercept_core.reservation.manager');
-      if ($reservation = $manager->getEventReservation($base_event)) {
-        $this->generateReservation($event, $reservation);
-      }
+      ];
+      $batch['operations'][] = [
+        [$this, 'createProcess'],
+        [$base_event, $date_time, $recurrence],
+      ];
     }
-    drupal_set_message($this->t('@count events created.', ['@count' => count($dates)]));
+
+    batch_set($batch);
   }
 
   /**
@@ -307,11 +352,12 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    *   The new event node entity.
    * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $reservation
    *   The base reservation entity to clone.
+   * @param \Drupal\intercept_event\Entity\EventRecurrenceInterface $event_recurrence
+   *   The event recurrence entity.
    */
-  protected function generateReservation(NodeInterface $new_event, RoomReservationInterface $reservation) {
+  protected function generateReservation(NodeInterface $new_event, RoomReservationInterface $reservation, EventRecurrenceInterface $event_recurrence) {
     $manager = \Drupal::service('intercept_core.reservation.manager');
-    $recurring_rule_field = $this->eventRecurrence->getRecurField();
-    $storage_format = $recurring_rule_field->getDateStorageFormat();
+    $storage_format = $event_recurrence->getDateStorageFormat();
     // This field originates from the value entered in on the event form. We
     // need to preserve the time that was entered, but change the date to the
     // recurring date that was calculated.

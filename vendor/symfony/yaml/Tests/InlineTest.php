@@ -58,7 +58,6 @@ class InlineTest extends TestCase
             ['!php/const PHP_INT_MAX', PHP_INT_MAX],
             ['[!php/const PHP_INT_MAX]', [PHP_INT_MAX]],
             ['{ foo: !php/const PHP_INT_MAX }', ['foo' => PHP_INT_MAX]],
-            ['{ !php/const PHP_INT_MAX: foo }', [PHP_INT_MAX => 'foo']],
             ['!php/const NULL', null],
         ];
     }
@@ -94,7 +93,6 @@ class InlineTest extends TestCase
             ['!php/const:PHP_INT_MAX', PHP_INT_MAX],
             ['[!php/const:PHP_INT_MAX]', [PHP_INT_MAX]],
             ['{ foo: !php/const:PHP_INT_MAX }', ['foo' => PHP_INT_MAX]],
-            ['{ !php/const:PHP_INT_MAX: foo }', [PHP_INT_MAX => 'foo']],
             ['!php/const:NULL', null],
         ];
     }
@@ -782,21 +780,5 @@ class InlineTest extends TestCase
         $this->expectException('Symfony\Component\Yaml\Exception\ParseException');
         $this->expectExceptionMessage('Unexpected end of line, expected one of ",}" at line 1 (near "{abc: \'def\'").');
         Inline::parse("{abc: 'def'");
-    }
-
-    /**
-     * @dataProvider getTestsForOctalNumbers
-     */
-    public function testParseOctalNumbers($expected, $yaml)
-    {
-        self::assertSame($expected, Inline::parse($yaml));
-    }
-
-    public function getTestsForOctalNumbers()
-    {
-        return [
-            'positive octal number' => [28, '034'],
-            'negative octal number' => [-28, '-034'],
-        ];
     }
 }

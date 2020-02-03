@@ -34,7 +34,7 @@ class AutowireServiceResourceTest extends TestCase
         $this->time = time();
         touch($this->file, $this->time);
 
-        $this->class = Foo::class;
+        $this->class = __NAMESPACE__.'\Foo';
         $this->resource = new AutowireServiceResource(
             $this->class,
             $this->file,
@@ -83,7 +83,7 @@ class AutowireServiceResourceTest extends TestCase
     public function testIsFreshSameConstructorArgs()
     {
         $oldResource = AutowirePass::createResourceForClass(
-            new \ReflectionClass(Foo::class)
+            new \ReflectionClass(__NAMESPACE__.'\Foo')
         );
 
         // test with a stale file *but* the resource will not be changed

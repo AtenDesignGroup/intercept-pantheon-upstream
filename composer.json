@@ -14,7 +14,7 @@
     "rvtraveller/qs-composer-installer": "^1.1",
     "cweagans/composer-patches": "^1.0",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core": "^8.8",
+    "drupal/core-recommended": "8.8.2",
     "drupal/intercept_profile": "1.x-dev",
     "drupal-composer/drupal-scaffold": "^2.0.1",
     "drush/drush": "~8",
@@ -27,8 +27,7 @@
     "drupal/better_normalizers": "^1.0@beta"
   },
   "require-dev": {
-    "pantheon-systems/quicksilver-pushback": "~1",
-    "drupal/core-dev": "8.7.10"
+    "pantheon-systems/quicksilver-pushback": "~1"
   },
   "conflict": {
       "drupal/drupal": "*"

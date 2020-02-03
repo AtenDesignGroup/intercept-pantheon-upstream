@@ -20,7 +20,10 @@ class RedirectResponseTest extends TestCase
     {
         $response = new RedirectResponse('foo.bar');
 
-        $this->assertRegExp('#<meta http-equiv="refresh" content="\d+;url=\'foo\.bar\'" />#', preg_replace('/\s+/', ' ', $response->getContent()));
+        $this->assertEquals(1, preg_match(
+            '#<meta http-equiv="refresh" content="\d+;url=foo\.bar" />#',
+            preg_replace(['/\s+/', '/\'/'], [' ', '"'], $response->getContent())
+        ));
     }
 
     public function testRedirectResponseConstructorNullUrl()

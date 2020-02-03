@@ -130,49 +130,6 @@ class SymfonyQuestionHelperTest extends AbstractQuestionHelperTest
         $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream('')), $this->createOutputInterface(), new Question('What\'s your name?'));
     }
 
-    public function testChoiceQuestionPadding()
-    {
-        $choiceQuestion = new ChoiceQuestion('qqq', [
-            'foo' => 'foo',
-            'żółw' => 'bar',
-            'łabądź' => 'baz',
-        ]);
-
-        (new SymfonyQuestionHelper())->ask(
-            $this->createStreamableInputInterfaceMock($this->getInputStream("foo\n")),
-            $output = $this->createOutputInterface(),
-            $choiceQuestion
-        );
-
-        $this->assertOutputContains(<<<EOT
- qqq:
-  [foo   ] foo
-  [żółw  ] bar
-  [łabądź] baz
- > 
-EOT
-        , $output, true);
-    }
-
-    public function testChoiceQuestionCustomPrompt()
-    {
-        $choiceQuestion = new ChoiceQuestion('qqq', ['foo']);
-        $choiceQuestion->setPrompt(' >ccc> ');
-
-        (new SymfonyQuestionHelper())->ask(
-            $this->createStreamableInputInterfaceMock($this->getInputStream("foo\n")),
-            $output = $this->createOutputInterface(),
-            $choiceQuestion
-        );
-
-        $this->assertOutputContains(<<<EOT
- qqq:
-  [0] foo
- >ccc> 
-EOT
-        , $output, true);
-    }
-
     protected function getInputStream($input)
     {
         $stream = fopen('php://memory', 'r+', false);
@@ -200,15 +157,10 @@ EOT
         return $mock;
     }
 
-    private function assertOutputContains($expected, StreamOutput $output, $normalize = false)
+    private function assertOutputContains($expected, StreamOutput $output)
     {
         rewind($output->getStream());
         $stream = stream_get_contents($output->getStream());
-
-        if ($normalize) {
-            $stream = str_replace(PHP_EOL, "\n", $stream);
-        }
-
         $this->assertStringContainsString($expected, $stream);
     }
 }

@@ -71,7 +71,7 @@ class ContainerControllerResolverTest extends ControllerResolverTest
     public function testGetControllerInvokableServiceWithClassNameAsName()
     {
         $invokableController = new InvokableController('bar');
-        $className = InvokableController::class;
+        $className = __NAMESPACE__.'\InvokableController';
 
         $container = $this->createMockContainer();
         $container->expects($this->once())

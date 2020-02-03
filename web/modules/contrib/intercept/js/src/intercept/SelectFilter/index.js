@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Input, { InputLabel } from '@material-ui/core/Input';
-import { MenuItem } from '@material-ui/core/Menu';
-import { FormControl } from '@material-ui/core/Form';
-import { ListItemText } from '@material-ui/core/List';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
+import { InputLabel } from '@material-ui/core/Input';
+import { Input, MenuItem, FormControl, ListItemText, Select, Checkbox } from '@material-ui/core';
 
 const styles = theme => ({
   root: {
@@ -14,7 +10,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   formControl: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
     width: '100%',

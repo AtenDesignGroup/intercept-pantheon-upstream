@@ -21,7 +21,8 @@ settings:
     target_bundles:
       room: room
     sort:
-      field: _none
+      field: title
+      direction: ASC
     auto_create: false
     auto_create_bundle: ''
 field_type: entity_reference

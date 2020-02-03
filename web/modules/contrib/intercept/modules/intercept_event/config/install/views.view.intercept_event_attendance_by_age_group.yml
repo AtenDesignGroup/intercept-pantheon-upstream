@@ -28,7 +28,6 @@ description: 'Shows overall attendance by age groups for each event.'
 tag: ''
 base_table: node_field_data
 base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -951,6 +950,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -961,6 +962,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         field_date_time_value:
           id: field_date_time_value
           table: node__field_date_time
@@ -1000,6 +1004,8 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1047,6 +1053,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1096,6 +1104,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1165,7 +1175,7 @@ display:
     display_title: Page
     position: 1
     display_options:
-      display_extenders: { }
+      display_extenders: {  }
       path: account/manage/intercept_event_attendance_by_age_group
       style:
         type: table
@@ -1238,7 +1248,7 @@ display:
     display_title: 'REST export'
     position: 2
     display_options:
-      display_extenders: { }
+      display_extenders: {  }
       path: data/export/attendance-by-age-group.csv
       pager:
         type: none

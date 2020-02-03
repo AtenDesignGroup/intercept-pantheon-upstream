@@ -2,13 +2,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
 import { withStyles } from '@material-ui/core/styles';
-
 import EventSummary from 'intercept/EventSummary';
-import LoadingIndicator from 'intercept/LoadingIndicator';
 
+import LoadingIndicator from 'intercept/LoadingIndicator';
 import EventSummaryActions from './EventSummaryActions';
+
+import { Dialog } from '@material-ui/core';
 
 const styles = theme => ({
   root: {

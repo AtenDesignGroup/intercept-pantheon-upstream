@@ -11,14 +11,11 @@ import interceptClient from 'interceptClient';
 
 /* eslint-disable */
 import ButtonRegister from 'intercept/ButtonRegister';
-/* eslint-enable */
-
-// Material UI
-import Button from '@material-ui/core/Button';
-
 import EvaluationWidget from './EvaluationWidget';
+
 import CriteriaWidget from './CriteriaWidget';
 import withEvaluation from './withEvaluation';
+import { Button } from '@material-ui/core';
 
 const { api, select } = interceptClient;
 const c = interceptClient.constants;
@@ -182,7 +179,7 @@ class EventCustomerEvaluationApp extends React.Component {
 
     const submit = (
       <Button
-        variant={'raised'}
+        variant={'contained'}
         size="small"
         color="primary"
         className={''}

@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
-import withStyles from '@material-ui/core/styles/withStyles';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import FormLabel from '@material-ui/core/FormLabel';
-import Button from '@material-ui/core/Button';
 import RemoveIcon from '@material-ui/icons/Remove';
 import AddIcon from '@material-ui/icons/Add';
+import { withStyles } from '@material-ui/core/styles';
+
+import { FormControl, Input, FormLabel, Button } from '@material-ui/core';
 
 const styles = theme => ({
   container: {
@@ -87,7 +85,7 @@ class InputIncrementer extends React.PureComponent {
             className={[classes.button, classes.buttonFirst].join(' ')}
             aria-label="Decrement"
             aria-controls={inputId}
-            variant="raised"
+            variant="contained"
             disabled={typeof min === 'number' && value <= min}
             onClick={decrement}
           >
@@ -112,7 +110,7 @@ class InputIncrementer extends React.PureComponent {
             className={[classes.button, classes.buttonLast].join(' ')}
             aria-label="Increment"
             aria-controls={inputId}
-            variant="raised"
+            variant="contained"
             disabled={typeof max === 'number' && value >= max}
             onClick={increment}
           >

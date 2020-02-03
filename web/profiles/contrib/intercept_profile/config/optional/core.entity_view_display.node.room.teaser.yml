@@ -7,7 +7,10 @@ dependencies:
     - field.field.node.room.field_capacity_max
     - field.field.node.room.field_capacity_min
     - field.field.node.room.field_location
+    - field.field.node.room.field_online_registration
+    - field.field.node.room.field_reservable_online
     - field.field.node.room.field_reservation_phone_number
+    - field.field.node.room.field_reservation_time_max
     - field.field.node.room.field_room_fees
     - field.field.node.room.field_room_standard_equipment
     - field.field.node.room.field_room_type
@@ -75,6 +78,9 @@ hidden:
   field_approval_required: true
   field_capacity_min: true
   field_location: true
+  field_online_registration: true
+  field_reservable_online: true
+  field_reservation_time_max: true
   field_room_fees: true
   field_room_standard_equipment: true
   field_staff_use_only: true

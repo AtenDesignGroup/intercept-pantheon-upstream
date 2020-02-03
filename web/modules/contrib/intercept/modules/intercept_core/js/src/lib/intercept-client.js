@@ -939,10 +939,10 @@ function arrayLikeKeys(value, inherited) {
 
   for (let key in value) {
     if ((inherited || hasOwnProperty$3.call(value, key)) && !(skipIndexes && ( // Safari 9 has enumerable `arguments.length` in strict mode.
-      key == 'length' || // Node.js 0.10 has enumerable non-index properties on buffers.
+      (// Skip index properties.
+      (key == 'length' || // Node.js 0.10 has enumerable non-index properties on buffers.
     isBuff && (key == 'offset' || key == 'parent') || // PhantomJS 2 has enumerable non-index properties on typed arrays.
-    isType && (key == 'buffer' || key == 'byteLength' || key == 'byteOffset') || // Skip index properties.
-    _isIndex(key, length)))) {
+    isType && (key == 'buffer' || key == 'byteLength' || key == 'byteOffset') || _isIndex(key, length)))))) {
       result.push(key);
     }
   }
@@ -4504,9 +4504,9 @@ var Bottleneck = createCommonjsModule((module) => {
                   options: next.options
                 }]);
 
-                ({
+                (((({
                   running
-                } = await this._store.__free__(index, next.options.weight));
+                } = await this._store.__free__(index, next.options.weight)))));
 
                 this._trigger('debug', [`Freed ${next.options.id}`, {
                   args: next.args,
@@ -4558,10 +4558,10 @@ var Bottleneck = createCommonjsModule((module) => {
             }
 
             queue = this._getFirst(this._queues);
-            ({
+            (((({
               options,
               args
-            } = queue.first());
+            } = queue.first()))));
 
             if (freed != null && options.weight > freed) {
               return this.Promise.resolve(false);
@@ -4640,11 +4640,11 @@ var Bottleneck = createCommonjsModule((module) => {
             var blocked, e, reachedHWM, shifted, strategy;
 
             try {
-              ({
+              (((({
                 reachedHWM,
                 blocked,
                 strategy
-              } = await this._store.__submit__(this.queued(), options.weight));
+              } = await this._store.__submit__(this.queued(), options.weight)))));
 
               this._trigger('debug', [`Queued ${options.id}`, {
                 args,
@@ -7054,41 +7054,48 @@ let ApiManager =
                 //
                 if (replace && currentFetch !== getLatestFetch()) {
                   return;
-                } //
+                }
+
+                //
                 // Ensure the response data is an Array
                 //
-
-
                 var output = {
                   data: [].concat(json.data)
                 };
-                totalFetched += output.data.length; //
+                totalFetched += output.data.length;
+
+                //
                 // Log network response
                 //
-
                 logger.group('network', 'response');
                 logger.log('network', 'Response: '.concat(getTimestamp(), ' ').concat(resource), json);
                 logger.log('network', output.data);
-                logger.groupEnd('network', 'response'); //
+                logger.groupEnd('network', 'response');
+
+                //
                 // Process included resources.
                 //
-
                 if ('included' in json) {
                   processIncludes(dispatch)(json.included);
-                } //
+                }
+
+                //
                 // Purge store if replacing.
                 //
-
-
-                if (replace) {
+                if (replace && currentFetch === getLatestFetch()) {
                   dispatch(purge(resource)); // Ensure it only purges once.
-
                   replace = false;
-                } //
+                }
+
+                // Cancel receive action if the current fetch doesn't match the latest
+                // This is to prevent paginated requests from being added to the results.
+                if (currentFetch !== getLatestFetch()) {
+                  return;
+                }
+
+                //
                 // Dispatch Receive action
                 //
-
-
                 dispatch(receive(output, resource));
                 var hasMore = json.links && json.links.next;
 
@@ -7099,28 +7106,30 @@ let ApiManager =
                   }
 
                   return;
-                } //
+                }
+
+                //
                 // Recursively fetch paginated items.
                 //
-
-
-                if (count === 0 || count > totalFetched) {
+                if (count === 0 || count > totalFetched && currentFetch === getLatestFetch()) {
                   dispatch(_fetchAll(_objectSpread({}, options, {
                     endpoint: json.links.next.href,
                     totalFetched: totalFetched,
                     replace: replace
                   })));
-                } else if (onNext) {
+                } else if (onNext && currentFetch === getLatestFetch()) {
                   // Call onNext()
                   onNext(json.links.next.href, totalFetched);
                 }
               });
-            } //
+            }
+
+            //
             // Handle a NOT OK response
             //
             else {
-                dispatch(failure(''.concat(resp.status, ': ').concat(resp.statusText || 'No status message provided'), resource));
-              }
+              dispatch(failure(''.concat(resp.status, ': ').concat(resp.statusText || 'No status message provided'), resource));
+            }
 
             return resp;
           }) //

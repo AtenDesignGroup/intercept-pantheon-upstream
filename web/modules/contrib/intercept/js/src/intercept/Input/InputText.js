@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import { TextField } from '@material-ui/core';
 
 class InputText extends React.Component {
   render() {

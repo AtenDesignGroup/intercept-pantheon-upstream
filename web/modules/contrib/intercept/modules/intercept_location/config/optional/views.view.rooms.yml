@@ -4,9 +4,11 @@ dependencies:
   config:
     - field.storage.node.field_capacity_max
     - field.storage.node.field_text_teaser
+    - field.storage.node.image_primary
     - node.type.room
   module:
     - node
+    - text
     - user
 id: rooms
 label: Rooms
@@ -15,7 +17,6 @@ description: ''
 tag: ''
 base_table: node_field_data
 base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -460,6 +461,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -471,6 +474,9 @@ display:
           entity_field: type
           plugin_id: bundle
           group: 1
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
       sorts:
         created:
           id: created

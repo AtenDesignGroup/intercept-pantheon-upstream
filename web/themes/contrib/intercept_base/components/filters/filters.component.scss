@@ -109,6 +109,10 @@
   .select-filter__label {
     @extend %filter__label;
   }
+
+  label + .select-filter__menu {
+    margin-top: 16px;
+  }
 }
 
 .select-filter__menu {

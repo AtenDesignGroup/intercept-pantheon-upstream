@@ -13,16 +13,15 @@ import map from 'lodash/map';
 import interceptClient from 'interceptClient';
 import drupalSettings from 'drupalSettings';
 
-// Material UI
-import Button from '@material-ui/core/Button';
-
 // Intercept Components
 import LoadingIndicator from 'intercept/LoadingIndicator';
 
 // Local Components
 import ReserveRoomDateForm from './ReserveRoomDateForm';
+
 import RoomAvailabilityCalendar from './RoomAvailabilityCalendar';
 import withAvailability from './../withAvailability';
+import { Button } from '@material-ui/core';
 
 const { constants, select, utils } = interceptClient;
 const c = constants;
@@ -68,6 +67,15 @@ class ReserveRoomStep2 extends React.Component {
     }
   }
 
+  onlyTodaysReservations = (reservation) => {
+    const start = utils.dateFromDrupal(reservation.start);
+    const eod = moment(get(this, 'props.formValues.date'))
+      .tz(utils.getUserTimezone())
+      .endOf('day');
+
+    return start < eod;
+  };
+
   // Get query params based on current rooms and filters.
   getRoomAvailabilityQuery = () => {
     const options = {
@@ -99,7 +107,7 @@ class ReserveRoomStep2 extends React.Component {
     const { duration } = filters;
 
     if (!values.date) {
-      values.date = filters.date || utils.getUserStartOfDay();
+      values.date = filters.date || utils.getUserTimeNow();
     }
 
     if ((!values.start || !values.end) && ((utils.userIsStaff() && showClosed) || this.isWithinOpenHours(nowish))) {
@@ -115,15 +123,6 @@ class ReserveRoomStep2 extends React.Component {
     return values;
   };
 
-  onlyTodaysReservations = (reservation) => {
-    const start = utils.dateFromDrupal(reservation.start);
-    const eod = moment(get(this, 'props.formValues.date'))
-      .tz(utils.getUserTimezone())
-      .endOf('day');
-
-    return start < eod;
-  };
-
   getDisabledTimespans = () => {
     const availability = get(this, `props.availability.rooms.${this.props.room}.dates`);
 
@@ -136,6 +135,20 @@ class ReserveRoomStep2 extends React.Component {
       end: utils.getTimeFromDate(utils.dateFromDrupal(item.end)),
     }));
   };
+
+  getHours = () => {
+    const hours = this.props.hours;
+
+    return hours
+      ? {
+        min: hours.min,
+        max: (hours.max.endsWith('00') ? String(hours.max - 55) : String(hours.max - 15)),
+      }
+      : {
+        min: null,
+        max: null,
+      };
+  }
 
   isWithinOpenHours = (time) => {
     const hours = this.props.hours;
@@ -163,20 +176,6 @@ class ReserveRoomStep2 extends React.Component {
       [c.DATE]: date,
     });
   };
-
-  getHours = () => {
-    const hours = this.props.hours;
-
-    return hours
-      ? {
-        min: hours.min,
-        max: (hours.max.endsWith('00') ? String(hours.max - 55) : String(hours.max - 15)),
-      }
-      : {
-        min: null,
-        max: null,
-      };
-  }
 
   render() {
     const {
@@ -248,7 +247,7 @@ class ReserveRoomStep2 extends React.Component {
                 <p>Choose a room to see its availability</p>
                 <Button
                   className="value-summary__button"
-                  variant="raised"
+                  variant="contained"
                   color="primary"
                   size="small"
                   onClick={() => onChangeStep(0)}
@@ -265,10 +264,14 @@ class ReserveRoomStep2 extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+
   const hours =
     ownProps.formValues.date && ownProps.room
       ? // Open hours for current day.
-      select.roomLocationHours(ownProps.room, ownProps.formValues.date)(state)
+      select.roomLocationHours(
+        ownProps.room,
+        utils.getDayTimeStamp(ownProps.formValues.date),
+      )(state)
       : // Default open hours.
       select.locationsOpenHoursLimit(state);
 

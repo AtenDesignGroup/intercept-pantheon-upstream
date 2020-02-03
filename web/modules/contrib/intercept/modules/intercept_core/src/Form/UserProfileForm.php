@@ -206,11 +206,13 @@ class UserProfileForm extends ProfileForm {
     $ils_username = $form_state->cleanValues()->getValue(['customer_profile', 'field_ils_username']);
     $ils_username = $ils_username[0]['value'];
     $response = $patron->updateUsername($ils_username);
-    if ($response->PAPIErrorCode == -3607) {
-      $form_state->setError($form['field_ils_username'], 'The username you entered is unavailable. Please try another username.');
-    }
-    elseif ($response->PAPIErrorCode == -3606) {
-      $form_state->setError($form['field_ils_username'], 'The username must be at least 4 characters but not longer than 50 characters.');
+    if (isset($response->PAPIErrorCode)) {
+      if ($response->PAPIErrorCode == -3607) {
+        $form_state->setError($form['field_ils_username'], 'The username you entered is unavailable. Please try another username.');
+      }
+      elseif ($response->PAPIErrorCode == -3606) {
+        $form_state->setError($form['field_ils_username'], 'The username must be at least 4 characters but not longer than 50 characters.');
+      }
     }
   }
 

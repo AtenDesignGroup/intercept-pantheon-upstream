@@ -2,9 +2,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// Material UI
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { CSSTransition } from 'react-transition-group';
+import { CircularProgress } from '@material-ui/core';
 
 const LoadingIndicator = (props) => {
   const { loading, label, size } = props;

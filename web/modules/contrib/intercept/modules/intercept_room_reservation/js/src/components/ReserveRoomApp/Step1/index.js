@@ -8,11 +8,6 @@ import isEqual from 'lodash/isEqual';
 
 /* eslint-disable */
 import drupalSettings from 'drupalSettings';
-/* eslint-enable */
-
-// Material UI
-import Button from '@material-ui/core/Button';
-import Slide from '@material-ui/core/Slide';
 
 // Intercept Components
 /* eslint-disable */
@@ -27,6 +22,8 @@ import RoomTeaser from 'intercept/RoomTeaser';
 import RoomFilters from './RoomFilters';
 import RoomList from './RoomList';
 import withAvailability from './../withAvailability';
+
+import { Button, Slide } from '@material-ui/core';
 
 const { constants, api, select, utils } = interceptClient;
 const c = constants;
@@ -276,8 +273,6 @@ class ReserveRoomStep1 extends React.Component {
       const date = utils.roundTo(new Date(), 15, 'minutes', 'ceil').tz(tz);
       options.start = date.clone();
       options.end = date.clone().add(options.duration, 'minute');
-      // options.start = utils.dateToDrupal(date.clone());
-      // options.end = utils.dateToDrupal(date.clone().add(options.duration, 'minute'));
     }
     else if (this.props.filters[c.DATE]) {
       const date = moment.tz(this.props.filters[c.DATE], tz);
@@ -299,9 +294,6 @@ class ReserveRoomStep1 extends React.Component {
         default:
           break;
       }
-
-      // options.start = utils.dateToDrupal(options.start);
-      // options.end = utils.dateToDrupal(options.end);
     }
 
     return options;
@@ -431,7 +423,7 @@ class ReserveRoomStep1 extends React.Component {
       return (
         <div className="action-button">
           <Button
-            variant={'raised'}
+            variant={'contained'}
             size="small"
             color="primary"
             className={'action-button__button'}

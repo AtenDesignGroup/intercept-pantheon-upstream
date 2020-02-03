@@ -5,12 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
-import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { isWidthUp } from '@material-ui/core/withWidth';
 
 // Lodash
 import get from 'lodash/get';
@@ -22,6 +17,8 @@ import RegistrationStatus from 'intercept/RegistrationStatus';
 /* eslint-enable */
 import EventRegistrationActions from '../EventRegistrationActions';
 
+import { withWidth, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+
 const { constants, select, utils } = interceptClient;
 const c = constants;
 
@@ -30,7 +27,7 @@ const defaultUserId = utils.getUserUuid();
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: 'auto',
   },
   table: {

@@ -134,7 +134,7 @@ class EventFilters extends PureComponent {
               defaultValue={null}
               value={filters[c.DATE_END]}
               name={c.DATE_END}
-              minDate={filters[c.DATE_START]}
+              minDate={filters[c.DATE_START] || undefined}
               label={labels[c.DATE_END]}
             />
           )}

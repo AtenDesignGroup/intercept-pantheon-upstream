@@ -5,6 +5,7 @@ dependencies:
     - core.entity_form_mode.event_attendance.scan
     - field.field.event_attendance.event_attendance.field_attendees
     - field.field.event_attendance.event_attendance.field_event
+    - field.field.event_attendance.event_attendance.field_guest_zip_code
     - field.field.event_attendance.event_attendance.field_user
   module:
     - intercept_event
@@ -33,6 +34,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     region: content
     third_party_settings: {  }
 hidden:

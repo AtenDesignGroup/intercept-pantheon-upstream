@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import interceptClient from 'interceptClient';
 import UserName from './UserName';
 import RegistrationLookup from './RegistrationLookup';
-import Button from '@material-ui/core/Button';
+import { Button } from '@material-ui/core';
 
 const { utils } = interceptClient;
 

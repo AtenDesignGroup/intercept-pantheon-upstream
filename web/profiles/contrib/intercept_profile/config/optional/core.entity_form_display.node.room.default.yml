@@ -7,7 +7,10 @@ dependencies:
     - field.field.node.room.field_capacity_max
     - field.field.node.room.field_capacity_min
     - field.field.node.room.field_location
+    - field.field.node.room.field_online_registration
+    - field.field.node.room.field_reservable_online
     - field.field.node.room.field_reservation_phone_number
+    - field.field.node.room.field_reservation_time_max
     - field.field.node.room.field_room_fees
     - field.field.node.room.field_room_standard_equipment
     - field.field.node.room.field_room_type
@@ -170,6 +173,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     region: content
     third_party_settings: {  }
   unpublish_on:
@@ -184,5 +188,8 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_online_registration: true
+  field_reservable_online: true
+  field_reservation_time_max: true
   promote: true
   sticky: true

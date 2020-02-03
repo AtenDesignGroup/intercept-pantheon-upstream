@@ -2,17 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import memoize from 'lodash/memoize';
 import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import moment from 'moment';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Select from '@material-ui/core/Select';
+import { Autocomplete } from '@material-ui/lab';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 
 import interceptClient from 'interceptClient';
+
+import {
+  InputLabel,
+  MenuItem,
+  FormControl,
+  ListItemText,
+  FormHelperText,
+  Select,
+  TextField,
+} from '@material-ui/core';
 
 const { utils } = interceptClient;
 
@@ -22,7 +25,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   formControl: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
     width: '100%',
@@ -32,8 +35,6 @@ const styles = theme => ({
   },
 });
 
-const ITEM_HEIGHT = 24;
-const ITEM_PADDING_TOP = 4;
 const MenuListProps = {
   className: 'select-filter__menu-list',
 };
@@ -42,7 +43,6 @@ const MenuProps = {
   MenuListProps,
   PaperProps: {
     style: {
-      // maxHeight: (ITEM_HEIGHT * 8.5) + ITEM_PADDING_TOP,
       maxHeight: 200,
       width: 250,
     },
@@ -178,6 +178,10 @@ class SelectTime extends React.Component {
     super(props);
     // Memoize getOptions() to avoid unneeded date calculations.
     this.options = memoize(this.constructor.getOptions, (...args) => JSON.stringify(args));
+
+    this.state = {
+      autocompleteIsOpen: false
+    };
   }
 
   componentDidUpdate() {
@@ -188,16 +192,18 @@ class SelectTime extends React.Component {
     }
   }
 
-  handleChange = (event) => {
-    const value = event.target.value;
-    // const proxy = event;
-    // proxy.target.value = value;
-    this.props.setValue(value);
-    this.props.onChange(value);
+  handleChange = (event, value) => {
+    // When clearing an input, the value is null, otherwise it is an object.
+    const normalizedValue = value === null
+      ? value
+      : value.key;
+    this.props.setValue(normalizedValue);
+    this.props.onChange(normalizedValue);
   };
 
   render() {
     const { min, max, step, label, disabled, disabledSpans, disabledExclude } = this.props;
+    const { autocompleteIsOpen } = this.state;
     const value = this.props.getValue();
     const options = this.options(min, max, step, disabledSpans, disabledExclude);
     const checkboxId = id => `select-filter--${id}`;
@@ -212,23 +218,25 @@ class SelectTime extends React.Component {
         <FormControl className="select-filter__control">
           <InputLabel
             className="select-filter__label"
-            htmlFor="select-multiple-chip"
+            htmlFor="select-filter__menu"
             required={this.props.required}
-            shrink={!!value}
+            shrink={autocompleteIsOpen || !!value}
           >
             {label}
           </InputLabel>
 
-          <Select
-            value={value === null || !value ? '' : value}
+          <Autocomplete
+            className="select-filter__menu"
+            defaultValue={value === null || !value ? '' : options.filter(option => option.key === value).shift()}
+            getOptionLabel={option => option.value}
+            options={options}
             onChange={this.handleChange}
-            MenuProps={MenuProps}
-            error={!this.props.isValid()}
-            required={this.props.required}
-            disabled={disabled}
-          >
-            {options.map(option => (
+            onClose={() => this.setState({ autocompleteIsOpen: false })}
+            onOpen={() => this.setState({ autocompleteIsOpen: true })}
+            getOptionSelected={(option, val) => option.key === val}
+            renderOption={option => (
               <MenuItem
+                component="div"
                 key={option.key}
                 disabled={option.disabled}
                 value={option.key}
@@ -239,10 +247,20 @@ class SelectTime extends React.Component {
                   primary={checkboxLabel(option.value, checkboxId(option.key))}
                 />
               </MenuItem>
-            ))}
-          </Select>
+            )}
+            renderInput={params => (
+              <TextField
+                {...params}
+                aria-describedby="select-time-helper-text"
+                disabled={disabled}
+                error={!this.props.isValid()}
+                fullWidth
+                required={this.props.required}
+              />
+            )}
+          />
 
-          <FormHelperText error={!this.props.isValid()}>
+          <FormHelperText id="select-time-helper-text" error={!this.props.isValid()}>
             {this.props.getErrorMessage()}
           </FormHelperText>
         </FormControl>

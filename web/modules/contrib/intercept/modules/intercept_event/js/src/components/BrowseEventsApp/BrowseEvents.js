@@ -83,7 +83,8 @@ function getDate(value, view = 'day', boundary = 'start') {
   if (view === 'month') {
     date[method]('week');
   }
-  return date.toISOString();
+
+  return date.format();
 }
 
 function getDateSpan(value, view = 'day') {
@@ -117,7 +118,7 @@ function getDateFilters(values, view = 'list', calView = 'day', date = new Date(
     .tz(utils.getUserTimezone())
     .subtract(1, 'day')
     .endOf('day')
-    .toISOString();
+    .format();
 
   // Handler Calendar view.
   // The date should be determined by the date and calendar view type
@@ -443,6 +444,7 @@ class BrowseEvents extends Component {
           onNavigate={handleCalendarNavigate}
           onView={handleCalendarView}
           defaultView={calView}
+          date={date}
           defaultDate={date}
         />
       );
@@ -533,7 +535,7 @@ BrowseEvents.propTypes = {
 BrowseEvents.defaultProps = {
   view: 'list',
   calView: 'month',
-  date: new Date(),
+  date: utils.getUserTimeNow(),
   filters: {
     [c.KEYWORD]: '',
     location: [],

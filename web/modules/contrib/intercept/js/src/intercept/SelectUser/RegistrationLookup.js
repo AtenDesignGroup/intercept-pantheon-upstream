@@ -5,14 +5,13 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import debounce from 'lodash/debounce';
 
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Error from '@material-ui/icons/Error';
 import Warning from '@material-ui/icons/Warning';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import v4 from 'uuid/v4';
+
+import { InputAdornment, TextField, CircularProgress } from '@material-ui/core';
 
 const EMPTY = 'empty';
 const VALID = 'valid';

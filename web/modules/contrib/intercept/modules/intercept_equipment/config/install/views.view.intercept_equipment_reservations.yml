@@ -24,7 +24,6 @@ description: 'Shows all current equipment reservations in the system.'
 tag: ''
 base_table: equipment_reservation_field_data
 base_field: id
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -36,6 +35,7 @@ display:
         type: role
         options:
           role:
+            intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
             intercept_staff: intercept_staff
             intercept_system_admin: intercept_system_admin
       cache:
@@ -639,6 +639,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -684,6 +686,8 @@ display:
             placeholder: null
             min_placeholder: null
             max_placeholder: null
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: true
           group_info:
             label: 'Dates (field_dates)'
@@ -750,6 +754,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -794,6 +800,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -838,6 +846,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -892,6 +902,8 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''

@@ -3,21 +3,28 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.search_result
+    - field.field.node.event.field_add_to_cal
     - field.field.node.event.field_attendees
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
+    - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
+    - field.field.node.event.field_event_designation
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
+    - field.field.node.event.field_event_user_reg_max
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_keywords
     - field.field.node.event.field_location
     - field.field.node.event.field_must_register
+    - field.field.node.event.field_presented_by_non_staff
+    - field.field.node.event.field_presenter
     - field.field.node.event.field_room
     - field.field.node.event.field_text_content
     - field.field.node.event.field_text_intro
@@ -218,4 +225,11 @@ hidden:
   evaluation_attendee_js: true
   evaluation_staff: true
   event_recurrence: true
+  field_add_to_cal: true
+  field_evanced_id: true
+  field_event_designation: true
   field_event_is_template: true
+  field_event_user_reg_max: true
+  field_keywords: true
+  field_presented_by_non_staff: true
+  field_presenter: true

@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
 import DialogConfirm from 'intercept/Dialog/DialogConfirm';
 import interceptClient from 'interceptClient';
 const { constants, api, select } = interceptClient;
 const c = constants;
 import { connect } from 'react-redux';
+
+import { Button } from '@material-ui/core';
 
 const ActionProperties = {
   cancel: {

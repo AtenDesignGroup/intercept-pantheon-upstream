@@ -109,7 +109,7 @@ class RoomReservationActionButtonApp extends React.Component {
   approve = () => this.actionButton({
     status: 'approved',
     label: 'Approve',
-    variant: 'raised',
+    variant: 'contained',
   });
 
   actionButton({ status, label, variant }) {

@@ -10,9 +10,6 @@ import drupalSettings from 'drupalSettings';
 
 // Material UI
 
-// Intercept Components
-import SelectResource from 'intercept/SelectResource';
-
 // Local Components
 import ReserveRoomForm from './ReserveRoomForm';
 import DateSummary from './DateSummary';
@@ -23,20 +20,6 @@ import withAvailability from './../withAvailability';
 const { constants, select, utils } = interceptClient;
 const c = constants;
 const roomIncludes = ['image_primary', 'image_primary.field_media_image'];
-
-function getDateSpan(value, view = 'day') {
-  const start = moment(value).startOf(view);
-  const end = moment(value).endOf(view);
-
-  // The calendar view may include date from the previous or next month
-  // so we make sure to include the beginning of the first week and
-  // end of the last week.
-  if (view === 'month') {
-    start.startOf('week');
-    end.endOf('week');
-  }
-  return [start.toISOString(), end.toISOString()];
-}
 
 function getPublishedFilters(value = true) {
   return {

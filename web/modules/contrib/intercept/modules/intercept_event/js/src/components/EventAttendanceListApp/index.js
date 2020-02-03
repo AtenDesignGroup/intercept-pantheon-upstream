@@ -14,21 +14,20 @@ import drupalSettings from 'drupalSettings';
 // Lodash
 import debounce from 'lodash/debounce';
 
-// Material UI
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 // Intercept
 import interceptClient from 'interceptClient';
 
 // Intercept Components
 import DialogConfirm from 'intercept/Dialog/DialogConfirm';
-import ViewSwitcher from 'intercept/ViewSwitcher';
 
+import ViewSwitcher from 'intercept/ViewSwitcher';
 // Local Components
 import ContentList from 'intercept/ContentList';
+
 import EventRegistrationActions from '../EventRegistrationActions';
 import EventAttendanceTable from './EventAttendanceTable';
 import EventTeaser from 'intercept/EventTeaser';
+import { CircularProgress } from '@material-ui/core';
 
 const { constants, api, select } = interceptClient;
 const c = constants;

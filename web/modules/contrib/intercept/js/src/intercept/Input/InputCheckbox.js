@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+
+import { Checkbox, FormControlLabel } from '@material-ui/core';
 
 class InputCheckbox extends React.Component {
   render() {

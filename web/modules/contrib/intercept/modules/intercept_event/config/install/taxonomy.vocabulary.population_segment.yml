@@ -4,5 +4,4 @@ dependencies: {  }
 name: 'Population Segment'
 vid: population_segment
 description: 'Used to count groups of users for registrations and attendence'
-hierarchy: 0
 weight: 0

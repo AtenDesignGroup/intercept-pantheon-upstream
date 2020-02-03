@@ -542,8 +542,7 @@ export const locationOpenHours = (id, date) =>
   createSelector(location(id), (loc) => {
     const hours = get(loc, 'data.attributes.field_location_hours');
     const day = parseInt(
-      moment(date)
-        .tz(utils.getUserTimezone())
+      moment.tz(date, utils.getUserTimezone())
         .format('d'),
       10,
     );

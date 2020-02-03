@@ -1,13 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+
+import { Input, InputLabel, MenuItem, FormControl, ListItemText, Select } from '@material-ui/core';
 
 const styles = theme => ({
   root: {
@@ -15,7 +11,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   formControl: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
     width: '100%',

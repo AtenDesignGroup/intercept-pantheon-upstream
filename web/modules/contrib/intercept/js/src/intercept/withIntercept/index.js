@@ -1,12 +1,11 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
-import JssProvider from 'react-jss/lib/JssProvider';
 import { configureUrlQuery } from 'react-url-query';
 
 import interceptClient from 'interceptClient';
 import interceptTheme from 'interceptTheme';
+
+import { StylesProvider, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 // Redux store
 const store = interceptClient.store;
@@ -34,11 +33,11 @@ function withIntercept(WrappedComponent) {
     render() {
       return (
         <Provider store={store}>
-          <JssProvider jss={jss} generateClassName={generateClassName}>
+          <StylesProvider jss={jss} generateClassName={generateClassName}>
             <MuiThemeProvider theme={theme}>
               <WrappedComponent {...this.props} />
             </MuiThemeProvider>
-          </JssProvider>
+          </StylesProvider>
         </Provider>
       );
     }

@@ -11,8 +11,7 @@ import { connect } from 'react-redux';
 // Lodash
 import get from 'lodash/get';
 
-// Material UI
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { CircularProgress } from '@material-ui/core';
 
 const { select } = interceptClient;
 

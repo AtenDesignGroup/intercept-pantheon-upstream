@@ -1,15 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Checkbox from '@material-ui/core/Checkbox';
 import InputCheckbox from './InputCheckbox';
 
 import union from 'lodash/union';
 import without from 'lodash/without';
+
+import {
+  FormLabel,
+  FormControl,
+  FormGroup,
+  FormControlLabel,
+  FormHelperText,
+  Checkbox,
+} from '@material-ui/core';
 
 class InputCheckboxes extends React.Component {
   state = {

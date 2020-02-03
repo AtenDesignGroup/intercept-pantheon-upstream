@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
+    - field.field.node.event.field_event_user_reg_max
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
     - field.field.node.event.field_keywords
@@ -252,4 +253,5 @@ hidden:
   field_add_to_cal: true
   field_evanced_id: true
   field_event_is_template: true
+  field_event_user_reg_max: true
   field_keywords: true

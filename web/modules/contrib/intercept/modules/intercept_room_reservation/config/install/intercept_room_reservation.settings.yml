@@ -7,7 +7,7 @@ reservation_limit_text:
   format: basic_html
 advanced_reservation_limit: '0'
 advanced_reservation_limit_text:
-  value: ""
+  value: ''
   format: basic_html
 email:
   reservation_accepted:

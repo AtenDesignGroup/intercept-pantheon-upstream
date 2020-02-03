@@ -20,7 +20,6 @@ description: 'Show availability information about a particular piece of equipmen
 tag: ''
 base_table: equipment_reservation_field_data
 base_field: id
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -316,6 +315,8 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''

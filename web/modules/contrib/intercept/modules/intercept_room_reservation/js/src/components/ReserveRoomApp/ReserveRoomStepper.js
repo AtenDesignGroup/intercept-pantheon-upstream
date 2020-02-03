@@ -2,16 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
-import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepButton from '@material-ui/core/StepButton';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { isWidthUp } from '@material-ui/core/withWidth';
 
 /* eslint-disable */
 import interceptClient from 'interceptClient';
 import { isFutureTime } from './ReserveRoom';
+import { withWidth, Stepper, Step, StepButton, Button, Typography } from '@material-ui/core';
 /* eslint-enable */
 const { select, utils } = interceptClient;
 
@@ -20,25 +16,28 @@ const styles = theme => ({
     width: '90%',
   },
   button: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   completed: {
     display: 'inline-block',
   },
   instructions: {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   labelButton: {
     textTransform: 'none',
     textAlign: 'left',
     letterSpacing: 0,
-    paddingBottom: theme.spacing.unit,
-    paddingTop: theme.spacing.unit,
+    paddingBottom: theme.spacing(1),
+    paddingTop: theme.spacing(1),
     '&:disabled': {
       opacity: '.5',
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
     },
+    '& .MuiTypography-caption': {
+      display: 'block',
+    }
   },
 });
 
@@ -187,7 +186,7 @@ class HorizontalNonLinearStepper extends React.Component {
                   Back
                 </Button>
                 <Button
-                  variant="raised"
+                  variant="contained"
                   color="primary"
                   onClick={this.handleNext}
                   className={classes.button}
@@ -200,7 +199,7 @@ class HorizontalNonLinearStepper extends React.Component {
                       Step {activeStep + 1} already completed
                     </Typography>
                   ) : (
-                    <Button variant="raised" color="primary" onClick={this.handleComplete}>
+                    <Button variant="contained" color="primary" onClick={this.handleComplete}>
                       {this.completedSteps() === this.totalSteps() - 1 ? 'Finish' : 'Complete Step'}
                     </Button>
                   ))}

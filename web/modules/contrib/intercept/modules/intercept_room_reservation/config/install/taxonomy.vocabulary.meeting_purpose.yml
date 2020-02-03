@@ -4,5 +4,4 @@ dependencies: {  }
 name: 'Meeting Purpose'
 vid: meeting_purpose
 description: 'Room reservation meeting purpose'
-hierarchy: 0
 weight: 0

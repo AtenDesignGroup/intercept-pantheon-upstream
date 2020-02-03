@@ -8,12 +8,13 @@ import map from 'lodash/map';
 import BigCalendar from 'intercept/BigCalendar';
 
 import Toolbar from 'react-big-calendar/lib/Toolbar';
+import { Navigate } from 'react-big-calendar';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import ArrowForward from '@material-ui/icons/ArrowForward';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import interceptClient from 'interceptClient';
 import moment from 'moment';
+
+import { Button, IconButton } from '@material-ui/core';
 
 const { utils } = interceptClient;
 
@@ -30,17 +31,21 @@ const CalendarEvent = (props) => {
 
 class CustomToolbar extends Toolbar {
   render() {
-    const { messages, label, maxDate, minDate, date } = this.props;
+    const { localizer: { messages }, label, maxDate, minDate, date } = this.props;
+
+    // Get the calendar's local date in ISO Date format.
+    // Used for min/max comparisons later.
+    const ISOdate = moment(date).format('YYYY-MM-DD');
 
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
           <Button
-            variant="raised"
+            variant="contained"
             color="primary"
             size="small"
             className="rbc-btn rbc-btn--today"
-            onClick={() => this.navigate('TODAY')}
+            onClick={this.navigate.bind(null, Navigate.TODAY)}
           >
             {messages.today}
           </Button>
@@ -48,21 +53,21 @@ class CustomToolbar extends Toolbar {
         <div className="rbc-toolbar__heading">
           <IconButton
             className={'rbc-toolbar__pager-button rbc-toolbar__pager-button--prev'}
-            onClick={() => this.navigate('PREV')}
+            onClick={this.navigate.bind(null, Navigate.PREVIOUS)}
             color="primary"
             aria-label="Previous"
             variant="flat"
-            disabled={minDate && utils.getDateFromDayTimeStamp(minDate) >= date}
+            disabled={minDate && minDate >= ISOdate}
           >
             <ArrowBack />
           </IconButton>
           <h2 className="rbc-toolbar__label">{label}</h2>
           <IconButton
             className={'rbc-toolbar__pager-button rbc-toolbar__pager-button--next'}
-            onClick={() => this.navigate('NEXT')}
+            onClick={this.navigate.bind(null, Navigate.NEXT)}
             color="primary"
             aria-label="Next"
-            disabled={maxDate && utils.getDateFromDayTimeStamp(maxDate) <= date}
+            disabled={maxDate && maxDate <= ISOdate}
           >
             <ArrowForward />
           </IconButton>
@@ -120,7 +125,7 @@ class RoomAvailabilityCalendar extends React.Component {
       .tz(utils.getUserTimezone())
       .startOf('day');
     const startDate = moment.max(dateFromDrupal, midnight);
-    return startDate.toISOString();
+    return startDate.toDate();
   };
 
   endDateAccessor = prop => (item) => {
@@ -133,7 +138,7 @@ class RoomAvailabilityCalendar extends React.Component {
     if (endDate.get('hour') === 0) {
       endDate.subtract(1, 'seconds');
     }
-    return endDate.toISOString();
+    return endDate.toDate();
   };
 
   render() {
@@ -189,11 +194,9 @@ class RoomAvailabilityCalendar extends React.Component {
           })}
           endAccessor={endAccessor}
           events={events}
-          getNow={() => utils.getUserTimeNow()}
           max={this.getDateFromTime(max && (max !== '2400' && max !== '0000') ? max : '2359')}
           min={this.getDateFromTime(min || '0000')}
           onNavigate={this.props.onNavigate}
-          // onSelectEvent={this.onSelectEvent}
           onView={this.props.onView}
           step={15}
           startAccessor={startAccessor}
@@ -220,8 +223,8 @@ RoomAvailabilityCalendar.propTypes = {
 RoomAvailabilityCalendar.defaultProps = {
   onNavigate: null,
   onView: null,
-  date: utils.getUserStartOfDay(),
-  defaultDate: utils.getUserStartOfDay(),
+  date: utils.getUserTimeNow(),
+  defaultDate: utils.getUserTimeNow(),
   defaultView: 'day',
   min: '0000',
   max: '2359',

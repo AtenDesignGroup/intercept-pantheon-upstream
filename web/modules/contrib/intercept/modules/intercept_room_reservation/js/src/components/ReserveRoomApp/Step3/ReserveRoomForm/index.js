@@ -1,6 +1,7 @@
 // React
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 // Redux
 import { connect } from 'react-redux';
@@ -15,15 +16,7 @@ import drupalSettings from 'drupalSettings';
 // UUID
 import v4 from 'uuid/v4';
 
-// Material UI
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
 
 // Intercept Components
 import SelectResource from 'intercept/SelectResource';
@@ -41,6 +34,8 @@ import Formsy, { addValidationRule } from 'formsy-react';
 // Local Components
 import ReserveRoomConfirmation from './ReserveRoomConfirmation';
 import ReservationTeaser from './../../../ReservationTeaser';
+
+import { AppBar, Button, Dialog, Toolbar, IconButton, Typography, Slide } from '@material-ui/core';
 
 const { actions, constants, select, utils } = interceptClient;
 const c = constants;
@@ -104,8 +99,10 @@ const buildRoomReservation = (values) => {
       uuid,
       field_attendee_count: values.attendees,
       field_dates: {
-        value: utils.dateToDrupal(utils.getDateFromTime(values.start, values.date), true),
-        end_value: utils.dateToDrupal(utils.getDateFromTime(values.end, values.date), true),
+        value: moment.tz(utils.getDateFromTime(values.start, values.date), utils.getUserTimezone())
+          .format(),
+        end_value: moment.tz(utils.getDateFromTime(values.end, values.date), utils.getUserTimezone())
+          .format(),
       },
       field_group_name: values.groupName,
       field_meeting_purpose_details: values.meetingDetails,
@@ -313,7 +310,7 @@ class ReserveRoomForm extends PureComponent {
             <small>
               Telephone: {drupalSettings.intercept.user.telephone}<br />
               Email: {drupalSettings.intercept.user.email}<br />
-              <i>Need to update your info? After finishing your reservation visit My Account > Settings</i>
+              <em>Need to update your info? After finishing your reservation visit My Account &gt; Settings</em>
             </small>
           </div>
         );
@@ -427,7 +424,7 @@ class ReserveRoomForm extends PureComponent {
                   />
                 </div>
                 <Button
-                  variant="raised"
+                  variant="contained"
                   size="large"
                   color="primary"
                   type="submit"

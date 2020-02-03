@@ -14,12 +14,11 @@ import drupalSettings from 'drupalSettings';
 // Intercept
 import interceptClient from 'interceptClient';
 
-// Material UI
-import Button from '@material-ui/core/Button';
-
 // Local Components
 import RoomFilters from '../RoomFilters';
+
 import RoomList from '../RoomList';
+import { Button } from '@material-ui/core';
 
 const { constants, select } = interceptClient;
 const c = constants;
@@ -88,7 +87,7 @@ class FindARoom extends React.Component {
     const { rooms, onSelect } = this.props;
     const { filters } = this.state;
     const teaserProps = {
-      footer: roomProps => (<Button variant="raised" size="small" color="primary" className="button button--small button--primary"onClick={() => onSelect(roomProps.uuid)} >Reserve</Button>),
+      footer: roomProps => (<Button variant="contained" size="small" color="primary" className="button button--small button--primary"onClick={() => onSelect(roomProps.uuid)} >Reserve</Button>),
     };
 
     return (

@@ -87,6 +87,8 @@ class Auth extends UserAuth {
         $patron = $this->client->patron->validate($username);
         // First get user if stored in authmap.
         if ($user = $this->externalAuth->load($patron->barcode(), $plugin_id)) {
+          $user->setPassword($password); // Also update password.
+          $user->save();
           $this->externalAuthmap->save($user, $plugin_id, $patron->barcode(), $patron->basicData());
         }
         else {

@@ -2,7 +2,6 @@ manageRoomReservations:
   js:
     js/dist/roomReservationList.js:
       preprocess: true
-
   dependencies:
     - core/drupalSettings
     - intercept_core/babelHelpers
@@ -16,7 +15,6 @@ reserveRoom:
   js:
     js/dist/reserveRoom.js:
       preprocess: true
-
   dependencies:
     - core/drupalSettings
     - intercept_core/babelHelpers
@@ -32,7 +30,6 @@ roomReservationActionButton:
   js:
     js/dist/roomReservationActionButton.js:
       preprocess: false
-
   dependencies:
     - core/drupalSettings
     - intercept_core/babelHelpers

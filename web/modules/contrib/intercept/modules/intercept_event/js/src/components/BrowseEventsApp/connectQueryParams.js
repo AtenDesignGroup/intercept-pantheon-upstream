@@ -23,8 +23,6 @@ import updateWithHistory from 'intercept/updateWithHistory';
 const {
   decodeArray,
   encodeArray,
-  decodeBoolean,
-  encodeBoolean,
   decodeObject,
   encodeObject,
 } = Serialize;
@@ -35,6 +33,14 @@ const DESIGNATION = 'designation';
 
 const removeFalseyProps = obj => pickBy(obj, prop => prop);
 
+const encodeDate = (value) => {
+  return !value ? null : utils.getDayTimeStamp(value);
+}
+
+const decodeDate = (value) => {
+  // We fallback to undefined to allow the underlying app to set its own default date prop.
+  return value ? utils.getDateFromDayTimeStamp(value) : undefined;
+}
 
 const encodeFilters = (value) => {
   const filters = removeFalseyProps({
@@ -64,6 +70,7 @@ const decodeFilters = (values) => {
     };
   }
   const value = decodeObject(values, '::', '__');
+
   const filters = {
     [c.KEYWORD]: decode(UrlQueryParamTypes.string, value[c.KEYWORD], ''),
     [c.TYPE_LOCATION]: decodeArray(value.location, ',') || [],
@@ -74,13 +81,19 @@ const decodeFilters = (values) => {
     [c.DATE_END]: value[c.DATE_END] ? utils.getDateFromDayTimeStamp(value[c.DATE_END]) : null,
     [DESIGNATION]: decode(UrlQueryParamTypes.string, value[DESIGNATION], 'events'),
   };
+
   return filters;
 };
 
 const urlPropsQueryConfig = {
   view: { type: UrlQueryParamTypes.string },
   calView: { type: UrlQueryParamTypes.string },
-  date: { type: UrlQueryParamTypes.date },
+  date: {
+    type: {
+      decode: decodeDate,
+      encode: encodeDate,
+    }
+  },
   filters: {
     type: {
       decode: decodeFilters,

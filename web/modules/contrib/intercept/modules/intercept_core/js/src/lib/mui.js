@@ -1,6 +1,5 @@
 import { create } from 'jss';
-import createGenerateClassName from '@material-ui/core/styles/createGenerateClassName';
-import jssPreset from '@material-ui/core/styles/jssPreset';
+import { createGenerateClassName, jssPreset } from '@material-ui/core/styles';
 
 export const generateClassName = createGenerateClassName();
 export const jss = create(jssPreset());

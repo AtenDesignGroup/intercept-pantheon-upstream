@@ -9,14 +9,12 @@ import moment from 'moment';
 // Lodash
 import map from 'lodash/map';
 
-// Material UI
-import Button from '@material-ui/core/Button';
-
 // Intercept
 import interceptClient from 'interceptClient';
 
 // Components
 import CurrentFilters from 'intercept/CurrentFilters';
+
 import DateFilter from 'intercept/DateFilter';
 import KeywordFilter from 'intercept/KeywordFilter';
 import SelectResource from 'intercept/SelectResource';
@@ -24,6 +22,7 @@ import SelectSingle from 'intercept/Select/SelectSingle';
 import InputDate from 'intercept/Input/InputDate';
 import InputNumber from 'intercept/Input/InputNumber';
 import InputCheckbox from 'intercept/Input/InputCheckbox';
+import { Button } from '@material-ui/core';
 
 const { constants, utils } = interceptClient;
 const c = constants;
@@ -178,7 +177,7 @@ class RoomFilters extends PureComponent {
             <h4 className="section-title--secondary">
               Show Available
               {/* <Button
-                variant="raised"
+                variant="contained"
                 size="small"
                 color="primary"
                 type="submit"

@@ -2,9 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
-import MomentUtils from 'material-ui-pickers/utils/moment-utils';
-import TimePicker from 'material-ui-pickers/TimePicker';
-import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider';
+import MomentUtils from '@date-io/moment';
+import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 const styles = theme => ({
   container: {
@@ -12,8 +11,8 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     width: 200,
   },
 });

@@ -140,3 +140,4 @@ hidden:
   card_number: true
   field_hold_pickup_location: true
   hold_pickup_location: true
+  is_default: true

@@ -2,9 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
-import MomentUtils from 'material-ui-pickers/utils/moment-utils';
-import DatePicker from 'material-ui-pickers/DatePicker';
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import MomentUtils from '@date-io/moment';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 import interceptClient from 'interceptClient';
 
@@ -16,8 +15,8 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     width: 200,
   },
 });
@@ -93,13 +92,10 @@ class InputDate extends React.Component {
       maxDate,
       maxDateMessage,
       minDate,
-      minDateMessage
+      minDateMessage,
     } = this.props;
 
-
-    // const value = this.props.getValue();
-    // const inputValue = value === '' ? null : value;
-    const inputValue = this.constructor.denormalize(this.props.getValue())
+    const inputValue = this.constructor.denormalize(this.props.getValue());
 
 
     return (
@@ -116,9 +112,9 @@ class InputDate extends React.Component {
           className="date-filter input input--date"
           error={!this.props.isValid()}
           helperText={this.props.getErrorMessage() || helperText}
-          maxDate={maxDate}
+          maxDate={maxDate && this.constructor.denormalize(maxDate)}
           maxDateMessage={maxDateMessage}
-          minDate={minDate}
+          minDate={minDate && this.constructor.denormalize(minDate)}
           minDateMessage={minDateMessage}
         />
       </MuiPickersUtilsProvider>

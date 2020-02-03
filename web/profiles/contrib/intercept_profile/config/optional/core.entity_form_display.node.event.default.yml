@@ -17,6 +17,7 @@ dependencies:
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
+    - field.field.node.event.field_event_user_reg_max
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
     - field.field.node.event.field_keywords
@@ -160,6 +161,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -314,6 +316,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     region: content
     third_party_settings: {  }
   unpublish_on:
@@ -332,6 +335,7 @@ hidden:
   field_attendees: true
   field_evanced_id: true
   field_event_is_template: true
+  field_event_user_reg_max: true
   field_keywords: true
   promote: true
   sticky: true

@@ -2,6 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - core.date_format.medium
     - field.field.event_recurrence.event_recurrence.field_event_rrule
   module:
     - date_recur
@@ -12,6 +13,13 @@ targetEntityType: event_recurrence
 bundle: event_recurrence
 mode: default
 content:
+  author:
+    label: hidden
+    type: author
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_event_rrule:
     weight: 0
     label: above

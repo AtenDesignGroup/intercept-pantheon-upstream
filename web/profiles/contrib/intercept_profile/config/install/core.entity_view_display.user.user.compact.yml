@@ -21,5 +21,7 @@ content:
       image_link: content
     third_party_settings: {  }
     label: hidden
+    region: content
 hidden:
+  customer_profiles: true
   member_for: true

@@ -99,6 +99,9 @@
   .radios__group .radios__radio-label:not(:last-child) {
     margin-right: 1em; }
 
+.select-filter__control label + .select-filter__menu {
+  margin-top: 16px; }
+
 .select-filter__menu .select-filter__menu-item {
   font-size: 0.57639rem;
   padding-left: 0.25rem; }

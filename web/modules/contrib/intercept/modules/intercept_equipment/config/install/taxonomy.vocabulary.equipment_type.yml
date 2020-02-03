@@ -4,5 +4,4 @@ dependencies: {  }
 name: 'Equipment Type'
 vid: equipment_type
 description: 'Equipment categorization'
-hierarchy: 0
 weight: 0

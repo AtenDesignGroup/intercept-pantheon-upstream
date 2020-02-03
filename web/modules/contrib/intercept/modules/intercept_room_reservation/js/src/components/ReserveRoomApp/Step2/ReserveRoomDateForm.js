@@ -5,22 +5,19 @@ import PropTypes from 'prop-types';
 // Lodash
 import get from 'lodash/get';
 
-// Lodash
-
 // Redux
 import { connect } from 'react-redux';
 
+// Material UI
+import { Button } from '@material-ui/core';
+
 // Intercept
 import interceptClient from 'interceptClient';
-
-// Material UI
-import Button from '@material-ui/core/Button';
 
 // Intercept Components
 import InputDate from 'intercept/Input/InputDate';
 import SelectTime from 'intercept/Select/SelectTime';
 import InputCheckbox from 'intercept/Input/InputCheckbox';
-
 import { isFutureTime, isLessThanMaxTime } from '../ReserveRoom';
 
 // Formsy
@@ -369,7 +366,7 @@ class ReserveRoomDateForm extends PureComponent {
 
           <div className="form__actions">
             <Button
-              variant="raised"
+              variant="contained"
               size="small"
               color="primary"
               type="submit"

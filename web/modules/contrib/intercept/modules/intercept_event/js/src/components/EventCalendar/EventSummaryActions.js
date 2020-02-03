@@ -2,12 +2,12 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import CardActions from '@material-ui/core/CardActions';
 import { connect } from 'react-redux';
 import interceptClient from 'interceptClient';
 import ButtonRegister from 'intercept/ButtonRegister';
 import { withStyles } from '@material-ui/core/styles';
+
+import { Button, CardActions } from '@material-ui/core';
 
 const { select, constants } = interceptClient;
 const c = constants;

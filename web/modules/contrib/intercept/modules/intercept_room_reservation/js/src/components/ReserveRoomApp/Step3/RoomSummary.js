@@ -4,12 +4,9 @@ import { connect } from 'react-redux';
 
 /* eslint-disable */
 import interceptClient from 'interceptClient';
-/* eslint-enable */
-
-// Material UI
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
+
+import { Button, IconButton } from '@material-ui/core';
 
 // Intercept Components
 const { select } = interceptClient;
@@ -43,7 +40,7 @@ class RoomSummary extends React.PureComponent {
         <h4 className="value-summary__label">Room</h4>
         <Button
           className="value-summary__button"
-          variant="raised"
+          variant="contained"
           color="primary"
           size="small"
           onClick={onClickChange}

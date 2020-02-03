@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// Material UI
-import Button from '@material-ui/core/Button';
-
 /* eslint-disable */
 import interceptClient from 'interceptClient';
+
+import { Button } from '@material-ui/core';
 /* eslint-enable */
 
 const { utils } = interceptClient;

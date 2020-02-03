@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Tabs, Tab } from '@material-ui/core';
 
 const styles = theme => ({
   root: {
@@ -19,7 +18,7 @@ const styles = theme => ({
     textTransform: 'initial',
     minWidth: 72,
     letterSpacing: 0,
-    marginRight: theme.spacing.unit * 4,
+    marginRight: theme.spacing(4),
     '&:hover': {
       // color: '#40a9ff',
       opacity: 1,
@@ -34,7 +33,7 @@ const styles = theme => ({
   },
   tabSelected: {},
   typography: {
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
   },
 });
 

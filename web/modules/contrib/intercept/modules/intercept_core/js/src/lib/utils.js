@@ -14,11 +14,17 @@ export const getUserName = () => get(drupalSettings, "intercept.user.name");
 export const getUserUid = () => get(drupalSettings, "intercept.user.id");
 export const getUserUuid = () => get(drupalSettings, "intercept.user.uuid");
 export const getUserRoles = () => get(drupalSettings, "intercept.user.roles");
+
+/**
+ * Returns a Date object set to the start of
+ * the current day in the user's timezone.
+ */
 export const getUserStartOfDay = () =>
   moment()
     .tz(getUserTimezone())
     .startOf("day")
     .toDate();
+
 export const getUserTimeNow = () =>
   moment()
     .tz(getUserTimezone())
@@ -54,6 +60,64 @@ export const ensureDate = (date, offset) => {
   }
   return new Date(date);
 };
+
+/**
+ * Ensures a start of day date falls on the user's day.
+ *
+ * Some inputs and calendar widgets set or expect a 'day'
+ * to be the start of day in local timezone (the one set in
+ * in the browser or OS). This creates issues if the user's
+ * desired timezone is set to a timezone ahead of the local
+ * timezone. As the local timezone will actually be one calendar
+ * day ahead.
+ *
+ * @param {Date} date
+ *  The input date in the local timezone.
+ * @return {Moment}
+ *  The Moment date converted to match the user's timezone.
+ */
+export const normalizeStartOfDay = (date) => {
+  const localOffset = moment(date).utcOffset();
+  const userOffset = moment.tz(date, getUserTimezone()).utcOffset();
+  const userDate = moment(date);
+
+  // If the local offset is less than the
+  // user offset, add 1 day.
+  if (localOffset < userOffset) {
+    userDate.add(1, 'days');
+  }
+
+  return userDate;
+}
+
+/**
+ * Ensures a start of day date falls on the user's day.
+ *
+ * Some inputs and calendar widgets set or expect a 'day'
+ * to be the start of day in local timezone (the one set in
+ * in the browser or OS). This creates issues if the user's
+ * desired timezone is set to a timezone ahead of the local
+ * timezone. As the local timezone will actually be one calendar
+ * day ahead.
+ *
+ * @param {Date} date
+ *  The input date in the local timezone.
+ * @return {Moment}
+ *  The Moment date converted to match the user's timezone.
+ */
+export const denormalizeStartOfDay = (date) => {
+  const localOffset = moment(date).utcOffset();
+  const userOffset = moment.tz(date, getUserTimezone()).utcOffset();
+  const userDate = moment(date);
+
+  // If the local offset is less than the
+  // user offset, add 1 day.
+  if (localOffset < userOffset) {
+    userDate.subtract(1, 'days');
+  }
+
+  return userDate;
+}
 
 export const getDateFromTime = (time, date) =>
   moment

@@ -1,22 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import interceptClient from 'interceptClient';
 import TallySummary from 'intercept/TallySummary';
 import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
+
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 
 const c = interceptClient.constants;
 
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: 'auto',
   },
   table: {

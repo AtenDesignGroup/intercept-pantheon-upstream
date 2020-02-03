@@ -252,10 +252,8 @@ class ChoiceFormField extends FormField
 
     /**
      * Returns option value with associated disabled flag.
-     *
-     * @return array
      */
-    private function buildOptionValue(\DOMElement $node)
+    private function buildOptionValue(\DOMElement $node): array
     {
         $option = [];
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
+import { TextField } from '@material-ui/core';
 
 function TimePicker(props) {
   const { value, step, label, onChange } = props;

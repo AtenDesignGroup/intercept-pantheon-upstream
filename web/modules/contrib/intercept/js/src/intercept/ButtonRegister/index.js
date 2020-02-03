@@ -4,11 +4,10 @@ import PropTypes from 'prop-types';
 // Redux
 import { connect } from 'react-redux';
 
-// Material UI
-import Button from '@material-ui/core/Button';
-
 /* eslint-disable */
 import interceptClient from 'interceptClient';
+
+import { Button } from '@material-ui/core';
 /* eslint-enable */
 
 const { select, utils } = interceptClient;
@@ -21,7 +20,7 @@ function ButtonRegister(props) {
   return mustRegister ? (
     <Button
       href={onClick ? null : registerUrl}
-      variant={text === 'register' ? 'raised' : 'outlined'}
+      variant={text === 'register' ? 'contained' : 'outlined'}
       size="small"
       color="primary"
       className={'action-button__button'}

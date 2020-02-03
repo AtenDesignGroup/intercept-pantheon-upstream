@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
 import { withFormsy } from 'formsy-react';
 import { propTypes, defaultProps } from 'formsy-react';
-
 import interceptClient from 'interceptClient';
+
+import { TextField } from '@material-ui/core';
 const { utils } = interceptClient;
 
 class InputTime extends React.Component {

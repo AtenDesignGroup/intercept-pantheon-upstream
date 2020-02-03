@@ -5,9 +5,6 @@ import PropTypes from 'prop-types';
 // Redux
 import { connect } from 'react-redux';
 
-// Components
-import Button from '@material-ui/core/Button';
-
 // Intercept
 import DialogConfirm from 'intercept/Dialog/DialogConfirm';
 import interceptClient from 'interceptClient';
@@ -18,6 +15,8 @@ const c = constants;
 // Local Components
 import EventRegisterConfirmation from '../EventRegisterApp/EventRegisterConfirmation';
 import EventRegistrationStatus from '../EventRegisterApp/EventRegistrationStatus';
+
+import { Button } from '@material-ui/core';
 
 const actionProperties = {
   default: {
@@ -101,7 +100,7 @@ class EventRegistrationActions extends PureComponent {
       <div>
         {actions.length > 0 &&
           actions.map(action => (
-            <Button key={action} onClick={this.onClick(action)} variant={action === 'cancel' ? 'outlined' : 'raised'} color="primary">
+            <Button key={action} onClick={this.onClick(action)} variant={action === 'cancel' ? 'outlined' : 'contained'} color="primary">
               {action}
             </Button>
           ))}

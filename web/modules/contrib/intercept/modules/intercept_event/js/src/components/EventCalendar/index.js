@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Toolbar from 'react-big-calendar/lib/Toolbar';
+import { Navigate } from 'react-big-calendar';
 
 // Material UI
 import ArrowBack from '@material-ui/icons/ArrowBack';
@@ -47,7 +48,7 @@ CalendarEvent.propTypes = {
 
 class CustomToolbar extends Toolbar {
   render() {
-    const { messages, label } = this.props;
+    const { localizer: { messages }, label } = this.props;
 
     return (
       <div className="rbc-toolbar">
@@ -57,7 +58,7 @@ class CustomToolbar extends Toolbar {
             color="primary"
             size="small"
             className="rbc-btn rbc-btn--today"
-            onClick={() => this.navigate('TODAY')}
+            onClick={this.navigate.bind(null, Navigate.TODAY)}
           >
             {messages.today}
           </Button>
@@ -65,7 +66,7 @@ class CustomToolbar extends Toolbar {
         <div className="rbc-toolbar__heading">
           <IconButton
             className={'rbc-toolbar__pager-button rbc-toolbar__pager-button--prev'}
-            onClick={() => this.navigate('PREV')}
+            onClick={this.navigate.bind(null, Navigate.PREVIOUS)}
             color="primary"
             aria-label="Previous"
             variant="flat"
@@ -75,7 +76,7 @@ class CustomToolbar extends Toolbar {
           <h2 className="rbc-toolbar__label">{label}</h2>
           <IconButton
             className={'rbc-toolbar__pager-button rbc-toolbar__pager-button--next'}
-            onClick={() => this.navigate('NEXT')}
+            onClick={this.navigate.bind(null, Navigate.NEXT)}
             color="primary"
             aria-label="Next"
           >

@@ -4,5 +4,4 @@ dependencies: {  }
 name: Tag
 vid: tag
 description: 'Keywords for categorizing events'
-hierarchy: 0
 weight: 0

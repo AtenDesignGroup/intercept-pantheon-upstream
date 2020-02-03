@@ -3,8 +3,9 @@ status: true
 dependencies: {  }
 id: customer
 label: Customer
-registration: true
+display_label: null
 multiple: false
+registration: true
 roles:
   authenticated: authenticated
   intercept_registered_customer: intercept_registered_customer
@@ -12,6 +13,5 @@ roles:
   intercept_system_admin: intercept_system_admin
   administrator: administrator
   intercept_kiosk: '0'
-weight: 0
-use_revisions: false
-description: ''
+allow_revisions: false
+new_revision: false

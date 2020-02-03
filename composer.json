@@ -94,7 +94,12 @@
       },
       "file-mapping": {
           "[project-root]/.editorconfig": false
-      }            
+      }
+    },
+    "patches": {
+      "drupal/core": {
+        "Issue #3103529: http installation of 8.8.1 fails": "https://www.drupal.org/files/issues/2020-01-29/3103529-22.patch"
+      }
     }
   }
 }

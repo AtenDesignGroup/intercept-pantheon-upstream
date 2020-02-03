@@ -2006,6 +2006,9 @@
                     "[web-root]/profiles/README.txt": "assets/scaffold/files/profiles.README.txt",
                     "[web-root]/themes/README.txt": "assets/scaffold/files/themes.README.txt"
                 }
+            },
+            "patches_applied": {
+                "Issue #3103529: http installation of 8.8.1 fails": "https://www.drupal.org/files/issues/2020-01-29/3103529-22.patch"
             }
         },
         "installation-source": "dist",

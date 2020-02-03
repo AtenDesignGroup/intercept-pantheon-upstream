@@ -159,6 +159,10 @@ function install_drupal($class_loader, $settings = [], callable $callback = NULL
       install_display_output($output, $state);
     }
     elseif ($state['installation_finished']) {
+      // Truncate cache_container table
+      // See: https://www.drupal.org/project/drupal/issues/3103529
+      Database::getConnection()->truncate('cache_container')->execute();
+
       // Redirect to the newly installed site.
       $finish_url = '';
       if (isset($install_state['profile_info']['distribution']['install']['finish_url'])) {

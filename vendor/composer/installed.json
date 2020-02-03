@@ -1128,52 +1128,6 @@
         ]
     },
     {
-        "name": "drupal-composer/drupal-scaffold",
-        "version": "2.6.1",
-        "version_normalized": "2.6.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/drupal-composer/drupal-scaffold.git",
-            "reference": "13c1ffc7dd4925cb03707759128b85c0cd6276f8"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/drupal-composer/drupal-scaffold/zipball/13c1ffc7dd4925cb03707759128b85c0cd6276f8",
-            "reference": "13c1ffc7dd4925cb03707759128b85c0cd6276f8",
-            "shasum": ""
-        },
-        "require": {
-            "composer-plugin-api": "^1.0.0",
-            "composer/semver": "^1.4",
-            "php": "^5.5.9|>=7.0.8"
-        },
-        "require-dev": {
-            "composer/composer": "dev-master",
-            "g1a/composer-test-scenarios": "^2.1.0",
-            "phpunit/phpunit": "^6",
-            "squizlabs/php_codesniffer": "^2.8"
-        },
-        "time": "2019-03-30T10:41:38+00:00",
-        "type": "composer-plugin",
-        "extra": {
-            "class": "DrupalComposer\\DrupalScaffold\\Plugin",
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "DrupalComposer\\DrupalScaffold\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-2.0-or-later"
-        ],
-        "description": "Composer Plugin for updating the Drupal scaffold files when using drupal/core"
-    },
-    {
         "name": "drupal/address",
         "version": "1.7.0",
         "version_normalized": "1.7.0.0",
@@ -2076,6 +2030,55 @@
             "GPL-2.0-or-later"
         ],
         "description": "Drupal is an open source content management platform powering millions of websites and applications."
+    },
+    {
+        "name": "drupal/core-composer-scaffold",
+        "version": "8.8.2",
+        "version_normalized": "8.8.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/drupal/core-composer-scaffold.git",
+            "reference": "dca4b123a638d78bf77719632993e920de6cc426"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/drupal/core-composer-scaffold/zipball/dca4b123a638d78bf77719632993e920de6cc426",
+            "reference": "dca4b123a638d78bf77719632993e920de6cc426",
+            "shasum": ""
+        },
+        "require": {
+            "composer-plugin-api": "^1.0.0",
+            "php": ">=7.0.8"
+        },
+        "conflict": {
+            "drupal-composer/drupal-scaffold": "*"
+        },
+        "require-dev": {
+            "composer/composer": "^1.8@stable"
+        },
+        "time": "2019-10-09T02:55:24+00:00",
+        "type": "composer-plugin",
+        "extra": {
+            "class": "Drupal\\Composer\\Plugin\\Scaffold\\Plugin",
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Drupal\\Composer\\Plugin\\Scaffold\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0-or-later"
+        ],
+        "description": "A flexible Composer project scaffold builder.",
+        "homepage": "https://www.drupal.org/project/drupal",
+        "keywords": [
+            "drupal"
+        ]
     },
     {
         "name": "drupal/core-recommended",
@@ -5245,24 +5248,66 @@
         ]
     },
     {
-        "name": "pantheon-systems/quicksilver-pushback",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "name": "pantheon-systems/drupal-integrations",
+        "version": "8.0.0",
+        "version_normalized": "8.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/pantheon-systems/quicksilver-pushback.git",
-            "reference": "32c65effd6802bdf829f1c68fb75ade2bd5894a0"
+            "url": "https://github.com/pantheon-systems/drupal-integrations.git",
+            "reference": "98a334921691bd23f29f56a722b8bf52665f5e57"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/pantheon-systems/quicksilver-pushback/zipball/32c65effd6802bdf829f1c68fb75ade2bd5894a0",
-            "reference": "32c65effd6802bdf829f1c68fb75ade2bd5894a0",
+            "url": "https://api.github.com/repos/pantheon-systems/drupal-integrations/zipball/98a334921691bd23f29f56a722b8bf52665f5e57",
+            "reference": "98a334921691bd23f29f56a722b8bf52665f5e57",
+            "shasum": ""
+        },
+        "conflict": {
+            "drupal/core": "<8.5"
+        },
+        "time": "2020-01-30T17:57:20+00:00",
+        "type": "project",
+        "extra": {
+            "drupal-scaffold": {
+                "file-mapping": {
+                    "[project-root]/.drush-lock-update": "assets/drush-lock-update",
+                    "[project-root]/pantheon.upstream.yml": "assets/pantheon.upstream.yml",
+                    "[web-root]/sites/default/default.services.pantheon.preproduction.yml": "assets/default.services.pantheon.preproduction.yml",
+                    "[web-root]/sites/default/settings.pantheon.php": "assets/settings.pantheon.php",
+                    "[web-root]/sites/default/settings.php": {
+                        "mode": "replace",
+                        "path": "assets/initial.settings.php",
+                        "overwrite": false
+                    }
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "Add this project to any Drupal distribution based on drupal/core-composer-scaffold to enable it for use on Pantheon."
+    },
+    {
+        "name": "pantheon-systems/quicksilver-pushback",
+        "version": "2.0.1",
+        "version_normalized": "2.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pantheon-systems/quicksilver-pushback.git",
+            "reference": "e9e64afc0e3e02e611e87fa583075e4bd69876ca"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pantheon-systems/quicksilver-pushback/zipball/e9e64afc0e3e02e611e87fa583075e4bd69876ca",
+            "reference": "e9e64afc0e3e02e611e87fa583075e4bd69876ca",
             "shasum": ""
         },
         "require": {
             "composer/installers": "~1.0"
         },
-        "time": "2017-07-21T17:10:28+00:00",
+        "time": "2019-09-12T18:18:26+00:00",
         "type": "quicksilver-script",
         "installation-source": "dist",
         "notification-url": "https://packagist.org/downloads/",
@@ -7771,6 +7816,51 @@
             }
         ],
         "description": "A robust cross-platform utility for normalizing, comparing and modifying file paths."
+    },
+    {
+        "name": "zaporylie/composer-drupal-optimizations",
+        "version": "1.1.1",
+        "version_normalized": "1.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zaporylie/composer-drupal-optimizations.git",
+            "reference": "fb231d92adc862a2c9276bccbc90f684816dc75d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/zaporylie/composer-drupal-optimizations/zipball/fb231d92adc862a2c9276bccbc90f684816dc75d",
+            "reference": "fb231d92adc862a2c9276bccbc90f684816dc75d",
+            "shasum": ""
+        },
+        "require": {
+            "composer-plugin-api": "^1.1"
+        },
+        "require-dev": {
+            "composer/composer": "^1.6",
+            "phpunit/phpunit": "^6"
+        },
+        "time": "2019-10-02T17:01:11+00:00",
+        "type": "composer-plugin",
+        "extra": {
+            "class": "zaporylie\\ComposerDrupalOptimizations\\Plugin"
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "zaporylie\\ComposerDrupalOptimizations\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0-or-later"
+        ],
+        "authors": [
+            {
+                "name": "Jakub Piasecki",
+                "email": "jakub@piaseccy.pl"
+            }
+        ],
+        "description": "Composer plugin to improve composer performance for Drupal projects"
     },
     {
         "name": "zendframework/zend-diactoros",

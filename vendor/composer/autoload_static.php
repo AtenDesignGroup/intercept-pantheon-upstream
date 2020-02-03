@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672
+class ComposerStaticInit2433b790b56a40d6de74e3dffd0c22db
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -30,6 +30,10 @@ class ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672
     );
 
     public static $prefixLengthsPsr4 = array (
+        'z' => 
+        array (
+            'zaporylie\\ComposerDrupalOptimizations\\' => 38,
+        ),
         'r' => 
         array (
             'rvtraveller\\QuicksilverComposerInstaller\\' => 41,
@@ -131,8 +135,8 @@ class ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672
             'Drush\\' => 6,
             'Drupal\\Driver\\' => 14,
             'Drupal\\Core\\' => 12,
+            'Drupal\\Composer\\Plugin\\Scaffold\\' => 32,
             'Drupal\\Component\\' => 17,
-            'DrupalComposer\\DrupalScaffold\\' => 30,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Inflector\\' => 26,
             'Doctrine\\Common\\Cache\\' => 22,
@@ -155,6 +159,10 @@ class ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672
     );
 
     public static $prefixDirsPsr4 = array (
+        'zaporylie\\ComposerDrupalOptimizations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zaporylie/composer-drupal-optimizations/src',
+        ),
         'rvtraveller\\QuicksilverComposerInstaller\\' => 
         array (
             0 => __DIR__ . '/..' . '/rvtraveller/qs-composer-installer/src',
@@ -383,13 +391,13 @@ class ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672
         array (
             0 => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core',
         ),
+        'Drupal\\Composer\\Plugin\\Scaffold\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/drupal/core-composer-scaffold',
+        ),
         'Drupal\\Component\\' => 
         array (
             0 => __DIR__ . '/../..' . '/web/core/lib/Drupal/Component',
-        ),
-        'DrupalComposer\\DrupalScaffold\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/drupal-composer/drupal-scaffold/src',
         ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
@@ -532,11 +540,11 @@ class ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit3f4e7995ddfc89a4d4ce24e740975672::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit2433b790b56a40d6de74e3dffd0c22db::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit2433b790b56a40d6de74e3dffd0c22db::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit2433b790b56a40d6de74e3dffd0c22db::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit2433b790b56a40d6de74e3dffd0c22db::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit2433b790b56a40d6de74e3dffd0c22db::$classMap;
 
         }, null, ClassLoader::class);
     }

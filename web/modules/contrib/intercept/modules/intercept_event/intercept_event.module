@@ -54,7 +54,7 @@ function intercept_event_theme() {
     ],
     'evaluation_eval_widget' => [
       'variables' => [
-        'label' => t('Your rating for this event:'),
+        'label' => new TranslatableMarkup('Your rating for this event:'),
         'value' => NULL,
       ],
       'template' => 'evaluation-eval-widget',
@@ -112,43 +112,43 @@ function intercept_event_entity_extra_field_info() {
   $extra = [];
 
   $extra['vote']['evaluation']['display']['evaluation'] = [
-    'label' => t('Event evaluation'),
-    'description' => t('A simple liked or disliked display.'),
+    'label' => new TranslatableMarkup('Event evaluation'),
+    'description' => new TranslatableMarkup('A simple liked or disliked display.'),
     'weight' => 0,
     'visible' => FALSE,
   ];
 
   $extra['node']['event']['display']['evaluation_attendee_default'] = [
-    'label' => t('Evaluation default (attendee)'),
-    'description' => t('View evaluation widget for attendees.'),
+    'label' => new TranslatableMarkup('Evaluation default (attendee)'),
+    'description' => new TranslatableMarkup('View evaluation widget for attendees.'),
     'weight' => 10,
     'visible' => FALSE,
   ];
 
   $extra['node']['event']['display']['evaluation_attendee_js'] = [
-    'label' => t('Evaluation JS widget (attendee)'),
-    'description' => t('View evaluation widget for attendees.'),
+    'label' => new TranslatableMarkup('Evaluation JS widget (attendee)'),
+    'description' => new TranslatableMarkup('View evaluation widget for attendees.'),
     'weight' => 10,
     'visible' => FALSE,
   ];
 
   $extra['node']['event']['display']['evaluation_staff'] = [
-    'label' => t('Evaluation (staff)'),
-    'description' => t('View evaluation widget for staff users.'),
+    'label' => new TranslatableMarkup('Evaluation (staff)'),
+    'description' => new TranslatableMarkup('View evaluation widget for staff users.'),
     'weight' => 10,
     'visible' => FALSE,
   ];
 
   $extra['event_attendance']['event_attendance']['form']['event_summary'] = [
-    'label' => t('Event summary'),
-    'description' => t('View event summary information.'),
+    'label' => new TranslatableMarkup('Event summary'),
+    'description' => new TranslatableMarkup('View event summary information.'),
     'weight' => 10,
     'visible' => FALSE,
   ];
 
   $extra['node']['event']['form']['recurring_event'] = [
-    'label' => t('Recurring event'),
-    'description' => t('View event recurrence information.'),
+    'label' => new TranslatableMarkup('Recurring event'),
+    'description' => new TranslatableMarkup('View event recurrence information.'),
     'weight' => 10,
     'visible' => FALSE,
   ];
@@ -399,7 +399,7 @@ function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterfac
       ($d == 1) ? $suffix = ' - ' : $suffix = '';
       return [
         '#type' => 'link',
-        '#title' => t($t),
+        '#title' => new TranslatableMarkup($t),
         '#url' => Url::fromRoute('<current>', [], [
           'query' => $query,
         ]),
@@ -532,13 +532,13 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
     $dates_registration = $values['field_event_register_period'][0];
 
     if (!$valid_dates($dates_registration)) {
-      $form_state->setErrorByName('field_event_register_period[0', t('Registration period is required.'));
+      $form_state->setErrorByName('field_event_register_period[0', new TranslatableMarkup('Registration period is required.'));
       return;
     }
     if (!$valid_dates($dates_event)) {
       // This should not be possible,
       // but just in case so further validation does not break.
-      $form_state->setErrorByName('field_event_register_period[0', t('Event date is invalid.'));
+      $form_state->setErrorByName('field_event_register_period[0', new TranslatableMarkup('Event date is invalid.'));
     }
 
     // TODO: Check to see if date module has already set an error on the
@@ -551,12 +551,12 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
     $title = $form['field_event_register_period']['widget']['#title'];
 
     if (!$dates_event['end_value']->diff($dates_registration['end_value'])->invert) {
-      $form_state->setErrorByName($get_field_name('end_value'), t('The @title must end before the event end date.', [
+      $form_state->setErrorByName($get_field_name('end_value'), new TranslatableMarkup('The @title must end before the event end date.', [
         '@title' => $title,
       ]));
     }
     if (!$dates_event['value']->diff($dates_registration['value'])->invert) {
-      $form_state->setErrorByName($get_field_name('value'), t('The @title must start before the event start date.', [
+      $form_state->setErrorByName($get_field_name('value'), new TranslatableMarkup('The @title must start before the event start date.', [
         '@title' => $title,
       ]));
     }
@@ -571,7 +571,7 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
     ];
     foreach ($required_fields as $key => $name) {
       if (empty($values[$key])) {
-        $form_state->setErrorByName($key, t('@name is required.', ['@name' => $name]));
+        $form_state->setErrorByName($key, new TranslatableMarkup('@name is required.', ['@name' => $name]));
       }
     }
   }

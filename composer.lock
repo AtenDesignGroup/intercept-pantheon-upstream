@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9958a8ad1129638ca838d4bd9ea5fbf8",
+    "content-hash": "e1a9fc4213441afb3385067c50b0bf4a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1957,6 +1957,9 @@
                         "[web-root]/profiles/README.txt": "assets/scaffold/files/profiles.README.txt",
                         "[web-root]/themes/README.txt": "assets/scaffold/files/themes.README.txt"
                     }
+                },
+                "patches_applied": {
+                    "Issue #3103529: http installation of 8.8.1 fails": "https://www.drupal.org/files/issues/2020-01-29/3103529-22.patch"
                 }
             },
             "autoload": {
@@ -3111,7 +3114,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept.git",
-                "reference": "88dabba3a6a2e511c0894565c286decc568a1704"
+                "reference": "31a630fc54e0093267a7510bce8c9d153aea27c2"
             },
             "require": {
                 "drupal/address": "^1.3",
@@ -3172,8 +3175,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha16+0-dev",
-                    "datestamp": "1579810981",
+                    "version": "8.x-1.0-alpha16+2-dev",
+                    "datestamp": "1580769521",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3215,7 +3218,7 @@
                 "source": "http://cgit.drupalcode.org/intercept",
                 "issues": "https://www.drupal.org/project/issues/intercept"
             },
-            "time": "2020-02-03T15:58:56+00:00"
+            "time": "2020-02-04T16:19:04+00:00"
         },
         {
             "name": "drupal/intercept_base",
@@ -3223,7 +3226,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept_base.git",
-                "reference": "da6672b5fa12647c846a7b04ad9d61d60a7b64b4"
+                "reference": "7d2bf9cbbfb94f77f9e0a4a87e0fd618dfa6d803"
             },
             "require": {
                 "drupal/components": "^1.0",
@@ -3281,7 +3284,7 @@
                 "source": "http://cgit.drupalcode.org/intercept_base",
                 "issues": "https://www.drupal.org/project/issues/intercept_base"
             },
-            "time": "2020-01-23T20:21:19+00:00"
+            "time": "2020-02-04T16:21:24+00:00"
         },
         {
             "name": "drupal/intercept_profile",

@@ -7,6 +7,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\inline_entity_form\ElementSubmit;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Utility\Dates;
@@ -261,13 +262,13 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       }
       else {
         \Drupal::service('messenger')
-          ->addMessage(t('No new events to generate.'));
+          ->addMessage(new TranslatableMarkup('No new events to generate.'));
       }
     }
     else {
       $error_operation = reset($operations);
       \Drupal::service('messenger')
-        ->addMessage(t('An error occurred while processing @operation with arguments : @args'), [
+        ->addMessage(new TranslatableMarkup('An error occurred while processing @operation with arguments : @args'), [
           '@operation' => $error_operation[0],
           '@args' => print_r($error_operation[0]),
         ]);

@@ -31,8 +31,8 @@ function intercept_room_reservation_help($route_name, RouteMatchInterface $route
     // Main module help for the intercept_room_reservation module.
     case 'help.page.intercept_room_reservation':
       $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('Room reservation functionality for the Intercept library') . '</p>';
+      $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
+      $output .= '<p>' . new TranslatableMarkup('Room reservation functionality for the Intercept library') . '</p>';
       return $output;
 
     default:
@@ -64,7 +64,7 @@ function intercept_room_reservation_preprocess_page(array &$variables) {
   $advanced_limit = \Drupal::config('intercept_room_reservation.settings')->get('advanced_reservation_limit', 0);
   $variables['#attached']['drupalSettings']['intercept']['room_reservations']['customer_advanced_limit'] = $advanced_limit;
   if (isset($advanced_limit) && $advanced_limit !== '0') {
-    $variables['#attached']['drupalSettings']['intercept']['room_reservations']['customer_advanced_text'] = t(
+    $variables['#attached']['drupalSettings']['intercept']['room_reservations']['customer_advanced_text'] = new TranslatableMarkup(
       'Reservations may be made up to @limit days in advance', ['@limit' => $advanced_limit]);
   }
 
@@ -121,7 +121,7 @@ function intercept_room_reservation_entity_operation(EntityInterface $entity) {
   if ($entity->getEntityTypeId() == 'room_reservation') {
     $operation = function ($op) use ($entity) {
       return [
-        'title' => t(ucwords($op)),
+        'title' => new TranslatableMarkup(ucwords($op)),
         'url' => Url::fromRoute("entity.room_reservation.{$op}_form", [
           'room_reservation' => $entity->id(),
           'destination' => Url::fromRoute('<current>')->toString(),
@@ -213,7 +213,7 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $form[$location_field]['#multiple'] = FALSE;
 
     // Specify the empty option for our select list.
-    $form[$location_field]['#empty_option'] = t('Any');
+    $form[$location_field]['#empty_option'] = new TranslatableMarkup('Any');
 
     // Add the $options from above to our select list.
     $form[$location_field]['#options'] = $options;
@@ -234,7 +234,7 @@ function intercept_room_reservation_form_room_reservation_update_status_form_alt
   if ($operation == 'cancel') {
     // Rewrite the confirmation message to match the customer confirmation.
     $form['description'] = [
-      '#markup' => '<p>' . t('Are you sure you want to cancel this reservation?') . '</p>',
+      '#markup' => '<p>' . new TranslatableMarkup('Are you sure you want to cancel this reservation?') . '</p>',
     ];
     // Add margin to the right of the first action button.
     $form['actions']['cancel']['#prefix'] = '<div class="actions">';
@@ -293,28 +293,28 @@ function intercept_room_reservation_entity_extra_field_info() {
   $extra = [];
 
   $extra['node']['event']['form']['reservation'] = [
-    'label' => t('Reservations'),
-    'description' => t('Manage reservations for this event.'),
+    'label' => new TranslatableMarkup('Reservations'),
+    'description' => new TranslatableMarkup('Manage reservations for this event.'),
     'visible' => FALSE,
   ];
 
   $extra['room_reservation']['room_reservation']['display']['location_full'] = [
-    'label' => t('Full location'),
-    'description' => t('Location title and room name'),
+    'label' => new TranslatableMarkup('Full location'),
+    'description' => new TranslatableMarkup('Location title and room name'),
     'weight' => 10,
     'visible' => FALSE,
   ];
 
   $extra['room_reservation']['room_reservation']['display']['attendees_full'] = [
-    'label' => t('Attendee count'),
-    'description' => t('Atendee count and label'),
+    'label' => new TranslatableMarkup('Attendee count'),
+    'description' => new TranslatableMarkup('Atendee count and label'),
     'weight' => 15,
     'visible' => FALSE,
   ];
 
   $extra['room_reservation']['room_reservation']['display']['action_button'] = [
-    'label' => t('Action button'),
-    'description' => t('Cancel deny and approve buttons.'),
+    'label' => new TranslatableMarkup('Action button'),
+    'description' => new TranslatableMarkup('Cancel deny and approve buttons.'),
     'weight' => 15,
     'visible' => FALSE,
   ];
@@ -358,7 +358,7 @@ function intercept_room_reservation_room_reservation_view(array &$build, RoomRes
       '#type' => 'html_tag',
       '#tag' => 'div',
       '#attributes' => ['class' => 'field-attendees-full'],
-      '#value' => !empty($count) ? t('@count Attendees', [
+      '#value' => !empty($count) ? new TranslatableMarkup('@count Attendees', [
         '@count' => $count,
       ]) : '',
     ];

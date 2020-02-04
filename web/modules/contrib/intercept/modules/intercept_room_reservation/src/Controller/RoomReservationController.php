@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Link;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
 use Drupal\intercept_core\ReservationManagerInterface;
@@ -108,7 +109,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     $build['agreement']['title'] = [
       '#type' => 'html_tag',
       '#tag' => 'h1',
-      '#value' => t('Reserve a Room'),
+      '#value' => new TranslatableMarkup('Reserve a Room'),
     ];
 
     $build['agreement']['text'] = [

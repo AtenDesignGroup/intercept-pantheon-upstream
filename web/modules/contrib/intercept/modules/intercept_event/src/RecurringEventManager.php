@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\date_recur\Rl\RlHelper;
 use Drupal\node\NodeInterface;
@@ -367,7 +368,7 @@ class RecurringEventManager {
   public static function nodeFormValidate(array &$form, FormStateInterface $form_state) {
     $recurring = $form_state->getValue('recurring_event');
     if (!empty($recurring['enabled']) && empty($recurring['end']['count']) && empty($recurring['end']['until'])) {
-      $message = $this->t('Enabling recurring events requires either an end date, or a total repeat count.');
+      $message = new TranslatableMarkup('Enabling recurring events requires either an end date, or a total repeat count.');
       $form_state->setError($form['recurring_event']['end_type'], $message);
     }
   }
@@ -392,7 +393,7 @@ class RecurringEventManager {
       $existing_events = $recurrence->getEvents();
       if (!empty($existing_events)) {
         $nodes = $recurrence->deleteEvents();
-        $manager->messenger->addStatus($this->t('@count recurring events deleted.', ['@count' => count($nodes)]));
+        $manager->messenger->addStatus(new TranslatableMarkup('@count recurring events deleted.', ['@count' => count($nodes)]));
       }
       $recurrence->delete();
     }

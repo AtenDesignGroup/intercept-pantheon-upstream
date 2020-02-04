@@ -33,7 +33,7 @@ class RoomReservationForm extends ContentEntityForm {
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
-        'message' => t('Verifying reservation dates...'),
+        'message' => $this->t('Verifying reservation dates...'),
       ],
     ];
 

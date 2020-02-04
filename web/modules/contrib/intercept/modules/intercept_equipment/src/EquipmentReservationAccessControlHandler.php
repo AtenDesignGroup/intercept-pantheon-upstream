@@ -24,31 +24,36 @@ class EquipmentReservationAccessControlHandler extends EntityAccessControlHandle
     $result = parent::checkAccess($entity, $operation, $account);
     switch ($operation) {
       case 'view':
-        if (!$entity->isPublished()) {
-          $result = AccessResult::allowedIfHasPermission($account, 'view unpublished equipment reservation entities');
-        }
-        $result = AccessResult::allowedIfHasPermission($account, 'view published equipment reservation entities');
-
       case 'update':
-        $result = AccessResult::allowedIfHasPermission($account, 'edit equipment reservation entities');
-
-      case 'delete':
-        $result = AccessResult::allowedIfHasPermission($account, 'delete equipment reservation entities');
+        if ($result->isNeutral() && $this->hasReferencedUser($entity)) {
+          $result = $this->checkEntityUserReferencedPermissions($entity, $operation, $account);
+        }
+        break;
     }
 
-    if ($result->isNeutral() && $this->hasReferencedUser($entity)) {
-      return $this->checkEntityUserReferencedPermissions($entity, $operation, $account);
-    }
-
-    // Unknown operation, no opinion.
-    return AccessResult::neutral();
+    return $result->addCacheableDependency($entity);
   }
 
   /**
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    return AccessResult::allowedIfHasPermission($account, 'add equipment reservation entities');
+    return AccessResult::allowedIfHasPermission($account, 'create equipment_reservation');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkEntityOwnerPermissions(EntityInterface $entity, $operation, AccountInterface $account) {
+    /** @var \Drupal\intercept_equipment\Entity\EquipmentReservationInterface $entity */
+    $result = parent::checkEntityOwnerPermissions($entity, $operation, $account);
+    if ($operation == 'view' && $result->isNeutral() && $account->id() == $entity->getOwnerId()) {
+      $permissions = [
+        "view own {$entity->getEntityTypeId()}",
+      ];
+      $result = AccessResult::allowedIfHasPermissions($account, $permissions, 'OR');
+    }
+    return $result;
   }
 
   /**
@@ -74,19 +79,31 @@ class EquipmentReservationAccessControlHandler extends EntityAccessControlHandle
     if (($account->id() == $entity->get('field_user')->entity->id())) {
       return AccessResult::allowedIfHasPermissions($account, [
         "$operation referenced user {$entity->getEntityTypeId()}",
-      ]);
+        "$operation referenced user {$entity->bundle()} {$entity->getEntityTypeId()}",
+      ], 'OR');
+    }
+    else {
+      switch ($operation) {
+        case 'cancel':
+        case 'update':
+        case 'approve':
+        case 'deny':
+          return AccessResult::allowedIfHasPermissions($account, [
+            "update any {$entity->getEntityTypeId()}",
+          ], 'OR');
+      }
     }
     return $return;
   }
 
   /**
-   * Whether the entity has an field_user field.
+   * Check if entity has referenced user field.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity for which to check.
+   *   The entity to check.
    *
    * @return bool
-   *   Whether the entity has an field_user field.
+   *   Whether the entity has the field_user field.
    */
   protected function hasReferencedUser(EntityInterface $entity) {
     /** @var \Drupal\intercept_equipment\Entity\EquipmentReservationInterface $entity */

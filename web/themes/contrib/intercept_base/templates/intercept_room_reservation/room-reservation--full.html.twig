@@ -1,0 +1,24 @@
+<article{{ attributes.addclass(['room-reservation']) }}>
+  {# Intro Text #}
+  <div class="l--1-col l--offset">
+    <div class="l--section">
+      {{ tabs }}
+    </div>
+  </div>
+
+  <header class="article__header l--offset">
+      {{ title_prefix }}
+      {% include '@intercept-base-components/page-title/page-title.twig' with {
+    text: label
+  } only %}
+      {{ title_suffix }}
+  </header>
+
+  <div class="l--1-col l--offset">
+      <div class="l__primary">
+        {% if content %}
+            {{ content }}
+        {% endif %}
+      </div>
+  </div>
+</article>

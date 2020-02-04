@@ -9,6 +9,7 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Field\Computed\MethodItemList;
 use Drupal\user\UserInterface;
@@ -163,15 +164,15 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
     $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['title'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Title'))
+      ->setLabel(new TranslatableMarkup('Title'))
       ->setComputed(TRUE)
       ->setClass(MethodItemList::class)
       ->setSetting('method', 'label')
       ->setReadOnly(TRUE);
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Authored by'))
-      ->setDescription(t('The user ID of author of the Event Registration entity.'))
+      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setDescription(new TranslatableMarkup('The user ID of author of the Event Registration entity.'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
@@ -195,8 +196,8 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['status'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(t('Status'))
-      ->setDescription(t('A boolean indicating whether the Event Registration is published.'))
+      ->setLabel(new TranslatableMarkup('Status'))
+      ->setDescription(new TranslatableMarkup('A boolean indicating whether the Event Registration is published.'))
       ->setDefaultValue('active')
       ->setCardinality(1)
       ->setSetting('allowed_values', [
@@ -208,12 +209,12 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
+      ->setLabel(new TranslatableMarkup('Created'))
+      ->setDescription(new TranslatableMarkup('The time that the entity was created.'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the entity was last edited.'));
+      ->setLabel(new TranslatableMarkup('Changed'))
+      ->setDescription(new TranslatableMarkup('The time that the entity was last edited.'));
 
     return $fields;
   }

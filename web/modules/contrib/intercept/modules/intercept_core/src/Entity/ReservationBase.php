@@ -9,6 +9,7 @@ use Drupal\Core\Entity\RevisionableContentEntityBase;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\intercept_core\Field\Computed\FileFieldItemList;
 use Drupal\intercept_core\Field\Computed\MethodItemList;
 use Drupal\intercept_core\Utility\Dates;
@@ -289,15 +290,15 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['title'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Title'))
+      ->setLabel(new TranslatableMarkup('Title'))
       ->setComputed(TRUE)
       ->setClass(MethodItemList::class)
       ->setSetting('method', 'label')
       ->setReadOnly(TRUE);
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Authored by'))
-      ->setDescription(t('The user ID of author of the @label entity.', [
+      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setDescription(new TranslatableMarkup('The user ID of author of the @label entity.', [
         '@label' => $entity_type->getLabel(),
       ]))
       ->setRevisionable(TRUE)
@@ -325,8 +326,8 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
     $reservation_type = static::reservationType();
 
     $fields['image'] = BaseFieldDefinition::create('image')
-      ->setLabel(t('Image'))
-      ->setDescription(t("The related @label entity's image.", [
+      ->setLabel(new TranslatableMarkup('Image'))
+      ->setDescription(new TranslatableMarkup("The related @label entity's image.", [
         '@label' => $reservation_type,
       ]))
       ->setComputed(TRUE)
@@ -341,24 +342,24 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
       ->setReadOnly(TRUE);
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Publishing status'))
-      ->setDescription(t('A boolean indicating whether the @label is published.', [
+      ->setLabel(new TranslatableMarkup('Publishing status'))
+      ->setDescription(new TranslatableMarkup('A boolean indicating whether the @label is published.', [
         '@label' > $entity_type->getLabel(),
       ]))
       ->setRevisionable(TRUE)
       ->setDefaultValue(TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
+      ->setLabel(new TranslatableMarkup('Created'))
+      ->setDescription(new TranslatableMarkup('The time that the entity was created.'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the entity was last edited.'));
+      ->setLabel(new TranslatableMarkup('Changed'))
+      ->setDescription(new TranslatableMarkup('The time that the entity was last edited.'));
 
     $fields['revision_translation_affected'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Revision translation affected'))
-      ->setDescription(t('Indicates if the last edit of a translation belongs to current revision.'))
+      ->setLabel(new TranslatableMarkup('Revision translation affected'))
+      ->setDescription(new TranslatableMarkup('Indicates if the last edit of a translation belongs to current revision.'))
       ->setReadOnly(TRUE)
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE);

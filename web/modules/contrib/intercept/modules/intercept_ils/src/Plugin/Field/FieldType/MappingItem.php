@@ -4,6 +4,7 @@ namespace Drupal\intercept_ils\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\MapDataDefinition;
 
@@ -26,10 +27,10 @@ class MappingItem extends FieldItemBase {
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
     $properties['id'] = DataDefinition::create('string')
-      ->setLabel(t('External ILS ID'));
+      ->setLabel(new TranslatableMarkup('External ILS ID'));
     $properties['data'] = MapDataDefinition::create()
-      ->setLabel(t('Data map'))
-      ->setDescription(t('The mapped object data.'));
+      ->setLabel(new TranslatableMarkup('Data map'))
+      ->setDescription(new TranslatableMarkup('The mapped object data.'));
 
     return $properties;
   }

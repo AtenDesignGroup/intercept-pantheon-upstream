@@ -9,9 +9,11 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
@@ -22,7 +24,7 @@ use Drupal\views\Plugin\views\query\QueryPluginBase;
 /**
  * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
  */
-function intercept_equipment_reservation_jsonapi_equipment_reservation_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
+function intercept_equipment_jsonapi_equipment_reservation_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
   return ([
     // @todo CRL-163: The 'view referenced user equipment_reservation' permission does not yet exist.
     // Once it has been implemented, the AMONG_ALL should be commented out and AMONG_OWN deleted.
@@ -86,9 +88,9 @@ function intercept_equipment_mail($key, &$message, $params) {
   switch ($key) {
     case 'created':
       $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Equipment Request - @equipment_title for @username', ['@username' => $params['username'], '@equipment_title' => $params['equipment_title']], $options);
+      $message['subject'] = new TranslatableMarkup('Equipment Request - @equipment_title for @username', ['@username' => $params['username'], '@equipment_title' => $params['equipment_title']], $options);
       $message['body'] = [];
-      $message['body'][] = t("The following request was submitted:\n\nContact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
+      $message['body'][] = new TranslatableMarkup("The following request was submitted:\n\nContact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
         '@email_address' => $params['email_address'],
         '@username' => $params['username'],
         '@equipment_title' => $params['equipment_title'],
@@ -200,7 +202,7 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInte
       ($d == 1) ? $suffix = ' - ' : $suffix = '';
       return [
         '#type' => 'link',
-        '#title' => t($t),
+        '#title' => new TranslatableMarkup($t),
         '#url' => Url::fromRoute('<current>', [], [
           'query' => $query,
         ]),
@@ -248,7 +250,7 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInte
     $form[$location_field]['#multiple'] = FALSE;
 
     // Specify the empty option for our select list.
-    $form[$location_field]['#empty_option'] = t('Any');
+    $form[$location_field]['#empty_option'] = new TranslatableMarkup('Any');
 
     // Add the $options from above to our select list.
     $form[$location_field]['#options'] = $options;

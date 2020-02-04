@@ -5,6 +5,7 @@ namespace Drupal\intercept_room_reservation\Entity;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\intercept_core\Entity\ReservationBase;
 use Drupal\intercept_core\Field\Computed\EntityReferenceFieldItemList;
 use Drupal\intercept_core\Field\Computed\MethodItemList;
@@ -130,15 +131,15 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
     $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['location'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Title'))
+      ->setLabel(new TranslatableMarkup('Title'))
       ->setComputed(TRUE)
       ->setClass(MethodItemList::class)
       ->setSetting('method', 'location')
       ->setReadOnly(TRUE);
 
     $fields['room_location'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Location'))
-      ->setDescription(t("The related room's location entity."))
+      ->setLabel(new TranslatableMarkup('Location'))
+      ->setDescription(new TranslatableMarkup("The related room's location entity."))
       ->setComputed(TRUE)
       ->setClass(EntityReferenceFieldItemList::class)
       ->setDisplayConfigurable('form', TRUE)

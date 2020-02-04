@@ -6,18 +6,19 @@
  */
 
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Implements hook_token_info_alter().
  */
 function intercept_room_reservation_token_info_alter(&$data) {
   $data['tokens']['room_reservation']['first_name'] = [
-    'name' => t("User first name"),
-    'description' => t("The first name of this room reservation\'s user."),
+    'name' => new TranslatableMarkup("User first name"),
+    'description' => new TranslatableMarkup("The first name of this room reservation\'s user."),
   ];
   $data['tokens']['room_reservation']['full_name'] = [
-    'name' => t("User full name"),
-    'description' => t("The full name of this room reservation\'s user."),
+    'name' => new TranslatableMarkup("User full name"),
+    'description' => new TranslatableMarkup("The full name of this room reservation\'s user."),
   ];
 }
 

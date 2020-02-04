@@ -45,7 +45,7 @@ class EquipmentReservationForm extends ContentEntityForm {
         'wrapper' => 'edit-output',
         'progress' => [
           'type' => 'throbber',
-          'message' => t('Checking availability...'),
+          'message' => $this->t('Checking availability...'),
         ],
       ],
     ];

@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
@@ -246,7 +247,7 @@ class EventManager implements EventManagerInterface {
     $event_template->event_recurrence->setValue(NULL);
     $event_template->save();
     // TODO: Use the message service.
-    \Drupal::messenger()->addMessage(t('Event template @link has been created.', [
+    \Drupal::messenger()->addMessage(new TranslatableMarkup('Event template @link has been created.', [
       '@link' => $event_template->link(),
     ]));
     // TODO: Fix this so that this overrides the admin/content destination.

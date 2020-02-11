@@ -55,6 +55,7 @@ class EventImportSubscriber implements EventSubscriberInterface {
       $modified_days = '0';
       // First, change all event dates to current times.
       foreach ($event_entities as $base_event) {
+        /** @var \Drupal\node\NodeInterface $base_event */
         $event_date_start = new \DateTime($base_event->field_date_time->value);
         $event_date_end = new \DateTime($base_event->field_date_time->end_value);
         $storage_format = 'Y-m-d\TH:i:s';
@@ -79,6 +80,9 @@ class EventImportSubscriber implements EventSubscriberInterface {
             ];
             $new_event->set('field_date_time', $dates);
             $new_event->set('event_recurrence', $event_recurrence->id());
+            if ($base_event->field_must_register->value) {
+              $new_event->field_event_register_period->end_value = $event_date_end->format($storage_format);
+            }
             $new_event->save();
             $this->reservationManager->createEventReservation($new_event, [
               'field_dates' => $dates,
@@ -89,6 +93,9 @@ class EventImportSubscriber implements EventSubscriberInterface {
           'value' => $event_date_start->format($storage_format),
           'end_value' => $event_date_end->format($storage_format),
         ]);
+        if ($base_event->field_must_register->value) {
+          $base_event->field_event_register_period->end_value = $event_date_end->format($storage_format);
+        }
         $base_event->save();
         $this->reservationManager->createEventReservation($base_event, [
           'field_dates' => [

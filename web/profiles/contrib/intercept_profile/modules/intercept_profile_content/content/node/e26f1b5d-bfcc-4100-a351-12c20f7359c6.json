@@ -349,7 +349,7 @@
     ],
     "field_featured": [
         {
-            "value": false
+            "value": true
         }
     ],
     "field_has_waitlist": [

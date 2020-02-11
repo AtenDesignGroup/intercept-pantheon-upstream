@@ -387,7 +387,7 @@
         {
             "total": 0,
             "total_waitlist": 0,
-            "status": "expired",
+            "status": "open",
             "status_user": null
         }
     ],

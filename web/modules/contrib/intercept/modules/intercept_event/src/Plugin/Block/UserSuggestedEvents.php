@@ -5,13 +5,12 @@ namespace Drupal\intercept_event\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\intercept_event\EventManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
-
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\intercept_event\EventManagerInterface;
 use Drupal\intercept_event\SuggestedEventsQuery;
 
 /**
@@ -53,6 +52,13 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
   protected $connection;
 
   /**
+   * The Profile entity storage handler.
+   *
+   * @var \Drupal\profile\ProfileStorageInterface
+   */
+  protected $profileStorage;
+
+  /**
    * Constructs a new UserSuggestedEvents object.
    *
    * @param array $configuration
@@ -76,6 +82,7 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
     $this->interceptEventManager = $intercept_event_manager;
     $this->currentUser = $current_user;
     $this->connection = $connection;
+    $this->profileStorage = $this->entityTypeManager->getStorage('profile');
   }
 
   /**
@@ -206,6 +213,7 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
     $nodes_historical = $storage->loadMultiple($nids);
     $event_types_historical = $locations_historical = $audiences_historical = [];
     foreach ($nodes_historical as $node_historical) {
+      /** @var \Drupal\node\NodeInterface $node_historical */
       $audience = $node_historical->get('field_audience_primary')->getString();
       if (!in_array($audience, $audiences_historical) && !empty($audience)) {
         $audiences_historical[] = $audience;
@@ -223,7 +231,7 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
     // RECOMMENDATIONS.
     $view = $this->entityTypeManager->getViewBuilder('node');
     $node = $this->entityTypeManager->getDefinition('node');
-    $customer = $this->entityTypeManager->getStorage('profile')->loadByUser($this->currentUser, 'customer');
+    $customer = $this->profileStorage->loadByUser($this->currentUser, 'customer');
     $query = new SuggestedEventsQuery($node, 'AND', \Drupal::service('database'), ['Drupal\Core\Entity\Query\Sql']);
 
     $current_date = $this->currentDate()->setTimezone(new \DateTimeZone('UTC'));
@@ -312,6 +320,7 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
     $titles = [];
     foreach ($nodes as $key => $node) {
       // $this->configuration['results'] = 3 results by default.
+      /** @var \Drupal\node\NodeInterface $node */
       if (!in_array($node->get('title')->getString(), $titles) && count($titles) < $this->configuration['results']) {
         $titles[] = $node->get('title')->getString();
       }

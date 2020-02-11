@@ -361,7 +361,7 @@
     ],
     "field_featured": [
         {
-            "value": false
+            "value": true
         }
     ],
     "field_has_waitlist": [
@@ -401,7 +401,7 @@
         {
             "total": 0,
             "total_waitlist": 0,
-            "status": "closed",
+            "status": "open",
             "status_user": null
         }
     ],

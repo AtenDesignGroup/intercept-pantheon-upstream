@@ -1,6 +1,8 @@
 langcode: en
 status: true
 dependencies:
+  module:
+    - ctools
   theme:
     - intercept_base
 id: intercept_base_local_tasks
@@ -16,4 +18,10 @@ settings:
   label_display: '0'
   primary: true
   secondary: true
-visibility: {  }
+visibility:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    bundles: {  }
+    negate: true
+    context_mapping:
+      node: '@node.node_route_context:node'

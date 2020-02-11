@@ -78,6 +78,7 @@ function intercept_event_entity_access(EntityInterface $entity, $operation, Acco
       'view saved_event flagging entities',
       'administer flaggings',
     ];
+    /** @var \Drupal\flag\FlaggingInterface $entity */
     if ($entity->getOwnerId() == $account->id()) {
       $permissions[] = 'view own saved_event flagging entities';
     }
@@ -260,6 +261,7 @@ function intercept_event_entity_presave(EntityInterface $entity) {
   switch ($entity->bundle()) {
     case 'event':
       $keywords = '';
+      /** @var \Drupal\node\NodeInterface $entity */
       $title = $entity->get('title')->value;
       $teaser = html_entity_decode(strip_tags($entity->get('field_text_teaser')->value));
       $content = html_entity_decode(strip_tags($entity->get('field_text_content')->value));
@@ -495,6 +497,7 @@ function intercept_event_node_view(array &$build, EntityInterface $entity, Entit
  */
 function intercept_event_vote_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   if ($entity->bundle() == 'evaluation' && $display->getComponent('evaluation')) {
+    /** @var \Drupal\votingApi\VoteInterface $entity */
     $build['evaluation'] = [
       '#theme' => 'evaluation_eval_widget',
       '#value' => $entity->getValue() ? 'like' : 'dislike',
@@ -705,7 +708,6 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
     }
   }
   elseif ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
-    $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
     $query->addGroupBy('node.nid');
   }
   elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {

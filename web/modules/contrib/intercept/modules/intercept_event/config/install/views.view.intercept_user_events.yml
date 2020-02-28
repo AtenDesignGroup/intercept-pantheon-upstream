@@ -193,7 +193,7 @@ display:
           exposed: true
           expose:
             operator_id: field_date_time_value_op
-            label: 'Date &amp; Time (field_date_time)'
+            label: 'Past or upcoming'
             description: null
             use_operator: false
             operator: field_date_time_value_op
@@ -692,7 +692,7 @@ display:
           exposed: true
           expose:
             operator_id: field_date_time_value_op
-            label: 'Date &amp; Time (field_date_time)'
+            label: 'Past or upcoming'
             description: null
             use_operator: false
             operator: field_date_time_value_op

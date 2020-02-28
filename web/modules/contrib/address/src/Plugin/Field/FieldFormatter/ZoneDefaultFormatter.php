@@ -219,7 +219,7 @@ class ZoneDefaultFormatter extends FormatterBase implements ContainerFactoryPlug
       if ($included_postal_codes = $territory->getIncludedPostalCodes()) {
         $element['territories'][$index]['included_postal_codes'] = [
           '#type' => 'item',
-          '#title' => t('Included postal codes'),
+          '#title' => $this->t('Included postal codes'),
           '#attributes' => [
             'class' => ['included-postal-codes'],
           ],
@@ -229,7 +229,7 @@ class ZoneDefaultFormatter extends FormatterBase implements ContainerFactoryPlug
       if ($excluded_postal_codes = $territory->getExcludedPostalCodes()) {
         $element['territories'][$index]['excluded_postal_codes'] = [
           '#type' => 'item',
-          '#title' => t('Excluded postal codes'),
+          '#title' => $this->t('Excluded postal codes'),
           '#attributes' => [
             'class' => ['excluded-postal-codes'],
           ],

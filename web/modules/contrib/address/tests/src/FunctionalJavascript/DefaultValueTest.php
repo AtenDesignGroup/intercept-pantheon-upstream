@@ -23,6 +23,11 @@ class DefaultValueTest extends WebDriverTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Tests the default value.
    */
   public function testDefaultValue() {
@@ -45,7 +50,7 @@ class DefaultValueTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('credit_card[address][given_name]', 'Jack');
     $radio_button = $this->getSession()->getPage()->findField('Cash on delivery');
     $radio_button->click();
-    $this->waitForAjaxToFinish();
+    $this->assertSession()->assertWaitOnAjaxRequest();
     // Confirm that the address is now under different parents, and that the
     // default value is set.
     foreach ($expected_default_value as $property => $value) {
@@ -56,14 +61,6 @@ class DefaultValueTest extends WebDriverTestBase {
       'cash_on_delivery[address][address_line1]' => '1099 Alta Ave',
     ], 'Submit');
     $this->assertSession()->pageTextContains('The street is "1099 Alta Ave" and the country code is US.');
-  }
-
-  /**
-   * Waits for jQuery to become active and animations to complete.
-   */
-  protected function waitForAjaxToFinish() {
-    $condition = "(0 === jQuery.active && 0 === jQuery(':animated').length)";
-    $this->assertJsCondition($condition, 10000);
   }
 
 }

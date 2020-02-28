@@ -298,7 +298,7 @@ class ZoneTerritory extends FormElement {
    */
   public static function ajaxRefresh(array $form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
-    return NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, -1));
+    return NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, -2));
   }
 
   /**

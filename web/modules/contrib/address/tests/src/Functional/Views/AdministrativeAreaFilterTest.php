@@ -24,6 +24,11 @@ class AdministrativeAreaFilterTest extends BrowserTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * A simple user with 'access content' permission.
    *
    * @var \Drupal\user\UserInterface

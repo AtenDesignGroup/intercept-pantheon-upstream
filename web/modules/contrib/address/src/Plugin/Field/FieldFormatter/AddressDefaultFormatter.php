@@ -19,6 +19,15 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+// @codingStandardsIgnoreStart
+// @todo remove this BC layer once support for Drupal 8.7 is sunsetted
+if (interface_exists('\Drupal\Core\Security\TrustedCallbackInterface')) {
+  interface TrustedCallbackInterface extends \Drupal\Core\Security\TrustedCallbackInterface {}
+}
+else {
+  interface TrustedCallbackInterface {}
+}
+// @codingStandardsIgnoreStop
 /**
  * Plugin implementation of the 'address_default' formatter.
  *
@@ -30,7 +39,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   },
  * )
  */
-class AddressDefaultFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
+class AddressDefaultFormatter extends FormatterBase implements ContainerFactoryPluginInterface, TrustedCallbackInterface {
 
   /**
    * The address format repository.
@@ -283,6 +292,13 @@ class AddressDefaultFormatter extends FormatterBase implements ContainerFactoryP
     }
 
     return $values;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function trustedCallbacks() {
+    return ['postRender'];
   }
 
 }

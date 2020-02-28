@@ -6,10 +6,11 @@ dependencies:
   - drupal:block
   - drupal:link
   - drupal:menu_ui
+  - drupal:telephone
   - entity_browser:entity_browser_entity_form
   - field_group:field_group
   - inline_entity_form:inline_entity_form
   - intercept:intercept_core
   - office_hours:office_hours
-  - drupal:telephone
+  - pathauto:pathauto
 package: 'Intercept'

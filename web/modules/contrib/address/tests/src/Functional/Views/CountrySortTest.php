@@ -24,6 +24,11 @@ class CountrySortTest extends BrowserTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * A regular user with 'access content' permission.
    *
    * @var \Drupal\user\UserInterface

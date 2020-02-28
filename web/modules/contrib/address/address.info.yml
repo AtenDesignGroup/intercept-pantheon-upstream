@@ -2,16 +2,12 @@ name: Address
 type: module
 description: 'Provides functionality for handling postal addresses.'
 package: Field types
-# core: 8.x
+core_version_requirement: ^8.7.7 || ^9
 config: entity.address_format.collection
 dependencies:
   - drupal:field
-  - drupal:system (>=8.6.0)
-test_dependencies:
-  - token:token
 
-# Information added by Drupal.org packaging script on 2019-06-04
-version: '8.x-1.7'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2020-02-28
+version: '8.x-1.8'
 project: 'address'
-datestamp: 1559642892
+datestamp: 1582913043

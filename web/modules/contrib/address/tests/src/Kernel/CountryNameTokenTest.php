@@ -8,7 +8,12 @@ use Drupal\filter\Entity\FilterFormat;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait;
+use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
+// @todo Remove this when 8.7.x is EOL.
+// @see https://www.drupal.org/project/address/issues/3093193
+if (!trait_exists('\Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait')) {
+  class_alias('\Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait', '\Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait');
+}
 use Drupal\Tests\token\Kernel\KernelTestBase;
 
 /**
@@ -50,6 +55,9 @@ class CountryNameTokenTest extends KernelTestBase {
   public function setUp() {
     parent::setUp();
 
+    if (\Drupal::entityTypeManager()->hasDefinition('path_alias')) {
+      $this->installEntitySchema('path_alias');
+    }
     $this->installEntitySchema('node');
     $this->installEntitySchema('taxonomy_term');
     $this->installEntitySchema('user');

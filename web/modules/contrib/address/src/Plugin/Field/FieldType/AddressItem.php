@@ -296,7 +296,7 @@ class AddressItem extends FieldItemBase implements AddressInterface {
    */
   public function getConstraints() {
     $constraints = parent::getConstraints();
-    $constraint_manager = \Drupal::typedDataManager()->getValidationConstraintManager();
+    $constraint_manager = $this->getTypedDataManager()->getValidationConstraintManager();
     $field_overrides = new FieldOverrides($this->getFieldOverrides());
     $constraints[] = $constraint_manager->create('ComplexData', [
       'country_code' => [

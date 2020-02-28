@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Requirements and update functions for the address module.
+ */
+
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorageException;

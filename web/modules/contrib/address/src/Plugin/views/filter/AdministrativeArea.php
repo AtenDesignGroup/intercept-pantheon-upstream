@@ -155,6 +155,7 @@ class AdministrativeArea extends CountryAwareInOperatorBase {
     // Find all the contextual filters on the display to use as options.
     foreach ($this->view->display_handler->getHandlers('argument') as $name => $argument) {
       // @todo Limit this to arguments pointing to a country code field.
+      // @see https://www.drupal.org/project/address/issues/3088084
       $argument_options[$name] = $argument->adminLabel();
     }
     if (!empty($argument_options)) {
@@ -182,10 +183,11 @@ class AdministrativeArea extends CountryAwareInOperatorBase {
     ];
 
     $filter_options = [];
-    // Find all country_code filters from address.module for the valid choices.
+    // Find all country filters from address.module for the valid choices.
     foreach ($this->view->display_handler->getHandlers('filter') as $name => $filter) {
       $definition = $filter->pluginDefinition;
-      if ($definition['id'] == 'country_code' && $definition['provider'] == 'address') {
+      // Support both 'country' (current) and 'country_code' (deprecated).
+      if ($definition['provider'] === 'address' && ($definition['id'] === 'country' || $definition['id'] === 'country_code')) {
         $filter_options[$name] = $filter->adminLabel();
       }
     }

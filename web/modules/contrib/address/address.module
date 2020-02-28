@@ -5,6 +5,8 @@
  * Provides functionality for handling postal addresses.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+
 /**
  * Implements hook_theme().
  */
@@ -24,20 +26,43 @@ function address_theme() {
         'locality' => [],
         'administrative_area' => [],
         'country' => [],
+        'address' => NULL,
+        'view_mode' => '',
       ],
     ],
   ];
 }
 
 /**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function address_theme_suggestions_address_plain(array $variables) {
+  $suggestions = [];
+  $original = $variables['theme_hook_original'] . '__';
+  $field = $variables['address']->getFieldDefinition();
+  $entity_type_id = $field->getTargetEntityTypeId();
+  $bundle = $field->getTargetBundle();
+  $sanitized_view_mode = strtr($variables['view_mode'], '.', '_');
+
+  $suggestions[] = $original . $entity_type_id . '__' . $sanitized_view_mode;
+  $suggestions[] = $original . $entity_type_id . '__' . $bundle;
+  $suggestions[] = $original . $entity_type_id . '__' . $bundle . '__' . $sanitized_view_mode;
+  $suggestions[] = $original . $field->getName();
+  $suggestions[] = $original . $entity_type_id . '__' . $field->getName();
+  $suggestions[] = $original . $entity_type_id . '__' . $field->getName() . '__' . $bundle;
+
+  return $suggestions;
+}
+
+/**
  * Updates the given entity's field for the RC1 changes.
  *
- * @param $entity
+ * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity.
- * @param $field_name
+ * @param string $field_name
  *   The name of the field to update.
  */
-function _address_update_entity($entity, $field_name) {
+function _address_update_entity(EntityInterface $entity, $field_name) {
   $update_helper = '\CommerceGuys\Addressing\UpdateHelper';
   foreach ($entity->{$field_name} as $delta => $address) {
     $names = $update_helper::splitRecipient($address->given_name, $address->country_code);

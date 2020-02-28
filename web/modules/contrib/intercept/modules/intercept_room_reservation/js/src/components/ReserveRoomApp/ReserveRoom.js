@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import debounce from 'lodash/debounce';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
 import interceptClient from 'interceptClient';
@@ -20,7 +19,6 @@ import ReserveRoomStep3 from './Step3';
 import RoomLimitWarning from './RoomLimitWarning';
 import RoomDetailDialog from './RoomDetailDialog';
 import withUserStatus from './withUserStatus';
-import { Slide } from '@material-ui/core';
 
 const { constants, api, select, utils } = interceptClient;
 const c = constants;

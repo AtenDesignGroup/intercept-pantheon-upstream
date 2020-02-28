@@ -4,6 +4,7 @@ namespace Drupal\Tests\profile\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Tests attaching of profile entity forms to other forms.
@@ -25,7 +26,7 @@ class ProfileRegisterFormTest extends ProfileTestBase {
     // Allow registration without administrative approval and log in user
     // directly after registering.
     \Drupal::configFactory()->getEditable('user.settings')
-      ->set('register', USER_REGISTER_VISITORS)
+      ->set('register', UserInterface::REGISTER_VISITORS)
       ->set('verify_mail', 0)
       ->save();
     user_role_grant_permissions(AccountInterface::AUTHENTICATED_ROLE, ['view own test profile']);

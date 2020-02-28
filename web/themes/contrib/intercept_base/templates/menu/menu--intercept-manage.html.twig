@@ -1,2 +1,77 @@
-{% extends '@intercept_base/menu/menu.html.twig' %}
-{% set attributes = attributes.addClass('menu--main') %}
+{#
+/**
+ * @file
+ * Default theme implementation to display a menu.
+ *
+ * Available variables:
+ * - menu_name: The machine name of the menu.
+ * - items: A nested list of menu items. Each menu item contains:
+ *   - attributes: HTML attributes for the menu item.
+ *   - below: The menu item child items.
+ *   - title: The menu link title.
+ *   - url: The menu link url, instance of \Drupal\Core\Url
+ *   - localized_options: Menu link localized options.
+ *   - is_expanded: TRUE if the link has visible children within the current
+ *     menu tree.
+ *   - is_collapsed: TRUE if the link has children within the current menu tree
+ *     that are not currently visible.
+ *   - in_active_trail: TRUE if the link is in the active trail.
+ *
+ * @ingroup themeable
+ */
+#}
+{% import _self as menus %}
+
+{#
+  We call a macro which calls itself to render the full tree.
+  @see https://twig.symfony.com/doc/1.x/tags/macro.html
+#}
+{{ menus.menu_links(items, attributes, 0) }}
+
+{% macro menu_links(items, attributes, menu_level) %}
+  {% import _self as menus %}
+  {% if items %}
+    {% if menu_level == 0 %}
+      {% for item in items %}
+        {% if item.title == 'Events' %}
+          {% set fa_class = 'fa fa-calendar' %}
+        {% elseif item.title == 'Rooms' %}
+          {% set fa_class = 'fas fa-door-open' %}
+        {% elseif item.title == 'Equipment' %}
+          {% set fa_class = 'fas fa-tools' %}
+        {% elseif item.title == 'Export Data' %}
+          {% set fa_class = 'fas fa-file-export' %}
+        {% elseif item.title == 'System Config' %}
+          {% set fa_class = 'fas fa-cog' %}
+        {% else %}
+          {% set fa_class = 'fas fa-circle' %}
+        {% endif %}
+        {% if item.below %}
+          <div class="section">
+            <input type="radio" name="accordion-1" id="section-{{ loop.index }}"/>
+            <label for="section-{{ loop.index }}"><i class="{{ fa_class }} fa-fw"></i><span>{{ item.title }}</span><span class="caret fas fa-angle-right"></span></label>
+            {{ menus.menu_links(item.below, attributes, menu_level + 1) }}
+          </div>
+        {% else %}
+          <div class="section">
+            <input type="radio" name="accordion-1" id="section-{{ loop.index }}" onclick="location.href='{{ item.url }}'"/>
+            <label for="section-{{ loop.index }}"><i class="{{ fa_class }} fa-fw"></i><span>{{ item.title }}</span></label>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="content">
+        <ul>
+        {% for item in items %}
+          <li{{ item.attributes }}><span>
+            {{ link(item.title, item.url) }}
+            {% if item.below %}
+              {{ menus.menu_links(item.below, attributes, menu_level + 1) }}
+            {% endif %}
+          </span></li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endmacro %}

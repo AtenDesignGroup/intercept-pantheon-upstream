@@ -120,7 +120,7 @@ class ReserveRoomConfirmation extends React.Component {
       case CONFLICT:
         dialogProps = {
           ...dialogProps,
-          heading: 'This room is no longer available at this time.',
+          heading: 'This reservation time is no longer available.',
           cancelText: 'Close',
         };
         break;

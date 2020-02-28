@@ -57,6 +57,7 @@ class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterfac
         'weight' => isset($page->menu_weight) ? $page->menu_weight : 0,
         'route_name' => "{$id}.redirect",
         'menu_name' => 'intercept-manage',
+        'parent' => isset($page->parent) ? $page->parent : NULL,
       ];
     }
 

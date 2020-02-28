@@ -3,8 +3,8 @@
 namespace Drupal\intercept_room_reservation\Entity;
 
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\intercept_core\Entity\ReservationBase;
 use Drupal\intercept_core\Field\Computed\EntityReferenceFieldItemList;
@@ -32,7 +32,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *       "edit" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "delete" = "Drupal\intercept_room_reservation\Form\RoomReservationDeleteForm",
  *       "cancel" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
- *       "approve" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
+ *       "approve" = "Drupal\intercept_room_reservation\Form\RoomReservationApproveForm",
  *       "deny" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
  *     },
  *     "access" = "Drupal\intercept_room_reservation\RoomReservationAccessControlHandler",
@@ -49,6 +49,11 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *   revision_data_table = "room_reservation_field_revision",
  *   translatable = TRUE,
  *   admin_permission = "administer room reservation entities",
+ *   constraints = {
+ *     "NonOverlappingRoomReservation" = {},
+ *     "LocationOpenHours" = {},
+ *     "ReservationLimit" = {},
+ *   },
  *   entity_keys = {
  *     "id" = "id",
  *     "revision" = "vid",
@@ -122,6 +127,16 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
   public function deny() {
     $this->set('field_status', 'denied');
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validationWarnings() {
+    $this->__set('warning', TRUE);
+    $violations = $this->validate();
+    $this->__unset('warning');
+    return $violations;
   }
 
   /**

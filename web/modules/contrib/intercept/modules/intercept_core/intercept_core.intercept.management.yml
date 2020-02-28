@@ -1,12 +1,9 @@
 intercept_core:
   controller: 'Drupal\intercept_core\Controller\ManagementController::view'
   pages:
-    default:
-      title: 'Dashboard'
-      menu_weight: -50
     settings:
       title: 'Settings'
       menu_link: FALSE
     system_configuration:
       title: 'System Configuration'
-      menu_weight: 50
+      menu_link: FALSE

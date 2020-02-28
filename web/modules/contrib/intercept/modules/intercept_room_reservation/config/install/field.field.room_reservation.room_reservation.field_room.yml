@@ -12,7 +12,7 @@ entity_type: room_reservation
 bundle: room_reservation
 label: Room
 description: ''
-required: false
+required: true
 translatable: false
 default_value: {  }
 default_value_callback: ''

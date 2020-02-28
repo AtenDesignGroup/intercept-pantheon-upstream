@@ -1367,7 +1367,7 @@ display:
           admin_label: ''
           empty: false
           tokenize: false
-          content: '<a href="/account/manage/intercept_event_attendance_by_age_group">View All Attendance By Age Group</a>'
+          content: ''
           plugin_id: text_custom
       defaults:
         header: false

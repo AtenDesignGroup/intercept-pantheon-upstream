@@ -113,13 +113,11 @@ function getDesignationFilters(value = 'events') {
 
 function getDateFilters(values, view = 'list', calView = 'day', date = new Date()) {
   const path = 'field_date_time.value';
-  let operator = '>';
+  let operator = '>=';
   let value = moment(new Date())
     .tz(utils.getUserTimezone())
-    .subtract(1, 'day')
-    .endOf('day')
+    .startOf('day')
     .format();
-
   // Handler Calendar view.
   // The date should be determined by the date and calendar view type
   // rather than the selected date value.
@@ -291,6 +289,12 @@ class BrowseEvents extends Component {
         date: {
           path: 'field_date_time.value',
           direction: getSortDirection(view, values),
+        },
+        title: {
+          path: 'title',
+        },
+        id: {
+          path: 'drupal_internal__nid',
         },
       },
       count: view === 'list' ? 10 : 0,

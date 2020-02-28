@@ -8,21 +8,19 @@ import moment from 'moment';
 
 // Lodash
 import map from 'lodash/map';
+import get from 'lodash/get';
 
 // Intercept
 import interceptClient from 'interceptClient';
+import drupalSettings from 'drupalSettings';
 
 // Components
-import CurrentFilters from 'intercept/CurrentFilters';
-
-import DateFilter from 'intercept/DateFilter';
 import KeywordFilter from 'intercept/KeywordFilter';
 import SelectResource from 'intercept/SelectResource';
 import SelectSingle from 'intercept/Select/SelectSingle';
 import InputDate from 'intercept/Input/InputDate';
 import InputNumber from 'intercept/Input/InputNumber';
 import InputCheckbox from 'intercept/Input/InputCheckbox';
-import { Button } from '@material-ui/core';
 
 const { constants, utils } = interceptClient;
 const c = constants;
@@ -65,6 +63,24 @@ const currentFiltersConfig = filters =>
   }));
 
 class RoomFilters extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      default_applied: false,
+    };
+  }
+
+  componentDidUpdate() {
+    if (!this.state.default_applied && !this.props.loading) {
+      const { filters } = this.props;
+      const defaultLocations = get(drupalSettings, 'intercept.room_reservations.default_locations', []);
+      if (defaultLocations.length > 0 && filters[c.TYPE_LOCATION].length === 0) {
+        this.onFilterChange(c.TYPE_LOCATION, defaultLocations);
+      }
+      this.setState({ default_applied: true });
+    }
+  }
+
   onFilterChange = (key, value) => {
     const newFilters = { ...this.props.filters, [key]: value };
     this.props.onChange(newFilters);
@@ -119,7 +135,7 @@ class RoomFilters extends PureComponent {
     const {
       dateLimits,
       showDate,
-      filters
+      filters,
     } = this.props;
 
     let currentFilters = currentFiltersConfig(filters);
@@ -139,11 +155,17 @@ class RoomFilters extends PureComponent {
         <Formsy className="">
           <div className="l--subsection">
             <h4 className="section-title--secondary">Filter Rooms By</h4>
-            <KeywordFilter
-              handleChange={this.onInputChange(c.KEYWORD)}
-              value={filters[c.KEYWORD]}
-              name={c.KEYWORD}
-              label={labels[c.KEYWORD]}
+            <InputDate
+              handleChange={this.onDateChange}
+              defaultValue={null}
+              value={filters[c.DATE] || null}
+              maxDate={maxDate}
+              minDate={minDate}
+              name={c.DATE}
+              clearable
+              validations="isFutureDate"
+              validationError="Date must be in the future"
+              disabled={filters[NOW]}
             />
             <SelectResource
               multiple
@@ -154,6 +176,30 @@ class RoomFilters extends PureComponent {
               label={labels[c.TYPE_LOCATION]}
               chips
               shouldFetch={false}
+            />
+            <SelectSingle
+              name={TIME}
+              handleChange={this.onInputChange(TIME)}
+              value={filters[TIME]}
+              label={labels[TIME]}
+              disabled={filters[NOW] || !filters[c.DATE]}
+              options={timeOptions}
+              clearable
+            />
+            <SelectSingle
+              name={DURATION}
+              handleChange={this.onInputChange(DURATION)}
+              value={filters[DURATION]}
+              label={labels[DURATION]}
+              options={durationOptions}
+              disabled={!filters[NOW] && !filters[c.DATE]}
+              clearable
+            />
+            <KeywordFilter
+              handleChange={this.onInputChange(c.KEYWORD)}
+              value={filters[c.KEYWORD]}
+              name={c.KEYWORD}
+              label={labels[c.KEYWORD]}
             />
             <SelectResource
               multiple
@@ -176,16 +222,6 @@ class RoomFilters extends PureComponent {
           <div className="l--subsection">
             <h4 className="section-title--secondary">
               Show Available
-              {/* <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                type="submit"
-                className="button button--primary"
-                onClick={this.onFilterNow}
-              >
-              Now
-              </Button> */}
             </h4>
             <InputCheckbox
               label="Available Now"
@@ -193,36 +229,6 @@ class RoomFilters extends PureComponent {
               onChange={() => this.onNowChange()}
               value={NOW}
               name={NOW}
-            />
-            <InputDate
-              handleChange={this.onDateChange}
-              defaultValue={null}
-              value={filters[c.DATE] || null}
-              maxDate={maxDate}
-              minDate={minDate}
-              name={c.DATE}
-              clearable
-              validations="isFutureDate"
-              validationError="Date must be in the future"
-              disabled={filters[NOW]}
-            />
-            <SelectSingle
-              name={TIME}
-              handleChange={this.onInputChange(TIME)}
-              value={filters[TIME]}
-              label={labels[TIME]}
-              disabled={filters[NOW] || !filters[c.DATE]}
-              options={timeOptions}
-              clearable
-            />
-            <SelectSingle
-              name={DURATION}
-              handleChange={this.onInputChange(DURATION)}
-              value={filters[DURATION]}
-              label={labels[DURATION]}
-              options={durationOptions}
-              disabled={!filters[NOW] && !filters[c.DATE]}
-              clearable
             />
           </div>
         </Formsy>
@@ -232,12 +238,14 @@ class RoomFilters extends PureComponent {
 }
 
 RoomFilters.propTypes = {
+  loading: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   showDate: PropTypes.bool,
   filters: PropTypes.object,
 };
 
 RoomFilters.defaultProps = {
+  loading: false,
   showDate: true,
   filters: {},
 };

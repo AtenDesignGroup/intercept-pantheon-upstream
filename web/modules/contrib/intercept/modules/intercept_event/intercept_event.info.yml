@@ -13,6 +13,7 @@ dependencies:
   - existing_values_autocomplete_widget:existing_values_autocomplete_widget
   - flag:flag
   - intercept:intercept_location
+  - pathauto:pathauto
   - tally:tally
   - votingapi:votingapi
 package: 'Intercept'

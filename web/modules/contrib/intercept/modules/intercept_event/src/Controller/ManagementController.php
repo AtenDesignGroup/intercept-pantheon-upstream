@@ -24,17 +24,6 @@ class ManagementController extends ManagementControllerBase {
         '#weight' => 8,
       ];
     }
-    if ($page_name == 'default') {
-      $build['sections']['main']['#actions']['event'] = [
-        '#link' => $this->getCreateEventButton(),
-        '#weight' => -15,
-      ];
-      if ($this->currentUser()->hasPermission('create event content')) {
-        $build['sections']['main']['#actions']['events_all'] = [
-          '#link' => $this->getManagementButton('View all Events', 'events'),
-        ];
-      }
-    }
   }
 
   /**

@@ -1,0 +1,28 @@
+{#
+/**
+ * @file room_reservation-warnings.html.twig
+ * Default theme implementation to present Room reservation warnings.
+ *
+ * This template is used when viewing Room reservation warnings.
+ *
+ *
+ * Available variables:
+ * - warnings: A list of warnings. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_room_reservation_warnings()
+ *
+ * @ingroup themeable
+ */
+#}
+{% if warnings %}
+<div{{ attributes.addClass('messages messages--warning') }}>
+  {% for warning in warnings %}
+    {{ warning }}
+  {% endfor %}
+</div>
+{% else %}
+<div{{ attributes.addClass('messages messages--status') }}>
+  No reservation conflicts.
+</div>
+{% endif %}

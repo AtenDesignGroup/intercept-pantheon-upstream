@@ -253,8 +253,8 @@ class ManagementControllerBase extends ControllerBase {
    * @return array
    *   The render array representation of the Link.
    */
-  protected function getButton($title, $route, array $params = []) {
-    $button = Link::createFromRoute($title, $route, $params)->toRenderable();
+  protected function getButton($title, $route, array $params = [], array $options = []) {
+    $button = Link::createFromRoute($title, $route, $params, $options)->toRenderable();
     $button['#access'] = $button['#url']->access($this->currentUser());
     return $button;
   }

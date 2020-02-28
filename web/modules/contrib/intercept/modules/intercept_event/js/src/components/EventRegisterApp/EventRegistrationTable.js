@@ -64,7 +64,7 @@ function EventRegistrationTable(props) {
           <TableRow>
             <TableCell>Registration</TableCell>
             <TableCell>Status</TableCell>
-            <TableCell numeric />
+            <TableCell align="right" />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -74,7 +74,7 @@ function EventRegistrationTable(props) {
                 <RegistrationTallySummary id={n.id} />
               </TableCell>
               <TableCell>{n.status}</TableCell>
-              <TableCell numeric className={classes.lastColumn}>
+              <TableCell align="right" className={classes.lastColumn}>
                 <EventRegistrationActions registrationId={n.id} />
               </TableCell>
             </TableRow>

@@ -1,6 +1,10 @@
 {{ attach_library('intercept_base/page-header') }}
 {{ attach_library('intercept_base/userEvents') }}
 
+{% include '@intercept-base-components/staff-management-menu/staff-management-menu.twig' with {
+    content: page.staff_management_menu
+  } only %}
+
 <div class="l--page-wrapper">
   <div class="l--page">
     {% include '@intercept-base-components/region/region--bare.twig' with {

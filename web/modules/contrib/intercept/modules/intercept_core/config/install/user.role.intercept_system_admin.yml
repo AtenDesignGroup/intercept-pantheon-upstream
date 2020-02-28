@@ -40,6 +40,8 @@ permissions:
   - 'approve room_reservation'
   - 'bypass room reservation agreement'
   - 'bypass room reservation limit'
+  - 'bypass room reservation open hours constraints'
+  - 'bypass room reservation overlap constraints'
   - 'cancel equipment_reservation'
   - 'cancel event_registration entities'
   - 'cancel referenced user equipment_reservation'

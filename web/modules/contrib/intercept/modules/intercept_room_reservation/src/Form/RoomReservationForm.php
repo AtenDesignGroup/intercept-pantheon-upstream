@@ -16,7 +16,7 @@ class RoomReservationForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var $entity \Drupal\intercept_room_reservation\Entity\RoomReservation */
+    /* @var $entity \Drupal\intercept_room_reservation\Entity\RoomReservationInterface */
     $entity = $this->entity;
     if ($entity->isNew() && ($room = $this->getRequest()->query->get('room'))) {
       $entity->set('field_room', $room);
@@ -24,7 +24,10 @@ class RoomReservationForm extends ContentEntityForm {
     $form = parent::buildForm($form, $form_state);
 
     $form['#attached'] = [
-      'library' => ['intercept_room_reservation/room-reservations'],
+      'library' => [
+        'intercept_room_reservation/room-reservations',
+        'intercept_core/delay_keyup',
+      ],
     ];
 
     $form['field_room']['widget'][0]['target_id']['#ajax'] = [
@@ -33,7 +36,7 @@ class RoomReservationForm extends ContentEntityForm {
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
-        'message' => $this->t('Verifying reservation dates...'),
+        'message' => t('Verifying reservation dates...'),
       ],
     ];
 
@@ -44,7 +47,7 @@ class RoomReservationForm extends ContentEntityForm {
     $form['field_dates']['widget'][0]['value']['#ajax'] = [
       'callback' => '::checkAvailability',
       'disable-refocus' => TRUE,
-      'event' => 'blur',
+      'event' => 'blur delayed_keyup',
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
@@ -54,12 +57,18 @@ class RoomReservationForm extends ContentEntityForm {
     $form['field_dates']['widget'][0]['end_value']['#ajax'] = [
       'callback' => '::checkAvailability',
       'disable-refocus' => TRUE,
-      'event' => 'blur',
+      'event' => 'blur delayed_keyup',
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
         'message' => $this->t('Verifying reservation dates...'),
       ],
+    ];
+    $form['field_dates']['widget'][0]['value']['#attributes']['class'] = [
+      'delayed-keyup',
+    ];
+    $form['field_dates']['widget'][0]['end_value']['#attributes']['class'] = [
+      'delayed-keyup',
     ];
 
     if (!$this->entity->isNew()) {
@@ -85,7 +94,7 @@ class RoomReservationForm extends ContentEntityForm {
       $entity->setNewRevision();
 
       // If a new revision is created, save the current user as revision author.
-      $entity->setRevisionCreationTime(REQUEST_TIME);
+      $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
       $entity->setRevisionUserId(\Drupal::currentUser()->id());
     }
     else {
@@ -96,13 +105,13 @@ class RoomReservationForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        \Drupal::messenger()->addMessage($this->t('Created the %label Room reservation.', [
+        $this->messenger()->addMessage($this->t('Created the %label Room reservation.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        \Drupal::messenger()->addMessage($this->t('Saved the %label Room reservation.', [
+        $this->messenger()->addMessage($this->t('Saved the %label Room reservation.', [
           '%label' => $entity->label(),
         ]));
     }
@@ -124,10 +133,10 @@ class RoomReservationForm extends ContentEntityForm {
         'start' => $start->format('Y-m-d\TH:i:s'),
         'end' => $end->format('Y-m-d\TH:i:s'),
         'rooms' => [$field_room[0]['target_id']],
-        'exclude' => [$reservation->id()],
-        'debug' => TRUE,
       ];
-
+      if ($reservation->id()) {
+        $reservation_params['exclude'] = [$reservation->id()];
+      }
       $reservation_manager = \Drupal::service('intercept_core.reservation.manager');
       if ($availability = $reservation_manager->availability($reservation_params)) {
         foreach ($availability as $room_availability) {

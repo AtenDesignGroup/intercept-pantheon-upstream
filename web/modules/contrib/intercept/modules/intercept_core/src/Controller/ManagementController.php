@@ -19,15 +19,6 @@ class ManagementController extends ManagementControllerBase {
         '#link' => $this->getManagementButton('System Configuration', 'system_configuration'),
         '#weight' => 12,
       ];
-      $build['sections']['main']['#actions']['account'] = [
-        '#link' => $this->getButton(
-          'Edit My Account',
-          'entity.user.edit_form',
-          [
-            'user' => \Drupal::currentUser()->id(),
-          ]),
-        '#weight' => 11,
-      ];
     }
   }
 
@@ -136,7 +127,7 @@ class ManagementController extends ManagementControllerBase {
    */
   public function viewSystemConfiguration(AccountInterface $user, Request $request) {
     $build = [
-      'title' => $this->title('System configuration'),
+      'title' => $this->title('System Configuration'),
       'sections' => [
         'main' => [
           '#actions' => [

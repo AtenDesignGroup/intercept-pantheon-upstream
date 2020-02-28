@@ -1,0 +1,11 @@
+{{ attach_library('intercept_base/staff-management-menu') }}
+
+{% if content|render|striptags|trim %}
+  <input type="checkbox" id="slide-menu-toggle" checked />
+  <label class="slide-menu-btn" for="slide-menu-toggle"><span><i class="fa fa-bars"> </i></span></label>
+  <div class="left-menu">
+    <div class="accordion">
+      {{ content }}
+    </div>
+  </div>
+{% endif %}

@@ -16,6 +16,7 @@ regions:
   sidebar_second: Second Sidebar
   footer: Footer
   breadcrumb: Breadcrumb
+  staff_management_menu: Staff Management Menu
 
 libraries:
   - intercept_base/global

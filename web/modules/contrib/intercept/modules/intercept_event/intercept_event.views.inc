@@ -25,9 +25,12 @@ function intercept_event_views_data_alter(&$data) {
 
   $data['node_field_data']['event_attendance_count'] = [
     'title' => new TranslatableMarkup('Event attendance count'),
-    'help' => new TranslatableMarkup('.'),
+    'help' => new TranslatableMarkup('The number of attendees for an event.'),
     'field' => [
       'id' => 'event_attendance_count',
+    ],
+    'sort' => [
+      'id' => 'event_count_numeric', // Points to custom Numeric.php sort handler.
     ],
   ];
 
@@ -58,9 +61,12 @@ function intercept_event_views_data_alter(&$data) {
 
   $data['node_field_data']['event_registration_count'] = [
     'title' => new TranslatableMarkup('Event registration count'),
-    'help' => new TranslatableMarkup('.'),
+    'help' => new TranslatableMarkup('The number of registrations for an event.'),
     'field' => [
       'id' => 'event_registration_count',
+    ],
+    'sort' => [
+      'id' => 'event_count_numeric', // Points to custom Numeric.php sort handler.
     ],
   ];
 

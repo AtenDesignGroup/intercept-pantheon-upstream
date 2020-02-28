@@ -36,7 +36,7 @@ intercept_core.account.settings:
     _title: 'Settings'
     route_name: 'intercept_core.user_profile_form'
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _role: 'intercept_registered_customer'
 
 intercept_core.user_profile_form:
   path: '/user/{user}/settings'
@@ -46,6 +46,16 @@ intercept_core.user_profile_form:
   requirements:
     user: '\d+'
     _entity_access: 'user.update'
+
+# "Profile" link for staff
+intercept_core.user_edit:
+  path: '/account/edit'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\UserAccount::userRedirect'
+    _title: 'Profile'
+    route_name: 'entity.user.edit_form'
+  requirements:
+    _role: 'intercept_equipment_reservation_manager + intercept_event_manager + intercept_event_organizer + intercept_room_reservation_approver + intercept_staff + intercept_system_admin + administrator'
 
 intercept_core.admin_permissions:
   path: '/admin/config/intercept/permissions'

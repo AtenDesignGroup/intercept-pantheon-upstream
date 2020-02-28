@@ -79,6 +79,11 @@ class RouteSubscriber extends RouteSubscriberBase {
           '_permission' => implode('+', $permissions),
         ]));
     }
+
+    // Alter the core user profile (Dashboard) page to only display for customers.
+    if ($route = $collection->get('user.page')) {
+      $route->setRequirement('_role', 'intercept_registered_customer');
+    }
   }
 
 }

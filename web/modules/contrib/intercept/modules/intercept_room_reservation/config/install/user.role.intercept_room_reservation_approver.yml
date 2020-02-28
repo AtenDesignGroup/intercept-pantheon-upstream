@@ -13,6 +13,8 @@ permissions:
   - 'approve room_reservation entities'
   - 'bypass room reservation agreement'
   - 'bypass room reservation limit'
+  - 'bypass room reservation open hours constraints'
+  - 'bypass room reservation overlap constraints'
   - 'cancel referenced user room_reservation'
   - 'cancel room_reservation'
   - 'create room_reservation'

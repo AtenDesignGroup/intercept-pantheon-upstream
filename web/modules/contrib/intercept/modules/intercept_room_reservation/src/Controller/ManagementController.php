@@ -26,12 +26,6 @@ class ManagementController extends ManagementControllerBase {
         '#weight' => 15,
       ];
     }
-    if ($page_name == 'default') {
-      $build['sections']['main']['#actions']['room'] = [
-        '#link' => $this->getButton('Reserve a Room', 'intercept_room_reservation.reserve_room'),
-        '#weight' => -20,
-      ];
-    }
   }
 
   /**

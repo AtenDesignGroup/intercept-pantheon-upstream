@@ -35,7 +35,13 @@ class EntityStatus extends React.PureComponent {
     }
 
     if (state.error) {
-      message = messages.error[status];
+      // Default to the passed in error messages.
+      let errors = messages.error[status];
+      // If the entity itself has an errors in the response, show the error details instead.
+      if (Array.isArray(state.error)) {
+        errors = state.error.map(err => err.detail).join(', ');
+      }
+      message = errors;
       return message;
     }
 

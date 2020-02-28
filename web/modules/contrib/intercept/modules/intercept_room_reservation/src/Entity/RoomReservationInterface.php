@@ -51,4 +51,13 @@ interface RoomReservationInterface extends ReservationInterface {
    */
   public function deny();
 
+  /**
+   * Gets validation constraint violations.
+   *
+   * @return \Symfony\Component\Validator\ConstraintViolationListInterface
+   *   A list of constraint violations. If the list is empty, validation
+   *   succeeded.
+   */
+  public function validationWarnings();
+
 }

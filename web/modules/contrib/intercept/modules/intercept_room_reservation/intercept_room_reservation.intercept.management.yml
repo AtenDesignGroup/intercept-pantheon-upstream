@@ -2,8 +2,9 @@ intercept_room_reservation:
   controller: 'Drupal\intercept_room_reservation\Controller\ManagementController::view'
   pages:
     room_reservations:
-      title: 'Room Reservations'
-      menu_weight: 10
+      title: 'All Reservations' # Room Reservations
+      menu_weight: 0
+      parent: intercept_room_reservation.room_parent
     room_reservation_configuration:
       title: 'Room Reservations'
       menu_link: FALSE

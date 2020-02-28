@@ -20,6 +20,39 @@ equipment_reservation.admin.structure.settings:
 
 intercept_equipment.account.equipment_reservations:
   title: 'Equipment Reservations'
-  weight: 10
+  weight: 0
   route_name: intercept_equipment.account.equipment_reservations
   menu_name: account
+  class: Drupal\intercept_core\Plugin\Menu\UserMenuLink
+
+intercept_equipment.equipment_parent:
+  title: 'Equipment'
+  weight: 2
+  route_name: <front>
+  menu_name: intercept-manage
+  class: Drupal\intercept_equipment\Plugin\Menu\EquipmentMenuLink
+
+intercept_equipment.equipment_create:
+  parent: intercept_equipment.equipment_parent
+  title: 'Create Reservation'
+  weight: 1
+  route_name: view.intercept_equipment.page
+  menu_name: intercept-manage
+  class: Drupal\intercept_equipment\Plugin\Menu\EquipmentMenuLink
+
+intercept_equipment.equipment_my:
+  parent: intercept_equipment.equipment_parent
+  title: 'My Reservations'
+  weight: 2
+  route_name: intercept_equipment.account.equipment_reservations
+  menu_name: intercept-manage
+  class: Drupal\intercept_equipment\Plugin\Menu\EquipmentMenuLink
+
+# System Config child link
+intercept_equipment.config_equipment:
+  parent: intercept_core.config_parent
+  title: 'Equipment'
+  weight: 0
+  route_name: intercept_equipment.management.equipment_configuration.redirect
+  menu_name: intercept-manage
+  class: Drupal\intercept_core\Plugin\Menu\ConfigMenuLink

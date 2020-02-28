@@ -11,6 +11,5 @@ dependencies:
   - inline_entity_form:inline_entity_form
   - intercept:intercept_core
   - office_hours:office_hours
-  - pathauto:pathauto
   - drupal:telephone
 package: 'Intercept'

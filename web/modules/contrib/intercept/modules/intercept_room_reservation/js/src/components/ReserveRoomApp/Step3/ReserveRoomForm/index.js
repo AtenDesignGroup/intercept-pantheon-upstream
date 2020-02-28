@@ -21,11 +21,8 @@ import CloseIcon from '@material-ui/icons/Close';
 // Intercept Components
 import SelectResource from 'intercept/SelectResource';
 import SelectUser from 'intercept/SelectUser';
-import InputDate from 'intercept/Input/InputDate';
-import InputTime from 'intercept/Input/InputTime';
 import InputNumber from 'intercept/Input/InputNumber';
 import InputText from 'intercept/Input/InputText';
-import InputCheckbox from 'intercept/Input/InputCheckbox';
 import RadioGroup from 'intercept/RadioGroup/RadioGroup';
 
 // Formsy
@@ -63,19 +60,6 @@ const FIELD_PUBLICIZE_OPTIONS = [
     value: 'No',
   },
 ];
-
-const matchTime = (original, ref) => {
-  if (ref instanceof Date === false || original instanceof Date === false) {
-    return ref;
-  }
-  const output = new Date();
-  output.setTime(original.getTime());
-  output.setHours(ref.getHours());
-  output.setMinutes(ref.getMinutes());
-  output.setSeconds(ref.getSeconds());
-  output.setMilliseconds(ref.getMilliseconds());
-  return output;
-};
 
 const purposeRequiresExplanation = meetingPurpose =>
   meetingPurpose && meetingPurpose.data.attributes.field_requires_explanation;
@@ -291,6 +275,9 @@ class ReserveRoomForm extends PureComponent {
       roomCapacity,
       values,
     } = this.props;
+    const {
+      uuid,
+    } = this.state;
     const showMeetingPurposeExplanation = !!purposeRequiresExplanation(meetingPurpose);
 
     let content = null;
@@ -298,8 +285,9 @@ class ReserveRoomForm extends PureComponent {
 
     this.form = React.createRef();
 
-    if (this.state.uuid) {
-      content = <ReservationTeaser id={this.state.uuid} />;
+    // Show the reservation teaser if it has successfully saved.
+    if (uuid && get(this.props.getRoomReservation(uuid), `${uuid}.state.saved`) === true) {
+      content = <ReservationTeaser id={uuid} />;
     }
     else {
       // Contact Information display for customers
@@ -400,7 +388,7 @@ class ReserveRoomForm extends PureComponent {
                     value={values.refreshments}
                     onChange={this.onValueChange('refreshments')}
                     name="refreshments"
-                    required={true}
+                    required
                     options={FIELD_REFRESHMENTS_OPTIONS}
                   />
                   <InputText
@@ -419,7 +407,7 @@ class ReserveRoomForm extends PureComponent {
                     value={values.publicize}
                     onChange={this.onValueChange('publicize')}
                     name="publicize"
-                    required={true}
+                    required
                     options={FIELD_PUBLICIZE_OPTIONS}
                   />
                 </div>
@@ -537,6 +525,7 @@ const mapStateToProps = (state, ownProps) => ({
       min: 0,
       max: null,
     },
+  getRoomReservation: uuid => select.roomReservation(uuid)(state),
 });
 
 const mapDispatchToProps = dispatch => ({

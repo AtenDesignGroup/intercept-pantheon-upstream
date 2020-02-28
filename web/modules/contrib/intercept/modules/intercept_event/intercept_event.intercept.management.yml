@@ -2,8 +2,9 @@ intercept_event:
   controller: 'Drupal\intercept_event\Controller\ManagementController::view'
   pages:
     events:
-      title: 'Events'
-      menu_weight: 5
+      title: 'All Events'
+      menu_weight: 0
+      parent: intercept_event.event_parent
     event_templates:
       title: 'Create an Event'
       menu_link: FALSE
@@ -11,4 +12,6 @@ intercept_event:
       title: 'Event configuration'
       menu_link: FALSE
     event_attendance_export:
-      title: 'Export Data'
+      title: 'Event Attendance'
+      menu_weight: 0
+      parent: intercept_event.export_parent

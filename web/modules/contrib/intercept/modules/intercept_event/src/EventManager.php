@@ -154,6 +154,8 @@ class EventManager implements EventManagerInterface {
     // Add in helper ajax functionality to change room field values
     // depending on location.
     $form['#attached']['library'][] = 'intercept_event/event_form_helper';
+    $form['field_location']['widget']['#multiple'] = FALSE;
+    $form['field_location']['widget']['#options'] = [0 => '- None -'] + $form['field_location']['widget']['#options'];
     $form['field_location']['widget']['#ajax'] = [
       'callback' => [$this, 'fieldRoomAjaxCallback'],
       'wrapper' => 'event-node-field-room-ajax-wrapper',
@@ -162,14 +164,13 @@ class EventManager implements EventManagerInterface {
       $location = $form['field_location']['widget']['#default_value'];
     }
     $options = &$form['field_room']['widget']['#options'];
-
     if (empty($location)) {
-      $form['field_room']['widget']['#options'] = ['_none' => $this->t('- Select a location -')];
+      $form['field_room']['widget']['#options'] = ['_none' => '- Select a location -'];
     }
     else {
       $rooms = $this->entityTypeManager->getStorage('node')->loadByProperties([
         'type' => 'room',
-        'field_location' => $location[0],
+        'field_location.target_id' => $location[0],
       ]);
       foreach ($options as $id => $label) {
         if ($id == '_none') {

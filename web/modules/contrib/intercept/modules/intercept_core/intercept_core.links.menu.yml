@@ -27,13 +27,40 @@ intercept_core.account.settings:
   weight: 15
   route_name: intercept_core.account.settings
   menu_name: account
+  # See: https://gorannikolovski.com/blog/menu-links-dynamic-values
+  class: Drupal\intercept_core\Plugin\Menu\UserMenuLink
 
+intercept_core.user_edit:
+  title: 'Profile'
+  weight: 14
+  route_name: intercept_core.user_edit
+  menu_name: account
+
+# Toggle link for Staff Management Menu
 intercept_core.account.manage:
   title: 'Manage'
   weight: 15
-  route_name: intercept_core.management.default.redirect
+  route_name: <front>
   menu_name: account
+  class: Drupal\intercept_core\Plugin\Menu\StaffOnlyMenuLink
 
 # Management menu
 intercept_core.manage:
   deriver: \Drupal\intercept_core\Plugin\Derivative\InterceptMenuLinks
+
+# System Config
+intercept_core.config_parent:
+  title: 'System Config'
+  weight: 10
+  route_name: <front>
+  menu_name: intercept-manage
+  class: Drupal\intercept_core\Plugin\Menu\ConfigMenuLink
+
+# System Config child link
+intercept_core.config_location:
+  parent: intercept_core.config_parent
+  title: 'Site Settings'
+  weight: 0
+  route_name: intercept_core.management.settings.redirect
+  menu_name: intercept-manage
+  class: Drupal\intercept_core\Plugin\Menu\ConfigMenuLink

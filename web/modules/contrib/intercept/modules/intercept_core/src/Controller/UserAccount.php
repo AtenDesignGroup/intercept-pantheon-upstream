@@ -51,6 +51,12 @@ class UserAccount extends ControllerBase {
     if (($return = $request->getRequestUri()) && strpos($return, '?return=')) {
       $options['query']['return'] = array_pop(explode('?return=', $return));
     }
+    elseif (($type = $request->getRequestUri()) && strpos($type, '?type=')) {
+      $options['query']['type'] = @array_pop(explode('?type=', $type));
+    }
+    elseif (($uid_current = $request->getRequestUri()) && strpos($uid_current, '?uid_current=')) {
+      $options['query']['uid_current'] = @array_pop(explode('?uid_current=', $uid_current));
+    }
     $params->add(['user' => $this->currentUser()->id()]);
     $params->remove('route_name');
 

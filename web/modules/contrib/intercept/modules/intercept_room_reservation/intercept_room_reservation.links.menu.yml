@@ -23,3 +23,45 @@ intercept_room_reservation.account.room_reservations:
   weight: 10
   route_name: intercept_room_reservation.account.room_reservations
   menu_name: account
+  class: Drupal\intercept_core\Plugin\Menu\UserMenuLink
+
+intercept_room_reservation.room_parent:
+  title: 'Rooms'
+  weight: 0
+  route_name: <front>
+  menu_name: intercept-manage
+  class: Drupal\intercept_room_reservation\Plugin\Menu\RoomMenuLink
+
+intercept_room_reservation.room_create:
+  parent: intercept_room_reservation.room_parent
+  title: 'Create Reservation'
+  weight: 1
+  route_name: intercept_room_reservation.reserve_room
+  menu_name: intercept-manage
+  class: Drupal\intercept_room_reservation\Plugin\Menu\RoomMenuLink
+
+intercept_room_reservation.room_my:
+  parent: intercept_room_reservation.room_parent
+  title: 'My Reservations'
+  weight: 2
+  route_name: intercept_room_reservation.account.room_reservations
+  menu_name: intercept-manage
+  class: Drupal\intercept_room_reservation\Plugin\Menu\RoomMenuLink
+
+# System Config child link
+intercept_room_reservation.config_location:
+  parent: intercept_core.config_parent
+  title: 'Locations & Rooms'
+  weight: 0
+  route_name: intercept_location.management.locations_rooms.redirect
+  menu_name: intercept-manage
+  class: Drupal\intercept_core\Plugin\Menu\ConfigMenuLink
+
+# System Config child link
+intercept_room_reservation.config_room:
+  parent: intercept_core.config_parent
+  title: 'Room Reservations'
+  weight: 0
+  route_name: intercept_room_reservation.management.room_reservation_configuration.redirect
+  menu_name: intercept-manage
+  class: Drupal\intercept_core\Plugin\Menu\ConfigMenuLink

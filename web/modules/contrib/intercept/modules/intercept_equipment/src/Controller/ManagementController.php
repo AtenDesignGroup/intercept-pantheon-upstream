@@ -22,14 +22,6 @@ class ManagementController extends ManagementControllerBase {
         '#weight' => '5',
       ];
     }
-
-    if ($page_name == 'default') {
-      $build['sections']['main']['#actions']['equipment'] = [
-        '#link' => $this->getButton('Reserve Equipment', 'view.intercept_equipment.page'),
-        '#access' => $this->currentUser->hasPermission('add equipment reservation entities'),
-        '#weight' => '-10',
-      ];
-    }
   }
 
   /**
@@ -46,7 +38,7 @@ class ManagementController extends ManagementControllerBase {
   public function viewEquipmentReservations(AccountInterface $user, Request $request) {
     return [
       'title' => $this->title('Equipment Reservations'),
-      'equipment_reservation_create' => $this->getButton('Reserve equipment', 'view.intercept_equipment.page'),
+      'equipment_reservation_create' => $this->getButton('Reserve Equipment', 'view.intercept_equipment.page'),
       'content' => [
         '#type' => 'view',
         '#name' => 'intercept_equipment_reservations',

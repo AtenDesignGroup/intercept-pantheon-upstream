@@ -6543,10 +6543,12 @@ function responseHandler(request$$1, resolve, reject) {
         //   403 - Permission denied responses.
         //   404 - Not Found.
         //   409 - Conflict.
+        //   422 - Failed validation.
         //   504 - Timeout.
         case 403:
         case 404:
         case 409:
+        case 422:
         case 504:
           resolve(resp);
           break;
@@ -6610,17 +6612,25 @@ function errorHandler(request$$1, resolve, reject) {
 function handleFailedResponse(resp, request$$1, dispatch, resource, uuid) {
   return resp.json().then((json) => {
     logger.log('network', 'Failed json response', json);
-    var err = json || ''.concat(resp.status, ': ').concat(resp.statusText || 'No status message provided'); // Mark an non-existent entity as not saved.
-
+    var err;
+    if (json.errors) {
+      err = json.errors;
+    }
+    else {
+      err = [''.concat(resp.status, ': ').concat(resp.statusText || 'No status message provided')]
+    }
     if (request$$1.method === 'PATCH' && resp.status === 404) {
       dispatch(failure(err, resource, uuid));
       return dispatch(setSaved(false, resource, uuid));
-    } // Mark an existing entity as saved.
-
-
+    }
+    // Mark an existing entity as saved.
     if (request$$1.method === 'POST' && resp.status === 409) {
       dispatch(failure(err, resource, uuid));
       return dispatch(setSaved(true, resource, uuid));
+    }
+
+    if (request$$1.method === 'PATCH' && resp.status === 422) {
+      return dispatch(failure(err, resource, uuid));
     }
 
     return dispatch(failure(err, resource, uuid));
@@ -7501,18 +7511,25 @@ let ApiManager =
         }));
 
         function makeApiCall() {
-          return backoffFetch$$1(request$$1, responseHandler, errorHandler).then(function (resp) {
-            return handleResponse(resp, request$$1, dispatch, resource, model, uuid);
-          }).then(function (action) {
-            // If this is an update operation, we need to update relationships as well.
-            if (saved) {
-              return updateRelationshipsIfNeeded(dispatch, entity.data, action.resp.data);
-            }
-          }).catch(function (err) {
-            logger.log('network', 'we give up', err);
-            handleNetworkError(dispatch, resource, uuid)(err);
-            return Promise.reject(err);
-          });
+          return backoffFetch$$1(request$$1, responseHandler, errorHandler)
+            .then(function (resp) {
+              return handleResponse(resp, request$$1, dispatch, resource, model, uuid);
+            })
+            .then(function (action) {
+              // Abort if this is a failure.
+              if (action.type === FAILURE) {
+                return;
+              }
+              // If this is an update operation, we need to update relationships as well.
+              else if (saved) {
+                return updateRelationshipsIfNeeded(dispatch, entity.data, action.resp.data);
+              }
+            })
+            .catch(function (err) {
+              logger.log('network', 'we give up', err);
+              handleNetworkError(dispatch, resource, uuid)(err);
+              return Promise.reject(err);
+            });
         }
 
         logger.log('network', method, request$$1); // Dispatch generic api request action.
@@ -8048,11 +8065,10 @@ function dataReducer() {
           error: null,
         };
       }
- else {
+      else {
         // If the item is now dirty, let's not update it again as we will
         //   lose changes and need to sync again anyway.
         if (action.resp.data && !item.state.dirty) {
-          // item.data = action.resp.data;
           item = mergeStrategy === 'mergeNew' ? itemUpdateTimestamps(item, action.resp.data) : itemUpdate(item, action.resp.data);
         }
 

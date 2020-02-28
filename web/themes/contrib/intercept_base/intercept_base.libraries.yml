@@ -394,6 +394,14 @@ slideshow:
       - core/jquery
       - intercept_base/slick
 
+# Staff Management Menu
+staff-management-menu:
+  css:
+    component:
+      build/components/staff-management-menu/staff-management-menu.component.css: {}
+  js:
+    build/components/staff-management-menu/staff-management-menu.js: {}
+
 # Tabs
 tabs:
   css:

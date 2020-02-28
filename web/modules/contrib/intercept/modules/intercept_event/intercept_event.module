@@ -381,40 +381,22 @@ function intercept_event_views_post_execute(ViewExecutable $view) {
  * Implements hook_form_FORM_ID_alter().
  */
 function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // TODO: Change this to a widget type for the exposed filter.
   $view = $form_state->get('view');
-  if ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
+  if ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
+    // Show future events by default.
+    if (array_key_exists('field_date_time_value', $form)) {
+      $form['field_date_time_value']['min']['#default_value'] = date('m/d/Y');
+      $end_date = new DateTime('+3 months');
+      $form['field_date_time_value']['max']['#default_value'] = date_format($end_date, 'm/d/Y');
+    }
+  }
+  elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
     $query = \Drupal::request()->query->all();
     if (empty($query)) {
       foreach (['attended', 'registered', 'saved'] as $field) {
         $form[$field]['#value'] = 1;
       }
     }
-  }
-  if ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
-    $link = function ($d, $o, $t) {
-      $query = \Drupal::request()->query->all();
-      // 2 is upcoming dates combined filter.
-      $query['date'] = $d;
-      $query['sort'] = $o;
-      $query['order'] = 'field_date_time';
-      ($d == 1) ? $suffix = ' - ' : $suffix = '';
-      return [
-        '#type' => 'link',
-        '#title' => new TranslatableMarkup($t),
-        '#url' => Url::fromRoute('<current>', [], [
-          'query' => $query,
-        ]),
-        '#attributes' => ['class' => ['date-filter', 'date-filter-' . strtolower($t)]],
-        '#suffix' => $suffix,
-      ];
-    };
-    $form['links'] = [
-      '#weight' => -5,
-      'past' => $link(1, 'desc', 'Past'),
-      'upcoming' => $link(2, 'asc', 'Upcoming'),
-    ];
-    $form['date']['#type'] = 'hidden';
   }
   elseif ($view->id() == 'intercept_event_attendance' && $view->current_display == 'embed') {
     // Remove autocomplete from the form's date fields.
@@ -708,6 +690,7 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
     }
   }
   elseif ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
+    $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
     $query->addGroupBy('node.nid');
   }
   elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
@@ -739,8 +722,7 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
       'empty' => TRUE,
       'tokenize' => FALSE,
       'content' => '<h1 class="title">Event Attendance By Age Group</h1>' .
-      $link . '<br>' .
-      '<a href="/account/manage/event-attendance-export">View All Attendance</a>',
+      $link,
       'plugin_id' => 'text_custom',
     ];
     $view->setHandler('page', 'header', 'area_text_custom', $options);

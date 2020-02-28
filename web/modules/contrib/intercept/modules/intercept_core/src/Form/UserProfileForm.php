@@ -274,7 +274,7 @@ class UserProfileForm extends ProfileForm {
    */
   protected function getProfileEntity(UserInterface $user) {
     $profile_storage = $this->entityTypeManager->getStorage('profile');
-    /** @var $profile_storage ProfileStorageInterface */
+    /** @var \Drupal\profile\ProfileStorageInterface $profile_storage */
     $profile = $profile_storage->loadDefaultByUser($user, 'customer');
     if (!$profile) {
       $profile = $profile_storage->create([

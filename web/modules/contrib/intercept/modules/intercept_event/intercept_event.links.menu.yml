@@ -36,6 +36,7 @@ intercept_event.account.events:
   weight: 5
   route_name: intercept_event.account.events
   menu_name: account
+  class: Drupal\intercept_core\Plugin\Menu\UserMenuLink
 
 event_attendance.admin.structure.settings:
   title: Event attendance
@@ -43,9 +44,60 @@ event_attendance.admin.structure.settings:
   route_name: event_attendance.settings
   parent: intercept_core.admin_structure
 
-
 event_registration.admin.structure.settings:
   title: Event registration
   description: 'Configure Event Registration entities'
   route_name: event_registration.settings
   parent: intercept_core.admin_structure
+
+intercept_event.event_parent:
+  title: 'Events'
+  weight: 0
+  route_name: <front>
+  menu_name: intercept-manage
+  class: Drupal\intercept_event\Plugin\Menu\EventMenuLink
+
+intercept_event.event_create:
+  parent: intercept_event.event_parent
+  title: 'Create Event'
+  weight: 1
+  route_name: node.add
+  route_parameters:
+    node_type: 'event'
+  menu_name: intercept-manage
+  class: Drupal\intercept_event\Plugin\Menu\EventMenuLink
+
+intercept_event.event_my:
+  parent: intercept_event.event_parent
+  title: 'My Events'
+  weight: 2
+  route_name: intercept_event.management.events.redirect
+  menu_name: intercept-manage
+  class: Drupal\intercept_event\Plugin\Menu\EventMenuLink
+  options:
+    query:
+      uid_current: 1
+
+intercept_event.export_parent:
+  title: 'Export Data'
+  weight: 10
+  route_name: <front>
+  menu_name: intercept-manage
+  class: Drupal\intercept_event\Plugin\Menu\ExportMenuLink
+
+intercept_event.export_attendance_age:
+  parent: intercept_event.export_parent
+  title: 'Event Attendance by Age Group'
+  weight: 1
+  route_name: view.intercept_event_attendance_by_age_group.page
+  menu_name: intercept-manage
+  class: Drupal\intercept_event\Plugin\Menu\ExportMenuLink
+
+# System Config child link
+intercept_event.config_event:
+  parent: intercept_core.config_parent
+  title: 'Events'
+  weight: 0
+  route_name: intercept_event.management.event_configuration.redirect
+  menu_name: intercept-manage
+  class: Drupal\intercept_core\Plugin\Menu\ConfigMenuLink

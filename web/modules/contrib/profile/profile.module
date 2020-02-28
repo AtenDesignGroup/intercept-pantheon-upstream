@@ -128,6 +128,7 @@ function template_preprocess_profile(array &$variables) {
   /** @var Drupal\profile\Entity\ProfileInterface $profile */
   $profile = $variables['elements']['#profile'];
 
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
   $variables['profile'] = $profile;
   $variables['url'] = $profile->id() ? $profile->toUrl() : FALSE;
   // Helpful $content variable for templates.

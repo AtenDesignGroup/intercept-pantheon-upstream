@@ -29,3 +29,11 @@ bypass room reservation limit:
 bypass room reservation agreement:
   title: 'Bypass room reservation agreement & approval process'
   description: 'Assign to roles that can bypass the room reservation agreement & approval process'
+
+bypass room reservation overlap constraints:
+  title: 'Bypass room reservation overlap constraints'
+  description: 'Assign to roles that can make overlapping room reservations'
+
+bypass room reservation open hours constraints:
+  title: 'Bypass room reservation open hours constraints'
+  descrription: 'Assign to roles that can reserve rooms outside of open hours'

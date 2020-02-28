@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
@@ -36,6 +37,8 @@ class DialogConfirm extends React.PureComponent {
       text,
     } = this.props;
 
+    const textContent = text && [].concat(text);
+
     return (
       <div>
         <Dialog
@@ -50,9 +53,11 @@ class DialogConfirm extends React.PureComponent {
           <DialogTitle id="responsive-dialog-title">{heading}</DialogTitle>
           { text || children
             ? <DialogContent>
-              {text && <DialogContentText>{text}</DialogContentText>}
+              {textContent && textContent.map((content, index) =>
+                <DialogContentText key={index}>{content}</DialogContentText>
+              )}
               {children}
-              </DialogContent>
+            </DialogContent>
             : null
           }
           <DialogActions>
@@ -82,7 +87,10 @@ DialogConfirm.propTypes = {
   disableBackdropClick: PropTypes.bool,
   disableEscapeKeyDown: PropTypes.bool,
   heading: PropTypes.string,
-  text: PropTypes.string,
+  text: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
   onConfirm: PropTypes.func,
   onCancel: PropTypes.func,
   onClose: PropTypes.func,

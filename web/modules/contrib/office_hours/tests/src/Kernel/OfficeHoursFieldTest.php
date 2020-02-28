@@ -13,6 +13,8 @@ use Drupal\Tests\field\Kernel\FieldKernelTestBase;
  * Class OfficeHoursFieldTest.
  *
  * @package Drupal\Tests\office_hours\Kernel
+ *
+ * @group office_hours
  */
 class OfficeHoursFieldTest extends FieldKernelTestBase {
 

@@ -15,6 +15,13 @@ user_settings_form_helper:
     - core/drupal
     - core/drupalSettings
 
+delay_keyup:
+  js:
+    js/delay_keyup.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+
 reservation_form_helper:
   js:
     js/reservation_form_helper.js: {}

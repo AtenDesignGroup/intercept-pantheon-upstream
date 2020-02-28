@@ -144,7 +144,20 @@ const byKeyword = keyword => (room) => {
     return true;
   }
 
-  const haystack = get(room, 'data.attributes.title').toLowerCase();
+  const title = get(room, 'data.attributes.title').toLowerCase();
+  const teaser = get(room, 'data.attributes.field_text_teaser.value');
+  const equipment = get(room, 'data.attributes.field_room_standard_equipment');
+
+  const haystack = [
+    title,
+    teaser,
+    equipment.length > 0 ? equipment.reduce((allItems, item) => allItems.concat(item)) : '',
+  ].reduce((allFields, field) => allFields.concat(field
+    .toLowerCase()
+    // PHP strip_tags
+    .replace(/<.*?>/g, '')
+    // Remove non alphanumeric characters
+    .replace(/[^a-zA-Z 0-9\-]/g, '')));
   const needle = keyword.toLowerCase();
 
   return haystack.indexOf(needle) >= 0;
@@ -306,7 +319,6 @@ class ReserveRoomStep1 extends React.Component {
 
   handleFilterChange = (values) => {
     this.props.onChangeFilters(values);
-
     if (this.shouldFetchRooms(this.props.filters, values)) {
       this.doFetchRooms(values);
     }
@@ -387,7 +399,7 @@ class ReserveRoomStep1 extends React.Component {
       dateLimits,
       rooms,
       roomsLoading,
-      filters
+      filters,
     } = this.props;
 
     const roomToShow = this.state.room[this.state.room.exiting ? 'previous' : 'current'];
@@ -445,6 +457,7 @@ class ReserveRoomStep1 extends React.Component {
               onChange={handleFilterChange}
               filters={filters}
               dateLimits={dateLimits}
+              loading={roomsLoading}
             />
           </div>
           <div className="l__primary">

@@ -22,6 +22,13 @@ class RoomReservationViewsData extends EntityViewsData {
         'id' => 'room_reservation_bulk_form',
       ],
     ];
+    $data['room_reservation']['intercept_room_reservation_validation'] = [
+      'title' => $this->t('Room reservation validation warnings'),
+      'help' => $this->t('Room reservation validation constraint violations.'),
+      'field' => [
+        'id' => 'intercept_room_reservation_validation',
+      ],
+    ];
 
     return $data;
   }

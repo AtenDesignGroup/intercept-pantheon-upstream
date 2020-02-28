@@ -1,0 +1,266 @@
+@mixin transition($trans...) {
+  -webkit-transition: $trans;
+  -moz-transition: $trans;
+  -ms-transition: $trans;
+  transition: $trans;
+}
+
+@mixin noselect() {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+body.adminimal-admin-toolbar {
+  padding-left: 60px;
+}
+
+$toggle-background: #222;
+$toggle-background-active: lighten($toggle-background, 8);
+$accent-color: #21ccfc;
+
+#slide-menu-toggle:checked {
+  & ~ .left-menu {
+    width: 61px;
+    @include transition(all 0.4s);
+  }
+  & ~ .slide-menu-btn {
+    left: 59px;
+    @include transition(left 0.4s);
+  }
+  & ~ .left-menu label span {
+    display: none;
+  }
+}
+
+.slide-menu-btn {
+  cursor: pointer;
+  color: #fff;
+  position: fixed;
+  z-index: 101;
+  height: 60px;
+  width: 30px;
+  top: 28vh;
+  left: 208px;
+  @include transition(left 0.4s);
+  background: $toggle-background;
+  border: 2px solid white;
+  border-left: none;
+  border-radius: 0 30px 30px 0;
+  &:hover {
+    background: $toggle-background-active;
+  }
+  i {
+    position: relative;
+    top: 19px;
+    left: 3px;
+  }
+}
+
+.slide-menu-btn span {
+  position: relative;
+  vertical-align: center;
+}
+
+.slide-menu-btn span i {
+  position: absolute;
+  right: -40px;
+}
+
+#slide-menu-toggle {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.my-account-btn {
+  cursor: pointer;
+}
+
+.accordion {
+  color: #fff;
+  width: 100%;
+  .section {
+    width: 100%;
+    padding: 0;
+    input[type='radio'] {
+      display: none;
+      &:checked {
+        & + label {
+          background: $toggle-background-active;
+          &:before {
+            content: ' ';
+            position: absolute;
+            border-left: 3px solid $accent-color;
+            height: 100%;
+            left: 0;
+          }
+          & .caret {
+            transform: rotate(90deg);
+            @include transition(all 0.4s);
+          }
+        }
+        & ~ .content {
+          max-height: 300px;
+          opacity: 1;
+          z-index: 10;
+          overflow-y: hidden;
+        }
+        & ~ .content.hidden {
+          max-height: 0;
+        }
+      }
+    }
+    label {
+      position: relative;
+      cursor: pointer;
+      padding: 10px 20px;
+      margin: 0;
+      white-space: nowrap;
+      display: table;
+      background: $toggle-background;
+      width: 100%;
+      overflow: hidden;
+      @include transition(background 0.3s ease-in-out);
+      @include noselect();
+      &:before {
+        content: ' ';
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 1px;
+        border-top: 1px solid $toggle-background-active;
+      }
+      &:hover {
+        background: $toggle-background-active;
+      }
+      span {
+        margin-left: 10px;
+        @include transition(all 0.4s);
+        overflow: hidden;
+      }
+    }
+    &:last-of-type {
+      border-bottom: 1px solid $toggle-background-active;
+    }
+    .content {
+      max-height: 0;
+      @include transition(all 0.4s);
+      opacity: 0;
+      position: relative;
+      overflow-y: hidden;
+      & span:hover {
+        color: $accent-color;
+      }
+    }
+  }
+}
+
+.caret {
+  position: absolute;
+  right: 15px;
+  top: 13px;
+  @include transition(all 0.4s);
+}
+
+// Custom styles
+*,
+*:before,
+*:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Quicksand);
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css);
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css);
+
+body.toolbar-tray-open .left-menu {
+  padding-top: 78px;
+}
+.left-menu {
+  @include transition(all 0.4s);
+  background: $toggle-background;
+  width: 210px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 39px;
+  border-right: 2px solid white;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 100;
+
+  .accordion {
+    font-size: 16px;
+    .section {
+      .content {
+        padding: 0 15px;
+      }
+      input[type='checkbox'] {
+        display: none;
+        &:checked {
+          & ~ .content {
+            padding: 15px;
+          }
+        }
+      }
+    }
+  }
+  ul:not([class]) > li {
+    margin: 0;
+    &:before {
+      display: none;
+    }
+  }
+  ul {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    li {
+      padding: 10px;
+      a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: unset;
+        &:hover,
+        &:active,
+        &:focus {
+          color: $accent-color;
+        }
+      }
+      i {
+        font-size: 13px;
+        width: 15px;
+        margin-right: 15px;
+      }
+      &:hover {
+        cursor: pointer;
+        i {
+          color: $accent-color;
+        }
+      }
+    }
+  }
+
+  .contextual .trigger {
+    display: none;
+  }
+}
+
+.menu--account .menu__item label {
+  color: #fff;
+  line-height: 1.8;
+  padding: 0.25rem 0;
+  text-decoration: none;
+  &:hover {
+    color: #ff7548;
+  }
+}

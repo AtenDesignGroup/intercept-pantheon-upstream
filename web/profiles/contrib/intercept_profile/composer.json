@@ -3,12 +3,16 @@
   "description": "Installation profile for Intercept.",
   "type": "drupal-profile",
   "license": "GPL-2.0+",
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://packages.drupal.org/8"
+  "repositories": {
+    "drupal": {
+        "type": "composer",
+        "url": "https://packages.drupal.org/8"
+    },
+    "assets": {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
     }
-  ],
+  },
   "require": {
     "drupal/adminimal_admin_toolbar": "^1.0",
     "drupal/adminimal_theme": "^1.0",

@@ -23,6 +23,8 @@ permissions:
   - 'add room reservation entities'
   - 'bypass room reservation agreement'
   - 'bypass room reservation limit'
+  - 'bypass room reservation open hours constraints'
+  - 'bypass room reservation overlap constraints'
   - 'cancel event_registration entities'
   - 'cancel room_reservation'
   - 'create equipment_reservation'

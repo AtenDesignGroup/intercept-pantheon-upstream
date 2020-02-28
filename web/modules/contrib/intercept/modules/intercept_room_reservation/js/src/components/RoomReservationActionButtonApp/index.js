@@ -8,6 +8,7 @@ import get from 'lodash/get';
 /* eslint-disable */
 import interceptClient from 'interceptClient';
 
+import withAvailability from './../ReserveRoomApp/withAvailability';
 import ButtonReservationAction from 'intercept/ButtonReservationAction';
 import DialogConfirm from 'intercept/Dialog/DialogConfirm';
 import LoadingIndicator from 'intercept/LoadingIndicator';
@@ -22,6 +23,7 @@ class RoomReservationActionButtonApp extends React.Component {
     super(props);
     this.state = {
       open: false,
+      errorDialogOpen: false,
       disableBackdropClick: true,
       disableEscapeKeyDown: true,
       dialogProps: {},
@@ -32,6 +34,35 @@ class RoomReservationActionButtonApp extends React.Component {
   componentDidMount() {
     this.props.fetchReservation(this.props.entityId);
   }
+
+  componentDidUpdate(prevProps) {
+    const { record, isLoading, availability, fetchAvailability } = this.props;
+    const prevRecord = prevProps.record;
+    const hasError = get(record, 'state.error');
+    const prevHasError = get(prevRecord, 'state.error');
+
+    if (!isLoading && record !== null && !availability.loading && availability.rooms.length === 0) {
+      fetchAvailability(this.getRoomAvailabilityQuery());
+    }
+
+    if (hasError && !prevHasError) {
+      // Alert the user to the error
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ errorDialogOpen: true });
+    }
+  }
+
+  // Get query params based on current rooms and filters.
+  getRoomAvailabilityQuery = () => {
+    const { record } = this.props;
+    const room = get(record, 'data.relationships.field_room.data.id');
+    const dates = get(record, 'data.attributes.field_dates');
+    return {
+      rooms: [room],
+      start: dates.value,
+      end: dates.end_value,
+    };
+  };
 
   getActions = (status) => {
     const { cancel, deny, approve, request } = this;
@@ -45,7 +76,7 @@ class RoomReservationActionButtonApp extends React.Component {
       case 'approved':
         return isManager ? [deny(), cancel()] : [cancel()];
       case 'canceled':
-        return [request()];
+        return this.isConflicted() ? this.getConflictedMessage() : [request()];
       default:
         return null;
     }
@@ -78,12 +109,37 @@ class RoomReservationActionButtonApp extends React.Component {
     }
   };
 
+  getConflictedMessage = () => {
+    const { record, availability } = this.props;
+    const room = get(record, 'data.relationships.field_room.data.id');
+    if (!availability.loading && availability.rooms[room]) return (<p className="action-button__message">This reservation time is no longer available.</p>);
+    return '';
+  }
+
+  isConflicted = () => {
+    const { record, availability } = this.props;
+    const room = get(record, 'data.relationships.field_room.data.id');
+
+    if (!availability.loading && availability.rooms[room]) {
+      const availabilityStatus = availability.rooms[room];
+      return availabilityStatus.has_max_duration_conflict
+        || availabilityStatus.has_open_hours_conflict
+        || availabilityStatus.has_reservation_conflict;
+    }
+    return true;
+  }
+
   openDialog = (status) => {
     this.setState({ open: true, dialogProps: this.getDialogProps(status) });
   }
 
   closeDialog = () => {
     this.setState({ open: false });
+  }
+
+  closeErrorDialog = () => {
+    this.props.fetchReservation(this.props.entityId);
+    this.setState({ errorDialogOpen: false });
   }
 
   confirmDialog = (status) => {
@@ -141,7 +197,28 @@ class RoomReservationActionButtonApp extends React.Component {
         disableBackdropClick={this.state.disableBackdropClick}
         onConfirm={() => this.confirmDialog(dialogProps.status)}
         confirmText="Yes"
-        cancelText="No"
+      />
+    );
+  };
+
+  errorDialog = () => {
+    const { dialogProps } = this.state;
+    const { record } = this.props;
+    const errors = get(record, 'state.error') || [];
+    const text = errors.map((err => err.detail)) || 'Unkown Error';
+
+    return (
+      <DialogConfirm
+        {...dialogProps}
+        open={this.state.errorDialogOpen}
+        onClose={this.closeErrorDialog}
+        onConfirm={this.closeErrorDialog}
+        onBackdropClick={null}
+        disableEscapeKeyDown={this.state.disableEscapeKeyDown}
+        disableBackdropClick={this.state.disableBackdropClick}
+        heading={'Unable to update reservation'}
+        text={text}
+        confirmText="Close"
       />
     );
   };
@@ -161,6 +238,7 @@ class RoomReservationActionButtonApp extends React.Component {
         <ReservationStatus status={status} syncing={get(record, 'state.syncing')} />
         {buttons}
         {this.dialog()}
+        {this.errorDialog()}
       </div>
     );
   }
@@ -173,6 +251,8 @@ RoomReservationActionButtonApp.propTypes = {
   status: PropTypes.string.isRequired,
   // Connect
   fetchReservation: PropTypes.func.isRequired,
+  fetchAvailability: PropTypes.func.isRequired,
+  availability: PropTypes.object.isRequired,
   isLoading: PropTypes.bool,
   setStatusTo: PropTypes.func.isRequired,
   record: PropTypes.object,
@@ -237,4 +317,4 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps,
-)(RoomReservationActionButtonApp);
+)(withAvailability(RoomReservationActionButtonApp));

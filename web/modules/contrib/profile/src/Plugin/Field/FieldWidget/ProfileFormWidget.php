@@ -308,7 +308,7 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
     foreach ($profiles as $profile) {
       assert($profile instanceof ProfileInterface);
       $profile->setOwnerId($account->id());
-      $profile->setPublished(TRUE);
+      $profile->setPublished();
       $profile->save();
     }
   }

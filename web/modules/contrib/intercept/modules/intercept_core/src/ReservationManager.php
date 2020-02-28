@@ -18,6 +18,7 @@ use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\node\NodeInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Class ReservationManager.
@@ -29,8 +30,6 @@ class ReservationManager implements ReservationManagerInterface {
   use DependencySerializationTrait;
 
   use StringTranslationTrait;
-
-  const FORMAT = 'Y-m-d\TH:i:s';
 
   /**
    * The entity type manager.
@@ -110,23 +109,14 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
-   * Expose the date utility for functions that use this service.
-   *
-   * @return \Drupal\intercept_core\Utility\Dates
-   *   The Intercept Dates utility.
+   * {@inheritdoc}
    */
   public function dateUtility() {
     return $this->dateUtility;
   }
 
   /**
-   * Get a reservation entity for an event node.
-   *
-   * @param \Drupal\node\NodeInterface $event
-   *   The event node entity.
-   *
-   * @return bool|RoomReservationInterface
-   *   The Room Reservation entity, or FALSE.
+   * {@inheritdoc}
    */
   public function getEventReservation(NodeInterface $event) {
     if ($event->isNew()) {
@@ -135,6 +125,7 @@ class ReservationManager implements ReservationManagerInterface {
     $reservations = $this->reservations('room', function ($query) use ($event) {
       $query->condition('field_event', $event->id(), '=');
       $query->condition('field_status', ['canceled', 'denied'], 'NOT IN');
+      $query->sort('field_dates.value', 'ASC');
     });
     if (!empty($reservations)) {
       $reservation = reset($reservations);
@@ -144,7 +135,7 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
-   * Create a new reservation entity based on an event node.
+   * Create a new room reservation entity based on an event node.
    *
    * @param \Drupal\node\NodeInterface $event
    *   The event node.
@@ -234,7 +225,10 @@ class ReservationManager implements ReservationManagerInterface {
     }
 
     $form['reservation']['#attached'] = [
-      'library' => ['intercept_core/reservation_form_helper'],
+      'library' => [
+        'intercept_core/reservation_form_helper',
+        'intercept_core/delay_keyup',
+      ],
     ];
 
     $form['reservation']['dates'] = [
@@ -252,9 +246,14 @@ class ReservationManager implements ReservationManagerInterface {
       '#default_value' => $start_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
-        'event' => 'blur',
+        'event' => 'blur delayed_keyup',
         'disable-refocus' => TRUE,
         'wrapper' => 'event-room-reservation-status-ajax-wrapper',
+      ],
+      '#attributes' => [
+        'class'      => [
+          'delayed-keyup',
+        ],
       ],
     ];
 
@@ -264,9 +263,14 @@ class ReservationManager implements ReservationManagerInterface {
       '#default_value' => $end_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
-        'event' => 'blur',
+        'event' => 'blur delayed_keyup',
         'disable-refocus' => TRUE,
         'wrapper' => 'event-room-reservation-status-ajax-wrapper',
+      ],
+      '#attributes' => [
+        'class'      => [
+          'delayed-keyup',
+        ],
       ],
     ];
 
@@ -297,7 +301,6 @@ class ReservationManager implements ReservationManagerInterface {
     $form['#validate'][] = [$this, 'nodeFormValidate'];
     $form['actions']['submit']['#submit'][] = [static::class, 'nodeFormAlterSubmit'];
     $form_state->set('reservation_manager', $this);
-
   }
 
   /**
@@ -363,14 +366,14 @@ class ReservationManager implements ReservationManagerInterface {
     if (empty($dates) || empty($dates['start']) || empty($dates['end'])) {
       $dates = $form_state->getValue('field_date_time');
       if (empty($dates) || empty($dates[0]['value']) || empty($dates[0]['end_value'])) {
-        return [];
+        return $status_element;
       }
       $start_date = $dates[0]['value'];
       $end_date = $dates[0]['end_value'];
     }
     else {
       if (is_array($dates['start'])) {
-        return [];
+        return $status_element;
       }
       $start_date = $dates['start'];
       $end_date = $dates['end'];
@@ -531,6 +534,7 @@ class ReservationManager implements ReservationManagerInterface {
       $date = new DrupalDateTime('now', $this->dateUtility->getDefaultTimezone());
       $query->condition('field_dates.end_value', $date->format('Y-m-d\TH:i:sP'), '>');
       $query->condition('field_status', ['requested', 'approved'], 'IN');
+      $query->sort('field_dates.value', 'ASC');
     });
 
     $this->moduleHandler->alter('intercept_room_reservation_limit', $reservations);
@@ -539,12 +543,7 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
-   * Determines the duration between a start and end date.
-   *
-   * @param string $start
-   *   The start time.
-   * @param string $end
-   *   The end time.
+   * {@inheritdoc}
    */
   public function duration(string $start, string $end) {
     return $this->dateUtility->duration(
@@ -562,42 +561,23 @@ class ReservationManager implements ReservationManagerInterface {
    *   The parameters to check availability for.
    */
   public function availability(array $params = []) {
+    // Show debug information in return.
+    $debug = !empty($params['debug']);
     // Reservations keyed by room uuid.
     if (empty($params['duration'])) {
       $params['duration'] = $this->duration($params['start'], $params['end']);
     }
-    $data = $this->reservationsByNode('room', function ($query) use ($params) {
-      $start_date = $this->dateUtility->getDate($params['start']);
-      $end_date = $this->dateUtility->getDate($params['end']);
-      if (!empty($params['rooms'])) {
-        $query->condition('field_room', $params['rooms'], 'IN');
-      }
-      // If we're editing an event reservation, we need to make sure to not
-      // count the existing reservation towards unavailability.
-      if (!empty($params['event'])) {
-        $query->condition('field_event', $params['event'], '!=');
-      }
-      if (!empty($params['exclude'])) {
-        $query->condition('id', $params['exclude'], '!=');
-      }
-      $query->condition('field_status', ['canceled', 'denied'], 'NOT IN');
-      $range = [$start_date->format(self::FORMAT), $end_date->format(self::FORMAT)];
-      $query->condition($query->orConditionGroup()
-        // Date start value is in between start / end params.
-        ->condition('field_dates.value', $range, 'BETWEEN')
-        // OR Date end value is in between start / end params.
-        ->condition('field_dates.end_value', $range, 'BETWEEN')
-        // OR Date start and date end values span larger
-        // than the start / end params.
-        ->condition($query->andConditionGroup()
-          ->condition('field_dates.value', $range[0], '<=')
-          ->condition('field_dates.end_value', $range[1], '>=')
-        )
-      );
-    });
 
-    $nodes = $this->nodes('room', isset($params['rooms']) ? $params['rooms'] : []);
+    $user_exceeded_limit = $this->userExceededReservationLimit($this->currentUser);
+    $room_reservations = $this->roomReservationsByNode($params);
+
+    $rooms = $this->nodes('room', isset($params['rooms']) ? $params['rooms'] : []);
     $return = [];
+
+    $timezone_info = [
+      'default_timezone' => $this->dateUtility->getDefaultTimezone()->getName(),
+      'storage_timezone' => $this->dateUtility->getStorageTimezone()->getName(),
+    ];
 
     $param_info = [];
     foreach (['start', 'end'] as $param) {
@@ -606,17 +586,48 @@ class ReservationManager implements ReservationManagerInterface {
       $param_info[$param]['default_timezone'] = $this->dateUtility->convertTimezone($date, 'default')->format(self::FORMAT);
     }
 
-    foreach ($nodes as $node) {
-      $uuid = $node->uuid();
-      $reservations = !empty($data[$node->uuid()]) ? $data[$node->uuid()] : [];
+    foreach ($rooms as $room) {
+      $uuid = $room->uuid();
+      if ($debug) {
+        $return[$uuid]['debug'] = [];
+        $debug_data = &$return[$uuid]['debug'];
+      }
+      $return[$uuid]['user_exceeded_limit'] = $user_exceeded_limit;
+      $reservations = !empty($room_reservations[$uuid]) ? $room_reservations[$uuid] : [];
+
       $return[$uuid]['has_reservation_conflict'] = $this->hasReservationConflict($reservations, $params);
-      $return[$uuid]['has_open_hours_conflict'] = $this->hasOpeningHoursConflict($reservations, $params, $node);
-      $return[$uuid]['has_max_duration_conflict'] = $this->hasMaxDurationConflict($params, $node);
-      $is_closed = $this->isClosed($params, $node);
+      $return[$uuid]['has_open_hours_conflict'] = $this->aggressiveOpeningHoursConflict($reservations, $params, $room);
+      $return[$uuid]['has_max_duration_conflict'] = $this->hasMaxDurationConflict($params, $room);
+      $is_closed = $this->isClosed($params, $room);
       $return[$uuid]['is_closed'] = $is_closed;
-      $return[$uuid]['closed_message'] = $this->closedMessage($params, $node);
-      $return[$uuid]['has_location'] = !empty($this->getLocation($node));
-      $return[$uuid]['dates'] = $this->getDates($reservations, $params, $node);
+      $return[$uuid]['closed_message'] = $this->closedMessage($params, $room);
+      $return[$uuid]['has_location'] = !empty($this->getLocation($room));
+      if ($debug) {
+        $debug_data['schedule'] = $this->getSchedule($reservations, $params);
+        $debug_data['schedule_by_open_hours'] = $this->getScheduleByOpenHours($reservations, $params, $room);
+        $debug_data['hours'] = FALSE;
+        if (!$this->isClosed($params, $room)) {
+          $hours = $this->getHours($params, $room);
+          $hours_start = $this->timeToDate($hours['starthours'], $this->dateUtility->getDate($params['start']));
+          $hours_end = $this->timeToDate($hours['endhours'], $this->dateUtility->getDate($params['end']));
+          $debug_data['hours'] = [
+            'start' => ['raw' => $hours['starthours']],
+            'end' => ['raw' => $hours['endhours']],
+          ];
+
+          $debug_data['hours']['start']['default_timezone'] = $hours_start->format(self::FORMAT);
+          $debug_data['hours']['start']['storage_timezone'] = $this->dateUtility->convertTimezone($hours_start, 'storage')->format(self::FORMAT);
+          $debug_data['hours']['end']['default_timezone'] = $hours_end->format(self::FORMAT);
+          $debug_data['hours']['end']['storage_timezone'] = $this->dateUtility->convertTimezone($hours_end, 'storage')->format(self::FORMAT);
+        }
+      }
+      $return[$uuid]['dates'] = $this->getDates($reservations, $params, $room);
+      if ($debug) {
+        $debug_data['room_nid'] = $room->id();
+        $debug_data['location_nid'] = !empty($this->getLocation($room)) ? $this->getLocation($room)->id() : FALSE;
+        $debug_data['param_info'] = $param_info;
+        $debug_data['timezone_info'] = $timezone_info;
+      }
     }
     return $return;
   }
@@ -629,7 +640,7 @@ class ReservationManager implements ReservationManagerInterface {
    * @param array $params
    *   An array of reservation parameters.
    * @param \Drupal\node\NodeInterface $node
-   *   A Location node.
+   *   A Room node.
    *
    * @return array
    *   An array of start and end dates, keyed by reservation UUID.
@@ -684,6 +695,42 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function roomReservationsByNode(array $params) {
+    return $this->reservationsByNode('room', function ($query) use ($params) {
+      $start_date = $this->dateUtility->getDate($params['start']);
+      $end_date = $this->dateUtility->getDate($params['end']);
+      if (!empty($params['rooms'])) {
+        $query->condition('field_room', $params['rooms'], 'IN');
+      }
+      // If we're editing an event reservation, we need to make sure to not
+      // count the existing reservation towards unavailability.
+      if (!empty($params['event'])) {
+        $query->condition('field_event', $params['event'], '!=');
+      }
+      if (!empty($params['exclude'])) {
+        $query->condition('id', $params['exclude'], '!=');
+      }
+      $query->condition('field_status', ['canceled', 'denied'], 'NOT IN');
+      $range = [$start_date->format(self::FORMAT), $end_date->format(self::FORMAT)];
+      $query->condition($query->orConditionGroup()
+        // Date start value is in between start / end params.
+        ->condition('field_dates.value', $range, 'BETWEEN')
+        // OR Date end value is in between start / end params.
+        ->condition('field_dates.end_value', $range, 'BETWEEN')
+        // OR Date start and date end values span larger
+        // than the start / end params.
+        ->condition($query->andConditionGroup()
+          ->condition('field_dates.value', $range[0], '<=')
+          ->condition('field_dates.end_value', $range[1], '>=')
+        )
+      );
+      $query->sort('field_dates.value', 'ASC');
+    });
+  }
+
+  /**
    * Gets all Reservations of a type.
    *
    * @param string $type
@@ -700,45 +747,73 @@ class ReservationManager implements ReservationManagerInterface {
     if (is_callable($exec)) {
       $exec($query);
     }
-    $ids = $query->sort('field_dates.value', 'ASC')->execute();
+    $ids = $query->execute();
     $reservations = $storage->loadMultiple($ids);
     return $reservations;
   }
 
   /**
-   * Determines if a start and end date conflicts with existing reservations.
-   *
-   * @param array $reservations
-   *   An array of existing reservations.
-   * @param array $params
-   *   An array of reservation parameters.
-   *
-   * @return bool
-   *   Whether a start and end date conflicts with existing reservations.
+   * {@inheritdoc}
    */
   public function hasReservationConflict(array $reservations, array $params) {
     return empty($this->getOpeningsByDuration($reservations, $params));
   }
 
   /**
-   * Determines if a start and end date conflicts with a Location's hours.
-   *
-   * @param array $reservations
-   *   An array of existing reservations.
-   * @param array $params
-   *   An array of reservation parameters.
-   * @param \Drupal\node\NodeInterface $node
-   *   A Location node.
-   *
-   * @return bool
-   *   Whether a start and end date conflicts with a Location's hours.
+   * {@inheritdoc}
    */
-  public function hasOpeningHoursConflict(array $reservations, array $params, NodeInterface $node) {
-    if (!$params = $this->getOpenHoursParams($params, $node)) {
-      // Appears to be closed.
+  public function aggressiveOpeningHoursConflict(array $reservations, array $params, NodeInterface $room) {
+    if ($this->hasOpeningHoursConflict($reservations, $params, $room)) {
       return TRUE;
     }
-    return $this->hasReservationConflict($reservations, $params);
+
+    // Get the open hours parameters.
+    $openHoursParams = $this->getOpenHoursParams($params, $room);
+
+    // Reservation is within opening hours, check for conflicting reservations
+    // during opening hours.
+    return $this->hasReservationConflict($reservations, $openHoursParams);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasOpeningHoursConflict(array $reservations, array $params, NodeInterface $room) {
+    // Get the open hours parameters.
+    $openHoursParams = $this->getOpenHoursParams($params, $room);
+
+    // Appears to be closed. Considered conflicted.
+    if (!$openHoursParams) {
+      return TRUE;
+    }
+
+    // Get opening hours.
+    $hours = $this->getHours($params, $room);
+
+    // Get the open and close times in UTC so we can compare.
+    $utc_open = $this->dateUtility->convertTimezone($this->dateUtility->getDate($hours['start_datetime']));
+    $utc_open = $utc_open->format(self::FORMAT);
+    $utc_close = $this->dateUtility->convertTimezone($this->dateUtility->getDate($hours['end_datetime']));
+    $utc_close = $utc_close->format(self::FORMAT);
+
+    // Constrain the start and end times to opening hours.
+    $start_boundary = $utc_open > $params['start'] ? $utc_open : $params['start'];
+    $end_boundary = $utc_close < $params['end'] ? $utc_close : $params['end'];
+
+    // If the start and end time fall completely out of open hours, consider conflicted.
+    if ($start_boundary > $end_boundary) {
+      return TRUE;
+    }
+
+    // If the duration is greater than the boundaries, it won't fit. Consider conflicted.
+    if ($params['duration'] > $this->duration($start_boundary, $end_boundary)) {
+      return TRUE;
+    }
+
+    $boundaryHoursParams = $openHoursParams;
+    $boundaryHoursParams['start'] = $start_boundary;
+    $boundaryHoursParams['end'] = $end_boundary;
+    return empty($this->getOpeningsByDuration($reservations, $boundaryHoursParams, $room));
   }
 
   /**
@@ -746,14 +821,14 @@ class ReservationManager implements ReservationManagerInterface {
    *
    * @param array $params
    *   The requested start and end times.
-   * @param \Drupal\node\NodeInterface $node
+   * @param \Drupal\node\NodeInterface $room
    *   The Room node.
    *
    * @return bool
    *   Whether there is a conflict with the room's maximum duration.
    */
-  public function hasMaxDurationConflict(array $params, NodeInterface $node) {
-    if (!empty($params['duration']) && $max_duration_interval = $this->getMaxRoomDuration($node)) {
+  public function hasMaxDurationConflict(array $params, NodeInterface $room) {
+    if (!empty($params['duration']) && $max_duration_interval = $this->getMaxRoomDuration($room)) {
       $max_duration = 0;
       if ($max_duration_interval->format('%h') > 0) {
         $max_duration = $max_duration_interval->format('%h') * 60;
@@ -836,7 +911,12 @@ class ReservationManager implements ReservationManagerInterface {
     if (!$params = $this->getOpenHoursParams($params, $node)) {
       return [];
     }
-    return $this->getOpenings($reservations, $params);
+    foreach ($this->getOpenings($reservations, $params) as $id => $opening) {
+      if ($opening['duration'] >= $params['duration']) {
+        $openings[$id] = $opening;
+      }
+    }
+    return $openings;
   }
 
   /**
@@ -1012,7 +1092,7 @@ class ReservationManager implements ReservationManagerInterface {
     $hours = $location->field_location_hours;
     $values = $hours->getValue();
     // e.g. 'starthours' => '0900', 'endhours' => '1700'.
-    return array_reduce($values, function ($car, $val) use ($d) {
+    $hours_on_date = array_reduce($values, function ($car, $val) use ($d) {
       if ($val['day'] == $d) {
         $car = $val;
         switch ($car['endhours']) {
@@ -1030,6 +1110,24 @@ class ReservationManager implements ReservationManagerInterface {
       }
       return $car;
     });
+
+    // Create a DateTime object for the opening hours in the default timezone.
+    $start_hour = (int) substr(str_pad($hours_on_date['starthours'], 4, "0", STR_PAD_LEFT), 0, 2);
+    $start_minute = (int) substr($hours_on_date['starthours'], -2);
+    $start_datetime = clone $start_date;
+    $start_datetime->setTime($start_hour, $start_minute);
+    // Add it to the result.
+    $hours_on_date['start_datetime'] = $start_datetime;
+
+    // Create a DateTime object for the closing hours in the default timezone.
+    $end_hour = (int) substr(str_pad($hours_on_date['endhours'], 4, "0", STR_PAD_LEFT), 0, 2);
+    $end_minute = (int) substr($hours_on_date['endhours'], -2);
+    $end_datetime = clone $start_date;
+    $end_datetime->setTime($end_hour, $end_minute);
+    // Add it to the result.
+    $hours_on_date['end_datetime'] = $end_datetime;
+
+    return $hours_on_date;
   }
 
   /**
@@ -1176,6 +1274,10 @@ class ReservationManager implements ReservationManagerInterface {
       }
       $emails[$mail_key] = $settings;
     }
+    // Don't send 2 emails to the same staff member if they canceled their own reservation.
+    if (isset($emails['reservation_canceled']) && isset($emails['reservation_canceled_staff']) && $reservation_author->id() == $reservation_user->id()) {
+      unset($emails['reservation_canceled_staff']);
+    }
     foreach ($emails as $mail_key => $settings) {
       $this->email($mail_key, $room_reservation);
     }
@@ -1237,6 +1339,19 @@ class ReservationManager implements ReservationManagerInterface {
     $body = $this->token->replace($email_config['body'], $token_replacements);
     $message['subject'] = str_replace(["\r", "\n"], '', $subject);
     $message['body'][] = $body;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getReservationsByUser($type, AccountInterface $user) {
+    return $this->reservations($type, function ($query) use ($user) {
+      $orConditionGroup = $query->orConditionGroup();
+      $orConditionGroup->condition('field_user', $user->id());
+      $orConditionGroup->condition('author', $user->id());
+      $query->condition($orConditionGroup);
+      $query->sort('created', 'DESC');
+    });
   }
 
 }

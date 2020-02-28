@@ -193,29 +193,12 @@ function intercept_equipment_equipment_reservation_insert(EntityInterface $entit
 function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->get('view');
   if ($view->id() == 'intercept_equipment_reservations' && $view->current_display == 'embed') {
-    $link = function ($d, $o, $t) {
-      $query = \Drupal::request()->query->all();
-      // 2 is upcoming dates combined filter.
-      $query['field_dates_value'] = $d;
-      $query['sort'] = $o;
-      $query['order'] = 'field_dates_value';
-      ($d == 1) ? $suffix = ' - ' : $suffix = '';
-      return [
-        '#type' => 'link',
-        '#title' => new TranslatableMarkup($t),
-        '#url' => Url::fromRoute('<current>', [], [
-          'query' => $query,
-        ]),
-        '#attributes' => ['class' => ['date-filter', 'date-filter-' . strtolower($t)]],
-        '#suffix' => $suffix,
-      ];
-    };
-    $form['links'] = [
-      '#weight' => -5,
-      'past' => $link(1, 'desc', 'Past'),
-      'upcoming' => $link(2, 'asc', 'Upcoming'),
-    ];
-    $form['field_dates_value']['#type'] = 'hidden';
+    // Show future equipment reservations by default.
+    if (array_key_exists('field_dates_value_1', $form)) {
+      $form['field_dates_value_1']['min']['#default_value'] = date('m/d/Y');
+      $end_date = new DateTime('+3 months');
+      $form['field_dates_value_1']['max']['#default_value'] = date_format($end_date, 'm/d/Y');
+    }
 
     // Change the locations field to be a dropdown.
     // See: https://atendesigngroup.com/blog/drupal-8-views-entity-reference-exposed-filter-select-list

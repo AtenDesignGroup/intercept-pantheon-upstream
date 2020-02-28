@@ -54,7 +54,7 @@ class CustomToolbar extends Toolbar {
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
           <Button
-            variant="raised"
+            variant="contained"
             color="primary"
             size="small"
             className="rbc-btn rbc-btn--today"

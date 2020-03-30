@@ -10,7 +10,6 @@ use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\intercept_core\Field\Computed\FileFieldItemList;
 use Drupal\intercept_core\Field\Computed\MethodItemList;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\user\UserInterface;
@@ -38,7 +37,7 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
    * {@inheritdoc}
    */
   public function label() {
-    $timezone = drupal_get_user_timezone();
+    $timezone = date_default_timezone_get();
     return $this->getDateRange($timezone);
   }
 
@@ -322,24 +321,6 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
-
-    $reservation_type = static::reservationType();
-
-    $fields['image'] = BaseFieldDefinition::create('image')
-      ->setLabel(new TranslatableMarkup('Image'))
-      ->setDescription(new TranslatableMarkup("The related @label entity's image.", [
-        '@label' => $reservation_type,
-      ]))
-      ->setComputed(TRUE)
-      ->setClass(FileFieldItemList::class)
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE)
-      ->setSetting('target_fields', [
-        "field_$reservation_type",
-        'image_primary',
-        'field_media_image',
-      ])
-      ->setReadOnly(TRUE);
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Publishing status'))

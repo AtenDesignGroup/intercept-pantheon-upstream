@@ -225,9 +225,14 @@ class ReserveRoomStep3 extends React.Component {
     ]);
     const hasConflict = this.hasConflict();
 
-    // Hide this step if the reservation status has not been checked or
-    // the user has exceeded their limit.
-    if (!userStatus.initialized || userStatus.loading || userStatus.exceededLimit) {
+    // Hide this step if:
+    // - the reservation status has not been checked
+    // - the user has exceeded their limit
+    // - the user has been blocked/barred
+
+    if (!userStatus.initialized || userStatus.loading ||
+        userStatus.exceededLimit ||
+        window.drupalSettings.intercept.user.barred) {
       return null;
     }
 
@@ -235,14 +240,20 @@ class ReserveRoomStep3 extends React.Component {
       <div className="l--default">
         <div className="l__header">
           <div className="value-summary__wrapper">
-            <RoomSummary value={room} onClickChange={() => {
-              this.props.fetchUserStatus();
-              onChangeStep(0);
-            }} />
-            <DateSummary value={dateValues} onClickChange={() => {
-              this.props.fetchUserStatus();
-              onChangeStep(1);
-            }} />
+            <RoomSummary
+              value={room}
+              onClickChange={() => {
+                this.props.fetchUserStatus();
+                onChangeStep(0);
+              }}
+            />
+            <DateSummary
+              value={dateValues}
+              onClickChange={() => {
+                this.props.fetchUserStatus();
+                onChangeStep(1);
+              }}
+            />
           </div>
           {hasConflict && (
             <ValueSummaryFooter

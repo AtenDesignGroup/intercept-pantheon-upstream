@@ -174,6 +174,30 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
     if ($this->isNew()) {
       $this->setDefaultStatus();
     }
+    if ($this->isNew()) {
+      // If they've signed the agreement, remove it from their session.
+      if (\Drupal::service('current_user')->isAnonymous()) {
+        return;
+      }
+      $temp_store = \Drupal::service('user.private_tempstore')->get('reservation_agreement');
+      if ($temp_store->get('room')) {
+        $temp_store->delete('room');
+        if ($this->hasField('field_agreement')) {
+          $this->field_agreement->setValue(1);
+        }
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    if ($this->statusHasChanged()) {
+      \Drupal::service('intercept_core.reservation.manager')->notifyStatusChange($this, $this->getOriginalStatus(), $this->getNewStatus());
+    }
   }
 
   /**

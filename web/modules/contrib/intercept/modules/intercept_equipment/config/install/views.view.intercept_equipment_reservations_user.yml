@@ -12,7 +12,7 @@ id: intercept_equipment_reservations_user
 label: 'Intercept Equipment Reservations for User'
 module: views
 description: 'Shows all equipment reservations for the specified user id.'
-tag: ''
+tag: Intercept
 base_table: equipment_reservation_field_data
 base_field: id
 display:
@@ -25,7 +25,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'view referenced user equipment_reservation'
+          perm: 'view own equipment_reservation'
       cache:
         type: tag
         options: {  }

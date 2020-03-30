@@ -15,6 +15,7 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
@@ -25,6 +26,22 @@ use Drupal\node\NodeInterface;
 use Drupal\pathauto\AliasUniquifier;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
+
+/**
+ * Implements hook_help().
+ */
+function intercept_event_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the intercept_event module.
+    case 'help.page.intercept_event':
+      $output = '';
+      $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
+      $output .= '<p>' . new TranslatableMarkup('Provides events and event registration for the Intercept library') . '</p>';
+      return $output;
+
+    default:
+  }
+}
 
 /**
  * Implements hook_theme().
@@ -338,6 +355,20 @@ function intercept_event_node_delete(NodeInterface $node) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ */
+function intercept_event_preprocess_views_view(&$variables) {
+  $view = $variables['view'];
+
+  $tag = $view->storage->get('tag');
+  if (in_array('management', explode(' ', $tag))) {
+    $variables['title'] = [
+      '#markup' => $view->getTitle(),
+    ];
+  }
+}
+
+/**
  * Implemtent hook_theme_suggestions_HOOK_alter().
  */
 function intercept_event_theme_suggestions_form_element_alter(&$suggestions, $variables) {
@@ -409,6 +440,13 @@ function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterfac
     // Remove autocomplete from the form's date fields.
     $form['field_date_time_value']['min']['#attributes']['autocomplete'] = 'off';
     $form['field_date_time_value']['max']['#attributes']['autocomplete'] = 'off';
+  }
+  elseif ($view->id() == 'intercept_meetings' && $view->current_display == 'page') {
+    $filters = $view->getHandlers('filter');
+    if (!empty($filters['field_date_time_value']) && !empty($filters['field_date_time_value']['exposed'])) {
+      $identifier = $filters['field_date_time_value']['expose']['identifier'];
+      $form[$identifier]['max']['#title'] = "";
+    }
   }
 }
 
@@ -662,6 +700,22 @@ function intercept_event_jsonapi_event_registration_filter_access(EntityTypeInte
 }
 
 /**
+ * Implements hook_mail().
+ */
+function intercept_event_mail($key, &$message, $params) {
+  $token_service = \Drupal::token();
+  $context = $params['context'];
+  switch ($key) {
+    case 'status_change':
+      $message['headers']['content-type'] = 'text/html';
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = $token_service->replace($context['subject'], $context['tokens']);
+      $message['body'][] = $token_service->replace($context['body'], $context['tokens']);
+      break;
+  }
+}
+
+/**
  * Implements hook_views_query_alter().
  */
 function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
@@ -689,7 +743,8 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
       }
     }
   }
-  elseif ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
+  elseif (($view->id() == 'intercept_events' && $view->current_display == 'embed') || 
+  $view->id() == 'intercept_event_attendance_by_age_group') {
     $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
     $query->addGroupBy('node.nid');
   }
@@ -711,7 +766,7 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
     // Build the link to download the CSV.
     $request = \Drupal::request();
     $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_event_attendance_by_age_group.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
-    $link = \Drupal::service('renderer')->render($link_renderable);
+    $link = \Drupal::service('renderer')->renderPlain($link_renderable);
     $options = [
       'id' => 'area_text_custom',
       'table' => 'views',

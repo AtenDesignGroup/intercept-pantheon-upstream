@@ -44,9 +44,12 @@ intercept_room_reservation.room_my:
   parent: intercept_room_reservation.room_parent
   title: 'My Reservations'
   weight: 2
-  route_name: intercept_room_reservation.account.room_reservations
+  route_name: intercept_room_reservation.management.room_reservations.redirect
   menu_name: intercept-manage
   class: Drupal\intercept_room_reservation\Plugin\Menu\RoomMenuLink
+  options:
+    query:
+      uid_current: 1
 
 # System Config child link
 intercept_room_reservation.config_location:

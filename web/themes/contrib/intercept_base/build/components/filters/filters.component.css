@@ -1,57 +1,60 @@
-.select-filter, .keyword-filter, .date-filter, .time-filter, .input {
+.select-filter, .keyword-filter, .js-form-type-entity-autocomplete, .date-filter, .time-filter, .input {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex; }
-  .filters__inputs > .select-filter, .filters__inputs > .keyword-filter, .filters__inputs > .date-filter, .filters__inputs > .time-filter, .filters__inputs > .input {
+  .filters__inputs > .select-filter, .filters__inputs > .keyword-filter, .filters__inputs > .js-form-type-entity-autocomplete, .filters__inputs > .date-filter, .filters__inputs > .time-filter, .filters__inputs > .input {
     width: 100%; }
   @media (min-width: 37.5em) and (max-width: 47.9375em) {
-    .filters__inputs > .select-filter, .filters__inputs > .keyword-filter, .filters__inputs > .date-filter, .filters__inputs > .time-filter, .filters__inputs > .input {
+    .filters__inputs > .select-filter, .filters__inputs > .keyword-filter, .filters__inputs > .js-form-type-entity-autocomplete, .filters__inputs > .date-filter, .filters__inputs > .time-filter, .filters__inputs > .input {
       width: 47.82609%;
       margin-right: 4.34783%; }
-      .filters__inputs > .select-filter:nth-child(2n), .filters__inputs > .keyword-filter:nth-child(2n), .filters__inputs > .date-filter:nth-child(2n), .filters__inputs > .time-filter:nth-child(2n), .filters__inputs > .input:nth-child(2n) {
+      .filters__inputs > .select-filter:nth-child(2n), .filters__inputs > .keyword-filter:nth-child(2n), .filters__inputs > .js-form-type-entity-autocomplete:nth-child(2n), .filters__inputs > .date-filter:nth-child(2n), .filters__inputs > .time-filter:nth-child(2n), .filters__inputs > .input:nth-child(2n) {
         margin-right: 0; }
-      .filters__inputs > .select-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .keyword-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .date-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .time-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .input:nth-child(2n + 1):nth-last-child(-n + 2),
+      .filters__inputs > .select-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .keyword-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .js-form-type-entity-autocomplete:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .date-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .time-filter:nth-child(2n + 1):nth-last-child(-n + 2), .filters__inputs > .input:nth-child(2n + 1):nth-last-child(-n + 2),
       .filters__inputs > .select-filter:nth-child(2n + 1):nth-last-child(-n + 2) ~ *,
       .filters__inputs > .keyword-filter:nth-child(2n + 1):nth-last-child(-n + 2) ~ *,
+      .filters__inputs > .js-form-type-entity-autocomplete:nth-child(2n + 1):nth-last-child(-n + 2) ~ *,
       .filters__inputs > .date-filter:nth-child(2n + 1):nth-last-child(-n + 2) ~ *,
       .filters__inputs > .time-filter:nth-child(2n + 1):nth-last-child(-n + 2) ~ *,
       .filters__inputs > .input:nth-child(2n + 1):nth-last-child(-n + 2) ~ * {
         margin-bottom: 0; } }
   @media (min-width: 48em) {
-    .filters__inputs > .select-filter, .filters__inputs > .keyword-filter, .filters__inputs > .date-filter, .filters__inputs > .time-filter, .filters__inputs > .input {
+    .filters__inputs > .select-filter, .filters__inputs > .keyword-filter, .filters__inputs > .js-form-type-entity-autocomplete, .filters__inputs > .date-filter, .filters__inputs > .time-filter, .filters__inputs > .input {
       width: 30.43478%;
       margin-right: 4.34783%; }
-      .filters__inputs > .select-filter:nth-child(3n), .filters__inputs > .keyword-filter:nth-child(3n), .filters__inputs > .date-filter:nth-child(3n), .filters__inputs > .time-filter:nth-child(3n), .filters__inputs > .input:nth-child(3n) {
+      .filters__inputs > .select-filter:nth-child(3n), .filters__inputs > .keyword-filter:nth-child(3n), .filters__inputs > .js-form-type-entity-autocomplete:nth-child(3n), .filters__inputs > .date-filter:nth-child(3n), .filters__inputs > .time-filter:nth-child(3n), .filters__inputs > .input:nth-child(3n) {
         margin-right: 0; }
-    .filters--3up .filters__inputs > .select-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .keyword-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .date-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .time-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .input:nth-child(3n + 1):nth-last-child(-n + 3),
+    .filters--3up .filters__inputs > .select-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .keyword-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .js-form-type-entity-autocomplete:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .date-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .time-filter:nth-child(3n + 1):nth-last-child(-n + 3), .filters--3up .filters__inputs > .input:nth-child(3n + 1):nth-last-child(-n + 3),
     .filters--3up .filters__inputs > .select-filter:nth-child(3n + 1):nth-last-child(-n + 3) ~ *,
     .filters--3up .filters__inputs > .keyword-filter:nth-child(3n + 1):nth-last-child(-n + 3) ~ *,
+    .filters--3up .filters__inputs > .js-form-type-entity-autocomplete:nth-child(3n + 1):nth-last-child(-n + 3) ~ *,
     .filters--3up .filters__inputs > .date-filter:nth-child(3n + 1):nth-last-child(-n + 3) ~ *,
     .filters--3up .filters__inputs > .time-filter:nth-child(3n + 1):nth-last-child(-n + 3) ~ *,
     .filters--3up .filters__inputs > .input:nth-child(3n + 1):nth-last-child(-n + 3) ~ * {
       margin-bottom: 0; }
-    .filters--4up .filters__inputs > .select-filter, .filters--4up .filters__inputs > .keyword-filter, .filters--4up .filters__inputs > .date-filter, .filters--4up .filters__inputs > .time-filter, .filters--4up .filters__inputs > .input {
+    .filters--4up .filters__inputs > .select-filter, .filters--4up .filters__inputs > .keyword-filter, .filters--4up .filters__inputs > .js-form-type-entity-autocomplete, .filters--4up .filters__inputs > .date-filter, .filters--4up .filters__inputs > .time-filter, .filters--4up .filters__inputs > .input {
       width: 21.73913%; }
-      .filters--4up .filters__inputs > .select-filter, .filters--4up .filters__inputs > .keyword-filter, .filters--4up .filters__inputs > .date-filter, .filters--4up .filters__inputs > .time-filter, .filters--4up .filters__inputs > .input, .filters--4up .filters__inputs > .select-filter:nth-child(3n), .filters--4up .filters__inputs > .keyword-filter:nth-child(3n), .filters--4up .filters__inputs > .date-filter:nth-child(3n), .filters--4up .filters__inputs > .time-filter:nth-child(3n), .filters--4up .filters__inputs > .input:nth-child(3n) {
+      .filters--4up .filters__inputs > .select-filter, .filters--4up .filters__inputs > .keyword-filter, .filters--4up .filters__inputs > .js-form-type-entity-autocomplete, .filters--4up .filters__inputs > .date-filter, .filters--4up .filters__inputs > .time-filter, .filters--4up .filters__inputs > .input, .filters--4up .filters__inputs > .select-filter:nth-child(3n), .filters--4up .filters__inputs > .keyword-filter:nth-child(3n), .filters--4up .filters__inputs > .js-form-type-entity-autocomplete:nth-child(3n), .filters--4up .filters__inputs > .date-filter:nth-child(3n), .filters--4up .filters__inputs > .time-filter:nth-child(3n), .filters--4up .filters__inputs > .input:nth-child(3n) {
         margin-right: 4.34783%; }
-      .filters--4up .filters__inputs > .select-filter:nth-child(4n), .filters--4up .filters__inputs > .keyword-filter:nth-child(4n), .filters--4up .filters__inputs > .date-filter:nth-child(4n), .filters--4up .filters__inputs > .time-filter:nth-child(4n), .filters--4up .filters__inputs > .input:nth-child(4n) {
+      .filters--4up .filters__inputs > .select-filter:nth-child(4n), .filters--4up .filters__inputs > .keyword-filter:nth-child(4n), .filters--4up .filters__inputs > .js-form-type-entity-autocomplete:nth-child(4n), .filters--4up .filters__inputs > .date-filter:nth-child(4n), .filters--4up .filters__inputs > .time-filter:nth-child(4n), .filters--4up .filters__inputs > .input:nth-child(4n) {
         margin-right: 0; }
-      .filters--4up .filters__inputs > .select-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .keyword-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .date-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .time-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .input:nth-child(4n + 1):nth-last-child(-n + 4),
+      .filters--4up .filters__inputs > .select-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .keyword-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .js-form-type-entity-autocomplete:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .date-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .time-filter:nth-child(4n + 1):nth-last-child(-n + 4), .filters--4up .filters__inputs > .input:nth-child(4n + 1):nth-last-child(-n + 4),
       .filters--4up .filters__inputs > .select-filter:nth-child(4n + 1):nth-last-child(-n + 4) ~ *,
       .filters--4up .filters__inputs > .keyword-filter:nth-child(4n + 1):nth-last-child(-n + 4) ~ *,
+      .filters--4up .filters__inputs > .js-form-type-entity-autocomplete:nth-child(4n + 1):nth-last-child(-n + 4) ~ *,
       .filters--4up .filters__inputs > .date-filter:nth-child(4n + 1):nth-last-child(-n + 4) ~ *,
       .filters--4up .filters__inputs > .time-filter:nth-child(4n + 1):nth-last-child(-n + 4) ~ *,
       .filters--4up .filters__inputs > .input:nth-child(4n + 1):nth-last-child(-n + 4) ~ * {
         margin-bottom: 0; } }
 
-.radios__group .radios__radio-label, .select-filter__control .select-filter__label, .keyword-filter .keyword-filter__label, .date-filter .date-filter__label, .time-filter .time-filter__label, .input .input__label, .input-group .input__label {
+.radios__group .radios__radio-label, .select-filter__control .select-filter__label, .keyword-filter .keyword-filter__label, .js-form-type-entity-autocomplete .input__label, .date-filter .date-filter__label, .time-filter .time-filter__label, .input .input__label, .input-group .input__label {
   font-size: 0.65278rem;
   margin: 0; }
   @media (min-width: 48em) {
-    .radios__group .radios__radio-label, .select-filter__control .select-filter__label, .keyword-filter .keyword-filter__label, .date-filter .date-filter__label, .time-filter .time-filter__label, .input .input__label, .input-group .input__label {
+    .radios__group .radios__radio-label, .select-filter__control .select-filter__label, .keyword-filter .keyword-filter__label, .js-form-type-entity-autocomplete .input__label, .date-filter .date-filter__label, .time-filter .time-filter__label, .input .input__label, .input-group .input__label {
       font-size: 0.83333rem; } }
   @media (min-width: 62em) {
-    .radios__group .radios__radio-label, .select-filter__control .select-filter__label, .keyword-filter .keyword-filter__label, .date-filter .date-filter__label, .time-filter .time-filter__label, .input .input__label, .input-group .input__label {
+    .radios__group .radios__radio-label, .select-filter__control .select-filter__label, .keyword-filter .keyword-filter__label, .js-form-type-entity-autocomplete .input__label, .date-filter .date-filter__label, .time-filter .time-filter__label, .input .input__label, .input-group .input__label {
       font-size: 1rem; } }
 
 .select-filter__control, .keyword-filter__control {
@@ -75,6 +78,9 @@
       margin-bottom: 0.5rem; } }
 
 .filters__inputs {
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -85,6 +91,9 @@
           justify-content: flex-start; }
   .filters__inputs > .form-item {
     margin-right: 2em; }
+  .filters__inputs > .form-actions {
+    -ms-flex-preferred-size: 100%;
+        flex-basis: 100%; }
 
 .radios__group {
   display: -webkit-box;
@@ -98,6 +107,9 @@
       flex-wrap: wrap; }
   .radios__group .radios__radio-label:not(:last-child) {
     margin-right: 1em; }
+
+.select-filter .select-wrapper {
+  width: 100%; }
 
 .select-filter__control label + .select-filter__menu {
   margin-top: 16px; }

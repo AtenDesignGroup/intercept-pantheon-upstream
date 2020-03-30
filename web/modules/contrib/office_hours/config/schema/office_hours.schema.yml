@@ -33,22 +33,22 @@ field.formatter.settings.office_hours:
   type: mapping
   label: 'Office hours display format settings'
   mapping:
-    daysformat:
+    day_format:
       type: string
       label: 'Day notation'
-    time_type:
+    time_format:
       type: string
-      label: 'Time type'
+      label: 'Time notation'
     compress:
       type: boolean
       label: 'Compress all hours of a day into one set'
     grouped:
       type: boolean
       label: 'Group consecutive days with same hours into one set'
-    showclosed:
+    show_closed:
       type: string
       label: 'Number of days to show'
-    closedformat:
+    closed_format:
       type: string
       label: 'Empty days notation'
     separator:
@@ -89,6 +89,13 @@ field.formatter.settings.office_hours:
     office_hours_first_day:
       type: string
       label: 'First day of week'
+    schema:
+      type: mapping
+      label: 'Schema.org support'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Enable Schema.org openingHours support'
 
 field.formatter.settings.office_hours_status:
   type: mapping

@@ -69,6 +69,10 @@ function intercept_room_reservation_page_attachments(array &$attachments) {
       'Reservations may be made up to @limit days in advance', ['@limit' => $advanced_limit]);
   }
 
+  // Add customer barred message.
+  $reservation_barred_text = \Drupal::config('intercept_room_reservation.settings')->get('reservation_barred_text');
+  $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['reservation_barred_text'] = $reservation_barred_text['value'];
+
   // Add publicize field.
   $reservation_fields = Drupal::service('entity_field.manager')->getFieldDefinitions('room_reservation', 'room_reservation');
   if (array_key_exists('field_publicize', $reservation_fields)) {
@@ -78,63 +82,50 @@ function intercept_room_reservation_page_attachments(array &$attachments) {
 
   // Add default location.
   $current_user = \Drupal::currentUser();
-  $user = User::load($current_user->id());
   $default_locations = [];
-  if ($reservations = \Drupal::service('intercept_core.reservation.manager')->getReservationsByUser('room', $user)) {
-    if (!empty($reservations)) {
-      $last_reservation = reset($reservations);
-      // First, look for the last room reservation made.
-      if ($last_reservation = reset($reservations)) {
-        $last_room = $last_reservation->field_room->entity;
-        $last_location = $last_room->field_location->entity;
-
-        if (!empty($last_location)) {
-          $default_locations = [$last_location->uuid()];
-        }
-      }
-    }
-  }
-  else {
-    // If no reservation, get the preferred locations.
+  $customer_barred = false;
+  if ($current_user->isAuthenticated()) {
+    $user = User::load($current_user->id());
     $customer = \Drupal::service('entity_type.manager')
       ->getStorage('profile')
       ->loadByProperties([
         'type' => 'customer',
         'uid' => $current_user->id(),
       ]);
-
     if (!empty($customer)) {
       $customer = reset($customer);
-      foreach ($customer->get('field_preferred_location')->referencedEntities() as $location) {
-        if ($location->field_branch_location->value) {
-          $default_locations[] = $location->uuid();
+      // See if the customer is allowed to make reservations or is barred.
+      $customer_barred = $customer->get('field_room_reservation_barred')->getString();
+      $customer_barred = ($customer_barred === '1') ? true : false;
+    }
+
+    if ($reservations = \Drupal::service('intercept_core.reservation.manager')->getReservationsByUser('room', $user)) {
+      if (!empty($reservations)) {
+        $last_reservation = reset($reservations);
+        // First, look for the last room reservation made.
+        if ($last_reservation = reset($reservations)) {
+          $last_room = $last_reservation->field_room->entity;
+          $last_location = $last_room->field_location->entity;
+
+          if (!empty($last_location)) {
+            $default_locations = [$last_location->uuid()];
+          }
+        }
+      }
+    }
+    else {
+      // If no reservation, get the preferred locations.
+      if (!empty($customer)) {
+        foreach ($customer->get('field_preferred_location')->referencedEntities() as $location) {
+          if ($location->field_branch_location->value) {
+            $default_locations[] = $location->uuid();
+          }
         }
       }
     }
   }
+  $attachments['#attached']['drupalSettings']['intercept']['user']['barred'] = $customer_barred;
   $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['default_locations'] = $default_locations;
-}
-
-/**
- * Implements hook_ENTITY_TYPE_presave().
- */
-function intercept_room_reservation_room_reservation_presave(RoomReservationInterface $entity) {
-  if ($entity->statusHasChanged()) {
-    \Drupal::service('intercept_core.reservation.manager')->notifyStatusChange($entity, $entity->getOriginalStatus(), $entity->getNewStatus());
-  }
-  if ($entity->isNew()) {
-    // If they've signed the agreement, remove it from their session.
-    if (\Drupal::service('current_user')->isAnonymous()) {
-      return;
-    }
-    $temp_store = \Drupal::service('user.private_tempstore')->get('reservation_agreement');
-    if ($temp_store->get('room')) {
-      $temp_store->delete('room');
-      if ($entity->hasField('field_agreement')) {
-        $entity->field_agreement->setValue(1);
-      }
-    }
-  }
 }
 
 /**
@@ -250,7 +241,7 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     }
 
     // Start building out our new form element.
-    $location_field = 'title';
+    $location_field = 'location';
     $form[$location_field]['#type'] = 'select';
     $form[$location_field]['#multiple'] = FALSE;
 
@@ -455,6 +446,20 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
           }
         }
       }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function intercept_room_reservation_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'intercept_room_reservations' && $display_id == 'embed') {
+    $exposed_input = $view->getExposedInput();
+    if (!isset($exposed_input['date--start'])) {
+      $date = new DateTime('now');
+      $exposed_date['date--start'] = $date->format('m/d/Y');
+      $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
   }
 }

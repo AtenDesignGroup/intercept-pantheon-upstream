@@ -1,0 +1,30 @@
+views.field.event_evaluation_criteria_count:
+  type: views.field.numeric
+  label: 'Event evaluation criteria count'
+
+views.field.event_evaluation_negative_count:
+  type: views.field.numeric
+  label: 'Event evaluation negative count'
+
+views.field.event_evaluation_positive_count:
+  type: views.field.numeric
+  label: 'Event evaluation positive count'
+
+views.field.event_attendance_count:
+  type: views.field.numeric
+  label: 'Event attendance count'
+
+views.field.event_registration_count:
+  type: views.field.numeric
+  label: 'Event registration count'
+
+views.relationship.vote_relationship:
+  type: views_relationship
+  label: 'Display options for vote relationship'
+  mapping:
+    vote:
+      type: string
+      label: 'The vote'
+    user_scope:
+      type: string
+      label: 'The user scope'

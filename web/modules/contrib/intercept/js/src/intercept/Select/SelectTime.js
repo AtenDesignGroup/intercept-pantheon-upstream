@@ -228,7 +228,7 @@ class SelectTime extends React.Component {
           <Autocomplete
             className="select-filter__menu"
             defaultValue={value === null || !value ? '' : options.filter(option => option.key === value).shift()}
-            getOptionLabel={option => option.value}
+            getOptionLabel={option => option.value || ''}
             options={options}
             onChange={this.handleChange}
             onClose={() => this.setState({ autocompleteIsOpen: false })}

@@ -38,3 +38,10 @@ $messages: (
     color: $white;
   }
 }
+
+// Webform override messages info icon
+.webform-message {
+  .messages.messages--info {
+    background-image: none;
+  }
+}

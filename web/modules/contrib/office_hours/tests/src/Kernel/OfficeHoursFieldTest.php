@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\office_hours\Kernel;
 
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\entity_test\Entity\EntityTest;
@@ -57,6 +58,14 @@ class OfficeHoursFieldTest extends FieldKernelTestBase {
       'settings' => [],
     ]);
     $this->field->save();
+
+    $entity_display = EntityViewDisplay::create([
+      'targetEntityType' => $this->field->getTargetEntityTypeId(),
+      'bundle' => $this->field->getTargetBundle(),
+      'mode' => 'default',
+    ]);
+    $entity_display->setComponent('field_office_hours', ['type' => 'office_hours']);
+    $entity_display->save();
   }
 
   /**
@@ -67,13 +76,13 @@ class OfficeHoursFieldTest extends FieldKernelTestBase {
     $this->fieldStorage->save();
 
     // Verify entity creation.
+    /** @var \Drupal\entity_test\Entity\EntityTest $entity */
     $entity = EntityTest::create();
     $office_hours = [
       'day' => 1,
       'starthours' => 630,
       'endhours' => 2200,
     ];
-    /** @var $entity EntityTest*/
     $entity->set('field_office_hours', $office_hours);
     $entity->setName($this->randomMachineName());
     $this->entityValidateAndSave($entity);
@@ -81,8 +90,8 @@ class OfficeHoursFieldTest extends FieldKernelTestBase {
     // Verify entity has been created properly.
     $id = $entity->id();
     $entity = EntityTest::load($id);
-    $this->assertTrue($entity->field_office_hours instanceof FieldItemListInterface, 'Field implements interface.');
-    $this->assertTrue($entity->field_office_hours[0] instanceof FieldItemInterface, 'Field item implements interface.');
+    $this->assertInstanceOf(FieldItemListInterface::class, $entity->get('field_office_hours'));
+    $this->assertInstanceOf(FieldItemInterface::class, $entity->get('field_office_hours')->first());
   }
 
 }

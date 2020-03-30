@@ -3,9 +3,11 @@
 namespace Drupal\intercept_event;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -31,6 +33,12 @@ class EventEvaluationManager {
 
   const FIELD_NAME_NEGATIVE = 'field_evaluation_criteria_neg';
 
+  /**
+   * The class resolver.
+   *
+   * @var \Drupal\Core\DependencyInjection\ClassResolverInterface
+   */
+  protected $classResolver;
 
   /**
    * The current user.
@@ -54,6 +62,13 @@ class EventEvaluationManager {
   protected $entityTypeManager;
 
   /**
+   * The form builder.
+   *
+   * @var \Drupal\Core\Form\FormBuilderInterface
+   */
+  protected $formBuilder;
+
+  /**
    * The votingapi vote storage manager.
    *
    * @var \Drupal\votingapi\VoteStorageInterface
@@ -62,10 +77,21 @@ class EventEvaluationManager {
 
   /**
    * Constructs a new EventEvaluationManager object.
+   *
+   * @param \Drupal\Core\DependencyInjection\ClassResolverInterface $class_resolver
+   *   The class resolver.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current user.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The currently active request object.
    */
-  public function __construct(AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(ClassResolverInterface $class_resolver, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, FormBuilderInterface $form_builder) {
+    $this->classResolver = $class_resolver;
     $this->currentUser = $current_user;
     $this->entityTypeManager = $entity_type_manager;
+    $this->formBuilder = $form_builder;
     $this->voteStorage = $this->entityTypeManager->getStorage('vote');
   }
 
@@ -329,10 +355,10 @@ class EventEvaluationManager {
    */
   public function getAttendeeForm(EntityInterface $entity) {
     $class = EventEvaluationAttendeeForm::class;
-    $form_arg = \Drupal::service('class_resolver')->getInstanceFromDefinition($class)
+    $form_arg = $this->classResolver->getInstanceFromDefinition($class)
       ->setEntity($entity);
     $form_state = new FormState();
-    return \Drupal::service('form_builder')
+    return $this->formBuilder
       ->buildForm($form_arg, $form_state);
   }
 
@@ -347,10 +373,10 @@ class EventEvaluationManager {
    */
   public function getStaffForm(EntityInterface $entity) {
     $class = EventEvaluationStaffForm::class;
-    $form_arg = \Drupal::service('class_resolver')->getInstanceFromDefinition($class)
+    $form_arg = $this->classResolver->getInstanceFromDefinition($class)
       ->setEntity($entity);
     $form_state = new FormState();
-    return \Drupal::service('form_builder')
+    return $this->formBuilder
       ->buildForm($form_arg, $form_state);
   }
 

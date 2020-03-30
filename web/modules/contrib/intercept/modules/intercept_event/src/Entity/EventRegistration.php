@@ -12,6 +12,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Field\Computed\MethodItemList;
+use Drupal\intercept_core\Event\EntityStatusChangeEvent;
 use Drupal\user\UserInterface;
 
 /**
@@ -43,6 +44,10 @@ use Drupal\user\UserInterface;
  *   },
  *   base_table = "event_registration",
  *   admin_permission = "administer event registration entities",
+ *   constraints = {
+ *     "RegistrationLimit" = {},
+ *     "RegistrationAllowed" = {},
+ *   },
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
@@ -100,6 +105,40 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
    */
   public function total() {
     return $this->get('field_registrants')->getTotal();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRegistrant() {
+    return $this->get('field_user') ? $this->get('field_user')->entity : $this->getOwner();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOriginalStatus() {
+    if ($this->isNew()) {
+      return 'empty';
+    }
+    return isset($this->original) ? $this->original->get('status')->value : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getStatus() {
+    return $this->get('status')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function statusHasChanged() {
+    if ($this->isNew()) {
+      return TRUE;
+    }
+    return $this->getOriginalStatus() != $this->getStatus();
   }
 
   /**
@@ -197,9 +236,10 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
 
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Status'))
-      ->setDescription(new TranslatableMarkup('A boolean indicating whether the Event Registration is published.'))
+      ->setDescription(new TranslatableMarkup('The event registration status.'))
       ->setDefaultValue('active')
       ->setCardinality(1)
+      ->setRequired(TRUE)
       ->setSetting('allowed_values', [
         'canceled' => 'Canceled',
         'active' => 'Active',
@@ -242,16 +282,18 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
   /**
    * {@inheritdoc}
    */
-  public function preSave(EntityStorageInterface $storage) {
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     // Make sure that the EventRegistrationField refreshes.
     self::invalidateEventCacheTag($this);
-    parent::preSave($storage);
-  }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    if ($this->statusHasChanged()) {
+      $status_event = new EntityStatusChangeEvent($this, $this->getOriginalStatus(), $this->getStatus());
+
+      // Get the event_dispatcher service and dispatch the event.
+      $event_dispatcher = \Drupal::service('event_dispatcher');
+      $event_dispatcher->dispatch(EntityStatusChangeEvent::CHANGE, $status_event);
+    }
+
     if ($this->get('status')->value == 'canceled') {
       \Drupal::service('intercept_event.manager')->fillEventOpenCapacity($this->get('field_event')->entity);
     }

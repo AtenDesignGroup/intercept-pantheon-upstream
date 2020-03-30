@@ -14,6 +14,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  */
 function intercept_event_views_data_alter(&$data) {
   $data['users_field_data']['uid_current'] = [
+    'group' => new TranslatableMarkup('Intercept'),
     'real field' => 'uid',
     'title' => new TranslatableMarkup('Intercept Current'),
     'help' => new TranslatableMarkup('Filter the view to the currently logged in user but avoid an INNER join.'),
@@ -24,6 +25,7 @@ function intercept_event_views_data_alter(&$data) {
   ];
 
   $data['node_field_data']['event_attendance_count'] = [
+    'group' => new TranslatableMarkup('Intercept'),
     'title' => new TranslatableMarkup('Event attendance count'),
     'help' => new TranslatableMarkup('The number of attendees for an event.'),
     'field' => [
@@ -60,6 +62,7 @@ function intercept_event_views_data_alter(&$data) {
   }
 
   $data['node_field_data']['event_registration_count'] = [
+    'group' => new TranslatableMarkup('Intercept'),
     'title' => new TranslatableMarkup('Event registration count'),
     'help' => new TranslatableMarkup('The number of registrations for an event.'),
     'field' => [
@@ -67,6 +70,33 @@ function intercept_event_views_data_alter(&$data) {
     ],
     'sort' => [
       'id' => 'event_count_numeric', // Points to custom Numeric.php sort handler.
+    ],
+  ];
+
+  $data['node_field_data']['event_evaluation_positive_count'] = [
+    'group' => new TranslatableMarkup('Intercept'),
+    'title' => new TranslatableMarkup('Event evaluation positive count'),
+    'help' => new TranslatableMarkup('The number of positive customer evaluations for an event.'),
+    'field' => [
+      'id' => 'event_evaluation_positive_count',
+    ],
+  ];
+
+  $data['node_field_data']['event_evaluation_negative_count'] = [
+    'group' => new TranslatableMarkup('Intercept'),
+    'title' => new TranslatableMarkup('Event evaluation negative count'),
+    'help' => new TranslatableMarkup('The number of negative customer evaluations for an event.'),
+    'field' => [
+      'id' => 'event_evaluation_negative_count',
+    ],
+  ];
+
+  $data['node_field_data']['event_evaluation_criteria_count'] = [
+    'group' => new TranslatableMarkup('Intercept'),
+    'title' => new TranslatableMarkup('Event evaluation criteria count'),
+    'help' => new TranslatableMarkup('The number of times customers used a given "evaluation criteria" term in relation to an event.'),
+    'field' => [
+      'id' => 'event_evaluation_criteria_count',
     ],
   ];
 

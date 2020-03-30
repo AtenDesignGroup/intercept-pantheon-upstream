@@ -186,10 +186,10 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
   public function setRevisionUserId($uid);
 
   /**
-   * Get the user the registration is for.
+   * Get the user the reservation is for.
    *
    * @return \Drupal\Core\Session\AccountInterface|bool
-   *   The current session user, or FALSE.
+   *   The registration user entity, or FALSE.
    */
   public function getRegistrant();
 

@@ -37,9 +37,9 @@ class EntityStatus extends React.PureComponent {
     if (state.error) {
       // Default to the passed in error messages.
       let errors = messages.error[status];
-      // If the entity itself has an errors in the response, show the error details instead.
+      // If the entity itself has an error in the response, show the error details instead.
       if (Array.isArray(state.error)) {
-        errors = state.error.map(err => err.detail).join(', ');
+        errors = state.error.map(err => err.detail.replace('Entity is not valid: ', '')).join(', ');
       }
       message = errors;
       return message;

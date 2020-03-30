@@ -6,9 +6,26 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_help().
+ */
+function intercept_core_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the intercept_core module.
+    case 'help.page.intercept_core':
+      $output = '';
+      $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
+      $output .= '<p>' . new TranslatableMarkup('Provides core functionality for the Intercept library') . '</p>';
+      return $output;
+
+    default:
+  }
+}
 
 /**
  * Implements hook_page_attachments().
@@ -25,7 +42,7 @@ function intercept_core_page_attachments(array &$attachments) {
   // Add user info to drupalSettings.
   $current_user = \Drupal::currentUser();
   $user = User::load($current_user->id());
-  $user_timezone = new \DateTimeZone(drupal_get_user_timezone());
+  $user_timezone = new \DateTimeZone(date_default_timezone_get());
   $utc = new \DateTime('UTC');
   $user_utc_offset = $user_timezone->getOffset($utc) / 3600;
   $attachments['#attached']['drupalSettings']['intercept']['user'] = [
@@ -33,7 +50,7 @@ function intercept_core_page_attachments(array &$attachments) {
     'uuid' => $user->uuid(),
     'name' => $user->full_name,
     'roles' => $current_user->getRoles(),
-    'timezone' => drupal_get_user_timezone(),
+    'timezone' => date_default_timezone_get(),
     'utc_offset' => $user_utc_offset,
   ];
   $authmap = \Drupal::service('externalauth.authmap');
@@ -96,7 +113,7 @@ function intercept_core_entity_type_build(array &$entity_types) {
 function intercept_core_menu_links_discovered_alter(&$links) {
   // Change the title of the default user view menu link.
   if (isset($links['user.page'])) {
-    $links['user.page']['title'] = new TranslatableMarkup('Dashboard');
+    $links['user.page']['title'] = new TranslatableMarkup('Account Summary');
   }
 }
 

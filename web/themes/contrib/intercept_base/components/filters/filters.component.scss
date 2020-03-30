@@ -76,12 +76,17 @@
 }
 
 .filters__inputs {
+  align-items: flex-end;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
 
   > .form-item {
     margin-right: 2em;
+  }
+
+  > .form-actions {
+    flex-basis: 100%;
   }
 }
 
@@ -101,6 +106,10 @@
 
 .select-filter {
   @extend %filter;
+
+  .select-wrapper {
+    width: 100%;
+  }
 }
 
 .select-filter__control {
@@ -156,6 +165,14 @@
 
   input {
     line-height: 1;
+  }
+}
+
+.js-form-type-entity-autocomplete {
+  @extend %filter;
+
+  .input__label {
+    @extend %filter__label;
   }
 }
 

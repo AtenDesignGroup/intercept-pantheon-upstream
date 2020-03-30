@@ -16,14 +16,10 @@ translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:user'
+  handler: views
   handler_settings:
-    include_anonymous: false
-    filter:
-      type: _none
-    target_bundles: null
-    sort:
-      field: name
-      direction: ASC
-    auto_create: false
+    view:
+      view_name: intercept_users
+      display_name: entity_reference
+      arguments: {  }
 field_type: entity_reference

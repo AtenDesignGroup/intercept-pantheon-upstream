@@ -187,12 +187,12 @@ class ReserveRoomStep2 extends React.Component {
       hours,
       room,
       userStatus,
-      dateLimits
+      dateLimits,
     } = this.props;
 
     const {
       maxDate,
-      minDate
+      minDate,
     } = dateLimits;
 
     const isClosed = !hours || get(availability, `rooms.${room}.is_closed`);
@@ -204,9 +204,14 @@ class ReserveRoomStep2 extends React.Component {
       }
       : this.getHours();
 
-      // Hide this step if the reservation status has not been checked or
-    // the user has exceeded their limit.
-    if (!userStatus.initialized || userStatus.loading || userStatus.exceededLimit) {
+      // Hide this step if:
+      // - the reservation status has not been checked
+      // - the user has exceeded their limit
+      // - the user has been blocked/barred
+
+    if (!userStatus.initialized || userStatus.loading ||
+        userStatus.exceededLimit ||
+        window.drupalSettings.intercept.user.barred) {
       return null;
     }
 
@@ -264,7 +269,6 @@ class ReserveRoomStep2 extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-
   const hours =
     ownProps.formValues.date && ownProps.room
       ? // Open hours for current day.

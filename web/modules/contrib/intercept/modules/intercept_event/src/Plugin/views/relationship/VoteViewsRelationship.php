@@ -178,8 +178,8 @@ to limit the results to specifically unflagged content</a>.', ['@unflagged-url' 
   /**
    * Get the flag of the relationship.
    *
-   * @return \Drupal\flag\FlagInterface|null
-   *   The flag being selected by in the view.
+   * @return \Drupal\votingapi\VoteInterface|null
+   *   The vote being selected by in the view.
    */
   public function getVote() {
     $vote = $this->voteTypeStorage->load($this->options['vote']);

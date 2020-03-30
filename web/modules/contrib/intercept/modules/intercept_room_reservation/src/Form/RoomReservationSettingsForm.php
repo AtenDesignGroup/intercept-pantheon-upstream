@@ -121,6 +121,13 @@ class RoomReservationSettingsForm extends ConfigFormBase {
       '#format' => $this->getTextFormat('reservation_limit_text', 'format'),
     ];
 
+    $form['reservation_barred_text'] = [
+      '#title' => $this->t('Room reservation barred user message'),
+      '#type' => 'text_format',
+      '#default_value' => $this->getTextFormat('reservation_barred_text', 'value'),
+      '#format' => $this->getTextFormat('reservation_barred_text', 'format'),
+    ];
+
     $form['advanced_reservation_limit'] = [
       '#title' => $this->t('Advanced room reservation limit'),
       '#type' => 'number',
@@ -134,7 +141,7 @@ class RoomReservationSettingsForm extends ConfigFormBase {
     ];
 
     $form['advanced_reservation_limit_text'] = [
-      '#title' => $this->t('Room reservation limit user message'),
+      '#title' => $this->t('Room reservation advanced limit user message'),
       '#type' => 'text_format',
       '#default_value' => $this->getTextFormat('advanced_reservation_limit_text', 'value'),
       '#format' => $this->getTextFormat('advanced_reservation_limit_text', 'format'),

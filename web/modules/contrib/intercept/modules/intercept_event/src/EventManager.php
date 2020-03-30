@@ -49,10 +49,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Deletes an event register alias.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The Event node.
+   * {@inheritdoc}
    */
   public function deleteRegisterAlias(NodeInterface $node) {
     $storage = \Drupal::service('path.alias_storage');
@@ -65,12 +62,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Adds an event register alias.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The Event node.
-   * @param string $alias
-   *   The register alias.
+   * {@inheritdoc}
    */
   public function addRegisterAlias(NodeInterface $node, $alias = NULL) {
     $alias = $alias ?: $node->path->alias;
@@ -111,13 +103,23 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * View a node cloned from a template.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The Event Node.
-   *
-   * @return array
-   *   The Event Node render array.
+   * A list of emails to use for registration notifications.
+   */
+  public static function emails() {
+    $emails = [
+      'registration_active' => new TranslatableMarkup('Registration active'),
+      'registration_canceled' => new TranslatableMarkup('Registration canceled'),
+      'registration_waitlisted' => new TranslatableMarkup('Registration waitlisted'),
+      'registration_unwaitlisted' => new TranslatableMarkup('Registration unwaitlisted'),
+    ];
+
+    \Drupal::moduleHandler()->alter('intercept_registration_emails', $emails);
+
+    return $emails;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function previewFromTemplate(NodeInterface $node) {
     $new_node = $this->cloneify($node);
@@ -130,13 +132,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Edit a node cloned from a template.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The Event Node.
-   *
-   * @return mixed
-   *   The Event edit form.
+   * {@inheritdoc}
    */
   public function addFromTemplate(NodeInterface $node) {
     $form = \Drupal::service('entity.form_builder')->getForm($this->cloneify($node));
@@ -258,13 +254,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Loads a Node entity by ID or UUID.
-   *
-   * @param int $id
-   *   The node ID or UUID.
-   *
-   * @return \Drupal\node\NodeInterface
-   *   The loaded Node.
+   * {@inheritdoc}
    */
   public function load($id) {
     // First try to see if the id provided is a uuid.
@@ -275,12 +265,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Updates the attendance for an Event.
-   *
-   * @param \Drupal\user\UserInterface $user
-   *   Deprecated.  The user.
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The HTTP request.
+   * {@inheritdoc}
    */
   public function updateAttendance(UserInterface $user = NULL, Request $request) {
     $response = NULL;
@@ -303,12 +288,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Creates an attendee for an event.
-   *
-   * @param \Drupal\user\UserInterface $user
-   *   The user to create as an attendee.
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The HTTP request.
+   * {@inheritdoc}
    */
   public function createAttendee(UserInterface $user = NULL, Request $request) {
     $response = NULL;
@@ -371,13 +351,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Determines whether the event's start time is in the past.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   *
-   * @return bool
-   *   Whether the event has passed.
+   * {@inheritdoc}
    */
   public function isEventStarted(NodeInterface $node) {
     if ($node->bundle() !== 'event') {
@@ -392,13 +366,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Determines whether the event's registration end time is in the past.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   *
-   * @return bool
-   *   Whether the event has passed.
+   * {@inheritdoc}
    */
   public function isEventRegistrationEnded(NodeInterface $node) {
     if ($node->bundle() !== 'event') {
@@ -413,13 +381,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Determines whether the event node's waitlist option is enabled.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   *
-   * @return bool
-   *   Whether the event has a waitlist.
+   * {@inheritdoc}
    */
   public function allowsWaitlist(NodeInterface $node) {
     if ($node->bundle() !== 'event') {
@@ -430,15 +392,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Gets registrations for an event.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   * @param string $status
-   *   The status of the event registration.
-   *
-   * @return array
-   *   An array of waitlisted registration entities.
+   * {@inheritdoc}
    */
   public function getEventRegistrations(NodeInterface $node, $status = '') {
     if ($node->bundle() !== 'event') {
@@ -457,13 +411,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Gets the event's active registrants.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   *
-   * @return int
-   *   A whole number of attendees.
+   * {@inheritdoc}
    */
   public function getEventActiveRegistrants(NodeInterface $node) {
     if ($node->bundle() !== 'event') {
@@ -479,13 +427,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Gets the event's max capacity.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   *
-   * @return int
-   *   The max capacity of the event.
+   * {@inheritdoc}
    */
   public function getEventCapacity(NodeInterface $node) {
     if ($node->bundle() !== 'event') {
@@ -498,13 +440,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Gets the total number of attendees that can be added to an event.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   *
-   * @return int
-   *   A whole number of attendees.
+   * {@inheritdoc}
    */
   public function getEventOpenCapacity(NodeInterface $node) {
     if ($node->bundle() !== 'event') {
@@ -518,10 +454,7 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Gets the total number of attendees that can be added to an event.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
+   * {@inheritdoc}
    */
   public function fillEventOpenCapacity(NodeInterface $node) {
     if ($node->bundle() !== 'event') {
@@ -568,6 +501,20 @@ class EventManager implements EventManagerInterface {
     }
 
     return JsonResponse::create($data['response'], 200);
+  }
+
+  /**
+   * Gets the intercept_event email settings config.
+   *
+   * @param string $type
+   *   The key of the email settings config.
+   *
+   * @return array
+   *   The intercept_event email settings config.
+   */
+  protected function getEmailConfig($type) {
+    $config = $this->configFactory->get('intercept_event.settings')->get('email');
+    return !empty($config[$type]) ? $config[$type] : FALSE;
   }
 
 }

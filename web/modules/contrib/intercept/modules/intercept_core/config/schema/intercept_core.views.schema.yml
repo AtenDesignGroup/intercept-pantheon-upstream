@@ -1,0 +1,32 @@
+views.filter.intercept_entity_reference:
+  type: views.filter.many_to_one
+  label: 'Intercept entity reference'
+  mapping:
+    handler:
+      type: string
+      label: 'Selection handler'
+      nullable: false
+      translatable: false
+    widget:
+      type: string
+      label: 'Selection type'
+      nullable: false
+      translatable: false
+    list_max:
+      type: integer
+      label: 'Maximum entities in select list'
+      nullable: false
+      translatable: false
+    handler_settings:
+      type: entity_reference_selection.views
+      label: 'Selection handler settings'
+    handler_submit:
+      type: string
+      label: 'Change handler'
+    expose:
+      type: mapping
+      label: 'Exposed'
+      mapping:
+        placeholder:
+          type: label
+          label: 'Placeholder'

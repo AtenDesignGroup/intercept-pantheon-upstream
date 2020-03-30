@@ -24,6 +24,47 @@ class TallyDefaultWidget extends OptionsWidgetBase {
   /**
    * {@inheritdoc}
    */
+  public static function defaultSettings() {
+    return [
+      'placeholder' => '',
+    ] + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm(array $form, FormStateInterface $form_state) {
+    $element['placeholder'] = [
+      '#type' => 'textfield',
+      '#title' => t('Placeholder'),
+      '#default_value' => $this->getSetting('placeholder'),
+      '#description' => t('Text that will be shown inside the field until a value is entered. This hint is usually a sample value or a brief description of the expected format.'),
+    ];
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary() {
+    $summary = [];
+
+    $placeholder = $this->getSetting('placeholder');
+    // Copied from NumberWidget::settingsSummary but allows for a placeholder
+    // of "0".
+    if (isset($placeholder) && $placeholder != "") {
+      $summary[] = t('Placeholder: @placeholder', ['@placeholder' => $placeholder]);
+    }
+    else {
+      $summary[] = t('No placeholder');
+    }
+
+    return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function form(FieldItemListInterface $items, array &$form, FormStateInterface $form_state, $get_delta = NULL) {
     $field_name = $this->fieldDefinition->getName();
     $parents = $form['#parents'];
@@ -53,10 +94,13 @@ class TallyDefaultWidget extends OptionsWidgetBase {
     $element['count'] = [
       '#type' => 'number',
       '#default_value' => $item->count,
-      '#attributes' => [
-        'placeholder' => '0'
-      ],
     ];
+    $placeholder = $this->getSetting('placeholder');
+    if (isset($placeholder) && $placeholder != "") {
+      $element['count']['#attributes'] = [
+        'placeholder' => $placeholder,
+      ];
+    }
 
     $element['label'] = [
       '#type' => 'item',

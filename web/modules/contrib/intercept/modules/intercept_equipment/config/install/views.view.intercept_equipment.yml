@@ -9,9 +9,6 @@ dependencies:
     - node.type.equipment
     - system.menu.main
     - taxonomy.vocabulary.equipment_type
-    - user.role.intercept_equipment_reservation_manager
-    - user.role.intercept_staff
-    - user.role.intercept_system_admin
   module:
     - media
     - node
@@ -21,10 +18,9 @@ id: intercept_equipment
 label: 'Intercept Equipment'
 module: views
 description: 'Lists all pieces of equipment in the site.'
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -33,16 +29,9 @@ display:
     position: 0
     display_options:
       access:
-        type: role
+        type: perm
         options:
-          role:
-            administrator: administrator
-            intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
-            intercept_event_manager: intercept_event_manager
-            intercept_event_organizer: intercept_event_organizer
-            intercept_room_reservation_approver: intercept_room_reservation_approver
-            intercept_staff: intercept_staff
-            intercept_system_admin: intercept_system_admin
+          perm: 'create equipment_reservation'
       cache:
         type: tag
         options: {  }
@@ -299,6 +288,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         status:
           id: status
           table: node_field_data
@@ -322,6 +314,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -370,6 +364,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -418,6 +414,8 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -481,10 +479,11 @@ display:
         - url.query_args
         - user
         - 'user.node_grants:view'
-        - user.roles
+        - user.permissions
       tags:
         - 'config:field.storage.node.field_equipment_type'
         - 'config:field.storage.node.image_primary'
+        - extensions
   page:
     display_plugin: page
     id: page
@@ -502,6 +501,7 @@ display:
         weight: 0
         context: '0'
         menu_name: main
+        enabled: false
     cache_metadata:
       max-age: -1
       contexts:
@@ -511,7 +511,8 @@ display:
         - url.query_args
         - user
         - 'user.node_grants:view'
-        - user.roles
+        - user.permissions
       tags:
         - 'config:field.storage.node.field_equipment_type'
         - 'config:field.storage.node.image_primary'
+        - extensions

@@ -30,6 +30,38 @@ interface EventRegistrationInterface extends ContentEntityInterface, EntityChang
   public function total();
 
   /**
+   * Get the user the registration is for.
+   *
+   * @return \Drupal\user\UserInterface
+   *   The registration user entity.
+   */
+  public function getRegistrant();
+
+  /**
+   * Gets the original event registration status.
+   *
+   * @return string|bool
+   *   The original event registration status, or FALSE.
+   */
+  public function getOriginalStatus();
+
+  /**
+   * Gets the current event registration status.
+   *
+   * @return string
+   *   The current event registration status, or FALSE.
+   */
+  public function getStatus();
+
+  /**
+   * Whether the event registration status is changing on save.
+   *
+   * @return bool
+   *   Whether the event registration status is changing on save.
+   */
+  public function statusHasChanged();
+
+  /**
    * Gets the Event Registration creation timestamp.
    *
    * @return int

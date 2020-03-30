@@ -1,0 +1,65 @@
+intercept_room_reservation.settings:
+  type: config_object
+  label: 'Room Reservation settings'
+  mapping:
+    agreement_text:
+      type: text_format
+      label: 'Terms and conditions agreement'
+    reservation_limit:
+      type: string
+      label: 'Room reservation limit'
+    reservation_limit_text:
+      type: text_format
+      label: 'Room reservation limit user message'
+    advanced_reservation_limit:
+      type: 'string'
+      label: 'Advanced room reservation limit'
+    advanced_reservation_limit_text:
+      type: text_format
+      label: 'Room reservation advanced limit user message'
+    reservation_barred_text:
+      type: text_format
+      label: 'Room reservation barred user message'
+    email:
+      type: sequence
+      label: 'Emails'
+      sequence:
+        type: mapping
+        label: 'Email'
+        mapping:
+          subject:
+            type: string
+            label: 'Subject'
+          body:
+            type: string
+            label: 'Body'
+          status_original:
+            type: sequence
+            label: 'Original status'
+            sequence:
+              type: string
+          status_new:
+            type: sequence
+            label: 'New status'
+            sequence:
+              type: string
+          user:
+            type: string
+            label: User
+          user_role:
+            type: sequence
+            label: 'User Role'
+            sequence:
+              type: string
+
+action.configuration.room_reservation_approve:
+  type: action_configuration_default
+  label: 'Approve room reservation'
+
+action.configuration.room_reservation_cancel:
+  type: action_configuration_default
+  label: 'Cancel room reservation'
+
+action.configuration.room_reservation_deny:
+  type: action_configuration_default
+  label: 'Deny room reservation'

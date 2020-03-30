@@ -3,6 +3,7 @@
 namespace Drupal\intercept_room_reservation\Plugin\Validation\Constraint;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\intercept_core\ReservationManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -21,20 +22,33 @@ class NonOverlappingReservationConstraintValidator extends ConstraintValidator i
   protected $reservationManager;
 
   /**
-   * Constructs a new NonOverlappingReservationConstraintValidator.
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $currentUser;
+
+  /**
+   * Constructs a new ReservationLimitConstraintValidator.
    *
    * @param \Drupal\intercept_core\ReservationManagerInterface $reservation_manager
    *   The Intercept reservation manager.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current user.
    */
-  public function __construct(ReservationManagerInterface $reservation_manager) {
+  public function __construct(ReservationManagerInterface $reservation_manager, AccountProxyInterface $current_user) {
     $this->reservationManager = $reservation_manager;
+    $this->currentUser = $current_user;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('intercept_core.reservation.manager'));
+    return new static(
+      $container->get('intercept_core.reservation.manager'),
+      $container->get('current_user')
+    );
   }
 
   /**
@@ -45,8 +59,7 @@ class NonOverlappingReservationConstraintValidator extends ConstraintValidator i
       return;
     }
 
-    $current_user = \Drupal::currentUser();
-    if ($current_user->hasPermission('bypass room reservation overlap constraints') && !$entity->__get('warning')) {
+    if ($this->currentUser->hasPermission('bypass room reservation overlap constraints') && !$entity->__get('warning')) {
       return;
     }
 

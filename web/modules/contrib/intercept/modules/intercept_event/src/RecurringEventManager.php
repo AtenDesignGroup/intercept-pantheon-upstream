@@ -94,7 +94,7 @@ class RecurringEventManager {
    * Gets the event recurrence if this event is a base event.
    */
   public function getBaseEventRecurrence(NodeInterface $node) {
-    $storage = \Drupal::service('entity_type.manager')->getStorage('event_recurrence');
+    $storage = $this->entityTypeManager->getStorage('event_recurrence');
     $recurrences = $storage->loadByProperties([
       'event' => $node->id(),
     ]);
@@ -116,7 +116,7 @@ class RecurringEventManager {
 
     $recurrence = NULL;
     if (!$node->isNew()) {
-      $storage = \Drupal::service('entity_type.manager')->getStorage('event_recurrence');
+      $storage = $this->entityTypeManager->getStorage('event_recurrence');
       $recurrences = $storage->loadByProperties([
         'event' => $node->id(),
       ]);
@@ -353,8 +353,8 @@ class RecurringEventManager {
       $this->eventRecurrenceBaseForm($form, $form_state, $node);
     }
 
-    $form['#validate'][] = [static::class, 'nodeFormValidate'];
-    $form['actions']['submit']['#submit'][] = [static::class, 'nodeFormSubmit'];
+    $form['#validate'][] = [$this, 'nodeFormValidate'];
+    $form['actions']['submit']['#submit'][] = [$this, 'nodeFormSubmit'];
   }
 
   /**
@@ -365,7 +365,7 @@ class RecurringEventManager {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public static function nodeFormValidate(array &$form, FormStateInterface $form_state) {
+  public function nodeFormValidate(array &$form, FormStateInterface $form_state) {
     $recurring = $form_state->getValue('recurring_event');
     if (!empty($recurring['enabled']) && empty($recurring['end']['count']) && empty($recurring['end']['until'])) {
       $message = new TranslatableMarkup('Enabling recurring events requires either an end date, or a total repeat count.');
@@ -381,7 +381,7 @@ class RecurringEventManager {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public static function nodeFormSubmit(array &$form, FormStateInterface $form_state) {
+  public function nodeFormSubmit(array &$form, FormStateInterface $form_state) {
     $recurring = $form_state->getValue('recurring_event');
     $recurrence = $form_state->getValue('event_recurrence');
 

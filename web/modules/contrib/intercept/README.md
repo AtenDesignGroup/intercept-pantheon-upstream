@@ -1,19 +1,21 @@
-# Intercept
+CONTENTS OF THIS FILE
+---------------------
 
-## Table of Contents
+ * Introduction
+ * Requirements
+ * Recommended Modules
+ * Development
+ * Installation
+ * Events
+ * API Methods Included in Intercept
+ * Intercept Event and Room Field Names
+ * Finding UUIDs for Use in Queries
+ * RSS Feeds for Digital Signage
+ * Maintainers
 
-* Introduction
-* Requirements
-* Recommended Modules & Themes
-* Installation
-* Development
-* Events
-* API Methods Included in Intercept
-* Finding UUIDs for Use in Queries
-* RSS Feeds for Digital Signage
-* Maintainers
 
-## Introduction
+INTRODUCTION
+------------
 
 Intercept is an event management system designed to help libraries and other
 organizations evolve and track their event programming.
@@ -31,7 +33,9 @@ https://www.drupal.org/project/intercept
 To submit bug reports and feature suggestions, or track changes:<br>
 https://www.drupal.org/project/issues/intercept
 
-## Requirements
+
+REQUIREMENTS
+------------
 
 Intercept Core requires the following contributed modules:
 
@@ -46,7 +50,9 @@ Intercept Core requires the following contributed modules:
 Some of the included modules have their own dependencies which should be
 installed automatically as you enable them.
 
-## Recommended Modules & Themes
+
+RECOMMENDED MODULES
+-------------------
 
   * Intercept Base Theme (https://www.drupal.org/project/intercept_base):<br>
   This theme is custom-built to be the customer-facing theme.
@@ -55,11 +61,9 @@ installed automatically as you enable them.
   * Polaris (https://www.drupal.org/project/polaris):<br>
   This plugin module can be used by libraries that utilize the Polaris ILS.
 
-## Installation
-Follow the installation guide here:<br>
-https://www.drupal.org/docs/8/modules/intercept/installation-guide
 
-## Development
+DEVELOPMENT
+-----------
 
 ### JavaScript
 This module and its submodules consist of many React applications that share a dependency on a common interceptClient Library.
@@ -70,7 +74,8 @@ It is highly recommended that you install the [React Dev Tools](https://chrome.g
 #### interceptClient
 interceptClient provides a shared Redux store, Reselect selectors and Drupal JsonAPI integrations to help fetching and manipulating Drupal content as well as many other utility functions that help making interacting with Intercept a little easier.
 
-### Installation
+INSTALLATION
+------------
 `npm install`
 
 ### Development Build
@@ -85,7 +90,15 @@ When the build is complete, a visual representation of the Webpack bundle will l
 
 *The production build should be committed to the repository. Currently this is a manual process.*
 
-## Events
+
+CONFIGURATION
+-------------
+
+See https://www.libraryintercept.com/how/
+
+
+EVENTS
+------
 
 ### Event status logic
 * default status: open
@@ -100,7 +113,10 @@ When the build is complete, a visual representation of the Webpack bundle will l
 * check if reg start date has not happened, if true return 'open_pending'
 * return default status
 
-## API Methods Included in Intercept
+
+API METHODS INCLUDED IN INTERCEPT
+---------------------------------
+
 If you're planning to use Intercept to drive data to another source such as
 digital signage, you may want to utilize the API endpoints/methods that are
 included as part of Intercept. Although all of the endpoints are documented
@@ -1293,7 +1309,10 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter[status][valu
 }
 ```
 
-## Intercept Event and Room Field Names
+
+INTERCEPT EVENT AND ROOM FIELD NAMES
+------------------------------------
+
 Since querying for Events and Rooms is a common practice with Intercept using
 JSON API-style query endpoints, a list of field names that can be used in your
 queries are included here. For latest list of fields, you can always check that
@@ -1344,7 +1363,8 @@ at Manage > Structure > Content Types > Manage Fields.
   * `field_text_teaser`
 
 
-## Finding UUIDs for Use in Queries
+FINDING UUIDS FOR USE IN QUERIES
+--------------------------------
 If you find yourself writing a query such as the example queries above, you
 may find that you need to know the UUID (or universally unique identifier) for
 a particular piece of content on your Intercept site. There are a few different
@@ -1359,7 +1379,10 @@ LEFT JOIN node_field_data AS nfd
 ON n.nid = nfd.nid
 WHERE nfd.title = 'Library Staff Conference Room';`
 
-## RSS Feeds for Digital Signage
+
+RSS FEEDS FOR DIGITAL SIGNAGE
+-----------------------------
+
 If your library is planning to display events and room reservations on digital signage, a few dynamic RSS feeds are provided out-of-the-box with Intercept as outlined below.
 
 * Events
@@ -1376,7 +1399,9 @@ If your library is planning to display events and room reservations on digital s
     * `room_id`
   * Example: `/room-reservations/feed?location_id=2790&room_id=2811`
 
-## Maintainers
+
+MAINTAINERS
+-----------
 
 Current maintainers:
   * John Ferris (pixelwhip) - https://www.drupal.org/u/pixelwhip

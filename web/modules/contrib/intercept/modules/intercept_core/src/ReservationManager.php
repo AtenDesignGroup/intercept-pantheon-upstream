@@ -18,7 +18,6 @@ use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\node\NodeInterface;
-use Drupal\user\Entity\User;
 
 /**
  * Class ReservationManager.
@@ -488,11 +487,9 @@ class ReservationManager implements ReservationManagerInterface {
 
   /**
    * A list of emails to use for reservations.
-   *
-   * TODO: Make this a hook so that it can be customized and altered.
    */
   public static function emails() {
-    return [
+    $emails = [
       'reservation_requested' => new TranslatableMarkup('Reservation requested'),
       'reservation_canceled' => new TranslatableMarkup('Reservation canceled'),
       'reservation_approved_staff' => new TranslatableMarkup('Reservation approved (by staff)'),
@@ -500,6 +497,10 @@ class ReservationManager implements ReservationManagerInterface {
       'reservation_canceled_staff' => new TranslatableMarkup('Reservation canceled (by staff)'),
       'reservation_denied_staff' => new TranslatableMarkup('Reservation denied (by staff)'),
     ];
+
+    \Drupal::moduleHandler()->alter('intercept_reservation_emails', $emails);
+
+    return $emails;
   }
 
   /**

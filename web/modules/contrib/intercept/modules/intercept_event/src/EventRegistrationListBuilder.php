@@ -96,6 +96,7 @@ class EventRegistrationListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+    /** @var \Drupal\intercept_event\Entity\EventRegistrationInterface $entity */
     $row = [];
     $authdata = [];
     $this->addEventRow($row, $entity);
@@ -121,7 +122,7 @@ class EventRegistrationListBuilder extends EntityListBuilder {
       $user = User::load($uid);
       $row['name'] = $user->getDisplayName();
     }
-    elseif (!empty($guest_name)) {
+    elseif (is_array($guest_name)) {
       $guest_email = $entity->get('field_guest_email')->getValue();
       $guest_phone_number = $entity->get('field_guest_phone_number')->getValue();
       $email_link = Link::fromTextAndUrl($guest_email[0]['value'], Url::fromUri('mailto:' . $guest_email[0]['value']))->toString();

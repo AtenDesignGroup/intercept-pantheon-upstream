@@ -1175,6 +1175,9 @@ tbody + tbody {
   .list--content > .list__item:not(:last-child) {
     margin-bottom: 3.125rem; }
 
+.table-overflow-x-scroll .view__content {
+  overflow-x: scroll; }
+
 .l--page-wrapper {
   display: -webkit-box;
   display: -ms-flexbox;

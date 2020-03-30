@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_room_reservation_barred
+    - profile.type.customer
+id: profile.customer.field_room_reservation_barred
+field_name: field_room_reservation_barred
+entity_type: profile
+bundle: customer
+label: Barred From Reserving Rooms
+description: 'Is the customer barred from reserving rooms?'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

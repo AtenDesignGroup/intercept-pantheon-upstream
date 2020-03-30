@@ -8,7 +8,7 @@ class RoomLimitWarning extends React.PureComponent {
 
     const getDestination = () => encodeURIComponent(window.location.pathname + window.location.search);
 
-    if (!userStatus.exceededLimit || !userStatus.initialized) {
+    if ((!userStatus.exceededLimit || !userStatus.initialized) && window.drupalSettings.intercept.user.barred === false) {
       return null;
     }
 
@@ -23,6 +23,15 @@ class RoomLimitWarning extends React.PureComponent {
             Log in now
           </a>
         </p>
+      );
+    }
+    else if (window.drupalSettings.intercept.user.barred === true) {
+      const msg = window.drupalSettings.intercept.room_reservations.reservation_barred_text;
+      message = (
+        <p
+          className="value-summary__footer-text"
+          dangerouslySetInnerHTML={{ __html: msg }}
+        />
       );
     }
     else {

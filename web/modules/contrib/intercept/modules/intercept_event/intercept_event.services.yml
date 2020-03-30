@@ -7,7 +7,12 @@ services:
     arguments: ['@current_user', '@entity_type.manager', '@messenger', '@intercept_core.utility.dates']
   intercept_event.evaluation_manager:
     class: Drupal\intercept_event\EventEvaluationManager
-    arguments: ['@current_user', '@entity_type.manager']
+    arguments: ['@class_resolver', '@current_user', '@entity_type.manager', '@form_builder']
   intercept_event.queue:
     class: Drupal\intercept_event\EventQueue
     arguments: ['@queue']
+  intercept_event.event_registration_status_change:
+    class: '\Drupal\intercept_event\EventSubscriber\RegistrationStatusChangeEventSubscriber'
+    arguments: ['@config.factory', '@entity_type.manager', '@language_manager', '@plugin.manager.mail', '@token']
+    tags:
+      - { name: event_subscriber }

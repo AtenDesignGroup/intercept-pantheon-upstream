@@ -1,4 +1,4 @@
-addtocalendar_show: 0
+addtocalendar_show: '0'
 style: blue
 display_text: 'Add to Calendar'
 atc_title: 'Title'

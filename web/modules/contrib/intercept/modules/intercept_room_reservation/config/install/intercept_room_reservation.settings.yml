@@ -9,6 +9,9 @@ advanced_reservation_limit: '0'
 advanced_reservation_limit_text:
   value: ''
   format: basic_html
+reservation_barred_text:
+  value: "<p>There is a block on your account preventing room reservations.</p>\r\n"
+  format: basic_html
 email:
   reservation_accepted:
     subject: ''

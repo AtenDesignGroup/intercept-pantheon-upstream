@@ -5,6 +5,7 @@
  * Functions to support theming.
  */
 
+use Drupal\Component\Utility\Tags;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
 
@@ -18,6 +19,17 @@ function intercept_base_preprocess_page(&$variables) {
   }
 
   _intercept_base_add_logo($variables);
+
+  // Establish whether the current user has a staff role (for use in header.twig).
+  if ($variables['logged_in']) {
+    $roles = \Drupal::currentUser()->getRoles();
+    if (!in_array('intercept_registered_customer', $roles)) {
+      $variables['is_staff'] = TRUE;
+    }
+    else {
+      $variables['is_staff'] = FALSE;
+    }
+  }
 }
 
 /**
@@ -79,6 +91,13 @@ function intercept_base_preprocess_form(&$variables) {
       break;
 
     case 'views-exposed-form-intercept-user-events-embed':
+    case 'views-exposed-form-intercept-room-reservations-embed':
+    case 'views-exposed-form-intercept-equipment-reservations-embed':
+    case 'views-exposed-form-intercept-events-embed':
+    case 'views-exposed-form-intercept-equipment-page':
+    case 'views-exposed-form-intercept-event-attendance-by-age-group-page':
+    case 'views-exposed-form-intercept-event-attendance-embed':
+    case 'views-exposed-form-intercept-meetings-page':
       $variables['attributes']['class'][] = 'filters__inputs';
       $variables['attributes']['class'][] = 'filters__inputs--uniform-padding';
       $variables['attributes']['class'][] = 'form-wrapper';
@@ -88,7 +107,28 @@ function intercept_base_preprocess_form(&$variables) {
 }
 
 /**
- * Implements hook_suggestions_alter() for fields.
+ * Implements hook_preprocess_form_element().
+ */
+function intercept_base_preprocess_form_element(&$variables) {
+  $form_id = $variables['element']['#form_id'] ?? NULL;
+
+  switch ($form_id) {
+    case 'views_exposed_form':
+      switch ($variables['element']['#type']) {
+        case 'select':
+          $variables['attributes']['class'][] = 'select-filter';
+          break;
+
+        case 'textfield':
+          $variables['attributes']['class'][] = 'keyword-filter';
+          break;
+      }
+      break;
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for fields.
  */
 function intercept_base_theme_suggestions_field_alter(array &$suggestions, array $variables) {
   $name = $variables['element']['#field_name'];
@@ -96,6 +136,16 @@ function intercept_base_theme_suggestions_field_alter(array &$suggestions, array
   $bundle = $variables['element']['#bundle'];
   $suggestions[] = implode('__', ['field', $name, $mode]);
   $suggestions[] = implode('__', ['field', $name, $bundle, $mode]);
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for views.
+ */
+function intercept_base_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+  // Add theme suggestions for each single tag.
+  foreach (Tags::explode($variables['view']->storage->get('tag')) as $tag) {
+    $suggestions[] = 'views_view__tag_' . preg_replace('/[^a-z0-9]/', '_', strtolower($tag));
+  }
 }
 
 /**
@@ -248,13 +298,11 @@ function intercept_base_preprocess_views_view_row_rss(&$variables) {
   // Description tweaks to add <enclosure> tag for RSS feeds & digital signage.
   if ($view->id() == 'intercept_rss_events' && $view->current_display == 'feed_1') {
     if (isset($item->description) && is_array($item->description)) {
-      $description = (string) \Drupal::service('renderer')->render($item->description);
       $explosion = explode('|', $variables['description']);
       $variables['description'] = ['#markup' => trim($explosion[0])];
-  
+
       // Build enclosure.
       if ($explosion[1]) {
-        $image = \Drupal::service('image.factory')->get($explosion[1]); 
         $host = \Drupal::request()->getSchemeAndHttpHost();
         $variables['enclosure'] = ['#markup' => $host . $explosion[1]];
 
@@ -272,22 +320,21 @@ function intercept_base_preprocess_views_view_row_rss(&$variables) {
  * Get authdata for user in the row in order to display customer info.
  */
 function intercept_base_get_authdata($uid) {
-  $authmap = \Drupal::service('externalauth.authmap');
-  $authdata = $authmap->getAuthdata($uid, 'polaris');
-  $authdata_data = unserialize($authdata['data']);
-  if (isset($authdata_data->Barcode)) {
-    $barcode = $authdata_data->Barcode;
-    $client = \Drupal::service('polaris.client');
-    $result = $client->patron->searchByBarcode($barcode);
+  $ils_settings = \Drupal::service('config.factory')->get('intercept_ils.settings');
+  $intercept_ils_plugin = $ils_settings->get('intercept_ils_plugin', '');
+  if ($intercept_ils_plugin) {
+    $authmap = \Drupal::service('externalauth.authmap');
+    $authdata = $authmap->getAuthdata($uid, $intercept_ils_plugin);
+    return unserialize($authdata['data']);
   }
-  return $authdata_data;
+  return FALSE;
 }
 
 /**
  * Implements hook_preprocess_menu().
  */
 function intercept_base_preprocess_menu__account(&$variables) {
-  // Remove the Dashboard menu item if the user isn't a customer.
+  // Remove the Account Summary menu item if the user isn't a customer.
   $roles = \Drupal::currentUser()->getRoles();
   if (!in_array('intercept_registered_customer', $roles)) {
     unset($variables['items']['user.page']);

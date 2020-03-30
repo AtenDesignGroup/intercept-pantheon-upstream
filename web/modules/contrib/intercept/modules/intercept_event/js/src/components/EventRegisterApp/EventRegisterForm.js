@@ -408,7 +408,7 @@ class EventRegisterForm extends React.Component {
 
               <div className="form__actions">
                 <Button
-                  variant="raised"
+                  variant="contained"
                   size="small"
                   color="primary"
                   type="submit"

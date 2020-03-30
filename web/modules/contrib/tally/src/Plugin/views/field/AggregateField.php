@@ -78,17 +78,11 @@ class AggregateField extends EntityField {
       return NULL;
     }
 
-    $field_item_definition = $field_item_list->getFieldDefinition();
-
     $values = [];
     if ($type == 'node') {
       if ($this->options['delta_limit'] == 1) { // Just show 1 value as specified.
         $offset = $this->options['delta_offset'];
-        foreach ($field_item_list as $index => $field_item) {
-          if ($index == $offset) {
-            $values = $count = $field_item->count ? $field_item->count : 0;
-          }
-        }
+        $values = $field_item_list->get($offset) ? $field_item_list->get($offset)->count : NULL;
       }
       else { // Show all of the values in one column together.
         foreach ($field_item_list as $field_item) {

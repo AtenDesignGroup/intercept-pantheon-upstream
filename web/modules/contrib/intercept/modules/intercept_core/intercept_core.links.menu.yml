@@ -23,7 +23,7 @@ intercept_core.admin_structure:
   parent: system.admin_structure
 
 intercept_core.account.settings:
-  title: 'Settings'
+  title: 'Profile'
   weight: 15
   route_name: intercept_core.account.settings
   menu_name: account

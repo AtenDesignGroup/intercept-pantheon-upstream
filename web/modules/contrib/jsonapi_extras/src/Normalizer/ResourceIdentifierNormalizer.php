@@ -2,7 +2,10 @@
 
 namespace Drupal\jsonapi_extras\Normalizer;
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\jsonapi\JsonApiResource\ResourceIdentifier;
+use Drupal\jsonapi\JsonApiResource\ResourceObject;
 use Drupal\jsonapi\Normalizer\Value\CacheableNormalization;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType;
@@ -42,9 +45,18 @@ class ResourceIdentifierNormalizer extends JsonApiNormalizerDecoratorBase {
     assert($field instanceof ResourceIdentifier);
     $normalized_output = parent::normalize($field, $format, $context);
     assert($normalized_output instanceof CacheableNormalization);
-    $resource_type = $context['resource_object']->getResourceType();
-    assert($resource_type instanceof ConfigurableResourceType);
-    $enhancer = $resource_type->getFieldEnhancer($context['field_name']);
+    $resource_object = $context['resource_object'];
+    if (empty($resource_object)) {
+      return $normalized_output;
+    }
+    // Find the name of the field being normalized. This is unreasonably more
+    // contrived than one could expect for ResourceIdentifiers.
+    $resource_type = $resource_object->getResourceType();
+    $field_name = $this->guessFieldName($field->getId(), $resource_object);
+    if (!$field_name) {
+      return $normalized_output;
+    }
+    $enhancer = $resource_type->getFieldEnhancer($field_name);
     if (!$enhancer) {
       return $normalized_output;
     }
@@ -55,6 +67,56 @@ class ResourceIdentifierNormalizer extends JsonApiNormalizerDecoratorBase {
     return new CacheableNormalization(
       $normalized_output,
       array_intersect_key($transformed, array_flip(['id', 'type', 'meta']))
+    );
+  }
+
+  /**
+   * Guesses the field name of a resource identifier pointing to a UUID.
+   *
+   * @param $uuid
+   *   The uuid being referenced.
+   * @param \Drupal\jsonapi\JsonApiResource\ResourceObject $resource_object
+   *   The object being normalized.
+   *
+   * @return string|null
+   *   The field name.
+   */
+  protected function guessFieldName($uuid, ResourceObject $resource_object) {
+    $resource_type = $resource_object->getResourceType();
+    assert($resource_type instanceof ConfigurableResourceType);
+    // From the resource object get all the reference fields.
+    $reference_field_names = array_keys($resource_type->getRelatableResourceTypes());
+    // Only consider the fields that contain enhancers. This is to improve
+    // performance. Discard the candidates that will not have an enhancer.
+    $ref_enhancers = array_filter(array_map(function ($public_field_name) use ($resource_type) {
+      return $resource_type->getFieldEnhancer($public_field_name, 'publicName');
+    }, array_combine($reference_field_names, $reference_field_names)));
+    // Get the field objects of the reference fields that have enhancers.
+    $reference_fields = array_intersect_key(
+      $resource_object->getFields(),
+      array_flip(array_keys($ref_enhancers))
+    );
+    $reference_fields = array_filter($reference_fields, function ($reference_field) {
+      // This is certainly a limitation.
+      return $reference_field instanceof EntityReferenceFieldItemListInterface;
+    });
+    return array_reduce(
+      $reference_fields,
+      function ($field_name, EntityReferenceFieldItemListInterface $object_field) use ($uuid) {
+        if ($field_name) {
+          return $field_name;
+        }
+        $referenced_entities = $object_field->referencedEntities();
+        // If any of the referenced entities contains the UUID of the field
+        // being normalized, then we have our field name.
+        $matches = array_filter(
+          $referenced_entities,
+          function (EntityInterface $referenced_entity) use ($uuid) {
+            return $uuid === $referenced_entity->uuid();
+          }
+        );
+        return empty($matches) ? NULL : $object_field->getName();
+      }
     );
   }
 

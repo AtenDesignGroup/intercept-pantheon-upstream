@@ -7,9 +7,6 @@ dependencies:
     - field.storage.equipment_reservation.field_room
     - field.storage.node.field_equipment_type
     - taxonomy.vocabulary.equipment_type
-    - user.role.intercept_equipment_reservation_manager
-    - user.role.intercept_staff
-    - user.role.intercept_system_admin
   module:
     - datetime
     - datetime_range
@@ -21,7 +18,7 @@ id: intercept_equipment_reservations
 label: 'Intercept Equipment Reservations'
 module: views
 description: 'Shows all current equipment reservations in the system.'
-tag: ''
+tag: Intercept
 base_table: equipment_reservation_field_data
 base_field: id
 display:
@@ -32,12 +29,9 @@ display:
     position: 0
     display_options:
       access:
-        type: role
+        type: perm
         options:
-          role:
-            intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
-            intercept_staff: intercept_staff
-            intercept_system_admin: intercept_system_admin
+          perm: 'view equipment_reservation'
       cache:
         type: tag
         options: {  }
@@ -656,75 +650,6 @@ display:
           entity_type: user
           entity_field: uid
           plugin_id: user_name
-        field_dates_value:
-          id: field_dates_value
-          table: equipment_reservation__field_dates
-          field: field_dates_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_dates_value_op
-            label: 'Dates (field_dates)'
-            description: null
-            use_operator: false
-            operator: field_dates_value_op
-            identifier: field_dates_value
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: null
-            min_placeholder: null
-            max_placeholder: null
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: true
-          group_info:
-            label: 'Dates (field_dates)'
-            description: ''
-            identifier: field_dates_value
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: Past
-                operator: '<'
-                value:
-                  type: date
-                  value: now
-                  min: ''
-                  max: ''
-              2:
-                title: Upcoming
-                operator: '>='
-                value:
-                  type: date
-                  value: now
-                  min: ''
-                  max: ''
-              3:
-                title: ''
-                operator: '='
-                value:
-                  type: date
-                  value: ''
-                  min: ''
-                  max: ''
-          plugin_id: datetime
         title:
           id: title
           table: node_field_data
@@ -1013,7 +938,7 @@ display:
         - url
         - url.query_args
         - user
-        - user.roles
+        - user.permissions
       tags:
         - 'config:field.storage.equipment_reservation.field_dates'
         - 'config:field.storage.equipment_reservation.field_location'
@@ -1035,7 +960,7 @@ display:
         - url
         - url.query_args
         - user
-        - user.roles
+        - user.permissions
       tags:
         - 'config:field.storage.equipment_reservation.field_dates'
         - 'config:field.storage.equipment_reservation.field_location'

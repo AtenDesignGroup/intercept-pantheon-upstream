@@ -5,6 +5,11 @@
 // Classes to help apply layout
 //
 
+// Scrollable table
+.table-overflow-x-scroll .view__content {
+  overflow-x: scroll;
+}
+
 //
 // Page
 //

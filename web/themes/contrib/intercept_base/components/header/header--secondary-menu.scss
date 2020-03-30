@@ -146,6 +146,18 @@
 }
 
 // Account Trigger (button / icon)
+label[for="account-trigger"].account-trigger--is-staff {
+  @include bp(large) {
+    background-color: $magenta-50;
+    transition: background-color $duration $easing;
+  }
+  &:hover {
+    @include bp(large) {
+      background-color: $magenta-60; // 10% darker than above
+    }
+  }
+}
+
 label[for="account-trigger"],
 .account-trigger--logged-out {
   @include fs(small);

@@ -57,16 +57,6 @@ intercept_event.event_parent:
   menu_name: intercept-manage
   class: Drupal\intercept_event\Plugin\Menu\EventMenuLink
 
-intercept_event.event_create:
-  parent: intercept_event.event_parent
-  title: 'Create Event'
-  weight: 1
-  route_name: node.add
-  route_parameters:
-    node_type: 'event'
-  menu_name: intercept-manage
-  class: Drupal\intercept_event\Plugin\Menu\EventMenuLink
-
 intercept_event.event_my:
   parent: intercept_event.event_parent
   title: 'My Events'

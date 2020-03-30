@@ -41,7 +41,10 @@ class RoomReservationActionButtonApp extends React.Component {
     const hasError = get(record, 'state.error');
     const prevHasError = get(prevRecord, 'state.error');
 
-    if (!isLoading && record !== null && !availability.loading && availability.rooms.length === 0) {
+    if (!isLoading &&
+        record !== null &&
+        !availability.loading &&
+        (availability.rooms.length === 0 || prevRecord !== record)) {
       fetchAvailability(this.getRoomAvailabilityQuery());
     }
 
@@ -205,7 +208,7 @@ class RoomReservationActionButtonApp extends React.Component {
     const { dialogProps } = this.state;
     const { record } = this.props;
     const errors = get(record, 'state.error') || [];
-    const text = errors.map((err => err.detail)) || 'Unkown Error';
+    const text = errors.map(err => err.detail.replace('Entity is not valid: ', '')) || 'Unknown Error';
 
     return (
       <DialogConfirm

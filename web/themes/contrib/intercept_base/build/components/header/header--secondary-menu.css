@@ -140,6 +140,16 @@
     -webkit-transform: rotate(90deg) scale(0);
             transform: rotate(90deg) scale(0); }
 
+@media (min-width: 62em) {
+  label[for="account-trigger"].account-trigger--is-staff {
+    background-color: #C91B76;
+    -webkit-transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out; } }
+
+@media (min-width: 62em) {
+  label[for="account-trigger"].account-trigger--is-staff:hover {
+    background-color: #B0025D; } }
+
 label[for="account-trigger"],
 .account-trigger--logged-out {
   font-size: 0.72917rem;

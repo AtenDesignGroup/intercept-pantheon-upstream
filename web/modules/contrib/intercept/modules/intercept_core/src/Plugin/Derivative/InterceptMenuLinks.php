@@ -4,14 +4,18 @@ namespace Drupal\intercept_core\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\intercept_core\ManagementManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
  * Derives menu links from Intercept management manager pages.
  */
 class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterface {
+
+  use StringTranslationTrait;
 
   /**
    * The Intercept management manager.
@@ -21,13 +25,24 @@ class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterfac
    */
   protected $managementManager;
 
-  use StringTranslationTrait;
+  /**
+   * The route provider to load routes by name.
+   *
+   * @var \Drupal\Core\Routing\RouteProviderInterface
+   */
+  protected $routeProvider;
 
   /**
-   * {@inheritdoc}
+   * Constructs an InterceptMenuLinks object.
+   *
+   * @param \Drupal\intercept_core\ManagementManagerInterface $management_manager
+   *   The Intercept management manager.
+   * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
+   *   The route provider to load routes by name.
    */
-  public function __construct(ManagementManagerInterface $management_manager) {
+  public function __construct(ManagementManagerInterface $management_manager, RouteProviderInterface $route_provider) {
     $this->managementManager = $management_manager;
+    $this->routeProvider = $route_provider;
   }
 
   /**
@@ -35,7 +50,8 @@ class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterfac
    */
   public static function create(ContainerInterface $container, $base_plugin_id) {
     return new static(
-      $container->get('plugin.manager.intercept_management')
+      $container->get('plugin.manager.intercept_management'),
+      $container->get('router.route_provider')
     );
   }
 
@@ -51,17 +67,38 @@ class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterfac
       if (isset($page->menu_link) && !$page->menu_link) {
         continue;
       }
+      if (isset($page->route_name) && !$this->ensureRoute($page->route_name)) {
+        continue;
+      }
 
       $this->derivatives[$id] = [
         'title' => $page->title,
         'weight' => isset($page->menu_weight) ? $page->menu_weight : 0,
-        'route_name' => "{$id}.redirect",
+        'route_name' => $page->route_name ?? "{$id}.redirect",
         'menu_name' => 'intercept-manage',
         'parent' => isset($page->parent) ? $page->parent : NULL,
       ];
     }
 
     return $this->derivatives;
+  }
+
+  /**
+   * Verifies that a route exists.
+   *
+   * @param string $route_name
+   *   The route name.
+   *
+   * @return bool
+   *   Whether the route exists.
+   */
+  protected function ensureRoute($route_name) {
+    try {
+      return $this->routeProvider->getRouteByName($route_name);
+    }
+    catch (RouteNotFoundException $e) {
+      return FALSE;
+    }
   }
 
 }

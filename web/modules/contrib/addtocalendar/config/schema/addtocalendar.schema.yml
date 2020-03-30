@@ -33,3 +33,86 @@ addtocalendar.settings:
     delta:
       type: integer
       label: 'AddToCalendar button visibility for a particular date field'
+
+addtocalendar_setting:
+  type: mapping
+  mapping:
+    field:
+      type: string
+      label: 'Field to be used'
+    tokenized:
+      type: string
+      label: 'Static/Tokenized Content'
+
+field.field_settings.add_to_calendar_field:
+  type: mapping
+  label: 'Add to calendar field settings'
+  mapping:
+    on_label:
+      type: label
+      label: 'On label'
+    off_label:
+      type: label
+      label: 'Off label'
+    addtocalendar_show:
+      type: integer
+      label: 'Show Add to Calendar'
+    addtocalendar_settings:
+      type: mapping
+      mapping:
+        addtocalendar_show:
+          type: string
+          label: 'Show Add to Calendar'
+        style:
+          type: string
+          label: 'Select Style'
+        display_text:
+          type: text
+          label: 'Display Text'
+          translatable: true
+        atc_title:
+          type: addtocalendar_setting
+        atc_description:
+          type: addtocalendar_setting
+        atc_location:
+          type: addtocalendar_setting
+        atc_organizer:
+          type: addtocalendar_setting
+        atc_organizer_email:
+          type: addtocalendar_setting
+        atc_date_start:
+          type: addtocalendar_setting
+        atc_date_end:
+          type: addtocalendar_setting
+        atc_privacy:
+          type: string
+          label: 'Privacy of the event'
+        data_secure:
+          type: string
+          label: 'Security level'
+        data_calendars:
+          type: mapping
+          mapping:
+            'Google Calendar':
+              type: integer
+              label: 'Google Calendar'
+            'Outlook Online':
+              type: integer
+              label: 'Outlook Online'
+            iCalendar:
+              type: integer
+              label: 'iCalendar'
+            Outlook:
+              type: integer
+              label: 'Outlook'
+            'Yahoo! Calendar':
+              type: integer
+              label: 'Yahoo! Calendar'
+
+field.value.add_to_calendar_field:
+  type: mapping
+  label: 'Default value'
+  mapping:
+    value:
+      type: integer
+      label: 'Show Add to Calendar'

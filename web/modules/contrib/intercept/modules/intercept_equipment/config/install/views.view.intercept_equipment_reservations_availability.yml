@@ -4,9 +4,6 @@ dependencies:
   config:
     - field.storage.equipment_reservation.field_dates
     - field.storage.equipment_reservation.field_user
-    - user.role.intercept_equipment_reservation_manager
-    - user.role.intercept_staff
-    - user.role.intercept_system_admin
   module:
     - datetime
     - datetime_range
@@ -17,7 +14,7 @@ id: intercept_equipment_reservations_availability
 label: 'Intercept Equipment Reservations Availability'
 module: views
 description: 'Show availability information about a particular piece of equipment.'
-tag: ''
+tag: Intercept
 base_table: equipment_reservation_field_data
 base_field: id
 display:
@@ -28,12 +25,9 @@ display:
     position: 0
     display_options:
       access:
-        type: role
+        type: perm
         options:
-          role:
-            intercept_staff: intercept_staff
-            intercept_system_admin: intercept_system_admin
-            intercept_equipment_reservation_manager: intercept_equipment_reservation_manager
+          perm: 'create equipment_reservation'
       cache:
         type: tag
         options: {  }
@@ -424,7 +418,7 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
-        - user.roles
+        - user.permissions
       tags:
         - 'config:field.storage.equipment_reservation.field_dates'
         - 'config:field.storage.equipment_reservation.field_user'
@@ -442,7 +436,7 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
-        - user.roles
+        - user.permissions
       tags:
         - 'config:field.storage.equipment_reservation.field_dates'
         - 'config:field.storage.equipment_reservation.field_user'

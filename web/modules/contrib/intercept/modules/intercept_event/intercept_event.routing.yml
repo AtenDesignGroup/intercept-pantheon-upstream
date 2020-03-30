@@ -30,7 +30,7 @@ entity.node.register:
   defaults:
     _controller: '\Drupal\intercept_event\Controller\EventRegistrationController::register'
   requirements:
-    _access: 'TRUE'
+    _user_is_logged_in: 'TRUE'
 
 entity.node.registrations:
   path: '/event/{node}/registrations'

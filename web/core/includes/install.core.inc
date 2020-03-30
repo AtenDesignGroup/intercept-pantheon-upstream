@@ -159,10 +159,6 @@ function install_drupal($class_loader, $settings = [], callable $callback = NULL
       install_display_output($output, $state);
     }
     elseif ($state['installation_finished']) {
-      // Truncate cache_container table
-      // See: https://www.drupal.org/project/drupal/issues/3103529
-      Database::getConnection()->truncate('cache_container')->execute();
-
       // Redirect to the newly installed site.
       $finish_url = '';
       if (isset($install_state['profile_info']['distribution']['install']['finish_url'])) {
@@ -2326,7 +2322,13 @@ function install_config_import_batch() {
   // Match up the site UUIDs, the install_base_system install task will have
   // installed the system module and created a new UUID.
   $system_site = $sync->read('system.site');
-  \Drupal::configFactory()->getEditable('system.site')->set('uuid', $system_site['uuid'])->save();
+  // When installing from configuration it is possible that system.site
+  // configuration is not present. If this occurs a ConfigImporterException will
+  // by thrown when $config_importer->initialize() is called below and the error
+  // will be reported to the user.
+  if ($system_site !== FALSE) {
+    \Drupal::configFactory()->getEditable('system.site')->set('uuid', $system_site['uuid'])->save();
+  }
 
   // Create the storage comparer and the config importer.
   $storage_comparer = new StorageComparer($sync, \Drupal::service('config.storage'));

@@ -3,7 +3,7 @@
 
 {% set target_attr = '' %}
 {% if target %}
-{% set target_attr = 'target="{{ target }}"' %}
+{% set target_attr = 'target="' ~ target ~ '"' %}
 {% endif %}
 
 <article {{ component.attributes('listing', modifiers, attr) }}>

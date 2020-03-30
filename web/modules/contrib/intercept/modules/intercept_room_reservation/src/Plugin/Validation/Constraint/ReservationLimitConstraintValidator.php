@@ -17,21 +17,24 @@ class ReservationLimitConstraintValidator extends ConstraintValidator implements
   /**
    * The Intercept reservation manager.
    *
-   * @var ReservationManagerInterface
+   * @var \Drupal\intercept_core\ReservationManagerInterface
    */
   protected $reservationManager;
 
   /**
-   * @var AccountProxyInterface
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $currentUser;
 
   /**
    * Constructs a new ReservationLimitConstraintValidator.
    *
-   * @param ReservationManagerInterface $reservation_manager
+   * @param \Drupal\intercept_core\ReservationManagerInterface $reservation_manager
    *   The Intercept reservation manager.
-   * @param AccountProxyInterface $current_user
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current user.
    */
   public function __construct(ReservationManagerInterface $reservation_manager, AccountProxyInterface $current_user) {
     $this->reservationManager = $reservation_manager;

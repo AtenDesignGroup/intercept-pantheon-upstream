@@ -26,3 +26,6 @@
     background: transparent; }
   .messages--full-screen .messages__content {
     color: #fff; }
+
+.webform-message .messages.messages--info {
+  background-image: none; }

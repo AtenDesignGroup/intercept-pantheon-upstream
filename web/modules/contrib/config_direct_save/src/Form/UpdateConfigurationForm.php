@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provide the settings form for updating configurations.
- * Class UpdateConfigurationForm
+ *
  * @package Drupal\config_direct_save\Form
  */
 class UpdateConfigurationForm extends FormBase {
@@ -35,12 +35,19 @@ class UpdateConfigurationForm extends FormBase {
    * @var \Drupal\Core\Config\ConfigManagerInterface
    */
   protected $configManager;
+
   /**
-   * Returns a unique string identifying the form.
+   * Constructs a ConfigController object.
    *
-   * @return string
-   *   The unique string identifying the form.
+   * @param \Drupal\Core\Config\StorageInterface $target_storage
+   *   The target storage.
+   * @param \Drupal\Core\Config\ConfigManagerInterface $config_manager
+   *   Gets the config factory.
    */
+  public function __construct(StorageInterface $target_storage, ConfigManagerInterface $config_manager) {
+    $this->targetStorage = $target_storage;
+    $this->configManager = $config_manager;
+  }
 
   /**
    * {@inheritdoc}
@@ -53,18 +60,8 @@ class UpdateConfigurationForm extends FormBase {
   }
 
   /**
-   * Constructs a ConfigController object.
-   *
-   * @param \Drupal\Core\Config\StorageInterface $target_storage
-   *   The target storage.
-   * @param \Drupal\system\FileDownloadController $file_download_controller
-   *   The file download controller.
+   * {@inheritdoc}
    */
-  public function __construct(StorageInterface $target_storage, ConfigManagerInterface $config_manager) {
-    $this->targetStorage = $target_storage;
-    $this->configManager = $config_manager;
-  }
-
   public function getFormId() {
     return 'config_update_form';
   }
@@ -81,22 +78,22 @@ class UpdateConfigurationForm extends FormBase {
    *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['config_directory'] = array(
+    $form['config_directory'] = [
       '#type' => 'select',
       '#required' => TRUE,
       '#title' => $this->t('Config source'),
       '#description' => $this->t('Select config source directory'),
       '#options' => array_flip($GLOBALS['config_directories']),
-    );
-    $form['backup'] = array(
+    ];
+    $form['backup'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Backup'),
-      '#description' => $this->t('Check to make a backup for a specific config source(sync for example.)')
-    );
-    $form['update'] = array(
+      '#description' => $this->t('Check to make a backup for a specific config source(sync for example.)'),
+    ];
+    $form['update'] = [
       '#type' => 'submit',
       '#value' => $this->t('Update configuration'),
-    );
+    ];
 
     return $form;
   }
@@ -110,74 +107,79 @@ class UpdateConfigurationForm extends FormBase {
    *   The current state of the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    //Create config  files.
+    // Create config files.
     $this->createConfigFiles($form, $form_state);
-  }
-
-  /**
-   * Get the path of the directory.
-   * @param string $directory
-   * @return mixed
-   */
-  protected function getConfigDirectory($directory = 'sync') {
-    $config_directories = $GLOBALS['config_directories'][$directory];
-    return $config_directories;
   }
 
   /**
    * Override the old configurations.
    */
   public function createConfigFiles(array &$form, FormStateInterface $form_state) {
-    //Get the name of config source( sync, text, etc...).
+    // Get the name of config source( sync, text, etc...).
     $config_directory_selected = $form_state->getValue('config_directory');
-    //$config_manager = \Drupal::service('config.manager');
     $config_files_names = $this->configManager->getConfigFactory()->listAll();
-    //If the user check to make a backup, a directory will be created.
+    // If the user check to make a backup, a directory will be created.
     if ($form_state->getValue('backup')) {
       $current_date = date('d-m-Y-H-i-s');
       $folder_backup = $config_directory_selected . "-" . $current_date;
-      $this->recurse_copy($config_directory_selected, $folder_backup);
+      $this->recurseCopy($config_directory_selected, $folder_backup);
     }
-      //Delete old configurations files( except .htaccess).
-      $this->unlink_recursive($config_directory_selected, 'yml');
-      foreach ($config_files_names as $name) {
-        //Data associated to file.
-        $data = Yaml::encode($this->configManager->getConfigFactory()
-          ->get($name)
-          ->getRawData());
-        //Create new files.
-        file_put_contents($config_directory_selected . "/$name.yml", $data);
+    // Delete old configurations files( except .htaccess).
+    $this->unlinkRecursive($config_directory_selected, 'yml');
+    foreach ($config_files_names as $name) {
+      // Data associated to file.
+      $data = Yaml::encode($this->configManager->getConfigFactory()
+        ->get($name)
+        ->getRawData());
+      // Create new files.
+      file_put_contents($config_directory_selected . "/$name.yml", $data);
+    }
+    // Get all override data from the remaining collections.
+    foreach ($this->targetStorage->getAllCollectionNames() as $collection) {
+      $target = str_replace('.', '/', $collection);
+      $this->unlinkRecursive($config_directory_selected . "/" . $target . "/", 'yml');
+      if (!is_dir($config_directory_selected . "/" . $target . "/")) {
+        mkdir(($config_directory_selected . "/" . $target . "/"), 0775, TRUE);
       }
-      // Get all override data from the remaining collections.
-      foreach ($this->targetStorage->getAllCollectionNames() as $collection) {
+      $collection_storage = $this->targetStorage->createCollection($collection);
+      foreach ($collection_storage->listAll() as $name) {
         $target = str_replace('.', '/', $collection);
-        $this->unlink_recursive($config_directory_selected . "/" . $target . "/", 'yml');
-        if (!is_dir($config_directory_selected . "$config_directory_selected." / ".$target." / "" . $target . "/")) {
-          mkdir(($config_directory_selected . "/" . $target . "/"), 0775, TRUE);
-        }
-        $collection_storage = $this->targetStorage->createCollection($collection);
-        foreach ($collection_storage->listAll() as $name) {
-          $target = str_replace('.', '/', $collection);
-          file_put_contents($config_directory_selected . "/" . $target . "/$name.yml", Yaml::encode($collection_storage->read($name)));
-        }
+        file_put_contents($config_directory_selected . "/" . $target . "/$name.yml", Yaml::encode($collection_storage->read($name)));
       }
-    drupal_set_message($this->t("The configuration has been uploaded."));
+    }
+    $this->messenger()->addMessage($this->t("The configuration has been uploaded."));
   }
 
-  /***
-   * Delete all configurations.
-   * @param $dir_name
-   * @param $ext
-   * @return bool
+  /**
+   * Copy the directory of.
    */
-  function unlink_recursive($dir_name, $ext) {
-    // Exit if there's no such directory
+  public function recurseCopy($src, $dst) {
+    $dir = opendir($src);
+    @mkdir($dst);
+    while (FALSE !== ($file = readdir($dir))) {
+      if (($file != '.') && ($file != '..')) {
+        if (is_dir($src . '/' . $file)) {
+          $this->recurseCopy($src . '/' . $file, $dst . '/' . $file);
+        }
+        else {
+          copy($src . '/' . $file, $dst . '/' . $file);
+        }
+      }
+    }
+    closedir($dir);
+  }
+
+  /**
+   * Delete all configurations.
+   */
+  public function unlinkRecursive($dir_name, $ext) {
+    // Exit if there's no such directory.
     if (!file_exists($dir_name)) {
       return FALSE;
     }
-    // Open the target directory
+    // Open the target directory.
     $dir_handle = dir($dir_name);
-    // Take entries in the directory one at a time
+    // Take entries in the directory one at a time.
     while (FALSE !== ($entry = $dir_handle->read())) {
       if ($entry == '.' || $entry == '..') {
         continue;
@@ -190,9 +192,10 @@ class UpdateConfigurationForm extends FormBase {
         }
         return FALSE;
       }
-      // Recurse on the children if the current entry happens to be a "directory"
+      // Recurse on the children if the current entry
+      // happens to be a "directory".
       if (is_dir($abs_name) || is_link($abs_name)) {
-        $this->unlink_recursive($abs_name, $ext);
+        $this->unlinkRecursive($abs_name, $ext);
       }
     }
     $dir_handle->close();
@@ -200,23 +203,11 @@ class UpdateConfigurationForm extends FormBase {
   }
 
   /**
-   * Copy the directory of
-   * @param $src
-   * @param $dst
+   * Get the path of the directory.
    */
-  function recurse_copy($src, $dst) {
-    $dir = opendir($src);
-    @mkdir($dst);
-    while (FALSE !== ($file = readdir($dir))) {
-      if (($file != '.') && ($file != '..')) {
-        if (is_dir($src . '/' . $file)) {
-          $this->recurse_copy($src . '/' . $file, $dst . '/' . $file);
-        }
-        else {
-          copy($src . '/' . $file, $dst . '/' . $file);
-        }
-      }
-    }
-    closedir($dir);
+  protected function getConfigDirectory($directory = 'sync') {
+    $config_directories = $GLOBALS['config_directories'][$directory];
+    return $config_directories;
   }
+
 }

@@ -10,6 +10,8 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeEventSubscriberTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeListenerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Field\FieldStorageDefinitionEventSubscriberTrait;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -74,10 +76,12 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
    *   The entity field manager.
    * @param \Drupal\Core\TypedData\TypedDataManagerInterface $typedDataManager
    *   Manages data type plugins.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
    */
-  public function __construct(Connection $database, EntityFieldManagerInterface $entityFieldManager, TypedDataManagerInterface $typedDataManager) {
+  public function __construct(Connection $database, EntityFieldManagerInterface $entityFieldManager, TypedDataManagerInterface $typedDataManager, EntityTypeManagerInterface $entityTypeManager) {
     $this->database = $database;
-    $this->entityTypeManager = \Drupal::entityTypeManager();
+    $this->entityTypeManager = $entityTypeManager;
     $this->entityFieldManager = $entityFieldManager;
     $this->typedDataManager = $typedDataManager;
   }
@@ -97,9 +101,10 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
     $isInsert = $event->isInsert();
     if (!$isInsert) {
       // Delete all existing values for entity and field combination.
+      /** @var string|int $entityId */
       $entityId = $list->getEntity()->id();
       $this->database->delete($tableName)
-        ->condition('entity_id', $entityId)
+        ->condition('entity_id', (string) $entityId)
         ->execute();
     }
 
@@ -117,6 +122,8 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
    *   The name of table to store occurrences.
    */
   protected function saveItem(DateRecurItem $item, string $tableName): void {
+    // Type suggested, see https://www.drupal.org/project/drupal/issues/3094067.
+    /** @var string|int $fieldDelta */
     $fieldDelta = $item->getName();
     assert(is_int($fieldDelta));
     $fieldName = $item->getFieldDefinition()->getName();
@@ -133,7 +140,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
       'entity_id' => $entity->id(),
       'field_delta' => $fieldDelta,
     ];
-    if ($entity->getEntityType()->isRevisionable()) {
+    if ($entity->getEntityType()->isRevisionable() && $entity instanceof RevisionableInterface) {
       $fields[] = 'revision_id';
       $baseRow['revision_id'] = $entity->getRevisionId();
     }
@@ -172,7 +179,9 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
     $tableName = static::getOccurrenceCacheStorageTableName($fieldDefinition->getFieldStorageDefinition());
     $delete = $this->database
       ->delete($tableName);
-    $delete->condition('entity_id', $list->getEntity()->id());
+    /** @var string|int $entityId */
+    $entityId = $list->getEntity()->id();
+    $delete->condition('entity_id', (string) $entityId);
     $delete->execute();
   }
 
@@ -189,8 +198,10 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
     $fieldDefinition = $list->getFieldDefinition();
     $tableName = static::getOccurrenceCacheStorageTableName($fieldDefinition->getFieldStorageDefinition());
     $delete = $this->database->delete($tableName);
-    $delete->condition('entity_id', $list->getEntity()->id());
-    if ($entity->getEntityType()->isRevisionable()) {
+    /** @var string|int $entityId */
+    $entityId = $list->getEntity()->id();
+    $delete->condition('entity_id', (string) $entityId);
+    if ($entity->getEntityType()->isRevisionable() && $entity instanceof RevisionableInterface) {
       $delete->condition('revision_id', $entity->getRevisionId());
     }
     $delete->execute();
@@ -394,8 +405,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
    *   Whether field is date recur or subclasses date recur.
    */
   protected function isDateRecur(FieldStorageDefinitionInterface $fieldDefinition): bool {
-    $typeDefinition = \Drupal::service('typed_data_manager')
-      ->getDefinition('field_item:' . $fieldDefinition->getType());
+    $typeDefinition = $this->typedDataManager->getDefinition('field_item:' . $fieldDefinition->getType());
     // @see \Drupal\date_recur\DateRecurCachedHooks::fieldInfoAlter
     return isset($typeDefinition[DateRecurOccurrences::IS_DATE_RECUR]);
   }

@@ -4,9 +4,9 @@ import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 
 import { Checkbox, FormControlLabel } from '@material-ui/core';
 
-class InputCheckbox extends React.Component {
+class InputCheckbox extends React.PureComponent {
   render() {
-    const { label, isValid, onChange, getErrorMessages, isRequired, checked, value } = this.props;
+    const { label, isValid, onChange, getErrorMessages, required, checked, value } = this.props;
 
     const handleChange = (event) => {
       onChange(event.target.value);
@@ -40,8 +40,8 @@ InputCheckbox.propTypes = {
   ...propTypes,
   onChange: PropTypes.func.isRequired,
   checked: PropTypes.bool,
-  value: PropTypes.string.isRequired,
-  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   validators: PropTypes.arrayOf(String),
 };
 

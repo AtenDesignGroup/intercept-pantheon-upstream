@@ -30,7 +30,7 @@ class TestInterpreter extends DateRecurInterpreterPluginBase implements PluginFo
   /**
    * {@inheritdoc}
    */
-  public function interpret(array $rules, string $language): string {
+  public function interpret(array $rules, string $language, ?\DateTimeZone $timeZone = NULL): string {
     $pluginConfig = $this->getConfiguration();
 
     if ($pluginConfig['show_foo']) {

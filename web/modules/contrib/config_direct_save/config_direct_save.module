@@ -1,8 +1,8 @@
 <?php
+
 /**
  * @file
  * Allows to export configuration after changes.
- *
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;

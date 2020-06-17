@@ -129,25 +129,7 @@ function prototype_preprocess_menu(&$variables) {
   $attributes['class'][] = 'menu';
   $attributes['class'][] = "menu--{$menu_name}";
 
-  // Add menu item classes.
-  foreach ($variables['items'] as $name => &$item) {
-    // Attributes will be an instance of the Attributes object in Drupal.
-    $item_classes = ['menu__item'];
-
-    if ($item['is_expanded'] ?? FALSE) {
-      $item_classes[] = 'menu__item--expanded';
-    }
-
-    if ($item['is_collapsed'] ?? FALSE) {
-      $item_classes[] = 'menu__item--collapsed';
-    }
-
-    if ($item['is_active_trail'] ?? FALSE) {
-      $item_classes[] = 'menu__item--active-trail';
-    }
-
-    $item['attributes']->addClass($item_classes);
-  }
+  prototype_prepare_menu_items($variables['items']);
 }
 
 /**
@@ -190,6 +172,42 @@ function prototype_theme_suggestions_views_view_unformatted_alter(array &$sugges
   $display = $variables['view']->current_display;
   $suggestions[] = 'views_view_unformatted--' . $id;
   $suggestions[] = 'views_view_unformatted--' . $id . '--' . $display;
+}
+
+/**
+ * Helper function to standarize gaps in the menu markup.
+ *
+ * @param array $items
+ *   The array of menu items.
+ */
+function prototype_prepare_menu_items(&$items) {
+  foreach ($items as &$item) {
+    // Set classes on our links.
+    $link_attributes = $item['url']->getOption('attributes') ?? [];
+    $link_attributes['class'][] = 'menu__link';
+    $item['url']->setOption('attributes', $link_attributes);
+
+    // Set classes for the link wrapper.
+    $item_classes = ['menu__item'];
+
+    if ($item['is_expanded'] ?? FALSE) {
+      $item_classes[] = 'menu__item--expanded';
+    }
+
+    if ($item['is_collapsed'] ?? FALSE) {
+      $item_classes[] = 'menu__item--collapsed';
+    }
+
+    if ($item['is_active_trail'] ?? FALSE) {
+      $item_classes[] = 'menu__item--active-trail';
+    }
+
+    $item['attributes']->addClass($item_classes);
+
+    if (!empty($item['below'])) {
+      prototype_prepare_menu_items($item['below']);
+    }
+  }
 }
 
 /**

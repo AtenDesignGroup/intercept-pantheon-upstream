@@ -8,7 +8,7 @@
   "minimum-stability": "dev",
   "support": {
     "issues": "http://drupal.org/project/issues/votingapi",
-    "source": "http://cgit.drupalcode.org/votingapi"
+    "source": "https://git.drupalcode.org/project/votingapi"
   },
   "require": { }
 }

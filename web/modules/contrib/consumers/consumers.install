@@ -121,3 +121,19 @@ function consumers_update_8106() {
     ? $edum->updateFieldStorageDefinition($field_storage_definition)
     : $edum->installFieldStorageDefinition('owner_id', 'consumer', 'consumers', $field_definition);
 }
+
+/**
+ * Fix image field widget plugin ID. Was image, should be image_image.
+ *
+ * https://www.drupal.org/project/consumers/issues/3105435
+ */
+function consumers_update_8107() {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $image_field = $definition_update_manager->getFieldStorageDefinition('image', 'consumer');
+  $options = $image_field->getDisplayOptions('form');
+  if ($options['type'] === 'image') {
+    $options['type'] = 'image_image';
+    $image_field->setDisplayOptions('form', $options);
+    $definition_update_manager->installFieldStorageDefinition('image', 'consumer', 'consumer', $image_field);
+  }
+}

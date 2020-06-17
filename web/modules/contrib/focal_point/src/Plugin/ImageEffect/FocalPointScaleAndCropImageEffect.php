@@ -52,7 +52,7 @@ class FocalPointScaleAndCropImageEffect extends FocalPointEffectBase {
     // @see crop_file_url_alter()
     // @see https://www.drupal.org/node/2842260
     return parent::defaultConfiguration() + [
-      'crop_type' => 'focal_point'
+      'crop_type' => 'focal_point',
     ];
 
   }

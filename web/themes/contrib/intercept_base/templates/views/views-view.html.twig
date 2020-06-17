@@ -15,7 +15,9 @@
     </header>
   {% endif %}
 
+  {% block exposed %}
   {{ exposed }}
+  {% endblock %}
   {{ attachment_before }}
 
   {% if rows %}

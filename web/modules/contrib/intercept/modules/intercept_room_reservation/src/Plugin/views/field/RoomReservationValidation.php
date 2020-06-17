@@ -20,7 +20,11 @@ class RoomReservationValidation extends FieldPluginBase {
    */
   public function render(ResultRow $values) {
     $entity = $this->getEntity($values);
-    if ($entity instanceof RoomReservationInterface) {
+    if (!$entity instanceof RoomReservationInterface) {
+      return;
+    }
+    $is_canceled = $entity->get('field_status')->value == 'canceled';
+    if (!$is_canceled) {
       $warnings = [];
       $violations = $entity->validationWarnings();
       foreach ($violations->getEntityViolations() as $violation) {

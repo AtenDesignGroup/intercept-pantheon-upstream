@@ -1,0 +1,10 @@
+{% extends '@intercept_base/views/views-view.html.twig' %}
+
+{% block exposed %}
+{% if exposed %}
+<div class="filters filters--3up">
+  <h3 class="filters__heading">Filter</h3>
+  {{ exposed }}
+</div>
+{% endif %}
+{% endblock %}

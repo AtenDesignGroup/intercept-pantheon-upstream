@@ -26,8 +26,8 @@ function intercept_event_views_data_alter(&$data) {
 
   $data['node_field_data']['event_attendance_count'] = [
     'group' => new TranslatableMarkup('Intercept'),
-    'title' => new TranslatableMarkup('Event attendance count'),
-    'help' => new TranslatableMarkup('The number of attendees for an event.'),
+    'title' => new TranslatableMarkup('Event attendance scan count'),
+    'help' => new TranslatableMarkup('The number of scanned-in attendees for an event.'),
     'field' => [
       'id' => 'event_attendance_count',
     ],

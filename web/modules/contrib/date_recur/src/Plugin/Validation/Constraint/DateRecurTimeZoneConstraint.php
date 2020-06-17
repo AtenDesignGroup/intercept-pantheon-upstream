@@ -17,6 +17,11 @@ use Symfony\Component\Validator\Constraint;
  */
 class DateRecurTimeZoneConstraint extends Constraint {
 
+  /**
+   * Violation message for an invalid time zone.
+   *
+   * @var string
+   */
   public $invalidTimeZone = '%value is not a valid time zone.';
 
 }

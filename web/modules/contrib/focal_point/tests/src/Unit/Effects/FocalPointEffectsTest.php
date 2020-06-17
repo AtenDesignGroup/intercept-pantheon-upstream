@@ -41,8 +41,8 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
     $request = $this->prophesize(Request::class);
 
     $effect = new FocalPointCropImageEffect([], 'plugin_id', [], $logger->reveal(), $this->focalPointManager, $crop_storage->reveal(), $focal_point_config->reveal(), $request->reveal());
-    $this->assertAttributeEquals($crop_storage->reveal(), 'cropStorage', $effect);
-    $this->assertAttributeEquals($focal_point_config->reveal(), 'focalPointConfig', $effect);
+    $this->assertEquals($focal_point_config->reveal(), $effect->getFocalPointConfig());
+    $this->assertEquals($crop_storage->reveal(), $effect->getCropStorage());
   }
 
   /**
@@ -69,7 +69,7 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
     $data['vertical_image_horizontal_crop'] = [480, 640, 300, 100, ['width' => 300, 'height' => 400]];
     $data['vertical_image_vertical_crop'] = [480, 640, 100, 300, ['width' => 225, 'height' => 300]];
     $data['horizontal_image_too_large_crop'] = [640, 480, 3000, 1000, ['width' => 3000, 'height' => 2250]];
-    $data['image_too_narrow_to_crop_after_resize'] = [1920, 1080, 400, 300, ['width' => 533, 'height' => 300]];
+    $data['image_too_narrow_to_crop_after_resize'] = [1920, 1080, 400, 300, ['width' => 534, 'height' => 300]];
     $data['image_too_short_to_crop_after_resize'] = [200, 400, 1000, 1000, ['width' => 1000, 'height' => 2000]];
     // @codingStandardsIgnoreEnd
     return $data;

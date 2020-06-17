@@ -103,7 +103,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @return mixed
+   * @return array
    *   The value to assign to the element.
    */
   public function dateValueCallback(array $element, $input, FormStateInterface $form_state): array {
@@ -175,7 +175,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
     $rrule = $input['rrule'];
 
     if ($startDateEnd && !isset($startDate)) {
-      $form_state->setError($element['value'], $this->t('Start date must be set if end date is set.'));
+      $form_state->setError($element['value'], (string) $this->t('Start date must be set if end date is set.'));
     }
 
     // If end was empty, copy start date over.
@@ -191,11 +191,11 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
         DateRecurHelper::create(
           $rrule,
           $startDate->getPhpDateTime(),
-          $startDateEnd->getPhpDateTime()
+          $startDateEnd ? $startDateEnd->getPhpDateTime() : NULL
         );
       }
       catch (\Exception $e) {
-        $form_state->setError($element['rrule'], $this->t('Repeat rule is formatted incorrectly.'));
+        $form_state->setError($element['rrule'], (string) $this->t('Repeat rule is formatted incorrectly.'));
       }
     }
   }
@@ -218,7 +218,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    *   A PHP time zone string.
    */
   protected function getCurrentUserTimeZone(): string {
-    return \drupal_get_user_timezone();
+    return \date_default_timezone_get();
   }
 
   /**

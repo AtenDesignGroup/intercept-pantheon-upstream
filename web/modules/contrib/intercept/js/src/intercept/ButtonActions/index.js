@@ -2,11 +2,13 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import DialogConfirm from 'intercept/Dialog/DialogConfirm';
 import interceptClient from 'interceptClient';
-const { constants, api, select } = interceptClient;
-const c = constants;
+
 import { connect } from 'react-redux';
 
 import { Button } from '@material-ui/core';
+
+const { constants, api, select } = interceptClient;
+const c = constants;
 
 const ActionProperties = {
   cancel: {
@@ -24,10 +26,9 @@ const ActionProperties = {
     text: 'Confirm approval',
     heading: 'Confirm approval',
   },
-}
+};
 
 class ButtonActions extends PureComponent {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -93,7 +94,7 @@ ButtonActions.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-  reservation: select.record({type: c.TYPE_ROOM_RESERVATION, id: ownProps.id})(state),
+  reservation: select.record({ type: c.TYPE_ROOM_RESERVATION, id: ownProps.id })(state),
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -102,7 +103,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     data.attributes.field_status = this.getActionProperties(this.state.action).status;
     dispatch(interceptClient.actions.edit(data, c.TYPE_ROOM_RESERVATION, this.props.id));
     dispatch(interceptClient.api[c.TYPE_ROOM_RESERVATION].sync(this.props.id));
-    this.setState({open: false});
+    this.setState({ open: false });
   }
 });
 

@@ -4,9 +4,11 @@
 
 .pager__item {
   display: inline-block;
-  margin: 0 .25rem; }
+  margin: 0 0.25rem; }
   .pager__item.is-active a {
-    color: #4C4D4F; }
+    color: #ffffff;
+    background-color: #0288D1;
+    padding: 2px 5px; }
 
 .pager__link {
   color: #7A7D81;

@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_room_reservation
+id: room_reservation_archive
+label: 'Archive room reservation'
+type: room_reservation
+plugin: room_reservation_archive
+configuration: {  }

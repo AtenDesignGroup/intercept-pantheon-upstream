@@ -192,6 +192,9 @@ function date_recur_update_8203(&$sandbox): void {
       $select->addField('field_table', $timeZoneColumnName);
       $select->distinct();
       $result = $select->execute();
+      if (!$result) {
+        throw new \Exception('Problem executing query.');
+      }
       $allTimeZones = $result->fetchCol($timeZoneColumnName);
       $diff = array_diff($allTimeZones, $timeZoneList);
 

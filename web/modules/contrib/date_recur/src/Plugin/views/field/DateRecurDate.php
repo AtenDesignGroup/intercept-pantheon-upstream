@@ -16,7 +16,7 @@ use Drupal\views\ResultRow;
  * @ingroup views_field_handlers
  *
  * @ViewsField("date_recur_date")
- * @property \Drupal\views\Plugin\views\query\Sql query
+ * @property \Drupal\views\Plugin\views\query\Sql $query
  */
 class DateRecurDate extends Date {
 

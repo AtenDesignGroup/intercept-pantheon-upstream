@@ -30,7 +30,7 @@ class RoomReservationHtmlRouteProvider extends InterceptHtmlRouteProvider {
       $collection->add("$entity_type_id.settings", $settings_form_route);
     }
 
-    foreach (['cancel', 'approve', 'deny'] as $action) {
+    foreach (['cancel', 'approve', 'deny', 'archive'] as $action) {
       if ($settings_form_route = $this->getUpdateStatusFormRoutes($entity_type, $action)) {
         $collection->add("entity.$entity_type_id.{$action}_form", $settings_form_route);
       }

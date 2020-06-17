@@ -21,9 +21,10 @@ class AggregateField extends EntityField {
    * Provide options for multiple value fields.
    */
   public function multiple_options_form(&$form, FormStateInterface $form_state) {
+    parent::multiple_options_form($form, $form_state);
     $form['multi_type']['#options']['count'] = $this->t('Simple count');
     $form['multi_type']['#options']['individual'] = $this->t('Individual count per item');
-    return parent::multiple_options_form($form, $form_state);
+    return;
   }
 
   /**
@@ -79,7 +80,7 @@ class AggregateField extends EntityField {
     }
 
     $values = [];
-    if ($type == 'node') {
+    if ($type == 'node' && $this->options['multi_type'] == 'individual') {
       if ($this->options['delta_limit'] == 1) { // Just show 1 value as specified.
         $offset = $this->options['delta_offset'];
         $values = $field_item_list->get($offset) ? $field_item_list->get($offset)->count : NULL;
@@ -94,7 +95,7 @@ class AggregateField extends EntityField {
         $values = implode('; ', $values);
       }
     }
-    elseif ($type = 'event_attendance') {
+    elseif ($type = 'event_attendance') { // It's a "count" instead of individual.
       foreach ($field_item_list as $field_item) {
         /** @var \Drupal\Core\Field\FieldItemInterface $field_item */
         if (empty($field_item->count)) {
@@ -102,7 +103,12 @@ class AggregateField extends EntityField {
         }
         $values[] = $field_item->count;
       }
-      $values = array_sum($values);
+      if (count($values) > 0) {
+        $values = array_sum($values);
+      }
+      else {
+        $values = '-';
+      }
     }
     return $values;
   }
@@ -112,4 +118,3 @@ class AggregateField extends EntityField {
   }
 
 }
-

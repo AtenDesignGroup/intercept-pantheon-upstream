@@ -247,8 +247,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    * Batch callback; initialize the number of events.
    */
   public static function batchStart($total, &$context) {
-    $context['results']['events'] = 0;
-    $context['sandbox']['count'] = $total;
+    $context['results']['events'] = $total;
   }
 
   /**
@@ -278,15 +277,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   /**
    * Create event batch processing callback.
    */
-  public function createProcess($base_event, array $date_time, $recurrence, &$context) {
-    if (!isset($context['sandbox']['current'])) {
-      $context['sandbox']['count'] = 0;
-      $context['sandbox']['current'] = 0;
-    }
-    // Get the total amount of items to process.
-    if (!isset($context['sandbox']['total'])) {
-      $context['sandbox']['total'] = count($recurrence->getDateOccurrences);
-    }
+  public function createProcess($base_event, array $date_time, $recurrence) {
     $event = $base_event->createDuplicate();
     $event->set('field_date_time', $date_time);
     $event->set('event_recurrence', $recurrence->id());
@@ -294,13 +285,6 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     $manager = \Drupal::service('intercept_core.reservation.manager');
     if ($reservation = $manager->getEventReservation($base_event)) {
       $this->generateReservation($event, $reservation, $recurrence);
-    }
-    $context['sandbox']['count'] += 1;
-    $context['sandbox']['current'] += 1;
-    $context['results']['events'] += 1;
-
-    if ($context['sandbox']['count'] != $context['sandbox']['total']) {
-      $context['finished'] = $context['sandbox']['count'] / $context['sandbox']['total'];
     }
   }
 

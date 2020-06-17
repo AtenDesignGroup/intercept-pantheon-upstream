@@ -117,7 +117,9 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    * {@inheritdoc}
    */
   public function key(): ?int {
-    return key($this->occurrences);
+    $key = key($this->occurrences);
+    assert(is_int($key));
+    return $key;
   }
 
   /**

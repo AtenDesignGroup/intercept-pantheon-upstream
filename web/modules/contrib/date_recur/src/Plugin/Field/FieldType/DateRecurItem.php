@@ -37,8 +37,10 @@ use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
  *   }
  * )
  *
- * @property \DateTime start_date
- * @property \DateTime end_date
+ * @property \Drupal\Core\Datetime\DrupalDateTime|null $start_date
+ * @property \Drupal\Core\Datetime\DrupalDateTime|null $end_date
+ * @property string|null $timezone
+ * @property string|null $rrule
  */
 class DateRecurItem extends DateRangeItem {
 
@@ -81,11 +83,15 @@ class DateRecurItem extends DateRangeItem {
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition): array {
     $properties = parent::propertyDefinitions($field_definition);
 
-    $properties['start_date']->setClass(DateRecurDateTimeComputed::class);
-    $properties['end_date']->setClass(DateRecurDateTimeComputed::class);
+    /** @var \Drupal\Core\TypedData\DataDefinition $startDateProperty */
+    $startDateProperty = $properties['start_date'];
+    $startDateProperty->setClass(DateRecurDateTimeComputed::class);
+    /** @var \Drupal\Core\TypedData\DataDefinition $endDateProperty */
+    $endDateProperty = $properties['end_date'];
+    $endDateProperty->setClass(DateRecurDateTimeComputed::class);
 
     $properties['rrule'] = DataDefinition::create('string')
-      ->setLabel(new TranslatableMarkup('RRule'))
+      ->setLabel((string) new TranslatableMarkup('RRule'))
       ->setRequired(FALSE);
     $rruleMaxLength = $field_definition->getSetting('rrule_max_length');
     assert(empty($rruleMaxLength) || (is_numeric($rruleMaxLength) && $rruleMaxLength > 0));
@@ -94,16 +100,16 @@ class DateRecurItem extends DateRangeItem {
     }
 
     $properties['timezone'] = DataDefinition::create('string')
-      ->setLabel(new TranslatableMarkup('Timezone'))
+      ->setLabel((string) new TranslatableMarkup('Timezone'))
       ->setRequired(TRUE)
       ->addConstraint('DateRecurTimeZone');
 
     $properties['infinite'] = DataDefinition::create('boolean')
-      ->setLabel(new TranslatableMarkup('Whether the RRule is an infinite rule. Derived value from RRULE.'))
+      ->setLabel((string) new TranslatableMarkup('Whether the RRule is an infinite rule. Derived value from RRULE.'))
       ->setRequired(FALSE);
 
     $properties['occurrences'] = ListDataDefinition::create('any')
-      ->setLabel(new TranslatableMarkup('Occurrences'))
+      ->setLabel((string) new TranslatableMarkup('Occurrences'))
       ->setComputed(TRUE)
       ->setClass(DateRecurOccurrencesComputed::class);
 
@@ -370,6 +376,8 @@ class DateRecurItem extends DateRangeItem {
   public function setValue($values, $notify = TRUE): void {
     // Cast infinite to boolean on load.
     $values['infinite'] = !empty($values['infinite']);
+    // All values are going to be overwritten atomically.
+    $this->resetHelper();
     parent::setValue($values, $notify);
   }
 
@@ -379,7 +387,7 @@ class DateRecurItem extends DateRangeItem {
   public function onChange($property_name, $notify = TRUE) {
     if (in_array($property_name, ['value', 'end_value', 'rrule', 'timezone'])) {
       // Reset cached helper instance if values changed.
-      $this->helper = NULL;
+      $this->resetHelper();
     }
     parent::onChange($property_name, $notify);
   }
@@ -434,7 +442,7 @@ class DateRecurItem extends DateRangeItem {
       $startDateEnd->setTimezone($timeZone);
     }
     $this->helper = $this->isRecurring() ?
-      DateRecurHelper::create($this->rrule, $startDate, $startDateEnd) :
+      DateRecurHelper::create((string) $this->rrule, $startDate, $startDateEnd) :
       DateRecurNonRecurringHelper::createInstance('', $startDate, $startDateEnd);
     return $this->helper;
   }
@@ -445,12 +453,13 @@ class DateRecurItem extends DateRangeItem {
   public function isEmpty(): bool {
     $start_value = $this->get('value')->getValue();
     $end_value = $this->get('end_value')->getValue();
-    return
+    return (
       // Use OR operator instead of AND from parent. See
       // https://www.drupal.org/project/drupal/issues/3025812
       ($start_value === NULL || $start_value === '') ||
       ($end_value === NULL || $end_value === '') ||
-      empty($this->get('timezone')->getValue());
+      empty($this->get('timezone')->getValue())
+    );
   }
 
   /**
@@ -465,6 +474,13 @@ class DateRecurItem extends DateRangeItem {
     $values['infinite'] = FALSE;
 
     return $values;
+  }
+
+  /**
+   * Resets helper value since source values changed.
+   */
+  public function resetHelper(): void {
+    $this->helper = NULL;
   }
 
 }

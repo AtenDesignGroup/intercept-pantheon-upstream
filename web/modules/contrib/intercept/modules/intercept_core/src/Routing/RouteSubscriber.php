@@ -56,7 +56,7 @@ class RouteSubscriber extends RouteSubscriberBase {
       // Add a basic permission for the default page and the menu item.
       $permissions[] = ($page->key == 'default') ? "access management" : "access management page {$page->key}";
       // Build a route that is independent of a user id context.
-      $collection->add("$id.redirect", $this->createRoute("/account/manage/{$page->key}")
+      $collection->add("$id.redirect", $this->createRoute("/manage/{$page->key}")
         ->addDefaults([
           '_controller' => '\Drupal\intercept_core\Controller\UserAccount::userRedirect',
           'route_name' => $id,

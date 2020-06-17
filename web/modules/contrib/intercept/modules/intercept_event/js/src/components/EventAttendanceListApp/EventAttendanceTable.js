@@ -74,7 +74,7 @@ function EventAttendanceTable(props) {
           <TableCell>Name</TableCell>
           <TableCell>Saved</TableCell>
           <TableCell>Registered</TableCell>
-          <TableCell>Attended</TableCell>
+          <TableCell>Scanned</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

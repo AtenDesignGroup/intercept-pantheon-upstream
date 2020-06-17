@@ -205,7 +205,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
     // it supports base fields.
     $allFields = $this->getDateRecurFields();
     foreach ($allFields as $entityTypeId => $fields) {
-      /** @var \Drupal\Core\Entity\Sql\SqlEntityStorageInterface|\Drupal\Core\Entity\EntityStorageInterface $entityStorage */
+      /** @var \Drupal\Core\Entity\Sql\SqlEntityStorageInterface $entityStorage */
       $entityStorage = $this->entityTypeManager->getStorage($entityTypeId);
       /** @var \Drupal\Core\Entity\Sql\DefaultTableMapping $tableMapping */
       $tableMapping = $entityStorage->getTableMapping($fields);
@@ -241,8 +241,10 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
 
     $entityTypeId = $fieldDefinition->getTargetEntityTypeId();
     $entityType = $this->entityTypeManager->getDefinition($entityTypeId);
+    /** @var \Drupal\Core\Entity\Sql\SqlEntityStorageInterface $entityStorage */
+    $entityStorage = $this->entityTypeManager->getStorage($entityTypeId);
     /** @var \Drupal\Core\Entity\Sql\DefaultTableMapping $tableMapping */
-    $tableMapping = $this->entityTypeManager->getStorage($entityTypeId)->getTableMapping();
+    $tableMapping = $entityStorage->getTableMapping();
 
     $fieldName = $fieldDefinition->getName();
     // The field label, see also usage in views.views.inc.
@@ -263,6 +265,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
       unset($occurrenceTable['table']['join']);
       // Unset some irrelevant fields.
       foreach (array_keys($occurrenceTable) as $fieldId) {
+        $fieldId = (string) $fieldId;
         if (($fieldId === 'table') || (strpos($fieldId, $fieldName . '_value', 0) !== FALSE) || (strpos($fieldId, $fieldName . '_end_value', 0) !== FALSE)) {
           continue;
         }

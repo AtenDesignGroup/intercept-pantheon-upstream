@@ -27,3 +27,17 @@ function intercept_core_field_views_data_alter(array &$data, FieldStorageConfigI
     }
   }
 }
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function intercept_core_views_data_alter(array &$data) {
+  $data['users_field_data']['customer_edit_link'] = [
+    'title' => t('Customer edit link'),
+    'help' => t('Edit the user customer profile'),
+    'real field' => 'uid',
+    'field' => [
+      'id' => 'customer_edit_link',
+    ],
+  ];
+}

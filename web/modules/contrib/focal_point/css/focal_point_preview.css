@@ -6,7 +6,7 @@
 #focal-point-preview-image {
   max-height: 500px;
   max-width: 100%;
-  box-shadow: 4px 4px 10px rgba(0,0,0,0.75);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, .75);
 }
 
 #focal-point-derivatives {
@@ -22,16 +22,16 @@
   font-size: 1em;
   margin: .5em 1em 1em 0;
   padding: 0 1em 1em 1em;
-  border: 1px solid #CCCCCC;
-  background: #EEEEEE;
+  border: 1px solid #ccc;
+  background: #eee;
   min-height: 11.5em;
   vertical-align: top;
   cursor: pointer;
 }
 
 .focal-point-derivative-preview.active {
-  background: #CCCCCC;
-  border-color: #999999;
+  background: #ccc;
+  border-color: #999;
 }
 
 .focal-point-derivative-preview-image {
@@ -41,7 +41,7 @@
 
 #focal-point-preview-wrapper .note {
   display: block;
-  color: #999999;
+  color: #999;
   font-size: .8em;
   line-height: 1.5em;
   text-align: center;

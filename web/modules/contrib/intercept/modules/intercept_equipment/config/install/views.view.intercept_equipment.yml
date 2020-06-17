@@ -470,6 +470,7 @@ display:
       arguments: {  }
       display_extenders: {  }
       title: 'Reserve Equipment'
+      css_class: view-intercept-equipment
     cache_metadata:
       max-age: -1
       contexts:

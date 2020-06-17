@@ -100,9 +100,6 @@
       "drupal/addtocalendar": {
         "Issue #3092765: Fix configuration": "https://www.drupal.org/files/issues/2019-11-06/addtocalendar-config.patch"
       },
-      "drupal/core": {
-        "Issue #3103529: Drupal 8.8.1+ and 9 can fail to install in the web browser due to cache pollution": "https://www.drupal.org/files/issues/2020-03-16/3103529-8.x-115.patch"
-      },
       "drupal/office_hours": {
         "Issue #3072276: Incomplete Configuration schema for field.formatter.settings.office_hours": "https://www.drupal.org/files/issues/2019-08-02/3072276-2.patch"
       }

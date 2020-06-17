@@ -22,17 +22,25 @@
       // Add a click event to each derivative preview.
       $focalPointDerivativePreviews.each(function () {
         $(this).click(function(event) {
+          // Remove any image style classes added by active previews.
+          $(".focal-point-derivative-preview.active").each(function () {
+            $focalPointImagePreview.removeClass($(this).data('image-style'))
+          });
           // Before adding the active class, remove the active class from all
           // derivative previews in case one is already active.
           $(".focal-point-derivative-preview").removeClass('active');
-          $(this).addClass('active');
+          var $this = $(this);
+          var image_style = $this.data('image-style');
+          $this.addClass('active');
 
           // Set the main preview label and image to this derivative since it
           // was just clicked.
-          var imageSrc = $(this).find("img").attr('src');
-          var imageLabel = $(this).find('h3').html();
+          var imageSrc = $this.find("img").attr('src');
+          var imageLabel = $this.find('h3').html();
           $focalPointImagePreviewLabel.html(imageLabel);
           $focalPointImagePreview.attr('src', imageSrc);
+          $focalPointImagePreview.addClass(image_style);
+          $focalPointImagePreview.data('image-style', image_style);
 
           // Prevent the window click event from running.
           event.stopPropagation();
@@ -58,8 +66,8 @@
        */
       function resetPreview() {
         $focalPointDerivativePreviews.removeClass('active');
-
         $focalPointImagePreviewLabel.html(originalImagePreviewLabel);
+        $focalPointImagePreview.removeClass($focalPointImagePreview.data('image-style'));
         $focalPointImagePreview.attr('src', originalImageURL);
       }
 

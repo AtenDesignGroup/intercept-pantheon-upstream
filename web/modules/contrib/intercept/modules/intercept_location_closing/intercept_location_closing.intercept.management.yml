@@ -1,0 +1,9 @@
+intercept_location_closing:
+  controller: 'Drupal\intercept_location_closing\Controller\ManagementController::view'
+  pages:
+    location_closings:
+      title: 'Closings'
+      menu_weight: 8
+    location_closing_add:
+      title: 'Add Location Closing'
+      menu_link: FALSE

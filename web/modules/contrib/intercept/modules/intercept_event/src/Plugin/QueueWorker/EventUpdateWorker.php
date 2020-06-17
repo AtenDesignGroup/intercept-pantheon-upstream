@@ -42,7 +42,7 @@ class EventUpdateWorker extends QueueWorkerBase implements ContainerFactoryPlugi
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-      $container->get('entity.manager')->getStorage('node')
+      $container->get('entity_type.manager')->getStorage('node')
     );
   }
 

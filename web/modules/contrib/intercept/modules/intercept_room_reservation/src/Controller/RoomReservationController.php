@@ -72,53 +72,9 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    */
   public function reserve(Request $request) {
     $build = [];
-
-    // @TODO: Move this to the reservation manager.
-    $bypass_agreement = $this->currentUser()->hasPermission('bypass room reservation agreement');
-    $store = $this->tempStoreFactory->get('reservation_agreement');
-    if (!$store->get('room') && !$bypass_agreement) {
-      return $this->agreement($request);
-    }
-
-    $build = [];
     $build['#attached']['library'][] = 'intercept_room_reservation/reserveRoom';
     $build['#markup'] = '';
     $build['intercept_room_reserve']['#markup'] = '<div id="reserveRoomRoot"></div>';
-
-    return $build;
-  }
-
-  /**
-   * Reservation agreement form page.
-   *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The HTTP request object.
-   */
-  public function agreement(Request $request) {
-    $config = $this->config('intercept_room_reservation.settings');
-    $agreement = $config->get('agreement_text');
-    $build['agreement'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'div',
-      '#attributes' => [
-        'id' => 'reserveRoomRoot',
-        'class' => ['l--offset'],
-      ],
-    ];
-
-    $build['agreement']['title'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'h1',
-      '#value' => new TranslatableMarkup('Reserve a Room'),
-    ];
-
-    $build['agreement']['text'] = [
-      '#type' => 'processed_text',
-      '#text' => $agreement['value'],
-      '#format' => $agreement['format'],
-    ];
-
-    $build['agreement']['form'] = $this->formBuilder()->getForm(RoomReservationAgreementForm::class);
 
     return $build;
   }

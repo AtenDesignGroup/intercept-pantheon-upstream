@@ -2,6 +2,7 @@
 
 namespace Drupal\addtocalendar;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
@@ -14,17 +15,96 @@ class AddToCalendarApiWidget {
    *
    * @var string
    */
+
+  /**
+   * The config factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * Style.
+   *
+   * @var string
+   */
   protected $atcStyle;
+
+  /**
+   * DisplayText.
+   *
+   * @var string
+   */
   protected $atcDisplayText;
+
+  /**
+   * Title.
+   *
+   * @var string
+   */
   protected $atcTitle;
+
+  /**
+   * Description.
+   *
+   * @var string
+   */
   protected $atcDescription;
+
+  /**
+   * Location.
+   *
+   * @var string
+   */
   protected $atcLocation;
+
+  /**
+   * Organizer.
+   *
+   * @var string
+   */
   protected $atcOrganizer;
+
+  /**
+   * Orangizer Email.
+   *
+   * @var string
+   */
   protected $atcOrganizerEmail;
+
+  /**
+   * Start Date.
+   *
+   * @var string
+   */
   protected $atcDateStart;
+
+  /**
+   * End Date.
+   *
+   * @var string
+   */
   protected $atcDateEnd;
+
+  /**
+   * Privacy.
+   *
+   * @var string
+   */
   protected $atcPrivacy;
+
+  /**
+   * DataSecure.
+   *
+   * @var string
+   */
   protected $atcDataSecure;
+
+  /**
+   * Timezone.
+   *
+   * @var string
+   */
   protected $timeZone;
 
   /**
@@ -37,7 +117,7 @@ class AddToCalendarApiWidget {
   /**
    * Constructs a new AddToCalendarApiWidget object.
    */
-  public function __construct() {
+  public function __construct(ConfigFactoryInterface $config_factory) {
 
     $this->atcStyle = 'blue';
     $this->atcDisplayText = 'Add to calendar';
@@ -45,7 +125,8 @@ class AddToCalendarApiWidget {
     $this->atcDescription = 'Some event description';
     $this->atcLocation = 'Some event location';
     // Fetching site name and site email id.
-    $config = \Drupal::config('system.site');
+    $this->configFactory = $config_factory;
+    $config = $this->configFactory->getEditable('system.site');
     $site_name = $config->get('name');
     $site_mail = $config->get('mail');
 
@@ -55,21 +136,21 @@ class AddToCalendarApiWidget {
     $this->atcDateEnd = 'now';
     $this->atcPrivacy = 'public';
     $this->atcDataSecure = 'auto';
-    $data_calendars = array('iCalendar',
+    $data_calendars = ['iCalendar',
       'Google Calendar',
       'Outlook',
       'Outlook Online',
       'Yahoo! Calendar',
-    );
+    ];
     $this->atcDataCalendars = $data_calendars;
-    $this->timeZone = drupal_get_user_timezone();
+    $this->timeZone = date_default_timezone_get();
 
   }
 
   /**
    * Use this function to set values for the widget.
    */
-  public function setWidgetValues($config_values = array()) {
+  public function setWidgetValues($config_values = []) {
     foreach ($config_values as $key => $value) {
       $this->$key = $value;
     }
@@ -89,7 +170,7 @@ class AddToCalendarApiWidget {
 
     // Start building the renderable array.
     $build['addtocalendar'] = [];
-    $display_text = t('%text', array('%text' => $this->atcDisplayText));
+    $display_text = t('%text', ['%text' => $this->atcDisplayText]);
     $build['addtocalendar_button'] = [
       '#type' => 'html_tag',
       '#tag' => 'a',

@@ -32,8 +32,9 @@ class DateRange {
    *   The end date.
    */
   public function __construct(\DateTimeInterface $start, \DateTimeInterface $end) {
-    $this->setStart($start);
-    $this->setEnd($end);
+    $this->start = clone $start;
+    $this->end = clone $end;
+    $this->validateDates();
   }
 
   /**
@@ -43,7 +44,7 @@ class DateRange {
    *   The start date.
    */
   public function getStart(): \DateTimeInterface {
-    return $this->start;
+    return clone $this->start;
   }
 
   /**
@@ -72,7 +73,7 @@ class DateRange {
    *   The end date.
    */
   public function getEnd(): \DateTimeInterface {
-    return $this->end;
+    return clone $this->end;
   }
 
   /**
@@ -101,16 +102,13 @@ class DateRange {
    *   When there is a problem with the start and/or end date.
    */
   protected function validateDates(): void {
-    // Wait until both start and end are set before validating.
-    if ($this->start && $this->end) {
-      // Normalize end date timezone.
-      if ($this->start->getTimezone()->getName() !== $this->end->getTimezone()->getName()) {
-        throw new \InvalidArgumentException('Provided dates must be the same timezone.');
-      }
+    // Normalize end date timezone.
+    if ($this->start->getTimezone()->getName() !== $this->end->getTimezone()->getName()) {
+      throw new \InvalidArgumentException('Provided dates must be the same timezone.');
+    }
 
-      if ($this->end < $this->start) {
-        throw new \InvalidArgumentException('End date must not occur before start date.');
-      }
+    if ($this->end < $this->start) {
+      throw new \InvalidArgumentException('End date must not occur before start date.');
     }
   }
 

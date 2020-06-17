@@ -32,6 +32,7 @@ permissions:
   - 'create event_registration'
   - 'create room_reservation'
   - 'delete equipment reservation entities'
+  - 'delete own equipment_reservation'
   - 'edit equipment reservation entities'
   - 'edit room reservation entities'
   - 'evaluate any event'

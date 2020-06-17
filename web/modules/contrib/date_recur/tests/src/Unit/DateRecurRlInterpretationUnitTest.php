@@ -39,7 +39,7 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $dateFormat = $this->createMock(DateFormatInterface::class);
     $dateFormat->expects($this->any())
       ->method('id')
-      ->willReturn('');
+      ->willReturn($this->randomMachineName());
 
     $dateFormatStorage = $this->createMock(EntityStorageInterface::class);
     $dateFormatStorage->expects($this->any())
@@ -58,8 +58,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       ->method('format')
       ->with($this->anything())
       // See \Drupal\Core\Datetime\DateFormatterInterface::format.
-      ->willReturnCallback(function ($timestamp, $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL) {
-        return (new \DateTime('@' . $timestamp))->format('r');
+      ->willReturnCallback(function ($timestamp, $type = 'medium', $format = '', string $timezone = NULL, $langcode = NULL) {
+        $date = new \DateTime('@' . $timestamp);
+        if (!$timezone) {
+          $timezone = date_default_timezone_get();
+        }
+        $date->setTimezone(new \DateTimeZone($timezone));
+        return $date->format('r');
       });
 
     $container = new ContainerBuilder();
@@ -78,9 +83,10 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       'BYSECOND' => '59',
     ];
     $rules[] = new RlDateRecurRule($parts);
-    $interpreter = RlInterpreter::create($this->testContainer, [], '', []);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('secondly at second 59, starting from Sun, 15 Jul 2012 14:00:00 +0000, forever', $interpretation);
+    $this->assertEquals('secondly at second 59, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
@@ -93,9 +99,10 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       'BYMINUTE' => '44',
     ];
     $rules[] = new RlDateRecurRule($parts);
-    $interpreter = RlInterpreter::create($this->testContainer, [], '', []);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('minutely at minute 44, starting from Sun, 15 Jul 2012 14:00:00 +0000, forever', $interpretation);
+    $this->assertEquals('minutely at minute 44, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
@@ -108,9 +115,10 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       'BYHOUR' => '4,7',
     ];
     $rules[] = new RlDateRecurRule($parts);
-    $interpreter = RlInterpreter::create($this->testContainer, [], '', []);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('hourly at 4h and 7h, starting from Sun, 15 Jul 2012 14:00:00 +0000, forever', $interpretation);
+    $this->assertEquals('hourly at 4h and 7h, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
@@ -123,9 +131,10 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       'BYDAY' => 'WE,SU',
     ];
     $rules[] = new RlDateRecurRule($parts);
-    $interpreter = RlInterpreter::create($this->testContainer, [], '', []);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('daily on Wednesday and Sunday, starting from Sun, 15 Jul 2012 14:00:00 +0000, forever', $interpretation);
+    $this->assertEquals('daily on Wednesday and Sunday, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
@@ -138,9 +147,10 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       'BYDAY' => 'MO,TU',
     ];
     $rules[] = new RlDateRecurRule($parts);
-    $interpreter = RlInterpreter::create($this->testContainer, [], '', []);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('weekly on Monday and Tuesday, starting from Sun, 15 Jul 2012 14:00:00 +0000, forever', $interpretation);
+    $this->assertEquals('weekly on Monday and Tuesday, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
@@ -153,9 +163,10 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       'BYMONTH' => '2,10',
     ];
     $rules[] = new RlDateRecurRule($parts);
-    $interpreter = RlInterpreter::create($this->testContainer, [], '', []);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('monthly in February and October, starting from Sun, 15 Jul 2012 14:00:00 +0000, forever', $interpretation);
+    $this->assertEquals('monthly in February and October, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
@@ -167,9 +178,28 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
     ];
     $rules[] = new RlDateRecurRule($parts);
-    $interpreter = RlInterpreter::create($this->testContainer, [], '', []);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('yearly, starting from Sun, 15 Jul 2012 14:00:00 +0000, forever', $interpretation);
+    $this->assertEquals('yearly, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+  }
+
+  /**
+   * Tests output is in the same time zone as requested.
+   */
+  public function testDisplayTimeZone() {
+    $parts = [
+      'FREQ' => 'WEEKLY',
+      // Africa/Tripoli: UTC+2 No DST.
+      'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Africa/Tripoli')),
+    ];
+    $rules[] = new RlDateRecurRule($parts);
+    $configuration = ['date_format' => $this->randomMachineName()];
+    $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
+    // Asia/Singapore: UTC+8 No DST.
+    $displayTimeZone = new \DateTimeZone('Asia/Singapore');
+    $interpretation = $interpreter->interpret($rules, 'en', $displayTimeZone);
+    $this->assertEquals('weekly, starting from Sun, 15 Jul 2012 10:00:00 +0800, forever', $interpretation);
   }
 
 }

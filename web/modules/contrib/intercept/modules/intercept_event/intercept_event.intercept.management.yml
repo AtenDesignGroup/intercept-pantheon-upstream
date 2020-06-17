@@ -13,7 +13,7 @@ intercept_event:
       title: 'Event configuration'
       menu_link: FALSE
     event_attendance_export:
-      title: 'Event Attendance'
+      title: 'Export Scans'
       menu_weight: 0
       parent: intercept_event.export_parent
     meetings_export:

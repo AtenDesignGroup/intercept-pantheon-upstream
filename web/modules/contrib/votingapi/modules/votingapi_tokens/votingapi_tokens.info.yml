@@ -1,0 +1,13 @@
+name: VotingAPI Tokens
+description: 'Token support for VotingAPI'
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+- votingapi:votingapi
+- token:token
+
+# Information added by Drupal.org packaging script on 2020-06-08
+version: '8.x-3.0-beta2'
+project: 'votingapi'
+datestamp: 1591655797

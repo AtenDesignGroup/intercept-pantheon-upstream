@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\InfoParserInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountSwitcherInterface;
 use Drupal\default_content\Event\DefaultContentEvents;
 use Drupal\default_content\Event\ExportEvent;
@@ -85,6 +86,13 @@ class Exporter implements ExporterInterface {
   protected $accountSwitcher;
 
   /**
+   * The filesystem service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
    * Constructs the default content manager.
    *
    * @param \Symfony\Component\Serializer\Serializer $serializer
@@ -105,8 +113,10 @@ class Exporter implements ExporterInterface {
    *   Defines relation domain URI for entity links.
    * @param \Drupal\Core\Session\AccountSwitcherInterface $account_switcher
    *   The account switcher.
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
+   *   The filesystem service.
    */
-  public function __construct(Serializer $serializer, EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, LinkManagerInterface $link_manager, EventDispatcherInterface $event_dispatcher, ModuleHandlerInterface $module_handler, InfoParserInterface $info_parser, $link_domain, AccountSwitcherInterface $account_switcher) {
+  public function __construct(Serializer $serializer, EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, LinkManagerInterface $link_manager, EventDispatcherInterface $event_dispatcher, ModuleHandlerInterface $module_handler, InfoParserInterface $info_parser, $link_domain, AccountSwitcherInterface $account_switcher, FileSystemInterface $file_system) {
     $this->serializer = $serializer;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityRepository = $entity_repository;
@@ -116,6 +126,7 @@ class Exporter implements ExporterInterface {
     $this->infoParser = $info_parser;
     $this->linkDomain = $link_domain;
     $this->accountSwitcher = $account_switcher;
+    $this->fileSystem = $file_system;
   }
 
   /**
@@ -231,7 +242,7 @@ class Exporter implements ExporterInterface {
    *   Content directory + entity directory to prepare.
    */
   protected function prepareDirectory($path) {
-    file_prepare_directory($path, FILE_CREATE_DIRECTORY);
+    $this->fileSystem->prepareDirectory($path, FileSystemInterface::CREATE_DIRECTORY);
   }
 
   /**

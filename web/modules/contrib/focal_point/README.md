@@ -1,4 +1,16 @@
-##ABOUT
+CONTENTS OF THIS FILE
+---------------------
+
+ * Introduction
+ * Usage
+ * Requirements
+ * Installation
+ * Configuration
+ * Maintainers
+
+
+INTRODUCTION
+------------
 
 Focal Point allows you to specify the portion of an image that is most
 important. This information can be used when the image is cropped or cropped and
@@ -7,41 +19,61 @@ subject's head.
 
 This module borrows heavily from the ImageField Focus module but it works in a
 fundamentally different way. In this module the focus is defined as a single
-point on the image. Among other things this helps to solve the problem of
-guaranteeing the size of a cropped image as described here:
-https://drupal.org/node/1889542.
+point on the image.
 
-Currently, Focal Point integrates with the standard image fields.
+ * For a full description of the module, visit the project page:
+   https://www.drupal.org/project/focal_point
 
-##DEPENDENCIES
+ * To submit bug reports and feature suggestions, or to track changes:
+   https://www.drupal.org/project/issues/focal_point
 
-- image
-- crop
 
-##USAGE
+REQUIREMENTS
+------------
 
-### Setting up image fields
+This module requires the following module outside of Drupal core:
 
-Install the module as usual. On the "Manage Form Display" page (e.g.
-admin/structure/types/manage/article/form-display) choose the "Image (Focal
-Point)" widget for your image field.
+ * Crop API - https://www.drupal.org/project/crop
 
-### Setting the focal point for an image
 
-To set the focal point on an image, go to the content edit form (ex. the node
-edit form) and upload an image. You will notice a crosshair in the middle of the
-newly uploaded image. Drag this crosshair to the most important part of your
-image. Done.
+INSTALLATION
+------------
 
-Pro tip: you can double-click the crosshair to see the exact coordinates (in
-percentages) of the focal point.
+ * Install the Focal Point module as you would normally install a contributed
+   Drupal module. Visit https://www.drupal.org/node/1897420 for further
+   information.
 
-### Cropping your image
-The focal point module comes with two image effects:
 
-1. focal point crop
-2. focal point crop and scale
+CONFIGURATION
+-------------
 
-Both effects will make sure that the defined focal point is as close to the
-center of your image as possible. It guarantees the focal point will be not be
-cropped out of your image and that the image size will be the specified size.
+    1. Navigate to Administration > Extend and enable the module.
+    2. Navigate to Administration > Structure > Content types > [Content type to
+       edit] > Manage Form Display and choose the "Image (Focal Point)" widget
+       for the image field.
+
+ * Setting the focal point for an image:
+   To set the focal point on an image, go to the content edit form (ex. the node
+   edit form) and upload an image. You will notice a crosshair in the middle of
+   the newly uploaded image. Drag this crosshair to the most important part of
+   your image. Done.
+
+   Pro tip: you can double-click the crosshair to see the exact coordinates (in
+   percentages) of the focal point.
+
+ * Cropping your image:
+   The focal point module comes with two image effects:
+
+    1. focal point crop
+    2. focal point crop and scale
+
+   Both effects will make sure that the defined focal point is as close to the
+   center of your image as possible. It guarantees the focal point will be not
+   be cropped out of your image and that the image size will be the specified
+   size.
+
+
+MAINTAINERS
+-----------
+
+ * Alexander Ross (bleen) - https://www.drupal.org/u/bleen

@@ -4,7 +4,7 @@ services:
     public: false
     decorates: user.auth
     decoration_inner_name: intercept_ils.auth.user_auth
-    arguments: ['@entity.manager', '@password', '@intercept_ils.auth.user_auth', '@externalauth.externalauth', '@externalauth.authmap', '@config.factory', '@plugin.manager.intercept_ils']
+    arguments: ['@entity_type.manager', '@password', '@intercept_ils.auth.user_auth', '@externalauth.externalauth', '@externalauth.authmap', '@config.factory', '@plugin.manager.intercept_ils']
   intercept_ils.mapping_manager:
     class: Drupal\intercept_ils\MappingManager
     arguments: ['@entity_type.manager', '@entity.query', '@config.factory', '@plugin.manager.intercept_ils']

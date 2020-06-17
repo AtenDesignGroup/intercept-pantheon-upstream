@@ -16,6 +16,11 @@ use Symfony\Component\Validator\Constraint;
  */
 class DateRecurRruleConstraint extends Constraint {
 
+  /**
+   * Violation message for an invalid RRULE.
+   *
+   * @var string
+   */
   public $invalidRrule = 'Invalid RRULE.';
 
 }

@@ -37,7 +37,7 @@ const styles = theme => ({
     },
     '& .MuiTypography-caption': {
       display: 'block',
-    }
+    },
   },
 });
 
@@ -49,6 +49,39 @@ class HorizontalNonLinearStepper extends React.Component {
   state = {
     activeStep: 0,
     completed: {},
+  };
+
+  getStepCaption = (step) => {
+    switch (step) {
+      case 0:
+        return this.props.roomLabel;
+      case 1:
+        // return props.dateLabel;
+        return this.getDateLabel();
+      case 2:
+        return '';
+      default:
+        return 'Unknown step';
+    }
+  }
+
+  getStepDisabledState = (step) => {
+    const { date, start } = this.props.values;
+
+    switch (step) {
+      case 0:
+      case 1:
+        return false;
+      case 2:
+        return !(date && start && isFutureTime(start, date));
+      default:
+        return false;
+    }
+  }
+
+  getDateLabel = () => {
+    const { date, start, end } = this.props.values;
+    return (date && start && end) ? utils.getDateTimespanDisplay({ date, start, end }) : '';
   };
 
   completedSteps() {
@@ -109,39 +142,6 @@ class HorizontalNonLinearStepper extends React.Component {
     });
   };
 
-  getDateLabel = () => {
-    const { date, start, end } = this.props.values;
-    return (date && start && end) ? utils.getDateTimespanDisplay({ date, start, end }) : '';
-  };
-
-  getStepCaption = (step) => {
-    switch (step) {
-      case 0:
-        return this.props.roomLabel;
-      case 1:
-        // return props.dateLabel;
-        return this.getDateLabel();
-      case 2:
-        return '';
-      default:
-        return 'Unknown step';
-    }
-  }
-
-  getStepDisabledState = (step) => {
-    const { date, start, end } = this.props.values;
-
-    switch (step) {
-      case 0:
-      case 1:
-        return false;
-      case 2:
-        return !(date && start && isFutureTime(start, date));
-      default:
-        return false;
-    }
-  }
-
   render() {
     const { classes, step, width } = this.props;
     const steps = getSteps();
@@ -151,7 +151,8 @@ class HorizontalNonLinearStepper extends React.Component {
         <Stepper
           nonLinear
           activeStep={step}
-          orientation={isWidthUp('md', width) ? 'horizontal' : 'vertical'}>
+          orientation={isWidthUp('md', width) ? 'horizontal' : 'vertical'}
+        >
           {steps.map((label, index) => (
             <Step key={label}>
               <StepButton

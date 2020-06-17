@@ -1485,6 +1485,9 @@ tbody + tbody {
     width: -webkit-calc(33.33% - 30px);
     width: calc(33.33% - 30px); } }
 
+.view-intercept-equipment .view__content {
+  margin: 2em 0 1em; }
+
 .align-left {
   margin: 0 1rem 1rem 0; }
 

@@ -81,6 +81,7 @@ class VoteTypeForm extends EntityForm {
       '#description' => $this->t('A unique machine-readable name for this vote type. It must only contain lowercase letters, numbers, and underscores.', [
         '%vote-add' => $this->t('Add vote type'),
       ]),
+      '#disabled' => !$type->isNew(),
     ];
 
     $form['value_type'] = [
@@ -140,11 +141,11 @@ class VoteTypeForm extends EntityForm {
     $t_args = ['%name' => $type->label()];
 
     if ($status == SAVED_UPDATED) {
-      drupal_set_message($this->t('The vote type %name has been updated.', $t_args));
+      $this->messenger()->addMessage($this->t('The vote type %name has been updated.', $t_args));
     }
     elseif ($status == SAVED_NEW) {
-      drupal_set_message($this->t('The vote type %name has been added.', $t_args));
-      $context = array_merge($t_args, ['link' => $type->link($this->t('View'), 'collection')]);
+      $this->messenger()->addMessage($this->t('The vote type %name has been added.', $t_args));
+      $context = array_merge($t_args, ['link' => $type->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('vote')->notice('Added vote type %name.', $context);
     }
 

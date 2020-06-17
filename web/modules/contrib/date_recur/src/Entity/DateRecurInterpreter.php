@@ -71,7 +71,7 @@ class DateRecurInterpreter extends ConfigEntityBase implements DateRecurInterpre
   /**
    * The plugin collection.
    *
-   * @var \Drupal\date_recur\Plugin\DateRecurInterpreterPluginCollection
+   * @var \Drupal\date_recur\Plugin\DateRecurInterpreterPluginCollection|null
    */
   protected $pluginCollection;
 
@@ -82,7 +82,7 @@ class DateRecurInterpreter extends ConfigEntityBase implements DateRecurInterpre
    *   The plugin collection.
    */
   protected function getPluginCollection(): LazyPluginCollection {
-    if (!$this->pluginCollection) {
+    if (!isset($this->pluginCollection)) {
       $this->pluginCollection = new DateRecurInterpreterPluginCollection(
         \Drupal::service('plugin.manager.date_recur_interpreter'),
         $this->plugin,

@@ -72,7 +72,7 @@ final class DateRecurHelper implements DateRecurHelperInterface {
   public function getRules(): array {
     $rules = $this->dateRecurHelper->getRules();
     assert(is_array($rules));
-    assert(count($rules) == 0 || $rules[0] instanceof DateRecurRuleInterface);
+    assert(Inspector::assertAllObjects($rules, DateRecurRuleInterface::class));
     return $rules;
   }
 

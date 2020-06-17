@@ -350,6 +350,47 @@ class DateRecurFieldItemTest extends KernelTestBase {
   }
 
   /**
+   * Tests cached helper instance on items are reset if values is overwritten.
+   *
+   * @covers ::setValue
+   */
+  public function testHelperResetAfterListOverwritten() {
+    $entity = DrEntityTest::create();
+    $entity->dr = [
+      [
+        'value' => '2014-06-15T23:00:01',
+        'end_value' => '2014-06-16T07:00:02',
+        'timezone' => 'Indian/Christmas',
+        'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=5',
+      ],
+    ];
+
+    /** @var \Drupal\date_recur\DateRecurHelperInterface $helper1 */
+    $helper1 = $entity->dr[0]->getHelper();
+    $firstOccurrence = $helper1->getOccurrences(NULL, NULL, 1)[0];
+    $this->assertEquals('Mon, 16 Jun 2014 06:00:01 +0700', $firstOccurrence->getStart()->format('r'));
+    $this->assertEquals('Mon, 16 Jun 2014 14:00:02 +0700', $firstOccurrence->getEnd()->format('r'));
+    $this->assertEquals('WEEKLY', $helper1->getRules()[0]->getFrequency());
+
+    // Change full list.
+    $entity->dr = [
+      [
+        'value' => '2015-07-15T23:00:03',
+        'end_value' => '2015-07-16T07:00:04',
+        'timezone' => 'Indian/Christmas',
+        'rrule' => 'FREQ=DAILY;COUNT=3',
+      ],
+    ];
+
+    /** @var \Drupal\date_recur\DateRecurHelperInterface $helper2 */
+    $helper2 = $entity->dr[0]->getHelper();
+    $firstOccurrence = $helper2->getOccurrences(NULL, NULL, 1)[0];
+    $this->assertEquals('Thu, 16 Jul 2015 06:00:03 +0700', $firstOccurrence->getStart()->format('r'));
+    $this->assertEquals('Thu, 16 Jul 2015 14:00:04 +0700', $firstOccurrence->getEnd()->format('r'));
+    $this->assertEquals('DAILY', $helper2->getRules()[0]->getFrequency());
+  }
+
+  /**
    * Tests magic properties have the correct time zone.
    */
   public function testStartEndDateTimeZone() {

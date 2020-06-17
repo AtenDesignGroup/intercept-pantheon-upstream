@@ -57,11 +57,17 @@ function intercept_room_reservation_jsonapi_room_reservation_filter_access(Entit
  * Implements hook_page_attachments().
  */
 function intercept_room_reservation_page_attachments(array &$attachments) {
+  $current_user = \Drupal::currentUser();
   // Add customer room reservation limit.
   $limit = \Drupal::config('intercept_room_reservation.settings')->get('reservation_limit', 0);
   $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['customer_limit'] = $limit;
+  // Add room reservation agreement text.
+  $agreement_text = \Drupal::config('intercept_room_reservation.settings')->get('agreement_text', '');
+  $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['agreement_text'] = $agreement_text['value'];
+  $bypass_agreement = $current_user->hasPermission('bypass room reservation agreement');
+  $attachments['#attached']['drupalSettings']['intercept']['user']['bypass room reservation agreement'] = $bypass_agreement;
 
-  // Add customer room reservation limit.
+  // Add customer advanced limit.
   $advanced_limit = \Drupal::config('intercept_room_reservation.settings')->get('advanced_reservation_limit', 0);
   $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['customer_advanced_limit'] = $advanced_limit;
   if (isset($advanced_limit) && $advanced_limit !== '0') {
@@ -81,9 +87,8 @@ function intercept_room_reservation_page_attachments(array &$attachments) {
   }
 
   // Add default location.
-  $current_user = \Drupal::currentUser();
   $default_locations = [];
-  $customer_barred = false;
+  $customer_barred = FALSE;
   if ($current_user->isAuthenticated()) {
     $user = User::load($current_user->id());
     $customer = \Drupal::service('entity_type.manager')
@@ -96,7 +101,7 @@ function intercept_room_reservation_page_attachments(array &$attachments) {
       $customer = reset($customer);
       // See if the customer is allowed to make reservations or is barred.
       $customer_barred = $customer->get('field_room_reservation_barred')->getString();
-      $customer_barred = ($customer_barred === '1') ? true : false;
+      $customer_barred = ($customer_barred === '1') ? TRUE : FALSE;
     }
 
     if ($reservations = \Drupal::service('intercept_core.reservation.manager')->getReservationsByUser('room', $user)) {
@@ -159,7 +164,7 @@ function intercept_room_reservation_entity_operation(EntityInterface $entity) {
       ];
     };
 
-    $operation_types = ['cancel', 'approve', 'deny'];
+    $operation_types = ['cancel', 'approve', 'deny', 'archive'];
 
     $operations = [];
 
@@ -213,7 +218,7 @@ function intercept_room_reservation_form_node_form_alter(&$form, FormStateInterf
  */
 function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->get('view');
-  if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'embed') {
+  if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'page') {
 
     // Change the locations field to be a dropdown.
     $storage = Drupal::getContainer()->get('entity_type.manager')->getStorage('node');
@@ -412,7 +417,7 @@ function intercept_room_reservation_room_reservation_view(array &$build, RoomRes
  * Implements hook_views_query_alter().
  */
 function intercept_room_reservation_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
-  if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'embed') {
+  if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'page') {
     foreach ($query->where as &$condition_group) {
       // For each condition in condition group.
       foreach ($condition_group['conditions'] as &$condition) {
@@ -454,7 +459,7 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
  * Implements hook_views_pre_view().
  */
 function intercept_room_reservation_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
-  if ($view->id() == 'intercept_room_reservations' && $display_id == 'embed') {
+  if ($view->id() == 'intercept_room_reservations' && $display_id == 'page') {
     $exposed_input = $view->getExposedInput();
     if (!isset($exposed_input['date--start'])) {
       $date = new DateTime('now');

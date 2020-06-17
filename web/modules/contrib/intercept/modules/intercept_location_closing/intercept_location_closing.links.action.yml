@@ -1,0 +1,5 @@
+entity.intercept_location_closing.add_form:
+  route_name: entity.intercept_location_closing.add_form
+  title: 'Add Location Closing'
+  appears_on:
+    - entity.intercept_location_closing.collection

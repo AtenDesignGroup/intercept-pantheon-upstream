@@ -4,7 +4,6 @@ type: module
 core: 8.x
 dependencies:
   - address:address
-  - consumers:consumers
   - consumer_image_styles:consumer_image_styles
   - drupal:field
   - drupal:file
@@ -19,7 +18,6 @@ dependencies:
   - drupal:views
   - entity:entity
   - externalauth:externalauth
-  - field_group:field_group
   - focal_point:focal_point
   - intercept:intercept
   - intercept:intercept_ils

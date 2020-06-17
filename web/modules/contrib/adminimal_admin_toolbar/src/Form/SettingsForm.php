@@ -35,14 +35,14 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('adminimal_admin_toolbar.settings');
 
-    $form['avoid_custom_font'] = array(
+    $form['avoid_custom_font'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Avoid loading "Open Sans" font'),
       '#default_value' => $config->get('avoid_custom_font'),
       '#description' => $this->t(
         'Google Open Sans will not be downloaded if this is checked (useful for languages that are not well supported by the "Open sans" font. Like Japanese for example).'
       ),
-    );
+    ];
 
     return parent::buildForm($form, $form_state);
   }

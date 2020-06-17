@@ -25,8 +25,8 @@ entity.node.recurrence_form:
   title: 'Recurrences'
 
 entity.event_recurrence.delete_form:
-  route_name:  entity.event_recurrence.delete_form
-  base_route:  entity.event_recurrence.canonical
+  route_name: entity.event_recurrence.delete_form
+  base_route: entity.event_recurrence.canonical
   title: Delete
   weight: 10
 
@@ -53,8 +53,8 @@ entity.event_attendance.edit_form:
   title: 'Edit'
 
 entity.event_attendance.delete_form:
-  route_name:  entity.event_attendance.delete_form
-  base_route:  entity.event_attendance.canonical
+  route_name: entity.event_attendance.delete_form
+  base_route: entity.event_attendance.canonical
   title: Delete
   weight: 10
 
@@ -81,8 +81,8 @@ entity.event_registration.edit_form:
   title: 'Edit'
 
 entity.event_registration.delete_form:
-  route_name:  entity.event_registration.delete_form
-  base_route:  entity.event_registration.canonical
+  route_name: entity.event_registration.delete_form
+  base_route: entity.event_registration.canonical
   title: Delete
   weight: 10
 
@@ -90,10 +90,10 @@ entity.event_registration.collection:
   title: 'Event registration'
   route_name: entity.event_registration.collection
   base_route: system.admin_content
-  weight: 20 
+  weight: 20
 
 entity.node.attendance:
-  title: 'Attendance'
+  title: 'Scanned'
   route_name: entity.node.attendance
   base_route: entity.node.canonical
 

@@ -91,7 +91,7 @@ function intercept_base_preprocess_form(&$variables) {
       break;
 
     case 'views-exposed-form-intercept-user-events-embed':
-    case 'views-exposed-form-intercept-room-reservations-embed':
+    case 'views-exposed-form-intercept-room-reservations-page':
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
     case 'views-exposed-form-intercept-equipment-page':
@@ -136,16 +136,6 @@ function intercept_base_theme_suggestions_field_alter(array &$suggestions, array
   $bundle = $variables['element']['#bundle'];
   $suggestions[] = implode('__', ['field', $name, $mode]);
   $suggestions[] = implode('__', ['field', $name, $bundle, $mode]);
-}
-
-/**
- * Implements hook_theme_suggestions_HOOK_alter() for views.
- */
-function intercept_base_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
-  // Add theme suggestions for each single tag.
-  foreach (Tags::explode($variables['view']->storage->get('tag')) as $tag) {
-    $suggestions[] = 'views_view__tag_' . preg_replace('/[^a-z0-9]/', '_', strtolower($tag));
-  }
 }
 
 /**

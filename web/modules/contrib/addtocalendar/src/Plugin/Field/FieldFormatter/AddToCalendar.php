@@ -6,6 +6,11 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\addtocalendar\AddToCalendarApiWidget;
+use Drupal\Core\Utility\Token;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'add_to_calendar' formatter.
@@ -18,7 +23,67 @@ use Drupal\Core\Form\FormStateInterface;
  *   }
  * )
  */
-class AddToCalendar extends FormatterBase {
+class AddToCalendar extends FormatterBase implements ContainerFactoryPluginInterface {
+
+
+  /**
+   * The entity manager service.
+   *
+   * @var \Drupal\addtocalendar\AddToCalendarApiWidget
+   */
+  protected $addToCalendarApiWidget;
+
+  /**
+   * The token service.
+   *
+   * @var \Drupal\Core\Utility\Token
+   */
+  protected $token;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['label'],
+      $configuration['view_mode'],
+      $configuration['third_party_settings'],
+      $container->get('addtocalendar.apiwidget'),
+      $container->get('token')
+    );
+  }
+
+  /**
+   * Construct an AddToCalendar object.
+   *
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+   *   Defines an interface for entity field definitions.
+   * @param array $settings
+   *   The formatter settings.
+   * @param string $label
+   *   The formatter label display setting.
+   * @param string $view_mode
+   *   The view mode.
+   * @param array $third_party_settings
+   *   Any third party settings.
+   * @param \Drupal\addtocalendar\AddToCalendarApiWidget $add_to_calendar_api_widget
+   *   AddToCalendarApi Widget service.
+   * @param \Drupal\Core\Utility\Token $token
+   *   Token service.
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AddToCalendarApiWidget $add_to_calendar_api_widget, Token $token) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+    $this->addToCalendarApiWidget = $add_to_calendar_api_widget;
+    $this->token = $token;
+  }
 
   /**
    * {@inheritdoc}
@@ -77,7 +142,7 @@ class AddToCalendar extends FormatterBase {
       $entity_type = $entity->getEntityTypeId();
       $settings = $this->fieldDefinition->getSettings();
 
-      $service = \Drupal::service('addtocalendar.apiwidget');
+      $service = $this->addToCalendarApiWidget;
       $config_values = [
         'atcStyle' => $settings['addtocalendar_settings']['style'],
         'atcDisplayText' => $this->fieldDefinition->getSetting('on_label'),
@@ -92,7 +157,7 @@ class AddToCalendar extends FormatterBase {
         'atcDataSecure' => $settings['addtocalendar_settings']['data_secure'],
       ];
       if ($settings['addtocalendar_settings']['data_calendars']) {
-        $data_calendars = array();
+        $data_calendars = [];
         foreach ($settings['addtocalendar_settings']['data_calendars'] as $key => $set) {
           if ($set) {
             $data_calendars[$key] = $key;
@@ -116,7 +181,7 @@ class AddToCalendar extends FormatterBase {
    *
    * @param array $field_setting
    *   The field setting array.
-   * @param $entity
+   * @param object $entity
    *   The entity from which the value is to be returned.
    * @param array $options
    *   Provide various options usable to override the data value being return
@@ -126,10 +191,10 @@ class AddToCalendar extends FormatterBase {
    * @return string
    *   The textual output generated.
    */
-  public function getProperValue(array $field_setting, $entity, array $options = array()) {
+  public function getProperValue(array $field_setting, $entity, array $options = []) {
     $entity_type = $entity->getEntityTypeId();
     // Create token service.
-    $token_service = \Drupal::token();
+    $token_service = $this->token;
     $token_options = [
       'langcode' => $entity->language()->getId(),
       'callback' => '',

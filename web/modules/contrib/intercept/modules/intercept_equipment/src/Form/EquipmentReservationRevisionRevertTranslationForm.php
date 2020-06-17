@@ -51,7 +51,7 @@ class EquipmentReservationRevisionRevertTranslationForm extends EquipmentReserva
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('equipment_reservation'),
+      $container->get('entity_type.manager')->getStorage('equipment_reservation'),
       $container->get('date.formatter'),
       $container->get('language_manager')
     );

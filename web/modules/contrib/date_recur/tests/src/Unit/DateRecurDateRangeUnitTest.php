@@ -43,7 +43,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    * @covers ::setStart
    * @covers ::setEnd
    */
-  public function testReferencesLost() {
+  public function testConstructorReferencesLost() {
     $startOriginal = new \DateTime('Monday 12:00:00');
     $endOriginal = new \DateTime('Monday 12:00:00');
     $start = clone $startOriginal;
@@ -57,6 +57,38 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
     // Dates should be the same as passed.
     $this->assertEquals($startOriginal, $dateRange->getStart());
     $this->assertEquals($endOriginal, $dateRange->getEnd());
+  }
+
+  /**
+   * Tests references on start getter is lost.
+   *
+   * @covers ::getStart
+   */
+  public function testGetStartImmutable() {
+    $original = new \DateTime('Monday 12:00:00');
+    $dateRange = $this->createDateRange(clone $original, new \DateTime('Monday 12:00:00'));
+
+    $gotten = $dateRange->getStart();
+    $gotten->modify('+1 year');
+    $gotten->setTimezone(new \DateTimeZone('Asia/Singapore'));
+
+    $this->assertEquals($original, $dateRange->getStart());
+  }
+
+  /**
+   * Tests references on end getter is lost.
+   *
+   * @covers ::getEnd
+   */
+  public function testGetEndImmutable() {
+    $original = new \DateTime('Monday 12:00:00');
+    $dateRange = $this->createDateRange(new \DateTime('Monday 12:00:00'), clone $original);
+
+    $gotten = $dateRange->getEnd();
+    $gotten->modify('+1 year');
+    $gotten->setTimezone(new \DateTimeZone('Asia/Singapore'));
+
+    $this->assertEquals($original, $dateRange->getEnd());
   }
 
   /**

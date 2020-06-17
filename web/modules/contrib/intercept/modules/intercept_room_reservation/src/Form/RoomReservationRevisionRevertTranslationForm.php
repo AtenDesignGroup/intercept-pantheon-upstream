@@ -50,7 +50,7 @@ class RoomReservationRevisionRevertTranslationForm extends RoomReservationRevisi
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('room_reservation'),
+      $container->get('entity_type.manager')->getStorage('room_reservation'),
       $container->get('date.formatter'),
       $container->get('language_manager')
     );

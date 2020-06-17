@@ -2,7 +2,7 @@
 
 namespace Drupal\votingapi\Form;
 
-use Drupal\Core\Entity\Query\QueryFactory;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityDeleteForm;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -13,20 +13,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class VoteTypeDeleteConfirm extends EntityDeleteForm {
 
   /**
-   * The query factory to create entity queries.
+   * The entity type manager to create entity queries.
    *
-   * @var \Drupal\Core\Entity\Query\QueryFactory
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $queryFactory;
+  protected $entityTypeManager;
 
   /**
    * Constructs a new VoteTypeDeleteConfirm object.
    *
-   * @param \Drupal\Core\Entity\Query\QueryFactory $query_factory
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity query object.
    */
-  public function __construct(QueryFactory $query_factory) {
-    $this->queryFactory = $query_factory;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -34,7 +34,7 @@ class VoteTypeDeleteConfirm extends EntityDeleteForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.query')
+      $container->get('entity_type.manager')
     );
   }
 
@@ -42,7 +42,7 @@ class VoteTypeDeleteConfirm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $num_nodes = $this->queryFactory->get('vote')
+    $num_nodes = $this->entityTypeManager->getStorage('vote')->getQuery()
       ->condition('type', $this->entity->id())
       ->count()
       ->execute();

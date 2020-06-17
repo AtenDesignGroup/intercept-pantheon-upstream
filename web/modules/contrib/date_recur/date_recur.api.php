@@ -1,5 +1,7 @@
 <?php
 
+// @codingStandardsIgnoreFile
+
 /**
  * @file
  * API Examples for Recurring Dates Field.

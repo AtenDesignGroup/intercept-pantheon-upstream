@@ -133,6 +133,7 @@ class ReserveRoom extends React.Component {
         date: null,
         start: null,
         end: null,
+        agreement: utils.userIsStaff(),
         attendees: null,
         groupName: '',
         meeting: false,

@@ -687,8 +687,12 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
@@ -784,8 +788,13 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
               intercept_room_reservation_approver: '0'
@@ -842,8 +851,11 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
               intercept_room_reservation_approver: '0'
             placeholder: ''
             operator_limit_selection: false
@@ -861,6 +873,55 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: string
+        uid_current:
+          id: uid_current
+          table: users
+          field: uid_current
+          relationship: field_user
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: All
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: 'Only My Reservations'
+            description: ''
+            use_operator: false
+            operator: uid_current_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid_current
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: user
+          plugin_id: user_current
         field_dates_end_value:
           id: field_dates_end_value
           table: room_reservation__field_dates
@@ -891,8 +952,12 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
@@ -942,8 +1007,12 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
@@ -971,7 +1040,11 @@ display:
           group_type: group
           admin_label: ''
           operator: or
-          value: {  }
+          value:
+            requested: requested
+            approved: approved
+            denied: denied
+            canceled: canceled
           group: 1
           exposed: true
           expose:
@@ -980,24 +1053,25 @@ display:
             description: ''
             use_operator: false
             operator: field_status_value_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: reservation_status
             required: false
             remember: false
-            multiple: false
+            multiple: true
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-              administrator: '0'
-              intercept_room_reservation_approver: '0'
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1072,6 +1146,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
       tags:
         - 'config:field.storage.room_reservation.field_dates'
         - 'config:field.storage.room_reservation.field_status'
@@ -1083,7 +1158,9 @@ display:
     display_title: Embed
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        views_ajax_history:
+          history: 0
       defaults:
         fields: true
         exposed_form: false
@@ -1189,6 +1266,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - user.permissions
       tags:
         - 'config:field.storage.room_reservation.field_dates'
@@ -1201,7 +1279,9 @@ display:
     display_title: Upcoming
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        views_ajax_history:
+          history: 0
       style:
         type: html_list
         options:

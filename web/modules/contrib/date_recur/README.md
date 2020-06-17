@@ -5,6 +5,8 @@ Provides a recurring/repeating dates field.
 Extensive documentation can be found here: 
 https://www.drupal.org/docs/8/modules/recurring-dates-field
 
+![CircleCI](https://img.shields.io/circleci/build/github/dpi/date_recur?style=flat-square)
+
 # License
 
 This program is free software; you can redistribute it and/or modify it under     

@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\default_content\Kernel;
 
-use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
+use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -38,7 +38,7 @@ class ExporterIntegrationTest extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->installSchema('system', ['router', 'sequences']);
+    $this->installSchema('system', ['sequences']);
   }
 
   /**
@@ -198,7 +198,8 @@ class ExporterIntegrationTest extends KernelTestBase {
     \Drupal::service('router.builder')->rebuild();
     $this->defaultContentManager = \Drupal::service('default_content.exporter');
 
-    $this->setExpectedException(\InvalidArgumentException::class);
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage(sprintf('Entity "%s" with UUID "%s" does not exist', 'node', '0e45d92f-1919-47cd-8b60-964a8a761292'));
 
     // Should throw an exception for missing uuid for the testing module.
     $this->defaultContentManager->exportModuleContent('default_content_export_test');

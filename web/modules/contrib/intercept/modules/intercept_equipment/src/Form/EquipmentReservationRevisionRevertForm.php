@@ -56,7 +56,7 @@ class EquipmentReservationRevisionRevertForm extends ConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('equipment_reservation'),
+      $container->get('entity_type.manager')->getStorage('equipment_reservation'),
       $container->get('date.formatter')
     );
   }

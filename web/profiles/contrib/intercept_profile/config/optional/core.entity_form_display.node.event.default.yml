@@ -46,6 +46,7 @@ third_party_settings:
     group_attendees:
       children:
         - field_capacity_max
+        - field_event_user_reg_max
         - field_must_register
         - field_event_register_period
         - field_has_waitlist
@@ -106,9 +107,21 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  event_recurrence:
+    type: inline_entity_form_simple
+    weight: 12
+    region: content
+    settings:
+      form_mode: events
+      override_labels: true
+      label_singular: recurrence
+      label_plural: recurrences
+      collapsible: false
+      collapsed: false
+    third_party_settings: {  }
   field_add_to_cal:
     type: add_to_calendar_widget_type
-    weight: 20
+    weight: 19
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -138,13 +151,13 @@ content:
     type: options_select
     region: content
   field_event_designation:
-    weight: 21
+    weight: 20
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_event_register_period:
-    weight: 20
+    weight: 21
     settings: {  }
     third_party_settings: {  }
     type: daterange_default
@@ -177,15 +190,22 @@ content:
     third_party_settings: {  }
     type: options_select
     region: content
+  field_event_user_reg_max:
+    weight: 19
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
   field_featured:
-    weight: 18
+    weight: 17
     settings:
       display_label: true
     third_party_settings: {  }
     type: boolean_checkbox
     region: content
   field_has_waitlist:
-    weight: 21
+    weight: 22
     settings:
       display_label: true
     third_party_settings: {  }
@@ -198,7 +218,7 @@ content:
     type: options_select
     region: content
   field_must_register:
-    weight: 19
+    weight: 20
     settings:
       display_label: true
     third_party_settings: {  }
@@ -267,6 +287,9 @@ content:
       allow_existing: true
       match_operator: CONTAINS
       override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: stories_image_uploader
@@ -280,7 +303,7 @@ content:
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 16
+    weight: 15
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -326,7 +349,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 17
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -335,7 +358,6 @@ hidden:
   field_attendees: true
   field_evanced_id: true
   field_event_is_template: true
-  field_event_user_reg_max: true
   field_keywords: true
   promote: true
   sticky: true

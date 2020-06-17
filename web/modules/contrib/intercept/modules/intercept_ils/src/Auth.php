@@ -3,7 +3,7 @@
 namespace Drupal\intercept_ils;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Password\PasswordInterface;
 use Drupal\externalauth\Authmap;
 use Drupal\externalauth\ExternalAuth;
@@ -46,7 +46,7 @@ class Auth extends UserAuth {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityManagerInterface $entity_manager, PasswordInterface $password_checker, UserAuth $user_auth, ExternalAuth $external_auth, Authmap $external_authmap, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_manager, PasswordInterface $password_checker, UserAuth $user_auth, ExternalAuth $external_auth, Authmap $external_authmap, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
     $this->userAuth = $user_auth;
     $settings = $config_factory->get('intercept_ils.settings');
     $intercept_ils_plugin = $settings->get('intercept_ils_plugin', '');

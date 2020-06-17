@@ -22,10 +22,10 @@ dependencies:
     - tally
     - user
 id: intercept_event_attendance
-label: 'Intercept Event attendance'
+label: 'Intercept Export Scans'
 module: views
 description: ''
-tag: ''
+tag: Intercept
 base_table: event_attendance
 base_field: id
 display:
@@ -41,7 +41,7 @@ display:
           perm: 'access management page event_attendance_export'
       cache:
         type: tag
-        options: {  }
+        options: {}
       query:
         type: views_query
         options:
@@ -49,7 +49,7 @@ display:
           distinct: false
           replica: false
           query_comment: ''
-          query_tags: {  }
+          query_tags: {}
       exposed_form:
         type: bef
         options:
@@ -67,6 +67,7 @@ display:
               allow_secondary: false
               secondary_label: 'Advanced options'
               autosubmit: false
+              autosubmit_debounce_delay: 500
               autosubmit_exclude_textfield: false
               autosubmit_hide: false
             field_date_time_value:
@@ -110,7 +111,7 @@ display:
       style:
         type: table
         options:
-          grouping: {  }
+          grouping: {}
           row_class: ''
           default_row_class: true
           override: true
@@ -139,7 +140,7 @@ display:
       row:
         type: fields
         options:
-          inline: {  }
+          inline: {}
           separator: ''
           hide_empty: false
           default_field_elements: true
@@ -198,7 +199,7 @@ display:
             thousand_separator: ''
             prefix_suffix: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -260,9 +261,9 @@ display:
           hide_alter_empty: true
           click_sort_column: value
           type: number_unformatted
-          settings: {  }
+          settings: {}
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -327,7 +328,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -389,9 +390,9 @@ display:
           hide_alter_empty: true
           click_sort_column: count
           type: tally_default
-          settings: {  }
+          settings: {}
           group_column: ''
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 1
           delta_offset: 1
@@ -454,7 +455,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -519,7 +520,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -582,7 +583,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -645,7 +646,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -708,7 +709,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -773,7 +774,7 @@ display:
             custom_date_format: n/j/Y
             timezone: ''
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -838,7 +839,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -903,7 +904,7 @@ display:
           settings:
             link_to_entity: false
           group_column: value
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -968,7 +969,7 @@ display:
           settings:
             link: false
           group_column: target_id
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 0
           delta_offset: 0
@@ -1031,7 +1032,7 @@ display:
           settings:
             link: false
           group_column: target_id
-          group_columns: {  }
+          group_columns: {}
           group_rows: true
           delta_limit: 1
           delta_offset: 0
@@ -1082,7 +1083,7 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             operator_limit_selection: false
-            operator_list: {  }
+            operator_list: {}
           is_grouped: false
           group_info:
             label: ''
@@ -1093,8 +1094,8 @@ display:
             multiple: false
             remember: false
             default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
+            default_group_multiple: {}
+            group_items: {}
           plugin_id: datetime
         field_date_time_value_1:
           id: field_date_time_value_1
@@ -1124,6 +1125,7 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              schema_viewer: '0'
               intercept_kiosk: '0'
               intercept_registered_customer: '0'
               intercept_event_manager: '0'
@@ -1131,11 +1133,13 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
               administrator: '0'
+              rfp_admin: '0'
+              rfp_selector: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
             operator_limit_selection: false
-            operator_list: {  }
+            operator_list: {}
           is_grouped: false
           group_info:
             label: ''
@@ -1146,8 +1150,8 @@ display:
             multiple: false
             remember: false
             default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
+            default_group_multiple: {}
+            group_items: {}
           plugin_id: datetime
         created:
           id: created
@@ -1189,7 +1193,7 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             operator_limit_selection: false
-            operator_list: {  }
+            operator_list: {}
           is_grouped: false
           group_info:
             label: ''
@@ -1200,8 +1204,8 @@ display:
             multiple: false
             remember: false
             default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
+            default_group_multiple: {}
+            group_items: {}
           entity_type: event_attendance
           entity_field: created
           plugin_id: date
@@ -1224,7 +1228,7 @@ display:
             use_operator: false
             operator: ''
             operator_limit_selection: false
-            operator_list: {  }
+            operator_list: {}
             identifier: ''
             required: false
             remember: false
@@ -1242,8 +1246,8 @@ display:
             multiple: false
             remember: false
             default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
+            default_group_multiple: {}
+            group_items: {}
           reduce_duplicates: false
           plugin_id: list_field
       sorts:
@@ -1260,9 +1264,9 @@ display:
             label: ''
           granularity: minute
           plugin_id: datetime
-      header: {  }
-      footer: {  }
-      empty: {  }
+      header: {}
+      footer: {}
+      empty: {}
       relationships:
         field_event:
           id: field_event
@@ -1363,13 +1367,13 @@ display:
           validate:
             type: none
             fail: 'not found'
-          validate_options: {  }
+          validate_options: {}
           break_phrase: false
           not: false
           entity_type: node
           entity_field: nid
           plugin_id: node_nid
-      display_extenders: {  }
+      display_extenders: {}
       use_more: false
       use_more_always: true
       use_more_text: more
@@ -1398,7 +1402,7 @@ display:
     display_title: Embed
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders: {}
       header:
         area_text_custom:
           id: area_text_custom
@@ -1436,7 +1440,9 @@ display:
     display_title: 'REST export'
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        views_ajax_history:
+          history: true
       style:
         type: serializer
         options:

@@ -51,7 +51,7 @@ class EventRecurrenceRevisionRevertTranslationForm extends EventRecurrenceRevisi
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('event_recurrence'),
+      $container->get('entity_type.manager')->getStorage('event_recurrence'),
       $container->get('date.formatter'),
       $container->get('language_manager')
     );

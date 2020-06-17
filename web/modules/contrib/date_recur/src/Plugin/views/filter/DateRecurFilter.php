@@ -27,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ingroup views_filter_handlers
  *
  * @ViewsFilter("date_recur_occurrences_filter")
- * @property \Drupal\views\Plugin\views\query\Sql query
+ * @property \Drupal\views\Plugin\views\query\Sql $query
  */
 class DateRecurFilter extends FilterPluginBase {
 
@@ -277,7 +277,7 @@ class DateRecurFilter extends FilterPluginBase {
       if ($valueMin) {
         $largest = DateRecurUtility::createLargestDateFromInput($granularity, $value, $timezone);
         if ($largest < $valueMin) {
-          $form_state->setError($element, \t('Value is under minimum @minimum_as_granularity', [
+          $form_state->setError($element, (string) \t('Value is under minimum @minimum_as_granularity', [
             '@minimum_full' => $valueMin->format('r'),
             '@minimum_as_granularity' => $valueMin->format($format),
           ]));
@@ -287,7 +287,7 @@ class DateRecurFilter extends FilterPluginBase {
       $smallest = DateRecurUtility::createSmallestDateFromInput($granularity, $value, $timezone);
       if ($valueMax) {
         if ($smallest > $valueMax) {
-          $form_state->setError($element, \t('Value is over maximum @maximum_as_granularity', [
+          $form_state->setError($element, (string) \t('Value is over maximum @maximum_as_granularity', [
             '@minimum_full' => $valueMax->format('r'),
             '@maximum_as_granularity' => $valueMax->format($format),
           ]));
@@ -300,7 +300,7 @@ class DateRecurFilter extends FilterPluginBase {
       $sample = $now->format($format);
 
       $granularityExpectedFormatMessages = DateRecurGranularityMap::granularityExpectedFormatMessages($sample);
-      $form_state->setError($element, \t('Value format is incorrect. Expected format: @example', [
+      $form_state->setError($element, (string) \t('Value format is incorrect. Expected format: @example', [
         '@example' => $granularityExpectedFormatMessages[$granularity],
       ]));
     }

@@ -6,6 +6,7 @@ dependencies:
     - field.field.profile.customer.field_address
     - field.field.profile.customer.field_audiences
     - field.field.profile.customer.field_barcode
+    - field.field.profile.customer.field_room_reservation_barred
     - field.field.profile.customer.field_email_address
     - field.field.profile.customer.field_event_types
     - field.field.profile.customer.field_first_name
@@ -42,6 +43,7 @@ third_party_settings:
       label: 'Account Info'
     group_preferences:
       children:
+        - field_hold_pickup_location
         - field_preferred_location
         - field_event_types
         - field_audiences
@@ -102,6 +104,12 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
+  field_hold_pickup_location:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_ils_username:
     type: string_textfield
     weight: 7
@@ -138,6 +146,6 @@ content:
     third_party_settings: {  }
 hidden:
   card_number: true
-  field_hold_pickup_location: true
+  field_room_reservation_barred: true
   hold_pickup_location: true
   is_default: true

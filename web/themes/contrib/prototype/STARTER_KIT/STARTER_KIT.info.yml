@@ -2,7 +2,7 @@ name: STARTER_KIT
 type: theme
 description: Prototype Sub-Theme
 package: STARTER_KIT
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 base theme: prototype
 
 regions:

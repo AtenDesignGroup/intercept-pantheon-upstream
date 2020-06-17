@@ -35,6 +35,14 @@ function votingapi_help($route_name, RouteMatchInterface $route_match) {
               ->toString(),
           ]
         ) . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('General') . '</dt>';
+      $output .= '<dd>' . t('VotingAPI uses a flexible, easy-to-use framework for rating, voting, moderation, and consensus-gathering modules in Drupal. Module developers use it to focus on their ideas (say, providing a "rate this thread" widget at the bottom of each forum post) without worrying about the grunt work of storing votes, preventing ballot-stuffing, calculating the results, and so on.') . '</dd>';
+      $output .= '<dt>' . t('Basic Concepts and Features') . '</dt>';
+      $output .= '<dd>' . t('VotingAPI does NOT directly expose any voting mechanisms to end users. It is a framework designed to make life easier for other developers, and to standardize voting data for consumption by other modules (like Views).') . '</dd>';
+      $output .= '<dd>' . t('Two kinds of records are stored: individual votes by each user on each piece of content, and cached "result" records. The cached records aggregate calculated values like the average vote for a piece of content, how many people voted on it, etc. Each time a user votes, the cached result records are automatically recalculated. This means that no "on-the-fly" calculations have to be done when displaying content ratings.') . '</dd>';
+      $output .= '</dl>';
       return $output;
 
     default:

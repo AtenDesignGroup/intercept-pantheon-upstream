@@ -77,7 +77,7 @@ intercept_event.export_parent:
 
 intercept_event.export_attendance_age:
   parent: intercept_event.export_parent
-  title: 'Event Attendance by Age Group'
+  title: 'Export Event Attendance'
   weight: 1
   route_name: view.intercept_event_attendance_by_age_group.page
   menu_name: intercept-manage

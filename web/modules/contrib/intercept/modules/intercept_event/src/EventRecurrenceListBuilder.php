@@ -16,6 +16,20 @@ class EventRecurrenceListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
+  protected function getEntityIds() {
+    $query = $this->getStorage()->getQuery()
+      ->sort('changed', 'DESC');
+
+    // Only add the pager if a limit is specified.
+    if ($this->limit) {
+      $query->pager($this->limit);
+    }
+    return $query->execute();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildHeader() {
     $header['id'] = $this->t('ID');
     $header['base'] = $this->t('Recurrence of');

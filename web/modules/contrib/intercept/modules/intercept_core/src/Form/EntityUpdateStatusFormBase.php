@@ -50,6 +50,10 @@ abstract class EntityUpdateStatusFormBase extends ContentEntityConfirmFormBase {
         'action' => 'deny',
         'value' => 'denied',
       ],
+      $prefix . 'archive_form' => [
+        'action' => 'archive',
+        'value' => 'archived',
+      ],
     ];
     $route_name = $this->getRouteMatch()->getRouteName();
     return !empty($map[$route_name]) ? (object) $map[$route_name] : [];

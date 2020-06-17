@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Edit form for date recur interpreter entities.
  *
- * @method \Drupal\date_recur\Entity\DateRecurInterpreter getEntity
+ * @method \Drupal\date_recur\Entity\DateRecurInterpreter getEntity()
  */
 class DateRecurInterpreterEditForm extends EntityForm {
 
@@ -102,7 +102,7 @@ class DateRecurInterpreterEditForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state): void {
+  public function save(array $form, FormStateInterface $form_state) {
     $entity = $this->getEntity();
 
     $key = 'configure';
@@ -114,11 +114,12 @@ class DateRecurInterpreterEditForm extends EntityForm {
         ->submitConfigurationForm($form['configure'], $subformState);
     }
 
-    $entity->save();
+    $result = $entity->save();
     $this->messenger()->addStatus($this->t('Saved the %label interpreter.', [
       '%label' => $entity->label(),
     ]));
     $form_state->setRedirectUrl($entity->toUrl('collection'));
+    return $result;
   }
 
 }

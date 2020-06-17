@@ -22,7 +22,7 @@ class DateRecurDateTimeComputed extends DateTimeComputed {
     if (!$hasValueBefore && isset($this->date)) {
       /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item */
       $item = $this->getParent();
-      $this->date->setTimezone(new \DateTimeZone($item->timezone));
+      $this->date->setTimezone(new \DateTimeZone((string) $item->timezone));
     }
     return $this->date;
   }

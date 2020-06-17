@@ -26,10 +26,10 @@ dependencies:
     - tally
     - user
 id: intercept_event_attendance_by_age_group
-label: 'Intercept Event Attendance By Age Group'
+label: 'Intercept Export Event Attendance'
 module: views
 description: 'Shows overall attendance by age groups for each event.'
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
 display:
@@ -72,6 +72,7 @@ display:
               secondary_label: 'Advanced options'
               autosubmit: false
               autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
               autosubmit_hide: false
             field_date_time_value:
               bef_format: bef_datepicker
@@ -96,8 +97,8 @@ display:
           id: 0
           total_pages: null
           tags:
-            previous: ‹‹
-            next: ››
+            previous: '‹ Prev'
+            next: 'Next ›'
             first: '« First'
             last: 'Last »'
           expose:
@@ -308,7 +309,7 @@ display:
           delta_offset: 0
           delta_reversed: false
           delta_first_last: false
-          multi_type: ul
+          multi_type: individual
           separator: '|'
           field_api_classes: false
           plugin_id: tally_field
@@ -370,7 +371,7 @@ display:
           delta_offset: 1
           delta_reversed: false
           delta_first_last: false
-          multi_type: ul
+          multi_type: individual
           separator: ', '
           field_api_classes: false
           plugin_id: tally_field
@@ -432,7 +433,7 @@ display:
           delta_offset: 2
           delta_reversed: false
           delta_first_last: false
-          multi_type: ul
+          multi_type: individual
           separator: ', '
           field_api_classes: false
           plugin_id: tally_field
@@ -494,7 +495,7 @@ display:
           delta_offset: 3
           delta_reversed: false
           delta_first_last: false
-          multi_type: ul
+          multi_type: individual
           separator: ', '
           field_api_classes: false
           plugin_id: tally_field
@@ -1560,7 +1561,7 @@ display:
       arguments: {  }
       display_extenders: {  }
       group_by: false
-      title: 'Event Attendance By Age Group'
+      title: 'Intercept Export Event Attendance'
       css_class: table-overflow-x-scroll
     cache_metadata:
       max-age: -1
@@ -1588,7 +1589,9 @@ display:
     display_title: Page
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        views_ajax_history:
+          history: true
       path: account/manage/intercept_event_attendance_by_age_group
       style:
         type: table
@@ -1662,7 +1665,9 @@ display:
     display_title: 'REST export'
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        views_ajax_history:
+          history: true
       path: data/export/attendance-by-age-group.csv
       pager:
         type: none

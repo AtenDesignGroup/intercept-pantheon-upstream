@@ -10,12 +10,11 @@ event_recurring:
   version: VERSION
   js:
     js/event_recurring.js: {}
-    js/rrule/rrule.js: {}
-    js/rrule/nlp.js: {}
   dependencies:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+    - date_recur/rrule
 
 eventCheckin:
   version: VERSION

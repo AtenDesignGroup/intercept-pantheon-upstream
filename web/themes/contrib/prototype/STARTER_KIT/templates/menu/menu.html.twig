@@ -28,12 +28,11 @@
 
 {% macro menu_links(items, attributes, menu_depth, modifier) %}
   {% import _self as menus %}
-  {% set link_attributes = { 'class': ['menu__link']} %}
   {% if items %}
     <ul {{ attributes.setAttribute('data-depth', menu_depth) }}>
     {% for item in items %}
       <li {{ item.attributes.addClass(classes) }}>
-        {{ link(item.title, item.url, link_attributes) }}
+        {{ link(item.title, item.url) }}
         {% if item.below %}
           {{ menus.menu_links(item.below, attributes, menu_depth + 1, modifier) }}
         {% endif %}

@@ -36,12 +36,14 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
       switch ($name) {
         case 'first-name':
           $user = $event_registration->field_user->entity;
-          $replacements[$original] = $user && $user->first_name ? $user->first_name : 'User';
+          $display_name = $user ? $user->getDisplayName() : '';
+          $replacements[$original] = $user && $user->first_name ? $user->first_name : $display_name;
           break;
 
         case 'full-name':
           $user = $event_registration->field_user->entity;
-          $replacements[$original] = $user && $user->full_name ? $user->full_name : 'User';
+          $display_name = $user ? $user->getDisplayName() : '';
+          $replacements[$original] = $user && $user->full_name ? $user->full_name : $display_name;
           break;
       }
     }

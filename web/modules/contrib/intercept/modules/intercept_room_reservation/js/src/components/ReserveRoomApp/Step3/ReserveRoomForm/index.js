@@ -17,6 +17,7 @@ import drupalSettings from 'drupalSettings';
 import v4 from 'uuid/v4';
 
 import CloseIcon from '@material-ui/icons/Close';
+import { AppBar, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Toolbar, IconButton, Typography, Slide } from '@material-ui/core';
 
 // Intercept Components
 import SelectResource from 'intercept/SelectResource';
@@ -24,6 +25,7 @@ import SelectUser from 'intercept/SelectUser';
 import InputNumber from 'intercept/Input/InputNumber';
 import InputText from 'intercept/Input/InputText';
 import RadioGroup from 'intercept/RadioGroup/RadioGroup';
+import InputCheckbox from 'intercept/Input/InputCheckbox';
 
 // Formsy
 import Formsy, { addValidationRule } from 'formsy-react';
@@ -32,12 +34,10 @@ import Formsy, { addValidationRule } from 'formsy-react';
 import ReserveRoomConfirmation from './ReserveRoomConfirmation';
 import ReservationTeaser from './../../../ReservationTeaser';
 
-import { AppBar, Button, Dialog, Toolbar, IconButton, Typography, Slide } from '@material-ui/core';
-
 const { actions, constants, select, utils } = interceptClient;
 const c = constants;
 
-const FIELD_REFRESHMENTS_DESC = "I would like to serve refreshments and agree to the $25 charge that will be added to my library card. (Note: Some spaces may not allow refreshments. We will contact you if we are unable to fulfill this request.)";
+const FIELD_REFRESHMENTS_DESC = 'I would like to serve refreshments and agree to the $25 charge that will be added to my library card. (Note: Some spaces may not allow refreshments. We will contact you if we are unable to fulfill this request.)';
 const FIELD_REFRESHMENTS_OPTIONS = [
   {
     key: '1',
@@ -96,6 +96,7 @@ const buildRoomReservation = (values) => {
       },
       field_publicize: values.publicize === '1',
       field_status: 'requested',
+      field_agreement: values.agreement,
     },
     relationships: {
       field_event: {
@@ -131,9 +132,9 @@ const buildRoomReservation = (values) => {
   return output;
 };
 
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
+const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
+
+const agreementText = get(drupalSettings, 'intercept.room_reservations.agreement_text', undefined);
 
 class ReserveRoomForm extends PureComponent {
   constructor(props) {
@@ -147,6 +148,7 @@ class ReserveRoomForm extends PureComponent {
         findRoom: false,
         findTime: false,
       },
+      openAgreementDialog: false,
       openDialog: false,
       canSubmit: false,
       uuid: null,
@@ -156,8 +158,10 @@ class ReserveRoomForm extends PureComponent {
     this.updateValue = this.updateValue.bind(this);
     this.updateValues = this.updateValues.bind(this);
     this.toggleValue = this.toggleValue.bind(this);
+    this.onCloseAgreementDialog = this.onCloseAgreementDialog.bind(this);
     this.onCloseDialog = this.onCloseDialog.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
+    this.onOpenAgreementDialog = this.onOpenAgreementDialog.bind(this);
     this.onOpenDialog = this.onOpenDialog.bind(this);
     this.onValueChange = this.onValueChange.bind(this);
     this.disableButton = this.disableButton.bind(this);
@@ -197,6 +201,14 @@ class ReserveRoomForm extends PureComponent {
 
   onCloseDialog = () => {
     this.setState({ openDialog: false });
+  };
+
+  onOpenAgreementDialog = () => {
+    this.setState({ openAgreementDialog: true });
+  };
+
+  onCloseAgreementDialog = () => {
+    this.setState({ openAgreementDialog: false });
   };
 
   disableButton() {
@@ -262,6 +274,33 @@ class ReserveRoomForm extends PureComponent {
 
   toggleValue(key) {
     this.updateValue(key, !this.props.values[key]);
+  }
+
+  agreementLabel() {
+    return (<React.Fragment>
+      I agree to the <a
+        onClick={this.onOpenAgreementDialog}
+        role="link"
+        tabIndex="0"
+      >terms of service</a>.
+      <Dialog
+        open={this.state.openAgreementDialog}
+        onCancel={this.onCloseAgreementDialog}
+        onClose={this.onCloseAgreementDialog}
+        TransitionComponent={Transition}
+        className="dialog dialog--fullscreen"
+      >
+        <DialogTitle id="responsive-dialog-title">Terms of service</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <span
+              dangerouslySetInnerHTML={{ __html: agreementText }}
+            />
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+    </React.Fragment>
+    );
   }
 
   render() {
@@ -411,13 +450,26 @@ class ReserveRoomForm extends PureComponent {
                     options={FIELD_PUBLICIZE_OPTIONS}
                   />
                 </div>
+                {agreementText &&
+                  <div className="l--subsection">
+                    <h4 className="section-title section-title--secondary">Terms of Service</h4>
+                    <InputCheckbox
+                      label={this.agreementLabel()}
+                      checked={values.agreement}
+                      onChange={() => this.toggleValue('agreement')}
+                      required
+                      value={values.agreement}
+                      name="agreement"
+                    />
+                  </div>
+                }
                 <Button
                   variant="contained"
                   size="large"
                   color="primary"
                   type="submit"
                   className="button button--primary"
-                  disabled={!this.state.canSubmit || hasConflict || !room}
+                  disabled={!this.state.canSubmit || hasConflict || !room || !values.agreement}
                 >Next</Button>
               </div>
             </div>
@@ -451,7 +503,7 @@ class ReserveRoomForm extends PureComponent {
           fullScreen
           open={this.state.expand.findRoom}
           onClose={() => {}}
-          transition={Transition}
+          TransitionComponent={Transition}
           className="dialog dialog--fullscreen"
         >
           <AppBar className={'dialog__app-bar app-bar'}>
@@ -473,6 +525,7 @@ class ReserveRoomForm extends PureComponent {
 ReserveRoomForm.propTypes = {
   availabilityQuery: PropTypes.object.isRequired,
   values: PropTypes.shape({
+    agreement: PropTypes.bool,
     attendees: PropTypes.number,
     groupName: PropTypes.string,
     meetingDetails: PropTypes.string,
@@ -498,6 +551,7 @@ ReserveRoomForm.propTypes = {
 ReserveRoomForm.defaultProps = {
   combinedValues: {},
   values: {
+    agreement: true,
     attendees: null,
     groupName: '',
     meetingPurpose: '',

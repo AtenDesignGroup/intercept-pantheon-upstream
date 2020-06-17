@@ -1,0 +1,19 @@
+add location closing entities:
+  title: 'Create new Location Closing entities'
+
+administer location closing entities:
+  title: 'Administer Location Closing entities'
+  description: 'Allow to access the administration form to configure Location Closing entities.'
+  restrict access: true
+
+delete location closing entities:
+  title: 'Delete Location Closing entities'
+
+edit location closing entities:
+  title: 'Edit Location Closing entities'
+
+view published location closing entities:
+  title: 'View published Location Closing entities'
+
+view unpublished location closing entities:
+  title: 'View unpublished Location Closing entities'

@@ -16,10 +16,25 @@ use Symfony\Component\Validator\Constraint;
  */
 class DateRecurRulePartConstraint extends Constraint {
 
+  /**
+   * Violation message when a part is not permitted.
+   *
+   * @var string
+   */
   public $disallowedPart = '%part is not a permitted part.';
 
+  /**
+   * Violation message when a frequency is not permitted.
+   *
+   * @var string
+   */
   public $disallowedFrequency = '%frequency is not a permitted frequency.';
 
+  /**
+   * Violation message when a part is incompatible with a frequency.
+   *
+   * @var string
+   */
   public $incompatiblePart = '%part is incompatible with %frequency.';
 
 }

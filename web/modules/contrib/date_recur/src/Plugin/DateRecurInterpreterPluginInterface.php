@@ -19,11 +19,15 @@ interface DateRecurInterpreterPluginInterface extends ConfigurablePluginInterfac
    *   The rules.
    * @param string $language
    *   The two-letter language code.
+   * @param \DateTimeZone|null $timeZone
+   *   Time zone to display dates in. Time zone from rules is not used because
+   *   time zone used to calculate recurring dates may be different. Use null
+   *   for default PHP time zone.
    *
    * @return string
    *   Rules interpreted into a string.
    */
-  public function interpret(array $rules, string $language): string;
+  public function interpret(array $rules, string $language, ?\DateTimeZone $timeZone = NULL): string;
 
   /**
    * The languages supported by this plugin.

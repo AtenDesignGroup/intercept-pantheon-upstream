@@ -121,8 +121,8 @@ class UserProfileForm extends ProfileForm {
       if (isset($patron->basicData()->Username)) {
         $entity_form['field_ils_username']['widget'][0]['value']['#default_value'] = $patron->basicData()->Username;
       }
-      $entity_form['field_phone']['widget'][0]['value']['#default_value'] = $patron->basicData()->PhoneNumber;
-      $entity_form['field_email_address']['widget'][0]['value']['#default_value'] = $patron->basicData()->EmailAddress;
+      $entity_form['field_phone']['widget'][0]['value']['#default_value'] = $patron->basicData()->PhoneNumber ?? '';
+      $entity_form['field_email_address']['widget'][0]['value']['#default_value'] = $patron->basicData()->EmailAddress ?? '';
       $entity_form['#element_validate'][] = [$this, 'validateInlineEntityForm'];
       $entity_form['#ief_element_submit'][] = [$this, 'saveInlineEntityForm'];
       foreach (['field_first_name', 'field_last_name'] as $field) {

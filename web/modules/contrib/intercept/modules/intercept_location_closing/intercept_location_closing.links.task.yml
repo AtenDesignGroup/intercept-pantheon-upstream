@@ -1,0 +1,22 @@
+# Location Closing routing definition
+intercept_location_closing.settings_tab:
+  route_name: intercept_location_closing.settings
+  title: 'Settings'
+  base_route: intercept_location_closing.settings
+
+entity.intercept_location_closing.canonical:
+  route_name: entity.intercept_location_closing.canonical
+  base_route: entity.intercept_location_closing.canonical
+  title: 'View'
+
+entity.intercept_location_closing.edit_form:
+  route_name: entity.intercept_location_closing.edit_form
+  base_route: entity.intercept_location_closing.canonical
+  title: 'Edit'
+
+entity.intercept_location_closing.delete_form:
+  route_name:  entity.intercept_location_closing.delete_form
+  base_route:  entity.intercept_location_closing.canonical
+  title: Delete
+  weight: 10
+

@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Contains intercept_location_closing.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function intercept_location_closing_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the intercept_location_closing module.
+    case 'help.page.intercept_location_closing':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Allows locations to be marked as closed') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Given a location and start and end dates, find a matching location closing.
+ */
+function intercept_location_closing_get_closing($location, $start, $end) {
+  $closing_query = \Drupal::service('entity_type.manager')
+    ->getStorage('intercept_location_closing')
+    ->getQuery();
+  $date_group = $closing_query
+    ->andConditionGroup()
+    ->condition('date.value', $end, '<=')
+    ->condition('date.end_value', $start, '>');
+  $closings = $closing_query
+    ->condition('location', $location->id())
+    ->condition('status', 1)
+    ->condition($date_group)
+    ->execute();
+
+  return $closings;
+}
+
+/**
+ * Implements hook_intercept_room_reservation_dates_alter().
+ */
+function intercept_location_closing_intercept_room_reservation_dates_alter(&$dates, $params, $node) {
+  if ($location = $node->field_location->entity) {
+    if ($closings = intercept_location_closing_get_closing($location, $params['start'], $params['end'])) {
+      foreach ($closings as $closing_id) {
+        $closing = \Drupal::service('entity_type.manager')->getStorage('intercept_location_closing')->load($closing_id);
+        $dates[$closing->uuid()] = [
+          'start' => $closing->getStartTime(),
+          'end' => $closing->getEndTime(),
+          'message' => $closing->getMessage(),
+        ];
+      }
+    }
+  }
+}

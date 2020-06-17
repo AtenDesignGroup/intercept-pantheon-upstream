@@ -1,0 +1,41 @@
+{% include '@intercept-base-components/staff-management-menu/staff-management-menu.twig' with {
+    content: page.staff_management_menu
+  } only %}
+
+<div class="l--page-wrapper">
+  <div class="l--page">
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.header
+    } only %}
+
+    {% include '@intercept-base-components/header/header.twig' with {
+      header: {
+        menu: page.primary_menu,
+        utilities: page.secondary_menu
+      }
+    } %}
+
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.breadcrumb
+    } only %}
+
+    {% include '@intercept-base-components/region/region--offset.twig' with {
+      content: page.highlighted
+    } only %}
+
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.help
+    } only %}
+
+    {% block main %}
+    <main role="main" class="l--section l--offset">
+      <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
+
+      {% include '@intercept-base-components/content/content.twig' with { content: page.content
+      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_first, class: 'layout-sidebar-first'
+      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_second, class: 'layout-sidebar-second'
+      } %}
+    </main>
+    {% endblock %}
+  </div>{# /.layout-container #} {% include '@intercept-base-components/footer/footer.twig' with { footer: page.footer } only %}
+</div>

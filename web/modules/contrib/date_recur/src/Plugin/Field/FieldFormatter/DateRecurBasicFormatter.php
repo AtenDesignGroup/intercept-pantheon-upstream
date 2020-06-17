@@ -343,10 +343,13 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
       '#is_recurring' => $item->isRecurring(),
     ];
 
-    /** @var \Drupal\Core\Datetime\DrupalDateTime|null $startDate */
     $startDate = $item->start_date;
     /** @var \Drupal\Core\Datetime\DrupalDateTime|null $endDate */
     $endDate = $item->end_date ?? $startDate;
+    if (!$startDate || !$endDate) {
+      return $build;
+    }
+
     $build['#date'] = $this->buildDateRangeValue($startDate, $endDate, FALSE);
 
     // Render the rule.
@@ -354,7 +357,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
       /** @var string|null $interpreterId */
       $interpreterId = $this->getSetting('interpreter');
       if ($interpreterId && ($interpreter = $this->dateRecurInterpreterStorage->load($interpreterId))) {
-        /** @var \Drupal\date_recur\Entity\DateRecurInterpreterInterface $interpreter */
+        assert($interpreter instanceof DateRecurInterpreterInterface);
         $rules = $item->getHelper()->getRules();
         $plugin = $interpreter->getPlugin();
         $cacheability->addCacheableDependency($interpreter);
@@ -386,7 +389,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
    * @param \Drupal\Core\Datetime\DrupalDateTime $startDate
    *   The start date.
    * @param \Drupal\Core\Datetime\DrupalDateTime $endDate
-   *   The start date.
+   *   The end date.
    * @param bool $isOccurrence
    *   Whether the range is an occurrence of a repeating value.
    *

@@ -104,7 +104,9 @@ function intercept_core_theme() {
  */
 function intercept_core_entity_type_build(array &$entity_types) {
   /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
-  $entity_types['user']->setFormClass('customer', '\Drupal\intercept_core\Form\UserProfileForm');
+  $entity_types['user']
+    ->setFormClass('customer', '\Drupal\intercept_core\Form\UserProfileForm')
+    ->setLinkTemplate('customer-form', '/user/{user}/settings');
 }
 
 /**

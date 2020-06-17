@@ -52,6 +52,14 @@ interface RoomReservationInterface extends ReservationInterface {
   public function deny();
 
   /**
+   * Sets the Room reservation status to archived.
+   *
+   * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface
+   *   The RoomReservation entity.
+   */
+  public function archive();
+
+  /**
    * Gets validation constraint violations.
    *
    * @return \Symfony\Component\Validator\ConstraintViolationListInterface

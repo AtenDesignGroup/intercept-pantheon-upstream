@@ -65,7 +65,7 @@ function RoomDetail(props) {
   ) : null;
 
   const equipmentValue = get(resource, 'attributes.field_room_standard_equipment');
-  const equipment = equipmentValue ? (
+  const equipment = equipmentValue && equipmentValue.count > 0 ? (
     <FieldInline
       label="Equipment in Room"
       key="equipment"

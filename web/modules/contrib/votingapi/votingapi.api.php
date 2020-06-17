@@ -26,45 +26,41 @@ function hook_vote_result_info_alter(&$results) {
  */
 
 /**
- * Adds to or changes the calculated vote results for a piece of content.
+ * Adds to or changes the calculated vote results for an entity.
  *
  * VotingAPI calculates a number of common aggregate functions automatically,
- * including the average vote and total number of votes cast. Results are grouped
- * by 'tag', 'value_type', and then 'function' in the following format:
+ * including the average vote and total number of votes cast.
  *
- *   $results[$tag][$value_type][$aggregate_function] = $value;
- *
- * If no custom tag is being used for votes, the catch-all "vote" tag should be
- * used. In cases where custom tags are used to vote on different aspects of a
- * piece of content, a catch-all "vote" value should still be calculated for use
- * on summary screens, etc.
- *
- * @param $vote_results
+ * @param array $vote_results
  *   An alterable array of aggregate vote results.
- * @param $content_type
- *   A string identifying the type of content being rated. Node, comment,
+ * @param string $entity_type
+ *   A string identifying the type of entity being rated. Node, comment,
  *   aggregator item, etc.
- * @param $content_id
- *   The key ID of the content being rated.
+ * @param int $entity_id
+ *   The key ID of the entity being rated.
  *
- * @see votingapi_recalculate_results()
+ * @see VoteResultFunctionManager::recalculateResults()
  */
-function hook_votingapi_results_alter(&$vote_results, $content_type, $content_id) {
-  // We're using a MySQLism (STDDEV isn't ANSI SQL), but it's OK because this is
-  // an example. And no one would ever base real code on sample code. Ever. Never.
-  $sql = "SELECT v.tag, STDDEV(v.value) as standard_deviation ";
-  $sql .= "FROM {votingapi_vote} v ";
-  $sql .= "WHERE v.content_type = '%s' AND v.content_id = %d AND v.value_type = 'percent' ";
-  $sql .= "GROUP BY v.tag";
+function hook_votingapi_results_alter(array &$vote_results, $entity_type, $entity_id) {
+  // Calculate a standard deviation for votes cast on an entity.
+  $query = Database::getConnection()->select('votingapi_vote', 'v');
+  $query->addExpression('STDDEV(v.value)', 'standard_deviation');
+  $query->condition('v.entity_type', $entity_type);
+  $query->condition('v.entity_id', $entity_id);
+  $query->groupBy('v.tag');
 
-  $aggregates = db_query($sql, $content_type, $content_id);
+  $aggregate = $query->execute()->fetchObject();
 
-  // VotingAPI wants the data in the following format:
-  // $vote_results[$tag][$value_type][$aggregate_function] = $value;.
-  foreach ($aggregates as $aggregate) {
-    $aggregate = (array) $aggregate;
-    $vote_results[$aggregate['tag']]['percent']['standard_deviation'] = $aggregate['standard_deviation'];
-  }
+  // Add the standard deviation to the voted entity results.
+  $vote_results[] = [
+    'entity_id' => $entity_id,
+    'entity_type' => $entity_type,
+    'type' => $vote_results[0]->bundle(),
+    'function' => 'standard_deviation',
+    'value' => $aggregate->standard_deviation,
+    'value_type' => $vote_results[0]->get('value_type')->value,
+    'timestamp' => \Drupal::time()->getRequestTime(),
+  ];
 }
 
 /**

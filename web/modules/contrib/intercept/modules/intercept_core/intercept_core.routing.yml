@@ -34,11 +34,11 @@ intercept_core.account.settings:
   defaults:
     _controller: '\Drupal\intercept_core\Controller\UserAccount::userRedirect'
     _title: 'Settings'
-    route_name: 'intercept_core.user_profile_form'
+    route_name: 'entity.user.customer_form'
   requirements:
     _role: 'intercept_registered_customer'
 
-intercept_core.user_profile_form:
+entity.user.customer_form:
   path: '/user/{user}/settings'
   defaults:
     _entity_form: 'user.customer'

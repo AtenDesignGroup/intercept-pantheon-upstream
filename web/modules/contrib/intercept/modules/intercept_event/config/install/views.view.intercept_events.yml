@@ -2,22 +2,26 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.node.field_attendees
     - field.storage.node.field_date_time
     - field.storage.node.field_location
     - flag.flag.saved_event
     - node.type.event
+    - taxonomy.vocabulary.event_type
   module:
     - better_exposed_filters
     - datetime
     - flag
     - intercept_event
     - node
+    - tally
+    - taxonomy
     - user
 id: intercept_events
 label: 'Intercept Events'
 module: views
 description: ''
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
 display:
@@ -60,9 +64,10 @@ display:
               secondary_label: 'Advanced options'
               autosubmit: false
               autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
               autosubmit_hide: false
             field_date_time_value:
-              bef_format: default
+              bef_format: bef_datepicker
               more_options:
                 is_secondary: false
             title:
@@ -80,6 +85,22 @@ display:
                 bef_slider_orientation: horizontal
               more_options:
                 is_secondary: false
+            field_event_type_target_id:
+              bef_format: default
+              more_options:
+                is_secondary: false
+                placeholder_text: ''
+                rewrite:
+                  filter_rewrite_values: ''
+            uid:
+              bef_format: default
+              more_options:
+                bef_select_all_none: false
+                bef_collapsible: false
+                is_secondary: false
+                placeholder_text: ''
+                rewrite:
+                  filter_rewrite_values: ''
             uid_current:
               bef_format: default
               more_options:
@@ -135,6 +156,7 @@ display:
             nid: nid
             title: title
             field_location: field_location
+            uid: uid
             count: count
             event_registration_count: event_registration_count
             event_attendance_count: event_attendance_count
@@ -169,6 +191,11 @@ display:
               empty_column: false
               responsive: ''
             field_location:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            uid:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -184,14 +211,14 @@ display:
               responsive: ''
             event_registration_count:
               sortable: true
-              default_sort_order: asc
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
             event_attendance_count:
               sortable: true
-              default_sort_order: asc
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
@@ -528,6 +555,71 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Created by'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: node
+          entity_field: uid
+          plugin_id: field
         count:
           id: count
           table: flag_counts
@@ -650,7 +742,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: Attended
+          label: Scanned
           exclude: false
           alter:
             alter_text: false
@@ -701,6 +793,68 @@ display:
           suffix: ''
           entity_type: node
           plugin_id: event_attendance_count
+        field_attendees:
+          id: field_attendees
+          table: node__field_attendees
+          field: field_attendees
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Attended
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: count
+          type: tally_default
+          settings: {  }
+          group_column: ''
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: count
+          separator: ', '
+          field_api_classes: false
+          plugin_id: tally_field
         operations:
           id: operations
           table: node
@@ -778,6 +932,9 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
             operator_limit_selection: false
             operator_list: {  }
           is_grouped: false
@@ -795,67 +952,6 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
-        field_date_time_value:
-          id: field_date_time_value
-          table: node__field_date_time
-          field: field_date_time_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: now
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_date_time_value_op
-            label: 'Past or upcoming'
-            description: null
-            use_operator: false
-            operator: field_date_time_value_op
-            identifier: field_date_time_value
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: null
-            min_placeholder: null
-            max_placeholder: null
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: true
-          group_info:
-            label: 'Past or upcoming'
-            description: ''
-            identifier: date
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: Past
-                operator: '<'
-                value:
-                  type: date
-                  value: now
-                  min: ''
-                  max: ''
-              2:
-                title: Upcoming
-                operator: '>='
-                value:
-                  type: date
-                  value: now
-                  min: ''
-                  max: ''
-          plugin_id: datetime
         title:
           id: title
           table: node_field_data
@@ -887,6 +983,7 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
               administrator: '0'
+              intercept_room_reservation_approver: '0'
             placeholder: 'Search Title'
             operator_limit_selection: false
             operator_list: {  }
@@ -938,6 +1035,8 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
+              intercept_room_reservation_approver: '0'
             placeholder: Location
             min_placeholder: ''
             max_placeholder: ''
@@ -956,6 +1055,112 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: numeric
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: uid_op
+            label: 'Created by'
+            description: ''
+            use_operator: false
+            operator: uid_op
+            identifier: uid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+            reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: uid
+          plugin_id: user_name
+        tid:
+          id: tid
+          table: taxonomy_index
+          field: tid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: tid_op
+            label: 'Event Type'
+            description: ''
+            use_operator: false
+            operator: tid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: tid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          type: select
+          limit: true
+          vid: event_type
+          hierarchy: false
+          error_message: true
+          plugin_id: taxonomy_index_tid
         uid_current:
           id: uid_current
           table: users
@@ -986,6 +1191,9 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
+              intercept_room_reservation_approver: '0'
+              intercept_equipment_reservation_manager: '0'
             operator_limit_selection: false
             operator_list: {  }
           is_grouped: false
@@ -1002,6 +1210,61 @@ display:
             group_items: {  }
           entity_type: user
           plugin_id: user_current
+        field_date_time_value:
+          id: field_date_time_value
+          table: node__field_date_time
+          field: field_date_time_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: between
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_date_time_value_op
+            label: 'Dates between'
+            description: ''
+            use_operator: false
+            operator: field_date_time_value_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_date_time_value
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_reservation_approver: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: datetime
         status:
           id: status
           table: node_field_data
@@ -1032,6 +1295,8 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
+              intercept_room_reservation_approver: '0'
             operator_limit_selection: false
             operator_list: {  }
           is_grouped: false
@@ -1049,7 +1314,20 @@ display:
           entity_type: node
           entity_field: status
           plugin_id: boolean
-      sorts: {  }
+      sorts:
+        field_date_time_value:
+          id: field_date_time_value
+          table: node__field_date_time
+          field: field_date_time_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          granularity: minute
+          plugin_id: datetime
       title: Events
       header: {  }
       footer: {  }
@@ -1110,15 +1388,19 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
+        - 'config:field.storage.node.field_attendees'
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_location'
+        - extensions
   embed:
     display_plugin: embed
     id: embed
     display_title: Embed
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        views_ajax_history:
+          history: 0
     cache_metadata:
       max-age: -1
       contexts:
@@ -1130,5 +1412,7 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
+        - 'config:field.storage.node.field_attendees'
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_location'
+        - extensions

@@ -22,6 +22,9 @@ settings:
     -
       value: canceled
       label: Canceled
+    -
+      value: archived
+      label: Archived
   allowed_values_function: ''
 module: options
 locked: false

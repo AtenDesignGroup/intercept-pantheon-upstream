@@ -31,10 +31,11 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
   /**
    * {@inheritdoc}
    */
-  public function postSave($update): void {
+  public function postSave($update): bool {
     parent::postSave($update);
     $event = new DateRecurValueEvent($this, !$update);
     $this->getDispatcher()->dispatch(DateRecurEvents::FIELD_VALUE_SAVE, $event);
+    return FALSE;
   }
 
   /**
@@ -119,12 +120,12 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
     if (empty($defaultDateTimeZone)) {
       $defaultStartType = $form_state->getValue(['default_value_input', 'default_date_type']);
       if (!empty($defaultStartType)) {
-        $form_state->setErrorByName('default_value_input][default_date_time_zone', $this->t('Time zone must be provided if a default start date is provided.'));
+        $form_state->setErrorByName('default_value_input][default_date_time_zone', (string) $this->t('Time zone must be provided if a default start date is provided.'));
       }
 
       $defaultEndType = $form_state->getValue(['default_value_input', 'default_end_date_type']);
       if (!empty($defaultEndType)) {
-        $form_state->setErrorByName('default_value_input][default_date_time_zone', $this->t('Time zone must be provided if a default end date is provided.'));
+        $form_state->setErrorByName('default_value_input][default_date_time_zone', (string) $this->t('Time zone must be provided if a default end date is provided.'));
       }
     }
 
@@ -202,8 +203,7 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
       $defaultValue[0]['timezone'] = $defaultTimeZone;
     }
     else {
-      // @todo replace with https://www.drupal.org/project/drupal/issues/3009377.
-      $timeZone = \drupal_get_user_timezone();
+      $timeZone = \date_default_timezone_get();
       if (empty($timeZone)) {
         throw new \Exception('Something went wrong. User has no time zone.');
       }
@@ -247,6 +247,17 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
     // Existing field configs may not have a parts setting yet.
     $partSettings = $partSettings ?? [];
     return DateRecurPartGrid::configSettingsToGrid($partSettings);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function onChange($delta) {
+    foreach ($this->list as $item) {
+      assert($item instanceof DateRecurItem);
+      $item->resetHelper();
+    }
+    parent::onChange($delta);
   }
 
 }

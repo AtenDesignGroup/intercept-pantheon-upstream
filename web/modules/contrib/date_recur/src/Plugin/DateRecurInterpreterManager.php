@@ -25,7 +25,7 @@ class DateRecurInterpreterManager extends DefaultPluginManager implements DateRe
       'Drupal\date_recur\Plugin\DateRecurInterpreterPluginInterface',
       'Drupal\date_recur\Annotation\DateRecurInterpreter'
     );
-    $this->setCacheBackend($cache_backend, 'date_recur_interpreter_info');
+    $this->setCacheBackend($cache_backend, 'date_recur_interpreter_info', ['config:date_recur_interpreter_list']);
   }
 
 }

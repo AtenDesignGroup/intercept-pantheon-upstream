@@ -42,7 +42,7 @@ function _addtocalendar_build_form($settings, $field_definition) {
       'blue' => t('Blue'),
       'glow_orange' => t('Glow Orange'),
     ],
-    '#default_value' => !empty($settings['addtocalendar_settings']['style']) ? $settings['addtocalendar_settings']['style'] : 'blue',
+    '#default_value' => !empty($settings['addtocalendar_settings']['style']) ? $settings['addtocalendar_settings']['style'] : 0,
   ];
 
   $element['addtocalendar_settings']['display_text'] = [

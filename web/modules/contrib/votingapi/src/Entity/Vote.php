@@ -18,6 +18,13 @@ use Drupal\votingapi\VoteInterface;
  * @ContentEntityType(
  *   id = "vote",
  *   label = @Translation("Vote"),
+ *   label_collection = @Translation("Votes"),
+ *   label_singular = @Translation("vote"),
+ *   label_plural = @Translation("votes"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count vote",
+ *     plural = "@count votes",
+ *   ),
  *   bundle_label = @Translation("Vote type"),
  *   bundle_entity_type = "vote_type",
  *   handlers = {
@@ -208,8 +215,7 @@ class Vote extends ContentEntityBase implements VoteInterface {
 
     $fields['timestamp'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'))
-      ->setDefaultValueCallback('time');
+      ->setDescription(t('The time that the entity was created.'));
 
     $fields['vote_source'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Vote Source'))

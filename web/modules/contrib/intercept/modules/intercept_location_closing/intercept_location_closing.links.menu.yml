@@ -1,0 +1,14 @@
+
+# Location Closing menu items definition
+entity.intercept_location_closing.collection:
+  title: 'Location closings'
+  route_name: entity.intercept_location_closing.collection
+  description: 'List Location closings'
+  parent: system.admin_content
+  weight: 100
+
+intercept_location_closing.admin.structure.settings:
+  title: 'Location closings'
+  description: 'Configure Location closings'
+  route_name: intercept_location_closing.settings
+  parent: intercept_core.admin_structure

@@ -34,6 +34,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *       "cancel" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
  *       "approve" = "Drupal\intercept_room_reservation\Form\RoomReservationApproveForm",
  *       "deny" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
+ *       "archive" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
  *     },
  *     "access" = "Drupal\intercept_room_reservation\RoomReservationAccessControlHandler",
  *     "permission_provider" = "Drupal\intercept_core\ReservationPermissionsProvider",
@@ -65,6 +66,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *   links = {
  *     "approve-form" = "/room-reservation/{room_reservation}/approve",
  *     "add-form" = "/room-reservation/add",
+ *     "archive-form" = "/room-reservation/{room_reservation}/archive",
  *     "collection" = "/admin/content/room-reservations",
  *     "cancel-form" = "/room-reservation/{room_reservation}/cancel",
  *     "canonical" = "/room-reservation/{room_reservation}",
@@ -126,6 +128,14 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    */
   public function deny() {
     $this->set('field_status', 'denied');
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function archive() {
+    $this->set('field_status', 'archived');
     return $this;
   }
 

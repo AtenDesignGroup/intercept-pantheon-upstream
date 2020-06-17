@@ -4,6 +4,7 @@ base:
       '//addtocalendar.com/atc/1.5/atc-base.css': {type: external}
   js:
     '//addtocalendar.com/atc/1.5/atc.min.js': { type: external, minified: true }
+    'js/addtocalendar.js': {}
 
 glow_orange:
   css:

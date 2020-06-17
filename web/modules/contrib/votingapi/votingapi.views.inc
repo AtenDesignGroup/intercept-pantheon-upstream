@@ -5,6 +5,8 @@
  * Views data alterations for the votingapi module.
  */
 
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+
 /**
  * Implements hook_views_data_alter().
  */
@@ -15,9 +17,12 @@ function votingapi_views_data_alter(&$data) {
     return;
   }
 
+  /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager */
   $entity_manager = \Drupal::service('entity_type.manager');
-  $vote_type_storage = $entity_manager->getStorage('vote_type');
-  if (empty($vote_type_storage)) {
+  try {
+    $vote_type_storage = $entity_manager->getStorage('vote_type');
+  }
+  catch (PluginNotFoundException $e) {
     return;
   }
 

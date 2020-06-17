@@ -21,7 +21,7 @@ class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity_type.manager'),
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time'),
       $container->get('externalauth.externalauth')

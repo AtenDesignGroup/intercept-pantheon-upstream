@@ -1,0 +1,8 @@
+name: 'Intercept Locations Closing'
+type: module
+description: 'Allows locations to be marked as closed'
+core: 8.x
+package: 'Intercept'
+dependencies:
+  - office_hours:office_hours
+  - intercept:intercept_location

@@ -43,7 +43,7 @@ class ManagementController extends ManagementControllerBase {
     return [
       '#type' => 'view',
       '#name' => 'intercept_room_reservations',
-      '#display_id' => 'embed',
+      '#display_id' => 'page',
     ];
   }
 

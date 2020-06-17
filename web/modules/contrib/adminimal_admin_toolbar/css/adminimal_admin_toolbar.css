@@ -122,6 +122,15 @@
   background-color: #333;
 }
 
+.adminimal-admin-toolbar .toolbar .toolbar-icon.toolbar-handle > span {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+
 .adminimal-admin-toolbar .toolbar .toolbar-icon.toolbar-handle:focus {
   background-color: transparent;
 }
@@ -238,7 +247,7 @@
 }
 
 .toolbar-tray-horizontal .toolbar-menu:not(:first-child) li.menu-item--expanded > a:focus {
-    background-image: none !important;
+  background-image: none !important;
 }
 
 .adminimal-admin-toolbar .toolbar-tray-horizontal ul li.menu-item--expanded .menu-item:hover ul {

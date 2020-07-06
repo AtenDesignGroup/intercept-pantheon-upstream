@@ -1,4 +1,3 @@
-// import '@babel/polyfill';
 // Polyfill: Fetch API.
 import 'whatwg-fetch';
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';

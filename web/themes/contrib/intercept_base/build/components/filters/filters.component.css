@@ -138,9 +138,9 @@
     padding-left: 4.375rem; }
 
 .select-filter__menu .select-filter__checkbox {
-  color: #4C4D4F; }
+  color: #4c4d4f; }
   .select-filter__menu .select-filter__checkbox[class*='checked'] {
-    color: #0288D1; }
+    color: #0288d1; }
   .select-filter__menu .select-filter__checkbox + [class^='MuiListItemText'] {
     padding-left: 0; }
 

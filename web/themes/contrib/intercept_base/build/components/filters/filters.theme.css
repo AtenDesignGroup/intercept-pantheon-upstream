@@ -1,5 +1,5 @@
 .filters__inputs {
-  background-color: #EEF1F4;
+  background-color: #eef1f4;
   padding: 2.17391% 4.34783% 4.34783%; }
 
 .filters__inputs--uniform-padding {
@@ -12,17 +12,17 @@
   font-style: italic; }
 
 .input--textarea textarea::-webkit-input-placeholder {
-  color: #D3D8DF;
+  color: #d3d8df;
   font-weight: 900; }
 
 .input--textarea textarea:-ms-input-placeholder {
-  color: #D3D8DF;
+  color: #d3d8df;
   font-weight: 900; }
 
 .input--textarea textarea::-ms-input-placeholder {
-  color: #D3D8DF;
+  color: #d3d8df;
   font-weight: 900; }
 
 .input--textarea textarea::placeholder {
-  color: #D3D8DF;
+  color: #d3d8df;
   font-weight: 900; }

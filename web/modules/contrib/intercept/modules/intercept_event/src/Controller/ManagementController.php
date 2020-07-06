@@ -52,7 +52,8 @@ class ManagementController extends ManagementControllerBase {
       'title' => $this->title('Export Scans'),
       'download_link' => $this->getButton('Download CSV',
         'view.intercept_event_attendance.rest_export',
-        ['_format' => 'csv'] + $request->query->all()
+        ['_format' => 'csv'] + $request->query->all(),
+        ['attributes' => ['class' => ['button', 'button--arrow-green']]]
       ),
       'view' => [
         '#type' => 'view',

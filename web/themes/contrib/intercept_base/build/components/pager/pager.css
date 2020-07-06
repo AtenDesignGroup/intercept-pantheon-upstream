@@ -7,20 +7,20 @@
   margin: 0 0.25rem; }
   .pager__item.is-active a {
     color: #ffffff;
-    background-color: #0288D1;
+    background-color: #0288d1;
     padding: 2px 5px; }
 
 .pager__link {
-  color: #7A7D81;
+  color: #747481;
   text-decoration: none;
   -webkit-transition: color .2s ease-out;
   transition: color .2s ease-out;
   text-decoration: none; }
   .pager__link:hover, .pager__link:focus {
-    color: #4C4D4F;
+    color: #4c4d4f;
     text-decoration: none; }
   .pager__link:active, .pager__link.active--trail {
-    color: #4C4D4F;
-    color: #7A7D81; }
+    color: #4c4d4f;
+    color: #747481; }
   .pager__link:hover {
     text-decoration: underline; }

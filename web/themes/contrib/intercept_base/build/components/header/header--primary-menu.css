@@ -60,7 +60,7 @@
   .menu--main a,
   .menu--intercept-staff a,
   .menu--main-navigation-secondary a {
-    color: #4C4D4F;
+    color: #4c4d4f;
     display: inline-block;
     padding: 0.25rem 0;
     text-decoration: none; }
@@ -137,7 +137,7 @@ label[for='nav-trigger'] {
   position: absolute; }
   .nav-trigger__icon rect,
   .nav-trigger__icon polygon {
-    fill: #0288D1; }
+    fill: #0288d1; }
 
 .nav-trigger__icon--expand {
   opacity: 1;
@@ -160,7 +160,7 @@ label[for='nav-trigger'] {
     padding-bottom: 30px;
     padding-top: 30px;
     padding-bottom: 60px;
-    background-color: #EEF1F4;
+    background-color: #eef1f4;
     -webkit-box-shadow: 0 1rem 0.5rem 0 rgba(0, 0, 0, 0.25);
             box-shadow: 0 1rem 0.5rem 0 rgba(0, 0, 0, 0.25);
     height: 75vh;
@@ -201,7 +201,7 @@ label[for='nav-trigger'] {
   clip: auto; }
 
 .header__menu-main .nav-trigger:checked ~ label {
-  background: #EEF1F4; }
+  background: #eef1f4; }
   .header__menu-main .nav-trigger:checked ~ label .nav-trigger__icon--collapse {
     opacity: 1;
     -webkit-transform: rotate(0) scale(1);

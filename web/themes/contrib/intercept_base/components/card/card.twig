@@ -1,18 +1,15 @@
 {% import '@intercept-base-components/component.twig' as component %}
 {{ attach_library('intercept_base/card') }}
+{% if title_link.url is not empty %}
+  {{ attach_library('intercept_base/block-link') }}
+  {% set attr = attr|default({})|merge({'class': 'js--block-link'}) %}
+  {% set attr = attr|default({})|merge({'data-href': title_link.url|render }) %}
+{% endif %}
 <article {{ component.attributes('card', modifiers, attr) }}>
-
   {% if image %}
-  {% if title_link.url is not empty %}
-  <a href="{{ title_link.url }}" title="{{ title }}">
-  {% endif %}
   <figure class="card__image">
     {{ image }}
   </figure>
-
-  {% if title_link.url is not empty %}
-  </a>
-  {% endif %}
   {% endif %}
 
   <div class="card__content">

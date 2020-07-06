@@ -8,6 +8,7 @@ const Teaser = (props) => {
     footer,
     image,
     modifiers,
+    highlight,
     supertitle,
     subtitle,
     tags,
@@ -46,7 +47,11 @@ const Teaser = (props) => {
       </div>
       <div className="teaser__main clearfix">
         <div className="teaser__content">
-          {type && <span className="teaser__type">{type}</span>}
+          {highlight && (
+            <div className="teaser__highlight">
+              <span className="highlight">{highlight}</span>
+            </div>
+          )}
           {supertitle && <span className="teaser__supertitle">{supertitle}</span>}
           <h3 className="teaser__title">
             {titleUrl ? (
@@ -75,6 +80,7 @@ Teaser.propTypes = {
   date: PropTypes.object,
   description: PropTypes.string,
   footer: PropTypes.func,
+  highlight: PropTypes.string,
   image: PropTypes.string,
   modifiers: PropTypes.arrayOf(PropTypes.string),
   supertitle: PropTypes.string,
@@ -90,6 +96,7 @@ Teaser.defaultProps = {
   description: null,
   modifiers: [],
   footer: null,
+  highlight: null,
   image: null,
   subtitle: null,
   supertitle: null,

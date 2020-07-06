@@ -3,15 +3,13 @@
 namespace Drupal\intercept_event\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Database\Connection;
-use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\intercept_event\EventManagerInterface;
-use Drupal\intercept_event\SuggestedEventsQuery;
+use Drupal\intercept_event\SuggestedEventsProviderInterface;
 
 /**
  * Provides a 'UserSuggestedEvents' block.
@@ -31,32 +29,18 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
   protected $entityTypeManager;
 
   /**
-   * Drupal\intercept_event\EventManagerInterface definition.
-   *
-   * @var \Drupal\intercept_event\EventManagerInterface
-   */
-  protected $interceptEventManager;
-
-  /**
-   * Drupal\Core\Session\AccountProxyInterface definition.
+   * The current user.
    *
    * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $currentUser;
 
   /**
-   * The database connection.
+   * The Intercept suggested events provider.
    *
-   * @var \Drupal\Core\Database\Connection
+   * @var \Drupal\intercept_event\SuggestedEventsProviderInterface
    */
-  protected $connection;
-
-  /**
-   * The Profile entity storage handler.
-   *
-   * @var \Drupal\profile\ProfileStorageInterface
-   */
-  protected $profileStorage;
+  protected $suggestedEventsProvider;
 
   /**
    * Constructs a new UserSuggestedEvents object.
@@ -68,21 +52,17 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
    * @param string $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   Drupal\Core\Entity\EntityTypeManagerInterface definition.
-   * @param \Drupal\intercept_event\EventManagerInterface $intercept_event_manager
-   *   Drupal\intercept_event\EventManagerInterface definition.
+   *   The entity type manager.
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
-   *   Drupal\Core\Session\AccountProxyInterface definition.
-   * @param \Drupal\Core\Database\Connection $connection
-   *   The database connection.
+   *   The current user.
+   * @param \Drupal\intercept_event\SuggestedEventsProviderInterface $suggested_events_provider
+   *   The Intercept suggested events provider.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EventManagerInterface $intercept_event_manager, AccountProxyInterface $current_user, Connection $connection) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, AccountProxyInterface $current_user, SuggestedEventsProviderInterface $suggested_events_provider) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
-    $this->interceptEventManager = $intercept_event_manager;
     $this->currentUser = $current_user;
-    $this->connection = $connection;
-    $this->profileStorage = $this->entityTypeManager->getStorage('profile');
+    $this->suggestedEventsProvider = $suggested_events_provider;
   }
 
   /**
@@ -94,9 +74,8 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('intercept_event.manager'),
       $container->get('current_user'),
-      $container->get('database')
+      $container->get('intercept_event.suggested_events_provider')
     );
   }
 
@@ -147,203 +126,64 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
    */
   public function build() {
     $build = [];
-    $nids = [];
-    $storage = $this->entityTypeManager->getStorage('node');
 
-    // ATTENDED EVENTS
-    // SELECT e2.field_event_target_id
-    // FROM event_attendance AS e
-    // INNER JOIN event_attendance__field_event e2 ON e2.entity_id = e.id
-    // INNER JOIN node n ON n.nid = e2.field_event_target_id
-    // INNER JOIN event_attendance__field_user e3 ON e3.entity_id = e.id
-    // WHERE e3.field_user_target_id = $uid
-    // AND e.created > -1 year.
-    $query_attended = $this->connection->select('event_attendance', 'e');
-    // Get the event node ids.
-    $query_attended->addField('e2', 'field_event_target_id');
-    $query_attended->addJoin('INNER', 'event_attendance__field_event', 'e2', 'e2.entity_id = e.id');
-    $query_attended->addJoin('INNER', 'node', 'n', 'n.nid = e2.field_event_target_id');
-    $query_attended->addJoin('INNER', 'event_attendance__field_user', 'e3', 'e3.entity_id = e.id');
-    $query_attended->condition('e3.field_user_target_id', $this->currentUser->id());
-    // Within last year.
-    $query_attended->condition('e.created', strtotime('-1 year'), '>');
-    $result_attended = $query_attended->execute()->fetchAll();
-    if (count($result_attended) > 0) {
-      foreach ($result_attended as $attended) {
-        $nids[] = $attended->field_event_target_id;
-      }
-    }
-
-    // REGISTERED EVENTS
-    // Same as above, but add: status != canceled.
-    $query_registration = $this->connection->select('event_registration', 'r');
-    // Get the event node ids.
-    $query_registration->addField('r2', 'field_event_target_id');
-    $query_registration->addJoin('INNER', 'event_registration__field_event', 'r2', 'r2.entity_id = r.id');
-    $query_registration->addJoin('INNER', 'node', 'n', 'n.nid = r2.field_event_target_id');
-    $query_registration->addJoin('INNER', 'event_registration__field_user', 'r3', 'r3.entity_id = r.id');
-    $query_registration->condition('r3.field_user_target_id', $this->currentUser->id());
-    // Within last year.
-    $query_registration->condition('r.created', strtotime('-1 year'), '>');
-    $query_registration->condition('r.status', 'canceled', '!=');
-    $result_registration = $query_registration->execute()->fetchAll();
-    if (count($result_registration) > 0) {
-      foreach ($result_registration as $registration) {
-        $nids[] = $registration->field_event_target_id;
-      }
-    }
-
-    // SAVED EVENTS
-    // Get nodes flagged by current user.
-    $query_saved = $this->connection->select('flagging', 'f');
-    // Get the event node ids.
-    $query_saved->addField('f', 'entity_id');
-    $query_saved->condition('f.flag_id', 'saved_event');
-    $query_saved->condition('f.uid', $this->currentUser->id());
-    // Within last year.
-    $query_saved->condition('f.created', strtotime('-1 year'), '>');
-    $result_saved = $query_saved->execute()->fetchAll();
-    if (count($result_saved) > 0) {
-      foreach ($result_saved as $saved) {
-        $nids[] = $saved->entity_id;
-      }
-    }
-
-    // Figure out the event types and locations of the past $nids.
-    $nodes_historical = $storage->loadMultiple($nids);
-    $event_types_historical = $locations_historical = $audiences_historical = [];
-    foreach ($nodes_historical as $node_historical) {
-      /** @var \Drupal\node\NodeInterface $node_historical */
-      $audience = $node_historical->get('field_audience_primary')->getString();
-      if (!in_array($audience, $audiences_historical) && !empty($audience)) {
-        $audiences_historical[] = $audience;
-      }
-      $location = $node_historical->get('field_location')->getString();
-      if (!in_array($location, $locations_historical) && !empty($location)) {
-        $locations_historical[] = $location;
-      }
-      $type = $node_historical->get('field_event_type_primary')->getString();
-      if (!in_array($type, $event_types_historical) && !empty($type)) {
-        $event_types_historical[] = $type;
-      }
-    }
-
-    // RECOMMENDATIONS.
-    $view = $this->entityTypeManager->getViewBuilder('node');
-    $node = $this->entityTypeManager->getDefinition('node');
-    $customer = $this->profileStorage->loadByUser($this->currentUser, 'customer');
-    $query = new SuggestedEventsQuery($node, 'AND', \Drupal::service('database'), ['Drupal\Core\Entity\Query\Sql']);
-
-    $current_date = $this->currentDate()->setTimezone(new \DateTimeZone('UTC'));
-    // 3 items by default, but get 20 to remove dupl. titles.
-    // Sort based on date.
-    $query
-      ->condition('type', 'event', '=')
-      ->condition('field_date_time', $current_date->format('c'), '>=')
-      ->condition('status', 1, '=')
-      ->condition('field_event_designation', 'events', '=')
-      ->range(0, 20)
-      ->sort('field_date_time', 'ASC');
-
-    // Exclude attended, saved, and registered events.
-    if (count($nids) > 0) {
-      $query->condition('nid', $nids, 'NOT IN');
-    }
-    // Store what we've got so far in case we need to use our fallback query.
-    $query_fallback = clone $query;
-
-    // Preferred Audiences.
-    if ($customer && (($audiences = $this->simplifyValues($customer->field_audiences->getValue())) || count($audiences_historical) > 0)) {
-      if (count($audiences_historical) > 0 && is_array($audiences)) {
-        $audiences = array_merge($audiences, $audiences_historical);
-      }
-      elseif (count($audiences_historical) > 0) {
-        $audiences = $audiences_historical;
-      }
-      if (!empty($audiences)) {
-        $query->condition('field_event_audience', array_unique($audiences), 'IN');
-      }
-    }
-
-    // Preferred Locations.
-    if ($customer && (($locations = $this->simplifyValues($customer->field_preferred_location->getValue())) || count($locations_historical) > 0)) {
-      if (count($locations_historical) > 0 && is_array($locations)) {
-        $locations = array_merge($locations, $locations_historical);
-      }
-      elseif (count($locations_historical) > 0) {
-        $locations = $locations_historical;
-      }
-      $query->condition('field_location', array_unique($locations), 'IN');
-    }
-
-    // Preferred Event Types.
-    if ($customer && (($event_types = $this->simplifyValues($customer->field_event_types->getValue())) || count($event_types_historical) > 0)) {
-      if (count($event_types_historical) > 0 && is_array($event_types)) {
-        $event_types = array_merge($event_types, $event_types_historical);
-      }
-      elseif (count($event_types_historical) > 0) {
-        $event_types = $event_types_historical;
-      }
-      $query->condition('field_event_type', array_unique($event_types), 'IN');
-    }
-    // If the customer has no preferences of any kind, show featured events.
-    if (empty($audiences) && empty($locations) && empty($event_types)) {
-      $query->condition('field_featured', 1, '=');
-    }
-
-    $result = $query->execute();
-    $nodes = $storage->loadMultiple($result);
-
-    // Fallback - If we still have no events, try using all ORs in query.
-    if (count($nodes) == 0) {
-      if (!empty($audiences) || !empty($locations) || !empty($event_types)) {
-        $preferences = [
-          'field_event_audience' => $audiences,
-          'field_location' => $locations,
-          'field_event_type' => $event_types,
-        ];
-        // Create the orConditionGroup.
-        $orGroup = $query_fallback->orConditionGroup();
-        foreach ($preferences as $field_name => $preference) {
-          if (!empty($preference)) {
-            $orGroup->condition($field_name, array_unique($preference), 'IN');
-          }
+    if ($events = $this->suggestedEventsProvider->getSuggestedEvents()) {
+      // Ensure no two event titles are the same. If one is the same, remove it.
+      $titles = [];
+      foreach ($events as $key => $node) {
+        // $this->configuration['results'] = 3 results by default.
+        /** @var \Drupal\node\NodeInterface $node */
+        if (!in_array($node->get('title')->getString(), $titles) && count($titles) < $this->configuration['results']) {
+          $titles[] = $node->get('title')->getString();
         }
-        // Add the group to the query.
-        $query_fallback->condition($orGroup);
-        $result = $query_fallback->execute();
-        $nodes = $storage->loadMultiple($result);
+        else {
+          unset($events[$key]);
+        }
       }
-    }
-
-    // Ensure no two event titles are the same. If one is the same, remove it.
-    $titles = [];
-    foreach ($nodes as $key => $node) {
-      // $this->configuration['results'] = 3 results by default.
-      /** @var \Drupal\node\NodeInterface $node */
-      if (!in_array($node->get('title')->getString(), $titles) && count($titles) < $this->configuration['results']) {
-        $titles[] = $node->get('title')->getString();
-      }
-      else {
-        unset($nodes[$key]);
-      }
-    }
-
-    if (!empty($nodes)) {
+      uasort($events, 'static::sort');
+      $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
       $build['results'] = [
         '#theme' => 'events_recommended',
-        '#content' => $view->viewMultiple($nodes, $this->configuration['view_mode']),
+        '#content' => $viewBuilder->viewMultiple($events, $this->configuration['view_mode']),
         '#cache' => [
           'tags' => $this->getUser()->getCacheTags(),
         ],
       ];
       $build['#cache']['tags'][] = 'flagging_list';
     }
-    else {
-      $build = [];
-    }
 
     return $build;
+  }
+
+  /**
+   * Sorts events by date in ascending order.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $a
+   *   First event for comparison.
+   * @param \Drupal\Core\Entity\EntityInterface $b
+   *   Second event for comparison.
+   *
+   * @return int
+   *   If the first event is less than, equal to, or greater than the second.
+   */
+  public static function sort(EntityInterface $a, EntityInterface $b) {
+    /** @var \Drupal\node\NodeInterface $a */
+    /** @var \Drupal\node\NodeInterface $b */
+    if (!$a->hasField('field_date_time') || !$b->hasField('field_date_time')) {
+      return 0;
+    }
+    // First order by group, so that all items in the CSS_AGGREGATE_DEFAULT
+    // group appear before items in the CSS_AGGREGATE_THEME group. Modules may
+    // create additional groups by defining their own constants.
+    if ($a->get('field_date_time')->value < $b->get('field_date_time')->value) {
+      return -1;
+    }
+    elseif ($a->get('field_date_time')->value > $b->get('field_date_time')->value) {
+      return 1;
+    }
+    else {
+      return 0;
+    }
   }
 
   /**
@@ -354,25 +194,6 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
    */
   private function getUser() {
     return $this->entityTypeManager->getStorage('user')->load($this->currentUser->id());
-  }
-
-  /**
-   * Convert from sub-arrays with target_id to simple arrays.
-   */
-  private function simplifyValues($values) {
-    return array_map(function ($value) {
-      return $value['target_id'];
-    }, $values);
-  }
-
-  /**
-   * Gets the current DrupalDateTime.
-   *
-   * @return \Drupal\Core\Datetime\DrupalDateTime
-   *   The current DrupalDateTime.
-   */
-  private function currentDate() {
-    return new DrupalDateTime();
   }
 
 }

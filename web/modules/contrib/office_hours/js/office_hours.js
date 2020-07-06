@@ -36,7 +36,7 @@
       });
 
       // Copy values from previous day, when user clicks "Copy previous day".
-      // @todo: works for Table widget, not yet for List Widget.
+      // @todo This works for Table widget, not yet for List Widget.
       $('.office-hours-copy-link').bind('click', function (e) {
         e.preventDefault();
 

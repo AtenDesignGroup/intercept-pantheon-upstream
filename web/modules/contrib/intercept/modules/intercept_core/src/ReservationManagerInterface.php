@@ -102,6 +102,19 @@ interface ReservationManagerInterface {
   public function hasOpeningHoursConflict(array $reservations, array $params, NodeInterface $room);
 
   /**
+   * Checks if a reservation duration exceeds the room's maximum duration limit.
+   *
+   * @param array $params
+   *   The requested start and end times.
+   * @param \Drupal\node\NodeInterface $room
+   *   The Room node.
+   *
+   * @return bool
+   *   Whether there is a conflict with the room's maximum duration.
+   */
+  public function hasMaxDurationConflict(array $params, NodeInterface $room);
+
+  /**
    * Gets the last reservation of a type by a user.
    *
    * @param string $type

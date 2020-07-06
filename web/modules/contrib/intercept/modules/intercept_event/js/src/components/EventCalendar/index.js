@@ -248,7 +248,11 @@ const mapDispatchToProps = dispatch => ({
             path: 'id',
           },
         },
-        include: ['image_primary', 'image_primary.field_media_image', 'field_room'],
+        include: [
+          'image_primary',
+          'image_primary.field_media_image',
+          'field_room',
+        ],
         headers: {
           'X-Consumer-ID': interceptClient.consumer,
         },

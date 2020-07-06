@@ -97,6 +97,9 @@ field.formatter.settings.office_hours:
           type: boolean
           label: 'Enable Schema.org openingHours support'
 
+field.formatter.settings.office_hours_table:
+  type: field.formatter.settings.office_hours
+
 field.formatter.settings.office_hours_status:
   type: mapping
   label: 'Office hours current status display format settings'
@@ -107,3 +110,20 @@ field.formatter.settings.office_hours_status:
     closed_text:
       type: label
       label: 'Currently closed message'
+
+field.value.office_hours:
+  type: mapping
+  label: 'Default value'
+  mapping:
+    day:
+      type: integer
+      label: 'Day'
+    starthours:
+      type: integer
+      label: 'Start hours'
+    endhours:
+      type: integer
+      label: 'End hours'
+    comment:
+      type: string
+      label: 'Comment'

@@ -74,8 +74,8 @@ class EventCustomerEvaluationsApp extends React.Component {
 
     return (
       <div className="customer-evaluations__app">
-        <EvaluationSummary {...likes} icon={this.likeIcon('#7A7D81')} label={'Like'} />
-        <EvaluationSummary {...dislikes} icon={this.dislikeIcon('#7A7D81')} label={'Dislike'} />
+        <EvaluationSummary {...likes} icon={this.likeIcon('#747481')} label={'Like'} />
+        <EvaluationSummary {...dislikes} icon={this.dislikeIcon('#747481')} label={'Dislike'} />
       </div>
     );
   }

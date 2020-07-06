@@ -1,26 +1,26 @@
 .messages__content {
-  color: #4C4D4F; }
+  color: #4c4d4f; }
   .messages__content a {
-    color: #4C4D4F;
+    color: #4c4d4f;
     font-weight: bold; }
 
 .messages--status {
   background-color: #ededed; }
   .messages--status .messages__icon {
-    background-color: #4C4D4F; }
+    background-color: #4c4d4f; }
 
 .messages--warning {
   background-color: #fff6e9; }
   .messages--warning .messages__icon {
-    background-color: #FFA726; }
+    background-color: #ffa726; }
 
 .messages--error {
   background-color: #feeceb; }
   .messages--error .messages__icon {
-    background-color: #F44336; }
+    background-color: #f44336; }
 
 .messages--full-screen {
-  background-color: #0288D1;
+  background-color: #0288d1;
   color: #fff; }
   .messages--full-screen .messages__icon {
     background: transparent; }

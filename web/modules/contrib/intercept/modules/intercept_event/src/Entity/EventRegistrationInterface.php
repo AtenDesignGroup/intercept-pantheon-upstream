@@ -80,4 +80,20 @@ interface EventRegistrationInterface extends ContentEntityInterface, EntityChang
    */
   public function setCreatedTime($timestamp);
 
+  /**
+   * Gets the Event entity.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The event entity.
+   */
+  public function getEvent();
+
+  /**
+   * Gets the Event ID.
+   *
+   * @return int
+   *   The event entity ID.
+   */
+  public function getEventId();
+
 }

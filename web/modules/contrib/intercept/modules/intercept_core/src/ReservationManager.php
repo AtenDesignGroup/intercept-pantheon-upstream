@@ -818,15 +818,7 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
-   * Checks if a reservation duration exceeds the room's maximum duration limit.
-   *
-   * @param array $params
-   *   The requested start and end times.
-   * @param \Drupal\node\NodeInterface $room
-   *   The Room node.
-   *
-   * @return bool
-   *   Whether there is a conflict with the room's maximum duration.
+   * {@inheritdoc}
    */
   public function hasMaxDurationConflict(array $params, NodeInterface $room) {
     if (!empty($params['duration']) && $max_duration_interval = $this->getMaxRoomDuration($room)) {

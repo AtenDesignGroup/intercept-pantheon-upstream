@@ -56,14 +56,35 @@ class OfficeHoursFieldTest extends FieldKernelTestBase {
       'field_storage' => $this->fieldStorage,
       'bundle' => 'entity_test',
       'settings' => [],
+      'default_value' => [
+        [
+          'day' => 0,
+          'starthours' => 700,
+          'endhours' => 1800,
+          'comment' => 'Test comment',
+        ],
+        [
+          'day' => 1,
+          'starthours' => 700,
+          'endhours' => 1800,
+          'comment' => 'Test comment',
+        ],
+      ],
     ]);
     $this->field->save();
 
+    /** @var @ $entity_display */
     $entity_display = EntityViewDisplay::create([
       'targetEntityType' => $this->field->getTargetEntityTypeId(),
       'bundle' => $this->field->getTargetBundle(),
       'mode' => 'default',
     ]);
+    // Save the office hours field to check if the config schema is valid.
+    // @todo D9 test
+    // Table formatter.
+    $entity_display->setComponent('field_office_hours', ['type' => 'office_hours_table']);
+    $entity_display->save();
+    // Default formatter.
     $entity_display->setComponent('field_office_hours', ['type' => 'office_hours']);
     $entity_display->save();
   }

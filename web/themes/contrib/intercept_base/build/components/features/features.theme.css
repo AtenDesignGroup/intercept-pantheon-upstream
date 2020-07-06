@@ -6,7 +6,7 @@
   .features__heading {
     font-size: 1.03472rem;
     line-height: 1.2;
-    color: #03A9F4; }
+    color: #03a9f4; }
     @media (min-width: 48em) {
       .features__heading {
         font-size: 1.40625rem; } }
@@ -35,7 +35,7 @@
           .features__list .feature h5:not([class]) {
             font-size: 1.125rem; } }
         .features__list .feature h5:not([class]) a:not([class]) {
-          color: #03A9F4; }
+          color: #03a9f4; }
       .features__list .feature .field--label-inline {
         line-height: 1.5;
         font-size: 0.88194rem; }

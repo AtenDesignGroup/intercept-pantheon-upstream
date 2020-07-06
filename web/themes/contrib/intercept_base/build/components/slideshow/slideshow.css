@@ -1,6 +1,6 @@
 .slideshow {
   margin-bottom: 2.0625rem;
-  background-color: #EEF1F4; }
+  background-color: #eef1f4; }
   @media (min-width: 48em) {
     .slideshow {
       margin-bottom: 4.125rem; } }
@@ -63,7 +63,7 @@
     top: 0; }
   .slideshow__button polygon,
   .slideshow__button use {
-    fill: #0288D1; }
+    fill: #0288d1; }
 
 .slideshow__button--next {
   right: -2.5rem; }

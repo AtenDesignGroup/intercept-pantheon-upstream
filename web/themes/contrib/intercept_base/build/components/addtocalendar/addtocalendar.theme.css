@@ -1,17 +1,17 @@
 .addtocalendar .atcb-link,
 .react-add-to-calendar__button {
-  color: #878B90;
+  color: #878b90;
   font-weight: 900; }
   .addtocalendar .atcb-link:hover, .addtocalendar .atcb-link:focus,
   .react-add-to-calendar__button:hover,
   .react-add-to-calendar__button:focus {
-    color: #4C4D4F; }
+    color: #4c4d4f; }
 
 .react-add-to-calendar__dropdown {
-  border: 1px solid #EEF1F4; }
+  border: 1px solid #eef1f4; }
   .react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-    color: #878B90;
+    color: #878b90;
     font-weight: 900; }
     .react-add-to-calendar__dropdown > ul:not([class]) > li > a:hover, .react-add-to-calendar__dropdown > ul:not([class]) > li > a:focus {
-      color: #4C4D4F;
-      background-color: #EEF1F4; }
+      color: #4c4d4f;
+      background-color: #eef1f4; }

@@ -36,4 +36,8 @@ bypass room reservation overlap constraints:
 
 bypass room reservation open hours constraints:
   title: 'Bypass room reservation open hours constraints'
-  descrription: 'Assign to roles that can reserve rooms outside of open hours'
+  description: 'Assign to roles that can reserve rooms outside of open hours'
+
+bypass room reservation maximum duration constraints:
+  title: 'Bypass room reservation maximum duration constraints'
+  description: 'Assign to roles that can reserve rooms longer than the maximum duration'

@@ -99,6 +99,4 @@ function intercept_event_views_data_alter(&$data) {
       'id' => 'event_evaluation_criteria_count',
     ],
   ];
-
-  $data['node__field_location']['field_location_target_id']['filter']['id'] = 'numeric_reference';
 }

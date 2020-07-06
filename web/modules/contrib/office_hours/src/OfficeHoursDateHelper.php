@@ -62,6 +62,7 @@ class OfficeHoursDateHelper extends DateHelper {
    *
    * Helper function for a task that is often required when working with dates.
    * Copied from DateTimePlus::datePad($value, $size) method.
+   * @deprecated , replaced with OfficeHoursDatetime::get($value, $format)
    *
    * @param int $value
    *   The value to pad.
@@ -78,7 +79,9 @@ class OfficeHoursDateHelper extends DateHelper {
   /**
    * Helper function to convert a time to a given format.
    *
-   * For formatting options, see http://www.php.net/manual/en/function.date.php.
+   * For formatting options,
+   *   @see https://www.php.net/manual/en/function.date.php.
+   *   @see https://www.php.net/manual/en/datetime.formats.time.php
    *
    * @param string $time
    *   Time, in 24hr format '0800', '800', '08:00' or '8:00'.
@@ -92,7 +95,7 @@ class OfficeHoursDateHelper extends DateHelper {
    */
   public static function format($time, $time_format, $end_time = FALSE) {
     // Convert '800' or '0800' to '08:00'.
-    if (!strlen($time)) {
+    if (!mb_strlen($time)) {
       return NULL;
     }
     // Empty time field. (negative value)
@@ -111,7 +114,7 @@ class OfficeHoursDateHelper extends DateHelper {
     $formatted_time = $date->format($time_format);
 
     // Format the 24-hr end time from 0 to 24:00/2400.
-    if ($end_time && (strlen($time_format) == strspn($time_format, 'GH:i '))) {
+    if ($end_time && (mb_strlen($time_format) == strspn($time_format, 'GH:i '))) {
       if (($time == '0:00' || $time == '00:00')) {
         $formatted_time = '24:00';
       }
@@ -137,7 +140,7 @@ class OfficeHoursDateHelper extends DateHelper {
   public static function formatTimeSlot($start, $end, $format = 'G:i', $separator = ' - ') {
     $start_time = OfficeHoursDateHelper::format($start, $format, FALSE);
     $end_time = OfficeHoursDateHelper::format($end, $format, TRUE);
-    if (!strlen($start_time) && !strlen($end_time)) {
+    if (!mb_strlen($start_time) && !mb_strlen($end_time)) {
       // Empty time fields.
       return '';
     }
@@ -158,8 +161,9 @@ class OfficeHoursDateHelper extends DateHelper {
 
     // Get the valid hours. DateHelper API doesn't provide
     // straight method for this.
-    $start = ($start == '') ? 0 : max(0, $start);
-    $end = ($start == '') ? 23 : min(23, $end);
+    $add_midnight = empty($end); // midnight.
+    $start = (empty($start)) ? 0 : max(0, (int) $start);
+    $end = (empty($end)) ? 23 : min(23, (int) $end);
 
     // Begin modified copy from date_hours().
     if ($format == 'h' || $format == 'g') {
@@ -169,7 +173,7 @@ class OfficeHoursDateHelper extends DateHelper {
       for ($i = $min; $i <= $max; $i++) {
         if ((($i >= $start) && ($i <= $end)) || ($end - $start >= 11)) {
           $hour = ($i <= 12) ? $i : $i - 12;
-          $hours[$hour] = $hour < 10 && ($format == 'H' || $format == 'h') ? "0$hour" : $hour;
+          $hours[$hour] = $hour < 10 && ($format == 'H' || $format == 'h') ? "0$hour" : (string) $hour;
         }
 
       }
@@ -180,8 +184,11 @@ class OfficeHoursDateHelper extends DateHelper {
       $max = $end;
       for ($i = $min; $i <= $max; $i++) {
         $hour = $i;
-        $hours[$hour] = $hour < 10 && ($format == 'H' || $format == 'h') ? "0$hour" : $hour;
+        $hours[$hour] = $hour < 10 && ($format == 'H' || $format == 'h') ? "0$hour" : (string) $hour;
       }
+    }
+    if ($add_midnight) {
+      $hours[00] = ($format == 'H' || $format == 'h') ? "00" : (string) "0";
     }
 
     $none = ['' => ''];
@@ -215,7 +222,7 @@ class OfficeHoursDateHelper extends DateHelper {
         break;
 
       case 'two_letter':
-        // @todo: avoid translation from English to XX, in case of 'Microdata'.
+        // @todo Avoid translation from English to XX, in case of 'Microdata'.
         return self::weekDaysAbbr2(TRUE);
         break;
 

@@ -1,0 +1,4 @@
+enable_dashboard_redirect: 1
+dashboard_redirect_whitelist: "/reserve-room\r\n/catalog"
+dashboard_redirect_limit_roles:
+  intercept_registered_customer: intercept_registered_customer

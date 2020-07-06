@@ -319,22 +319,6 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * Get the start value of the event registration period.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The event node.
-   *
-   * @return string|null
-   *   The date string for the event registration start value.
-   */
-  protected function getEventRegistrationStart(NodeInterface $node) {
-    if ($node->bundle() !== 'event') {
-      return NULL;
-    }
-    return $node->get('field_event_register_period')->value;
-  }
-
-  /**
    * Get the end value of the event registration period.
    *
    * @param \Drupal\node\NodeInterface $node
@@ -501,20 +485,6 @@ class EventManager implements EventManagerInterface {
     }
 
     return JsonResponse::create($data['response'], 200);
-  }
-
-  /**
-   * Gets the intercept_event email settings config.
-   *
-   * @param string $type
-   *   The key of the email settings config.
-   *
-   * @return array
-   *   The intercept_event email settings config.
-   */
-  protected function getEmailConfig($type) {
-    $config = $this->configFactory->get('intercept_event.settings')->get('email');
-    return !empty($config[$type]) ? $config[$type] : FALSE;
   }
 
 }

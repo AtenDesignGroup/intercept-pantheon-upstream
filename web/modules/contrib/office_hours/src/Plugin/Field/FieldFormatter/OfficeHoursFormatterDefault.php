@@ -59,6 +59,7 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
         ],
         '#cache' => [
           'max-age' => $this->getStatusTimeLeft($items, $langcode),
+          'tags' => ['office_hours:field.default'],
         ],
       ];
     }

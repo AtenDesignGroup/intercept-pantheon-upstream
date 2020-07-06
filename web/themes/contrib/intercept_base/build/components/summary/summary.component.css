@@ -49,9 +49,9 @@
   transition: color .2s ease-out;
   text-decoration: none; }
   .summary__link:hover, .summary__link:focus {
-    color: #7A7D81; }
+    color: #747481; }
   .summary__link:active, .summary__link.active--trail {
-    color: #7A7D81; }
+    color: #747481; }
 
 .summary__title {
   font-size: 0.95833rem;

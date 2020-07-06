@@ -1,11 +1,10 @@
 <?php
 
-namespace Drupal\migrate_content\Plugin\migrate\process;
+namespace Drupal\office_hours\Plugin\migrate\process;
 
 use Drupal\migrate\MigrateException;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\Row;
-use Drupal\office_hours\Plugin\migrate\process\OfficeHoursField;
 
 /**
  * Processes a input array of office hours to the correct format for the field.

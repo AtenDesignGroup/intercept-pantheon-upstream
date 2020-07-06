@@ -22,6 +22,7 @@ class EventsController extends ControllerBase {
     $build = [];
     $build['#attached']['library'][] = 'intercept_event/eventList';
     $build['intercept_event_list']['#markup'] = '<div id="eventListRoot" ></div>';
+    $build['#attached']['drupalSettings']['intercept']['events']['recommended'] = \Drupal::service('intercept_event.suggested_events_provider')->getSuggestedEventIds();
     $this->attachFieldSettings($build);
     return $build;
   }

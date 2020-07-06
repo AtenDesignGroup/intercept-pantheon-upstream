@@ -70,6 +70,13 @@ function intercept_core_page_attachments(array &$attachments) {
 }
 
 /**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function intercept_core_form_user_login_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  \Drupal::service('intercept_core.utility.redirect')->userLoginFormAlter($form, $form_state);
+}
+
+/**
  * Implements hook_theme().
  */
 function intercept_core_theme() {

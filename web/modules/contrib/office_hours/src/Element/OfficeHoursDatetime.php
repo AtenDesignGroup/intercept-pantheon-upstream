@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
 
 /**
- * Provides a one-line text field form element.
+ * Provides a one-line HTML5 time element.
  *
  * @FormElement("office_hours_datetime")
  */
@@ -69,12 +69,8 @@ class OfficeHoursDatetime extends Datetime {
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
 
-    if (is_string($element['#default_value'])) {
-      $input['time'] = OfficeHoursDateHelper::format($element['#default_value'], 'H:i');
-    }
-    elseif (is_array($element['#default_value'])) {
-      $input['time'] = OfficeHoursDateHelper::format($element['#default_value']['time'], 'H:i');
-    }
+    $input['time'] = OfficeHoursDatetime::get($element['#default_value'], 'H:i');
+
     $input = parent::valueCallback($element, $input, $form_state);
     $element['#default_value'] = $input;
 
@@ -89,12 +85,13 @@ class OfficeHoursDatetime extends Datetime {
    * @param $complete_form
    * @return array
    */
-  public static function processOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {$element = parent::processDatetime($element, $form_state, $complete_form);
+  public static function processOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {
+    $element = parent::processDatetime($element, $form_state, $complete_form);
 
-    // @todo: use $element['#date_time_callbacks'], do not use this function.
+    // @todo Use $element['#date_time_callbacks'], do not use this function.
     // Adds the HTML5 attributes.
     $element['time']['#attributes'] = [
-        // @todo: set a proper from/to title.
+        // @todo Set a proper from/to title.
         // 'title' => $this->t('Time (e.g. @format)', ['@format' => static::formatExample($time_format)]),
         // Fix the convention: minutes vs. seconds.
         'step' => $element['#date_increment'] * 60,
@@ -113,7 +110,7 @@ class OfficeHoursDatetime extends Datetime {
   public static function validateOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {
     $input_exists = FALSE;
 
-    // @todo: call validateDateTime().
+    // @todo Call validateDatetime().
     // Get the 'time' sub-array.
     $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
     // Generate the 'object' sub-array.
@@ -123,6 +120,67 @@ class OfficeHoursDatetime extends Datetime {
       //  parent::validateDatetime($element, $form_state, $complete_form);
       //}
     }
+  }
+
+  /**
+   * Mimic Core/TypedData/ComplexDataInterface
+   */
+
+  /**
+   * @todo Use Core/TypedData/ComplexDataInterface.
+   *  There are too many similar functions:
+   *   - OfficeHoursWidgetBase::massageFormValues();
+   *   - OfficeHoursItem, which requires an object;
+   *   - this function.
+   *
+   * @param mixed $element
+   *   A string or array for time.
+   * @param string $format
+   *   Required time format.
+   * @return string
+   *   Return value.
+   */
+  public static function get($element, $format = 'Hi') {
+    $value = '';
+    // Be prepared for Datetime and Numeric input.
+    // Numeric input is set in OfficeHoursDateList/Datetime::validateOfficeHours()
+    if (!isset($element)) {
+      return $value;
+    }
+
+    if (isset($element['time'])) {
+      // Return NULL or time string.
+      $value = OfficeHoursDateHelper::format($element['time'], $format);
+    }
+    elseif (!empty($element['hour'])) {
+      $value = OfficeHoursDateHelper::format($element['hour'] * 100 + $element['minute'], $format);
+    }
+    elseif (!isset($element['hour'])) {
+      $value = OfficeHoursDateHelper::format($element, $format);
+    }
+    return $value;
+  }
+
+  /**
+   * Determines whether the data structure is empty.
+   *
+   * @return bool
+   *   TRUE if the data structure is empty, FALSE otherwise.
+   */
+  public static function isEmpty($element) {
+    if ($element === NULL) {
+      return TRUE;
+    }
+    if ($element === '') {
+      return TRUE;
+    }
+    if ($element === '-1') { // 24:00
+      return TRUE;
+    }
+    if (isset($element['time']) && $element['time'] === '') {
+      return TRUE;
+    }
+    return FALSE;
   }
 
 }

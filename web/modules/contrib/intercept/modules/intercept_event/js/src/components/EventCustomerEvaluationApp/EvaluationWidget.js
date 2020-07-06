@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { Radio, FormLabel, FormControl, FormGroup } from '@material-ui/core';
 
 const radioClasses = {
-  root: "evaluation__radio-icon",
-  checked: "evaluation__radio-icon--checked",
-  disabled: "evaluation__radio-icon--disabled",
+  root: 'evaluation__radio-icon',
+  checked: 'evaluation__radio-icon--checked',
+  disabled: 'evaluation__radio-icon--disabled',
 };
 
 class EvaluationWidget extends React.PureComponent {
@@ -35,7 +35,7 @@ class EvaluationWidget extends React.PureComponent {
             color="default"
             name={name}
             aria-label="Like"
-            icon={likeIcon('#7A7D81')}
+            icon={likeIcon('#747481')}
             checkedIcon={likeIcon('#ffffff')}
             classes={radioClasses}
           />
@@ -46,7 +46,7 @@ class EvaluationWidget extends React.PureComponent {
             color="default"
             name={name}
             aria-label="Dislike"
-            icon={dislikeIcon('#7A7D81')}
+            icon={dislikeIcon('#747481')}
             checkedIcon={dislikeIcon('#ffffff')}
             classes={radioClasses}
           />

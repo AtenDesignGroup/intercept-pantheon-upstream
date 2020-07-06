@@ -1,0 +1,1134 @@
+{
+  "evaluation_criteria--evaluation_criteria": {
+    "drupal_internal__id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "evaluation": {
+      "type": "integer"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "author": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "file--file": {
+    "drupal_internal__fid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "filename": {
+      "type": "string"
+    },
+    "uri": {
+      "type": "uri"
+    },
+    "filemime": {
+      "type": "string"
+    },
+    "filesize": {
+      "type": "integer"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "url": {
+      "type": "string"
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "flagging--saved_event": {
+    "drupal_internal__id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "entity_id": {
+      "type": "integer"
+    },
+    "global": {
+      "type": "boolean"
+    },
+    "session_id": {
+      "type": "integer"
+    },
+    "created": {
+      "type": "number"
+    },
+    "flagged_entity": {
+      "type": "relationship",
+      "model": "node--event",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "event_registration--event_registration": {
+    "title": {
+      "type": "string"
+    },
+    "drupal_internal__id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "author": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "field_event": {
+      "type": "relationship",
+      "model": "node--event",
+      "multiple": false
+    },
+    "field_registrants": {
+      "type": "relationship",
+      "model": "taxonomy_term--population_segment",
+      "multiple": true
+    },
+    "field_user": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "event_attendance--event_attendance": {
+    "title": {
+      "type": "string"
+    },
+    "drupal_internal__id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "author": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "field_event": {
+      "type": "relationship",
+      "model": "node--event",
+      "multiple": false
+    },
+    "field_attendees": {
+      "type": "relationship",
+      "model": "taxonomy_term--population_segment",
+      "multiple": true
+    },
+    "field_user": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "event_recurrence--event_recurrence": {
+    "drupal_internal__id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "author": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "media--file": {
+    "drupal_internal__mid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "thumbnail": {
+      "type": "relationship",
+      "model": "file--file",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "field_media_file": {
+      "type": "relationship",
+      "model": "file--file",
+      "multiple": false
+    }
+  },
+  "media--image": {
+    "drupal_internal__mid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_media_caption": {
+      "type": "object"
+    },
+    "field_media_credit": {
+      "type": "object"
+    },
+    "thumbnail": {
+      "type": "relationship",
+      "model": "file--file",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "field_media_image": {
+      "type": "relationship",
+      "model": "file--file",
+      "multiple": false
+    }
+  },
+  "media--slideshow": {
+    "drupal_internal__mid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "thumbnail": {
+      "type": "relationship",
+      "model": "file--file",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "field_media_slideshow": {
+      "type": "relationship",
+      "model": "media--image",
+      "multiple": true
+    }
+  },
+  "media--web_video": {
+    "drupal_internal__mid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_media_caption": {
+      "type": "object"
+    },
+    "field_media_video_embed_field": {
+      "type": "string"
+    },
+    "thumbnail": {
+      "type": "relationship",
+      "model": "file--file",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "node--equipment": {
+    "drupal_internal__nid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "promote": {
+      "type": "boolean"
+    },
+    "sticky": {
+      "type": "boolean"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_duration_min": {
+      "type": "string"
+    },
+    "field_text_content": {
+      "type": "object"
+    },
+    "type": {
+      "type": "relationship",
+      "model": "node_type--node_type",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "field_equipment_type": {
+      "type": "relationship",
+      "model": "taxonomy_term--equipment_type",
+      "multiple": false
+    },
+    "image_primary": {
+      "type": "relationship",
+      "model": "media--image",
+      "multiple": false
+    }
+  },
+  "node--event": {
+    "drupal_internal__nid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "promote": {
+      "type": "boolean"
+    },
+    "sticky": {
+      "type": "boolean"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_capacity_max": {
+      "type": "integer"
+    },
+    "field_date_time": {
+      "type": "object"
+    },
+    "field_event_is_template": {
+      "type": "boolean"
+    },
+    "field_event_register_period": {
+      "type": "object"
+    },
+    "field_event_user_reg_max": {
+      "type": "integer"
+    },
+    "field_featured": {
+      "type": "boolean"
+    },
+    "field_has_waitlist": {
+      "type": "boolean"
+    },
+    "field_must_register": {
+      "type": "boolean"
+    },
+    "field_text_content": {
+      "type": "object"
+    },
+    "field_text_intro": {
+      "type": "object"
+    },
+    "field_text_teaser": {
+      "type": "string"
+    },
+    "field_waitlist_max": {
+      "type": "integer"
+    },
+    "field_evanced_id": {
+      "type": "string"
+    },
+    "registration": {
+      "type": "object"
+    },
+    "type": {
+      "type": "relationship",
+      "model": "node_type--node_type",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "field_event_audience": {
+      "type": "relationship",
+      "model": "taxonomy_term--audience",
+      "multiple": true
+    },
+    "field_event_audience_primary": {
+      "type": "relationship",
+      "model": "taxonomy_term--audience",
+      "multiple": false
+    },
+    "field_event_recurrence": {
+      "type": "relationship",
+      "model": "event_recurrence--event_recurrence",
+      "multiple": false
+    },
+    "field_event_series": {
+      "type": "relationship",
+      "model": "node--event_series",
+      "multiple": false
+    },
+    "field_event_tags": {
+      "type": "relationship",
+      "model": "taxonomy_term--tag",
+      "multiple": true
+    },
+    "field_event_type": {
+      "type": "relationship",
+      "model": "taxonomy_term--event_type",
+      "multiple": true
+    },
+    "field_event_type_primary": {
+      "type": "relationship",
+      "model": "taxonomy_term--event_type",
+      "multiple": false
+    },
+    "image_primary": {
+      "type": "relationship",
+      "model": "media--image",
+      "multiple": false
+    },
+    "field_location": {
+      "type": "relationship",
+      "model": "node--location",
+      "multiple": false
+    },
+    "field_room": {
+      "type": "relationship",
+      "model": "node--room",
+      "multiple": false
+    },
+    "field_event_designation": {
+      "type": "string"
+    }
+  },
+  "node--event_series": {
+    "drupal_internal__nid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "promote": {
+      "type": "boolean"
+    },
+    "sticky": {
+      "type": "boolean"
+    },
+    "path": {
+      "type": "object"
+    },
+    "type": {
+      "type": "relationship",
+      "model": "node_type--node_type",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "node--location": {
+    "drupal_internal__nid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    },
+    "field_location_abbreviation": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "promote": {
+      "type": "boolean"
+    },
+    "sticky": {
+      "type": "boolean"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_address": {
+      "type": "object"
+    },
+    "field_affiliated": {
+      "type": "boolean"
+    },
+    "field_contact_number": {
+      "type": "string"
+    },
+    "field_features": {
+      "type": "string"
+    },
+    "field_location_hours": {
+      "type": "array"
+    },
+    "field_map_link": {
+      "type": "object"
+    },
+    "field_text_content": {
+      "type": "object"
+    },
+    "field_text_intro": {
+      "type": "object"
+    },
+    "type": {
+      "type": "relationship",
+      "model": "node_type--node_type",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "image_primary": {
+      "type": "relationship",
+      "model": "media--image",
+      "multiple": false
+    }
+  },
+  "node--room": {
+    "drupal_internal__nid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "room_thumbnail": {
+      "type": "string"
+    },
+    "promote": {
+      "type": "boolean"
+    },
+    "sticky": {
+      "type": "boolean"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_capacity_max": {
+      "type": "integer"
+    },
+    "field_capacity_min": {
+      "type": "integer"
+    },
+    "field_reservable_online": {
+      "type": "boolean"
+    },
+    "field_room_fees": {
+      "type": "object"
+    },
+    "field_room_standard_equipment": {
+      "type": "array"
+    },
+    "field_reservation_phone_number": {
+      "type": "string"
+    },
+    "field_staff_use_only": {
+      "type": "boolean"
+    },
+    "field_text_content": {
+      "type": "object"
+    },
+    "field_text_intro": {
+      "type": "object"
+    },
+    "field_text_teaser": {
+      "type": "string"
+    },
+    "type": {
+      "type": "relationship",
+      "model": "node_type--node_type",
+      "multiple": false
+    },
+    "uid": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "image_primary": {
+      "type": "relationship",
+      "model": "media--image",
+      "multiple": false
+    },
+    "field_location": {
+      "type": "relationship",
+      "model": "node--location",
+      "multiple": false
+    },
+    "field_room_type": {
+      "type": "relationship",
+      "model": "taxonomy_term--room_type",
+      "multiple": false
+    }
+  },
+  "room_reservation--room_reservation": {
+    "title": {
+      "type": "string"
+    },
+    "drupal_internal__id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "location": {
+      "type": "string"
+    },
+    "field_attendee_count": {
+      "type": "integer"
+    },
+    "field_dates": {
+      "type": "object"
+    },
+    "field_group_name": {
+      "type": "string"
+    },
+    "field_meeting_purpose_details": {
+      "type": "string"
+    },
+    "field_refreshments": {
+      "type": "boolean"
+    },
+    "field_refreshments_description": {
+      "type": "object"
+    },
+    "field_publicize": {
+      "type": "boolean"
+    },
+    "field_status": {
+      "type": "string"
+    },
+    "author": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    },
+    "image": {
+      "type": "relationship",
+      "model": "media--image",
+      "multiple": false
+    },
+    "field_room": {
+      "type": "relationship",
+      "model": "node--room",
+      "multiple": false
+    },
+    "field_meeting_purpose": {
+      "type": "relationship",
+      "model": "taxonomy_term--meeting_purpose",
+      "multiple": false
+    },
+    "field_event": {
+      "type": "relationship",
+      "model": "node--event",
+      "multiple": false
+    },
+    "field_user": {
+      "type": "relationship",
+      "model": "user--user",
+      "multiple": false
+    }
+  },
+  "taxonomy_term--audience": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--audience",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--equipment_type": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--equipment_type",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--evaluation_criteria": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_evaluation": {
+      "type": "integer"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--evaluation_criteria",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--event_type": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "field_examples": {
+      "type": "string"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--event_type",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--lc_subject": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--lc_subject",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--meeting_purpose": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "field_requires_explanation": {
+      "type": "boolean"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--meeting_purpose",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--population_segment": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--population_segment",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--room_type": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--room_type",
+      "multiple": true
+    }
+  },
+  "taxonomy_term--tag": {
+    "drupal_internal__tid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "object"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "path": {
+      "type": "object"
+    },
+    "parent": {
+      "type": "relationship",
+      "model": "taxonomy_term--tag",
+      "multiple": true
+    }
+  },
+  "user--user": {
+    "drupal_internal__uid": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "preferred_langcode": {
+      "type": "object"
+    },
+    "preferred_admin_langcode": {
+      "type": "object"
+    },
+    "name": {
+      "type": "string"
+    },
+    "pass": {
+      "type": "object"
+    },
+    "mail": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "created": {
+      "type": "number"
+    },
+    "changed": {
+      "type": "number"
+    },
+    "access": {
+      "type": "number"
+    },
+    "login": {
+      "type": "number"
+    },
+    "init": {
+      "type": "string"
+    },
+    "path": {
+      "type": "object"
+    },
+    "roles": {
+      "type": "relationship",
+      "model": "user_role--user_role",
+      "multiple": true
+    }
+  }
+}

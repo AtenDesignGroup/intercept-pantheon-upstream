@@ -114,7 +114,7 @@ button.rbc-input::-moz-focus-inner {
   .rbc-month-view .rbc-date-cell.rbc-now:before {
     content: '';
     position: absolute;
-    background-color: #FFA726;
+    background-color: #ffa726;
     display: block;
     margin: auto;
     top: 0;
@@ -192,9 +192,9 @@ button.rbc-input::-moz-focus-inner {
         font-size: 0.75rem; } }
 
 .rbc-btn-group--views > button {
-  color: #4C4D4F;
+  color: #4c4d4f;
   background-color: white;
-  border: 1px solid #D3D8DF; }
+  border: 1px solid #d3d8df; }
   @media (max-width: 47.9375em) {
     .rbc-btn-group--views > button {
       -webkit-box-ordinal-group: 4;
@@ -202,16 +202,16 @@ button.rbc-input::-moz-focus-inner {
               order: 3; } }
   .rbc-btn-group--views > button:active, .rbc-btn-group--views > button.rbc-active {
     color: #fff;
-    background-color: #FFA726;
-    border-color: #FFA726; }
+    background-color: #ffa726;
+    border-color: #ffa726; }
   .rbc-btn-group--views > button:active:hover, .rbc-btn-group--views > button.rbc-active:hover, .rbc-btn-group--views > button:active:focus, .rbc-btn-group--views > button.rbc-active:focus {
     color: #fff;
-    background-color: #FFA726;
-    border-color: #FFA726; }
+    background-color: #ffa726;
+    border-color: #ffa726; }
   .rbc-btn-group--views > button:hover, .rbc-btn-group--views > button:focus {
-    color: #FFA726;
+    color: #ffa726;
     background-color: #fff;
-    border-color: #FFA726; }
+    border-color: #ffa726; }
 
 .rbc-btn-group > button:not(:first-child):not(:last-child) {
   border-radius: 0; }

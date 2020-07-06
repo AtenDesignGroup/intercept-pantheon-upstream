@@ -3,7 +3,9 @@
 /**
  * @file
  * Provide Views data and handlers for office_hours.module.
- * @TODO: finish upgrade to D8, see advanced help: http://www.example.com/help/views/api-upgrading
+ *
+ * @todo Finish upgrade to D8.
+ * @see Advanced help: http://www.example.com/help/views/api-upgrading
  *
  * @ingroup views_module_handlers
  */
@@ -95,7 +97,7 @@ function _office_hours_views_field_views_data(\Drupal\field\FieldStorageConfigIn
 
       case 'text':
       case 'blob':
-        // TODO add markup handlers for these types
+        // @todo Add markup handlers for these types.
       default:
         $filters[] = 'content_handler_filter_string';
         $arguments[] = 'content_handler_argument_string';
@@ -128,8 +130,8 @@ function _office_hours_views_field_views_data(\Drupal\field\FieldStorageConfigIn
         'field' => $column,
         'table' => $db_info['table'],
         'handler' => $arguments[$i],
-        'click sortable' => $sorts[$i], // TODO used in once place in node.views.inc, should we use it here?
-        'name field' => '', // TODO
+        'click sortable' => $sorts[$i], // @todo used in once place in node.views.inc, should we use it here?
+        'name field' => '', // @todo
         //'additional fields' => $additional_fields,
         'content_field_name' => $field_storage['field_name'],
         'empty field name' => t('<No value>'),
@@ -148,7 +150,7 @@ function _office_hours_views_field_views_data(\Drupal\field\FieldStorageConfigIn
     $i++;
   }
 
-  // TODO do we need different handling for sorts with Views 2,
+  // @todo Do we need different handling for sorts with Views 2,
   // especially when relationships are involved?
   if (!empty($sorts[$i])) {
     $data[$column]['sort'] = [
@@ -160,7 +162,7 @@ function _office_hours_views_field_views_data(\Drupal\field\FieldStorageConfigIn
       'allow empty' => TRUE,
     ];
   }
-  // @todo: provide automatic filters, sorts, and arguments
+  // @todo Provide automatic filters, sorts, and arguments.
   // for each column, not just the first?
   return [$table_alias => $data];
 }

@@ -24,7 +24,7 @@ class RoomTeaser extends PureComponent {
     ) : null;
 
     const capacityValue = get(room, 'attributes.field_capacity_max');
-    const capicity = capacityValue ? (
+    const capacity = capacityValue ? (
       <FieldInline
         label="Capacity"
         key="capacity"
@@ -52,7 +52,7 @@ class RoomTeaser extends PureComponent {
         supertitle={get(room, 'relationships.field_location.0.attributes.title')}
         title={room.attributes.title}
         description={get(room, 'attributes.field_text_teaser.value')}
-        tags={[roomTypes, capicity, staffUse]}
+        tags={[roomTypes, capacity, staffUse]}
         room={room}
       />
     );

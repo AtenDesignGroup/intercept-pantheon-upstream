@@ -302,6 +302,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
       ],
       '#cache' => [
         'max-age' => $this->getStatusTimeLeft($items, $langcode),
+        'tags' => ['office_hours:field.default'],
       ],
     ];
 
@@ -370,12 +371,14 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
         return Cache::PERMANENT;
 
       case 'current':
+//        dpm($items, __CLASS__.'/'.__FUNCTION__.'/'.__LINE__);
         // Cache expires at midnight.
         $next_time = '0000';
         $add_days = 1;
         break;
 
       case 'next':
+//        dpm($items, __CLASS__.'/'.__FUNCTION__.'/'.__LINE__);
         /** @var OfficeHoursItemListInterface $items */
         $office_hours = $items->getRows($settings, $this->getFieldSettings());
 
@@ -385,7 +388,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
         $first_time = NULL;
         foreach ($next['slots'] as $slot) {
           $first_time = !isset($first_time) ? $slot['start'] : $first_time;
-          if (!isset($next_time) && $slot['start'] > $now){
+          if (!isset($next_time) && $slot['start'] > $now) {
             $next_time = $slot['start'];
           }
           elseif (!isset($next_time) && $slot['end'] > $now) {

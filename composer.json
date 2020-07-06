@@ -100,8 +100,8 @@
       "drupal/addtocalendar": {
         "Issue #3092765: Fix configuration": "https://www.drupal.org/files/issues/2019-11-06/addtocalendar-config.patch"
       },
-      "drupal/office_hours": {
-        "Issue #3072276: Incomplete Configuration schema for field.formatter.settings.office_hours": "https://www.drupal.org/files/issues/2019-08-02/3072276-2.patch"
+      "drupal/components": {
+        "Issue #3054764: Default configuration is invalid": "https://www.drupal.org/files/issues/2019-05-15/3054764.patch"
       }
     }
   }

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // UUID
-import v4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 // Lodash
 import get from 'lodash/get';
@@ -51,7 +51,7 @@ const text = {
 };
 
 const buildEventRegistration = (values) => {
-  const uuid = v4();
+  const uuid = uuidv4();
 
   const output = {
     id: uuid,
@@ -172,8 +172,9 @@ class EventRegisterForm extends React.Component {
   }
 
   getAvailableText() {
+    const totalCapacity = this.getCapacity();
     // Assume there is unlimited capacity.
-    if (this.getCapacity() === 0) {
+    if (totalCapacity === 0) {
       return '';
     }
 
@@ -183,15 +184,17 @@ class EventRegisterForm extends React.Component {
       case 0:
         return 'This event is full.';
       case 1:
-        return `There is ${availableCapacity} seat available.`;
+        return `There is ${availableCapacity} of ${totalCapacity} seats available.`;
       default:
-        return `There are ${availableCapacity} seats available.`;
+        return `There are ${availableCapacity} of ${totalCapacity} seats available.`;
     }
   }
 
   getWaitlistAvailableText() {
+    const waitlistCapacity = this.getWaitlistCapacity();
+
     // Assume there is unlimited capacity.
-    if (this.getWaitlistCapacity() === 0) {
+    if (waitlistCapacity === 0) {
       return '';
     }
 
@@ -201,9 +204,9 @@ class EventRegisterForm extends React.Component {
       case 0:
         return 'The waitlist is full.';
       case 1:
-        return `There is only ${availableCapacity} seat available on the waitlist.`;
+        return `There is only ${availableCapacity} of ${waitlistCapacity} seats available on the waitlist.`;
       default:
-        return `There are only ${availableCapacity} seats available on the waitlist.`;
+        return `There are only ${availableCapacity} of ${waitlistCapacity} seats available on the waitlist.`;
     }
   }
 

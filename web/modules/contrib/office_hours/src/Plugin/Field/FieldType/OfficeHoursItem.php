@@ -6,6 +6,7 @@ use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\DataDefinition;
+use Drupal\office_hours\Element\OfficeHoursDatetime;
 use Drupal\office_hours\OfficeHoursDateHelper;
 
 /**
@@ -100,7 +101,7 @@ class OfficeHoursItem extends FieldItemBase {
       ->getFieldStorageDefinition()
       ->getSettings();
 
-    // Get a formatted list of hours.
+    // Get a formatted list of valid hours values.
     $hours = OfficeHoursDateHelper::hours('H', FALSE);
     foreach ($hours as $key => &$hour) {
       if (!empty($hour)) {
@@ -120,7 +121,7 @@ class OfficeHoursItem extends FieldItemBase {
     $element['cardinality_per_day'] = [
       '#type' => 'select',
       '#title' => $this->t('Number of time slots per day'),
-      // @todo for 'multiple slots per day': add support for FIELD_CARDINALITY_UNLIMITED.
+      // @todo For 'multiple slots per day': add support for FIELD_CARDINALITY_UNLIMITED.
       // '#options' => [FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED => $this->t('unlimited')) + drupal_map_assoc(range(1, 10)],
       '#options' => array_combine(range(1, 12), range(1, 12)),
       '#default_value' => $settings['cardinality_per_day'],
@@ -128,7 +129,7 @@ class OfficeHoursItem extends FieldItemBase {
       // '#disabled' => $has_data,
     ];
 
-    // @todo D8: align with DateTimeDatelistWidget.
+    // @todo D8 Align with DateTimeDatelistWidget.
     $element['time_format'] = [
       '#type' => 'select',
       '#title' => $this->t('Time notation'),
@@ -152,7 +153,7 @@ class OfficeHoursItem extends FieldItemBase {
       ],
       '#default_value' => $this->getSetting('element_type'),
     ];
-    // @todo D8: align with DateTimeDatelistWidget.
+    // @todo D8 Align with DateTimeDatelistWidget.
     $element['increment'] = [
       '#type' => 'select',
       '#title' => $this->t('Time increments'),
@@ -179,7 +180,9 @@ class OfficeHoursItem extends FieldItemBase {
       '#title' => $this->t('Validate hours'),
       '#required' => FALSE,
       '#default_value' => $settings['valhrs'],
-      '#description' => $this->t('Assure that endhours are later then starthours. Please note that this will work as long as the opening hours are not through midnight.'),
+      '#description' => $this->t('Assure that endhours are later then starthours.
+        Please note that this will work as long as both hours are set and
+        the opening hours are not through midnight.'),
     ];
     $element['limit_start'] = [
       '#type' => 'select',
@@ -191,7 +194,9 @@ class OfficeHoursItem extends FieldItemBase {
     $element['limit_end'] = [
       '#type' => 'select',
       '#title' => $this->t('Limit widget hours - until'),
-      '#description' => $this->t('Restrict the hours available - select options will end at this hour.'),
+      '#description' => $this->t('Restrict the hours available - select options
+         will end at this hour. You may leave \'until\' time empty.
+         Use \'00:00\' for closing at midnight.'),
       '#default_value' => $settings['limit_end'],
       '#options' => $hours,
     ];
@@ -204,13 +209,10 @@ class OfficeHoursItem extends FieldItemBase {
    */
   public function isEmpty() {
     // Note: in Week-widget, day is <> '', in List-widget, day can be ''.
-    // Note: Test every change with both widgets!
-    // Note: The 'day' element may or may not be filled.
-    if (
-      empty($this->get('starthours')->getValue()) &&
-      empty($this->get('endhours')->getValue()) &&
-      empty($this->get('comment')->getValue())
-    ) {
+    // Note: test every change with Week/List widget and Select/HTML5 element!
+    if (OfficeHoursDatetime::isEmpty($this->get('starthours')->getValue())
+      && OfficeHoursDatetime::isEmpty($this->get('endhours')->getValue())
+      && empty($this->get('comment')->getValue())) {
       return TRUE;
     }
     return FALSE;
@@ -221,7 +223,7 @@ class OfficeHoursItem extends FieldItemBase {
    */
   public function getConstraints() {
     $constraints = [];
-    // @todo: when adding parent::getConstraints(), only English is allowed...
+    // @todo When adding parent::getConstraints(), only English is allowed...
     // $constraints = parent::getConstraints();
     $max_length = $this->getSetting('max_length');
     if ($max_length) {
@@ -247,12 +249,14 @@ class OfficeHoursItem extends FieldItemBase {
    *
    * Verifies the office hours limits.
    * "Please note that this will work as long as the opening hours are not through midnight."
+   * "You may leave 'until' time empty. Use '00:00' for closing at midnight."
    *
    * @param array $element
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    */
   public function validateOfficeHours(array $element, FormStateInterface &$form_state) {
-    if ($element['limit_start']['#value'] > $element['limit_end']['#value']) {
+    if (!empty($element['limit_end']['#value']) &&
+      $element['limit_end']['#value'] < $element['limit_start']['#value']) {
       $form_state->setError($element['limit_start'], $this->t('%start is later then %end.', [
         '%start' => $element['limit_start']['#title'],
         '%end' => $element['limit_end']['#title'],

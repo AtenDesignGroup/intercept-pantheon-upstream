@@ -2,15 +2,31 @@ services:
   intercept_event.manager:
     class: Drupal\intercept_event\EventManager
     arguments: ['@current_user', '@entity_type.manager']
+
+  intercept_event.event_attendance_provider:
+    class: Drupal\intercept_event\EventAttendanceProvider
+    arguments: ['@entity_type.manager', '@current_user']
+
+  intercept_event.event_registration_provider:
+    class: Drupal\intercept_event\EventRegistrationProvider
+    arguments: ['@entity_type.manager', '@current_user']
+
+  intercept_event.suggested_events_provider:
+    class: Drupal\intercept_event\SuggestedEventsProvider
+    arguments: ['@entity_type.manager', '@current_user', '@intercept_event.event_attendance_provider', '@intercept_event.event_registration_provider']
+
   intercept_event.recurring_manager:
     class: Drupal\intercept_event\RecurringEventManager
     arguments: ['@current_user', '@entity_type.manager', '@messenger', '@intercept_core.utility.dates']
+
   intercept_event.evaluation_manager:
     class: Drupal\intercept_event\EventEvaluationManager
     arguments: ['@class_resolver', '@current_user', '@entity_type.manager', '@form_builder']
+
   intercept_event.queue:
     class: Drupal\intercept_event\EventQueue
     arguments: ['@queue']
+
   intercept_event.event_registration_status_change:
     class: '\Drupal\intercept_event\EventSubscriber\RegistrationStatusChangeEventSubscriber'
     arguments: ['@config.factory', '@entity_type.manager', '@language_manager', '@plugin.manager.mail', '@token']

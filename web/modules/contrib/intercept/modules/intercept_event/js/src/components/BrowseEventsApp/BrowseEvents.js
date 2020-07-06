@@ -39,13 +39,15 @@ const eventIncludes = (view = 'list') =>
 const viewOptions = [{ key: 'list', value: 'List' }, { key: 'calendar', value: 'Calendar' }];
 
 const sparseFieldsets = (view = 'list') =>
-  (view === 'list'
+  view === 'list'
     ? {
       [c.TYPE_EVENT]: [
         'drupal_internal__nid',
         'status',
         'title',
         'path',
+        'field_capacity_max',
+        'field_waitlist_max',
         'field_date_time',
         'field_must_register',
         'field_text_teaser',
@@ -64,15 +66,16 @@ const sparseFieldsets = (view = 'list') =>
       [c.TYPE_FILE]: ['drupal_internal__fid', 'uri', 'url'],
     }
     : {
-      [c.TYPE_EVENT]: [
-        'title',
-        'path',
-        'field_date_time',
-        'field_must_register',
-        'field_location',
-        DESIGNATION_FIELD,
-      ],
-    });
+        [c.TYPE_EVENT]: [
+          'drupal_internal__nid',
+          'title',
+          'path',
+          'field_date_time',
+          'field_must_register',
+          'field_location',
+          DESIGNATION_FIELD,
+        ],
+      };
 
 function getDate(value, view = 'day', boundary = 'start') {
   const method = boundary === 'start' ? 'startOf' : 'endOf';

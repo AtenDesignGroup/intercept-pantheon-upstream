@@ -5,8 +5,8 @@ h2.styleguide {
   text-transform: uppercase; }
 
 .styleguide__header {
-  background: #EEF1F4;
-  border: 1px solid #D3D8DF;
+  background: #eef1f4;
+  border: 1px solid #d3d8df;
   padding: .5em 1em;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -40,7 +40,7 @@ h2.styleguide {
 
 .styleguide__toc-heading {
   font-size: 0.57639rem;
-  border-bottom: 1px solid #D3D8DF;
+  border-bottom: 1px solid #d3d8df;
   padding-bottom: .5em;
   margin-bottom: 2em;
   text-transform: uppercase;

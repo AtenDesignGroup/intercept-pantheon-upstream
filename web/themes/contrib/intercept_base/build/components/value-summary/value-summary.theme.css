@@ -1,8 +1,8 @@
 .value-summary__wrapper {
-  background-color: #F6F8F9; }
+  background-color: #f6f8f9; }
 
 .value-summary__footer--error {
-  background: #F44336; }
+  background: #f44336; }
   .value-summary__footer--error .value-summary__footer-link {
     color: #fff;
     font-weight: 900;

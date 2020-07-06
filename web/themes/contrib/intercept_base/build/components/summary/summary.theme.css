@@ -10,6 +10,6 @@
   transition: color .2s ease-out;
   text-decoration: none; }
   .summary__title-link:hover, .summary__title-link:focus {
-    color: #7A7D81; }
+    color: #747481; }
   .summary__title-link:active, .summary__title-link.active--trail {
-    color: #7A7D81; }
+    color: #747481; }

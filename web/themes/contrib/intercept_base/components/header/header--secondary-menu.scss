@@ -1,4 +1,4 @@
-@import "_partials";
+@import '_partials';
 
 // Utilities Menu (REGION)
 .header__utilities {
@@ -79,12 +79,12 @@
   a {
     color: $white;
     line-height: 1.8;
-    padding: .25rem 0;
+    padding: 0.25rem 0;
     text-decoration: none;
 
     @include bp(none large) {
       display: block;
-      margin-bottom: .75rem;
+      margin-bottom: 0.75rem;
     }
   }
 }
@@ -146,7 +146,7 @@
 }
 
 // Account Trigger (button / icon)
-label[for="account-trigger"].account-trigger--is-staff {
+label[for='account-trigger'].account-trigger--is-staff {
   @include bp(large) {
     background-color: $magenta-50;
     transition: background-color $duration $easing;
@@ -158,7 +158,7 @@ label[for="account-trigger"].account-trigger--is-staff {
   }
 }
 
-label[for="account-trigger"],
+label[for='account-trigger'],
 .account-trigger--logged-out {
   @include fs(small);
   cursor: pointer;
@@ -200,7 +200,7 @@ label[for="account-trigger"],
     border-left: rem(8px) solid transparent;
     border-right: rem(8px) solid transparent;
     height: 0;
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     margin-top: -#{rem(4px)};
     position: absolute;
     right: 2.5rem;
@@ -208,7 +208,7 @@ label[for="account-trigger"],
     width: 0;
 
     @include bp(large) {
-      content: "";
+      content: '';
     }
   }
 
@@ -245,7 +245,7 @@ label[for="account-trigger"],
 }
 
 // Logged Out
-label[for="account-trigger"].account-trigger--logged-out {
+label[for='account-trigger'].account-trigger--logged-out {
   text-decoration: none;
 
   @include bp(large) {
@@ -263,7 +263,7 @@ label[for="account-trigger"].account-trigger--logged-out {
     background: $gray-80;
 
     @include bp(large) {
-      background: $gray-20;
+      background: $gray-80;
       width: 25rem;
     }
   }
@@ -273,7 +273,7 @@ label[for="account-trigger"].account-trigger--logged-out {
   }
 }
 
-.account-trigger:checked ~ label[for="account-trigger"].account-trigger--logged-out {
+.account-trigger:checked ~ label[for='account-trigger'].account-trigger--logged-out {
   @include bp(none large) {
     background: $gray-80;
   }
@@ -286,7 +286,7 @@ label[for="account-trigger"].account-trigger--logged-out {
 
   .field-suffix {
     font-size: 14px;
-    margin: .25rem 0 0 0;
+    margin: 0.25rem 0 0 0;
 
     a {
       text-decoration: none;
@@ -294,16 +294,14 @@ label[for="account-trigger"].account-trigger--logged-out {
     }
   }
 
-
   label {
     color: $gray-30;
     display: block;
     font-weight: bold;
-    margin: 0 0 .25rem;
+    margin: 0 0 0.25rem;
 
     @include bp(large) {
       @include fs(small);
-      color: $white;
       font-weight: normal;
     }
   }
@@ -314,7 +312,7 @@ label[for="account-trigger"].account-trigger--logged-out {
     padding: 1rem;
     width: 100%;
 
-    &[type="submit"] {
+    &[type='submit'] {
       font-weight: 600;
       padding-bottom: 1.25rem;
       padding-top: 1.25rem;

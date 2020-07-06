@@ -40,6 +40,9 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
       return $elements;
     }
     $office_hours = $items->getRows($this->getSettings(), $this->getFieldSettings());
+    // For a11y screen readers, a header is introduced.
+    // Superfluous comments are removed. @see #3110755 for examples and explanation.
+    $isCommentEnabled = $this->fieldDefinition->getFieldStorageDefinition()->getSetting('comment');
 
     // Build the Table part.
     $table_rows = [];
@@ -49,22 +52,26 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
           'label' => [
             'data' => ['#markup' => $item['label']],
             'class' => ['office-hours__item-label', ],
+            'header' => !$isCommentEnabled,
           ],
           'slots' => [
             'data' => ['#markup' => $item['formatted_slots'] ],
             'class' => ['office-hours__item-slots', ],
           ],
-          'comments' => [
-            'data' => ['#markup' => $item['comments'] ],
-            'class' => ['office-hours__item-comments', ],
-          ],
         ],
-        'no_striping' => TRUE, // @todo: Does not work. Why? Solved in css.
+        'no_striping' => TRUE, // @todo Does not work. Why? Solved in css.
         'class' => ['office-hours__item', ],
       ];
-    }
 
-// @todo #2720335 : try to get the meta data into the <tr>.
+      if ($isCommentEnabled) {
+        $table_rows[$delta]['data']['comments'] = [
+          'data' => ['#markup' => $item['comments']],
+          'class' => ['office-hours__item-comments'],
+        ];
+      }
+ }
+
+// @todo #2720335 Try to get the meta data into the <tr>.
 //    foreach ($table_rows as $delta => &$row) {
 //      $row['#metadata']['itemprop'] = "openingHours";
 //      $row['#metadata']['property'] = "openingHours";
@@ -85,12 +92,30 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
       ],
     ];
 
+    if ($isCommentEnabled) {
+      $table['#header'] = [
+        [
+          'data' => $this->t('Day'),
+          'class' => 'visually-hidden',
+        ],
+        [
+          'data' => $this->t('Time slot'),
+          'class' => 'visually-hidden',
+        ],
+        [
+          'data' => $this->t('Comment'),
+          'class' => 'visually-hidden',
+        ],
+      ];
+    }
+
     $elements[] = [
       '#theme' => 'office_hours_table',
       '#table' => $table,
       '#office_hours' => $office_hours,
       '#cache' => [
         'max-age' => $this->getStatusTimeLeft($items, $langcode),
+        'tags' => ['office_hours:field.table'],
       ],
 
     ];

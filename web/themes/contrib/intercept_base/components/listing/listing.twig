@@ -1,6 +1,10 @@
 {% import '@intercept-base-components/component.twig' as component %}
 {{ attach_library('intercept_base/listing') }}
-
+{% if url %}
+  {{ attach_library('intercept_base/block-link') }}
+  {% set attr = attr|default({})|merge({'class': 'js--block-link'}) %}
+  {% set attr = attr|default({})|merge({'data-href': url|render }) %}
+{% endif %}
 {% set target_attr = '' %}
 {% if target %}
 {% set target_attr = 'target="' ~ target ~ '"' %}
@@ -9,15 +13,7 @@
 <article {{ component.attributes('listing', modifiers, attr) }}>
   {% if image %}
   <div class="listing__image">
-    {% if url %}
-    <a href="{{ url }}" {{ target_attr }} class="listing__link" title="{{ text }}">
-    {% endif %}
-
     {{ image }}
-
-    {% if url %}
-    </a>
-    {% endif %}
   </div>
   {% endif %}
   {% if date %}

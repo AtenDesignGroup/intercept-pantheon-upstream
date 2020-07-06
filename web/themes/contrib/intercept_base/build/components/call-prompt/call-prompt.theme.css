@@ -2,14 +2,14 @@
   font-weight: 900; }
 
 .call-prompt__link {
-  color: #7A7D81;
+  color: #747481;
   text-decoration: none;
   -webkit-transition: color .2s ease-out;
   transition: color .2s ease-out;
   font-weight: 900; }
   .call-prompt__link:hover, .call-prompt__link:focus {
-    color: #4C4D4F;
+    color: #4c4d4f;
     text-decoration: none; }
   .call-prompt__link:active, .call-prompt__link.active--trail {
-    color: #4C4D4F;
-    color: #7A7D81; }
+    color: #4c4d4f;
+    color: #747481; }

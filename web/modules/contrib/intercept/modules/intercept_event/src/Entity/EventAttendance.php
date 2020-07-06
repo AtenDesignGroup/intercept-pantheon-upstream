@@ -152,6 +152,24 @@ class EventAttendance extends ContentEntityBase implements EventAttendanceInterf
   /**
    * {@inheritdoc}
    */
+  public function getEvent() {
+    if ($this->hasField('field_event')) {
+      return $this->get('field_event')->entity;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEventId() {
+    if ($this->hasField('field_event')) {
+      return $this->get('field_event')->target_id;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isPublished() {
     return (bool) $this->getEntityKey('status');
   }

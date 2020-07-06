@@ -73,8 +73,8 @@ class RegistrationLimitConstraintValidator extends ConstraintValidator implement
         if ($registration->get('status')->value == 'canceled') {
           return FALSE;
         }
-        $registrant_id = ($registration->hasField('field_user') && $registration->field_user->target_id) ? $registration->field_user->target_id : NULL;
-        return in_array($this->currentUser->id(), [$registrant_id, $registration->getOwnerId()]);
+        $field_user_target_id = ($registration->hasField('field_user') && $registration->field_user->target_id) ? $registration->field_user->target_id : NULL;
+        return $field_user_target_id == $registrant_id;
       });
     }
 

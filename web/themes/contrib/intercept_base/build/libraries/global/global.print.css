@@ -62,7 +62,7 @@ h1 {
   display: none; }
 
 .events-list .teaser__date {
-  color: #4C4D4F; }
+  color: #4c4d4f; }
 
 .events-list .teaser__title {
   font-size: 1rem; }
@@ -119,10 +119,10 @@ h1 {
     display: none !important; }
   .rbc-calendar .rbc-event {
     background: transparent;
-    color: #4C4D4F; }
+    color: #4c4d4f; }
   .rbc-calendar .rbc-date-cell > a,
   .rbc-calendar .rbc-date-cell.rbc-current > a {
-    color: #4C4D4F; }
+    color: #4c4d4f; }
   .rbc-calendar .rbc-off-range > a {
     opacity: .4; }
   .rbc-calendar .rbc-day-bg.rbc-off-range-bg {

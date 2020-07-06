@@ -77,14 +77,14 @@ h1:not([class]) {
   @include fs(h1);
   color: $clr-heading;
   font-family: $ff-heading;
-  margin: 1em 0 .5em;
+  margin: 1em 0 0.5em;
 }
 
 h2:not([class]) {
   @include fs(h2);
   color: $clr-heading;
   font-family: $ff-heading;
-  margin: 1em 0 .5em;
+  margin: 1em 0 0.5em;
 }
 
 h3:not([class]) {
@@ -92,28 +92,28 @@ h3:not([class]) {
   @include lh(0);
   color: $clr-heading;
   font-family: $ff-heading;
-  margin: 1.5em 0 .5em;
+  margin: 1.5em 0 0.5em;
 }
 
 h4:not([class]) {
   @include fs(h4);
   color: $clr-heading;
   font-family: $ff-heading;
-  margin: 1.5em 0 .5em;
+  margin: 1.5em 0 0.5em;
 }
 
 h5:not([class]) {
   @include fs(h5);
   color: $clr-heading;
   font-family: $ff-heading;
-  margin: 1.5em 0 .5em;
+  margin: 1.5em 0 0.5em;
 }
 
 h6:not([class]) {
   @include fs(body);
   color: $clr-heading;
   font-family: $ff-heading;
-  margin: 1.5em 0 .5em;
+  margin: 1.5em 0 0.5em;
 }
 
 h1,
@@ -155,7 +155,7 @@ a:not([class]) {
   color: $clr-primary-dark;
   font-weight: $fw-bold;
   text-decoration-skip: ink;
-  transition: color .2s ease-out;
+  transition: color 0.2s ease-out;
 
   &:visited {
     text-decoration-style: dotted;
@@ -187,13 +187,12 @@ b {
 }
 
 del {
-  opacity: .6;
+  opacity: 0.6;
 }
 
 q {
   font-style: italic;
 }
-
 
 //
 // Copy
@@ -221,12 +220,11 @@ p:not([class]) {
 
 blockquote:not([class]) {
   @include fs(small);
-  border-top: solid $gray-80 .333em;
+  border-top: solid $gray-80 0.333em;
   font-style: italic;
   margin: 2em 0 2em;
-  padding-top: .666em;
+  padding-top: 0.666em;
 }
-
 
 //
 // Images
@@ -275,7 +273,6 @@ audio {
   &::-webkit-media-controls-play-button {
     cursor: pointer;
   }
-
 
   &::-webkit-media-controls-current-time-display,
   &::-webkit-media-controls-time-remaining-display {
@@ -334,7 +331,7 @@ fieldset {
 }
 
 button,
-input[type="submit"],
+input[type='submit'],
 .button {
   @include fs(medium);
   background-color: $clr-primary;
@@ -386,10 +383,10 @@ input[type="submit"],
 
     &::after {
       background-color: $clr-primary;
-      background-image: url("/themes/contrib/intercept_base/images/icons/arrow--white.svg");
+      background-image: url('/themes/contrib/intercept_base/images/icons/arrow--white.svg');
       background-position: center;
       background-repeat: no-repeat;
-      content: "";
+      content: '';
       display: block;
       height: 1em;
       padding: 1.1rem;
@@ -404,7 +401,7 @@ input[type="submit"],
   // Button Types
   &--download {
     &::after {
-      background-image: url("/themes/contrib/intercept_base/images/icons/download--white.svg");
+      background-image: url('/themes/contrib/intercept_base/images/icons/download--white.svg');
     }
   }
 }
@@ -420,17 +417,17 @@ textarea {
   padding: ce(11, 14) 1rem;
 }
 
-input[type="file"] {
+input[type='file'] {
   height: inherit;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   height: auto;
 }
 
 label,
 legend {
-  margin: 2em 0 .75em;
+  margin: 2em 0 0.75em;
 }
 
 select {
@@ -442,12 +439,14 @@ select {
   line-height: ce(18, 14);
   padding: ce(11, 14) 1rem;
   max-width: 100%;
-  text-indent: .01px;
-  text-overflow: "";
+  text-indent: 0.01px;
+  text-overflow: '';
 }
 
 // Remove default IE arrow
-select::-ms-expand { display: none; }
+select::-ms-expand {
+  display: none;
+}
 
 //
 // Tables
@@ -522,10 +521,10 @@ tr {
 // tr:nth-of-type(even) { background-color: $clr-table-even; }
 
 :focus {
-  outline-width: 1px;
+  outline-width: 3px;
   outline-style: dashed;
-  outline-color: $clr-secondary-light;
-  outline-color: rgba($clr-secondary-light, .6);
+  outline-color: #008db1;
+  outline-color: rgba(#008db1, 0.6);
 }
 
 :active {

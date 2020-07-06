@@ -19,6 +19,15 @@ bigCalendar:
     theme:
       build/libraries/bigCalendar/bigCalendar.theme.css: {}
 
+block-link:
+  css:
+    theme:
+      build/libraries/block-link/block-link.component.css: { preprocess: true }
+  js:
+    build/libraries/block-link/block-link.js: { preprocess: true }
+  dependencies:
+    - core/jquery
+
 filter-tips:
   version: 1.0.x
   css:

@@ -26,13 +26,13 @@ class OfficeHoursSlot extends OfficeHoursList {
   public static function processOfficeHoursSlot(&$element, FormStateInterface $form_state, &$complete_form) {
     // Fill with default data from a List element.
     $element = parent::processOfficeHoursSlot($element, $form_state, $complete_form);
-    // @todo D8: $form_state = ...
-    // @todo D8: $form = ...
+    // @todo D8 $form_state = ...
+    // @todo D8 $form = ...
 
     $max_delta = $element['#field_settings']['cardinality_per_day'] - 1;
     $day_delta = $element['#daydelta'];
     if ($day_delta == 0) {
-      // This is the first block of the day.
+      // This is the first slot of the day.
       $label = $element['#dayname']; // Show Day name (already translated) as label.
       $element['#attributes']['class'][] = 'office-hours-slot'; // Show the slot.
     }
@@ -51,8 +51,8 @@ class OfficeHoursSlot extends OfficeHoursList {
       $element['#value']['endhours'] = '';
       $element['#value']['comment'] = NULL;
     }
-    elseif (!empty($element['#value']['starthours'])) {
-      // This is a following block with contents.
+    elseif (isset($element['#value']['starthours']) && !empty($element['#value']['starthours'])) {
+      // This is a following slot with contents.
       $label = t('and');
       $element['#attributes']['class'][] = 'office-hours-slot'; // Show the slot.
       $element['#attributes']['class'][] = 'office-hours-more'; // Show add-link.
@@ -117,10 +117,11 @@ class OfficeHoursSlot extends OfficeHoursList {
         '#type' => 'link',
         '#title' => t('Remove'),
         '#weight' => 12,
-        '#url' => Url::fromRoute('<front>'), // dummy-url, will be catch-ed by javascript.
+        '#url' => Url::fromRoute('<front>'),
+        // dummy-url, will be catch-ed by javascript.
         '#suffix' => $suffix,
         '#attributes' => [
-          'class' => ['office-hours-delete-link', ],
+          'class' => ['office-hours-delete-link',],
         ],
       ];
     }
@@ -133,10 +134,11 @@ class OfficeHoursSlot extends OfficeHoursList {
         '#title' => ($element['#day'] !== OfficeHoursDateHelper::getFirstDay()) && ($day_delta == 0)
           ? t('Copy previous day') : t('Copy last day'),
         '#weight' => 16,
-        '#url' => Url::fromRoute('<front>'), // dummy-url, will be catch-ed by javascript.
+        '#url' => Url::fromRoute('<front>'),
+        // dummy-url, will be catch-ed by javascript.
         '#suffix' => $suffix,
         '#attributes' => [
-          'class' => ['office-hours-copy-link', ],
+          'class' => ['office-hours-copy-link',],
         ],
       ];
     }
@@ -146,12 +148,13 @@ class OfficeHoursSlot extends OfficeHoursList {
     if ($day_delta < $max_delta) {
       $operations['add'] = [
         '#type' => 'link',
-        '#title' => t('Add @node_type', ['@node_type' => t('time slot'), ]),
+        '#title' => t('Add @node_type', ['@node_type' => t('time slot'),]),
         '#weight' => 11,
-        '#url' => Url::fromRoute('<front>'), // dummy-url, will be catch-ed by javascript.
+        '#url' => Url::fromRoute('<front>'),
+        // dummy-url, will be catch-ed by javascript.
         '#suffix' => $suffix,
         '#attributes' => [
-          'class' => ['office-hours-add-link', ],
+          'class' => ['office-hours-add-link',],
         ],
       ];
     }

@@ -10,7 +10,7 @@
       z-index: 2; } }
 
 .header__utilities > div {
-  background-color: #4C4D4F; }
+  background-color: #4c4d4f; }
   .header__utilities > div label {
     color: #fff; }
   @media (max-width: 61.9375em) {
@@ -93,12 +93,12 @@
   .menu--account a {
     color: #fff;
     line-height: 1.8;
-    padding: .25rem 0;
+    padding: 0.25rem 0;
     text-decoration: none; }
     @media (max-width: 61.9375em) {
       .menu--account a {
         display: block;
-        margin-bottom: .75rem; } }
+        margin-bottom: 0.75rem; } }
 
 .account-trigger {
   clip: rect(0, 0, 0, 0);
@@ -107,7 +107,7 @@
     display: none; }
     @media (min-width: 62em) {
       .account-trigger ~ div {
-        background: #4C4D4F;
+        background: #4c4d4f;
         display: none;
         padding: 2.5rem;
         position: absolute;
@@ -125,7 +125,7 @@
             transform: translateY(0); }
   @media (max-width: 61.9375em) {
     .account-trigger:checked ~ label {
-      background: #4C4D4F; } }
+      background: #4c4d4f; } }
   .account-trigger:checked ~ label:after {
     -webkit-transform: rotate(180deg);
             transform: rotate(180deg); }
@@ -141,16 +141,16 @@
             transform: rotate(90deg) scale(0); }
 
 @media (min-width: 62em) {
-  label[for="account-trigger"].account-trigger--is-staff {
-    background-color: #C91B76;
+  label[for='account-trigger'].account-trigger--is-staff {
+    background-color: #c91b76;
     -webkit-transition: background-color 0.2s ease-in-out;
     transition: background-color 0.2s ease-in-out; } }
 
 @media (min-width: 62em) {
-  label[for="account-trigger"].account-trigger--is-staff:hover {
-    background-color: #B0025D; } }
+  label[for='account-trigger'].account-trigger--is-staff:hover {
+    background-color: #b0025d; } }
 
-label[for="account-trigger"],
+label[for='account-trigger'],
 .account-trigger--logged-out {
   font-size: 0.72917rem;
   cursor: pointer;
@@ -159,19 +159,19 @@ label[for="account-trigger"],
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out; }
   @media (min-width: 48em) {
-    label[for="account-trigger"],
+    label[for='account-trigger'],
     .account-trigger--logged-out {
       font-size: 0.9375rem; } }
   @media (min-width: 62em) {
-    label[for="account-trigger"],
+    label[for='account-trigger'],
     .account-trigger--logged-out {
       font-size: 1.125rem; } }
   @media (min-width: 31.25em) {
-    label[for="account-trigger"],
+    label[for='account-trigger'],
     .account-trigger--logged-out {
       margin-right: 6.25%; } }
   @media (max-width: 61.9375em) {
-    label[for="account-trigger"],
+    label[for='account-trigger'],
     .account-trigger--logged-out {
       -webkit-box-align: center;
           -ms-flex-align: center;
@@ -187,12 +187,12 @@ label[for="account-trigger"],
       top: 0;
       width: 3.75rem; } }
   @media (min-width: 62em) {
-    label[for="account-trigger"],
+    label[for='account-trigger'],
     .account-trigger--logged-out {
       -webkit-box-align: center;
           -ms-flex-align: center;
               align-items: center;
-      background: #0288D1;
+      background: #0288d1;
       color: #fff;
       display: -webkit-box;
       display: -ms-flexbox;
@@ -203,23 +203,23 @@ label[for="account-trigger"],
       padding: 0 4rem 0 2.5rem;
       position: relative;
       text-transform: uppercase; } }
-  label[for="account-trigger"]::after,
+  label[for='account-trigger']::after,
   .account-trigger--logged-out::after {
     border-top: 0.5rem solid #fff;
     border-left: 0.5rem solid transparent;
     border-right: 0.5rem solid transparent;
     height: 0;
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     margin-top: -0.25rem;
     position: absolute;
     right: 2.5rem;
     top: 50%;
     width: 0; }
     @media (min-width: 62em) {
-      label[for="account-trigger"]::after,
+      label[for='account-trigger']::after,
       .account-trigger--logged-out::after {
-        content: ""; } }
-  label[for="account-trigger"] span,
+        content: ''; } }
+  label[for='account-trigger'] span,
   .account-trigger--logged-out span {
     -webkit-box-align: center;
         -ms-flex-align: center;
@@ -228,69 +228,68 @@ label[for="account-trigger"],
     display: -ms-flexbox;
     display: flex; }
   @media (max-width: 61.9375em) {
-    label[for="account-trigger"] .mobile,
+    label[for='account-trigger'] .mobile,
     .account-trigger--logged-out .mobile {
       width: 100%; } }
   @media (min-width: 62em) {
-    label[for="account-trigger"] .mobile,
+    label[for='account-trigger'] .mobile,
     .account-trigger--logged-out .mobile {
       display: none; } }
-  label[for="account-trigger"] .mobile svg,
+  label[for='account-trigger'] .mobile svg,
   .account-trigger--logged-out .mobile svg {
     width: 1.25rem; }
-    label[for="account-trigger"] .mobile svg .st0,
+    label[for='account-trigger'] .mobile svg .st0,
     .account-trigger--logged-out .mobile svg .st0 {
-      fill: #0288D1; }
-  label[for="account-trigger"] .desktop,
+      fill: #0288d1; }
+  label[for='account-trigger'] .desktop,
   .account-trigger--logged-out .desktop {
     display: none; }
     @media (min-width: 62em) {
-      label[for="account-trigger"] .desktop,
+      label[for='account-trigger'] .desktop,
       .account-trigger--logged-out .desktop {
         display: inline; } }
 
-label[for="account-trigger"].account-trigger--logged-out {
+label[for='account-trigger'].account-trigger--logged-out {
   text-decoration: none; }
   @media (min-width: 62em) {
-    label[for="account-trigger"].account-trigger--logged-out {
+    label[for='account-trigger'].account-trigger--logged-out {
       margin-right: 0;
       padding: 0;
       text-align: center;
       width: 100%; } }
-  label[for="account-trigger"].account-trigger--logged-out::after {
+  label[for='account-trigger'].account-trigger--logged-out::after {
     display: none; }
-  label[for="account-trigger"].account-trigger--logged-out ~ div {
-    background: #EEF1F4; }
+  label[for='account-trigger'].account-trigger--logged-out ~ div {
+    background: #eef1f4; }
     @media (min-width: 62em) {
-      label[for="account-trigger"].account-trigger--logged-out ~ div {
-        background: #4C4D4F;
+      label[for='account-trigger'].account-trigger--logged-out ~ div {
+        background: #eef1f4;
         width: 25rem; } }
-  label[for="account-trigger"].account-trigger--logged-out span {
+  label[for='account-trigger'].account-trigger--logged-out span {
     width: 100%; }
 
 @media (max-width: 61.9375em) {
-  .account-trigger:checked ~ label[for="account-trigger"].account-trigger--logged-out {
-    background: #EEF1F4; } }
+  .account-trigger:checked ~ label[for='account-trigger'].account-trigger--logged-out {
+    background: #eef1f4; } }
 
 .header #user-login-form .form-item {
   margin: 0 0 1rem; }
 
 .header #user-login-form .field-suffix {
   font-size: 14px;
-  margin: .25rem 0 0 0; }
+  margin: 0.25rem 0 0 0; }
   .header #user-login-form .field-suffix a {
     text-decoration: none;
     font-weight: normal; }
 
 .header #user-login-form label {
-  color: #7A7D81;
+  color: #747481;
   display: block;
   font-weight: bold;
-  margin: 0 0 .25rem; }
+  margin: 0 0 0.25rem; }
   @media (min-width: 62em) {
     .header #user-login-form label {
       font-size: 0.72917rem;
-      color: #fff;
       font-weight: normal; } }
   @media (min-width: 62em) and (min-width: 48em) {
     .header #user-login-form label {
@@ -304,7 +303,7 @@ label[for="account-trigger"].account-trigger--logged-out {
   display: block;
   padding: 1rem;
   width: 100%; }
-  .header #user-login-form input[type="submit"] {
+  .header #user-login-form input[type='submit'] {
     font-weight: 600;
     padding-bottom: 1.25rem;
     padding-top: 1.25rem; }

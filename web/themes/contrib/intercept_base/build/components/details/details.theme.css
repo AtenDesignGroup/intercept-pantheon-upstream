@@ -1,5 +1,5 @@
 .content-details {
-  background-color: #EEF1F4;
+  background-color: #eef1f4;
   padding: 6.25%; }
   @media (min-width: 43.75em) {
     .content-details {
@@ -40,7 +40,7 @@
     .content-details .detail__heading {
       font-size: 0.88194rem;
       line-height: 1.2;
-      color: #03A9F4; }
+      color: #03a9f4; }
       @media (min-width: 48em) {
         .content-details .detail__heading {
           font-size: 1.14583rem; } }
@@ -49,7 +49,7 @@
           font-size: 1.5rem; } }
     .content-details .detail__content {
       font-size: 0.84375rem;
-      color: #7A7D81; }
+      color: #747481; }
       @media (min-width: 48em) {
         .content-details .detail__content {
           font-size: 1.09375rem; } }

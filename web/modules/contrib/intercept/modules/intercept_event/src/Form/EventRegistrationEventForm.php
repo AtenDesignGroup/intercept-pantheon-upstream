@@ -104,16 +104,25 @@ class EventRegistrationEventForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
-    $entity = &$this->entity;
-
+  public function buildEntity(array $form, FormStateInterface $form_state) {
+    $entity = parent::buildEntity($form, $form_state);
     $values = $form_state->cleanValues()->getValues();
+    // Set the field_user value from the ILS mapping before constraint validation.
     if (!empty($values['results'])) {
       $user = \Drupal::service('intercept_ils.mapping_manager')->loadByBarcode($values['results']);
       if ($user) {
         $entity->field_user->setValue($user->id());
       }
     }
+    return $entity;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state) {
+    $entity = &$this->entity;
     $status = parent::save($form, $form_state);
 
     switch ($status) {

@@ -52,8 +52,8 @@ class OfficeHoursList extends FormElement {
    * @return
    */
   public static function processOfficeHoursSlot(&$element, FormStateInterface $form_state, &$complete_form) {
-    // @todo D8: $form_state = ...
-    // @todo D8: $form = ...
+    // @todo D8 $form_state = ...
+    // @todo D8 $form = ...
 
     $slot_class = 'office-hours-slot';
     $element['#attributes']['class'][] = 'form-item'; //D8
@@ -71,8 +71,9 @@ class OfficeHoursList extends FormElement {
     ];
     $element['starthours'] = [
       '#type' => $field_settings['element_type'], // datelist, datetime.
-      '#default_value' => isset($element['#value']['starthours']) ? $element['#value']['starthours'] : NULL,
       '#field_settings' => $field_settings,
+      // Get the valid, restricted hours. Date API doesn't provide a straight method for this.
+      '#hour_options' => OfficeHoursDateHelper::hours($field_settings['time_format'], FALSE, $field_settings['limit_start'], $field_settings['limit_end']),
       // Attributes for element \Drupal\Core\Datetime\Element\Datelist - Start.
       //'#theme_wrappers' => ['datetime_wrapper'],
       '#date_part_order' => (in_array($field_settings['time_format'], ['g', 'h']))
@@ -87,10 +88,10 @@ class OfficeHoursList extends FormElement {
       //'#date_date_callbacks' => [],
       //'#date_year_range' => FALSE, // '2000:2000',
       '#date_timezone' => '+0000', // new \DateTimezone(DATETIME_STORAGE_TIMEZONE),
-
       // Attributes for element \Drupal\Core\Datetime\Element\Datelist - End.
     ];
     $element['endhours'] = $element['starthours'];
+    $element['starthours']['#default_value'] = isset($element['#value']['starthours']) ? $element['#value']['starthours'] : NULL;
     $element['endhours']['#default_value'] = isset($element['#value']['endhours']) ? $element['#value']['endhours'] : NULL;
 
     if ($field_settings['comment']) {
@@ -126,29 +127,33 @@ class OfficeHoursList extends FormElement {
    */
   public static function validateOfficeHoursSlot(&$element, FormStateInterface $form_state, &$complete_form) {
     $error_text = '';
+    $field_settings = $element['#field_settings'];
+    $val_hrs = $field_settings['valhrs'];
+
+    if (!$val_hrs) {
+      return;
+    }
 
     $input_exists = FALSE;
     $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
 
     $input_exists = TRUE;
 
-    if ($input_exists) {
-      $field_settings = $element['#field_settings'];
-      $val_hrs = $field_settings['valhrs'];
+    if ($input_exists && $val_hrs) {
       $limit_start = $field_settings['limit_start'];
       $limit_end = $field_settings['limit_end'];
 
-      // Be prepared for DateTime and Numeric input.
-      $start = OfficeHoursDateHelper::format(isset($input['starthours']['time']) ? $input['starthours']['time'] : $input['starthours'], 'Hi');
-      $end = OfficeHoursDateHelper::format(isset($input['endhours']['time']) ? $input['endhours']['time'] : $input['endhours'], 'Hi');
+      $start = OfficeHoursDatetime::get($input['starthours'], 'Hi');
+      $end = OfficeHoursDatetime::get($input['endhours'], 'Hi');
       // Validate the input.
-      if (!empty($start) xor !empty($end)) {
+      if ((!empty($start) xor !empty($end)) && !empty($limit_end)) {
         $error_text = 'Both Opening hours and Closing hours must be set.';
       }
-      elseif ($val_hrs && ($start > $end)) {
+      elseif (($end < $start) && ($end == '0000')) {
+        // Exception: end time is 00:00 / 24:00
         $error_text = 'Closing hours are earlier than Opening hours.';
       }
-      elseif (!empty($limit_start) || !empty($limit_end)) {
+      elseif ((!empty($limit_start) || !empty($limit_end))) {
         if (($start && ($limit_start * 100) > $start) || ($end && ($limit_end * 100) < $end)) {
           $error_text = 'Hours are outside limits ( @start - @end ).';
         }

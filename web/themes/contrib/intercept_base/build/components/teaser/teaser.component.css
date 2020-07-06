@@ -16,7 +16,7 @@
 .teaser__image {
   -ms-flex-item-align: start;
       align-self: flex-start;
-  background-color: #7A7D81;
+  background-color: #747481;
   -webkit-box-flex: 0;
       -ms-flex: none;
           flex: none;
@@ -44,7 +44,7 @@
         padding-top: 16.30435%; } }
 
 .teaser__images {
-  background: #EEF1F4;
+  background: #eef1f4;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -237,9 +237,9 @@ a.teaser__title {
   -webkit-transition: color .2s ease-out;
   transition: color .2s ease-out; }
   a.teaser__title:hover, a.teaser__title:focus {
-    color: #7A7D81; }
+    color: #747481; }
   a.teaser__title:active, a.teaser__title.active--trail {
-    color: #7A7D81; }
+    color: #747481; }
 
 .teaser__title-link {
   color: #130f13;
@@ -247,9 +247,9 @@ a.teaser__title {
   -webkit-transition: color .2s ease-out;
   transition: color .2s ease-out; }
   .teaser__title-link:hover, .teaser__title-link:focus {
-    color: #7A7D81; }
+    color: #747481; }
   .teaser__title-link:active, .teaser__title-link.active--trail {
-    color: #7A7D81; }
+    color: #747481; }
 
 .teaser__meta {
   -webkit-box-align: baseline;
@@ -352,16 +352,16 @@ a.teaser__title {
     .teaser__tags {
       font-size: 1.125rem; } }
   .teaser__tags a:not([class]) {
-    color: #7A7D81;
+    color: #747481;
     text-decoration: none;
     -webkit-transition: color .2s ease-out;
     transition: color .2s ease-out; }
     .teaser__tags a:not([class]):hover, .teaser__tags a:not([class]):focus {
-      color: #4C4D4F;
+      color: #4c4d4f;
       text-decoration: none; }
     .teaser__tags a:not([class]):active, .teaser__tags a:not([class]).active--trail {
-      color: #4C4D4F;
-      color: #7A7D81; }
+      color: #4c4d4f;
+      color: #747481; }
 
 .teaser--no-image .teaser__main {
   width: 100%; }
@@ -378,20 +378,20 @@ a.teaser__title {
           align-items: stretch; }
   .teaser--stub .teaser__supertitle,
   .teaser--stub .teaser__title {
-    background-color: #EEF1F4;
+    background-color: #eef1f4;
     height: 1em; }
   .teaser--stub .teaser__type {
-    background-color: #EEF1F4;
+    background-color: #eef1f4;
     height: 1em;
     display: block;
     width: 6em; }
   .teaser--stub .teaser__image {
-    background-color: #EEF1F4;
+    background-color: #eef1f4;
     -ms-flex-item-align: auto;
         -ms-grid-row-align: auto;
         align-self: auto; }
   .teaser--stub .teaser__description {
-    background-color: #EEF1F4;
+    background-color: #eef1f4;
     height: 4em; }
 
 @media (max-width: 37.4375em) {

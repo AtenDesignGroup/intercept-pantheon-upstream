@@ -3,6 +3,7 @@
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldItemList;
+use Drupal\office_hours\Element\OfficeHoursDatetime;
 use Drupal\office_hours\OfficeHoursDateHelper;
 
 /**
@@ -20,18 +21,18 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     // Convert the day_number to (int) to get '0' for Sundays, not 'false'.
     $time = ($time === NULL) ? \Drupal::time()->getRequestTime() : $time;
     $today = (int) idate('w', $time); // Get day_number sun=0 - sat=6.
-    $now = date('Gi', $time); // 'Gi' format, with leading zero (0900).
+    $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
     $is_open = FALSE;
     foreach ($this->getValue() as $key => $item) {
       // Calculate start and end times.
       $day = (int) $item['day'];
-      // 'Gi' format, with leading zero (0900).
-      $start = OfficeHoursDateHelper::datePad($item['starthours'], 4);
-      $end = OfficeHoursDateHelper::datePad($item['endhours'], 4);
+      // 'Hi' format, with leading zero (0900).
+      $start = OfficeHoursDatetime::get($item['starthours'], 'Hi');
+      $end = OfficeHoursDatetime::get($item['endhours'], 'Hi');
 
       if ($day - $today == -1 || ($day - $today == 6)) {
         // We were open yesterday evening, check if we are still open.
-        if ($start >= $end && $end >= $now) {
+        if ($start >= $end && $end > $now) {
           $is_open = TRUE;
         }
       }
@@ -77,19 +78,19 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     // Convert the day_number to (int) to get '0' for Sundays, not 'false'.
     $time = ($time === NULL) ? \Drupal::time()->getRequestTime() : $time;
     $today = (int) idate('w', $time); // Get day_number sun=0 - sat=6.
-    $now = date('Gi', $time); // 'Gi' format, with leading zero (0900).
+    $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
     foreach ($this->getValue() as $key => $item) {
       // Calculate start and end times.
       $day = (int) $item['day'];
-      // 'Gi' format, with leading zero (0900).
-      $start = OfficeHoursDateHelper::datePad($item['starthours'], 4);
-      $end = OfficeHoursDateHelper::datePad($item['endhours'], 4);
+      // 'Hi' format, with leading zero (0900).
+      $start = OfficeHoursDatetime::get($item['starthours'], 'Hi');
+      $end = OfficeHoursDatetime::get($item['endhours'], 'Hi');
 
       $office_hours[$day]['closed'] = NULL;
       $office_hours[$day]['slots'][] = [
         'start' => $start,
         'end' => $end,
-        'comment' => $item['comment'],
+        'comment' => isset($item['comment']) ? $item['comment'] : NULL,
       ];
     }
 
@@ -100,10 +101,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
           // Initialize to first day of (next) week, in case we're closed
           // the rest of the week.
           // if ($today == $settings['office_hours_first_day']) {
-          if ($day == 0) {
-            // Not for first day of the week.
-          }
-          elseif ($next === NULL) {
+          if ($next === NULL) {
             $next = $day;
           }
         }
@@ -115,16 +113,13 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
             // We will open later today.
             $next = $day;
           }
+          elseif (($start < $end) && ($end < $now)) {
+            // We were open today, but are already closed.
+          }
           else {
-            // We were open today, check if we are still open.
-            if (($start < $end) && ($end > $now)) {
-              // We have already closed.
-            }
-            else {
-              // We are still open.
-              $day_data['current'] = TRUE;
-              $next = $day;
-            }
+            // We are still open.
+            $day_data['current'] = TRUE;
+            $next = $day;
           }
         }
         elseif ($day > $today) {
@@ -193,7 +188,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   }
 
   /**
-   * Compress the slots:
+   * Formatter: compress the slots:
    *   E.g., 0900-1100 + 1300-1700 = 0900-1700
    *
    * @param array $office_hours
@@ -215,6 +210,11 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     return $office_hours;
   }
 
+  /**
+   * Formatter: group days with same slots into 1 line.
+   * @param array $office_hours
+   * @return array
+   */
   protected function groupDays(array $office_hours) {
     $times = [];
     for ($i = 0; $i < 7; $i++) {
@@ -236,6 +236,12 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     return $office_hours;
   }
 
+  /**
+   * Formatter: remove closed days, keeping open days
+   *
+   * @param array $office_hours
+   * @return array
+   */
   protected function keepOpenDays(array $office_hours) {
     $new_office_hours = [];
     foreach ($office_hours as $day => $info) {
@@ -246,6 +252,11 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     return $new_office_hours;
   }
 
+  /**
+   * Formatter: remove all days, except the first open day.
+   * @param array $office_hours
+   * @return array
+   */
   protected function keepNextDay(array $office_hours) {
     $new_office_hours = [];
     foreach ($office_hours as $day => $info) {
@@ -256,10 +267,16 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     return $new_office_hours;
   }
 
+  /**
+   * Formatter: remove all days, except for today.
+   * @param array $office_hours
+   * @return array
+   */
   protected function keepCurrentDay(array $office_hours) {
     $new_office_hours = [];
 
-    $today = (int) idate('w', $_SERVER['REQUEST_TIME']); // Get day_number sun=0 - sat=6.
+    // Get day_number sun=0 - sat=6.
+    $today = (int) idate('w', $_SERVER['REQUEST_TIME']);
 
     foreach ($office_hours as $info) {
       if ($info['startday'] == $today) {
@@ -269,6 +286,12 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     return $new_office_hours;
   }
 
+  /**
+   * Formatter: format the day name.
+   * @param array $office_hours
+   * @param array $settings
+   * @return array
+   */
   protected function formatLabels(array $office_hours, array $settings) {
     $day_names = OfficeHoursDateHelper::weekDaysByFormat($settings['day_format']);
     $group_separator = $settings['separator']['grouped_days'];
@@ -280,11 +303,18 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
       if (isset($info['endday'])) {
         $label .= $group_separator . $day_names[$info['endday']];
       }
-      $info['label'] = $label . $days_suffix;
+      $info['label'] = $label ? $label . $days_suffix : '';
     }
     return $office_hours;
   }
 
+  /**
+   * Formatter: format the office hours list.
+   * @param array $office_hours
+   * @param array $settings
+   * @param array $field_settings
+   * @return array
+   */
   protected function formatSlots(array $office_hours, array $settings, array $field_settings) {
     $time_format = OfficeHoursDateHelper::getTimeFormat($settings['time_format']);
     $time_separator = $settings['separator']['hours_hours'];

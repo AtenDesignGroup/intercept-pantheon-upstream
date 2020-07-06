@@ -54,6 +54,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *     "NonOverlappingRoomReservation" = {},
  *     "LocationOpenHours" = {},
  *     "ReservationLimit" = {},
+ *     "ReservationMaxDuration" = {},
  *   },
  *   entity_keys = {
  *     "id" = "id",

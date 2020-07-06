@@ -40,6 +40,7 @@ class OfficeHoursFormatterStatus extends OfficeHoursFormatterBase {
       '#position' => $this->settings['current_status']['position'],
       '#cache' => [
         'max-age' => $this->getStatusTimeLeft($items, $langcode),
+        'tags' => ['office_hours:field.status'],
       ],
     ];
 

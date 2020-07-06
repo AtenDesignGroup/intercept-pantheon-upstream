@@ -5,7 +5,7 @@
   -ms-flex-item-align: stretch;
       -ms-grid-row-align: stretch;
       align-self: stretch;
-  background: #EEF1F4; }
+  background: #eef1f4; }
   @media (min-width: 48em) {
     .footer {
       margin-top: 6.1875rem; } }
@@ -72,15 +72,15 @@
       margin: 0; } }
   .menu--footer-menu li {
     display: inline-block;
-    margin-right: .5rem;
-    margin-left: .5rem; }
+    margin-right: 0.5rem;
+    margin-left: 0.5rem; }
     @media (min-width: 68.75em) {
       .menu--footer-menu li {
         margin-left: 0;
         margin-right: 1.5rem; } }
   .menu--footer-menu a {
     background-color: transparent;
-    color: #4C4D4F; }
+    color: #4c4d4f; }
     @media (max-width: 68.6875em) {
       .menu--footer-menu a {
         display: block;
@@ -96,7 +96,7 @@
           order: 5; }
   @media (min-width: 68.75em) {
     #block-footermenusecondary {
-      margin-left: .5rem;
+      margin-left: 0.5rem;
       -webkit-box-ordinal-group: initial;
           -ms-flex-order: initial;
               order: initial; } }
@@ -117,14 +117,14 @@
               order: 3; } }
   @media (min-width: 68.75em) {
     #block-copyrightblock {
-      margin-left: .5rem;
+      margin-left: 0.5rem;
       position: relative;
-      top: .18rem; } }
+      top: 0.18rem; } }
   @media (min-width: 68.75em) and (max-width: 74.9375em) {
     #block-copyrightblock span {
       display: block; } }
   #block-copyrightblock a {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     text-decoration: none; }
 
 #block-socialmediamenu {
@@ -143,20 +143,20 @@
       -ms-flex-pack: center;
           justify-content: center;
   list-style: none;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
   padding: 0; }
   @media (min-width: 68.75em) {
     .menu--social-media-menu {
       margin: 0; } }
   .menu--social-media-menu li:last-of-type {
-    margin-left: .5rem; }
+    margin-left: 0.5rem; }
   .menu--social-media-menu a {
     font-size: 0.65278rem;
-    background-color: #0288D1;
+    background-color: #0288d1;
     color: #fff;
     font-weight: bold;
     display: block;
-    padding: .5rem; }
+    padding: 0.5rem; }
     @media (min-width: 48em) {
       .menu--social-media-menu a {
         font-size: 0.83333rem; } }
@@ -166,27 +166,28 @@
     @media (min-width: 37.5em) {
       .menu--social-media-menu a {
         padding: 1rem 1.5rem; } }
-  .menu--social-media-menu [href*="facebook.com"],
-  .menu--social-media-menu [href*="twitter.com"],
-  .menu--social-media-menu [href*="instagram.com"] {
+  .menu--social-media-menu [href*='facebook.com'],
+  .menu--social-media-menu [href*='twitter.com'],
+  .menu--social-media-menu [href*='instagram.com'] {
     background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
     overflow: hidden;
     text-indent: -9999px;
-    width: 2rem; }
+    width: 2rem;
+    color: #000; }
     @media (min-width: 37.5em) {
-      .menu--social-media-menu [href*="facebook.com"],
-      .menu--social-media-menu [href*="twitter.com"],
-      .menu--social-media-menu [href*="instagram.com"] {
+      .menu--social-media-menu [href*='facebook.com'],
+      .menu--social-media-menu [href*='twitter.com'],
+      .menu--social-media-menu [href*='instagram.com'] {
         width: 3.125rem; } }
-    .menu--social-media-menu [href*="facebook.com"]:hover,
-    .menu--social-media-menu [href*="twitter.com"]:hover,
-    .menu--social-media-menu [href*="instagram.com"]:hover {
+    .menu--social-media-menu [href*='facebook.com']:hover,
+    .menu--social-media-menu [href*='twitter.com']:hover,
+    .menu--social-media-menu [href*='instagram.com']:hover {
       background-color: transparent; }
-  .menu--social-media-menu [href*="facebook.com"] {
+  .menu--social-media-menu [href*='facebook.com'] {
     background-image: url("/themes/contrib/intercept_base/images/icons/facebook.svg"); }
-  .menu--social-media-menu [href*="twitter.com"] {
+  .menu--social-media-menu [href*='twitter.com'] {
     background-image: url("/themes/contrib/intercept_base/images/icons/twitter.svg"); }
-  .menu--social-media-menu [href*="instagram.com"] {
+  .menu--social-media-menu [href*='instagram.com'] {
     background-image: url("/themes/contrib/intercept_base/images/icons/instagram.svg"); }

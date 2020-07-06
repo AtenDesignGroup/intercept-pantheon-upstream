@@ -345,6 +345,15 @@ function intercept_event_entity_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_cloned_node_alter().
+ */
+function intercept_event_cloned_node_alter(&$node){
+  if ($node->bundle() == 'event') {
+    $node->set('event_recurrence', NULL);
+  }
+}
+
+/**
  * Implements hook_node_delete().
  */
 function intercept_event_node_delete(NodeInterface $node) {
@@ -794,6 +803,7 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
     // Build the link to download the CSV.
     $request = \Drupal::request();
     $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_event_attendance_by_age_group.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable['#attributes'] = ['class' => ['button', 'button--arrow-green']];
     $link = \Drupal::service('renderer')->renderPlain($link_renderable);
     $options = [
       'id' => 'area_text_custom',
@@ -805,6 +815,27 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
       'empty' => TRUE,
       'tokenize' => FALSE,
       'content' => '<h1 class="title">Export Event Attendance</h1>' .
+      $link,
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('page', 'header', 'area_text_custom', $options);
+  }
+  else if ($view->id() == 'intercept_meetings' && $display_id == 'page') {
+    // Build the link to download the CSV.
+    $request = \Drupal::request();
+    $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_meetings.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable['#attributes'] = ['class' => ['button', 'button--arrow-green']];
+    $link = \Drupal::service('renderer')->renderPlain($link_renderable);
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => '<h1 class="title">Meetings</h1>' .
       $link,
       'plugin_id' => 'text_custom',
     ];

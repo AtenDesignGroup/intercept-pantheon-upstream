@@ -6,6 +6,7 @@ import get from 'lodash/get';
 
 /* eslint-disable */
 import interceptClient from 'interceptClient';
+import drupalSettings from 'drupalSettings';
 /* eslint-enable */
 
 import FieldInline from './../FieldInline';
@@ -39,11 +40,16 @@ class EventTeaser extends PureComponent {
 
     const image = get(event, 'attributes.event_thumbnail');
 
+    const recommendedEvents = get(drupalSettings, 'intercept.events.recommended');
+
+    const highlight = Array.isArray(recommendedEvents) && recommendedEvents.includes(get(event, 'attributes.drupal_internal__nid').toString()) ? 'Recommended For You' : null;
+
     return (
       <Teaser
         key={id}
         modifiers={[image ? 'with-image' : 'without-image']}
         image={image}
+        highlight={highlight}
         supertitle={get(event, 'relationships.field_location.0.attributes.title')}
         title={event.attributes.title}
         titleUrl={

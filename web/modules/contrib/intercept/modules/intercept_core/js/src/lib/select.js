@@ -392,6 +392,18 @@ function getRegistrationRemaining(eventResource) {
   return get(eventResource, 'data.attributes.registration.remaining_registration');
 }
 
+function getEventCapacity(eventResource) {
+  return get(eventResource, 'data.attributes.field_capacity_max');
+}
+
+function getWaitlistRemaining(eventResource) {
+  return get(eventResource, 'data.attributes.registration.remaining_waitlist');
+}
+
+function getWaitlistCapacity(eventResource) {
+  return get(eventResource, 'data.attributes.field_waitlist_max');
+}
+
 function getRegistrationOpenDate(eventResource) {
   const value = get(eventResource, 'data.attributes.field_event_register_period.value');
   return utils.getDateDisplay(value);
@@ -423,12 +435,20 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
   }
 
   const availableCapacity = getRegistrationRemaining(eventResource);
+  const totalCapacity = getEventCapacity(eventResource);
+  const availableWaitlist = getWaitlistRemaining(eventResource);
+  const totalWaitlist = getWaitlistCapacity(eventResource);
 
   switch (statusEvent) {
     case 'open_pending':
       return `Registration opens ${getRegistrationOpenDate(eventResource)}`;
     case 'waitlist':
-      return 'Waitlist is open';
+      switch (availableWaitlist) {
+        case 1:
+          return `There is ${availableWaitlist} of ${totalWaitlist} waitlist seats available.`;
+        default:
+          return `There are ${availableWaitlist} of ${totalWaitlist} waitlist seats available.`;
+      }
     case 'full':
       return 'Registration is full';
     case 'closed':
@@ -440,9 +460,9 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
         case 0:
           return 'This event is full.';
         case 1:
-          return `There is ${availableCapacity} seat available.`;
+          return `There is ${availableCapacity} of ${totalCapacity} seats available.`;
         default:
-          return `There are ${availableCapacity} seats available.`;
+          return `There are ${availableCapacity} of ${totalCapacity} seats available.`;
       }
     default:
       return null;

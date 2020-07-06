@@ -5,7 +5,6 @@
  * Functions to support theming.
  */
 
-use Drupal\Component\Utility\Tags;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
 
@@ -79,7 +78,7 @@ function intercept_base_preprocess_event_eval_feedback(&$variables) {
 }
 
 /**
- * Implements hook_preprocess_form() for blocks.
+ * Implements hook_preprocess_form() for forms.
  */
 function intercept_base_preprocess_form(&$variables) {
   $form_id = $variables['element']['#id'];
@@ -95,6 +94,7 @@ function intercept_base_preprocess_form(&$variables) {
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
     case 'views-exposed-form-intercept-equipment-page':
+    case 'views-exposed-form-intercept-export-room-reservations-page':
     case 'views-exposed-form-intercept-event-attendance-by-age-group-page':
     case 'views-exposed-form-intercept-event-attendance-embed':
     case 'views-exposed-form-intercept-meetings-page':
@@ -248,7 +248,7 @@ function intercept_base_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
   $row = $variables['row'];
   if ($variables['field']->field == 'field_user') {
-    if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'embed') {
+    if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'page') {
       $uid = $variables['field']->getValue($row);
       if ($uid) {
         $username = $variables['field']->advancedRender($row);

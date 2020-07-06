@@ -18,3 +18,6 @@ services:
   intercept_core.utility.dates:
     class: Drupal\intercept_core\Utility\Dates
     arguments: ['@config.factory']
+  intercept_core.utility.redirect:
+    class: Drupal\intercept_core\Utility\Redirect
+    arguments: ['@config.factory', '@request_stack', '@entity_type.manager']

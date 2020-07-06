@@ -59,13 +59,9 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
     // See also function formElement().
 
     // Reformat the $values, before passing to database.
-    // N.B. Resetting does not work: $values = reset($values)['value'];
-    $new_values = [];
-    foreach ($values as $value) {
-      $new_values[] = $value['value'];
+    foreach ($values as &$item) {
+      $item = $item['value'];
     }
-    $values = $new_values;
-
     $values = parent::massageFormValues($values, $form, $form_state);
 
     return $values;

@@ -63,8 +63,8 @@ class OfficeHoursDatelist extends Datelist {
    * Mimics the date_parse() function.
    *   g = 12-hour format of an hour without leading zeros 1 through 12
    *   G = 24-hour format of an hour without leading zeros 0 through 23
-   *   h = 12-hour format of an hour with leading zeros    01 through 12
-   *   H = 24-hour format of an hour with leading zeros    00 through 23
+   *   h = 12-hour format of an hour with leading zeros   01 through 12
+   *   H = 24-hour format of an hour with leading zeros   00 through 23
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
 
@@ -79,7 +79,7 @@ class OfficeHoursDatelist extends Datelist {
         elseif (is_numeric($time)) {
           $timezone = $element['#date_timezone'];
           // The Date function needs a fixed format, so format $time to '0030'.
-          $time = OfficeHoursDateHelper::datePad($time, 4);
+          $time = OfficeHoursDatetime::get($time, 'Hi');
           $date = OfficeHoursDateHelper::createFromFormat('Gi', $time, $timezone);
         }
       }
@@ -88,7 +88,10 @@ class OfficeHoursDatelist extends Datelist {
       }
       $element['#default_value'] = $date;
     }
-
+    // Set empty minutes field to '00' for better UX.
+    if (!empty($input['hour']) && isset($input['minute']) && empty($input['minute'])) {
+      $input['minute'] = '00';
+    }
     $input = parent::valueCallback($element, $input, $form_state);
     return $input;
   }
@@ -103,10 +106,7 @@ class OfficeHoursDatelist extends Datelist {
    * @return
    */
   public static function processOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {
-    $settings = $element['#field_settings'];
-
-    // Get the valid, restricted hours. Date API doesn't provide a straight method for this.
-    $element['hour']['#options'] = OfficeHoursDateHelper::hours($settings['time_format'], FALSE, $settings['limit_start'], $settings['limit_end']);
+    $element['hour']['#options'] = $element['#hour_options'];
     return $element;
   }
 
@@ -119,8 +119,8 @@ class OfficeHoursDatelist extends Datelist {
    */
   public static function validateOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {
     $input = $element['#value'];
-    $value = '';
 
+    $value = '';
     if (isset($input['object']) && $input['object']) {
       $value = (string) $input['object']->format('Gi');
       // Set the value for usage in OfficeHoursList::validateOfficeHoursSlot().

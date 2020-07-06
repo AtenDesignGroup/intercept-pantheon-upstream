@@ -3,6 +3,7 @@ entity.event_recurrence.add_form:
   title: 'Add Event Recurrence'
   appears_on:
     - entity.event_recurrence.collection
+
 entity.event_attendance.add_form:
   route_name: entity.event_attendance.add_form
   title: 'Add Event Attendance'

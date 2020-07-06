@@ -1,4 +1,4 @@
-@import "_partials";
+@import '_partials';
 
 .footer {
   @include box--padded;
@@ -64,8 +64,8 @@
 
   li {
     display: inline-block;
-    margin-right: .5rem;
-    margin-left: .5rem;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
 
     @include bp(m-large) {
       margin-left: 0;
@@ -94,7 +94,7 @@
   order: 5;
 
   @include bp(m-large) {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     order: initial;
   }
 }
@@ -109,9 +109,9 @@
   }
 
   @include bp(m-large) {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     position: relative;
-    top: .18rem;
+    top: 0.18rem;
   }
 
   // Copyright Text
@@ -123,7 +123,7 @@
 
   // Privacy Policy
   a {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     text-decoration: none;
   }
 }
@@ -146,7 +146,7 @@
   display: flex;
   justify-content: center;
   list-style: none;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
   padding: 0;
 
   @include bp(m-large) {
@@ -154,7 +154,7 @@
   }
 
   li:last-of-type {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
   }
 
   a {
@@ -163,22 +163,23 @@
     color: $white;
     font-weight: bold;
     display: block;
-    padding: .5rem;
+    padding: 0.5rem;
 
     @include bp(small) {
       padding: 1rem 1.5rem;
     }
   }
 
-  [href*="facebook.com"],
-  [href*="twitter.com"],
-  [href*="instagram.com"] {
+  [href*='facebook.com'],
+  [href*='twitter.com'],
+  [href*='instagram.com'] {
     background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
     overflow: hidden;
     text-indent: -9999px;
     width: rem(32px);
+    color: #000;
 
     @include bp(small) {
       width: rem(50px);
@@ -190,17 +191,17 @@
   }
 
   // Facebook
-  [href*="facebook.com"] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/facebook.svg");
+  [href*='facebook.com'] {
+    background-image: url('/themes/contrib/intercept_base/images/icons/facebook.svg');
   }
 
   // Twitter
-  [href*="twitter.com"] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/twitter.svg");
+  [href*='twitter.com'] {
+    background-image: url('/themes/contrib/intercept_base/images/icons/twitter.svg');
   }
 
   // Instagram
-  [href*="instagram.com"] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/instagram.svg");
+  [href*='instagram.com'] {
+    background-image: url('/themes/contrib/intercept_base/images/icons/instagram.svg');
   }
 }

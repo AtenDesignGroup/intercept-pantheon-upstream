@@ -9,7 +9,7 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 import Error from '@material-ui/icons/Error';
 import Warning from '@material-ui/icons/Warning';
 
-import v4 from 'uuid/v4';
+import {v4 as uuidv4} from 'uuid';
 
 import { InputAdornment, TextField, CircularProgress } from '@material-ui/core';
 
@@ -84,7 +84,7 @@ class RegistrationLookup extends React.Component {
   };
 
   fetchRegistration = (barcode) => {
-    const uuid = v4();
+    const uuid = uuidv4();
 
     const { setStatus } = this;
     this.setState({

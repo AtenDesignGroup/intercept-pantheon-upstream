@@ -7,7 +7,7 @@
       padding-right: 30px;
       padding-bottom: 30px;
       padding-top: 30px;
-      background-color: #EEF1F4;
+      background-color: #eef1f4;
       -webkit-box-shadow: 0 0.1875rem 1.6375rem 0 rgba(0, 0, 0, 0.25);
               box-shadow: 0 0.1875rem 1.6375rem 0 rgba(0, 0, 0, 0.25);
       left: 0;
@@ -49,19 +49,19 @@
         background: #fff; } }
     @media (min-width: 62em) {
       .header__search-form input[type='search'] {
-        background: #EEF1F4; } }
+        background: #eef1f4; } }
     .header__search-form input[type='search']::-webkit-input-placeholder {
       font-size: 0.88194rem;
-      color: #4C4D4F; }
+      color: #4c4d4f; }
     .header__search-form input[type='search']:-ms-input-placeholder {
       font-size: 0.88194rem;
-      color: #4C4D4F; }
+      color: #4c4d4f; }
     .header__search-form input[type='search']::-ms-input-placeholder {
       font-size: 0.88194rem;
-      color: #4C4D4F; }
+      color: #4c4d4f; }
     .header__search-form input[type='search']::placeholder {
       font-size: 0.88194rem;
-      color: #4C4D4F; }
+      color: #4c4d4f; }
       @media (min-width: 48em) {
         .header__search-form input[type='search']::-webkit-input-placeholder {
           font-size: 0.9375rem; }
@@ -110,7 +110,7 @@
             transform: translateY(0); }
   @media (max-width: 61.9375em) {
     .search-trigger:checked ~ label {
-      background: #4C4D4F; } }
+      background: #4c4d4f; } }
   .search-trigger:checked ~ label:after {
     -webkit-transform: rotate(180deg);
             transform: rotate(180deg); }
@@ -154,10 +154,10 @@ label[for='search-trigger'] {
   margin-left: -0.75rem;
   position: absolute; }
   .search-trigger__icon path {
-    stroke: #0288D1; }
+    stroke: #0288d1; }
   .search-trigger__icon rect,
   .search-trigger__icon polygon {
-    fill: #0288D1; }
+    fill: #0288d1; }
 
 .search-trigger__icon--expand {
   opacity: 1;
@@ -180,7 +180,7 @@ label[for='search-trigger'] {
             transform: translateY(0); } }
 
 .search-trigger:checked ~ label {
-  background: #EEF1F4; }
+  background: #eef1f4; }
   .search-trigger:checked ~ label .search-trigger__icon--collapse {
     opacity: 1;
     -webkit-transform: rotate(0) scale(1);

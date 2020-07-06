@@ -1,0 +1,16 @@
+.js--block-link {
+  cursor: pointer;
+  position: relative; }
+  .js--block-link:before {
+    bottom: 0;
+    -webkit-box-shadow: 0 0 0 0 transparent inset;
+            box-shadow: 0 0 0 0 transparent inset;
+    content: '';
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    -webkit-transition: all 200ms;
+    transition: all 200ms;
+    z-index: 10; }

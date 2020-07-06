@@ -16,7 +16,6 @@ dependencies:
     - better_exposed_filters
     - csv_serialization
     - datetime
-    - datetime_range
     - flag
     - intercept_event
     - node
@@ -548,7 +547,7 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: daterange_custom
+          type: daterange_combined
           settings:
             timezone_override: ''
             date_format: n/j/Y
@@ -613,7 +612,7 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: daterange_custom
+          type: daterange_combined
           settings:
             timezone_override: ''
             date_format: 'g:i A'

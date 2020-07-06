@@ -14,7 +14,7 @@ import interceptClient from 'interceptClient';
 import drupalSettings from 'drupalSettings';
 
 // UUID
-import v4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import CloseIcon from '@material-ui/icons/Close';
 import { AppBar, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Toolbar, IconButton, Typography, Slide } from '@material-ui/core';
@@ -75,7 +75,7 @@ addValidationRule('isGreaterOrEqualTo', (values, value, min) => min === null || 
 addValidationRule('isLesserOrEqualTo', (values, value, max) => max === null || value <= max);
 
 const buildRoomReservation = (values) => {
-  const uuid = v4();
+  const uuid = uuidv4();
   const output = {
     id: uuid,
     type: c.TYPE_ROOM_RESERVATION,

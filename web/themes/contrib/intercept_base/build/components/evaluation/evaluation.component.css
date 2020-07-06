@@ -54,7 +54,7 @@
       flex-wrap: nowrap; }
 
 .evaluation .evaluation__radio-icon {
-  background-color: #EEF1F4;
+  background-color: #eef1f4;
   border-radius: 50%;
   height: 5rem;
   width: 5rem; }
@@ -62,7 +62,7 @@
     height: 54.54545%;
     width: 54.54545%; }
   .evaluation .evaluation__radio-icon[class*="checked"] {
-    background-color: #7A7D81; }
+    background-color: #747481; }
   .evaluation .evaluation__radio-icon:first-child {
     margin-right: 0.625rem; }
 

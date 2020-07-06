@@ -35,9 +35,9 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
   protected function formMultipleElements(FieldItemListInterface $items, array &$form, FormStateInterface $form_state) {
     $field_cardinality = $this->fieldDefinition->getFieldStorageDefinition()
       ->getCardinality();
-    if ($field_cardinality == FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED) {
+    if ($field_cardinality == FieldStorageDefinitionInterface  ::CARDINALITY_UNLIMITED) {
       $this->fieldDefinition->getFieldStorageDefinition()
-        ->setCardinality(7 * $this->getFieldSetting('cardinality_per_day'));
+        ->setCardinality(7 * $this->getFieldSetting('cardinality_per_day')); // @todo D9 test
     }
 
     $elements = parent::formMultipleElements($items, $form, $form_state);
@@ -80,7 +80,7 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
     $cardinality = $this->getFieldSetting('cardinality_per_day');
     $id = -1;
     foreach ($days as $index => $day) {
-      // todo: theme_function clears values above cardinality. move it here.
+      // @todo The theme_function clears values above cardinality. Move it here.
       for ($daydelta = 0; $daydelta < $cardinality; $daydelta++) {
         $id++;
         $elements[$id]['#day'] = $day;
@@ -88,7 +88,7 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
         $elements[$id]['#dayname'] = $daynames[$day];
 
         $elements[$id]['#type'] = 'office_hours_slot';
-        $elements[$id]['#default_value'] = isset($indexed_items[$day][$daydelta]) ? $indexed_items[$day][$daydelta]->getValue() : NULL;
+        $elements[$id]['#default_value'] = isset($indexed_items[$day][$daydelta]) ? $indexed_items[$day][$daydelta]->getValue() : NULL; // @todo D9 test
         $elements[$id]['#field_settings'] = $element['#field_settings'];
         $elements[$id]['#date_element_type'] = $this->getSetting('date_element_type');
       }
@@ -97,8 +97,8 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
     // Build multi element widget. Copy the description, etc. into the table.
     $header = [
       'title' => $this->t($element['#title']),
-      'from' => $this->t('From'),
-      'to' => $this->t('To'),
+      'from' => $this->t('From', [], ['context' => 'A point in time']),
+      'to' => $this->t('To', [], ['context' => 'A point in time']),
     ];
     if ($element['#field_settings']['comment']) {
       $header['comment'] = $this->t('Comment');

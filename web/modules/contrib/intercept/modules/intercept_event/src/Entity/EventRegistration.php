@@ -199,6 +199,24 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
   /**
    * {@inheritdoc}
    */
+  public function getEvent() {
+    if ($this->hasField('field_event')) {
+      return $this->get('field_event')->entity;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEventId() {
+    if ($this->hasField('field_event')) {
+      return $this->get('field_event')->target_id;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 

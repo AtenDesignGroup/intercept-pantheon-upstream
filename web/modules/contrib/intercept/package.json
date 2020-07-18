@@ -24,7 +24,7 @@
     "history": "^4.7.2",
     "intercept-client": "^1.2.2",
     "jss": "^10.0.3",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.19",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.17",
     "prop-types": "^15.7.2",

@@ -3307,7 +3307,7 @@
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/intercept_profile.git",
-            "reference": "2eced94cc0101fd7636b877ac3c7d298e4a6c5a9"
+            "reference": "acc6df6faaa26ef4e7585568113a737dc0596f41"
         },
         "require": {
             "drupal/core": "~8.0"

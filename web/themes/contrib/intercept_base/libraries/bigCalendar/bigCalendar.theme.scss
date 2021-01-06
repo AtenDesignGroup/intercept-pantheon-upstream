@@ -5,43 +5,23 @@
   white-space: nowrap;
 
   > button {
-    // color: $clr-text;
-
-    &:active,
-    &.rbc-active {
-      // background-color: #e6e6e6;
-      // border-color: #adadad;
-    }
-
-    &:active:hover,
-    &.rbc-active:hover,
-    &:active:focus,
-    &.rbc-active:focus {
-      // color: $clr-text;
-      // background-color: #d4d4d4;
-      // border-color: #8c8c8c;
-    }
-
-    &:focus {
-      // color: $clr-text;
-      // background-color: #e6e6e6;
-      // border-color: #adadad;
-    }
-
-    &:hover {
-      // color: $clr-text;
-      // background-color: #e6e6e6;
-      // border-color: #adadad;
-    }
-
     &:not(:first-child):not(:last-child) {
       border-radius: 0;
     }
   }
 }
 
+.rbc-btn--print {
+  margin-left: rem(5px);
+}
+
 .rbc-toolbar__label {
-  color: $clr-secondary;
+  color: $clr-text;
+  line-height: 1;
+
+  & + .MuiButton-endIcon {
+    margin-top: -1px;
+  }
 }
 
 .rbc-toolbar__pager-button.rbc-toolbar__pager-button {
@@ -61,6 +41,7 @@
 .rbc-event:focus,
 .rbc-event.rbc-selected {
   background-color: $clr-primary-dark;
+  color: white;
 }
 
 .rbc-event-content {
@@ -136,6 +117,11 @@
 
 .rbc-date-cell.rbc-now,
 .rbc-header.rbc-today {
+  &:hover,
+  &:focus {
+    box-shadow: 0;
+  }
+
   > a {
     @include link--tertiary;
   }

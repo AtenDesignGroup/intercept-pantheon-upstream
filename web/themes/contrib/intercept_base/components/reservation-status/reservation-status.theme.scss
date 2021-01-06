@@ -1,0 +1,20 @@
+@import "_partials";
+
+.reservation-status--requested {
+  &::before {
+    background-color: $gray-80;
+    border: 1px solid $gray-40;
+  }
+}
+
+.reservation-status--approved {
+  &::before {
+    background-color: $clr-primary;
+  }
+}
+
+.reservation-status--selected {
+  &::before {
+    background-color: $clr-accent;
+  }
+}

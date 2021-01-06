@@ -4,6 +4,7 @@ namespace Drupal\intercept_event;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\node\NodeInterface;
 
 /**
  * Default implementation of the event registration provider.
@@ -60,6 +61,29 @@ class EventRegistrationProvider implements EventRegistrationProviderInterface {
     }
     $query = $this->eventRegistrationStorage->getQuery()
       ->condition('field_user', $account->id())
+      ->accessCheck(FALSE);
+    return $query->execute();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEventRegistrationsByEvent(NodeInterface $event) {
+    $event_registrations = [];
+    $event_registration_ids = $this->getEventRegistrationIdsByEvent($event);
+    if ($event_registration_ids) {
+      $event_registrations = $this->eventRegistrationStorage->loadMultiple($event_registration_ids);
+    }
+
+    return $event_registrations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEventRegistrationIdsByEvent(NodeInterface $event) {
+    $query = $this->eventRegistrationStorage->getQuery()
+      ->condition('field_event', $event->id())
       ->accessCheck(FALSE);
     return $query->execute();
   }

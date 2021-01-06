@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Install functions for the Intercept Messages module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+
+/**
+ * Implements hook_schema().
+ */
+function intercept_messages_schema() {
+  $schema['intercept_messages_scheduled_message'] = [
+    'description' => 'Stores scheduled Intercept messages.',
+    'fields' => [
+      'message_id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Scheduled message ID.',
+      ],
+      'template_id' => [
+        'description' => 'The Intercept Message Template plugin id.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'entity_type' => [
+        'description' => 'The entity type that triggered this message.',
+        'type' => 'varchar',
+        'length' => EntityTypeInterface::ID_MAX_LENGTH,
+        'not null' => FALSE,
+      ],
+      'entity_id' => [
+        'description' => 'The entity ID that triggered this message.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'is_sent' => [
+        'description' => 'Whether the message has been sent.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'size' => 'small',
+      ],
+      'send' => [
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'description' => 'Unix timestamp of when the message should be sent.',
+      ],
+    ],
+    'primary key' => ['message_id'],
+    'indexes' => [
+      'message_id' => ['message_id'],
+    ],
+  ];
+  return $schema;
+}

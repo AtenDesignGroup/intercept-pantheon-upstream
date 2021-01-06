@@ -18,6 +18,43 @@ views.field.event_registration_count:
   type: views.field.numeric
   label: 'Event registration count'
 
+views.filter.numeric_reference:
+  type: views.filter.numeric
+  label: 'Numeric reference'
+  mapping:
+    expose:
+      type: mapping
+      label: 'Exposed'
+      mapping:
+        min_placeholder:
+          type: label
+          label: 'Min placeholder'
+        max_placeholder:
+          type: label
+          label: 'Max placeholder'
+        placeholder:
+          type: label
+          label: 'Placeholder'
+    handler:
+      type: string
+      label: 'Selection handler'
+      nullable: false
+      translatable: false
+    handler_settings:
+      type: entity_reference_selection.default
+      label: 'Selection handler settings'
+    handler_submit:
+      type: string
+      label: 'Change handler'
+    value:
+      type: views.filter_value.in_operator
+      label: 'Value'
+    widget:
+      type: string
+      label: 'Selection type'
+      nullable: false
+      translatable: false
+
 views.relationship.vote_relationship:
   type: views_relationship
   label: 'Display options for vote relationship'

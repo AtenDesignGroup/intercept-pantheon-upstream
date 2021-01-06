@@ -1,0 +1,24 @@
+@import "_partials";
+
+.reservation-status {
+  @include fs(body);
+  @include lh(0);
+  color: $clr-text;
+  display: inline-block;
+  font-weight: $fw-bold;
+  line-height: 24px;
+
+  &::before {
+    background-color: $gray-80;
+    border-radius: 50%;
+    content: "";
+    display: inline-block;
+    height: .7em;
+    margin-right: .1em;
+    width: .7em;
+  }
+}
+
+h2 > .reservation-status {
+  margin-left: 1em;
+}

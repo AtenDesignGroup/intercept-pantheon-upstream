@@ -74,13 +74,29 @@ class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterfac
       $this->derivatives[$id] = [
         'title' => $page->title,
         'weight' => isset($page->menu_weight) ? $page->menu_weight : 0,
-        'route_name' => $page->route_name ?? "{$id}.redirect",
+        'route_name' => $this->getPageRouteName($page),
         'menu_name' => 'intercept-manage',
         'parent' => isset($page->parent) ? $page->parent : NULL,
       ];
     }
 
     return $this->derivatives;
+  }
+
+  /**
+   * Checks if route was specified, is a redirect, or a regular user path.
+   *
+   * @param $page
+   *   A single item from ManagementManager::getPages() converted to an object.
+   *
+   * @return string
+   *   The route_name string.
+   */
+  private function getPageRouteName($page) {
+    if (!empty($page->route_name)) {
+      return $page->route_name;
+    }
+    return $page->user_context_redirect ? "{$page->id}.redirect" : "{$page->id}";
   }
 
   /**

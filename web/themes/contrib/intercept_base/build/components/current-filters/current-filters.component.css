@@ -58,5 +58,18 @@
   .current-filter .option-chip > svg {
     margin-left: .5em; }
 
+.current-filter .option-label {
+  font-size: 0.5rem;
+  display: inline-block;
+  padding-right: .25em; }
+  @media (min-width: 48em) {
+    .current-filter .option-label {
+      font-size: 0.625rem; } }
+  @media (min-width: 62em) {
+    .current-filter .option-label {
+      font-size: 0.75rem; } }
+  .current-filter .option-label:not(:last-of-type)::after {
+    content: ", "; }
+
 .current-filter--embedded .option-chip {
   margin: .25em .25em .25em 0; }

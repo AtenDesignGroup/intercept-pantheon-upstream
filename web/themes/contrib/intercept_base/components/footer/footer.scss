@@ -23,19 +23,18 @@
     }
   }
 
-  .menu {
-    li {
-    }
+  .menu a {
+    text-decoration: none;
+    transition: all $duration $easing;
 
-    a {
-      text-decoration: none;
-      transition: all $duration $easing;
-
-      @include bp(m-large) {
-        display: block;
-      }
+    @include bp(m-large) {
+      display: block;
     }
   }
+}
+
+.l--page-minimal + .footer {
+  margin-top: 0;
 }
 
 // Footer Menu (Primary)
@@ -89,6 +88,10 @@
   }
 }
 
+#block-footermenu {
+  order: 1;
+}
+
 // Secondary Menu
 #block-footermenusecondary {
   order: 5;
@@ -101,36 +104,31 @@
 
 // Copyright
 #block-copyrightblock {
-  @include fs(tiny);
-  text-align: center;
-
-  @include bp(none m-large) {
-    order: 3;
-  }
-
-  @include bp(m-large) {
-    margin-left: 0.5rem;
-    position: relative;
-    top: 0.18rem;
-  }
-
-  // Copyright Text
-  span {
-    @include bp(m-large x-large) {
-      display: block;
-    }
+  
+  order: 6;
+  @include bp(x-large) {
+    order: 2;
+    text-align: center;
   }
 
   // Privacy Policy
   a {
-    margin-left: 0.5rem;
     text-decoration: none;
+  }
+}
+
+#block-gtranslate, #block-gtranslate--2 {
+  margin: 0 auto 10px 0;
+  order: 3;
+  @include bp(x-large) {
+    margin: 5px auto;
   }
 }
 
 // Footer Menu (Social)
 #block-socialmediamenu {
   margin-bottom: 1rem;
+  order: 4;
 
   @include bp(small) {
   }
@@ -172,7 +170,9 @@
 
   [href*='facebook.com'],
   [href*='twitter.com'],
-  [href*='instagram.com'] {
+  [href*='instagram.com'],
+  [href*='linkedin.com'],
+  [href*='youtube.com'] {
     background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
@@ -203,5 +203,15 @@
   // Instagram
   [href*='instagram.com'] {
     background-image: url('/themes/contrib/intercept_base/images/icons/instagram.svg');
+  }
+
+  // LinkedIn
+  [href*='linkedin.com'] {
+    background-image: url('/themes/contrib/intercept_base/images/icons/linkedin.svg');
+  }
+
+  // Youtube
+  [href*='youtube.com'] {
+    background-image: url('/themes/contrib/intercept_base/images/icons/youtube.svg');
   }
 }

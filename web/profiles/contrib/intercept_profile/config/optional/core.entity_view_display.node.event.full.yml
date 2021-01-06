@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_status
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
@@ -46,7 +47,7 @@ mode: full
 content:
   field_add_to_cal:
     type: add_to_calendar
-    weight: 13
+    weight: 14
     region: content
     label: hidden
     settings: {  }
@@ -71,7 +72,7 @@ content:
     type: daterange_default
     region: content
   field_event_audience:
-    weight: 9
+    weight: 10
     label: above
     settings:
       link: true
@@ -88,8 +89,16 @@ content:
     third_party_settings: {  }
     type: daterange_default
     region: content
+  field_event_series:
+    type: entity_reference_label
+    weight: 8
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
   field_event_tags:
-    weight: 11
+    weight: 12
     label: above
     settings:
       link: true
@@ -97,7 +106,7 @@ content:
     type: entity_reference_label
     region: content
   field_event_type:
-    weight: 8
+    weight: 9
     label: above
     settings:
       link: true
@@ -105,7 +114,7 @@ content:
     type: entity_reference_label
     region: content
   field_location:
-    weight: 12
+    weight: 13
     label: hidden
     settings:
       link: true
@@ -145,10 +154,15 @@ content:
     type: text_default
     region: content
   flag_saved_event:
-    weight: 10
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
+  flag_subscribe_node:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   image_primary:
     weight: 0
     label: hidden
@@ -168,7 +182,7 @@ hidden:
   field_evanced_id: true
   field_event_designation: true
   field_event_is_template: true
-  field_event_series: true
+  field_event_status: true
   field_event_type_primary: true
   field_event_user_reg_max: true
   field_featured: true

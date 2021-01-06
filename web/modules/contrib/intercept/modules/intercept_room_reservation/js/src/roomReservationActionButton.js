@@ -2,15 +2,14 @@ import React from 'react';
 import { render } from 'react-dom';
 
 /* eslint-disable */
+import Drupal from 'Drupal';
 import withIntercept from 'intercept/withIntercept';
-import drupalSettings from 'drupalSettings';
 import interceptClient from 'interceptClient';
 /* eslint-enable */
 
 import RoomReservationActionButtonApp from './components/RoomReservationActionButtonApp';
 
 const App = withIntercept(RoomReservationActionButtonApp);
-const roots = [...document.getElementsByClassName('js--room-reservation-action')];
 
 function renderButton(root) {
   const uuid = root.getAttribute('data-reservation-uuid');
@@ -23,4 +22,10 @@ function renderButton(root) {
     type={interceptClient.constants.TYPE_ROOM_RESERVATION}
   />, root);
 }
-roots.map(renderButton);
+
+Drupal.behaviors.roomReservationActionButtonApp = {
+  attach: (context) => {
+    const roots = [...context.getElementsByClassName('js--room-reservation-action')];
+    roots.map(renderButton);
+  },
+};

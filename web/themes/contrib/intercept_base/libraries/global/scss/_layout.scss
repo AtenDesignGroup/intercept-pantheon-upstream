@@ -16,7 +16,6 @@
 .l--page-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   min-height: 100vh;
   align-items: center;
 
@@ -65,6 +64,11 @@
   @include bp(large) {
     @include box--gutters(percentage(2/27));
   }
+
+  // Cancel nested offsets.
+  .l--offset {
+    @include box--gutters(0);
+  }
 }
 
 .l--offset-left {
@@ -88,6 +92,51 @@
 
   @include bp(large) {
     @include box--gutters(0, percentage(2/27));
+  }
+}
+
+.l--page-minimal {
+  max-width: none;
+
+  .l--offset {
+    @include box--gutters(rem(10px));
+
+    @include bp(medium) {
+      @include box--gutters(rem(20px));
+    }
+
+    @include bp(large) {
+      @include box--gutters(rem(20px));
+    }
+
+    // Cancel nested offsets.
+    .l--offset {
+      @include box--gutters(0);
+    }
+  }
+
+  .l--offset-left {
+    @include box--gutters(rem(10px), 0);
+
+    @include bp(medium) {
+      @include box--gutters(rem(20px), 0);
+    }
+
+    @include bp(large) {
+      @include box--gutters(rem(20px), 0);
+    }
+  }
+
+  .l--offset-right {
+    @include box--gutters(0, rem(10px));
+
+    @include bp(medium) {
+      @include box--gutters(0, rem(20px));
+    }
+
+    @include bp(large) {
+      @include box--gutters(0, rem(20px));
+    }
   }
 }
 
@@ -270,37 +319,64 @@
   @include spacing(margin-bottom, tight);
 }
 
+.region--header {
+  position: relative;
+  z-index: 10;
+}
+
 // Page specific style
 
 // This is reserve space while content is loading
 // So linking to this anchor is a little less jarring.
 [id='eventRegisterRoot'] {
   min-height: rem(200px);
+
+  .form__actions .button:not(:first-child) {
+    margin-left: rem(10px);
+  }
 }
 
-// Locations layout
-.view-locations {
-  .view__content {
-    width: 100%;
-  }
+// 2 column layout
+.l--2-col-50 {
+  width: 100%;
 
   @include bp(smallish) {
-    .views-row {
+    align-content: stretch;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    > div {
       display: flex;
       flex-direction: column;
       padding: rem(10px);
       width: 50%;
     }
-    .view__content {
-      align-content: stretch;
+  }
+}
+
+// 3 column layout
+.view-locations .view__content,
+.l--3-col {
+  width: 100%;
+
+  @include bp(smallish) {
+    align-content: stretch;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    > div {
       display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: space-between;
+      flex-direction: column;
+      padding: rem(10px);
+      width: 50%;
     }
   }
   @include bp(x-large) {
-    .views-row {
+    > div {
       padding: 0 0 50px 0;
       width: calc(33.33% - 30px);
     }

@@ -7,10 +7,10 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\DataDefinition;
-use Drupal\duration_field\Service\DurationService;
+use Drupal\duration_field\Plugin\DataType\Iso8601StringInterface;
 
 /**
- * Provides the 'duration' field type.
+ * Provides the Duration field type.
  *
  * @FieldType(
  *   id = "duration",
@@ -26,14 +26,7 @@ class DurationField extends FieldItemBase implements FieldItemInterface {
    */
   public static function defaultFieldSettings() {
     return [
-      'granularity' => [
-        'year' => TRUE,
-        'month' => TRUE,
-        'day' => TRUE,
-        'hour' => TRUE,
-        'minute' => TRUE,
-        'second' => TRUE,
-      ],
+      'granularity' => 'y:m:d:h:i:s',
     ] + parent::defaultFieldSettings();
   }
 
@@ -42,25 +35,10 @@ class DurationField extends FieldItemBase implements FieldItemInterface {
    */
   public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
 
-    $default_values = [];
-    foreach ($this->getSetting('granularity') as $key => $value) {
-      if ($value) {
-        $default_values[] = $key;
-      }
-    }
-
     $element['granularity'] = [
+      '#type' => 'granularity',
       '#title' => $this->t('Granularity'),
-      '#type' => 'checkboxes',
-      '#options' => [
-        'year' => $this->t('Years'),
-        'month' => $this->t('Months'),
-        'day' => $this->t('Days'),
-        'hour' => $this->t('Hours'),
-        'minute' => $this->t('Minutes'),
-        'second' => $this->t('Seconds'),
-      ],
-      '#default_value' => $default_values,
+      '#default_value' => $this->getSetting('granularity'),
     ];
 
     return $element;
@@ -70,13 +48,18 @@ class DurationField extends FieldItemBase implements FieldItemInterface {
    * {@inheritdoc}
    */
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
-
     return [
       'columns' => [
-        'value' => [
+        // The ISO 8601 Duration string representing the duration.
+        'duration' => [
           'type' => 'varchar',
           'length' => 255,
-          'not null' => FALSE,
+        ],
+        // The number of seconds the duration represents. Allows for
+        // mathematical comparison of durations in queries.
+        'seconds' => [
+          'type' => 'int',
+          'size' => 'big',
         ],
       ],
     ];
@@ -87,31 +70,25 @@ class DurationField extends FieldItemBase implements FieldItemInterface {
    */
   public function isEmpty() {
 
-    $value = $this->get('value')->getValue();
+    $value = $this->get('duration')->getValue();
 
-    return $value === NULL || $value === '';
+    return $value == Iso8601StringInterface::EMPTY_DURATION || is_null($value) || $value === '';
   }
 
   /**
    * {@inheritdoc}
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
-    $properties['value'] = DataDefinition::create('string')
-      ->setLabel(t('Duration'));
+
+    $properties['seconds'] = DataDefinition::create('integer')
+      ->setLabel(t('Seconds'))
+      ->setDescription(t('The number of seconds the duration represents'));
+
+    $properties['duration'] = DataDefinition::create('php_date_interval')
+      ->setLabel('Duration')
+      ->setDescription(t('The PHP DateInterval object'));
 
     return $properties;
-  }
-
-  /**
-   * Sets the value of the field.
-   */
-  public function setValue($values, $notify = TRUE) {
-
-    if (is_array($values) && isset($values['value']) && is_array($values['value'])) {
-      $values['value'] = DurationService::convertValue($values['value']);
-    }
-
-    parent::setValue($values, $notify);
   }
 
 }

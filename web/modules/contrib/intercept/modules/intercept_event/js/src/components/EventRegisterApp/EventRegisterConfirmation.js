@@ -10,7 +10,6 @@ import LoadingIndicator from 'intercept/LoadingIndicator';
 
 import EventRegistrationStatus from './EventRegistrationStatus';
 import withEventRegistrations from './withEventRegistrations';
-import { Select } from '@material-ui/core';
 
 const { api, constants, session, select } = interceptClient;
 const c = constants;

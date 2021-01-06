@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import interceptClient from 'interceptClient';
+import moment from 'moment';
 
 import ButtonRegister from 'intercept/ButtonRegister';
 import RegistrationStatus from 'intercept/RegistrationStatus';
 
-const { api, select } = interceptClient;
+const { api, select, utils } = interceptClient;
 const c = interceptClient.constants;
 
 class EventRegisterButtonApp extends React.Component {
@@ -16,6 +17,7 @@ class EventRegisterButtonApp extends React.Component {
   }
 
   render() {
+    console.log({...this.props});
     return (
       <div className="event-register-button__inner">
         {this.props.event && <ButtonRegister {...this.props} event={this.props.event.data} />}
@@ -54,16 +56,17 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       api[c.TYPE_EVENT_REGISTRATION].fetchAll({
         filters: {
-          uuid: {
-            value: id,
-            path: 'field_event.id',
+          date: {
+            value: moment().tz(utils.getUserTimezone()).startOf('day').format(),
+            path: 'field_event.field_date_time.value',
+            operator: '>=',
           },
           user: {
             value: user.uuid,
             path: 'field_user.id',
           },
         },
-      }),
+      })
     );
   },
 });

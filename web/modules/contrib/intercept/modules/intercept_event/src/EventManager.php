@@ -103,22 +103,6 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
-   * A list of emails to use for registration notifications.
-   */
-  public static function emails() {
-    $emails = [
-      'registration_active' => new TranslatableMarkup('Registration active'),
-      'registration_canceled' => new TranslatableMarkup('Registration canceled'),
-      'registration_waitlisted' => new TranslatableMarkup('Registration waitlisted'),
-      'registration_unwaitlisted' => new TranslatableMarkup('Registration unwaitlisted'),
-    ];
-
-    \Drupal::moduleHandler()->alter('intercept_registration_emails', $emails);
-
-    return $emails;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function previewFromTemplate(NodeInterface $node) {

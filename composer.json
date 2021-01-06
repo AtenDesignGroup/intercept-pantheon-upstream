@@ -12,9 +12,9 @@
   "require": {
     "composer/installers": "^1.0.20",
     "rvtraveller/qs-composer-installer": "^1.1",
-    "cweagans/composer-patches": "^1.0",
+    "cweagans/composer-patches": "^1.7.0",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core-recommended": "^8.8",
+    "drupal/core-recommended": "^8.9.11",
     "drupal/intercept_profile": "1.x-dev",
     "pantheon-systems/drupal-integrations": "^8",
     "pantheon-systems/quicksilver-pushback": "^2",
@@ -98,10 +98,17 @@
     },
     "patches": {
       "drupal/addtocalendar": {
-        "Issue #3092765: Fix configuration": "https://www.drupal.org/files/issues/2019-11-06/addtocalendar-config.patch"
+        "Fix configuration": "https://www.drupal.org/files/issues/2020-05-06/schema-add-to-calender-config-3092765-6.patch"
       },
-      "drupal/components": {
-        "Issue #3054764: Default configuration is invalid": "https://www.drupal.org/files/issues/2019-05-15/3054764.patch"
+      "drupal/core": {
+        "JSON:API returns a CacheableResponseInterface instance for non-cacheable methods; causes unnecessary exceptions.": "https://www.drupal.org/files/issues/2020-03-11/jsonapi-3072076-60.patch",
+        "Issue #3022864: Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch"
+      },
+      "drupal/csv_serialization": {
+        "Unable to Override Headers/Labels with hook_views_pre_render(). Used in export by age group": "https://www.drupal.org/files/issues/2019-10-10/3087166-csv_serialization-8.x-2.x-dev-views-pre-render-alter-headers.patch"
+      },
+      "drupal/field_group": {
+        "Resolves PHP notices on My Account Settings form": "https://www.drupal.org/files/issues/2020-06-15/3059614-37.patch"
       }
     }
   }

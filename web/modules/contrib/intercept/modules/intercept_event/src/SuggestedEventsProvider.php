@@ -193,19 +193,24 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
   /**
    * Gets the future events query.
    *
-   * @return \Drupal\intercept_events\SuggestedEventsQuery
+   * @return \Drupal\intercept_event\SuggestedEventsQuery
    *   The future events query.
    */
   protected function futureEventsQuery() {
     $node = $this->entityTypeManager->getDefinition('node');
     $current_date = $this->currentDate()->setTimezone(new \DateTimeZone('UTC'));
     $query = new SuggestedEventsQuery($node, 'AND', \Drupal::service('database'), ['Drupal\Core\Entity\Query\Sql']);
-    return $query
-      ->condition('type', 'event', '=')
+    
+    $query->condition('type', 'event', '=')
       ->condition('field_date_time', $current_date->format('c'), '>=')
       ->condition('status', 1, '=')
       ->condition('field_event_designation', 'events', '=')
       ->range(0, 100);
+    $event_fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', 'event');
+    if (array_key_exists('field_event_status', $event_fields)) {
+      $query->condition('field_event_status', 'canceled', '!=');
+    }
+    return $query;
   }
 
   /**

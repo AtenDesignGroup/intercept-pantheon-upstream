@@ -10,9 +10,9 @@
     background-color: #4c4d4f; }
 
 .messages--warning {
-  background-color: #fff6e9; }
+  background-color: #faebe6; }
   .messages--warning .messages__icon {
-    background-color: #ffa726; }
+    background-color: #D13400; }
 
 .messages--error {
   background-color: #feeceb; }

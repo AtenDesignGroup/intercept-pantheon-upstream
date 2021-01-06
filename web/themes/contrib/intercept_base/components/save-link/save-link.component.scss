@@ -4,7 +4,7 @@
   @include fs(micro);
   @include lh(-1);
   align-items: center;
-  color: $gray-50;
+  color: $gray-30;
   display: flex;
   font-weight: $fw-bold;
   letter-spacing: (2 / 16) * 1em;
@@ -15,7 +15,7 @@
 
   &:hover,
   &:focus {
-    color: $gray-20;
+    color: $gray-10;
   }
 
   &__star {

@@ -4,16 +4,22 @@ namespace Drupal\intercept_room_reservation\Controller;
 
 use Drupal\Component\Utility\Xss;
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\OpenOffCanvasDialogCommand;
+use Drupal\Core\Ajax\SetDialogTitleCommand;
+use Drupal\Core\Ajax\AjaxHelperTrait;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Link;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
 use Drupal\intercept_core\ReservationManagerInterface;
+use Drupal\intercept_room_reservation\Entity\RoomReservation;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
-use Drupal\intercept_room_reservation\Form\RoomReservationAgreementForm;
 use Drupal\intercept_room_reservation\Form\RoomReservationAvailabilityForm;
 use Drupal\jsonapi\Resource\JsonApiDocumentTopLevel;
 use Drupal\node\NodeInterface;
@@ -28,6 +34,8 @@ use Symfony\Component\HttpFoundation\Request;
  *  Returns responses for Room reservation routes.
  */
 class RoomReservationController extends ControllerBase implements ContainerInjectionInterface {
+
+  use AjaxHelperTrait;
 
   /**
    * The reservation manager.
@@ -44,11 +52,20 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   protected $tempStoreFactory;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * Create a new RoomReservationController.
    */
-  public function __construct(ReservationManagerInterface $reservation_manager, PrivateTempStoreFactory $temp_store_factory) {
+  public function __construct(ReservationManagerInterface $reservation_manager, PrivateTempStoreFactory $temp_store_factory, EntityDisplayRepositoryInterface $entity_display_repository, AccountInterface $current_user) {
     $this->reservationManager = $reservation_manager;
     $this->tempStoreFactory = $temp_store_factory;
+    $this->entityDisplayRepository = $entity_display_repository;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -57,7 +74,9 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('intercept_core.reservation.manager'),
-      $container->get('user.private_tempstore')
+      $container->get('user.private_tempstore'),
+      $container->get('entity_display.repository'),
+      $container->get('current_user')
     );
   }
 
@@ -71,12 +90,224 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    *   Return Room reservation page.
    */
   public function reserve(Request $request) {
-    $build = [];
-    $build['#attached']['library'][] = 'intercept_room_reservation/reserveRoom';
-    $build['#markup'] = '';
-    $build['intercept_room_reserve']['#markup'] = '<div id="reserveRoomRoot"></div>';
+    $room_reservation_settings = \Drupal::config('intercept_room_reservation.settings');
+    // Add customer room reservation limit.
+    $limit = $room_reservation_settings->get('reservation_limit', 0);
+    // Add room reservation agreement text.
+    $agreement_text = $room_reservation_settings->get('agreement_text', '');
+
+    // Add customer advanced limit.
+    $advanced_limit = $room_reservation_settings->get('advanced_reservation_limit', 0);
+
+    // Add last reservation before closing value (number of minutes).
+    $last_reservation_before_closing = $room_reservation_settings->get('last_reservation_before_closing', 15);
+
+    // Add customer barred message.
+    $reservation_barred_text = $room_reservation_settings->get('reservation_barred_text');
+
+    // Add publicize field.
+    $reservation_fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('room_reservation', 'room_reservation');
+    if (array_key_exists('field_publicize', $reservation_fields)) {
+      $publicize_description = $reservation_fields['field_publicize']->getDescription();
+    }
+
+    // Add default location.
+    $default_locations = [];
+    $customer_barred = FALSE;
+    if ($this->currentUser->isAuthenticated()) {
+      $user = $this->entityTypeManager()->getStorage('user')->load($this->currentUser->id());
+      $customer = $this->entityTypeManager()
+        ->getStorage('profile')
+        ->loadByProperties([
+          'type' => 'customer',
+          'uid' => $this->currentUser->id(),
+        ]);
+      if (!empty($customer)) {
+        $customer = reset($customer);
+        // See if the customer is allowed to make reservations or is barred.
+        $customer_barred = $customer->get('field_room_reservation_barred')->getString();
+        $customer_barred = ($customer_barred === '1') ? TRUE : FALSE;
+      }
+
+      if ($reservations = $this->reservationManager->getReservationsByUser('room', $user)) {
+        if (!empty($reservations)) {
+          $last_reservation = reset($reservations);
+          // First, look for the last room reservation made.
+          if ($last_reservation = reset($reservations)) {
+            $last_room = $last_reservation->field_room->entity;
+            $last_location = $last_room->field_location->entity;
+
+            if (!empty($last_location)) {
+              $default_locations = [$last_location->uuid()];
+            }
+          }
+        }
+      }
+      else {
+        // If no reservation, get the preferred locations.
+        if (!empty($customer)) {
+          foreach ($customer->get('field_preferred_location')->referencedEntities() as $location) {
+            if ($location->field_branch_location->value) {
+              $default_locations[] = $location->uuid();
+            }
+          }
+        }
+      }
+    }
+    $build = [
+      'intercept_room_reserve' => [
+        '#markup' => '<div id="reserveRoomRoot"></div>',
+      ],
+      '#attached' => [
+        'library' => [
+          'intercept_room_reservation/reserveRoom',
+        ],
+        'drupalSettings' => [
+          'intercept' => [
+            'user' => [
+              'barred' => $customer_barred,
+            ],
+            'room_reservations' => [
+              'agreement_text' => $agreement_text['value'],
+              'customer_advanced_limit' => $advanced_limit,
+              'customer_advanced_text' => $advanced_limit > 0 ? $this->t('Reservations may be made up to @limit days in advance', ['@limit' => $advanced_limit]) : '',
+              'customer_limit' => $limit,
+              'default_locations' => $default_locations,
+              'field_publicize' => [
+                'description' => $publicize_description ?: '',
+              ],
+              'last_reservation_before_closing' => $last_reservation_before_closing,
+              'reservation_barred_text' => $reservation_barred_text['value'],
+            ],
+          ],
+        ],
+      ],
+    ];
 
     return $build;
+  }
+
+  /**
+   * Room Reservation Scheduler.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request object.
+   *
+   * @return array
+   *   Return room reservation scheduler page.
+   */
+  public function scheduler(Request $request) {
+    $build = [
+      '#theme' => 'room_reservation_scheduler',
+    ];
+
+    $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationScheduler';
+    $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationMediator';
+    $build['#content'] = [
+      'intercept_room_reservation_scheduler' => [
+        '#markup' => '<div id="roomReservationSchedulerRoot"></div>',
+      ],
+    ];
+
+    $statuses = [
+      'requested',
+      'approved',
+      'selected',
+    ];
+
+    $build['#content']['status_legend'] = [
+      '#theme' => 'intercept_reservation_status_legend',
+      '#statuses' => [],
+    ];
+
+    foreach ($statuses as $status) {
+      $build['#content']['status_legend']['#statuses'][$status] = [
+        '#theme' => 'intercept_reservation_status',
+        '#status' => $status,
+      ];
+    }
+
+    return $build;
+  }
+
+  /**
+   * Custom room reservation add form.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request object.
+   */
+  public function add(Request $request) {
+    $config = $this->config('intercept_room_reservation.settings');
+    $form_mode = $config->get('off_canvas_form_mode') ? $config->get('off_canvas_form_mode') : 'default';
+
+    /** @var \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $room_reservation */
+    $room_reservation = RoomReservation::create();
+    $values = $request->query->get('values');
+
+    // The form values can be preset in the request.
+    if (!empty($values)) {
+      // Populate the room value.
+      if (!empty($values['room'])) {
+        $room_reservation->field_room->target_id = $room_reservation['room'];
+      }
+      // @TODO: Populate the date values.
+      // Currently the values get updated when the dialog loads
+    }
+
+    $form = \Drupal::service('entity.form_builder')->getForm($room_reservation, $form_mode);
+    $build = [
+      'form' => $form,
+    ];
+
+    $response = new AjaxResponse();
+    $action = $request->get('action');
+
+    switch ($action) {
+      case 'replace':
+        $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
+        $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
+        break;
+
+      default:
+        $response->addCommand(new OpenOffCanvasDialogCommand('Add Reservation', $build, $request->get('dialogOptions', [])));
+        break;
+    }
+
+    return $response;
+  }
+
+  /**
+   * Custom room reservation edit form.
+   *
+   * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $room_reservation
+   *   A Room reservation object.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request object.
+   */
+  public function edit(RoomReservationInterface $room_reservation, Request $request) {
+    $config = $this->config('intercept_room_reservation.settings');
+    $form_mode = $config->get('off_canvas_form_mode') ? $config->get('off_canvas_form_mode') : 'default';
+
+    $form = \Drupal::service('entity.form_builder')->getForm($room_reservation, $form_mode);
+    $build = [
+      'form' => $form,
+    ];
+
+    $response = new AjaxResponse();
+    $action = $request->get('action');
+
+    switch ($action) {
+      case 'replace':
+        $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
+        $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
+        break;
+
+      default:
+        $response->addCommand(new OpenOffCanvasDialogCommand('Edit Reservation', $build, $request->get('dialogOptions')));
+        break;
+    }
+
+    return $response;
   }
 
   /**
@@ -101,10 +332,10 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   }
 
   /**
-   * Displays a Room reservation  revision.
+   * Displays a Room reservation revision.
    *
    * @param int $room_reservation_revision
-   *   The Room reservation  revision ID.
+   *   The Room reservation revision ID.
    *
    * @return array
    *   An array suitable for drupal_render().
@@ -117,10 +348,10 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   }
 
   /**
-   * Page title callback for a Room reservation  revision.
+   * Page title callback for a Room reservation revision.
    *
    * @param int $room_reservation_revision
-   *   The Room reservation  revision ID.
+   *   The Room reservation revision ID.
    *
    * @return string
    *   The page title.
@@ -134,7 +365,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    * Generates an overview table of older revisions of a Room reservation .
    *
    * @param \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $room_reservation
-   *   A Room reservation  object.
+   *   A Room reservation object.
    *
    * @return array
    *   An array as expected by drupal_render().
@@ -368,7 +599,9 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       $result = $manager->availability([
         'start' => $params['start'],
         'end' => $params['end'],
-        'duration' => $params['duration'],
+        'exclude' => isset($params['exclude']) ? $params['exclude'] : NULL,
+        'exclude_uuid' => isset($params['exclude_uuid']) ? $params['exclude_uuid'] : NULL,
+        'duration' => isset($params['duration']) ? $params['duration'] : NULL,
         'rooms' => $rooms,
         'debug' => !empty($params['debug']),
       ]);

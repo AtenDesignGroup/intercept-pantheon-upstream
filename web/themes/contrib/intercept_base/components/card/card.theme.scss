@@ -9,6 +9,12 @@
   background: $gray-80;
 }
 
+.card--registration {
+  .card__footer {
+    padding-top: rem(20px);
+  }
+}
+
 .card__content {
   padding: 2rem;
 }
@@ -48,12 +54,7 @@
   }
 
   .card__content {
-    display: flex;
-    flex-grow: 1;
-    height: calc(100% - 2rem);
-    min-height: 0;
     padding: rem(20px);
-    flex-direction: column;
 
     @include bp(large) {
       padding: rem(50px);
@@ -61,8 +62,6 @@
   }
 
   .card__footer {
-    margin-top: auto;
-
     a:not([class]) {
       @include fs(x-small);
       letter-spacing: rem(1px);

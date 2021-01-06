@@ -59,26 +59,10 @@
 }
 
 .print-legend {
-  display: flex;
-  flex-wrap: wrap;
-
-  &:not(:first-child) {
-    @include spacing(margin-top, tight);
+  &__item {
+    @include fs(tiny);
+    @include spacing(margin-bottom, compact);
+    line-height: lh(1);
+    white-space: nowrap;
   }
-}
-
-.print-legend__item {
-  @include fs(micro);
-  @include spacing(margin-bottom, compact);
-  line-height: lh(0);
-  white-space: nowrap;
-
-  &:not(:last-child) {
-    margin-right: 3em;
-  }
-}
-
-.print-legend__item-abbv {
-  font-weight: $fw-bold;
-  margin-right: .5em;
 }

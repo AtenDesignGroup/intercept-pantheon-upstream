@@ -2,6 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_form_mode.event_recurrence.events
     - core.entity_form_mode.media.simple
     - field.field.node.event.field_add_to_cal
     - field.field.node.event.field_attendees
@@ -14,6 +15,7 @@ dependencies:
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_status
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
@@ -45,9 +47,9 @@ third_party_settings:
   field_group:
     group_attendees:
       children:
+        - field_must_register
         - field_capacity_max
         - field_event_user_reg_max
-        - field_must_register
         - field_event_register_period
         - field_has_waitlist
         - field_waitlist_max
@@ -55,11 +57,11 @@ third_party_settings:
       weight: 13
       format_type: fieldset
       format_settings:
+        description: ''
         id: ''
         classes: ''
-        description: ''
         required_fields: false
-      label: Attendees
+      label: Registration
       region: content
     group_logistics:
       children:
@@ -132,7 +134,7 @@ content:
     type: options_select
     region: content
   field_capacity_max:
-    weight: 18
+    weight: 21
     settings:
       placeholder: ''
     third_party_settings: {  }
@@ -157,7 +159,7 @@ content:
     type: options_buttons
     region: content
   field_event_register_period:
-    weight: 21
+    weight: 23
     settings: {  }
     third_party_settings: {  }
     type: daterange_default
@@ -168,15 +170,17 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_event_status:
+    weight: 27
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
   field_event_tags:
     weight: 20
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
+    settings: {  }
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+    type: options_select
     region: content
   field_event_type:
     weight: 14
@@ -191,7 +195,7 @@ content:
     type: options_select
     region: content
   field_event_user_reg_max:
-    weight: 19
+    weight: 22
     settings:
       placeholder: ''
     third_party_settings: {  }
@@ -205,7 +209,7 @@ content:
     type: boolean_checkbox
     region: content
   field_has_waitlist:
-    weight: 22
+    weight: 24
     settings:
       display_label: true
     third_party_settings: {  }
@@ -271,7 +275,7 @@ content:
     type: string_textarea
     region: content
   field_waitlist_max:
-    weight: 23
+    weight: 25
     settings:
       placeholder: ''
     third_party_settings: {  }
@@ -354,7 +358,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  event_recurrence: true
   field_attendees: true
   field_evanced_id: true
   field_event_is_template: true

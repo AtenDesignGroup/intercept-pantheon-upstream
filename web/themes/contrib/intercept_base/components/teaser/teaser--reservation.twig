@@ -5,7 +5,7 @@
 {{ attach_library('intercept_base/teaser') }}
 
 {% set modifiers = modifiers|default([])|merge(['reservation', image ? 'has-image' : 'no-image']) %}
-<{{ tag|default('article') }} {{ component.attributes('teaser', modifiers, attr) }}>
+<{{ tag|default('article') }} {{ component.attributes('teaser', modifiers, attributes) }}>
   {% if image %}
   <div class="teaser__image">
     {% if title_url %}

@@ -65,6 +65,14 @@ intercept_core.admin_permissions:
   requirements:
     _permission: 'administer permissions'
 
+intercept_core.api.user_email_exists:
+  path: '/api/user/email-exists'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\UserAccount::userEmailExistsApi'
+    _title: 'Search User by Email'
+  requirements:
+    _access: 'TRUE'
+
 intercept_core.api.customer_search:
   path: '/api/customer/search'
   defaults:

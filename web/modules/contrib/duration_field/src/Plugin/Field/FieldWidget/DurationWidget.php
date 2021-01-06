@@ -12,7 +12,7 @@ use Drupal\duration_field\Service\DurationServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Creates a default widget to output a duration field.
+ * Widget for inputting durations.
  *
  * @FieldWidget(
  *   id = "duration_widget",
@@ -44,13 +44,20 @@ class DurationWidget extends WidgetBase implements WidgetInterface, ContainerFac
    *   The field settings.
    * @param array $third_party_settings
    *   Third party settings.
-   * @param \Drupal\duration_field\Service\DurationServiceInterface $durationService
+   * @param \Drupal\duration_field\Service\DurationServiceInterface $duration_service
    *   The duration service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, DurationServiceInterface $durationService) {
+  public function __construct(
+    $plugin_id,
+    $plugin_definition,
+    FieldDefinitionInterface $field_definition,
+    array $settings,
+    array $third_party_settings,
+    DurationServiceInterface $duration_service
+  ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
-    $this->durationService = $durationService;
+    $this->durationService = $duration_service;
   }
 
   /**
@@ -70,90 +77,45 @@ class DurationWidget extends WidgetBase implements WidgetInterface, ContainerFac
   /**
    * {@inheritdoc}
    */
-  public static function defaultSettings() {
-    return [
-      'duration' => '',
-    ] + parent::defaultSettings();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function settingsForm(array $form, FormStateInterface $form_state) {
-    $element['duration'] = [
-      '#type' => 'duration',
-      '#title' => $this->t('Duration'),
-      '#granularity' => $this->getGranularity(),
-      '#default_value' => $this->getSetting('duration'),
-      '#element_validate' => [
-        [$this, 'settingsFormValidate'],
-      ],
-    ];
-
-    return $element;
-  }
-
-  /**
-   * Validate the submitted settings.
-   */
-  public function settingsFormValidate($element, FormStateInterface $form_state) {
-    $duration = $form_state->getValue($element['#parents']);
-
-    if ($error_message = $this->durationService->checkDurationInvalid($this->durationService->convertValue($duration))) {
-      $form_state->setError($element, $error_message);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function settingsSummary() {
-    $summary = [];
-
-    $summary[] = t('Default Duration: @duration', ['@duration' => $this->getSetting('duration')]);
-
-    return $summary;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
-    $element['value'] = $element + [
+
+    $values = $items[$delta]->getValue();
+    $duration = isset($values['duration']) ? $values['duration'] : FALSE;
+    $seconds = isset($values['seconds']) ? $values['seconds'] : 0;
+
+    $element['duration'] = $element + [
       '#type' => 'duration',
-      '#default_value' => isset($items[$delta]->value) ? $items[$delta]->value : '',
+      '#default_value' => $duration,
       '#description' => $element['#description'],
       '#cardinality' => $this->fieldDefinition->getFieldStorageDefinition()->getCardinality(),
-      '#granularity' => $this->getGranularity(),
+      '#granularity' => $this->getFieldSetting('granularity'),
     ];
+
+    // Set a default value for seconds. This is over written in
+    // ::formElementValidate based on the submitted values for date_interval.
+    $element['seconds'] = [
+      '#type' => 'value',
+      '#value' => $seconds,
+    ];
+
+    // Add submit handler to validate a form element. Values for duration_string
+    // and seconds will be inserted in this submit handler. These will become
+    // the values saved for the field.
+    $element['#element_validate'][] = [$this, 'formElementValidate'];
 
     return $element;
   }
 
   /**
-   * Get the granularlity of field elements for the widget to display.
-   *
-   * @return string
-   *   A comma-separate string containing keys of duration elements to be shown
+   * Validation handler, sets the number of seconds for the submitted duration.
    */
-  private function getGranularity() {
-    $granularity = $this->getFieldSetting('granularity');
-    $time_elements = [
-      'year' => 'y',
-      'month' => 'm',
-      'day' => 'd',
-      'hour' => 'h',
-      'minute' => 'i',
-      'second' => 's',
-    ];
-    $granularity_elements = [];
-    foreach ($time_elements as $key => $time_element) {
-      if ($granularity[$key]) {
-        $granularity_elements[] = $time_element;
-      }
-    }
-    return implode(':', $granularity_elements);
+  public function formElementValidate(array &$element, FormStateInterface $form_state) {
+    // Get the submitted DateInterval.
+    $date_interval = $form_state->getValue($element['duration']['#parents']);
+    // Get the number of seconds for the duration.
+    $seconds = $this->durationService->getSecondsFromDateInterval($date_interval);
+    // Save the values to the form state.
+    $form_state->setValueForElement($element['seconds'], $seconds);
   }
 
 }

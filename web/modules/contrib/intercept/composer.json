@@ -26,7 +26,7 @@
     "drupal/core": "^8.7",
     "drupal/csv_serialization": "^2.0@beta",
     "drupal/date_recur": "^2.0",
-    "drupal/duration_field": "^1.1",
+    "drupal/duration_field": "^2.0",
     "drupal/entity_browser": "^2.0",
     "drupal/entity": "^1.0",
     "drupal/existing_values_autocomplete_widget": "^1.2",

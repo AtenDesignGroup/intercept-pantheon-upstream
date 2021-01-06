@@ -3,35 +3,19 @@ field.field_settings.duration:
   label: 'Duration settings'
   mapping:
     granularity:
-      type: mapping
+      type: granularity
       label: 'Granularity'
-      mapping:
-        year:
-          type: boolean
-          label: 'Year'
-        month:
-          type: boolean
-          label: 'Month'
-        day:
-          type: boolean
-          label: 'Day'
-        hour:
-          type: boolean
-          label: 'Hour'
-        minute:
-          type: boolean
-          label: 'Minute'
-        second:
-          type: boolean
-          label: 'Second'
 
-field.widget.settings.duration_widget:
+field.value.duration:
   type: mapping
-  label: 'Duration widget settings'
+  lable: 'Default value'
   mapping:
     duration:
-      type: string
-      label: 'Duration'
+      type: iso_8601_string
+      label: 'ISO 8601 Duration'
+    seconds:
+      type: integer
+      label: 'Number of seconds the duration represents'
 
 field.formatter.settings.duration_human_display:
   type: mapping

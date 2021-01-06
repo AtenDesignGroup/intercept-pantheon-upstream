@@ -51,8 +51,7 @@ class SelectSingle extends React.Component {
   };
 
   render() {
-    const { options, label, disabled } = this.props;
-    const value = this.props.getValue();
+    const { options, label, disabled, isValid, value } = this.props;
     const checkboxId = id => `select-filter--${id}`;
     const checkboxLabel = (text, id) => (
       <label className="select-filter__checkbox-label" htmlFor={id}>
@@ -78,7 +77,7 @@ class SelectSingle extends React.Component {
             input={<Input id="select-multiple-chip" />}
             // renderValue={(value) => value}
             MenuProps={MenuProps}
-            error={!this.props.isValid()}
+            error={!isValid}
             required={this.props.required}
           >
             {options.map(option => (

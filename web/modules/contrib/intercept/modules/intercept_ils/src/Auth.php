@@ -7,20 +7,12 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Password\PasswordInterface;
 use Drupal\externalauth\Authmap;
 use Drupal\externalauth\ExternalAuth;
-use Drupal\intercept_ils\ILSManager;
 use Drupal\user\UserAuth;
 
 /**
  * Authenticates with Drupal and External Auth.
  */
 class Auth extends UserAuth {
-
-  /**
-   * Validates user authentication credentials.
-   *
-   * @var \Drupal\user\UserAuth
-   */
-  private $userAuth;
 
   /**
    * The ILS client.

@@ -1,0 +1,239 @@
+
+.scheduler,
+.scheduler table {
+  margin: 0;
+}
+
+.scheduler {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.scheduler td {
+  padding: 0;
+}
+
+.scheduler .rbc-time-view {
+  border: 0;
+}
+
+.scheduler__head {
+  border-bottom: 2px solid #D3D8DF !important;
+}
+
+.scheduler__head td,
+.scheduler__head th {
+  border: 0;
+}
+
+.scheduler__scroll-wrapper {
+  box-sizing: content-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.scheduler__scroll-frame {
+  overflow: scroll hidden;
+  width: 100%;
+}
+
+.scheduler__scroll-canvas {
+  box-sizing: border-box;
+}
+
+.scheduler__section--resource {
+  position: relative;
+  width: 300px;
+  overflow-x: hidden;
+}
+
+.scheduler__section--resource table {
+  width: 300px;
+}
+
+.scheduler__section--resource th,
+.scheduler__section--resource td {
+  font-size: 12px;
+  color: #4C4D4F;
+  width: 300px;
+  text-overflow: ellipsis;
+  padding-top: .5em;
+}
+
+@media (min-width: 48em) {
+  .scheduler__section--resource th,
+  .scheduler__section--resource td {
+    font-size: 14px;
+  }
+}
+
+.scheduler__section--divider {
+  border: 1px solid #D3D8DF !important;
+  width: 1px;
+}
+
+.scheduler__timeline-container {
+  position: relative;
+}
+
+.scheduler__timeline {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.scheduler__row {
+  border-bottom: 1px solid  #D3D8DF;
+  height: 50px;
+  overflow: hidden;
+}
+
+.scheduler__row--group > th,
+.scheduler__row--resource > td {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.scheduler__row-inner {
+  position: relative;
+  margin-bottom: -1px;
+}
+
+.scheduler__events-row .rbc-timeslot-group {
+  display: flex;
+  flex: auto;
+  flex-direction: row;
+  justify-content: stretch;
+}
+
+.scheduler__events-row .rbc-timeslot-group .rbc-time-slot {
+  display: flex;
+  flex: auto;
+  flex-direction: row;
+  justify-content: stretch;
+}
+
+.scheduler__events-row .rbc-event,
+.scheduler__events-row .rbc-slot-selection {
+  position: absolute;
+  border: 2px solid white;
+  border-radius: 6px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.scheduler__events-row .rbc-event .rbc-addons-dnd-resize-ew-anchor {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  margin-bottom: auto;
+  margin-top: auto;
+  top: 0;
+}
+
+.scheduler__events-row .rbc-event .rbc-addons-dnd-resize-ew-anchor:first-child {
+  left: -8px;
+}
+
+.scheduler__events-row .rbc-event .rbc-addons-dnd-resize-ew-anchor:last-child {
+  right: -8px;
+}
+
+.scheduler__resource-hours {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  align-items: stretch;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  justify-content: space-between;
+}
+
+.scheduler__resource-hours__block {
+  flex: none;
+  height: 100%;
+}
+
+.scheduler__resource-hours__block--closed {
+  background-color: #7A7D81;
+  flex: none;
+  height: 100%;
+  opacity: .1;
+}
+
+.scheduler__bg {
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 0;
+}
+
+.scheduler__bg > table{
+  height: 100%;
+}
+
+.scheduler__bg--major:not(:first-child) {
+  border-left: 1px solid #D3D8DF;
+}
+
+.scheduler__bg--minor {
+  border-left: 1px dotted #D3D8DF;
+}
+
+.reservation-calendar-event__user {
+  margin-bottom: 0;
+}
+
+.scheduler__group-heading {
+  display: flex;
+  justify-content: stretch;
+  align-items: center;
+}
+
+.scheduler__group-text {
+  flex: auto;
+}
+
+.scheduler__group-toggle {
+  display: inline-block;
+  flex: none;
+  height: 100%;
+  justify-content: center;
+  margin-right: 8px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  text-indent: 2em;
+  white-space: nowrap;
+  width: 2em;
+}
+
+
+.scheduler__group-toggle::after {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  text-indent: 0;
+}
+
+.scheduler__group-toggle[aria-expanded="true"]::after {
+  content: "🔽"
+}
+
+.scheduler__group-toggle[aria-expanded="false"]::after {
+  content: "🔼"
+}
+
+.reservation-calendar-event__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

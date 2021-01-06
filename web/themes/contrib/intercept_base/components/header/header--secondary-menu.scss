@@ -11,7 +11,7 @@
   }
 }
 
-.header__utilities > div {
+.header__utilities .region--secondary-menu {
   background-color: $clr-secondary-dark;
 
   label {
@@ -44,6 +44,12 @@
     flex-direction: row;
     flex-wrap: nowrap;
     position: relative;
+  }
+}
+
+.header__utilities .account-trigger--logged-out ~ .region--secondary-menu {
+  @include bp(none large) {
+    background-color: $gray-80;
   }
 }
 
@@ -95,7 +101,7 @@
   position: absolute;
 
   // Menu Contents
-  ~ div {
+  ~ .region--secondary-menu {
     display: none;
 
     @include bp(large) {
@@ -114,7 +120,7 @@
   }
 
   &:checked {
-    ~ div {
+    ~ .region--secondary-menu {
       display: block;
       opacity: 1;
       overflow-y: auto;
@@ -151,6 +157,7 @@ label[for='account-trigger'].account-trigger--is-staff {
     background-color: $magenta-50;
     transition: background-color $duration $easing;
   }
+
   &:hover {
     @include bp(large) {
       background-color: $magenta-60; // 10% darker than above
@@ -259,7 +266,7 @@ label[for='account-trigger'].account-trigger--logged-out {
     display: none;
   }
 
-  ~ div {
+  ~ .region--secondary-menu {
     background: $gray-80;
 
     @include bp(large) {

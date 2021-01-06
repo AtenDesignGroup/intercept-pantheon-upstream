@@ -3,7 +3,7 @@ import moment from 'moment';
 import compact from 'lodash/compact';
 import forEach from 'lodash/forEach';
 import get from 'lodash/get';
-import find from 'lodash/find';
+import { filter } from 'lodash';
 import flatten from 'lodash/flatten';
 import groupBy from 'lodash/groupBy';
 import map from 'lodash/map';
@@ -119,7 +119,8 @@ export const recordOptions = type =>
     }
     // Else sort alphabetically by title
     else {
-      sorted = sortBy(items, 'data.attributes.title');
+      sorted = sortBy(items, 'data.attributes.title')
+        .filter(item => (get(item, 'data.attributes.status') ? (get(item, 'data.attributes.status') === true) : true));
     }
 
     return sorted.map(toOptions);
@@ -384,7 +385,7 @@ function getRegisterButtonText(mustRegister, statusEvent, cancelAllowed) {
     case 'waitlist':
       return 'Join Waitlist';
     default:
-      return 'register';
+      return 'Register';
   }
 }
 
@@ -423,15 +424,15 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
   }
 
   if (statusEvent === 'expired') {
-    return 'This event has ended';
+    return 'This event has ended.';
   }
 
   if (statusUser === 'active') {
-    return 'You are Registered!';
+    return 'You are registered!';
   }
 
   if (statusUser === 'waitlist') {
-    return 'You are on the waitlist';
+    return 'You are on the waitlist.';
   }
 
   const availableCapacity = getRegistrationRemaining(eventResource);
@@ -450,11 +451,11 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
           return `There are ${availableWaitlist} of ${totalWaitlist} waitlist seats available.`;
       }
     case 'full':
-      return 'Registration is full';
+      return 'Registration is full.';
     case 'closed':
-      return 'Registration is closed';
+      return 'Registration is closed.';
     case 'expired':
-      return 'This event has ended';
+      return 'This event has ended.';
     case 'open':
       switch (availableCapacity) {
         case 0:
@@ -521,26 +522,59 @@ export const eventTypesLabels = peek(eventTypes, 'data.attributes.name');
 //
 export const location = id => state => state[c.TYPE_LOCATION].items[id];
 export const locations = state => state[c.TYPE_LOCATION].items;
+export const locationsArray = state => Object.values(state[c.TYPE_LOCATION].items);
 export const locationsOptions = keyValues(locations, 'data.attributes.title');
 export const locationsLabels = peek(locations, 'data.attributes.title');
+export const locationsAscending = createSelector(locationsArray, items =>
+  items.sort(
+    (a, b) =>
+      (b.data.attributes.title === a.data.attributes.title
+        ? 0
+        : b.data.attributes.title > a.data.attributes.title
+          ? -1
+          : 1),
+  ),
+);
 export const locationHours = id => (state) => {
   const loc = location(id)(state);
   return get(loc, 'data.attributes.field_location_hours') || '';
 };
 export const locationHoursOnDate = (id, date) => (state) => {
   const hours = locationHours(id)(state);
-  const day = moment.tz(date, utils.getUserTimezone).format('d');
-  const daysHours = find(hours, item => item.day === day);
+  const day = parseInt(
+    moment.tz(date, utils.getUserTimezone())
+      .format('d'),
+    10,
+  );
+  const daysHours = filter(hours, value => value.day === day);
+  const startHours = daysHours.map(dayHours => dayHours.starthours);
+  const endHours = daysHours.map(dayHours => dayHours.endhours);
+
   if (daysHours) {
     return {
-      start: daysHours.starthours,
-      end: daysHours.endhours,
+      start: Math.min(...startHours),
+      end: Math.max(...endHours),
     };
   }
   return null;
 };
+export const locationHoursTimesOnDate = (id, date) =>
+  createSelector(locationHoursOnDate(id, date), (hours) => {
+    // Hours are null when location is closed.
+    if (!hours) {
+      return hours;
+    }
 
-// Gets the earliest and lates open hours.
+    const localStart = utils.getDateFromTime(padStart(hours.start, 4, '0'), date);
+    const localEnd = utils.getDateFromTime(padStart(hours.end, 4, '0'), date);
+
+    return {
+      start: utils.localDateToUserDateString(localStart),
+      end: utils.localDateToUserDateString(localEnd),
+    };
+  });
+
+// Gets the earliest and latest open hours.
 // Useful for setting defaults.
 export const locationsOpenHoursLimit = createSelector(locations, (locs) => {
   const hours = flatten(
@@ -566,12 +600,14 @@ export const locationOpenHours = (id, date) =>
         .format('d'),
       10,
     );
-    const dayHours = find(hours, value => value.day === day);
+    const days = filter(hours, value => value.day === day);
+    const startHours = days.map(dayHours => dayHours.starthours);
+    const endHours = days.map(dayHours => dayHours.endhours);
 
-    return dayHours
+    return days.length !== 0
       ? {
-        min: padStart(dayHours.starthours, 4, '0'),
-        max: padStart(dayHours.endhours, 4, '0'),
+        min: padStart(Math.min(...startHours), 4, '0'),
+        max: padStart(Math.max(...endHours), 4, '0'),
       }
       : null;
   });
@@ -581,7 +617,7 @@ export const locationOpenHours = (id, date) =>
 //
 export const room = id => record(getIdentifier(c.TYPE_ROOM, id));
 export const rooms = records(c.TYPE_ROOM);
-export const roomsArray = state => map(state[c.TYPE_ROOM].items, item => item);
+export const roomsArray = state => Object.values(state[c.TYPE_ROOM].items);
 export const roomsOptions = keyValues(rooms, 'data.attributes.title');
 export const roomsLabels = peek(rooms, 'data.attributes.title');
 export const roomsAscending = createSelector(roomsArray, items =>
@@ -662,6 +698,7 @@ function getReservationButtonText(resource) {
 
 export const roomReservation = id => records(c.TYPE_ROOM_RESERVATION, id);
 export const roomReservations = records(c.TYPE_ROOM_RESERVATION);
+export const roomReservationsArray = createSelector(roomReservations, Object.values);
 
 export const reservationStatusText = (id, type) =>
   createSelector(record({ id, type }), getReservationStatusText);

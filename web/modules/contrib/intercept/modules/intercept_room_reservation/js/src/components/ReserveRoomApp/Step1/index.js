@@ -495,19 +495,16 @@ const mapDispatchToProps = dispatch => ({
   fetchRooms: (options) => {
     dispatch(api[c.TYPE_ROOM].fetchAll(options));
   },
-  fetchLocations: (options) => {
-    dispatch(api[c.TYPE_LOCATION].fetchAll(options));
-  },
   fetchUser: (options) => {
     dispatch(api[c.TYPE_USER].fetchAll(options));
   },
 });
 
 ReserveRoomStep1.propTypes = {
+  availability: PropTypes.object,
   filters: PropTypes.object,
   rooms: PropTypes.arrayOf(Object).isRequired,
   roomsLoading: PropTypes.bool.isRequired,
-  fetchLocations: PropTypes.func.isRequired,
   fetchRooms: PropTypes.func.isRequired,
   onViewRoomDetail: PropTypes.func.isRequired,
   onChangeFilters: PropTypes.func.isRequired,
@@ -516,6 +513,7 @@ ReserveRoomStep1.propTypes = {
 };
 
 ReserveRoomStep1.defaultProps = {
+  availability: {},
   filters: {},
 };
 

@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_status
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
@@ -183,6 +184,11 @@ content:
     settings: {  }
     third_party_settings: {  }
     region: content
+  flag_subscribe_node:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   image_primary:
     weight: 117
     label: above
@@ -207,6 +213,7 @@ hidden:
   field_evanced_id: true
   field_event_designation: true
   field_event_is_template: true
+  field_event_status: true
   field_event_type_primary: true
   field_event_user_reg_max: true
   field_keywords: true

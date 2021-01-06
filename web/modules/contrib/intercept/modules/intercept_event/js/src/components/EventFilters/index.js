@@ -15,7 +15,6 @@ import interceptClient from 'interceptClient';
 
 // Components
 import CurrentFilters from 'intercept/CurrentFilters';
-import InputCheckbox from 'intercept/Input/InputCheckbox';
 import InputDate from 'intercept/Input/InputDate';
 import KeywordFilter from 'intercept/KeywordFilter';
 import SelectResource from 'intercept/SelectResource';
@@ -26,7 +25,7 @@ const { constants } = interceptClient;
 const c = constants;
 
 const DESIGNATION = 'designation';
-const DESIGNATION_OPTIONS = map(get(drupalSettings, 'intercept.events.field_event_designation.options', {}), (value, key) => ({key, value}));
+const DESIGNATION_OPTIONS = map(get(drupalSettings, 'intercept.events.field_event_designation.options', {}), (value, key) => ({ key, value }));
 
 
 const labels = {
@@ -88,64 +87,69 @@ class EventFilters extends PureComponent {
     return (
       <div className={`filters filters--${view === 'calendar' ? '4up' : '3up'}`}>
         <h3 className="filters__heading">Filter</h3>
-        <Formsy className="filters__inputs">
-          <KeywordFilter
-            handleChange={this.onInputChange(c.KEYWORD)}
-            value={filters[c.KEYWORD]}
-            name={c.KEYWORD}
-            label={labels[c.KEYWORD]}
-          />
-          <SelectResource
-            multiple
-            type={c.TYPE_LOCATION}
-            name={c.TYPE_LOCATION}
-            handleChange={this.onInputChange(c.TYPE_LOCATION)}
-            value={filters[c.TYPE_LOCATION]}
-            label={labels[c.TYPE_LOCATION]}
-          />
-          <SelectResource
-            multiple
-            type={c.TYPE_EVENT_TYPE}
-            name={c.TYPE_EVENT_TYPE}
-            handleChange={this.onInputChange(c.TYPE_EVENT_TYPE)}
-            value={filters[c.TYPE_EVENT_TYPE]}
-            label={labels[c.TYPE_EVENT_TYPE]}
-          />
-          <SelectResource
-            multiple
-            type={c.TYPE_AUDIENCE}
-            name={c.TYPE_AUDIENCE}
-            handleChange={this.onInputChange(c.TYPE_AUDIENCE)}
-            value={filters[c.TYPE_AUDIENCE]}
-            label={labels[c.TYPE_AUDIENCE]}
-          />
-          {showDate && (
-            <InputDate
-              handleChange={this.onDateStartChange}
-              defaultValue={null}
-              value={filters[c.DATE_START]}
-              name={c.DATE_START}
-              label={labels[c.DATE_START]}
+        <Formsy className="filters__inner filters__inputs">
+          <div className="filters__inputs-inner">
+            <KeywordFilter
+              handleChange={this.onInputChange(c.KEYWORD)}
+              value={filters[c.KEYWORD]}
+              name={c.KEYWORD}
+              label={labels[c.KEYWORD]}
             />
-          )}
-          {showDate && (
-            <InputDate
-              handleChange={this.onDateEndChange}
-              defaultValue={null}
-              value={filters[c.DATE_END]}
-              name={c.DATE_END}
-              minDate={filters[c.DATE_START] || undefined}
-              label={labels[c.DATE_END]}
+            <SelectResource
+              multiple
+              labels
+              type={c.TYPE_LOCATION}
+              name={c.TYPE_LOCATION}
+              handleChange={this.onInputChange(c.TYPE_LOCATION)}
+              value={filters[c.TYPE_LOCATION]}
+              label={labels[c.TYPE_LOCATION]}
             />
-          )}
-          <RadioGroup
-            ariaLabel="Event Designation"
-            checked={filters[DESIGNATION]}
-            onChange={(value) => {this.onFilterChange(DESIGNATION, value);}}
-            value={filters[DESIGNATION]}
-            name={DESIGNATION}
-            options={DESIGNATION_OPTIONS}
-          />
+            <SelectResource
+              multiple
+              labels
+              type={c.TYPE_EVENT_TYPE}
+              name={c.TYPE_EVENT_TYPE}
+              handleChange={this.onInputChange(c.TYPE_EVENT_TYPE)}
+              value={filters[c.TYPE_EVENT_TYPE]}
+              label={labels[c.TYPE_EVENT_TYPE]}
+            />
+            <SelectResource
+              multiple
+              labels
+              type={c.TYPE_AUDIENCE}
+              name={c.TYPE_AUDIENCE}
+              handleChange={this.onInputChange(c.TYPE_AUDIENCE)}
+              value={filters[c.TYPE_AUDIENCE]}
+              label={labels[c.TYPE_AUDIENCE]}
+            />
+            {showDate && (
+              <InputDate
+                handleChange={this.onDateStartChange}
+                defaultValue={null}
+                value={filters[c.DATE_START]}
+                name={c.DATE_START}
+                label={labels[c.DATE_START]}
+              />
+            )}
+            {showDate && (
+              <InputDate
+                handleChange={this.onDateEndChange}
+                defaultValue={null}
+                value={filters[c.DATE_END]}
+                name={c.DATE_END}
+                minDate={filters[c.DATE_START] || undefined}
+                label={labels[c.DATE_END]}
+              />
+            )}
+            <RadioGroup
+              ariaLabel="Event Designation"
+              checked={filters[DESIGNATION]}
+              onChange={(value) => {this.onFilterChange(DESIGNATION, value);}}
+              value={filters[DESIGNATION]}
+              name={DESIGNATION}
+              options={DESIGNATION_OPTIONS}
+            />
+          </div>
         </Formsy>
         <div className="filters__current">
           <CurrentFilters

@@ -104,7 +104,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(interceptClient.actions.edit(data, c.TYPE_ROOM_RESERVATION, this.props.id));
     dispatch(interceptClient.api[c.TYPE_ROOM_RESERVATION].sync(this.props.id));
     this.setState({ open: false });
-  }
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ButtonActions);

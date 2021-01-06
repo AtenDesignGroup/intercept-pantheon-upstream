@@ -34,7 +34,7 @@ function intercept_ils_entity_bundle_field_info(EntityTypeInterface $entity_type
 
   if ($entity_type->id() == 'node' && $bundle == 'location') {
     $fields['ils'] = BaseFieldDefinition::create('ils_mapping')
-      ->setLabel(t('ILS Mapping'))
+      ->setLabel(new TranslatableMarkup('ILS Mapping'))
       ->setComputed(TRUE)
       ->setCardinality(1)
       ->setDefaultValue(FALSE);
@@ -42,11 +42,43 @@ function intercept_ils_entity_bundle_field_info(EntityTypeInterface $entity_type
 
   if ($entity_type->id() == 'user') {
     $fields['ils'] = BaseFieldDefinition::create('ils_mapping')
-      ->setLabel(t('ILS Mapping'))
+      ->setLabel(new TranslatableMarkup('ILS Mapping'))
       ->setComputed(TRUE)
       ->setCardinality(1)
       ->setDefaultValue(FALSE);
   }
 
   return $fields;
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function intercept_ils_page_attachments(array &$attachments) {
+  $current_user = \Drupal::currentUser();
+  $authmap = \Drupal::service('externalauth.authmap');
+  $plugin_id = \Drupal::config('intercept_ils.settings')->get('intercept_ils_plugin', '');
+  if (!empty($plugin_id) && $authdata = $authmap->getAuthdata($current_user->id(), $plugin_id)) {
+    $authdata_data = unserialize($authdata['data']);
+    if (isset($authdata_data)) {
+      $attachments['#attached']['drupalSettings']['intercept']['user']['telephone'] = $authdata_data->PhoneNumber;
+      $attachments['#attached']['drupalSettings']['intercept']['user']['email'] = $authdata_data->EmailAddress;
+    }
+  }
+
+  $attachments['#cache']['contexts'][] = 'user';
+  $attachments['#cache']['tags'][] = 'user:' . $current_user->id();
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function intercept_ils_entity_extra_field_info() {
+  $extra['profile']['customer']['form']['pin'] = [
+    'label' => new TranslatableMarkup('PIN'),
+    'description' => new TranslatableMarkup('ILS PIN'),
+    'visible' => FALSE,
+  ];
+
+  return $extra;
 }

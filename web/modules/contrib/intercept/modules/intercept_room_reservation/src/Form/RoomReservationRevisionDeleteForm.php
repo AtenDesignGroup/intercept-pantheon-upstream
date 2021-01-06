@@ -29,7 +29,7 @@ class RoomReservationRevisionDeleteForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $RoomReservationStorage;
+  protected $roomReservationStorage;
 
   /**
    * The database connection.
@@ -47,7 +47,7 @@ class RoomReservationRevisionDeleteForm extends ConfirmFormBase {
    *   The database connection.
    */
   public function __construct(EntityStorageInterface $entity_storage, Connection $connection) {
-    $this->RoomReservationStorage = $entity_storage;
+    $this->roomReservationStorage = $entity_storage;
     $this->connection = $connection;
   }
 
@@ -55,9 +55,9 @@ class RoomReservationRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $entity_manager = $container->get('entity_type.manager');
+    $entity_type_manager = $container->get('entity_type.manager');
     return new static(
-      $entity_manager->getStorage('room_reservation'),
+      $entity_type_manager->getStorage('room_reservation'),
       $container->get('database')
     );
   }
@@ -94,7 +94,7 @@ class RoomReservationRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $room_reservation_revision = NULL) {
-    $this->revision = $this->RoomReservationStorage->loadRevision($room_reservation_revision);
+    $this->revision = $this->roomReservationStorage->loadRevision($room_reservation_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -104,7 +104,7 @@ class RoomReservationRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->RoomReservationStorage->deleteRevision($this->revision->getRevisionId());
+    $this->roomReservationStorage->deleteRevision($this->revision->getRevisionId());
 
     $this->logger('content')->notice('Room reservation: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
     \Drupal::messenger()->addMessage(t('Revision from %revision-date of Room reservation %title has been deleted.', ['%revision-date' => \Drupal::service('date.formatter')->format($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));

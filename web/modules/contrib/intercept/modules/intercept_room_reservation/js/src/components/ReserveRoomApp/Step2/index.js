@@ -25,6 +25,7 @@ import { Button } from '@material-ui/core';
 
 const { constants, select, utils } = interceptClient;
 const c = constants;
+const lastReservationBeforeClosing = get(drupalSettings, 'intercept.room_reservations.last_reservation_before_closing', '15');
 
 class ReserveRoomStep2 extends React.Component {
   constructor(props) {
@@ -142,7 +143,7 @@ class ReserveRoomStep2 extends React.Component {
     return hours
       ? {
         min: hours.min,
-        max: (hours.max.endsWith('00') ? String(hours.max - 55) : String(hours.max - 15)),
+        max: (hours.max.endsWith('00') ? String(hours.max - 40 - lastReservationBeforeClosing) : String(hours.max - lastReservationBeforeClosing)),
       }
       : {
         min: null,

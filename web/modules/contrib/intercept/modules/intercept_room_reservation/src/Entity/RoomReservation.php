@@ -2,6 +2,7 @@
 
 namespace Drupal\intercept_room_reservation\Entity;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -20,21 +21,21 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *   label = @Translation("Room reservation"),
  *   handlers = {
  *     "storage" = "Drupal\intercept_room_reservation\RoomReservationStorage",
- *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "view_builder" = "Drupal\intercept_room_reservation\RoomReservationViewBuilder",
  *     "list_builder" = "Drupal\intercept_room_reservation\RoomReservationListBuilder",
  *     "views_data" = "Drupal\intercept_room_reservation\Entity\RoomReservationViewsData",
  *     "translation" = "Drupal\intercept_room_reservation\RoomReservationTranslationHandler",
  *
  *     "form" = {
  *       "default" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
- *       "reserve" = "Drupal\intercept_room_reservation\Form\RoomReservationReserveForm",
  *       "add" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "edit" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "delete" = "Drupal\intercept_room_reservation\Form\RoomReservationDeleteForm",
- *       "cancel" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
+ *       "cancel" = "Drupal\intercept_room_reservation\Form\RoomReservationCancelForm",
  *       "approve" = "Drupal\intercept_room_reservation\Form\RoomReservationApproveForm",
  *       "deny" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
  *       "archive" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
+ *       "request" = "Drupal\intercept_room_reservation\Form\RoomReservationUpdateStatusForm",
  *     },
  *     "access" = "Drupal\intercept_room_reservation\RoomReservationAccessControlHandler",
  *     "permission_provider" = "Drupal\intercept_core\ReservationPermissionsProvider",
@@ -64,6 +65,11 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *     "langcode" = "langcode",
  *     "status" = "status",
  *   },
+ *   revision_metadata_keys = {
+ *     "revision_user" = "revision_user",
+ *     "revision_created" = "revision_created",
+ *     "revision_log_message" = "revision_log_message"
+ *   },
  *   links = {
  *     "approve-form" = "/room-reservation/{room_reservation}/approve",
  *     "add-form" = "/room-reservation/add",
@@ -72,6 +78,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *     "cancel-form" = "/room-reservation/{room_reservation}/cancel",
  *     "canonical" = "/room-reservation/{room_reservation}",
  *     "edit-form" = "/room-reservation/{room_reservation}/edit",
+ *     "request-form" = "/room-reservation/{room_reservation}/request",
  *     "deny-form" = "/room-reservation/{room_reservation}/deny",
  *     "delete-form" = "/room-reservation/{room_reservation}/delete",
  *     "delete-multiple-form" = "/room-reservation/delete",
@@ -86,6 +93,13 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  */
 class RoomReservation extends ReservationBase implements RoomReservationInterface {
 
+  // Hard-coded target entity constants.
+  const TARGET_TYPE = 'node';
+  const TARGET_BUNDLE = 'room';
+  const PARENT_FIELD = 'field_room';
+  const RESERVOR_FIELD = 'field_user';
+  const STATUS_FIELD = 'field_status';
+
   /**
    * {@inheritdoc}
    */
@@ -96,8 +110,38 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
   /**
    * {@inheritdoc}
    */
+  public function getParentEntity() {
+    return $this->get(self::PARENT_FIELD)->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParentId() {
+    return $this->get(self::PARENT_FIELD)->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setParentEntity(EntityInterface $parent) {
+    $this->set(self::PARENT_FIELD, $parent);
+
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getReservor() {
+    return $this->get(self::RESERVOR_FIELD) ? $this->get(self::RESERVOR_FIELD)->entity : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function cancel() {
-    $this->set('field_status', 'canceled');
+    $this->set(self::STATUS_FIELD, 'canceled');
     return $this;
   }
 
@@ -105,7 +149,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    * {@inheritdoc}
    */
   public function approve() {
-    $this->set('field_status', 'approved');
+    $this->set(self::STATUS_FIELD, 'approved');
     return $this;
   }
 
@@ -113,7 +157,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    * {@inheritdoc}
    */
   public function request() {
-    $this->set('field_status', 'requested');
+    $this->set(self::STATUS_FIELD, 'requested');
     return $this;
   }
 
@@ -128,7 +172,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    * {@inheritdoc}
    */
   public function deny() {
-    $this->set('field_status', 'denied');
+    $this->set(self::STATUS_FIELD, 'denied');
     return $this;
   }
 
@@ -136,7 +180,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    * {@inheritdoc}
    */
   public function archive() {
-    $this->set('field_status', 'archived');
+    $this->set(self::STATUS_FIELD, 'archived');
     return $this;
   }
 
@@ -148,6 +192,31 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
     $violations = $this->validate();
     $this->__unset('warning');
     return $violations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNotes() {
+    return $this->get('notes')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setNotes($notes) {
+    $this->set('notes', $notes);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function location() {
+    return $this->t('At @location @reservation_type', [
+      '@location' => $this->get('room_location')->entity ? $this->get('room_location')->entity->label() : '',
+      '@reservation_type' => $this->get(self::PARENT_FIELD)->entity ? $this->get(self::PARENT_FIELD)->entity->label() : '',
+    ]);
   }
 
   /**
@@ -173,6 +242,20 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
       ->setTargetEntityTypeId('node')->setTargetBundle('location')
       ->setSetting('target_fields', ['field_room', 'field_location'])
       ->setReadOnly(TRUE);
+
+    $fields['notes'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(new TranslatableMarkup('Reservation notes'))
+      ->setDescription(new TranslatableMarkup('Describe any additional information about this reservation.'))
+      ->setRevisionable(TRUE)
+      ->setDefaultValue('')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'settings' => [
+          'rows' => 4,
+        ],
+      ]);
 
     return $fields;
   }
@@ -215,11 +298,11 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    * Set status based on the room being reserved.
    */
   public function setDefaultStatus() {
-    if (!$this->hasField('field_room')) {
+    if (!$this->hasField(self::PARENT_FIELD)) {
       return;
     }
-    if (!$this->get('field_room')->isEmpty()) {
-      $room = $this->get('field_room')->entity;
+    if (!$this->get(self::PARENT_FIELD)->isEmpty()) {
+      $room = $this->get(self::PARENT_FIELD)->entity;
       $approval_required = $room->field_approval_required->getString();
 
       $current_user = \Drupal::currentUser();
@@ -227,7 +310,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
         $approval_required = FALSE;
       }
 
-      $current_status = $this->get('field_status')->getString();
+      $current_status = $this->get(self::STATUS_FIELD)->getString();
 
       if (!$approval_required && $current_status == 'requested') {
         $this->approve();

@@ -180,16 +180,8 @@ class SelectTime extends React.Component {
     this.options = memoize(this.constructor.getOptions, (...args) => JSON.stringify(args));
 
     this.state = {
-      autocompleteIsOpen: false
+      autocompleteIsOpen: false,
     };
-  }
-
-  componentDidUpdate() {
-    // Force this component to be treated like a controlled component
-    // by updating formsy with passed prop values.
-    if (this.props.value !== this.props.getValue()) {
-      this.props.setValue(this.props.value);
-    }
   }
 
   handleChange = (event, value) => {
@@ -202,9 +194,19 @@ class SelectTime extends React.Component {
   };
 
   render() {
-    const { min, max, step, label, disabled, disabledSpans, disabledExclude } = this.props;
+    const {
+      errorMessage,
+      isValid,
+      min,
+      max,
+      step,
+      label,
+      disabled,
+      disabledSpans,
+      disabledExclude,
+      value,
+    } = this.props;
     const { autocompleteIsOpen } = this.state;
-    const value = this.props.getValue();
     const options = this.options(min, max, step, disabledSpans, disabledExclude);
     const checkboxId = id => `select-filter--${id}`;
     const checkboxLabel = (text, id) => (
@@ -253,15 +255,15 @@ class SelectTime extends React.Component {
                 {...params}
                 aria-describedby="select-time-helper-text"
                 disabled={disabled}
-                error={!this.props.isValid()}
+                error={!isValid}
                 fullWidth
                 required={this.props.required}
               />
             )}
           />
 
-          <FormHelperText id="select-time-helper-text" error={!this.props.isValid()}>
-            {this.props.getErrorMessage()}
+          <FormHelperText id="select-time-helper-text" error={!isValid}>
+            {errorMessage}
           </FormHelperText>
         </FormControl>
       </div>

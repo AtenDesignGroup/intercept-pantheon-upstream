@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import debounce from 'lodash/debounce';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
@@ -204,7 +203,7 @@ class ReserveRoomStep3 extends React.Component {
       return false;
     }
     const isStaff = utils.userIsStaff();
-    const conflictProp = isStaff ? 'has_reservation_conflict' : 'has_open_hours_conflict';
+    const conflictProp = isStaff ? 'has_reservation_conflict' : 'has_conflict';
 
     return availability[conflictProp];
   };

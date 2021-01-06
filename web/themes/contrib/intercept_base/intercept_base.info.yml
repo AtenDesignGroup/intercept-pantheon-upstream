@@ -1,9 +1,8 @@
 name: Intercept Base
 type: theme
-description: Prototype Sub-Theme
+description: Base theme for Intercept sites
 package: intercept_base
 core: 8.x
-base theme: prototype
 
 regions:
   header: Header
@@ -25,6 +24,21 @@ libraries-override:
   addtocalendar/base: intercept_event/eventAddToCalendar
   styleguide/styleguide_css: intercept_base/styleguide
   intercept_core/bigCalendar: intercept_base/bigCalendar
+  core/drupal.dialog.off_canvas:
+    css:
+      base:
+        misc/dialog/off-canvas.reset.css: false
+        misc/dialog/off-canvas.base.css: build/libraries/off-canvas/off-canvas.base.css
+        misc/dialog/off-canvas.theme.css: build/libraries/off-canvas/off-canvas.theme.css
+      component:
+        # misc/dialog/off-canvas.motion.css: build/libraries/off-canvas/off-canvas.motion.css
+        misc/dialog/off-canvas.button.css: false
+        misc/dialog/off-canvas.form.css: build/libraries/off-canvas/off-canvas.form.css
+        # misc/dialog/off-canvas.table.css: build/libraries/off-canvas/off-canvas.table.css
+        # misc/dialog/off-canvas.details.css: build/libraries/off-canvas/off-canvas.details.css
+        # misc/dialog/off-canvas.tabledrag.css: build/libraries/off-canvas/off-canvas.tabledrag.css
+        # misc/dialog/off-canvas.dropbutton.css: build/libraries/off-canvas/off-canvas.dropbutton.css
+        # misc/dialog/off-canvas.layout.css: build/libraries/off-canvas/off-canvas.layout.css
 
 libraries-extend:
   core/drupal.dropbutton:
@@ -43,6 +57,7 @@ libraries-extend:
     - intercept_base/summary
   intercept_event/eventRegister:
     - intercept_base/action-button
+    - intercept_base/card
     - intercept_base/content-list
     - intercept_base/filters
     - intercept_base/loading-indicator
@@ -89,15 +104,16 @@ libraries-extend:
     - intercept_base/content-list
     - intercept_base/filters
     - intercept_base/page-spinner
-    - intercept_base/teaser
     - intercept_base/view-switcher
+  intercept_room_reservation/roomReservationScheduler:
+    - intercept_base/bigCalendarScheduler
   intercept_room_reservation/roomReservationActionButton:
     - intercept_base/action-button
     - intercept_base/loading-indicator
   intercept_event/eventAddToCalendar:
     - intercept_base/action-button
     - intercept_base/addtocalendar
-  addtocaledar/base:
+  addtocalendar/base:
     - intercept_base/action-button
     - intercept_base/addtocalendar
 

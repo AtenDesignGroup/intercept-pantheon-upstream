@@ -35,6 +35,46 @@ export const isUserLoggedIn = () => getUserUid() !== 0;
 // Set default moment timezone.
 // moment.tz.setDefault(getUserTimezone());
 
+
+/**
+ * Converts a datetime from the specified timezone, into
+ * that same datetime in the local timezone. This is useful
+ * for displaying different timezones in local time.
+ * For example:
+ *  Converting 2020/11/25 12:30pm New York time to 2020/11/25 12:30pm Los Angeles (as specified by user's device) time.
+ * @param {Date} sourceDate
+ *  Source Date object.
+ * @param {String} timeZoneName
+ *  Source timezone.
+ * @returns {Date}
+ *  A new Date where the hours.
+ */
+export const convertDateToLocal = (sourceDate, timeZoneName) => {
+  const mom = moment.tz(sourceDate, timeZoneName);
+  const localDate = new Date(mom.year(), mom.month(), mom.date(), mom.hour(), mom.minute(), 0);
+  return localDate;
+};
+
+/**
+ * Convert a local Date into the same date and time in the destination timezone
+ * For example:
+ *  Converting 2020/11/25 12:30pm Los Angeles (as specified by user's device) time to 2020/11/25 12:30pm New York time.
+ * @param {Date} date
+ *  Internal BigCalendar date
+ * @param {String} destinationTimeZone
+ *  Named timezone, ex. "America/New York"
+ */
+export const convertDateFromLocal = (localDate, destinationTimeZone) => {
+  const dateM = moment.tz(localDate, moment.tz.guess());
+  return moment.tz({
+    year: dateM.year(),
+    month: dateM.month(),
+    date: dateM.date(),
+    hour: dateM.hour(),
+    minute: dateM.minute(),
+  }, destinationTimeZone).toDate();
+};
+
 //
 // Date Functions
 //
@@ -220,6 +260,8 @@ export const dateToDrupal = (date, offset) => {
 export const dateFromDrupal = date =>
   moment.utc(date).toDate();
   // moment.utc(date, 'YYYY-MM-DDTHH:mm:ss').toDate();
+
+export const localDateToUserDateString = date => moment(date).tz(getUserTimezone()).format();
 
 export const roundTo = (
   date,

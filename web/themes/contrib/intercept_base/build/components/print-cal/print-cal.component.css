@@ -57,41 +57,20 @@
 .print-event__time {
   display: block; }
 
-.print-legend {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap; }
-  .print-legend:not(:first-child) {
-    margin-top: 0.9375rem; }
-    @media (min-width: 48em) {
-      .print-legend:not(:first-child) {
-        margin-top: 1.2375rem; } }
-    @media (min-width: 62em) {
-      .print-legend:not(:first-child) {
-        margin-top: 1.875rem; } }
-
 .print-legend__item {
-  font-size: 0.5rem;
+  font-size: 0.57639rem;
   margin-bottom: 0.375rem;
-  line-height: 1.2;
+  line-height: 1.5;
   white-space: nowrap; }
   @media (min-width: 48em) {
     .print-legend__item {
-      font-size: 0.625rem; } }
+      font-size: 0.72917rem; } }
   @media (min-width: 62em) {
     .print-legend__item {
-      font-size: 0.75rem; } }
+      font-size: 0.875rem; } }
   @media (min-width: 48em) {
     .print-legend__item {
       margin-bottom: 0.495rem; } }
   @media (min-width: 62em) {
     .print-legend__item {
       margin-bottom: 0.75rem; } }
-  .print-legend__item:not(:last-child) {
-    margin-right: 3em; }
-
-.print-legend__item-abbv {
-  font-weight: 900;
-  margin-right: .5em; }

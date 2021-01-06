@@ -3,6 +3,7 @@
 namespace Drupal\intercept_room_reservation\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -23,6 +24,13 @@ class RoomReservationSettingsForm extends ConfigFormBase {
   use AlterableFormTrait;
 
   protected const CONFIG_NAME = 'intercept_room_reservation.settings';
+
+  /**
+   * The entity display repository.
+   *
+   * @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface
+   */
+  protected $entityDisplayRepository;
 
   /**
    * The entity type manager.
@@ -50,11 +58,14 @@ class RoomReservationSettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
+   *   The entity display repository.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, EntityDisplayRepositoryInterface $entity_display_repository, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($config_factory);
+    $this->entityDisplayRepository = $entity_display_repository;
     $this->entityTypeManager = $entity_type_manager;
     $this->roleStorage = $this->entityTypeManager->getStorage('user_role');
     $this->roomReservationStorage = $this->entityTypeManager->getStorage('room_reservation');
@@ -66,6 +77,7 @@ class RoomReservationSettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('entity_display.repository'),
       $container->get('entity_type.manager')
     );
   }
@@ -100,39 +112,33 @@ class RoomReservationSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
+    $config = $this->config('intercept_room_reservation.settings');
 
     $form['agreement_text'] = [
       '#title' => $this->t('Terms and conditions agreement'),
       '#type' => 'text_format',
-      '#default_value' => $this->getTextFormat('agreement_text', 'value'),
-      '#format' => $this->getTextFormat('agreement_text', 'format'),
+      '#default_value' => $config->get('agreement_text.value'),
+      '#format' => $config->get('agreement_text.format'),
     ];
 
     $form['reservation_limit'] = [
       '#title' => $this->t('Room reservation limit'),
       '#type' => 'number',
-      '#default_value' => $this->getReservationLimit(),
+      '#default_value' => $config->get('reservation_limit'),
     ];
 
     $form['reservation_limit_text'] = [
       '#title' => $this->t('Room reservation limit user message'),
       '#type' => 'text_format',
-      '#default_value' => $this->getTextFormat('reservation_limit_text', 'value'),
-      '#format' => $this->getTextFormat('reservation_limit_text', 'format'),
-    ];
-
-    $form['reservation_barred_text'] = [
-      '#title' => $this->t('Room reservation barred user message'),
-      '#type' => 'text_format',
-      '#default_value' => $this->getTextFormat('reservation_barred_text', 'value'),
-      '#format' => $this->getTextFormat('reservation_barred_text', 'format'),
+      '#default_value' => $config->get('reservation_limit_text.value'),
+      '#format' => $config->get('reservation_limit_text.format'),
     ];
 
     $form['advanced_reservation_limit'] = [
       '#title' => $this->t('Advanced room reservation limit'),
       '#type' => 'number',
       '#field_suffix' => $this->t('days'),
-      '#default_value' => $this->getAdvancedReservationLimit(),
+      '#default_value' => $config->get('advanced_reservation_limit'),
       '#description' => $this->t('Set the number of days in advance in which customers may submit room reservations. Example: entering "30" will allow customers to reserve rooms up to 30 days ahead of time. Enter "0" for no limit.'),
       '#attributes' => [
         'step' => 1,
@@ -143,8 +149,53 @@ class RoomReservationSettingsForm extends ConfigFormBase {
     $form['advanced_reservation_limit_text'] = [
       '#title' => $this->t('Room reservation advanced limit user message'),
       '#type' => 'text_format',
-      '#default_value' => $this->getTextFormat('advanced_reservation_limit_text', 'value'),
-      '#format' => $this->getTextFormat('advanced_reservation_limit_text', 'format'),
+      '#default_value' => $config->get('advanced_reservation_limit_text.value'),
+      '#format' => $config->get('advanced_reservation_limit_text.format'),
+    ];
+
+    $form['last_reservation_before_closing'] = [
+      '#title' => $this->t('Last Reservation Before Closing'),
+      '#type' => 'number',
+      '#field_suffix' => $this->t('minutes'),
+      '#default_value' => $config->get('last_reservation_before_closing'),
+      '#description' => $this->t('Set the number of minutes before location closing when room reservations are no longer allowed.'),
+      '#attributes' => [
+        'step' => 5,
+        'min' => 0,
+        'max' => 55,
+      ],
+    ];
+
+    $form['reservation_barred_text'] = [
+      '#title' => $this->t('Room reservation barred user message'),
+      '#type' => 'text_format',
+      '#default_value' => $config->get('reservation_barred_text.value'),
+      '#format' => $config->get('reservation_barred_text.format'),
+    ];
+
+    $view_modes = $this->entityDisplayRepository->getViewModeOptions('room_reservation');
+    $form_modes = $this->entityDisplayRepository->getFormModeOptions('room_reservation');
+
+    $form['off_canvas'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Off-canvas dialog settings'),
+      '#open' => TRUE,
+      '#collapsible' => TRUE,
+      '#tree' => FALSE,
+    ];
+
+    $form['off_canvas']['off_canvas_view_mode'] = [
+      '#type' => 'select',
+      '#title' => t('Off-canvas dialog view mode'),
+      '#options' => $view_modes,
+      '#default_value' => $config->get('off_canvas_view_mode'),
+    ];
+
+    $form['off_canvas']['off_canvas_form_mode'] = [
+      '#type' => 'select',
+      '#title' => t('Off-canvas dialog form mode'),
+      '#options' => $form_modes,
+      '#default_value' => $config->get('off_canvas_form_mode'),
     ];
 
     $form['email'] = [
@@ -253,24 +304,6 @@ class RoomReservationSettingsForm extends ConfigFormBase {
     $config = $this->config(self::CONFIG_NAME)->get($config_name);
     $default_value = $subfield == 'value' ? '' : 'basic_html';
     return !empty($config) && !empty($config[$subfield]) ? $config[$subfield] : $default_value;
-  }
-
-  /**
-   * Helper function to get reservation limit or a default 0.
-   */
-  private function getReservationLimit() {
-    $config = $this->config(self::CONFIG_NAME);
-    $reservation_limit = $config->get('reservation_limit');
-    return isset($reservation_limit) ? $reservation_limit : 0;
-  }
-
-  /**
-   * Helper function to get reservation limit or a default 0.
-   */
-  private function getAdvancedReservationLimit() {
-    $config = $this->config(self::CONFIG_NAME);
-    $advanced_reservation_limit = $config->get('advanced_reservation_limit');
-    return isset($advanced_reservation_limit) ? $advanced_reservation_limit : 0;
   }
 
   /**

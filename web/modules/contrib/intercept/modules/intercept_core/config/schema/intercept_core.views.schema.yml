@@ -18,8 +18,48 @@ views.filter.intercept_entity_reference:
       nullable: false
       translatable: false
     handler_settings:
-      type: entity_reference_selection.views
+      type: entity_reference_selection.default
       label: 'Selection handler settings'
+      mapping:
+        target_bundles:
+          type: sequence
+          label: 'types'
+          nullable: true
+          sequence:
+            type: string
+            label: 'Bundle'
+        sort:
+          type: mapping
+          label: 'Sort settings'
+          mapping:
+            field:
+              type: string
+              label: 'Sort by'
+            direction:
+              type: string
+              label: 'Sort direction'
+        auto_create:
+          type: boolean
+          label: 'Create referenced entities if they don''t already exist'
+        auto_create_bundle:
+          type: string
+          label: 'Bundle assigned to the auto-created entities.'
+        view:
+          type: mapping
+          label: 'View used to select the entities'
+          mapping:
+            view_name:
+              type: string
+              label: 'View name'
+            display_name:
+              type: string
+              label: 'Display name'
+            arguments:
+              type: sequence
+              label: 'View arguments'
+              sequence:
+                type: string
+                label: 'Argument'
     handler_submit:
       type: string
       label: 'Change handler'

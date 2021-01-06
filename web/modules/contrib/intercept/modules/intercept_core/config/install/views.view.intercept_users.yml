@@ -22,9 +22,8 @@ display:
     position: 0
     display_options:
       access:
-        type: perm
-        options:
-          perm: 'access user profiles'
+        type: none
+        options: {  }
       cache:
         type: tag
         options: {  }
@@ -371,7 +370,6 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
-        - user.permissions
       tags:
         - 'config:field.storage.profile.field_first_name'
         - 'config:field.storage.profile.field_last_name'
@@ -405,7 +403,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - user.permissions
       tags:
         - 'config:field.storage.profile.field_first_name'
         - 'config:field.storage.profile.field_last_name'

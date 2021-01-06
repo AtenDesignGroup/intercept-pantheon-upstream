@@ -9,7 +9,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -98,43 +97,10 @@ class EventRegistrationListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\intercept_event\Entity\EventRegistrationInterface $entity */
     $row = [];
-    $authdata = [];
+
     $this->addEventRow($row, $entity);
-    $user = $entity->get('field_user')->entity;
-    $guest_name = $entity->get('field_guest_name')->getValue();
-    if ($user) {
-      // Use the $entity information to pull the customer's actual name
-      // instead of the name of the event registration.
-      $uid = $entity->get('field_user')->entity->id();
-      // Use the UID now to get the barcode and name of the customer.
-      $authdata = $this->getAuthdata($uid);
-    }
-    if ($authdata) {
-      $email_link = Link::fromTextAndUrl($authdata->EmailAddress, Url::fromUri('mailto:' . $authdata->EmailAddress))->toString();
-      $row['name'] = [
-        'data' => [
-          '#markup' => $authdata->NameFirst . ' ' . $authdata->NameLast . ' (' . $authdata->Barcode . ')<br>' . $authdata->PhoneNumber . ' ' . $email_link,
-        ],
-      ];
-    }
-    elseif (!empty($uid)) {
-      // Backup info can come from $user if it's a non-customer.
-      $user = User::load($uid);
-      $row['name'] = $user->getDisplayName();
-    }
-    elseif (is_array($guest_name)) {
-      $guest_email = $entity->get('field_guest_email')->getValue();
-      $guest_phone_number = $entity->get('field_guest_phone_number')->getValue();
-      $email_link = Link::fromTextAndUrl($guest_email[0]['value'], Url::fromUri('mailto:' . $guest_email[0]['value']))->toString();
-      $row['name'] = [
-        'data' => [
-          '#markup' => $guest_name[0]['value'] . '<br>' . $guest_phone_number[0]['value'] . ' ' . $email_link,
-        ],
-      ];
-    }
-    else {
-      $row['name'] = 'Unknown customer';
-    }
+
+    $row['name'] = $this->getRegistrantName($entity);
 
     $row['count'] = $entity->total();
     $row['status'] = $entity->status->getString();
@@ -156,6 +122,57 @@ class EventRegistrationListBuilder extends EntityListBuilder {
       return $authdata_data;
     }
     return NULL;
+  }
+
+  /**
+   * Get user name for an Event Registration.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Event Registration entity.
+   */
+  protected function getRegistrantName(EntityInterface $entity) {
+    /** @var \Drupal\intercept_event\Entity\EventRegistrationInterface $entity */
+    if ($user = $entity->getRegistrant()) {
+      if ($authdata = $this->getAuthdata($user->id())) {
+        // Use the UID now to get the barcode and name of the customer.
+        $email_link = Link::fromTextAndUrl($authdata->EmailAddress, Url::fromUri('mailto:' . $authdata->EmailAddress))->toString();
+        return [
+          'data' => [
+            '#markup' => $authdata->NameFirst . ' ' . $authdata->NameLast . ' (' . $authdata->Barcode . ')<br>' . $authdata->PhoneNumber . ' ' . $email_link,
+          ],
+        ];
+      }
+      return $user->getDisplayName();
+    }
+    $name = [];
+    if ($entity->hasField('field_guest_name') && $guest_name = $entity->field_guest_name->value) {
+      $name[] = $guest_name;
+    }
+    elseif ($entity->hasField('field_guest_name_first') && $entity->hasField('field_guest_name_last')) {
+      if ($entity->field_guest_name_first->value && $entity->field_guest_name_last->value) {
+        $name[] = $entity->field_guest_name_first->value . ' ' . $entity->field_guest_name_last->value;
+      }
+      elseif ($entity->field_guest_name_first->value) {
+        $name[] = $entity->field_guest_name_first->value;
+      }
+      elseif ($entity->field_guest_name_last->value) {
+        $name[] = $entity->field_guest_name_last->value;
+      }
+    }
+    if ($entity->hasField('field_guest_email') && $email = $entity->field_guest_email->value) {
+      $name[] = Link::fromTextAndUrl($email, Url::fromUri('mailto:' . $email))->toString();
+    }
+    if ($entity->hasField('field_guest_phone_number') && $phone = $entity->field_guest_phone_number->value) {
+      $name[] = $phone;
+    }
+    if (!empty($name)) {
+      return [
+        'data' => [
+          '#markup' => implode('<br />', $name),
+        ],
+      ];
+    }
+    return $this->t('Unknown customer');
   }
 
 }

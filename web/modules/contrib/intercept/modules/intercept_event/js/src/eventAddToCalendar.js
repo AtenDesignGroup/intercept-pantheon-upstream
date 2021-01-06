@@ -51,7 +51,7 @@ function renderApp(root) {
         return { outlook: 'Outlook' };
       case 'Outlook Online':
         return { outlookcom: 'Outlook.com' };
-      case 'Yahoo':
+      case 'Yahoo! Calendar':
         return { yahoo: 'Yahoo' };
       default:
         return null;

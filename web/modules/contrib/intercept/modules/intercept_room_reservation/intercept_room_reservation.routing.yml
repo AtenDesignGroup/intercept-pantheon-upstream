@@ -19,6 +19,27 @@ entity.node.reservations:
   options:
     _admin_route: TRUE
 
+intercept_room_reservation.reservation.add:
+  path: '/manage/room-reservations/add'
+  defaults:
+    # _form: '\Drupal\intercept_room_reservation\Form\RoomReservationForm'
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::add'
+    _title: 'Create Reservation'
+  requirements:
+    # _entity_access: 'room_reservation.update'
+    # _entity_bundle: 'room_reservation'
+    _access: 'TRUE'
+
+intercept_room_reservation.reservation.edit:
+  path: '/manage/room-reservations/{room_reservation}/edit'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::edit'
+    _title: 'Edit Reservation'
+  requirements:
+    room_reservation: \d+
+    _entity_access: 'room_reservation.update'
+    _entity_bundle: 'room_reservation'
+
 intercept_room_reservation.reserve_room:
   path: '/reserve-room'
   defaults:
@@ -26,6 +47,14 @@ intercept_room_reservation.reserve_room:
     _title: 'reserve'
   requirements:
     _access: 'TRUE'
+
+intercept_room_reservation.scheduler:
+  path: '/manage/room-reservations/calendar'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::scheduler'
+    _title: 'Room Reservations'
+  requirements:
+    _permission: 'update any room_reservation'
 
 intercept_room_reservation.account.room_reservations:
   path: '/account/room-reservations'

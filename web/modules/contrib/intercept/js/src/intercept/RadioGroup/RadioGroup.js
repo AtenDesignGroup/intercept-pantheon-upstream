@@ -20,11 +20,12 @@ class Radios extends React.Component {
       ariaLabel,
       isValid,
       onChange,
-      getErrorMessages,
+      errorMessage,
       required,
       disabled,
       options,
       name,
+      value,
     } = this.props;
 
     const handleChange = (event) => {
@@ -32,7 +33,7 @@ class Radios extends React.Component {
       this.props.setValue(event.target.value);
     };
 
-    let helperText = this.props.getErrorMessage() || '';
+    let helperText = errorMessage || '';
 
     if (this.props.helperText) {
       helperText = `${this.props.helperText} ${helperText}`;
@@ -43,20 +44,20 @@ class Radios extends React.Component {
         component="fieldset"
         className={'radios'}
         required={required}
-        error={!this.props.isValid()} >
+        error={!isValid} >
         {label && (<FormLabel component="legend">{label}</FormLabel>)}
         <RadioGroup
           aria-label={ariaLabel}
           name={name}
-          value={this.props.getValue()}
+          value={value}
           className={'radios__group'}
           onChange={handleChange}
         >
-        {options.map(option => (
-          <FormControlLabel key={option.key} value={option.key} control={<Radio />} label={option.value} className={'radios__radio-label'}/>
-        ))}
+          {options.map(option => (
+            <FormControlLabel key={option.key} value={option.key} control={<Radio />} label={option.value} className={'radios__radio-label'} />
+          ))}
         </RadioGroup>
-        {helperText && (<FormHelperText error={!isValid()}>{helperText}</FormHelperText>)}
+        {helperText && (<FormHelperText error={!isValid}>{helperText}</FormHelperText>)}
       </FormControl>
     );
   }

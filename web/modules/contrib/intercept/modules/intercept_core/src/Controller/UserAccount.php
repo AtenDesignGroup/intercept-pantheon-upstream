@@ -5,6 +5,7 @@ namespace Drupal\intercept_core\Controller;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\intercept_core\Utility\Obfuscate;
+use Drupal\intercept_core\HttpRequestTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -12,6 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
  * Defines a controller for user account routes.
  */
 class UserAccount extends ControllerBase {
+
+  use HttpRequestTrait;
 
   /**
    * ILS client object.
@@ -106,22 +109,25 @@ class UserAccount extends ControllerBase {
   }
 
   /**
-   * Gets a Request object's parameters.
+   * Searches for a user by email.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The current Request object.
    *
-   * @return array
-   *   The Request object query and post parameters.
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JsonResponse object with user IDs.
    */
-  protected function getParams(Request $request) {
-    // Accept query string params, and then also accept a post request.
-    $params = $request->query->get('filter');
-
-    if ($post = Json::decode($request->getContent())) {
-      $params = empty($params) ? $post : array_merge($params, $post);
+  public function userEmailExistsApi(Request $request) {
+    $params = $this->getParams($request);
+    if (!empty($params['email'])) {
+      $user = $this->entityTypeManager()
+        ->getStorage('user')
+        ->getQuery()
+        ->condition('mail', $params['email'])
+        ->execute();
+      return JsonResponse::create($user, 200);
     }
-    return $params;
+    return JsonResponse::create();
   }
 
 }

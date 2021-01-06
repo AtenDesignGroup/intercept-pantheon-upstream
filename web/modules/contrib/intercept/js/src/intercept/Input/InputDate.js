@@ -65,14 +65,6 @@ class InputDate extends React.Component {
     return moment.tz(date, utils.getUserTimezone());
   }
 
-  componentDidUpdate() {
-    // Force this component to be treated like a controlled component
-    // by updating formsy with passed prop values.
-    if (this.props.value !== this.props.getValue()) {
-      this.props.setValue(this.props.value);
-    }
-  }
-
   onChange = (date) => {
     const d = this.constructor.normalize(date);
 
@@ -86,6 +78,8 @@ class InputDate extends React.Component {
     const {
       clearable,
       disabled,
+      errorMessage,
+      isValid,
       required,
       label,
       helperText,
@@ -93,9 +87,10 @@ class InputDate extends React.Component {
       maxDateMessage,
       minDate,
       minDateMessage,
+      value,
     } = this.props;
 
-    const inputValue = this.constructor.denormalize(this.props.getValue());
+    const inputValue = this.constructor.denormalize(value);
 
 
     return (
@@ -110,8 +105,8 @@ class InputDate extends React.Component {
           InputLabelProps={InputLabelProps(inputValue)}
           value={inputValue}
           className="date-filter input input--date"
-          error={!this.props.isValid()}
-          helperText={this.props.getErrorMessage() || helperText}
+          error={!isValid}
+          helperText={errorMessage || helperText}
           maxDate={maxDate && this.constructor.denormalize(maxDate)}
           maxDateMessage={maxDateMessage}
           minDate={minDate && this.constructor.denormalize(minDate)}

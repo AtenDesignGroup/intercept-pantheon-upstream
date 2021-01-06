@@ -6,14 +6,14 @@ import { Checkbox, FormControlLabel } from '@material-ui/core';
 
 class InputCheckbox extends React.PureComponent {
   render() {
-    const { label, isValid, onChange, getErrorMessages, required, checked, value } = this.props;
+    const { label, isValid, onChange, errorMessage, isRequired, checked, value } = this.props;
 
     const handleChange = (event) => {
       onChange(event.target.value);
       this.props.setValue(event.target.value);
     };
 
-    let helperText = this.props.getErrorMessage() || '';
+    let helperText = errorMessage || '';
 
     if (this.props.helperText) {
       helperText = `${this.props.helperText} ${helperText}`;

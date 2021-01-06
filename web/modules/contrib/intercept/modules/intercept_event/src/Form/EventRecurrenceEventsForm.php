@@ -277,7 +277,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   /**
    * Create event batch processing callback.
    */
-  public function createProcess($base_event, array $date_time, $recurrence) {
+  public function createProcess(NodeInterface $base_event, array $date_time, $recurrence) {
     $event = $base_event->createDuplicate();
     $event->set('field_date_time', $date_time);
     $event->set('event_recurrence', $recurrence->id());

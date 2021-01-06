@@ -1,6 +1,9 @@
 parameters:
   duration_field.service.class: 'Drupal\duration_field\Service\DurationService'
+  duration_field.granularity.service.class: 'Drupal\duration_field\Service\GranularityService'
 
 services:
   duration_field.service:
     class: '%duration_field.service.class%'
+  duration_field.granularity.service:
+    class: '%duration_field.granularity.service.class%'

@@ -1,0 +1,185 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.room_reservation.off_canvas
+    - field.field.room_reservation.room_reservation.field_agreement
+    - field.field.room_reservation.room_reservation.field_attendee_count
+    - field.field.room_reservation.room_reservation.field_dates
+    - field.field.room_reservation.room_reservation.field_event
+    - field.field.room_reservation.room_reservation.field_group_name
+    - field.field.room_reservation.room_reservation.field_meeting_purpose
+    - field.field.room_reservation.room_reservation.field_meeting_purpose_details
+    - field.field.room_reservation.room_reservation.field_publicize
+    - field.field.room_reservation.room_reservation.field_refreshments
+    - field.field.room_reservation.room_reservation.field_refreshments_description
+    - field.field.room_reservation.room_reservation.field_room
+    - field.field.room_reservation.room_reservation.field_status
+    - field.field.room_reservation.room_reservation.field_user
+  module:
+    - addtocalendar
+    - datetime_range
+    - intercept_location
+    - intercept_room_reservation
+    - text
+id: room_reservation.room_reservation.off_canvas
+targetEntityType: room_reservation
+bundle: room_reservation
+mode: off_canvas
+content:
+  action_button:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_agreement:
+    weight: 10
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_attendee_count:
+    type: number_integer
+    weight: 4
+    region: content
+    label: inline
+    settings:
+      thousand_separator: ','
+      prefix_suffix: true
+    third_party_settings: {  }
+  field_dates:
+    type: daterange_custom
+    weight: 2
+    region: content
+    label: inline
+    settings:
+      timezone_override: ''
+      date_format: 'M j, Y g:ia'
+      separator: '-'
+    third_party_settings:
+      addtocalendar:
+        addtocalendar_settings:
+          style: blue
+          display_text: 'Add to Calendar'
+          atc_title:
+            field: token
+            tokenized: Title
+          atc_description:
+            field: token
+            tokenized: Description
+          atc_location:
+            field: token
+            tokenized: Location
+          atc_organizer:
+            field: token
+            tokenized: 'Richland Library'
+          atc_organizer_email:
+            field: token
+            tokenized: no-reply@richlandlibrary.com
+          atc_date_end:
+            field: token
+            tokenized: ''
+          atc_privacy: public
+          data_secure: auto
+          data_calendars:
+            iCalendar: 0
+            'Google Calendar': 0
+            Outlook: 0
+            'Outlook Online': 0
+            'Yahoo! Calendar': 0
+        addtocalendar_show: 0
+  field_event:
+    type: entity_reference_label
+    weight: 9
+    region: content
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_group_name:
+    type: string
+    weight: 3
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_meeting_purpose:
+    type: entity_reference_label
+    weight: 5
+    region: content
+    label: inline
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_meeting_purpose_details:
+    type: string
+    weight: 6
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_publicize:
+    weight: 11
+    label: inline
+    settings:
+      format: yes-no
+      format_custom_true: ''
+      format_custom_false: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_refreshments:
+    type: boolean
+    weight: 7
+    region: content
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+  field_refreshments_description:
+    type: text_default
+    weight: 8
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  field_room:
+    type: intercept_room_location
+    weight: 1
+    region: content
+    label: inline
+    settings:
+      location_link: 0
+      link: false
+    third_party_settings: {  }
+  field_user:
+    type: entity_reference_label
+    weight: 12
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  user_id:
+    label: hidden
+    type: author
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  attendees_full: true
+  author: true
+  field_status: true
+  location: true
+  location_full: true
+  room_location: true
+  search_api_excerpt: true

@@ -55,6 +55,7 @@ class NonOverlappingReservationConstraintValidator extends ConstraintValidator i
    * {@inheritdoc}
    */
   public function validate($entity, Constraint $constraint) {
+    /** @var \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $entity */
     if (!isset($entity)) {
       return;
     }
@@ -79,11 +80,15 @@ class NonOverlappingReservationConstraintValidator extends ConstraintValidator i
         'duration' => $this->reservationManager->duration($dates[0]['value'], $dates[0]['end_value']),
       ];
       if (!$entity->isNew()) {
-        $params['exclude'] = $entity->id();
+        $params['exclude'] = [$entity->id()];
+      }
+      if ($entity->uuid()) {
+        $params['exclude_uuid'] = [$entity->uuid()];
       }
       $existing_reservations = $this->reservationManager->roomReservationsByNode($params);
       $reservations = !empty($existing_reservations[$room->uuid()]) ? $existing_reservations[$room->uuid()] : [];
-      if ($this->reservationManager->hasReservationConflict($reservations, $params)) {
+      $blocked_dates = $this->reservationManager->getBlockedDates($reservations, $params, $room);
+      if ($this->reservationManager->hasReservationConflict($blocked_dates, $params)) {
         $this->context->addViolation($constraint->errorMessage);
       }
     }

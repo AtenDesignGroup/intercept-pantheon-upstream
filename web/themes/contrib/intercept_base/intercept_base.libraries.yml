@@ -6,6 +6,8 @@ global:
       build/libraries/global/global.print.css:
         preprocess: true
         media: print
+      '//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css':
+        { type: external, minified: true }
   js:
     build/libraries/global/global.js: { preprocess: true }
   dependencies:
@@ -18,6 +20,12 @@ bigCalendar:
       build/libraries/bigCalendar/bigCalendar.base.css: {}
     theme:
       build/libraries/bigCalendar/bigCalendar.theme.css: {}
+
+bigCalendarScheduler:
+  version: 0.18.0
+  css:
+    base:
+      build/libraries/bigCalendar/bigCalendarScheduler.base.css: {}
 
 block-link:
   css:
@@ -122,6 +130,12 @@ call-prompt:
       build/components/call-prompt/call-prompt.component.css: {}
     theme:
       build/components/call-prompt/call-prompt.theme.css: {}
+
+# Contact
+contact:
+  css:
+    component:
+      build/components/contact/contact.component.css: {}
 
 # Content Header
 content-header:
@@ -352,6 +366,8 @@ print-cal:
   css:
     component:
       build/components/print-cal/print-cal.component.css: {}
+    theme:
+      build/components/print-cal/print-cal.theme.css: {}
 
 # Progress Bar
 progress:
@@ -364,6 +380,20 @@ reservation-summary:
   css:
     component:
       build/components/reservation-summary/reservation-summary.component.css: {}
+
+# Reservation Status
+reservation-status:
+  css:
+    component:
+      build/components/reservation-status/reservation-status.component.css: {}
+    theme:
+      build/components/reservation-status/reservation-status.theme.css: {}
+
+# Reservation Status Legend
+reservation-status-legend:
+  css:
+    component:
+      build/components/reservation-status-legend/reservation-status-legend.component.css: {}
 
 # Save Link
 save-link:
@@ -390,7 +420,7 @@ slick:
   js:
     vendor/slick/slick.min.js: { minified: true }
   dependencies:
-      - core/jquery
+    - core/jquery
 
 # Slideshow
 slideshow:
@@ -400,8 +430,8 @@ slideshow:
   js:
     build/components/slideshow/slideshow.js: {}
   dependencies:
-      - core/jquery
-      - intercept_base/slick
+    - core/jquery
+    - intercept_base/slick
 
 # Staff Management Menu
 staff-management-menu:
@@ -424,6 +454,8 @@ teaser:
       build/components/teaser/teaser.component.css: {}
     theme:
       build/components/teaser/teaser.theme.css: {}
+  dependencies:
+    - core/drupal.dialog.off_canvas
 
 # Value Summary
 value-summary:

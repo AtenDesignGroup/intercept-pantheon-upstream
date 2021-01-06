@@ -28,7 +28,7 @@ class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $EventRecurrenceStorage;
+  protected $eventRecurrenceStorage;
 
   /**
    * The database connection.
@@ -46,7 +46,7 @@ class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
    *   The database connection.
    */
   public function __construct(EntityStorageInterface $entity_storage, Connection $connection) {
-    $this->EventRecurrenceStorage = $entity_storage;
+    $this->eventRecurrenceStorage = $entity_storage;
     $this->connection = $connection;
   }
 
@@ -93,7 +93,7 @@ class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $event_recurrence_revision = NULL) {
-    $this->revision = $this->EventRecurrenceStorage->loadRevision($event_recurrence_revision);
+    $this->revision = $this->eventRecurrenceStorage->loadRevision($event_recurrence_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -103,7 +103,7 @@ class EventRecurrenceRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->EventRecurrenceStorage->deleteRevision($this->revision->getRevisionId());
+    $this->eventRecurrenceStorage->deleteRevision($this->revision->getRevisionId());
 
     $this->logger('content')->notice('Event Recurrence: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
     \Drupal::messenger()->addMessage($this->t('Revision from %revision-date of Event Recurrence %title has been deleted.', ['%revision-date' => \Drupal::service('date.formatter')->format($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));

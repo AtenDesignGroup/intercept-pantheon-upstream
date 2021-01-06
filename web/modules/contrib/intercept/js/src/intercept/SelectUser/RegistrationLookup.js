@@ -9,7 +9,7 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 import Error from '@material-ui/icons/Error';
 import Warning from '@material-ui/icons/Warning';
 
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 import { InputAdornment, TextField, CircularProgress } from '@material-ui/core';
 

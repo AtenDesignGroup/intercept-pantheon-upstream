@@ -1,3 +1,10 @@
+roomReservationList:
+  js:
+    js/interceptRoomReservationList.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+
 manageRoomReservations:
   js:
     js/dist/roomReservationList.js:
@@ -33,11 +40,41 @@ roomReservationActionButton:
   dependencies:
     - core/drupalSettings
     - intercept_core/babelHelpers
+    - intercept_core/moment
+    - intercept_core/react
+    - intercept_core/interceptClient
+    - intercept_core/interceptCommon
+    - intercept_core/interceptTheme
+
+roomReservationScheduler:
+  css:
+    theme:
+      css/scheduler.base.css: {}
+      css/scheduler.theme.css: {}
+  js:
+    js/dist/roomReservationScheduler.js:
+      preprocess: true
+  dependencies:
+    - core/drupalSettings
+    - core/drupal.dialog.ajax
+    - intercept_core/babelHelpers
     - intercept_core/react
     - intercept_core/moment
     - intercept_core/interceptClient
     - intercept_core/interceptCommon
     - intercept_core/interceptTheme
+    - intercept_core/bigCalendar
+    - intercept_core/bigCalendarDnd
+    - intercept_core/materialIcons
+
+roomReservationMediator:
+  js:
+    js/interceptRoomReservationMediator.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+    - core/drupal.dialog.off_canvas
+    - intercept_room_reservation/roomReservationScheduler
 
 # RoomReservationForm.php
 room-reservations:

@@ -5,6 +5,8 @@ intercept_room_reservation:
       title: 'All Reservations' # Room Reservations
       menu_weight: 0
       parent: intercept_room_reservation.room_parent
+      user_context_redirect: FALSE
+      route_name: 'view.intercept_room_reservations.page'
     customer_lookup:
       title: 'Customer Lookup'
       menu_weight: 3

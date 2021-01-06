@@ -48,3 +48,7 @@ create own event feedback:
 
 create any event feedback:
   title: 'Event feedback: Provide and edit feedback on any event'
+
+bypass event registration limit:
+  title: 'Bypass event registration limit'
+  description: 'Assign to users that do not need to adhere to a registration limit for event registrations'

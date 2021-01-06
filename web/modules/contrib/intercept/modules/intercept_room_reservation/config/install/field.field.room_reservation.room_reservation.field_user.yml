@@ -9,9 +9,9 @@ id: room_reservation.room_reservation.field_user
 field_name: field_user
 entity_type: room_reservation
 bundle: room_reservation
-label: User
+label: 'Reserved for'
 description: ''
-required: false
+required: true
 translatable: false
 default_value: {  }
 default_value_callback: ''

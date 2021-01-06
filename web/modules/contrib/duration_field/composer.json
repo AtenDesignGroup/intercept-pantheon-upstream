@@ -1,0 +1,26 @@
+{
+  "name": "drupal/duration_field",
+  "description": "Creates a duration Field API field, that collects a period of time, whether that be hours, minutes, seconds, days, months, years, or any combination of those.",
+  "type": "drupal-module",
+  "keywords": ["Drupal", "Duration", "Field API", "Field"],
+  "homepage": "https://drupal.org/project/duration_field",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Jay Friendly (jaypan)",
+      "homepage": "https://www.drupal.org/u/jaypan",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/duration_field",
+    "source": "http://cgit.drupalcode.org/duration_field"
+  },
+  "extra": {
+    "drush": {
+      "services": {
+        "drush.services.yml": "^9"
+      }
+    }
+  }
+}

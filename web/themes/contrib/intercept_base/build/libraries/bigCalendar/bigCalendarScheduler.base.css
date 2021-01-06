@@ -1,0 +1,24 @@
+.scheduler__group-toggle {
+  background-color: transparent; }
+  .scheduler__group-toggle:active {
+    background-color: #e4e8eb; }
+  .scheduler__group-toggle:focus, .scheduler__group-toggle:hover {
+    background-color: #d3d8df; }
+
+.scheduler__group-toggle::after {
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2210%22%20height%3D%225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%205l5-5%205%205z%22%20fill%3D%22%237A7D81%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  content: "";
+  -webkit-transition: -webkit-transform .2s ease-out;
+  transition: -webkit-transform .2s ease-out;
+  transition: transform .2s ease-out;
+  transition: transform .2s ease-out, -webkit-transform .2s ease-out; }
+
+.scheduler__group-toggle[aria-expanded="true"]::after {
+  content: "";
+  -webkit-transform: rotateZ(180deg);
+          transform: rotateZ(180deg); }
+
+.scheduler__group-toggle[aria-expanded="false"]::after {
+  content: ""; }

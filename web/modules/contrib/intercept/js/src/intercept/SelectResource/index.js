@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import interceptClient from 'interceptClient';
 import SelectMultiple from './../Select/SelectMultiple';
 import SelectSingle from './../Select/SelectSingle';
 import ResourceChip from './../ResourceChip';
-import interceptClient from 'interceptClient';
+import ResourceLabel from './../ResourceLabel';
 
 const { select, api } = interceptClient;
 
@@ -16,9 +17,22 @@ class SelectResource extends React.Component {
   }
 
   render() {
-    const { chips, value, multiple, type, handleChange } = this.props;
+    const { chips, labels, value, multiple, type, handleChange } = this.props;
 
-    let renderValue = () => null;
+    let renderValue = () => {};
+
+    if (labels) {
+      renderValue = selected => (
+        <div className="current-filter current-filter--embedded">
+          {selected.map(id => (
+            <ResourceLabel
+              key={id}
+              identifier={{ type, id }}
+            />
+          ))}
+        </div>
+      );
+    }
 
     if (chips) {
       renderValue = selected => (
@@ -56,12 +70,12 @@ class SelectResource extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state, ownProps) =>
   // console.log(select.getTermTree(ownProps.type)(state));
-  return {
+  ({
     options: select.recordOptions(ownProps.type)(state),
-  };
-};
+  })
+;
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   fetchAll: (options) => {
@@ -71,6 +85,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
 SelectResource.defaultProps = {
   chips: false,
+  labels: false,
   multiple: false,
   value: null,
   shouldFetch: true,
@@ -78,6 +93,7 @@ SelectResource.defaultProps = {
 
 SelectResource.propTypes = {
   chips: PropTypes.bool,
+  labels: PropTypes.bool,
   handleChange: PropTypes.func.isRequired,
   fetchAll: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,

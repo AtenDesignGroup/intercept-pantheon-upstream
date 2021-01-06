@@ -4,3 +4,26 @@
  * @file
  * Contains intercept_room_reservation update hooks.
  */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Add the 'notes' field to room reservation entities.
+ */
+function intercept_room_reservation_update_8101() {
+  $storage_definition = BaseFieldDefinition::create('string_long')
+    ->setLabel(new TranslatableMarkup('Reservation notes'))
+    ->setDescription(new TranslatableMarkup('Describe any additional information about this reservation.'))
+    ->setRevisionable(TRUE)
+    ->setDefaultValue('')
+    ->setDisplayOptions('form', [
+      'type' => 'string_textarea',
+      'settings' => [
+        'rows' => 4,
+      ],
+    ]);
+
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $update_manager->installFieldStorageDefinition('notes', 'room_reservation', 'intercept_room_reservation', $storage_definition);
+}

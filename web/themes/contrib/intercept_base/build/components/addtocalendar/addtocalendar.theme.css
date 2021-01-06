@@ -15,3 +15,5 @@
     .react-add-to-calendar__dropdown > ul:not([class]) > li > a:hover, .react-add-to-calendar__dropdown > ul:not([class]) > li > a:focus {
       color: #4c4d4f;
       background-color: #eef1f4; }
+    .react-add-to-calendar__dropdown > ul:not([class]) > li > a .fa {
+      padding-right: 0.3125rem; }

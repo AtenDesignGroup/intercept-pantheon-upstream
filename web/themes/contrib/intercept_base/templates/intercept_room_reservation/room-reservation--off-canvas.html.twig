@@ -1,0 +1,28 @@
+<article{{ attributes.addclass(['room-reservation']) }}>
+  <div class="l--1-col l--offset l--padded">
+    <div class="l__primary">
+      <div class="l--subsection">
+        {{ content.field_status }}
+      </div>
+
+      {% if content %}
+        <div class="l--subsection">
+          <h2>{{'Reservation Details'|t}}</h2>
+          {% if edit_link %}
+            <div class="form-actions--operations">
+              {{ edit_link }}
+            </div>
+          {% endif %}
+          {{ content|without('field_status', 'field_user') }}
+        </div>
+      {% endif %}
+
+      {% if content.field_user %}
+        <div class="l--subsection">
+          <h2>{{'Customer'|t}}</h2>
+          {{ content.field_user }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</article>

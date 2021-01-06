@@ -4,5 +4,6 @@ description: 'Allows locations to be marked as closed'
 core: 8.x
 package: 'Intercept'
 dependencies:
+  - drupal:datetime_range
   - office_hours:office_hours
   - intercept:intercept_location

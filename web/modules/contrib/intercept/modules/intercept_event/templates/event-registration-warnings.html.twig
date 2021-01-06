@@ -1,0 +1,24 @@
+{#
+/**
+ * @file event-registration-warnings.html.twig
+ * Default theme implementation to present Event registration warnings.
+ *
+ * This template is used when viewing Event registration warnings.
+ *
+ *
+ * Available variables:
+ * - warnings: A list of warnings. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_event_registration_warnings()
+ *
+ * @ingroup themeable
+ */
+#}
+{% if warnings %}
+<div{{ attributes.addClass('messages messages--warning') }}>
+  {% for warning in warnings %}
+    {{ warning }}
+  {% endfor %}
+</div>
+{% endif %}

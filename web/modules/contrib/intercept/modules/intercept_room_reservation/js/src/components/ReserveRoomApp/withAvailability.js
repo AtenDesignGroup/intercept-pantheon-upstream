@@ -45,6 +45,8 @@ function withAvailability(WrappedComponent, debounceTime = 200) {
      *  The start of a span of time to check for availablity within.
      * @param {Date} query.end
      *  The end of a span of time to check for availablity within.
+     * @param {Array} query.exclude_uuid
+     *  An array of reservations to exclude from the query.
      *
      * @return {Promise}
      *  The Promise returned from the fetch.

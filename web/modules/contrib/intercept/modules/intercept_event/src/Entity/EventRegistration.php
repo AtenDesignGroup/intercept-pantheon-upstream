@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -34,9 +35,10 @@ use Drupal\user\UserInterface;
  *       "event" = "Drupal\intercept_event\Form\EventRegistrationEventForm",
  *       "cancel" = "Drupal\intercept_event\Form\EventRegistrationCancelForm",
  *       "edit" = "Drupal\intercept_event\Form\EventRegistrationForm",
+ *       "register" = "Drupal\intercept_event\Form\RegisterForm",
  *       "delete" = "Drupal\intercept_event\Form\EventRegistrationDeleteForm",
  *     },
- *     "access" = "Drupal\intercept_event\EventAccessControlHandler",
+ *     "access" = "Drupal\intercept_event\EventRegistrationAccessControlHandler",
  *     "permission_provider" = "Drupal\intercept_event\EventPermissionProvider",
  *     "route_provider" = {
  *       "html" = "Drupal\intercept_event\EventRegistrationHtmlRouteProvider",
@@ -46,6 +48,7 @@ use Drupal\user\UserInterface;
  *   admin_permission = "administer event registration entities",
  *   constraints = {
  *     "RegistrationLimit" = {},
+ *     "RegistrationEmailLimit" = {},
  *     "RegistrationAllowed" = {},
  *   },
  *   entity_keys = {
@@ -75,6 +78,12 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
 
   use DateRangeFormatterTrait;
 
+  // Hard-coded target entity constants.
+  const TARGET_TYPE = 'node';
+  const TARGET_BUNDLE = 'event';
+  const EVENT_FIELD = 'field_event';
+  const REGISTRANT_FIELD = 'field_user';
+
   /**
    * {@inheritdoc}
    */
@@ -85,17 +94,65 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
   /**
    * {@inheritdoc}
    */
+  public function getEvent() {
+    return $this->getParentEntity();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEventId() {
+    return $this->getParentId();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEventEntity(EntityInterface $event) {
+    return $this->setParentEntity($event);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParentEntity() {
+    return $this->get(static::EVENT_FIELD)->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParentId() {
+    return $this->get(static::EVENT_FIELD)->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setParentEntity(EntityInterface $event) {
+    $this->set(static::EVENT_FIELD, $event);
+
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTitle() {
-    if (!$event = $this->get('field_event')->entity) {
+    if (!$event = $this->get(static::EVENT_FIELD)->entity) {
       return $this->t('Event registration');
     }
     $dates = $event->get('field_date_time')->first();
     if (!$dates || !$dates->get('value') || !$dates->get('end_value')) {
       return '';
     }
+    $timezone = 'UTC';
+    if ($registrant = $this->getRegistrant()) {
+      $timezone = $registrant->getTimeZone();
+    }
     $values = [
       '@title' => $event->label(),
-      '@date' => $this->getDateRange($dates),
+      '@date' => $this->getDateRange($dates, $timezone),
     ];
     return !empty($values) ? $this->t('@title @date', $values) : '';
   }
@@ -111,7 +168,16 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
    * {@inheritdoc}
    */
   public function getRegistrant() {
-    return $this->get('field_user') ? $this->get('field_user')->entity : $this->getOwner();
+    return $this->get(static::REGISTRANT_FIELD) ? $this->get(static::REGISTRANT_FIELD)->entity : $this->getOwner();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRegistrant(UserInterface $user) {
+    $this->set(static::REGISTRANT_FIELD, $user);
+
+    return $this;
   }
 
   /**
@@ -121,7 +187,7 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
     if ($this->isNew()) {
       return 'empty';
     }
-    return isset($this->original) ? $this->original->get('status')->value : FALSE;
+    return isset($this->original) ? $this->original->getStatus() : FALSE;
   }
 
   /**
@@ -129,6 +195,15 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
    */
   public function getStatus() {
     return $this->get('status')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setStatus($status) {
+    $this->set('status', $status);
+
+    return $this;
   }
 
   /**
@@ -199,19 +274,11 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
   /**
    * {@inheritdoc}
    */
-  public function getEvent() {
-    if ($this->hasField('field_event')) {
-      return $this->get('field_event')->entity;
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEventId() {
-    if ($this->hasField('field_event')) {
-      return $this->get('field_event')->target_id;
-    }
+  public function validationWarnings() {
+    $this->__set('warning', TRUE);
+    $violations = $this->validate();
+    $this->__unset('warning');
+    return $violations;
   }
 
   /**
@@ -291,8 +358,8 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
    * Invalidate cache tag for an event associated with an event registration.
    */
   public static function invalidateEventCacheTag(EventRegistrationInterface $registration) {
-    if ($registration->hasField('field_event') && !$registration->field_event->isEmpty()) {
-      $event = $registration->field_event->entity;
+    if ($registration->hasField(static::EVENT_FIELD) && !$registration->{static::EVENT_FIELD}->isEmpty()) {
+      $event = $registration->getEvent();
       Cache::invalidateTags(['node:' . $event->id()]);
     }
   }
@@ -312,8 +379,8 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
       $event_dispatcher->dispatch(EntityStatusChangeEvent::CHANGE, $status_event);
     }
 
-    if ($this->get('status')->value == 'canceled') {
-      \Drupal::service('intercept_event.manager')->fillEventOpenCapacity($this->get('field_event')->entity);
+    if ($this->getStatus() == 'canceled') {
+      \Drupal::service('intercept_event.manager')->fillEventOpenCapacity($this->getEvent());
     }
     parent::postSave($storage);
   }

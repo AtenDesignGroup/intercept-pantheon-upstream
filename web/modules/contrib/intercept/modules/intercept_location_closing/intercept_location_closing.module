@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Implements hook_help().
@@ -21,6 +23,39 @@ function intercept_location_closing_help($route_name, RouteMatchInterface $route
 
     default:
   }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for intercept_event_list.
+ */
+function intercept_location_closing_preprocess_intercept_event_list(&$variables) {
+  $results = [];
+  $first_day = new \DateTime('first day of january this year');
+  $closing_query = \Drupal::service('entity_type.manager')
+    ->getStorage('intercept_location_closing')
+    ->getQuery();
+  $closings = $closing_query
+    ->condition('status', 1)
+    ->condition('date.value', $first_day->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>=')
+    ->execute();
+  if (!empty($closings)) {
+    $results = array_map(function ($closing_id) {
+      /** @var \Drupal\intercept_location_closing\Entity\InterceptLocationClosingInterface $closing */
+      $closing = \Drupal::service('entity_type.manager')
+        ->getStorage('intercept_location_closing')
+        ->load($closing_id);
+      return [
+        'id' => $closing->id(),
+        'message' => $closing->getMessage(),
+        'start' => $closing->getStartTime(),
+        'end' => $closing->getEndTime(),
+        'locations' => array_map(function ($location) {
+          return $location->uuid();
+        }, $closing->getLocations()),
+      ];
+    }, $closings);
+  }
+  $variables['#attached']['drupalSettings']['intercept']['location_closings'] = $results;
 }
 
 /**

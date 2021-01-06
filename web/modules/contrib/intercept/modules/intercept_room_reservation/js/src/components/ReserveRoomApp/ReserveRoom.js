@@ -200,7 +200,7 @@ class ReserveRoom extends React.Component {
         },
       },
       fields: {
-        [c.TYPE_LOCATION]: ['title', 'field_location_hours', 'field_branch_location'],
+        [c.TYPE_LOCATION]: ['title', 'field_location_hours', 'field_branch_location', 'status'],
       },
     });
 
@@ -213,6 +213,15 @@ class ReserveRoom extends React.Component {
       this.handleFormChange(this.getEventValues());
       this.props.onChangeRoom(get(this, 'props.eventRecord.data.relationships.field_room.data.id'));
     }
+  }
+
+  onExited() {
+    this.setState({
+      room: {
+        ...this.state.room,
+        exiting: false,
+      },
+    });
   }
 
   getEventValues = () => {
@@ -234,10 +243,6 @@ class ReserveRoom extends React.Component {
     const { data } = eventRecord;
 
     const tz = utils.getUserTimezone();
-    const nowish = utils.roundTo(new Date()).tz(tz);
-    const minTime = '0000';
-    const maxTime = '2345';
-    const { duration } = filters;
     const startValue = utils.dateFromDrupal(get(data, 'attributes.field_date_time.value'));
     const endValue = utils.dateFromDrupal(get(data, 'attributes.field_date_time.end_value'));
 
@@ -292,15 +297,6 @@ class ReserveRoom extends React.Component {
       },
     });
   };
-
-  onExited() {
-    this.setState({
-      room: {
-        ...this.state.room,
-        exiting: false,
-      },
-    });
-  }
 
   render() {
     const {
@@ -358,7 +354,8 @@ class ReserveRoom extends React.Component {
     // Redirect to step 1 if the date is invalid
     if (step === 2 && !isValidDateTime(date, start, end)) {
       currentStep = 1;
-    } else if (step === 2 && room === null) {
+    }
+    else if (step === 2 && room === null) {
       currentStep = 0;
     }
 
@@ -373,7 +370,6 @@ class ReserveRoom extends React.Component {
               this.props.fetchUserStatus();
               onChangeStep(s);
             }}
-
             values={this.state.formValues}
           />
           <RoomLimitWarning userStatus={userStatus} />

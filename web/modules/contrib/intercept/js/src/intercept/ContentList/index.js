@@ -8,7 +8,7 @@ class ContentList extends React.PureComponent {
   }
 
   render() {
-    const { items, heading, modifiers } = this.props;
+    const { items, heading, modifiers, page } = this.props;
 
     const classes = ['content-list'].concat(modifiers.map(modifier => `content-list--${modifier}`)).join(' ');
 
@@ -17,7 +17,7 @@ class ContentList extends React.PureComponent {
     const list = items.map(item => <li key={item.key} className="content-list__item">{item.node}</li>);
 
     return (
-      <div className={classes} ref={'list'}>
+      <div className={classes} ref={'list'} data-page-num={page}>
         {title}
         <ul className="content-list__list">
           {list}
@@ -31,11 +31,13 @@ ContentList.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   modifiers: PropTypes.arrayOf(PropTypes.string),
   heading: PropTypes.node,
+  page: PropTypes.number,
 };
 
 ContentList.defaultProps = {
   heading: null,
   modifiers: [],
-}
+  page: null,
+};
 
 export default ContentList;

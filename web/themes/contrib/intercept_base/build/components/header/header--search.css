@@ -95,7 +95,7 @@
     @media (min-width: 62em) {
       .header__search-form input[type='submit'] {
         width: 5rem; } }
-    .header__search-form input[type='submit']:hover {
+    .header__search-form input[type='submit']:hover, .header__search-form input[type='submit']:focus {
       background-color: transparent; }
 
 .search-trigger {

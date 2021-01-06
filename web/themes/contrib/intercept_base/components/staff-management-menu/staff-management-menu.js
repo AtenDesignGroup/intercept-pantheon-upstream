@@ -1,8 +1,8 @@
 // code to uncheck radio button (collapse an expanded submenu)
 window.onload = function(){
   // check to see if menu exists (won't exist for customers or non-logged-in users)
-  if(document.getElementById("slide-menu-toggle")) {
-    const menuItems = document.querySelectorAll("INPUT[type='radio']");
+  if (document.getElementById("slide-menu-toggle")) {
+    const menuItems = document.querySelectorAll(".accordion INPUT[type='radio']");
     const slideMenuToggle = document.getElementById("slide-menu-toggle");
     let subMenuOpen = null;
     

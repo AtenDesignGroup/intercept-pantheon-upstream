@@ -1,0 +1,96 @@
+@import "_partials";
+
+/**
+ * @file
+ * Styling for the modal ui dialog. Including overrides for jQuery UI.
+ */
+
+.ui-dialog.ui-dialog-off-canvas #drupal-off-canvas {
+  padding: 0 rem(30px) rem(30px);
+}
+
+/* Style the dialog-off-canvas container. */
+.ui-dialog.ui-dialog-off-canvas {
+  /* Layer the dialog just under the toolbar. */
+  z-index: 501;
+  padding: 0;
+  color: $clr-text;
+  border-radius: 0;
+  background: white;
+  box-shadow: 0 -5px 50px 0 rgba(0,0,0,0.10);
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.ui-widget.ui-dialog.ui-dialog-off-canvas {
+  border: 0;
+}
+
+.ui-dialog.ui-dialog-off-canvas .l--offset {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Style the off-canvas dialog header. */
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar {
+  display: flex;
+  padding: rem(24px) rem(30px);
+  color: $clr-text;
+  border: 0;
+  border-radius: 0;
+  background-color: $gray-80;
+  font-weight: normal;
+}
+
+/* Hide the default jQuery UI dialog close button. */
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close .ui-icon {
+  visibility: hidden;
+}
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close {
+  visibility: hidden;
+}
+
+[dir="rtl"] .ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close {
+  right: auto;
+  left: 1em;
+}
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-title {
+  /* Ensure that long titles do not overlap the close button. */
+  font-size: rem(20px);
+  font-weight: $fw-bold;
+  line-height: 1;
+  margin: 0;
+  max-width: none;
+  /* Push the text away from the icon. */
+  padding-left: 0; /* LTR */
+  padding-right: 0; /* LTR */
+  text-align: left; /* LTR */
+  /* Ensure that long titles are not truncated. */
+  white-space: normal;
+}
+
+[dir="rtl"] .ui-dialog.ui-dialog-off-canvas .ui-dialog-title {
+  float: right;
+  padding-right: 30px;
+  padding-left: 0;
+  text-align: right;
+}
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-title:before {
+  content: none;
+}
+
+/* Override default styling from jQuery UI. */
+#drupal-off-canvas .ui-state-default,
+#drupal-off-canvas .ui-widget-content .ui-state-default,
+#drupal-off-canvas .ui-widget-header .ui-state-default {
+  color: #333;
+  border: 0;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+#drupal-off-canvas .ui-widget-content a {
+  color: #85bef4;
+}

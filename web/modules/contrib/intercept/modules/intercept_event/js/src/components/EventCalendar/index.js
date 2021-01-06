@@ -62,6 +62,15 @@ class CustomToolbar extends Toolbar {
           >
             {messages.today}
           </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            className="rbc-btn rbc-btn--print"
+            onClick={this.props.onPrintClick}
+          >
+            Print
+          </Button>
         </span>
         <div className="rbc-toolbar__heading">
           <IconButton
@@ -90,11 +99,6 @@ class CustomToolbar extends Toolbar {
   }
 }
 
-const components = {
-  event: CalendarEvent,
-  toolbar: CustomToolbar,
-};
-
 class EventCalendar extends React.Component {
   constructor(props) {
     super(props);
@@ -110,6 +114,7 @@ class EventCalendar extends React.Component {
     this.onHideEvent = this.onHideEvent.bind(this);
     this.printTest = this.printTest.bind(this);
     this.setPrintState = this.setPrintState.bind(this);
+    this.onPrintClick = this.onPrintClick.bind(this);
   }
 
   componentDidMount() {
@@ -152,6 +157,15 @@ class EventCalendar extends React.Component {
     });
   }
 
+  onPrintClick() {
+    this.setState(() => ({
+      isPrint: true,
+    }),
+    () => {
+      window.print();
+    });
+  }
+
   setPrintState(isPrint) {
     this.setState({ isPrint });
   }
@@ -161,11 +175,17 @@ class EventCalendar extends React.Component {
   }
 
   render() {
+    const components = {
+      event: CalendarEvent,
+      toolbar: props => (<CustomToolbar {...props} onPrintClick={this.onPrintClick} />),
+    };
+
     return (
       <React.Fragment>
         <BigCalendar
           timeZoneName={utils.getUserTimezone()}
           components={components}
+          filters={this.props.filters}
           events={this.props.events}
           onSelectEvent={this.onSelectEvent}
           titleAccessor={titleAccessor}
@@ -219,6 +239,7 @@ class EventCalendar extends React.Component {
 
 EventCalendar.propTypes = {
   events: PropTypes.arrayOf(Object).isRequired,
+  filters: PropTypes.object.isRequired,
   onNavigate: PropTypes.func,
   onView: PropTypes.func,
   defaultDate: PropTypes.instanceOf(Date),

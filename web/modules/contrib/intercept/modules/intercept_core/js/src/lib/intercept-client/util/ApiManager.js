@@ -189,7 +189,7 @@ export function handleFailedResponse(resp, request, dispatch, resource, uuid) {
         return dispatch(a.setSaved(true, resource, uuid));
       }
 
-      if (request.method === 'POST' && resp.status === 422) {
+      if ((request.method === 'POST' || request.method === 'PATCH') && resp.status === 422) {
         return dispatch(a.failure(err, resource, uuid));
       }
 

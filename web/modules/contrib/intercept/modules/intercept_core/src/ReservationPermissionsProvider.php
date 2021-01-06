@@ -21,7 +21,7 @@ class ReservationPermissionsProvider extends EntityPermissionProvider {
 
     $permissions = parent::buildPermissions($entity_type);
 
-    foreach (['cancel', 'approve', 'decline', 'view'] as $action) {
+    foreach (['cancel', 'approve', 'decline', 'view', 'request'] as $action) {
       // View permissions are the same for both granularities.
       $permissions["{$action} {$entity_type_id}"] = [
         'title' => $this->t('@action @type', [

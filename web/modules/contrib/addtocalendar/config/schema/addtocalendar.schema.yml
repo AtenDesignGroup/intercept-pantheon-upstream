@@ -93,20 +93,20 @@ field.field_settings.add_to_calendar_field:
         data_calendars:
           type: mapping
           mapping:
-            'Google Calendar':
-              type: integer
+            Google Calendar:
+              type: string
               label: 'Google Calendar'
-            'Outlook Online':
-              type: integer
+            Outlook Online:
+              type: string
               label: 'Outlook Online'
             iCalendar:
-              type: integer
+              type: string
               label: 'iCalendar'
             Outlook:
-              type: integer
+              type: string
               label: 'Outlook'
-            'Yahoo! Calendar':
-              type: integer
+            Yahoo! Calendar:
+              type: string
               label: 'Yahoo! Calendar'
 
 field.value.add_to_calendar_field:
@@ -114,5 +114,5 @@ field.value.add_to_calendar_field:
   label: 'Default value'
   mapping:
     value:
-      type: integer
+      type: string
       label: 'Show Add to Calendar'

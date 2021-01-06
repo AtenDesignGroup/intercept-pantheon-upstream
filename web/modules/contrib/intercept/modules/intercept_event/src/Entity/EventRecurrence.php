@@ -50,6 +50,11 @@ use Drupal\user\UserInterface;
  *     "uid" = "author",
  *     "langcode" = "langcode",
  *   },
+ *   revision_metadata_keys = {
+ *     "revision_user" = "revision_user",
+ *     "revision_created" = "revision_created",
+ *     "revision_log_message" = "revision_log_message"
+ *   },
  *   links = {
  *     "canonical" = "/event-recurrence/{event_recurrence}",
  *     "add-form" = "/event-recurrence/add",
@@ -133,6 +138,9 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
     /** @var Drupal\date_recur\DateRecurHelperInterface $handler */
     $helper = $recurring_rule_field->getHelper();
     if ($helper->isInfinite() || !$recurring_rule_field->isRecurring()) {
+      if ($helper->generateOccurrences() instanceof \Generator) {
+        return iterator_to_array($helper->generateOccurrences());
+      }
       return $helper->generateOccurrences();
     }
     else {
@@ -296,7 +304,7 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
     $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setLabel(new TranslatableMarkup('Created by'))
       ->setDescription(new TranslatableMarkup('The user ID of author of the Event Recurrence entity.'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')

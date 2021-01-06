@@ -1,0 +1,194 @@
+<?php
+
+/**
+ * @file
+ * Holds hooks for the Duration Field module.
+ */
+
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function duration_field_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.duration_field':
+      return t(
+        '<p>This module creates a new Form API form element of type duration, as well as a Field API field of type duration. A duration is a time period, for which the granularity can be adjusted to collect any or all of years, months, days, hours, minutes and seconds. This module makes no assumptions as to the type of duration a user would want to collect, so as such, a user could choose to collect years and seconds only, if they wish, though generally that wouldn\'t make sense.</p><p>See the <a href=":project_page">project page on Drupal.org</a> for more details.</p>',
+        [
+          ':project_page' => 'https://www.drupal.org/project/duration_field',
+        ]
+      );
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function duration_field_theme($existing, $type, $theme, $path) {
+  return [
+    'duration_field_duration_time' => [
+      'variables' => [
+        'item' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Preprocesses duration_field_duration_time templates.
+ */
+function template_preprocess_duration_field_duration_time(&$vars) {
+  $vars['year'] = $vars['item']->format('%y');
+  $vars['month'] = $vars['item']->format('%m');
+  $vars['day'] = $vars['item']->format('%d');
+  $vars['hour'] = $vars['item']->format('%h');
+  if (strlen($vars['hour']) == 1) {
+    $vars['hour'] = '0' . $vars['hour'];
+  }
+  $vars['minute'] = $vars['item']->format('%i');
+  if (strlen($vars['minute']) == 1) {
+    $vars['minute'] = '0' . $vars['minute'];
+  }
+  $vars['second'] = $vars['item']->format('%s');
+  if (strlen($vars['second']) == 1) {
+    $vars['second'] = '0' . $vars['second'];
+  }
+}
+
+/**
+ * Recursively alters an array of nested database queries.
+ *
+ * Alters conditions that query duration fields, allowing for queries based on
+ * duration strings.
+ *
+ * @param array $conditions
+ *   An array of conditions to be altered.
+ * @param array $tables
+ *   An array of db tables that contain duration field data. The key is the
+ *   table name, the value is the field name.
+ */
+function duration_field_alter_query_recursive(array &$conditions, array $tables) {
+
+  $applicable_operators = [
+    '>',
+    '<',
+    '>=',
+    '<=',
+    '=',
+  ];
+
+  foreach (Element::children($conditions) as $index) {
+    // Conditions can be nested. Test if the element contains nested conditions.
+    if (is_a($conditions[$index]['field'], '\Drupal\Core\Database\Query\Condition')) {
+      // Get the nested conditions.
+      $subconditions =& $conditions[$index]['field']->conditions();
+      // Recursively call the function with the sub conditions, to swap their
+      // values.
+      duration_field_alter_query_recursive($subconditions, $tables);
+    }
+    else {
+      $duration_service = \Drupal::service('duration_field.service');
+      // Loop through each of the tables that contain duration field data.
+      foreach ($tables as $table => $field) {
+        // Only act if the operator is mathematical.
+        if (in_array($conditions[$index]['operator'], $applicable_operators)) {
+          // Check if current condition is based on a duration field.
+          if ($conditions[$index]['field'] == $field . '_duration') {
+            $date_interval = $duration_service->getDateIntervalFromDurationString(strtoupper($conditions[$index]['value']));
+            // Switch the condition to work on the {$field}_seconds table
+            // instead of the {$field}_duration table.
+            $conditions[$index]['field'] = $field . '_seconds';
+            // Convert the duration to seconds.
+            $conditions[$index]['value'] = $duration_service->getSecondsFromDateInterval($date_interval);
+            // The operator will not change.
+            $conditions[$index]['operator'] = $conditions[$index]['operator'];
+          }
+          // Test if the current condition is based on a duration field, where
+          // the table name is aliased.
+          elseif (preg_match('/^(.*?)\.' . $field . '_duration$/', $conditions[$index]['field'], $matches)) {
+            $date_interval = $duration_service->getDateIntervalFromDurationString(strtoupper($conditions[$index]['value']));
+            $conditions[$index]['field'] = $matches[1] . '.' . $field . '_seconds';
+            $conditions[$index]['value'] = $duration_service->getSecondsFromDateInterval($date_interval);
+            $conditions[$index]['operator'] = $conditions[$index]['operator'];
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Generates an array of database tables that contain duration field data.
+ *
+ * @return array
+ *   An array where the key is the table name in the database, and the value is
+ *   the field name.
+ */
+function duration_field_get_duration_fields() {
+  // Building the $duration_fields element is fairly resource intensive, so the
+  // array is cached if any values are found.
+  $duration_fields = &drupal_static(__FUNCTION__);
+  if (!is_array($duration_fields)) {
+    // Default to an empty array.
+    $duration_fields = [];
+    // Get the entity field manager.
+    $entity_field_manager = \Drupal::service('entity_field.manager');
+    // Get the bundle manager.
+    $bundle_manager = \Drupal::service('entity_type.bundle.info');
+    // Get the entity type manager.
+    $entity_type_manager = \Drupal::entityTypeManager();
+    // Get all the entity types on the system and loop through them.
+    $entity_types = $entity_type_manager->getDefinitions();
+    foreach (array_keys($entity_types) as $entity_type) {
+      // Check if the entity type has fields:
+      if ($entity_types[$entity_type]->getBundleEntityType()) {
+        // Get all the bundles for the entity type, and loop throug them.
+        $bundles = $bundle_manager->getBundleInfo($entity_type);
+        foreach (array_keys($bundles) as $bundle) {
+          // Get all the fields on the bundle and loop through them.
+          $fields = $entity_field_manager->getFieldDefinitions($entity_type, $bundle);
+          foreach (array_keys($fields) as $field) {
+            // Check if the field is of type 'duration'.
+            if ($fields[$field]->getType() == 'duration') {
+              $duration_fields[] = [
+                'field' => $fields[$field],
+                'entity_type' => $entity_type,
+                'bundle' => $bundle,
+              ];
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return $duration_fields;
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * Alters database queries tagged with the 'duration_string' tag, swapping out
+ * duration string searches with values to search against timestamps stored for
+ * durations in the database.
+ */
+function duration_field_query_duration_string_alter(AlterableInterface &$query) {
+  $duration_fields = duration_field_get_duration_fields();
+  // Only do something if there are duration fields in the database.
+  if (!empty($duration_fields)) {
+    // Get any conditions on the query.
+    $conditions =& $query->conditions();
+    // Only do something if there are any conditions.
+    if (is_array($conditions)) {
+      $duration_tables = [];
+      foreach ($duration_fields as $field) {
+        $duration_tables[$field['entity_type'] . '__' . $field['field']->getName()] = $field['field']->getName();
+      }
+      // Alter any queries that use Duration strings.
+      duration_field_alter_query_recursive($conditions, $duration_tables);
+    }
+  }
+}

@@ -47,6 +47,9 @@ class RoomReservationAccessControlHandler extends EntityAccessControlHandler {
 
       case 'archive':
         return AccessResult::allowedIfHasPermission($account, 'archive room_reservation');
+
+      case 'request':
+        return AccessResult::allowedIfHasPermission($account, 'request room_reservation');
     }
 
     return $result->addCacheableDependency($entity);

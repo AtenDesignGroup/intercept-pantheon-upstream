@@ -729,16 +729,6 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              blog_author: '0'
-              blog_editor: '0'
-              booklist_author: '0'
-              booklist_editor: '0'
-              finance: '0'
-              job_creator: '0'
-              page_editor: '0'
-              rfp_admin: '0'
-              rfp_selector: '0'
-              schema_viewer: '0'
               administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
@@ -967,16 +957,6 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              blog_author: '0'
-              blog_editor: '0'
-              booklist_author: '0'
-              booklist_editor: '0'
-              finance: '0'
-              job_creator: '0'
-              page_editor: '0'
-              rfp_admin: '0'
-              rfp_selector: '0'
-              schema_viewer: '0'
               administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
@@ -1026,16 +1006,6 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              blog_author: '0'
-              blog_editor: '0'
-              booklist_author: '0'
-              booklist_editor: '0'
-              finance: '0'
-              job_creator: '0'
-              page_editor: '0'
-              rfp_admin: '0'
-              rfp_selector: '0'
-              schema_viewer: '0'
               administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
@@ -1198,9 +1168,7 @@ display:
         weight: 0
       defaults:
         show_admin_links: false
-      display_extenders:
-        views_ajax_history:
-          history: true
+      display_extenders: { }
     cache_metadata:
       contexts:
         - 'languages:language_content'

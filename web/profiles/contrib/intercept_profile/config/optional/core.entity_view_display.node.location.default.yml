@@ -112,21 +112,21 @@ content:
       office_hours_first_day: ''
       day_format: short
       time_format: g
-      grouped: '1'
+      grouped: true
       closed_format: Closed
       separator:
         days: '<br />'
         grouped_days: –
         day_hours: ': '
         hours_hours: –
-        more_hours: ''
+        more_hours: ', '
       current_status:
         position: ''
         open_text: 'Currently open!'
         closed_text: 'Currently closed'
       schema:
         enabled: '1'
-      compress: 0
+      compress: false
       timezone_field: ''
     third_party_settings: {  }
     type: office_hours
@@ -158,11 +158,16 @@ content:
     type: text_default
     region: content
   field_virtual_tour:
-    weight: 12
-    label: above
+    weight: 18
+    label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    type: text_default
+    region: content
+  flag_subscribe_node:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
     region: content
   image_primary:
     weight: 13

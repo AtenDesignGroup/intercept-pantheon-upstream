@@ -20,10 +20,18 @@ function PrintableLocationLegend(props) {
   return (
     <div className={'print-legend'}>
       {items.map(item => (
-        <p key={item.abbv} className={'print-legend__item'}>
-          <span className={'print-legend__item-abbv'}>{item.abbv}</span>{' '}
-          <span className={'print-legend__item-title'}> {item.title}</span>
-        </p>
+        <div key={item.id} className={'print-legend__item'}>
+          <div className={'print-legend__item-title'}> {item.title}</div>
+          {item.phone &&
+            <div className={'print-legend__item-address'}> {item.phone}</div>
+          }
+          {item.addressLine1 &&
+            <div className={'print-legend__item-address'}> {item.addressLine1}</div>
+          }
+          {item.locality && item.administrative_area &&
+            <div className={'print-legend__item-address'}> {item.locality}, {item.administrative_area} {item.postal_code}</div>
+          }
+        </div>
       ))}
     </div>
   );
@@ -44,10 +52,15 @@ const mapStateToProps = (state, ownProps) => {
   return {
     items: sortBy(
       ownProps.locations.map(item => ({
-        abbv: get(records[item], 'data.attributes.field_location_abbreviation'),
+        id: get(records[item], 'data.id'),
         title: get(records[item], 'data.attributes.title'),
-      })).filter(item => item.abbv),
-      ['abbv'],
+        phone: get(records[item], 'data.attributes.field_contact_number', null),
+        addressLine1: get(records[item], 'data.attributes.field_address.address_line1', null),
+        locality: get(records[item], 'data.attributes.field_address.locality', null),
+        administrative_area: get(records[item], 'data.attributes.field_address.administrative_area', null),
+        postal_code: get(records[item], 'data.attributes.field_address.postal_code', null),
+      })).filter(item => item.title),
+      ['title'],
     ),
   };
 };

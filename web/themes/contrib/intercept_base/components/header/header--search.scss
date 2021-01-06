@@ -81,7 +81,7 @@
       width: 5rem;
     }
 
-    &:hover {
+    &:hover, &:focus {
       background-color: transparent;
     }
   }

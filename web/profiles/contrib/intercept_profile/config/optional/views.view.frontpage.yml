@@ -33,7 +33,7 @@ display:
           admin_label: ''
           empty: true
           tokenize: false
-          content: 'No front page content has been created yet.<br/>Follow the <a target="_blank" href="https://docs.google.com/document/d/1dVHNBE9-h6rjC8uxEMOjQMrkBoXPxMofd3xaByKA9-U/edit?usp=sharing">User Guide</a> to start building your site.'
+          content: 'No front page content has been created yet.<br/>Follow the <a target="_blank" href="https://www.drupal.org/docs/8/modules/intercept/installation-guide">Installation Guide</a> to start building your Intercept site.'
           label: ''
           plugin_id: text_custom
         node_listing_empty:

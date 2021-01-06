@@ -1,11 +1,14 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { Calendar, momentLocalizer } from 'react-big-calendar'
-import { accessor } from 'react-big-calendar/lib/utils/accessors'
-import moment from 'moment'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import { accessor } from 'react-big-calendar/lib/utils/accessors';
 import interceptClient from 'interceptClient';
+import moment from 'moment';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
 const { utils } = interceptClient;
+
+const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 /**
  *
@@ -86,8 +89,8 @@ class TimeZoneAgnosticBigCalendar extends Component {
   };
 
   static defaultProps = {
-    startAccessor: 'start',
-    endAccessor: 'end',
+    startAccessor: event => event.start,
+    endAccessor: event => event.end,
   };
 
   startAccessor = (event) => {
@@ -103,7 +106,9 @@ class TimeZoneAgnosticBigCalendar extends Component {
   render() {
     const {
       date,
+      defaultDate,
       onEventDrop,
+      onEventResize,
       onNavigate,
       onSelectSlot,
       slotPropGetter,
@@ -114,32 +119,49 @@ class TimeZoneAgnosticBigCalendar extends Component {
       startAccessor: this.startAccessor,
       endAccessor: this.endAccessor,
       date: date && convertDateTimeToDate(date, timeZoneName),
+      defaultDate: defaultDate && convertDateTimeToDate(defaultDate, timeZoneName),
       localizer,
-      getNow: () => {
-        return convertDateTimeToDate(utils.getUserTimeNow(), timeZoneName);
-      },
-      onNavigate: onNavigate && ((dateTime) => {
-        onNavigate(convertDateToDateTime(dateTime, timeZoneName));
-      }),
-      onSelectSlot: onSelectSlot && (({ start, end, slots }) => {
-        onSelectSlot({
-          start: convertDateToDateTime(start, timeZoneName),
-          end: convertDateToDateTime(end, timeZoneName),
-          slots: slots.map(dateTime => convertDateToDateTime(dateTime, timeZoneName)),
-        });
-      }),
-      onEventDrop: onEventDrop && (({ event, start, end }) => {
-        onEventDrop({
-          event,
-          start: convertDateToDateTime(start, timeZoneName),
-          end: convertDateToDateTime(end, timeZoneName),
-        });
-      }),
-      slotPropGetter: slotPropGetter && ((dateTime) => {
-        return slotPropGetter(convertDateToDateTime(dateTime, timeZoneName));
-      }),
+      getNow: () => convertDateTimeToDate(utils.getUserTimeNow(), timeZoneName),
+      onNavigate:
+        onNavigate &&
+        ((dateTime) => {
+          onNavigate(convertDateToDateTime(dateTime, timeZoneName));
+        }),
+      onSelectSlot:
+        onSelectSlot &&
+        (({ start, end, slots, ...args }) => {
+          onSelectSlot({
+            ...args,
+            start: convertDateToDateTime(start, timeZoneName),
+            end: convertDateToDateTime(end, timeZoneName),
+            slots: slots.map(dateTime => convertDateToDateTime(dateTime, timeZoneName)),
+          });
+        }),
+      onEventDrop:
+        onEventDrop &&
+        (({ start, end, ...args }) => {
+          onEventDrop({
+            ...args,
+            start: convertDateToDateTime(start, timeZoneName),
+            end: convertDateToDateTime(end, timeZoneName),
+          });
+        }),
+      onEventResize:
+        onEventResize &&
+        (({ start, end, ...args }) => {
+          onEventResize({
+            ...args,
+            start: convertDateToDateTime(start, timeZoneName),
+            end: convertDateToDateTime(end, timeZoneName),
+          });
+        }),
+      slotPropGetter:
+        slotPropGetter &&
+        (dateTime => slotPropGetter(convertDateToDateTime(dateTime, timeZoneName))),
     };
-    return (<Calendar {...bigCalendarProps} />);
+
+    const CalendarComponent = this.props.dnd ? DragAndDropCalendar : Calendar;
+    return (<CalendarComponent {...bigCalendarProps} />);
   }
 }
 export default TimeZoneAgnosticBigCalendar;

@@ -32,7 +32,7 @@ use Drupal\jsonapi\Query\Filter;
  * @see https://www.drupal.org/project/drupal/issues/2809177
  * @see https://www.drupal.org/project/drupal/issues/777578
  *
- * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see https://www.drupal.org/project/drupal/issues/3032787
  * @see jsonapi.api.php
  */
 class TemporaryQueryGuard {
@@ -92,7 +92,7 @@ class TemporaryQueryGuard {
     $field_specifiers = array_map(function ($field) {
       return explode('.', $field);
     }, $filtered_fields);
-    static::secureQuery($query, $query->getEntityTypeId(), static::buildTree($field_specifiers), $cacheability);
+    static::secureQuery($query, $query->getEntityTypeId(), static::buildTree($field_specifiers), $cacheability, NULL, NULL, []);
   }
 
   /**
@@ -112,6 +112,8 @@ class TemporaryQueryGuard {
    * @param string|null $field_prefix
    *   Internal use only. Contains a string representation of the previously
    *   visited field specifiers.
+   * @param array $entity_types_already_secured
+   *   List of entity types that are already secured.
    * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage_definition
    *   Internal use only. The current field storage definition, if known.
    *
@@ -119,13 +121,14 @@ class TemporaryQueryGuard {
    * @see \Drupal\Core\Database\Query\AlterableInterface::addMetaData()
    * @see \Drupal\Core\Database\Query\ConditionInterface
    */
-  protected static function secureQuery(QueryInterface $query, $entity_type_id, array $tree, CacheableMetadata $cacheability, $field_prefix = NULL, FieldStorageDefinitionInterface $field_storage_definition = NULL) {
+  protected static function secureQuery(QueryInterface $query, $entity_type_id, array $tree, CacheableMetadata $cacheability, $field_prefix = NULL, FieldStorageDefinitionInterface $field_storage_definition = NULL, array $entity_types_already_secured = []) {
     $entity_type = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
     // Config entity types are not fieldable, therefore they do not have field
     // access restrictions, nor entity references to other entity types.
     if ($entity_type instanceof ConfigEntityTypeInterface) {
       return;
     }
+
     foreach ($tree as $specifier => $children) {
       // The field path reconstructs the entity condition fields.
       // E.g. `uid.0` would become `uid.0.name` if $specifier === 'name'.
@@ -136,12 +139,14 @@ class TemporaryQueryGuard {
         // specifier was a data reference that has been traversed. In both
         // cases, the specifier must be a field name.
         $field_storage_definitions = static::$fieldManager->getFieldStorageDefinitions($entity_type_id);
-        static::secureQuery($query, $entity_type_id, $children, $cacheability, $child_prefix, $field_storage_definitions[$specifier]);
+        static::secureQuery($query, $entity_type_id, $children, $cacheability, $child_prefix, $field_storage_definitions[$specifier], $entity_types_already_secured);
+
         // When $field_prefix is NULL, this must be the first specifier in the
         // entity query field path and a condition for the query's base entity
         // type must be applied.
-        if (is_null($field_prefix)) {
+        if (is_null($field_prefix) && !isset($entity_types_already_secured[$entity_type_id])) {
           static::applyAccessConditions($query, $entity_type_id, NULL, $cacheability);
+          $entity_types_already_secured[$entity_type_id] = TRUE;
         }
       }
       else {
@@ -165,13 +170,14 @@ class TemporaryQueryGuard {
           $target_entity_type_id = $target_entity_type_id ?: $field_storage_definition->getSetting('target_type');
           $query->addTag("{$target_entity_type_id}_access");
           static::applyAccessConditions($query, $target_entity_type_id, $child_prefix, $cacheability);
+
           // Keep descending the tree.
-          static::secureQuery($query, $target_entity_type_id, $children, $cacheability, $child_prefix);
+          static::secureQuery($query, $target_entity_type_id, $children, $cacheability, $child_prefix, NULL, $entity_types_already_secured);
         }
         elseif (is_null($property_definition)) {
           assert(is_numeric($property_name), 'The specifier is not a property name, it must be a delta.');
           // Keep descending the tree.
-          static::secureQuery($query, $entity_type_id, $children, $cacheability, $child_prefix, $field_storage_definition);
+          static::secureQuery($query, $entity_type_id, $children, $cacheability, $child_prefix, $field_storage_definition, $entity_types_already_secured);
         }
       }
     }

@@ -46,10 +46,11 @@ trait EventListBuilderTrait {
    */
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery()
-      ->sort($this->entityType->getKey('id'));
+      ->sort('created', 'DESC');
 
     if (!empty($this->getEvent())) {
       $query->condition('field_event', $this->event->id(), '=');
+      $this->limit = FALSE;
     }
     // Only add the pager if a limit is specified.
     if ($this->limit) {

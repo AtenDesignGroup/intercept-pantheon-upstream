@@ -7,11 +7,19 @@
 
 .card__content {
   @include spacing(padding, compact);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 }
 
 .card__body {
   @include fs(small);
   @include spacing(margin-top, compact);
+}
+
+.card__footer {
+  margin-top: auto;
 }
 
 .card__label {

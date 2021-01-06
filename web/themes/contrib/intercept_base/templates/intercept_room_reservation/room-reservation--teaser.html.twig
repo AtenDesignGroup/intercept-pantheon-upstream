@@ -15,7 +15,7 @@
   time: "@start - @end"|t({
       '@start': room_reservation.field_dates.start_date|date("g:i a"),
       '@end': room_reservation.field_dates.end_date|date("g:i a"),
-    })|replace({'m':'.m.'})|replace({':00':''})
+    })|replace({'m': '.m.'})|replace({':00': ''})
   }
 %}
 
@@ -72,5 +72,6 @@
 {% block footer %}
  <footer class="teaser__footer">
   {{ content.action_button }}
+  {{ content.operations }}
  </footer>
 {% endblock %}

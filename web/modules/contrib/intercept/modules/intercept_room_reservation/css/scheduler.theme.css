@@ -1,0 +1,33 @@
+.rbc-event.rbc-event--requested {
+  background-color: #EEF1F4;
+  color: #7A7D81;
+}
+
+.rbc-event.rbc-event--requested:hover,
+.rbc-event.rbc-event--requested:focus {
+  background-color: #E9ECEF;
+}
+
+.rbc-event.rbc-event--approved {
+  background-color: #0288D1;
+}
+
+.rbc-event.rbc-event--approved:hover,
+.rbc-event.rbc-event--approved:focus {
+  background-color: #0277BD;
+}
+
+.rbc-event--canceled {
+  opacity: .2;
+  background-color: #333;
+}
+
+.rbc-event.rbc-selected {
+  background-color: #C91B76;
+  color: white;
+}
+
+.rbc-event.rbc-selected:hover,
+.rbc-event.rbc-selected:focus {
+  background-color: #B0025D;
+}

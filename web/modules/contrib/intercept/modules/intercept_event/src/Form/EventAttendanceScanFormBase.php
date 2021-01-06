@@ -4,7 +4,7 @@ namespace Drupal\intercept_event\Form;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -33,8 +33,8 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, ExternalAuth $external_auth) {
-    parent::__construct($entity_manager, $entity_type_bundle_info, $time);
+  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, ExternalAuth $external_auth) {
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->externalAuth = $external_auth;
   }
 
@@ -43,7 +43,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager'),
+      $container->get('entity.repository'),
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time'),
       $container->get('externalauth.externalauth')
@@ -111,7 +111,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        \Drupal::messenger()->addMessage($this->t(self::SUCCESS_MESSAGE, [
+        $this->messenger()->addMessage($this->t(self::SUCCESS_MESSAGE, [
           '%label' => $entity->label(),
         ]));
         break;

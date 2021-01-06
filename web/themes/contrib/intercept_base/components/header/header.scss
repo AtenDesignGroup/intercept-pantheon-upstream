@@ -9,6 +9,14 @@
   }
 }
 
+.js-prevent-scroll .view-announcements {
+  display: none;
+  @include bp(large) {
+    display: block;
+  }
+  
+}
+
 .header {
   position: relative;
   z-index: 3;
@@ -28,6 +36,7 @@
 
   @include bp(none large) {
     align-items: center;
+    background-color: $white;
   }
 
   @include bp(large) {

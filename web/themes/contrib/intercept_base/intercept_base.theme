@@ -32,6 +32,20 @@ function intercept_base_preprocess_page(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK() for node templates.
+ */
+function intercept_base_preprocess_node(&$variables) {
+
+  $node = $variables['node'];
+  // Will create a link variable visible on the event registratio page that points to the event detail page
+  if ($variables['view_mode'] == 'header' && $node->getType() == 'event') { 
+    if (\Drupal::routeMatch()->getRouteName() === 'entity.node.register') {
+      $variables['event_details_url'] = $variables['url'];
+    }
+  }
+}
+
+/**
  * Implements hook_preprocess_maintenance_page() for maintenance page templates.
  */
 function intercept_base_preprocess_maintenance_page(&$variables) {
@@ -78,6 +92,27 @@ function intercept_base_preprocess_event_eval_feedback(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK() for event_registration_guest_form.
+ */
+function intercept_base_preprocess_event_registration_guest_form(&$variables) {
+  $variables['#attached']['library'][] = 'intercept_base/card';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for intercept_reservation_status templates.
+ */
+function intercept_base_preprocess_intercept_reservation_status(&$variables) {
+  $variables['#attached']['library'][] = 'intercept_base/reservation-status';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for intercept_reservation_status_legend templates.
+ */
+function intercept_base_preprocess_intercept_reservation_status_legend(&$variables) {
+  $variables['#attached']['library'][] = 'intercept_base/reservation-status-legend';
+}
+
+/**
  * Implements hook_preprocess_form() for forms.
  */
 function intercept_base_preprocess_form(&$variables) {
@@ -89,7 +124,7 @@ function intercept_base_preprocess_form(&$variables) {
       $variables['#attached']['library'][] = 'intercept_base/filters';
       break;
 
-    case 'views-exposed-form-intercept-user-events-embed':
+    case 'views-exposed-form-intercept-user-events-page':
     case 'views-exposed-form-intercept-room-reservations-page':
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
@@ -97,9 +132,9 @@ function intercept_base_preprocess_form(&$variables) {
     case 'views-exposed-form-intercept-export-room-reservations-page':
     case 'views-exposed-form-intercept-event-attendance-by-age-group-page':
     case 'views-exposed-form-intercept-event-attendance-embed':
+    case 'views-exposed-form-intercept-rooms-default':
     case 'views-exposed-form-intercept-meetings-page':
       $variables['attributes']['class'][] = 'filters__inputs';
-      $variables['attributes']['class'][] = 'filters__inputs--uniform-padding';
       $variables['attributes']['class'][] = 'form-wrapper';
       $variables['#attached']['library'][] = 'intercept_base/filters';
       break;
@@ -124,6 +159,37 @@ function intercept_base_preprocess_form_element(&$variables) {
           break;
       }
       break;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for button links.
+ */
+function intercept_base_preprocess_links__buttons(&$variables) {
+  $links = $variables['links'];
+  if (!empty($links)) {
+    foreach ($links as $key => $link) {
+      $url_options = $link['link']['#url']->getOptions();
+      $url_options['attributes']['class'][] = 'action-button__button action-button__button--outlined action-button__button--small';
+      $variables['links'][$key]['link']['#url']->setOptions($url_options);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function intercept_base_form_alter(array &$form, FormStateInterface $form_state) {
+  // Alter reservation status change forms.
+  if (strpos($form['#id'], 'reservation-status-change-form') !== FALSE) {
+    $form['current_status']['#prefix'] = '<h2>' . t('Status') . ' ';
+    $form['current_status']['#suffix'] = '</h2>';
+
+    foreach ($form['actions'] as $key => $value) {
+      if (strpos($key, '#') === FALSE) {
+        $form['actions'][$key]['#attributes']['class'][] = 'button--outline';
+      }
+    }
   }
 }
 
@@ -297,8 +363,6 @@ function intercept_base_preprocess_views_view_row_rss(&$variables) {
         $variables['enclosure'] = ['#markup' => $host . $explosion[1]];
 
         $file = file_load($explosion[2]);
-        // $uri = $file->getFileUri();
-        //$image = \Drupal::service('image.factory')->get($uri);
         $variables['enclosure_size'] = ['#markup' => $file->filesize->value];
         $variables['enclosure_mime'] = ['#markup' => $file->filemime->value];
       }
@@ -329,4 +393,138 @@ function intercept_base_preprocess_menu__account(&$variables) {
   if (!in_array('intercept_registered_customer', $roles)) {
     unset($variables['items']['user.page']);
   }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function intercept_base_theme_suggestions_block_alter(array &$suggestions, array $variables) {
+  $content = $variables['elements']['content'];
+
+  if (isset($content['#block_content']) && $content['#block_content'] instanceof BlockContentInterface) {
+    $suggestions[] = 'block__block_content__' . $content['#block_content']->bundle();
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function intercept_base_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  $request = \Drupal::request();
+  $request_attributes = $request->attributes;
+
+  if ($request_attributes->has('node')
+    && $request_attributes->get('_route') === 'entity.node.canonical') {
+    $node = $request_attributes->get('node');
+    $content_type = $node->bundle();
+
+    $suggestions[] = 'page__' . $content_type;
+  }
+}
+
+/**
+ * Implements theme_theme_suggestions_input_alter().
+ */
+function intercept_base_theme_suggestions_input_alter(&$suggestions, array $variables) {
+  $element = $variables['element'];
+
+  // Add Twig template suggestion based on data attributes. To use this, in a
+  // `hook_form_alter()` add an element to the `#attributes` array for
+  // `data-twit-suggestion`. `button` elements have a template already made.
+  if (isset($element['#attributes']['data-twig-suggestion'])) {
+    $suggestions[] = "input__{$element['#type']}__{$element['#attributes']['data-twig-suggestion']}";
+  }
+}
+
+/**
+ * Implements hook_preprocess_menu().
+ */
+function intercept_base_preprocess_menu(&$variables) {
+  $menu_name = $variables['menu_name'];
+  $attributes = &$variables['attributes'];
+
+  // Add base classes to our menu.
+  $attributes['class'][] = 'menu';
+  $attributes['class'][] = "menu--{$menu_name}";
+
+  // Add menu item classes.
+  foreach ($variables['items'] as $name => &$item) {
+    // Attributes will be an instance of the Attributes object in Drupal.
+    $item_classes = ['menu__item'];
+
+    if ($item['is_expanded'] ?? FALSE) {
+      $item_classes[] = 'menu__item--expanded';
+    }
+
+    if ($item['is_collapsed'] ?? FALSE) {
+      $item_classes[] = 'menu__item--collapsed';
+    }
+
+    if ($item['is_active_trail'] ?? FALSE) {
+      $item_classes[] = 'menu__item--active-trail';
+    }
+
+    $item['attributes']->addClass($item_classes);
+  }
+}
+
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function intercept_base_theme_suggestions_taxonomy_term_alter(array &$suggestions, array $variables) {
+  $view_mode = $variables['elements']['#view_mode'];
+  $suggestions[] = 'taxonomy_term__' . $view_mode;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ *
+ * @Todo remove after these are resolved:
+ * https://www.drupal.org/project/drupal/issues/2270883
+ * https://www.drupal.org/project/drupal/issues/2766379
+ */
+function intercept_base_theme_suggestions_user_alter(array &$suggestions, array $variables) {
+  $view_mode = $variables['elements']['#view_mode'] ?? '';
+  if ($view_mode) {
+    $suggestions[] = 'user__' . $view_mode;
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function intercept_base_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+  $id = $variables['view']->id();
+  $display = $variables['view']->current_display;
+  $suggestions[] = 'views_view--' . $id;
+  $suggestions[] = 'views_view--' . $id . '--' . $display;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function intercept_base_theme_suggestions_views_view_unformatted_alter(array &$suggestions, array $variables) {
+  $id = $variables['view']->id();
+  $display = $variables['view']->current_display;
+  $suggestions[] = 'views_view_unformatted--' . $id;
+  $suggestions[] = 'views_view_unformatted--' . $id . '--' . $display;
+}
+
+/**
+ * Builds the render array for the provided block.
+ *
+ * @param string $id
+ *   The ID of the block to render.
+ *
+ * @return null|array
+ *   A render array for the block or NULL if the block does not exist.
+ */
+function intercept_base_view_block($id) {
+  if ($block = Block::load($id)) {
+    return \Drupal::entityTypeManager()
+      ->getViewBuilder('block')
+      ->view($block);
+  }
+  return NULL;
 }

@@ -1,0 +1,144 @@
+/**
+ * @file
+ * Set base styles for the off-canvas dialog.
+ */
+/* Set some global attributes. */
+[id="drupal-off-canvas"] {
+  font-size: 0.72917rem;
+  line-height: 1.2; }
+  @media (min-width: 48em) {
+    [id="drupal-off-canvas"] {
+      font-size: 0.9375rem; } }
+  @media (min-width: 62em) {
+    [id="drupal-off-canvas"] {
+      font-size: 1.125rem; } }
+  [id="drupal-off-canvas"] h1:not([class]) {
+    font-size: 1.41667rem; }
+    @media (min-width: 48em) {
+      [id="drupal-off-canvas"] h1:not([class]) {
+        font-size: 1.875rem; } }
+    @media (min-width: 62em) {
+      [id="drupal-off-canvas"] h1:not([class]) {
+        font-size: 2.25rem; } }
+  [id="drupal-off-canvas"] h2:not([class]) {
+    font-size: 1.1875rem; }
+    @media (min-width: 48em) {
+      [id="drupal-off-canvas"] h2:not([class]) {
+        font-size: 1.5625rem; } }
+    @media (min-width: 62em) {
+      [id="drupal-off-canvas"] h2:not([class]) {
+        font-size: 1.875rem; } }
+  [id="drupal-off-canvas"] h3:not([class]) {
+    font-size: 0.95833rem;
+    line-height: 1.2; }
+    @media (min-width: 48em) {
+      [id="drupal-off-canvas"] h3:not([class]) {
+        font-size: 1.25rem; } }
+    @media (min-width: 62em) {
+      [id="drupal-off-canvas"] h3:not([class]) {
+        font-size: 1.5rem; } }
+  [id="drupal-off-canvas"] h4:not([class]) {
+    font-size: 0.88194rem; }
+    @media (min-width: 48em) {
+      [id="drupal-off-canvas"] h4:not([class]) {
+        font-size: 1.14583rem; } }
+    @media (min-width: 62em) {
+      [id="drupal-off-canvas"] h4:not([class]) {
+        font-size: 1.375rem; } }
+  [id="drupal-off-canvas"] h5:not([class]) {
+    font-size: 0.80556rem; }
+    @media (min-width: 48em) {
+      [id="drupal-off-canvas"] h5:not([class]) {
+        font-size: 1.04167rem; } }
+    @media (min-width: 62em) {
+      [id="drupal-off-canvas"] h5:not([class]) {
+        font-size: 1.25rem; } }
+  [id="drupal-off-canvas"] .field--label-inline {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex; }
+    [id="drupal-off-canvas"] .field--label-inline:not(:last-child) {
+      margin-bottom: 1em; }
+    [id="drupal-off-canvas"] .field--label-inline > .field__label {
+      -webkit-box-flex: 0;
+          -ms-flex: none;
+              flex: none;
+      font-size: inherit;
+      font-weight: 900;
+      margin-right: 1.25rem;
+      width: 8.75rem; }
+    [id="drupal-off-canvas"] .field--label-inline > .field__items {
+      font-size: inherit; }
+
+/* Classes for hidden and visually hidden elements. See hidden.module.css. */
+#drupal-off-canvas .hidden {
+  display: none; }
+
+#drupal-off-canvas .visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  word-wrap: normal; }
+
+#drupal-off-canvas .visually-hidden.focusable:active,
+#drupal-off-canvas .visually-hidden.focusable:focus {
+  position: static !important;
+  overflow: visible;
+  clip: auto;
+  width: auto;
+  height: auto; }
+
+#drupal-off-canvas .invisible {
+  visibility: hidden; }
+
+/* Some system classes. See system.admin.css. */
+#drupal-off-canvas .panel {
+  padding: 5px 5px 15px; }
+
+#drupal-off-canvas .panel__description {
+  margin: 0 0 3px;
+  padding: 2px 0 3px 0; }
+
+#drupal-off-canvas .compact-link {
+  margin: 0 0 10px 0; }
+
+#drupal-off-canvas small .admin-link:before {
+  content: " ["; }
+
+#drupal-off-canvas small .admin-link:after {
+  content: "]"; }
+
+/* Override jQuery UI */
+#drupal-off-canvas .ui-widget-content a {
+  color: #85bef4 !important; }
+
+/* Message styles */
+#drupal-off-canvas .messages {
+  background: no-repeat 10px 17px; }
+
+[dir="rtl"] #drupal-off-canvas .messages {
+  background-position: right 10px top 17px; }
+
+#drupal-off-canvas .messages abbr {
+  color: #444; }
+
+#drupal-off-canvas .messages--status {
+  color: #325e1c;
+  background-color: #f3faef;
+  background-image: url(../../../images/core/icons/73b355/check.svg); }
+
+#drupal-off-canvas .messages--warning {
+  color: #734c00;
+  background-color: #fdf8ed;
+  background-image: url(../../../images/core/icons/e29700/warning.svg); }
+
+#drupal-off-canvas .messages--error {
+  color: #a51b00;
+  background-color: #fcf4f2;
+  background-image: url(../../../images/core/icons/e32700/error.svg); }
+
+#drupal-off-canvas .messages--error div[role="alert"] {
+  color: inherit;
+  background: transparent; }

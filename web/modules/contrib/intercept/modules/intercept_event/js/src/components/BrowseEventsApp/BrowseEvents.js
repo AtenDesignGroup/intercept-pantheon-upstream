@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 // Lodash
 import debounce from 'lodash/debounce';
 import difference from 'lodash/difference';
+import last from 'lodash/last';
 import xor from 'lodash/xor';
 import pick from 'lodash/pick';
 import throttle from 'lodash/throttle';
@@ -15,6 +16,9 @@ import uniq from 'lodash/uniq';
 
 // Moment
 import moment from 'moment';
+
+// in-viewport
+import inViewport from 'in-viewport';
 
 /* eslint-disable */
 import interceptClient from 'interceptClient';
@@ -39,7 +43,7 @@ const eventIncludes = (view = 'list') =>
 const viewOptions = [{ key: 'list', value: 'List' }, { key: 'calendar', value: 'Calendar' }];
 
 const sparseFieldsets = (view = 'list') =>
-  view === 'list'
+  (view === 'list'
     ? {
       [c.TYPE_EVENT]: [
         'drupal_internal__nid',
@@ -66,16 +70,16 @@ const sparseFieldsets = (view = 'list') =>
       [c.TYPE_FILE]: ['drupal_internal__fid', 'uri', 'url'],
     }
     : {
-        [c.TYPE_EVENT]: [
-          'drupal_internal__nid',
-          'title',
-          'path',
-          'field_date_time',
-          'field_must_register',
-          'field_location',
-          DESIGNATION_FIELD,
-        ],
-      };
+      [c.TYPE_EVENT]: [
+        'drupal_internal__nid',
+        'title',
+        'path',
+        'field_date_time',
+        'field_must_register',
+        'field_location',
+        DESIGNATION_FIELD,
+      ],
+    });
 
 function getDate(value, view = 'day', boundary = 'start') {
   const method = boundary === 'start' ? 'startOf' : 'endOf';
@@ -250,6 +254,7 @@ class BrowseEvents extends Component {
       date: props.date,
       filters: props.filters,
       view: props.view,
+      scrollSatisfied: false,
       fetcher: null,
     };
     this.handleCalendarNavigate = this.handleCalendarNavigate.bind(this);
@@ -267,6 +272,28 @@ class BrowseEvents extends Component {
     this.setFetchers(this.props.filters, this.props.view, this.props.calView, this.props.date);
     this.props.fetchRegistrations();
     window.addEventListener('scroll', this.handleScroll);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { scrollSatisfied } = this.state;
+    const { scroll, events, view } = this.props;
+
+    if (events.length > 0 && view === 'list') {
+      const lastPageLoaded = last(Array.from(document.getElementsByClassName('content-list')));
+      if (!scrollSatisfied && scroll !== null && scroll !== 0) {
+        const scrollPage = last(Array.from(document.querySelectorAll(`[data-page-num='${scroll}']`)));
+        if (scrollPage !== undefined) {
+          scrollPage.scrollIntoView(true);
+          this.setState({ scrollSatisfied: true });
+        }
+        else if (last(events).items.length === 0) {
+          this.setState({ scrollSatisfied: true });
+        }
+        else {
+          lastPageLoaded.scrollIntoView(true);
+        }
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -318,6 +345,10 @@ class BrowseEvents extends Component {
     this.doFetch(fetcher);
   }
 
+  handlePageChange = (value) => {
+    this.props.onChangePage(value);
+  };
+
   handleViewChange = (value) => {
     this.props.onChangeView(value);
     this.setFetchers(this.props.filters, value, this.props.calView, this.props.date);
@@ -366,7 +397,7 @@ class BrowseEvents extends Component {
     else {
       // Find parent
       const related = tree.filter(
-        node => node.children.filter(child => child.key === altered).length > 0
+        node => node.children.filter(child => child.key === altered).length > 0,
       ).pop();
 
       // If removing a child
@@ -415,6 +446,18 @@ class BrowseEvents extends Component {
     if (windowBottom >= docHeight - 1500) {
       this.doFetchMore(c.TYPE_EVENT);
     }
+
+    const currentPage = last(Array.from(document.getElementsByClassName('content-list')).filter(element => inViewport(element, { offset: -300 })));
+    if (currentPage !== undefined) {
+      const { scroll } = this.props;
+      if (scroll !== currentPage.getAttribute('data-page-num')) {
+        this.handlePageChange(currentPage.getAttribute('data-page-num'));
+      }
+    }
+  }
+
+  nextPage = () => {
+    this.doFetchMore(c.TYPE_EVENT);
   }
 
   doFetch(fetcher) {
@@ -448,6 +491,7 @@ class BrowseEvents extends Component {
       ) : (
         <EventCalendar
           events={calendarEvents}
+          filters={filters}
           onNavigate={handleCalendarNavigate}
           onView={handleCalendarView}
           defaultView={calView}
@@ -533,15 +577,20 @@ BrowseEvents.propTypes = {
   date: PropTypes.instanceOf(Date),
   view: PropTypes.string,
   filters: PropTypes.object,
+  page: PropTypes.number,
+  scroll: PropTypes.number,
   onChangeCalView: PropTypes.func.isRequired,
   onChangeView: PropTypes.func.isRequired,
   onChangeFilters: PropTypes.func.isRequired,
   onChangeDate: PropTypes.func.isRequired,
+  onChangePage: PropTypes.func.isRequired,
 };
 
 BrowseEvents.defaultProps = {
   view: 'list',
   calView: 'month',
+  page: 0,
+  scroll: 0,
   date: utils.getUserTimeNow(),
   filters: {
     [c.KEYWORD]: '',

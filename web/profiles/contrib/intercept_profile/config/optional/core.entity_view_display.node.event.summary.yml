@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_status
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
@@ -69,6 +70,11 @@ content:
   flag_saved_event:
     weight: 10
     region: content
+  flag_subscribe_node:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    region: content
 hidden:
   evaluation_attendee_default: true
   evaluation_attendee_js: true
@@ -84,6 +90,7 @@ hidden:
   field_event_is_template: true
   field_event_register_period: true
   field_event_series: true
+  field_event_status: true
   field_event_tags: true
   field_event_type: true
   field_event_type_primary: true

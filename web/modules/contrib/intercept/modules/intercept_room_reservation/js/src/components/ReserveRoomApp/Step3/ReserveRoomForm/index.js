@@ -366,7 +366,7 @@ class ReserveRoomForm extends PureComponent {
                     // max={roomCapacity.max}
                     name={'attendees'}
                     int
-                    required={!utils.userIsStaff()}
+                    required
                     validations={{
                       isPositive: true,
                       isLesserOrEqualTo: roomCapacity.max,
@@ -398,7 +398,7 @@ class ReserveRoomForm extends PureComponent {
                     handleChange={this.onInputChange(c.TYPE_MEETING_PURPOSE)}
                     value={values.meetingPurpose}
                     label={'Purpose for using this room'}
-                    required={!utils.userIsStaff()}
+                    required
                   />
                   <InputText
                     label="Description"

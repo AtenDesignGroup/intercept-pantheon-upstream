@@ -137,7 +137,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    *   Whether the waitlist field is enabled.
    */
   protected function waitlistCapacity() {
-    return $this->getEntity()->get('field_waitlist_max')->getString();
+    return (int) $this->getEntity()->get('field_waitlist_max')->getString();
   }
 
   /**

@@ -1,0 +1,97 @@
+{{ attach_library('intercept_base/page-header') }}
+{{ attach_library('intercept_base/userEvents') }}
+
+{% include '@intercept-base-components/staff-management-menu/staff-management-menu.twig' with {
+    content: page.staff_management_menu
+  } only %}
+{%
+  set classes = [
+    dom_id ? 'js-view-dom-id-' ~ dom_id,
+    'l--page-wrapper',
+  ]
+%}
+<div{{ attributes.addClass(classes) }}>
+  <div class="l--page">
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.header
+    } only %}
+
+    {% include '@intercept-base-components/header/header.twig' with {
+      header: {
+        menu: page.primary_menu,
+        utilities: page.secondary_menu
+      }
+    } %}
+
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.breadcrumb
+    } only %}
+
+    {% include '@intercept-base-components/region/region--offset.twig' with {
+      content: page.highlighted
+    } only %}
+
+    {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.help
+    } only %}
+
+    {% block main %}
+    <main role="main" class="l--section">
+      <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
+
+      <header class="page-header">
+        {% include '@intercept-base-components/page-title/page-title.twig' with {
+          text: 'My Events'|t,
+          modifiers: ['inline']
+        } only %}
+
+        {% include '@intercept-base-components/view-switcher/view-switcher.twig' with {
+          links: [
+            { text: 'Past'|t, href: '?field_date_time_value=1'},
+            { text: 'Upcoming'|t, href: '?field_date_time_value=2'},
+          ],
+          attr: {
+            class: 'js-user-events-switcher'
+          }
+        } only %}
+        {{ header }}
+      </header>
+
+      <div class="l--subsection">
+        <div class="filters filters--uniform-padding">
+        {{ exposed }}
+        </div>
+      </div>
+
+      {{ attachment_before }}
+
+      {% if rows %}
+        <div class="view__content">
+          {{ rows }}
+        </div>
+      {% elseif empty %}
+        <div class="view__empty">
+          {{ empty }}
+        </div>
+      {% endif %}
+    </main>
+    {% endblock %}
+      {{ pager }}
+
+  {{ attachment_after }}
+  {% if more %}
+  {% include more_link with {
+    text: more['#title'],
+    url: more['#url']|render
+  } %}
+  {% endif %}
+
+  {% if footer %}
+    <footer>
+      {{ footer }}
+    </footer>
+  {% endif %}
+
+  {{ feed_icons }}
+  </div>
+</div>

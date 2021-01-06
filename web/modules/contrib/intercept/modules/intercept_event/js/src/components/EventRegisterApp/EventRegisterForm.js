@@ -213,11 +213,15 @@ class EventRegisterForm extends React.Component {
   getLimitText() {
     const limit = this.getRegistrationLimit();
     // Must not exceed total registrations per user.
-    if (limit > 0) {
-      return `Limit ${limit} registrations per user`;
-    }
 
-    return null;
+    switch(limit) {
+      case 0: // no limit, return no message
+        return null;
+      case 1: // limit 1 registration per user
+        return `Limit ${limit} registration per user`
+      default: // limit (n) registrations per user
+        return `Limit ${limit} registrations per user`
+    }
   }
 
   getStatusText() {

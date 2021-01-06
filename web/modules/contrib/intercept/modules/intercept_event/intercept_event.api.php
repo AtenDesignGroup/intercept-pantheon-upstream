@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\node\NodeInterface;
 
 /**
  * @addtogroup hooks
@@ -22,6 +23,16 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  */
 function hook_intercept_registration_emails_alter(array &$emails) {
   $emails['reactivated'] = new TranslatableMarkup('Registration reactivated');
+}
+
+/**
+ * Allows the event registration access to be altered.
+ *
+ * @param \Drupal\node\NodeInterface $event
+ *   The event that is being registered for.
+ */
+function hook_event_registration_event_create_access_alter(NodeInterface $event) {
+
 }
 
 /**

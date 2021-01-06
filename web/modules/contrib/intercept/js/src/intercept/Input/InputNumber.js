@@ -4,16 +4,19 @@ import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 import { TextField } from '@material-ui/core';
 
 class InputNumber extends React.PureComponent {
-  componentDidUpdate() {
-    // Force this component to be treated like a controlled component
-    // by updating formsy with passed prop values.
-    if (this.props.value !== this.props.getValue()) {
-      this.props.setValue(this.props.value);
-    }
-  }
-
   render() {
-    const { step, label, onChange, min, max, int, required } = this.props;
+    const {
+      errorMessage,
+      isValid,
+      step,
+      label,
+      onChange,
+      min,
+      max,
+      int,
+      required,
+      value,
+    } = this.props;
 
     const handleChange = (event) => {
       const parse = int ? parseInt : parseFloat;
@@ -22,8 +25,6 @@ class InputNumber extends React.PureComponent {
       onChange(v);
     };
 
-    const value = this.props.getValue();
-
     return (
       <TextField
         label={label}
@@ -31,8 +32,8 @@ class InputNumber extends React.PureComponent {
         type="number"
         onChange={handleChange}
         value={value || ''}
-        error={!this.props.isValid()}
-        helperText={this.props.getErrorMessage() || this.props.helperText}
+        error={!isValid}
+        helperText={errorMessage || this.props.helperText}
         className="input input--number"
         InputLabelProps={{
           // shrink: value,

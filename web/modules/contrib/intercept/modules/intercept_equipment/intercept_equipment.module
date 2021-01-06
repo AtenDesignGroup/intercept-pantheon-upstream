@@ -212,7 +212,7 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInte
     // Show future equipment reservations by default.
     if (array_key_exists('field_dates_value_1', $form)) {
       $form['field_dates_value_1']['min']['#default_value'] = date('m/d/Y');
-      $end_date = new DateTime('+3 months');
+      $end_date = new \DateTime('+3 months');
       $form['field_dates_value_1']['max']['#default_value'] = date_format($end_date, 'm/d/Y');
     }
 

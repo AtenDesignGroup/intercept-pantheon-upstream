@@ -45,6 +45,31 @@
   }
 }
 
+.action-button__button {
+
+  &:hover,
+  &:focus {
+    background-color: rgba($clr-primary, 0.16);
+  }
+  
+  &--outlined {
+    @include spacing(margin-bottom, tiny);
+    @include spacing(margin-top, tiny);
+    @include spacing(padding-bottom, narrow);
+    @include spacing(padding-top, narrow);
+    background-color: $white;
+    border: 1px solid $clr-border;
+    border-radius: 0;
+    color: $clr-primary;
+    justify-content: center;
+    text-align: center;
+  }
+
+  &--small {
+    font-size: 0.8125rem;
+  }
+}
+
 .action-button__message {
   @include fs(x-small);
   @include lh(0);

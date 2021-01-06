@@ -30,7 +30,13 @@ class PathAliasTest extends PathTestBase {
     parent::setUp();
 
     // Create test user and log in.
-    $web_user = $this->drupalCreateUser(['create page content', 'edit own page content', 'administer url aliases', 'create url aliases', 'access content overview']);
+    $web_user = $this->drupalCreateUser([
+      'create page content',
+      'edit own page content',
+      'administer url aliases',
+      'create url aliases',
+      'access content overview',
+    ]);
     $this->drupalLogin($web_user);
   }
 
@@ -336,6 +342,12 @@ class PathAliasTest extends PathTestBase {
 
     // Create sixth test node.
     $node6 = $this->drupalCreateNode();
+
+    // Test the special case where the alias is '0'.
+    $edit = ['path[0][alias]' => '0'];
+    $this->drupalGet($node6->toUrl('edit-form'));
+    $this->submitForm($edit, 'Save');
+    $this->assertSession()->pageTextContains('The alias path has to start with a slash.');
 
     // Create an invalid alias with two leading slashes and verify that the
     // extra slash is removed when the link is generated. This ensures that URL

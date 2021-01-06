@@ -38,10 +38,6 @@
     @include spacing(margin-top, tight);
   }
 
-  // &:not(:last-child) {
-  //   @include spacing(margin-bottom, tight);
-  // }
-
   > .form-item {
     flex: 1;
   }
@@ -63,6 +59,10 @@
   &:not(:first-child) {
     @include spacing(margin-top, narrow);
   }
+}
+
+.form-container--inline {
+  display: flex;
 }
 
 //

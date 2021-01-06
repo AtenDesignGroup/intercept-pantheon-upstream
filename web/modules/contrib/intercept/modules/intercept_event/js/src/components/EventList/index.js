@@ -26,15 +26,23 @@ class EventList extends React.Component {
 
     const list =
       events.length > 0 ? (
-        map(events, group => (
+        map(events, (group, index) => (
           <ContentList
             heading={utils.getDayDisplay(moment.tz(group.date, utils.getUserTimezone()))}
             items={teasers(group.items)}
             key={group.key}
+            page={index}
           />
         ))
       ) : (
-        !loading && <p key={0}>No events have been loaded.</p>
+        !loading && <div key={0}>
+          <p>No events were found.</p>
+          <p>Try:</p>
+          <ul>
+            <li>Confirming the spelling of your search words.</li>
+            <li>Using other words for the subject of your searches.</li>
+          </ul>
+        </div>
       );
 
     return <div className="events-list">{list}</div>;

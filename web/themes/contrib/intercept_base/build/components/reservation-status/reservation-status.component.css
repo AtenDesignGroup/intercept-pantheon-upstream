@@ -1,0 +1,24 @@
+.reservation-status {
+  font-size: 0.80556rem;
+  line-height: 1.2;
+  color: #4c4d4f;
+  display: inline-block;
+  font-weight: 900;
+  line-height: 24px; }
+  @media (min-width: 48em) {
+    .reservation-status {
+      font-size: 1.04167rem; } }
+  @media (min-width: 62em) {
+    .reservation-status {
+      font-size: 1.25rem; } }
+  .reservation-status::before {
+    background-color: #eef1f4;
+    border-radius: 50%;
+    content: "";
+    display: inline-block;
+    height: .7em;
+    margin-right: .1em;
+    width: .7em; }
+
+h2 > .reservation-status {
+  margin-left: 1em; }

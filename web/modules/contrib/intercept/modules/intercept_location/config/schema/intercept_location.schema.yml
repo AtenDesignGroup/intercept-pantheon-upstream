@@ -1,0 +1,10 @@
+field.formatter.settings.intercept_room_location:
+  type: mapping
+  label: Room + Location
+  mapping:
+    link:
+      type: boolean
+      label: 'Link to Room'
+    locaion_link:
+      type: boolean
+      label: 'Link to Location'

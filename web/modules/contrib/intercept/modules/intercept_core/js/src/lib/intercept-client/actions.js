@@ -10,7 +10,7 @@ export const receiveTranslation = actionCreator(
   'resp',
   'resource',
   'langcode',
-  'id'
+  'id',
 );
 
 export const failure = actionCreator(t.FAILURE, 'error', 'resource', 'id');
@@ -30,13 +30,13 @@ export const markDirty = actionCreator(t.MARK_DIRTY, 'resource', 'id');
 export const setTimestamp = actionCreator(
   t.SET_TIMESTAMP,
   'resource',
-  'timestamp'
+  'timestamp',
 );
 
 export const setValidating = actionCreator(
   t.SET_VALIDATING,
   'resource',
-  'value'
+  'value',
 );
 
 export const add = actionCreator(t.ADD, 'data', 'resource', 'id');

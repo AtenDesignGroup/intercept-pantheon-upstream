@@ -5,7 +5,6 @@ namespace Drupal\intercept_event\Form;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\intercept_event\CustomerSearchFormTrait;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form controller for Event Attendance edit forms.
@@ -15,18 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
 
   use CustomerSearchFormTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager'),
-      $container->get('entity_type.bundle.info'),
-      $container->get('datetime.time'),
-      $container->get('externalauth.externalauth')
-    );
-  }
 
   /**
    * {@inheritdoc}

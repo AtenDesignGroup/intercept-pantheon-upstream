@@ -182,10 +182,6 @@ a:not([class]) {
   }
 }
 
-strong,
-b {
-}
-
 del {
   opacity: 0.6;
 }
@@ -258,11 +254,6 @@ audio {
     background-color: $gray-80;
   }
 
-  &::-webkit-media-controls-volume-slider,
-  &::-webkit-media-controls-timeline {
-    // background-color: $gray-20;
-  }
-
   &::-webkit-media-slider-thumb {
     cursor: pointer;
   }
@@ -303,9 +294,6 @@ ol:not([class]) {
   @include list--numbered;
 }
 
-li {
-}
-
 ul,
 ol,
 dl {
@@ -315,14 +303,9 @@ dl {
 //
 // Definition Lists
 //
-dl {
-}
 
 dt {
   font-weight: $fw-bold;
-}
-
-dd {
 }
 
 form,
@@ -513,12 +496,6 @@ caption {
 tbody + tbody {
   border-top: 2px solid $clr-table-border;
 }
-
-tr {
-}
-
-// tr:nth-of-type(odd) { background-color: $clr-table-odd; }
-// tr:nth-of-type(even) { background-color: $clr-table-even; }
 
 :focus {
   outline-width: 3px;

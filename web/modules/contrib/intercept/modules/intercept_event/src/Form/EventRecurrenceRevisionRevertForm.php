@@ -30,7 +30,7 @@ class EventRecurrenceRevisionRevertForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $EventRecurrenceStorage;
+  protected $eventRecurrenceStorage;
 
   /**
    * The date formatter service.
@@ -48,7 +48,7 @@ class EventRecurrenceRevisionRevertForm extends ConfirmFormBase {
    *   The date formatter service.
    */
   public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter) {
-    $this->EventRecurrenceStorage = $entity_storage;
+    $this->eventRecurrenceStorage = $entity_storage;
     $this->dateFormatter = $date_formatter;
   }
 
@@ -101,7 +101,7 @@ class EventRecurrenceRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $event_recurrence_revision = NULL) {
-    $this->revision = $this->EventRecurrenceStorage->loadRevision($event_recurrence_revision);
+    $this->revision = $this->eventRecurrenceStorage->loadRevision($event_recurrence_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;

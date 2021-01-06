@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_duration_min
+    - node.type.equipment
+  module:
+    - duration_field
+id: node.equipment.field_duration_min
+field_name: field_duration_min
+entity_type: node
+bundle: equipment
+label: 'Minimum Checkout Time'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  granularity: 'd:h'
+field_type: duration

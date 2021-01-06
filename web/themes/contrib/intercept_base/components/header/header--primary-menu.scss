@@ -33,6 +33,7 @@
   @include nav;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
 
   @include bp(large) {
     flex-direction: row;
@@ -71,6 +72,9 @@
     }
   }
 }
+nav.menu--main {
+  display: block;
+}
 
 // Secondary Menu (MENU)
 .menu--main-navigation-secondary {
@@ -93,7 +97,7 @@
   position: absolute;
 }
 
-label[for='nav-trigger'] {
+label[for="nav-trigger"] {
   align-items: center;
   cursor: pointer;
   display: flex;
@@ -137,7 +141,7 @@ label[for='nav-trigger'] {
   transition: all $duration ease-in-out;
 }
 
-.header__menu-main > div {
+.region--primary-menu {
   @include bp(none large) {
     @include box--gutters();
     @include box--padded;
@@ -154,6 +158,16 @@ label[for='nav-trigger'] {
     top: rem(60px);
     transform: translateY(-840px);
     transition: all $duration * 1.5 ease-in-out;
+    width: 100%;
+    z-index: -1;
+  }
+}
+
+.region--primary-menu--content {
+  @include bp(none large) {
+    height: 100%;
+    min-height: rem(600px);
+    padding-bottom: 60px;
     width: 100%;
     z-index: -1;
   }
@@ -177,7 +191,7 @@ label[for='nav-trigger'] {
 }
 
 .header__menu-main .nav-trigger:checked {
-  ~ div:not([class]) {
+  ~ .region--primary-menu {
     @include bp(none large) {
       opacity: 1;
       overflow-y: auto;

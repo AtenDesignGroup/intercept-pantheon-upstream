@@ -92,15 +92,44 @@ class RecurringEventManager {
    * Gets the event recurrence if this event is a base event.
    */
   public function getBaseEventRecurrence(NodeInterface $node) {
-    if ($node->isNew()) {
+    if (!$node->id() || $node->bundle() != 'event') {
       return FALSE;
     }
-    $storage = $this->entityTypeManager->getStorage('event_recurrence');
-    $recurrences = $storage->loadByProperties([
-      'event' => $node->id(),
-    ]);
-    return $recurrences ? reset($recurrences) : FALSE;
+    $event_recurrences = $node->get('event_recurrence')->referencedEntities();
+    if (empty($event_recurrences)) {
+      return FALSE;
+    }
+    foreach ($event_recurrences as $recurrence) {
+      /** @var \Drupal\intercept_event\Entity\EventRecurrenceInterface $recurrence */
+      if ($recurrence->getBaseEventId() == $node->id()) {
+        return $recurrence;
+      }
+    }
+    return FALSE;
   }
+
+  /**
+   * Determines whether the event is part of a recurring event or not.
+   */
+  public function isRecurringEvent(NodeInterface $node) {
+    $nid = $node->id();
+    // Join the event recurrence id of the node to table event_recurrence and
+    // make sure that there's a value under the event column in that table.
+    // If there isn't one, then we should return false.
+    $database = \Drupal::database();
+    $query = $database->select('node_field_data', 'n');
+    $query->fields('n', ['nid']);
+    $query->condition('n.type', 'event');
+    $query->condition('n.nid', $nid);
+    $query->join('event_recurrence', 'er', 'er.id = n.event_recurrence');
+    $query->isNotNull('er.event');
+    $result = $query->countQuery()->execute()->fetchField();
+
+    if (!empty($result) && $result == '1') {
+      return TRUE;
+    }
+    return FALSE;
+}
 
   /**
    * Form submit handler for the event.
@@ -258,7 +287,7 @@ class RecurringEventManager {
 
     $event_recurrence = $entity_form['#entity'];
     $recurring = $form_state->getValue(['event_recurrence', 0]);
-    if ($recurring['enabled'] && $event_recurrence->isNew()) {
+    if (($recurring['enabled'] !== 0) && $event_recurrence->isNew()) {
       $form_state->set('save_base_event', $event_recurrence);
     }
 
@@ -267,22 +296,24 @@ class RecurringEventManager {
     $complete_form = &$form_state->getCompleteForm();
     $inline_entity_form = &NestedArray::getValue($complete_form, $entity_form['#array_parents']);
 
-    // If the checkbox is disabled and this is a base event.
-    if (empty($recurring['enabled']) && $recurring_event_manager->getBaseEventRecurrence($node)) {
-      $existing_events = $event_recurrence->getEvents();
-      if (!empty($existing_events)) {
-        $nodes = $event_recurrence->deleteEvents();
-        $recurring_event_manager->messenger->addStatus(new TranslatableMarkup('@count recurring events deleted.', ['@count' => count($nodes)]));
-      }
-      // Flag to be deleted in WidgetSubmit::doSubmit().
-      $widget_state = &static::getWidgetState($form_state);
-      $widget_state['delete'][] = $widget_state['entities'][0]['entity'];
-      unset($widget_state['entities'][0]);
-
+    if ($recurring['enabled'] == 0) {
       // Now set the parent entity to remove the field value.
       // $entity_form is by reference but will not change the value of the
       // field.
       $inline_entity_form['#entity'] = NULL;
+
+      // If the checkbox is disabled and this is a base event.
+      if ($recurring_event_manager->getBaseEventRecurrence($node)) {
+        $existing_events = $event_recurrence->getEvents();
+        if (!empty($existing_events)) {
+          $nodes = $event_recurrence->deleteEvents();
+          $recurring_event_manager->messenger->addStatus(new TranslatableMarkup('@count recurring events deleted.', ['@count' => count($nodes)]));
+        }
+        // Flag to be deleted in WidgetSubmit::doSubmit().
+        $widget_state = &static::getWidgetState($form_state);
+        $widget_state['delete'][] = $widget_state['entities'][0]['entity'];
+        unset($widget_state['entities'][0]);
+      }
     }
 
     // If this is NOT a base event and we're removing it from the recurrence.

@@ -1,3 +1,7 @@
-duration:
-  label: 'Duration'
-  class: '\Drupal\duration_field\Plugin\DataType\DurationData'
+iso_8601_string:
+  label: 'ISO 8601 Duration String'
+  class: '\Drupal\duration_field\Plugin\DataType\Iso8601StringData'
+
+granularity:
+  label: 'Granularity string'
+  class: '\Drupal\duration_field\Plugin\DataType\GranularityStringData'

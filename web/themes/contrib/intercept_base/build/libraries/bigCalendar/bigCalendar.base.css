@@ -114,7 +114,7 @@ button.rbc-input::-moz-focus-inner {
   .rbc-month-view .rbc-date-cell.rbc-now:before {
     content: '';
     position: absolute;
-    background-color: #ffa726;
+    background-color: #D13400;
     display: block;
     margin: auto;
     top: 0;
@@ -202,16 +202,16 @@ button.rbc-input::-moz-focus-inner {
               order: 3; } }
   .rbc-btn-group--views > button:active, .rbc-btn-group--views > button.rbc-active {
     color: #fff;
-    background-color: #ffa726;
-    border-color: #ffa726; }
+    background-color: #D13400;
+    border-color: #D13400; }
   .rbc-btn-group--views > button:active:hover, .rbc-btn-group--views > button.rbc-active:hover, .rbc-btn-group--views > button:active:focus, .rbc-btn-group--views > button.rbc-active:focus {
     color: #fff;
-    background-color: #ffa726;
-    border-color: #ffa726; }
+    background-color: #D13400;
+    border-color: #D13400; }
   .rbc-btn-group--views > button:hover, .rbc-btn-group--views > button:focus {
-    color: #ffa726;
+    color: #D13400;
     background-color: #fff;
-    border-color: #ffa726; }
+    border-color: #D13400; }
 
 .rbc-btn-group > button:not(:first-child):not(:last-child) {
   border-radius: 0; }
@@ -254,7 +254,9 @@ button.rbc-input::-moz-focus-inner {
       font-size: 0.75rem; } }
 
 .rbc-event-content {
-  font-size: 0.5rem; }
+  font-size: 0.5rem;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
   @media (min-width: 48em) {
     .rbc-event-content {
       font-size: 0.625rem; } }

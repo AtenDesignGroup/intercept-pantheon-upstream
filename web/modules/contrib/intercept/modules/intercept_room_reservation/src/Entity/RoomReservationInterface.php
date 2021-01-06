@@ -68,4 +68,20 @@ interface RoomReservationInterface extends ReservationInterface {
    */
   public function validationWarnings();
 
+  /**
+   * Gets notes associated with this reservation.
+   *
+   * @return string
+   *   The reservation notes.
+   */
+  public function getNotes();
+
+  /**
+   * Sets notes associated with this reservation.
+   *
+   * @param string $notes
+   *   The reservation notes.
+   */
+  public function setNotes($notes);
+
 }

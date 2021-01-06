@@ -19,7 +19,6 @@ function PrintableEventSummary(props) {
 
   const title = get(event, 'attributes.title');
   const dateStart = utils.dateFromDrupal(event.attributes['field_date_time'].value);
-  // const dateEnd = utils.dateFromDrupal(event.attributes['field_date_time'].end_value);
   const time = utils.getTimeDisplay(dateStart);
   // const time = `${utils.getTimeDisplay(dateStart)} - ${utils.getTimeDisplay(dateEnd)}`;
   const location = get(

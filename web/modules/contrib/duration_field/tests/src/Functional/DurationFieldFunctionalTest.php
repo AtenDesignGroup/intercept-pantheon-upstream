@@ -7,10 +7,20 @@ namespace Drupal\Tests\duration_field\Functional;
  *
  * @group duration_field
  */
-class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
+class DurationFieldFunctionalTest extends DurationFieldBrowserTestBase {
 
+  /**
+   * Admin user for testing.
+   *
+   * @var \Drupal\user\UserInterface
+   */
   protected $adminUser;
 
+  /**
+   * The ID of the custom content type created for testing.
+   *
+   * @var string
+   */
   protected $contentType;
 
   /**
@@ -21,17 +31,22 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
   protected static $modules = ['field', 'field_ui', 'duration_field', 'node'];
 
   /**
-   * Tests human readable values.
+   * {@inheritdoc}
    */
-  public function testHumanReadableAll() {
+  protected $defaultTheme = 'stark';
+
+  /**
+   * Tests the Human Friendly duration field formatter outputs correct data.
+   */
+  public function testHumanReadableFormatter() {
     $this->createDefaultSetup();
     $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
-    $this->fillTextValue('#edit-field-duration-0-value-year', 1);
-    $this->fillTextValue('#edit-field-duration-0-value-month', 2);
-    $this->fillTextValue('#edit-field-duration-0-value-day', 3);
-    $this->fillTextValue('#edit-field-duration-0-value-hour', 4);
-    $this->fillTextValue('#edit-field-duration-0-value-minute', 5);
-    $this->fillTextValue('#edit-field-duration-0-value-second', 6);
+    $this->fillTextValue('#edit-field-duration-0-duration-y', 1);
+    $this->fillTextValue('#edit-field-duration-0-duration-m', 2);
+    $this->fillTextValue('#edit-field-duration-0-duration-d', 3);
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 4);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 5);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 6);
     $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
     $this->assertTextExists('1 year 2 months 3 days 4 hours 5 minutes 6 seconds');
@@ -58,15 +73,15 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
   }
 
   /**
-   * Test human readable times.
+   * Tests the Time Format duration field formatter outputs correct data.
    */
-  public function testHumanReadableTime() {
-    $this->createDefaultSetup(['hour', 'minute', 'second']);
+  public function testTimeFormatter() {
+    $this->createDefaultSetup(['h', 'i', 's']);
 
     $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
-    $this->fillTextValue('#edit-field-duration-0-value-hour', 1);
-    $this->fillTextValue('#edit-field-duration-0-value-minute', 2);
-    $this->fillTextValue('#edit-field-duration-0-value-second', 3);
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 1);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 2);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 3);
     $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
     $this->assertTextExists('1 hour 2 minutes 3 seconds');
@@ -75,16 +90,16 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
   }
 
   /**
-   * Tests human readable dates.
+   * Tests human readable date field formatter.
    */
   public function testHumanReadableDate() {
 
-    $this->createDefaultSetup(['year', 'month', 'day']);
+    $this->createDefaultSetup(['y', 'm', 'd']);
 
     $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
-    $this->fillTextValue('#edit-field-duration-0-value-year', 6);
-    $this->fillTextValue('#edit-field-duration-0-value-month', 5);
-    $this->fillTextValue('#edit-field-duration-0-value-day', 4);
+    $this->fillTextValue('#edit-field-duration-0-duration-y', 6);
+    $this->fillTextValue('#edit-field-duration-0-duration-m', 5);
+    $this->fillTextValue('#edit-field-duration-0-duration-d', 4);
     $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
     $this->assertTextExists('6 years 5 months 4 days');
@@ -92,7 +107,7 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
   }
 
   /**
-   * Tests raw values.
+   * Tests the raw value field formatter.
    */
   public function testRawValue() {
 
@@ -103,19 +118,19 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
     $this->assertStatusCodeEquals(200);
     $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
     $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
-    $this->fillTextValue('#edit-field-duration-0-value-year', 1);
-    $this->fillTextValue('#edit-field-duration-0-value-month', 2);
-    $this->fillTextValue('#edit-field-duration-0-value-day', 3);
-    $this->fillTextValue('#edit-field-duration-0-value-hour', 4);
-    $this->fillTextValue('#edit-field-duration-0-value-minute', 5);
-    $this->fillTextValue('#edit-field-duration-0-value-second', 6);
+    $this->fillTextValue('#edit-field-duration-0-duration-y', 1);
+    $this->fillTextValue('#edit-field-duration-0-duration-m', 2);
+    $this->fillTextValue('#edit-field-duration-0-duration-d', 3);
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 4);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 5);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 6);
     $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
     $this->assertTextExists('P1Y2M3DT4H5M6S');
   }
 
   /**
-   * Tests full time output.
+   * Tests full time for the Time Formatter.
    */
   public function testTimeFull() {
 
@@ -126,35 +141,49 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
     $this->assertStatusCodeEquals(200);
     $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
     $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
-    $this->fillTextValue('#edit-field-duration-0-value-year', 1);
-    $this->fillTextValue('#edit-field-duration-0-value-month', 2);
-    $this->fillTextValue('#edit-field-duration-0-value-day', 3);
-    $this->fillTextValue('#edit-field-duration-0-value-hour', 4);
-    $this->fillTextValue('#edit-field-duration-0-value-minute', 5);
-    $this->fillTextValue('#edit-field-duration-0-value-second', 6);
+    $this->fillTextValue('#edit-field-duration-0-duration-y', 1);
+    $this->fillTextValue('#edit-field-duration-0-duration-m', 2);
+    $this->fillTextValue('#edit-field-duration-0-duration-d', 3);
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 4);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 5);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 6);
     $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
-    $this->assertTextExists('1-2-3 4:05:06');
+    $this->assertTextExists('1/2/3 04:05:06');
+
+    $this->drupalGet('node/add/test_type');
+    $this->assertStatusCodeEquals(200);
+    $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
+    $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
+    $this->fillTextValue('#edit-field-duration-0-duration-y', 1);
+    $this->fillTextValue('#edit-field-duration-0-duration-m', 2);
+    $this->fillTextValue('#edit-field-duration-0-duration-d', 3);
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 12);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 13);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 14);
+    $this->click('input[name="op"]');
+    $this->assertStatusCodeEquals(200);
+    $this->assertTextExists('1/2/3 12:13:14');
   }
 
   /**
-   * Tests the date part of a time.
+   * Tests the date part of the time formatter.
    */
   public function testTimeDate() {
 
-    $this->createDefaultSetup(['year', 'month', 'day']);
+    $this->createDefaultSetup(['y', 'm', 'd']);
     $this->setFormatter('time');
 
     $this->drupalGet('node/add/test_type');
     $this->assertStatusCodeEquals(200);
     $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
     $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
-    $this->fillTextValue('#edit-field-duration-0-value-year', 1);
-    $this->fillTextValue('#edit-field-duration-0-value-month', 2);
-    $this->fillTextValue('#edit-field-duration-0-value-day', 3);
+    $this->fillTextValue('#edit-field-duration-0-duration-y', 1);
+    $this->fillTextValue('#edit-field-duration-0-duration-m', 2);
+    $this->fillTextValue('#edit-field-duration-0-duration-d', 3);
     $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
-    $this->assertTextExists('1-2-3');
+    $this->assertTextExists('1/2/3');
   }
 
   /**
@@ -162,25 +191,45 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
    */
   public function testTimeTime() {
 
-    $this->createDefaultSetup(['hour', 'minute', 'second']);
+    $this->createDefaultSetup(['h', 'i', 's']);
     $this->setFormatter('time');
 
     $this->drupalGet('node/add/test_type');
     $this->assertStatusCodeEquals(200);
     $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
     $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
-    $this->fillTextValue('#edit-field-duration-0-value-hour', 4);
-    $this->fillTextValue('#edit-field-duration-0-value-minute', 5);
-    $this->fillTextValue('#edit-field-duration-0-value-second', 6);
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 4);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 5);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 6);
     $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
-    $this->assertTextExists('4:05:06');
+    $this->assertTextExists('04:05:06');
+
+    $this->drupalGet('node/add/test_type');
+    $this->assertStatusCodeEquals(200);
+    $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
+    $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 10);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 11);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 12);
+    $this->click('input[name="op"]');
+    $this->assertStatusCodeEquals(200);
+    $this->assertTextExists('10:11:12');
   }
 
   /**
    * Sets up a date.
    */
-  protected function createDefaultSetup($granularity = ['year', 'month', 'day', 'hour', 'minute', 'second']) {
+  protected function createDefaultSetup(
+    $granularity = [
+      'y',
+      'm',
+      'd',
+      'h',
+      'i',
+      's',
+    ]
+  ) {
 
     $this->adminUser = $this->createUser([], 'Admin User', TRUE);
     $admin_role = $this->createAdminRole();
@@ -198,7 +247,7 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
     $this->click('#edit-submit');
     $this->assertSession()->addressMatches('/^\/admin\/structure\/types\/manage\/test_type\/fields\/node.test_type.field_duration$/');
     $this->assertStatusCodeEquals(200);
-    $check = array_diff(['year', 'month', 'day', 'hour', 'minute', 'second'], $granularity);
+    $check = array_diff(['y', 'm', 'd', 'h', 'i', 's'], $granularity);
     foreach ($check as $field) {
       $this->checkCheckbox('#edit-settings-granularity-' . $field);
     }
@@ -214,7 +263,7 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
     $this->assertStatusCodeEquals(200);
     $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
     foreach ($granularity as $field) {
-      $this->assertElementExists('input#edit-field-duration-0-value-' . $field . '[type="number"]');
+      $this->assertElementExists('input#edit-field-duration-0-duration-' . $field . '[type="number"]');
     }
   }
 
@@ -240,9 +289,9 @@ class DurationFieldAccessTest extends DurationFieldBrowserTestBase {
   protected function setFormatter($formatter) {
 
     $types = [
+      'raw' => 'duration_string_display',
       'human' => 'duration_human_display',
       'time' => 'duration_time_display',
-      'raw' => 'duration_raw_value_display',
     ];
 
     $this->drupalGet('/admin/structure/types/manage/test_type/display');

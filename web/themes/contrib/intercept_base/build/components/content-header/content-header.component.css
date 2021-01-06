@@ -139,3 +139,25 @@
       .content-header__date-date:not(:last-child),
       .content-header__date-time:not(:last-child) {
         margin-bottom: 0.75rem; } }
+
+.content-header__event-details-link {
+  color: #fff; }
+
+.content-header .share {
+  float: left;
+  padding: 0.5rem 0.5rem 0.5rem 0; }
+  @media (min-width: 37.5em) {
+    .content-header .share {
+      padding: 0.75rem 0.5rem 0.75rem 0; } }
+
+.content-header .menu--social-media-menu {
+  -webkit-box-pack: left;
+      -ms-flex-pack: left;
+          justify-content: left; }
+  .content-header .menu--social-media-menu a {
+    -webkit-filter: brightness(100);
+            filter: brightness(100); }
+  .content-header .menu--social-media-menu a[href*='linkedin.com'] {
+    -webkit-filter: none;
+            filter: none;
+    color: #fff; }

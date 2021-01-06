@@ -6,6 +6,11 @@
 {% else %}
   {% set image = null %}
 {% endif %}
+{% if node.id %}
+  {% set url = url('entity.node.canonical', {'node': node.id}, {'absolute': TRUE}) %}
+{% else %}
+  {% set url = null %}
+{% endif %}
 
 <article{{ attributes.addClass(['article']) }}>
   <div class="l--sidebar-after">
@@ -19,6 +24,8 @@
           date: node.field_date_time.start_date|date("l, F j, Y"),
           time: (node.field_date_time.start_date|date("g:i a") ~ ' – ' ~ node.field_date_time.end_date|date("g:i a"))|replace({'m': '.m.'})|replace({':00': ''})
         },
+        url: url,
+        sharing: true,
       } %}
     </div>
     <div class="l__main l--offset">

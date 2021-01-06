@@ -1,0 +1,13 @@
+name: 'Duration Field Form Test'
+type: module
+description: 'Support module for Duration Field Form tests.'
+hidden: TRUE
+package: Testing
+core_version_requirement: ^8 || ^9
+dependencies:
+  - duration_field
+
+# Information added by Drupal.org packaging script on 2020-12-07
+version: '8.x-2.0'
+project: 'duration_field'
+datestamp: 1607303976

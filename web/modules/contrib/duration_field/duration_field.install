@@ -1,0 +1,180 @@
+<?php
+
+/**
+ * @file
+ * Holds install hooks for the Duration Field module.
+ */
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\Core\Field\FieldConfigInterface;
+
+/**
+ * Implements hook_update_N().
+ *
+ * Updates module from 8.x-1.x to 8.x-2.x.
+ */
+function duration_field_update_8200() {
+  $config_factory = \Drupal::configFactory();
+  $duration_fields = duration_field_get_duration_fields();
+  foreach ($duration_fields as $duration_field) {
+    $field_name = $duration_field['field']->getName();
+    $fields = \Drupal::entityTypeManager()->getStorage('field_config')->loadByProperties(['field_name' => $field_name]);
+
+    foreach ($fields as $field) {
+      duration_field_update_config_v1_v2($field);
+      duration_field_update_db_v1_v2($field);
+    }
+  }
+}
+
+/**
+ * Helper function to convert 8.x-1.x configuration to 8.x-2.x configuration.
+ *
+ * Handles the following tasks:
+ *   - Converts default value for each field instance a single value of 'value'
+ *     to 'duration' (an ISO 1806 duration string) and 'seconds' (the number of
+ *     seconds the duration string represents)
+ *   - Converts the granularity settings for each field instance from an array
+ *     to a granularity string.
+ *   - Removes the now unused 'duration' setting for duration field widget
+ *     settings.
+ *
+ * @param \Drupal\Core\Field\FieldConfigInterface $field
+ *   The field to be updated.
+ */
+function duration_field_update_config_v1_v2(FieldConfigInterface $field) {
+  $duration_service = \Drupal::service('duration_field.service');
+  $granularity_service = \Drupal::service('duration_field.granularity.service');
+
+  $entity_type_id = $field->getTargetEntityTypeId();
+  $bundle = $field->getTargetBundle();
+  $field_name = $field->getName();
+
+  $new_field = $field->toArray();
+
+  // Convert the original default value from 'value' to 'duration' and
+  // 'seconds'.
+  $new_field['default_value'][0]['duration'] = $new_field['default_value'][0]['value'];
+  $new_field['default_value'][0]['seconds'] = $duration_service->getSecondsFromDurationString($new_field['default_value'][0]['value']);
+  // Unset the 'value' key, as it is not used anymore.
+  unset($new_field['default_value'][0]['value']);
+
+  // Change the field settings from a granularity array to a granularity
+  // string. The old settings used different keys than the new settings, so they
+  // first need to be recast.
+  $granularity_array = [
+    'y' => $new_field['settings']['granularity']['year'],
+    'm' => $new_field['settings']['granularity']['month'],
+    'd' => $new_field['settings']['granularity']['day'],
+    'h' => $new_field['settings']['granularity']['hour'],
+    'i' => $new_field['settings']['granularity']['minute'],
+    's' => $new_field['settings']['granularity']['second'],
+  ];
+  // Update the field's granularity settings to a granularity string.
+  $new_field['settings']['granularity'] = $granularity_service->convertGranularityArrayToGranularityString($granularity_array);
+
+  // Do some cleanup and save the new configuration.
+  $new_field = FieldConfig::create($new_field);
+  $new_field->original = $field;
+  $new_field->enforceIsNew(FALSE);
+  $new_field->save();
+
+  // Next the widget settings need to be updated, to remove the now unused
+  // 'duration' setting.
+  $properties = [
+    'targetEntityType' => $entity_type_id,
+    'bundle' => $bundle,
+  ];
+
+  // Load any form displays for this field.
+  if ($form_displays = \Drupal::entityTypeManager()->getStorage('entity_form_display')->loadByProperties($properties)) {
+    // Loop through any found form displays.
+    foreach ($form_displays as $form_display) {
+      // Load the component for the field from the form display.
+      if ($component = $form_display->getComponent($field_name)) {
+        // Unset the new unused duration setting.
+        unset($component['settings']['duration']);
+        // Save the updated component.
+        $form_display->setComponent($field_name, $component)->save();
+      }
+    }
+  }
+}
+
+/**
+ * Helper function to convert 8.x-1.x DB tables to 8.x-2.x DB tables.
+ *
+ * @param \Drupal\Core\Field\FieldConfigInterface $field
+ *   The field to be updated.
+ */
+function duration_field_update_db_v1_v2(FieldConfigInterface $field) {
+  $duration_service = \Drupal::service('duration_field.service');
+
+  $entity_type_id = $field->getTargetEntityTypeId();
+  $field_name = $field->getName();
+
+  // Ignore entity manager caches.
+  /** @var \Drupal\Core\Entity\EntityManager $entity_manager */
+  $entity_manager = \Drupal::service('entity_type.manager');
+  $entity_manager->useCaches(FALSE);
+
+  /** @var \Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface $schema_repository */
+  $schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+  /** @var \Drupal\Core\Entity\EntityFieldManager $entity_field_manager */
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_storage_definitions = $schema_repository->getLastInstalledFieldStorageDefinitions($entity_type_id);
+  $schema = $field_storage_definitions[$field_name]->getSchema();
+
+  // Update the 'value' field to be 'duration'.
+  \Drupal::database()->schema()->changeField($entity_type_id . '__' . $field_name, $field_name . '_value', $field_name . '_duration', $schema['columns']['duration']);
+  // Add the 'seconds' field.
+  \Drupal::database()->schema()->addField($entity_type_id . '__' . $field_name, $field_name . '_seconds', $schema['columns']['seconds']);
+  // Update the 'value' field on the revisions table to be 'duration'.
+  \Drupal::database()->schema()->changeField($entity_type_id . '_revision__' . $field_name, $field_name . '_value', $field_name . '_duration', $schema['columns']['duration']);
+  // Add the 'seconds' field to the revisions table.
+  \Drupal::database()->schema()->addField($entity_type_id . '_revision__' . $field_name, $field_name . '_seconds', $schema['columns']['seconds']);
+
+  $database = \Drupal::database();
+
+  // Get the existing database value from the field table.
+  $values = $database->select($entity_type_id . '__' . $field_name, 'fieldtable')
+    ->fields('fieldtable', [
+      'entity_id',
+      'revision_id',
+      $field_name . '_duration',
+    ])
+    ->execute();
+
+  // Set the 'seconds' column value in each row based on the 'duration' column
+  // value.
+  foreach ($values as $value) {
+    $database->update($entity_type_id . '__' . $field_name)
+      ->fields([
+        $field_name . '_seconds' => $duration_service->getSecondsFromDurationString($value->{$field_name . '_duration'}),
+      ])
+      ->condition('entity_id', $value->entity_id)
+      ->condition('revision_id', $value->revision_id)
+      ->execute();
+  }
+
+  // Get the existing database value from the field revision table.
+  $values = $database->select($entity_type_id . '_revision__' . $field_name, 'fieldtable')
+    ->fields('fieldtable', [
+      'entity_id',
+      'revision_id',
+      $field_name . '_duration',
+    ])
+    ->execute();
+
+  // Set the 'seconds' column value for each row in the revisions table, based
+  // on the 'duration' column value.
+  foreach ($values as $value) {
+    $database->update($entity_type_id . '_revision__' . $field_name)
+      ->fields([
+        $field_name . '_seconds' => $duration_service->getSecondsFromDurationString($value->{$field_name . '_duration'}),
+      ])
+      ->condition('entity_id', $value->entity_id)
+      ->condition('revision_id', $value->revision_id)
+      ->execute();
+  }
+}

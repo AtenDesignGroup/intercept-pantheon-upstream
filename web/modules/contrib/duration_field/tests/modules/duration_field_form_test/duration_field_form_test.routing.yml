@@ -1,0 +1,6 @@
+duration_field_form_test.states:
+  path: '/duration-field-form-test/duration-element-states'
+  defaults:
+    _form: '\Drupal\duration_field_form_test\Form\DurationElementStatesTestForm'
+  requirements:
+    _access: 'TRUE'

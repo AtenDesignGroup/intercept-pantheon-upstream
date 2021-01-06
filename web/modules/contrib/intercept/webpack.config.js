@@ -1,5 +1,4 @@
 const path = require('path');
-const Minify = require('babel-minify-webpack-plugin');
 const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -21,7 +20,12 @@ const entries = {
     'eventRegistrationList',
   ],
   intercept_location: ['locationsList'],
-  intercept_room_reservation: ['reserveRoom', 'roomReservationList', 'roomReservationActionButton'],
+  intercept_room_reservation: [
+    'reserveRoom',
+    'roomReservationActionButton',
+    'roomReservationList',
+    'roomReservationScheduler',
+  ],
   intercept_equipment: ['reserveEquipment'],
 };
 
@@ -35,6 +39,7 @@ const babelLoader = {
       [
         '@babel/preset-env',
         {
+          corejs: 3,
           debug: true,
           targets: {
             browsers: ['last 2 version', '> .25%', 'ie 11', 'android 4', 'ios 9'],
@@ -45,9 +50,9 @@ const babelLoader = {
       ],
     ],
     plugins: [
-      '@babel/plugin-proposal-class-properties',
       '@babel/plugin-external-helpers',
       '@babel/plugin-transform-runtime',
+      '@babel/plugin-proposal-class-properties',
     ],
   },
 };
@@ -80,12 +85,14 @@ function createEntryConfig(entries) {
 /**
  * Webpack config
  */
-module.exports = function config(env) {
-  const isProduction = env.production === true;
+module.exports = function config(env, argv) {
+  const isProduction = argv.mode === 'production';
 
   return [
     {
       entry: createEntryConfig(entries),
+      mode: isProduction ? 'production' : 'development',
+      devtool: (() => (isProduction ? 'none' : 'cheap-module-eval-source-map'))(),
       output: {
         filename: '[name].js',
         path: path.resolve(__dirname),
@@ -99,45 +106,38 @@ module.exports = function config(env) {
           'node_modules',
         ],
       },
-      devtool: (() => (isProduction ? 'none' : 'cheap-module-eval-source-map'))(),
-      plugins: (() => {
-        const nodeEnv = isProduction ? 'production' : 'development';
-        const plugins = [
-          new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify(nodeEnv) } }),
-          new webpack.optimize.CommonsChunkPlugin({
-            name: 'modules/intercept_core/js/dist/interceptCommon',
-            filename: '[name].js',
-            deepChildren: true,
-            minChunks: 4,
-          }),
-        ];
-
-        if (isProduction) {
-          plugins.push(
-            new Minify({
-              deadcode: false,
-            }),
-          );
+      optimization: {
+        splitChunks: {
+          cacheGroups: {
+            commons: {
+              name: 'modules/intercept_core/js/dist/interceptCommon',
+              chunks: 'initial',
+              minChunks: 4,
+            }
+          }
         }
-
-        return plugins;
-      })(),
+      },
+      // plugins: [
+      //   new BundleAnalyzerPlugin()
+      // ],
       externals: (() => {
         const prod = {
           react: 'React',
           'react-dom': 'ReactDOM',
-          interceptClient: 'interceptClient',
           interceptTheme: 'interceptTheme',
+          interceptClient: 'interceptClient',
           Drupal: 'Drupal',
           drupalSettings: 'drupalSettings',
+          jQuery: 'jQuery',
           moment: 'moment',
           redis: 'redis',
         };
         const dev = {
-          interceptClient: 'interceptClient',
           interceptTheme: 'interceptTheme',
+          interceptClient: 'interceptClient',
           Drupal: 'Drupal',
           drupalSettings: 'drupalSettings',
+          jQuery: 'jQuery',
           redis: 'redis',
           moment: 'moment',
         };
@@ -145,7 +145,10 @@ module.exports = function config(env) {
         return isProduction ? prod : dev;
       })(),
       module: {
-        loaders: [babelLoader],
+        rules: [
+          babelLoader,
+          { test: /\.css$/, loader: 'style-loader!css-loader' }
+        ],
       },
     },
 
@@ -158,6 +161,8 @@ module.exports = function config(env) {
         'modules/intercept_core/js/dist/interceptClient':
           './modules/intercept_core/js/src/interceptClient.js',
       },
+      mode: isProduction ? 'production' : 'development',
+      devtool: (() => (isProduction ? 'none' : 'cheap-module-eval-source-map'))(),
       output: {
         filename: '[name].js',
         path: path.resolve(__dirname),
@@ -172,24 +177,17 @@ module.exports = function config(env) {
           'node_modules',
         ],
       },
-      plugins: (() => {
-        const nodeEnv = isProduction ? 'production' : 'development';
-        const plugins = [
-          new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify(nodeEnv) } }),
-        ];
-
-        if (isProduction) {
-          plugins.push(new Minify());
-        }
-
-        return plugins;
-      })(),
+      // plugins: [
+      //   new BundleAnalyzerPlugin()
+      // ],
       externals: (() => {
         const prod = {
           Drupal: 'Drupal',
           drupalSettings: 'drupalSettings',
           moment: 'moment',
           redis: 'redis',
+          react: 'React',
+          'react-dom': 'ReactDOM',
         };
         const dev = {
           Drupal: 'Drupal',
@@ -201,7 +199,7 @@ module.exports = function config(env) {
         return isProduction ? prod : dev;
       })(),
       module: {
-        loaders: [babelLoader],
+        rules: [babelLoader],
       },
     },
 
@@ -214,6 +212,8 @@ module.exports = function config(env) {
         'modules/intercept_core/js/dist/interceptTheme':
           './modules/intercept_core/js/src/interceptTheme.js',
       },
+      mode: isProduction ? 'production' : 'development',
+      devtool: (() => (isProduction ? 'none' : 'cheap-module-eval-source-map'))(),
       output: {
         filename: '[name].js',
         path: path.resolve(__dirname),
@@ -223,22 +223,12 @@ module.exports = function config(env) {
         // Allow common modules in the root module to be referenced.
         modules: [path.resolve(__dirname, 'js/src'), 'node_modules'],
       },
-      plugins: (() => {
-        const nodeEnv = isProduction ? 'production' : 'development';
-        const plugins = [
-          new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify(nodeEnv) } }),
-        ];
-
-        if (isProduction) {
-          plugins.push(new Minify());
-        }
-
-        return plugins;
-      })(),
       externals: (() => {
         const prod = {
           Drupal: 'Drupal',
           drupalSettings: 'drupalSettings',
+          react: 'React',
+          'react-dom': 'ReactDOM',
         };
         const dev = {
           Drupal: 'Drupal',
@@ -248,7 +238,7 @@ module.exports = function config(env) {
         return isProduction ? prod : dev;
       })(),
       module: {
-        loaders: [babelLoader],
+        rules: [babelLoader],
       },
     },
   ].map(smp.wrap);

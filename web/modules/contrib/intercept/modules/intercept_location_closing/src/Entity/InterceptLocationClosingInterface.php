@@ -51,6 +51,14 @@ interface InterceptLocationClosingInterface extends ContentEntityInterface, Enti
   public function getEndTime();
 
   /**
+   * Gets the Location closing Location entities.
+   *
+   * @return \Drupal\Node\NodeInterface[]
+   *   The Location Nodes.
+   */
+  public function getLocations();
+
+  /**
    * Gets the Location closing visitor message.
    *
    * @return string

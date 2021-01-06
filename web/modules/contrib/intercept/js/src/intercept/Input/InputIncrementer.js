@@ -59,9 +59,8 @@ const styles = theme => ({
 
 class InputIncrementer extends React.PureComponent {
   render() {
-    const { classes, step, label, onChange, min, max, int, required, name } = this.props;
+    const { classes, step, label, onChange, min, max, int, required, name, value } = this.props;
 
-    const value = this.props.getValue();
     const inputId = `input-increment--${name}`;
 
     const updateValue = (v) => {

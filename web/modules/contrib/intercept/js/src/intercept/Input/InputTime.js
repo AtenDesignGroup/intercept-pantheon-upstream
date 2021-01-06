@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { withFormsy } from 'formsy-react';
-import { propTypes, defaultProps } from 'formsy-react';
+import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 import interceptClient from 'interceptClient';
 
 import { TextField } from '@material-ui/core';
+
 const { utils } = interceptClient;
 
-class InputTime extends React.Component {
+class InputTime extends React.PureComponent {
   render() {
-    const { step, label, onChange, required } = this.props;
-    const value = this.props.getValue();
+    const { errorMessage, isValid, step, label, onChange, required, value } = this.props;
 
     const handleChange = (event) => {
       const date = moment(event.target.value, 'HH:mm');
@@ -35,8 +34,8 @@ class InputTime extends React.Component {
         inputProps={{
           step,
         }}
-        error={!this.props.isValid()}
-        helperText={this.props.getErrorMessage()}
+        error={!isValid}
+        helperText={errorMessage}
       />
     );
   }

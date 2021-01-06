@@ -6,21 +6,21 @@
  */
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\intercept_core\EntityImageThumbnailUriField;
-use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
+use Drupal\intercept_room_reservation\Form\EventNodeFormHelper;
 use Drupal\node\NodeInterface;
-use Drupal\user\Entity\User;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 
@@ -54,86 +54,6 @@ function intercept_room_reservation_jsonapi_room_reservation_filter_access(Entit
 }
 
 /**
- * Implements hook_page_attachments().
- */
-function intercept_room_reservation_page_attachments(array &$attachments) {
-  $current_user = \Drupal::currentUser();
-  // Add customer room reservation limit.
-  $limit = \Drupal::config('intercept_room_reservation.settings')->get('reservation_limit', 0);
-  $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['customer_limit'] = $limit;
-  // Add room reservation agreement text.
-  $agreement_text = \Drupal::config('intercept_room_reservation.settings')->get('agreement_text', '');
-  $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['agreement_text'] = $agreement_text['value'];
-  $bypass_agreement = $current_user->hasPermission('bypass room reservation agreement');
-  $attachments['#attached']['drupalSettings']['intercept']['user']['bypass room reservation agreement'] = $bypass_agreement;
-
-  // Add customer advanced limit.
-  $advanced_limit = \Drupal::config('intercept_room_reservation.settings')->get('advanced_reservation_limit', 0);
-  $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['customer_advanced_limit'] = $advanced_limit;
-  if (isset($advanced_limit) && $advanced_limit !== '0') {
-    $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['customer_advanced_text'] = new TranslatableMarkup(
-      'Reservations may be made up to @limit days in advance', ['@limit' => $advanced_limit]);
-  }
-
-  // Add customer barred message.
-  $reservation_barred_text = \Drupal::config('intercept_room_reservation.settings')->get('reservation_barred_text');
-  $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['reservation_barred_text'] = $reservation_barred_text['value'];
-
-  // Add publicize field.
-  $reservation_fields = Drupal::service('entity_field.manager')->getFieldDefinitions('room_reservation', 'room_reservation');
-  if (array_key_exists('field_publicize', $reservation_fields)) {
-    $publicize_settings = $reservation_fields['field_publicize']->getSettings();
-    $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['field_publicize']['description'] = $publicize_settings['on_label'];
-  }
-
-  // Add default location.
-  $default_locations = [];
-  $customer_barred = FALSE;
-  if ($current_user->isAuthenticated()) {
-    $user = User::load($current_user->id());
-    $customer = \Drupal::service('entity_type.manager')
-      ->getStorage('profile')
-      ->loadByProperties([
-        'type' => 'customer',
-        'uid' => $current_user->id(),
-      ]);
-    if (!empty($customer)) {
-      $customer = reset($customer);
-      // See if the customer is allowed to make reservations or is barred.
-      $customer_barred = $customer->get('field_room_reservation_barred')->getString();
-      $customer_barred = ($customer_barred === '1') ? TRUE : FALSE;
-    }
-
-    if ($reservations = \Drupal::service('intercept_core.reservation.manager')->getReservationsByUser('room', $user)) {
-      if (!empty($reservations)) {
-        $last_reservation = reset($reservations);
-        // First, look for the last room reservation made.
-        if ($last_reservation = reset($reservations)) {
-          $last_room = $last_reservation->field_room->entity;
-          $last_location = $last_room->field_location->entity;
-
-          if (!empty($last_location)) {
-            $default_locations = [$last_location->uuid()];
-          }
-        }
-      }
-    }
-    else {
-      // If no reservation, get the preferred locations.
-      if (!empty($customer)) {
-        foreach ($customer->get('field_preferred_location')->referencedEntities() as $location) {
-          if ($location->field_branch_location->value) {
-            $default_locations[] = $location->uuid();
-          }
-        }
-      }
-    }
-  }
-  $attachments['#attached']['drupalSettings']['intercept']['user']['barred'] = $customer_barred;
-  $attachments['#attached']['drupalSettings']['intercept']['room_reservations']['default_locations'] = $default_locations;
-}
-
-/**
  * Implements hook_ENTITY_TYPE_delete().
  */
 function intercept_room_reservation_node_delete(NodeInterface $node) {
@@ -149,38 +69,6 @@ function intercept_room_reservation_node_delete(NodeInterface $node) {
 }
 
 /**
- * Implements hook_entity_operation().
- */
-function intercept_room_reservation_entity_operation(EntityInterface $entity) {
-  // TODO: Move this to the reservation manager.
-  if ($entity->getEntityTypeId() == 'room_reservation') {
-    $operation = function ($op) use ($entity) {
-      return [
-        'title' => new TranslatableMarkup(ucwords($op)),
-        'url' => Url::fromRoute("entity.room_reservation.{$op}_form", [
-          'room_reservation' => $entity->id(),
-          'destination' => Url::fromRoute('<current>')->toString(),
-        ]),
-      ];
-    };
-
-    $operation_types = ['cancel', 'approve', 'deny', 'archive'];
-
-    $operations = [];
-
-    foreach ($operation_types as $type) {
-      if (!$entity->access($type)) {
-        continue;
-      }
-      $operations[$type] = $operation($type);
-    }
-
-    return $operations;
-  }
-  return [];
-}
-
-/**
  * Implements hook_theme().
  */
 function intercept_room_reservation_theme() {
@@ -190,6 +78,9 @@ function intercept_room_reservation_theme() {
     ],
     'room_reservation_warnings' => [
       'variables' => ['warnings' => NULL],
+    ],
+    'room_reservation_scheduler' => [
+      'variables' => ['content' => NULL],
     ],
   ];
 }
@@ -209,7 +100,9 @@ function intercept_room_reservation_mail($key, &$message, $params) {
 function intercept_room_reservation_form_node_form_alter(&$form, FormStateInterface $form_state) {
   $node = $form_state->getFormObject()->getEntity();
   if ($node->bundle() == 'event') {
-    \Drupal::service('intercept_core.reservation.manager')->nodeFormAlter($form, $form_state);
+    \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EventNodeFormHelper::class)
+    ->nodeFormAlter($form, $form_state);
   }
 }
 
@@ -307,6 +200,25 @@ function template_preprocess_room_reservation(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
   $variables['label'] = $room_reservation->label();
+
+  // Add edit link.
+  if ($room_reservation->access('update')) {
+    $edit_link = Link::createFromRoute(t('Edit'), 'intercept_room_reservation.reservation.edit', [
+      'room_reservation' => $room_reservation->id(),
+      'destination' => Url::fromRoute('<current>')->toString(),
+    ]);
+    $edit_link = $edit_link->toRenderable();
+    $edit_link['#attributes'] = [
+      'class' => [
+        'use-ajax',
+        'button',
+      ],
+      'data-dialog-type' => 'dialog',
+      'data-dialog-options' => '{"width": "400"}',
+      'data-dialog-renderer' => 'off_canvas',
+    ];
+    $variables['edit_link'] = $edit_link;
+  }
 }
 
 /**
@@ -338,21 +250,21 @@ function intercept_room_reservation_entity_extra_field_info() {
 
   $extra['room_reservation']['room_reservation']['display']['location_full'] = [
     'label' => new TranslatableMarkup('Full location'),
-    'description' => new TranslatableMarkup('Location title and room name'),
+    'description' => new TranslatableMarkup('Location title and room name.'),
     'weight' => 10,
     'visible' => FALSE,
   ];
 
   $extra['room_reservation']['room_reservation']['display']['attendees_full'] = [
     'label' => new TranslatableMarkup('Attendee count'),
-    'description' => new TranslatableMarkup('Atendee count and label'),
+    'description' => new TranslatableMarkup('Attendee count and label.'),
     'weight' => 15,
     'visible' => FALSE,
   ];
 
   $extra['room_reservation']['room_reservation']['display']['action_button'] = [
     'label' => new TranslatableMarkup('Action button'),
-    'description' => new TranslatableMarkup('Cancel deny and approve buttons.'),
+    'description' => new TranslatableMarkup('Room reservation status change buttons.'),
     'weight' => 15,
     'visible' => FALSE,
   ];
@@ -376,41 +288,6 @@ function intercept_room_reservation_entity_bundle_field_info(EntityTypeInterface
       ->setClass(EntityImageThumbnailUriField::class);
   }
   return $fields;
-}
-
-/**
- * Implements hook_ENTITY_TYPE_view().
- */
-function intercept_room_reservation_room_reservation_view(array &$build, RoomReservationInterface $room_reservation, EntityViewDisplayInterface $display, $view_mode) {
-  if ($display->getComponent('location_full')) {
-    $build['location_full'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'div',
-      '#attributes' => ['class' => 'field-location-full'],
-      '#value' => $room_reservation->location(),
-    ];
-  }
-
-  if ($display->getComponent('attendees_full')) {
-    $count = $room_reservation->field_attendee_count->getString();
-    $build['attendees_full'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'div',
-      '#attributes' => ['class' => 'field-attendees-full'],
-      '#value' => !empty($count) ? new TranslatableMarkup('@count Attendees', [
-        '@count' => $count,
-      ]) : '',
-    ];
-  }
-
-  if ($display->getComponent('action_button')) {
-    $build['action_button'] = [
-      '#markup' => '<div class="js--room-reservation-action" data-reservation-uuid="' . $room_reservation->uuid() . '" data-status="' . $room_reservation->field_status->value . '" >' . $room_reservation->field_status->value . '</div>',
-      '#attached' => [
-        'library' => ['intercept_room_reservation/roomReservationActionButton'],
-      ],
-    ];
-  }
 }
 
 /**
@@ -466,5 +343,37 @@ function intercept_room_reservation_views_pre_view(ViewExecutable $view, $displa
       $exposed_date['date--start'] = $date->format('m/d/Y');
       $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
+
+    // Attach JS
+    $view->element['#attached']['library'][] = 'intercept_room_reservation/roomReservationList';
   }
+}
+
+/**
+ * Allowed values callback function for room reservation status field.
+ *
+ * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $definition
+ *   The field storage definition.
+ * @param \Drupal\Core\Entity\FieldableEntityInterface|null $entity
+ *   (optional) The entity context if known, or NULL if the allowed values are
+ *   being collected without the context of a specific entity.
+ * @param bool &$cacheable
+ *   (optional) If an $entity is provided, the $cacheable parameter should be
+ *   modified by reference and set to FALSE if the set of allowed values
+ *   returned was specifically adjusted for that entity and cannot not be reused
+ *   for other entities. Defaults to TRUE.
+ *
+ * @return array
+ *   The array of allowed values.
+ */
+function intercept_room_reservation_status_values(FieldStorageDefinitionInterface $definition, FieldableEntityInterface $entity = NULL, &$cacheable = FALSE) {
+  $options = [
+    'requested' => new TranslatableMarkup('Requested'),
+    'approved' => new TranslatableMarkup('Approved'),
+    'denied' => new TranslatableMarkup('Denied'),
+    'canceled' => new TranslatableMarkup('Canceled'),
+    'archived' => new TranslatableMarkup('Archived'),
+  ];
+
+  return $options;
 }

@@ -4,7 +4,7 @@
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  color: #878b90;
+  color: #747481;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -22,7 +22,7 @@
     .save-link {
       font-size: 0.75rem; } }
   .save-link:hover, .save-link:focus {
-    color: #4c4d4f; }
+    color: #261f26; }
   .save-link__star {
     -webkit-box-align: center;
         -ms-flex-align: center;

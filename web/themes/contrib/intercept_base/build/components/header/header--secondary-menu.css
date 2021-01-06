@@ -9,12 +9,12 @@
       position: relative;
       z-index: 2; } }
 
-.header__utilities > div {
+.header__utilities .region--secondary-menu {
   background-color: #4c4d4f; }
-  .header__utilities > div label {
+  .header__utilities .region--secondary-menu label {
     color: #fff; }
   @media (max-width: 61.9375em) {
-    .header__utilities > div {
+    .header__utilities .region--secondary-menu {
       padding-left: 30px;
       padding-right: 30px;
       padding-bottom: 30px;
@@ -35,7 +35,7 @@
       width: 100%;
       z-index: -1; } }
   @media (min-width: 62em) {
-    .header__utilities > div {
+    .header__utilities .region--secondary-menu {
       -webkit-box-align: start;
           -ms-flex-align: start;
               align-items: flex-start;
@@ -49,6 +49,10 @@
       -ms-flex-wrap: nowrap;
           flex-wrap: nowrap;
       position: relative; } }
+
+@media (max-width: 61.9375em) {
+  .header__utilities .account-trigger--logged-out ~ .region--secondary-menu {
+    background-color: #eef1f4; } }
 
 .menu--account {
   font-size: 0.88194rem;
@@ -103,10 +107,10 @@
 .account-trigger {
   clip: rect(0, 0, 0, 0);
   position: absolute; }
-  .account-trigger ~ div {
+  .account-trigger ~ .region--secondary-menu {
     display: none; }
     @media (min-width: 62em) {
-      .account-trigger ~ div {
+      .account-trigger ~ .region--secondary-menu {
         background: #4c4d4f;
         display: none;
         padding: 2.5rem;
@@ -115,9 +119,9 @@
         top: 100%;
         width: 34rem; } }
     @media (min-width: 75em) {
-      .account-trigger ~ div {
+      .account-trigger ~ .region--secondary-menu {
         width: 50rem; } }
-  .account-trigger:checked ~ div {
+  .account-trigger:checked ~ .region--secondary-menu {
     display: block;
     opacity: 1;
     overflow-y: auto;
@@ -259,10 +263,10 @@ label[for='account-trigger'].account-trigger--logged-out {
       width: 100%; } }
   label[for='account-trigger'].account-trigger--logged-out::after {
     display: none; }
-  label[for='account-trigger'].account-trigger--logged-out ~ div {
+  label[for='account-trigger'].account-trigger--logged-out ~ .region--secondary-menu {
     background: #eef1f4; }
     @media (min-width: 62em) {
-      label[for='account-trigger'].account-trigger--logged-out ~ div {
+      label[for='account-trigger'].account-trigger--logged-out ~ .region--secondary-menu {
         background: #eef1f4;
         width: 25rem; } }
   label[for='account-trigger'].account-trigger--logged-out span {

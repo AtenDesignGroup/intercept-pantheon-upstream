@@ -2,7 +2,6 @@ reserveEquipment:
   js:
     js/dist/reserveEquipment.js:
       preprocess: true
-
   dependencies:
     - core/drupal
     - core/drupalSettings

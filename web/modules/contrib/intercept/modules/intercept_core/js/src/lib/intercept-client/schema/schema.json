@@ -766,6 +766,9 @@
     "field_attendee_count": {
       "type": "integer"
     },
+    "field_agreement": {
+      "type": "boolean"
+    },
     "field_dates": {
       "type": "object"
     },

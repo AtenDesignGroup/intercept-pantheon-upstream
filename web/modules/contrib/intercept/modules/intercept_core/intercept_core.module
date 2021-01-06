@@ -53,17 +53,6 @@ function intercept_core_page_attachments(array &$attachments) {
     'timezone' => date_default_timezone_get(),
     'utc_offset' => $user_utc_offset,
   ];
-  $authmap = \Drupal::service('externalauth.authmap');
-
-  $plugin_id = \Drupal::config('intercept_ils.settings')->get('intercept_ils_plugin', '');
-  if (!empty($plugin_id)) {
-    $authdata = $authmap->getAuthdata($current_user->id(), $plugin_id);
-    $authdata_data = unserialize($authdata['data']);
-    if ($authdata_data) {
-      $attachments['#attached']['drupalSettings']['intercept']['user']['telephone'] = $authdata_data->PhoneNumber;
-      $attachments['#attached']['drupalSettings']['intercept']['user']['email'] = $authdata_data->EmailAddress;
-    }
-  }
 
   $attachments['#cache']['contexts'][] = 'user';
   $attachments['#cache']['tags'][] = 'user:' . $current_user->id();
@@ -81,6 +70,10 @@ function intercept_core_form_user_login_form_alter(&$form, \Drupal\Core\Form\For
  */
 function intercept_core_theme() {
   return [
+    'intercept_field_error_message' => [
+      'variables' => ['message' => NULL],
+      'template' => 'intercept-field-error-message',
+    ],
     'intercept_management' => [
       'variables' => ['content' => NULL],
       'template' => 'intercept-management',
@@ -102,6 +95,24 @@ function intercept_core_theme() {
       ],
       'template' => 'intercept-management-action',
       'base hook' => 'intercept_management_action',
+    ],
+    'intercept_reservation_status' => [
+      'variables' => [
+        'status' => NULL,
+      ],
+      'template' => 'intercept-reservation-status',
+    ],
+    'intercept_reservation_status_legend' => [
+      'variables' => [
+        'statuses' => NULL,
+      ],
+      'template' => 'intercept-reservation-status-legend',
+    ],
+    'intercept_view_switcher' => [
+      'variables' => [
+        'links' => [],
+      ],
+      'template' => 'intercept-view-switcher',
     ],
   ];
 }
@@ -161,12 +172,6 @@ function intercept_core_entity_extra_field_info() {
   $extra['user']['user']['form']['customer_profile'] = [
     'label' => new TranslatableMarkup('Customer profile form'),
     'description' => new TranslatableMarkup('An inline entity form for the customer profile entity.'),
-    'visible' => FALSE,
-  ];
-
-  $extra['profile']['customer']['form']['pin'] = [
-    'label' => new TranslatableMarkup('PIN'),
-    'description' => new TranslatableMarkup('ILS PIN'),
     'visible' => FALSE,
   ];
 

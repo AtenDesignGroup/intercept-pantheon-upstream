@@ -1,0 +1,5 @@
+services:
+  intercept_room_reservation.route_subscriber:
+    class: Drupal\intercept_room_reservation\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

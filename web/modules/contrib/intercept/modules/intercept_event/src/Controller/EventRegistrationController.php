@@ -3,12 +3,14 @@
 namespace Drupal\intercept_event\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityFormBuilderInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Url;
+use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\intercept_core\HttpRequestTrait;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -16,31 +18,33 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class EventRegistrationController extends ControllerBase {
 
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
+  use HttpRequestTrait;
 
   /**
    * The entity form builder.
    *
-   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
+   * @var \Drupal\Core\Form\FormBuilderInterface
    */
-  protected $entityFormBuilder;
+  protected $formBuilder;
 
   /**
-   * EventsController constructor.
+   * The current user.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
-   *   The entity form builder.
+   * @var \Drupal\Core\Session\AccountInterface
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder) {
-    $this->entityTypeManager = $entity_type_manager;
-    $this->entityFormBuilder = $entity_form_builder;
+  protected $currentUser;
+
+  /**
+   * EventRegistrationController constructor.
+   *
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The entity form builder.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
+   */
+  public function __construct(FormBuilderInterface $form_builder, AccountInterface $current_user) {
+    $this->formBuilder = $form_builder;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -48,9 +52,8 @@ class EventRegistrationController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager'),
-      $container->get('entity.form_builder'),
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('current_user')
     );
   }
 
@@ -61,25 +64,43 @@ class EventRegistrationController extends ControllerBase {
    *   The event Node entity.
    */
   public function register(NodeInterface $node) {
-    if ($this->currentUser()->isAnonymous()) {
-      return $this->redirect('user.login', [
-        'destination' => Url::fromRoute('<current>')->toString(),
-      ]);
+    // Add Event Header.
+    $view_builder = $this->entityTypeManager()->getViewBuilder('node');
+    if ($this->currentUser->id() == 0) {
+      return [
+        '#theme' => 'event_registration_guest_form',
+        '#event' => $node,
+        '#header' => $view_builder->view($node, 'header'),
+      ];
     }
-    $access_handler = $this->entityTypeManager()->getAccessControlHandler('event_registration');
-    if (!$access_handler->createAccess('event_registration')) {
-      throw new AccessDeniedHttpException();
-    }
+    return [
+      '#theme' => 'event_registration_user_form',
+      '#event' => $node,
+      '#header' => $view_builder->view($node, 'header'),
+      '#form' => [
+        '#attached' => [
+          'library' => [
+            'intercept_event/eventRegister',
+          ],
+        ],
+        '#markup' => '<div id="eventRegisterRoot" data-uuid="' . $node->uuid() . '"></div>',
+      ],
+    ];
+  }
 
-    $build = [];
-
+  /**
+   * Event registration guest form.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The event Node entity.
+   */
+  public function guestRegister(NodeInterface $node) {
     // Add Event Header.
     $view_builder = $this->entityTypeManager()->getViewBuilder('node');
     $build['header'] = $view_builder->view($node, 'header');
 
-    // Add Registration Form.
+    // Add Registration page.
     $build['#attached']['library'][] = 'intercept_event/eventRegister';
-    $build['#markup'] = '';
     $build['intercept_event_register']['#markup'] = '<div id="eventRegisterRoot" data-uuid="' . $node->uuid() . '"></div>';
 
     return $build;
@@ -109,18 +130,59 @@ class EventRegistrationController extends ControllerBase {
    *   The User entity.
    */
   public function manage(UserInterface $user) {
-    $build = [];
+    return $this->redirect('view.intercept_user_events.page');
+  }
 
-    $build['events'] = [
-      '#type' => 'view',
-      '#name' => 'intercept_user_events',
-      '#display_id' => 'embed',
-      '#attached' => [
-        'library' => ['intercept_event/eventCustomerEvaluation'],
-      ],
-    ];
+  /**
+   * Gets a user's event registration IDs by event NID.
+   *
+   * The Request object parameters must contain both a 'uid' and 'eventId'
+   * value.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current Request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JsonResponse object with event registration IDs.
+   */
+  public function userRegistrationsByEventId(Request $request) {
+    $params = $this->getParams($request);
+    if (!empty($params['uid'] && !empty($params['eventId']))) {
+      $registrations = $this->entityTypeManager()
+        ->getStorage('event_registration')
+        ->getQuery()
+        ->condition('field_event', $params['eventId'])
+        ->condition('field_user', $params['uid'])
+        ->execute();
+      return JsonResponse::create($registrations, 200);
+    }
+    return JsonResponse::create();
+  }
 
-    return $build;
+  /**
+   * Gets a guest's event registration IDs by event NID.
+   *
+   * The Request object parameters must contain both an 'email' and 'eventId'
+   * value.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current Request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JsonResponse object with event registration IDs.
+   */
+  public function guestRegistrationsByEventId(Request $request) {
+    $params = $this->getParams($request);
+    if (!empty($params['email'] && !empty($params['eventId']))) {
+      $registrations = $this->entityTypeManager()
+        ->getStorage('event_registration')
+        ->getQuery()
+        ->condition('field_event', $params['eventId'])
+        ->condition('field_guest_email', $params['email'])
+        ->execute();
+      return JsonResponse::create($registrations, 200);
+    }
+    return JsonResponse::create();
   }
 
 }

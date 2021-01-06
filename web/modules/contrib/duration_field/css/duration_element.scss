@@ -18,7 +18,6 @@
      -moz-justify-content: $justify;
       -ms-justify-content: $justify;
           justify-content: $justify;
-            -ms-flex-pack: $justify;
 }
 
 .form-type-duration
@@ -28,6 +27,7 @@
 		@include flexbox();
 		@include flex-wrap(wrap);
 		@include justify-content(flex-start);
+		-ms-flex-pack: start;
 		margin:0 -5px;
 		.form-type-number
 		{

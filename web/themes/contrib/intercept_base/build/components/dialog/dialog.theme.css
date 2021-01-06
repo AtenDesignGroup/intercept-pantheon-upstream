@@ -1,0 +1,87 @@
+/**
+ * @file
+ * Styling for the modal ui dialog. Including overrides for jQuery UI.
+ */
+.ui-dialog.ui-dialog-off-canvas #drupal-off-canvas {
+  padding: 0 1.875rem 1.875rem; }
+
+/* Style the dialog-off-canvas container. */
+.ui-dialog.ui-dialog-off-canvas {
+  /* Layer the dialog just under the toolbar. */
+  z-index: 501;
+  padding: 0;
+  color: #4c4d4f;
+  border-radius: 0;
+  background: white;
+  -webkit-box-shadow: 0 -5px 50px 0 rgba(0, 0, 0, 0.1);
+          box-shadow: 0 -5px 50px 0 rgba(0, 0, 0, 0.1);
+  font-size: inherit;
+  font-family: inherit; }
+
+.ui-widget.ui-dialog.ui-dialog-off-canvas {
+  border: 0; }
+
+.ui-dialog.ui-dialog-off-canvas .l--offset {
+  padding-left: 0;
+  padding-right: 0; }
+
+/* Style the off-canvas dialog header. */
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 1.5rem 1.875rem;
+  color: #4c4d4f;
+  border: 0;
+  border-radius: 0;
+  background-color: #eef1f4;
+  font-weight: normal; }
+
+/* Hide the default jQuery UI dialog close button. */
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close .ui-icon {
+  visibility: hidden; }
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close {
+  visibility: hidden; }
+
+[dir="rtl"] .ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close {
+  right: auto;
+  left: 1em; }
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-title {
+  /* Ensure that long titles do not overlap the close button. */
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+  margin: 0;
+  max-width: none;
+  /* Push the text away from the icon. */
+  padding-left: 0;
+  /* LTR */
+  padding-right: 0;
+  /* LTR */
+  text-align: left;
+  /* LTR */
+  /* Ensure that long titles are not truncated. */
+  white-space: normal; }
+
+[dir="rtl"] .ui-dialog.ui-dialog-off-canvas .ui-dialog-title {
+  float: right;
+  padding-right: 30px;
+  padding-left: 0;
+  text-align: right; }
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-title:before {
+  content: none; }
+
+/* Override default styling from jQuery UI. */
+#drupal-off-canvas .ui-state-default,
+#drupal-off-canvas .ui-widget-content .ui-state-default,
+#drupal-off-canvas .ui-widget-header .ui-state-default {
+  color: #333;
+  border: 0;
+  font-size: 14px;
+  font-weight: normal; }
+
+#drupal-off-canvas .ui-widget-content a {
+  color: #85bef4; }

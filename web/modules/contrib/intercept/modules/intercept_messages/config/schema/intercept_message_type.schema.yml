@@ -1,0 +1,12 @@
+intercept_messages.intercept_message_type.*:
+  type: config_entity
+  label: 'Intercept message type config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string

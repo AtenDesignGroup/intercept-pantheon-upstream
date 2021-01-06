@@ -54,7 +54,7 @@ class DialogConfirm extends React.PureComponent {
           { text || children
             ? <DialogContent>
               {textContent && textContent.map((content, index) =>
-                <DialogContentText key={index}>{content}</DialogContentText>
+                <DialogContentText key={index}>{content}</DialogContentText>,
               )}
               {children}
             </DialogContent>
@@ -63,16 +63,16 @@ class DialogConfirm extends React.PureComponent {
           <DialogActions>
             {onCancel &&
               cancelText && (
-                <Button onClick={debounce(onCancel, DEBOUNCE_WAIT, DEBOUNCE_OPTIONS)} color="secondary">
-                  {cancelText}
-                </Button>
-              )}
+              <Button onClick={debounce(onCancel, DEBOUNCE_WAIT, DEBOUNCE_OPTIONS)} color="secondary">
+                {cancelText}
+              </Button>
+            )}
             {onConfirm &&
               confirmText && (
-                <Button onClick={debounce(onConfirm, DEBOUNCE_WAIT, DEBOUNCE_OPTIONS)} color="primary" autoFocus>
-                  {confirmText}
-                </Button>
-              )}
+              <Button onClick={debounce(onConfirm, DEBOUNCE_WAIT, DEBOUNCE_OPTIONS)} color="primary" autoFocus>
+                {confirmText}
+              </Button>
+            )}
           </DialogActions>
         </Dialog>
       </div>

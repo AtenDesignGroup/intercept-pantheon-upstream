@@ -33,6 +33,7 @@ permissions:
   - 'create equipment_reservation'
   - 'create event content'
   - 'create event content from template'
+  - 'create event_recurrence'
   - 'create event_registration'
   - 'create media'
   - 'create own event feedback'

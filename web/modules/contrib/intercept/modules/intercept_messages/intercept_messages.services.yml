@@ -1,0 +1,10 @@
+services:
+  plugin.manager.intercept_message_template:
+    class: Drupal\intercept_messages\Plugin\InterceptMessageTemplateManager
+    parent: default_plugin_manager
+
+  intercept_messages.event_registration_status_change:
+    class: '\Drupal\intercept_messages\EventSubscriber\RegistrationStatusChangeEventSubscriber'
+    arguments: ['@config.factory', '@entity_type.manager']
+    tags:
+      - { name: event_subscriber }

@@ -8,6 +8,7 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\user\UserInterface;
 
 /**
@@ -103,6 +104,13 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
   /**
    * {@inheritdoc}
    */
+  public function getLocations() {
+    return $this->get('location')->referencedEntities();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMessage() {
     return $this->get('message')->value;
   }
@@ -174,8 +182,8 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
     $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Authored by'))
-      ->setDescription(t('The user ID of author of the Location Closing entity.'))
+      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setDescription(new TranslatableMarkup('The user ID of author of the Location Closing entity.'))
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
       ->setDisplayOptions('view', [
@@ -197,8 +205,8 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['title'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Title'))
-      ->setDescription(t('A helpful administrative identifier of the closing.'))
+      ->setLabel(new TranslatableMarkup('Title'))
+      ->setDescription(new TranslatableMarkup('A helpful administrative identifier of the closing.'))
       ->setSettings([
         'max_length' => 100,
         'text_processing' => 0,
@@ -218,8 +226,8 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
       ->setRequired(TRUE);
 
     $fields['message'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Visitor Message'))
-      ->setDescription(t('What visitors will see through the reservation system.'))
+      ->setLabel(new TranslatableMarkup('Visitor Message'))
+      ->setDescription(new TranslatableMarkup('What visitors will see through the reservation system.'))
       ->setSettings([
         'max_length' => 100,
         'text_processing' => 0,
@@ -239,8 +247,8 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
       ->setRequired(TRUE);
 
     $fields['date'] = BaseFieldDefinition::create('daterange')
-      ->setLabel(t('Closing time'))
-      ->setDescription(t('The date/time range for the closing.'))
+      ->setLabel(new TranslatableMarkup('Closing time'))
+      ->setDescription(new TranslatableMarkup('The date/time range for the closing.'))
       ->setRequired(TRUE)
       ->setDisplayOptions('view', [
         'label' => 'above',
@@ -255,8 +263,8 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['location'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Location(s)'))
-      ->setDescription(t('The location(s) affected by the closing.'))
+      ->setLabel(new TranslatableMarkup('Location(s)'))
+      ->setDescription(new TranslatableMarkup('The location(s) affected by the closing.'))
       ->setSetting('target_type', 'node')
       ->setSetting('handler_settings',
         [
@@ -280,8 +288,8 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Published'))
-      ->setDescription(t('A boolean indicating whether the closing is published.'))
+      ->setLabel(new TranslatableMarkup('Published'))
+      ->setDescription(new TranslatableMarkup('A boolean indicating whether the closing is published.'))
       ->setDefaultValue(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'boolean_checkbox',
@@ -289,12 +297,12 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
       ]);
 
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the closing was created.'));
+      ->setLabel(new TranslatableMarkup('Created'))
+      ->setDescription(new TranslatableMarkup('The time that the closing was created.'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the closing was last edited.'));
+      ->setLabel(new TranslatableMarkup('Changed'))
+      ->setDescription(new TranslatableMarkup('The time that the closing was last edited.'));
 
     return $fields;
   }

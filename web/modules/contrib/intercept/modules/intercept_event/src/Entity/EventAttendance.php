@@ -49,6 +49,11 @@ use Drupal\user\UserInterface;
  *     "langcode" = "langcode",
  *     "status" = "status",
  *   },
+ *   revision_metadata_keys = {
+ *     "revision_user" = "revision_user",
+ *     "revision_created" = "revision_created",
+ *     "revision_log_message" = "revision_log_message"
+ *   },
  *   links = {
  *     "canonical" = "/event-attendance/{event_attendance}",
  *     "add-form" = "/event-attendance/add",
@@ -62,8 +67,13 @@ use Drupal\user\UserInterface;
 class EventAttendance extends ContentEntityBase implements EventAttendanceInterface {
 
   use EntityChangedTrait;
-
   use StringTranslationTrait;
+
+  // Hard-coded target entity constants.
+  const TARGET_TYPE = 'node';
+  const TARGET_BUNDLE = 'event';
+  const EVENT_FIELD = 'field_event';
+  const ATTENDEE_FIELD = 'field_user';
 
   /**
    * {@inheritdoc}
@@ -152,9 +162,25 @@ class EventAttendance extends ContentEntityBase implements EventAttendanceInterf
   /**
    * {@inheritdoc}
    */
+  public function getAttendee() {
+    return $this->get(static::ATTENDEE_FIELD) ? $this->get(static::ATTENDEE_FIELD)->entity : $this->getOwner();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setAttendee(UserInterface $user) {
+    $this->set(static::ATTENDEE_FIELD, $user);
+
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getEvent() {
-    if ($this->hasField('field_event')) {
-      return $this->get('field_event')->entity;
+    if ($this->hasField(static::EVENT_FIELD)) {
+      return $this->get(static::EVENT_FIELD)->entity;
     }
   }
 
@@ -162,8 +188,8 @@ class EventAttendance extends ContentEntityBase implements EventAttendanceInterf
    * {@inheritdoc}
    */
   public function getEventId() {
-    if ($this->hasField('field_event')) {
-      return $this->get('field_event')->target_id;
+    if ($this->hasField(static::EVENT_FIELD)) {
+      return $this->get(static::EVENT_FIELD)->target_id;
     }
   }
 
@@ -196,7 +222,7 @@ class EventAttendance extends ContentEntityBase implements EventAttendanceInterf
       ->setReadOnly(TRUE);
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setLabel(new TranslatableMarkup('Recorded by'))
       ->setDescription(new TranslatableMarkup('The user ID of author of the Event Attendance entity.'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')

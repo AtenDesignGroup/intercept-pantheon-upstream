@@ -12,7 +12,7 @@ intercept_room_reservation.settings:
       type: text_format
       label: 'Room reservation limit user message'
     advanced_reservation_limit:
-      type: 'string'
+      type: string
       label: 'Advanced room reservation limit'
     advanced_reservation_limit_text:
       type: text_format
@@ -20,6 +20,15 @@ intercept_room_reservation.settings:
     reservation_barred_text:
       type: text_format
       label: 'Room reservation barred user message'
+    last_reservation_before_closing:
+      type: string
+      label: 'Last reservation before closing number of minutes'
+    off_canvas_view_mode:
+      type: string
+      label: 'Room reservation off-canvas dialog view mode'
+    off_canvas_form_mode:
+      type: string
+      label: 'Room reservation off-canvas dialog form mode'
     email:
       type: sequence
       label: 'Emails'
@@ -63,3 +72,7 @@ action.configuration.room_reservation_cancel:
 action.configuration.room_reservation_deny:
   type: action_configuration_default
   label: 'Deny room reservation'
+
+action.configuration.room_reservation_archive:
+  type: action_configuration_default
+  label: 'Archive room reservation'

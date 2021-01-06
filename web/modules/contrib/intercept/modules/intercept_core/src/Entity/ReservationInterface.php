@@ -3,6 +3,7 @@
 namespace Drupal\intercept_core\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\user\EntityOwnerInterface;
@@ -21,6 +22,32 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
    *   The type of reservation.
    */
   public static function reservationType();
+
+  /**
+   * Gets the parent entity.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   The parent entity, or NULL.
+   */
+  public function getParentEntity();
+
+  /**
+   * Gets the parent ID.
+   *
+   * @return int|null
+   *   The parent entity ID, or NULL.
+   */
+  public function getParentId();
+
+  /**
+   * Sets the parent entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $parent
+   *   The parent entity.
+   *
+   * @return $this
+   */
+  public function setParentEntity(EntityInterface $parent);
 
   /**
    * Gets an array of start and end dates.
@@ -74,6 +101,14 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
   public function getLocation();
 
   /**
+   * Gets the list of available operations based on the current status.
+   *
+   * @return array
+   *   The available operations.
+   */
+  public function getStatusOperations();
+
+  /**
    * Gets the original reservation status.
    *
    * @return string|bool
@@ -88,6 +123,14 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
    *   The current reservation status, or FALSE.
    */
   public function getNewStatus();
+
+  /**
+   * Gets the current reservation status.
+   *
+   * @return string|bool
+   *   The current reservation status, or FALSE.
+   */
+  public function getStatus();
 
   /**
    * Whether the reservation status is changing on save.
@@ -189,8 +232,34 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
    * Get the user the reservation is for.
    *
    * @return \Drupal\Core\Session\AccountInterface|bool
-   *   The registration user entity, or FALSE.
+   *   The reservation user entity, or FALSE.
    */
-  public function getRegistrant();
+  public function getReservor();
+
+  /**
+   * Get the available reservation operations for the current user.
+   *
+   * @return array|bool
+   *   An associative array of operation link data for this entity, keyed by
+   *   operation name, containing the following key-value pairs:
+   *   - title: The localized title of the operation.
+   *   - url: An instance of \Drupal\Core\Url for the operation URL.
+   *   - weight: The weight of this operation.
+   *   - attributes: The link attributes for the operation URL.
+   */
+  public function getOperations();
+
+  /**
+   * Get the reservation status change operations for the current user.
+   *
+   * @return array|bool
+   *   An associative array of operation link data for this entity, keyed by
+   *   operation name, containing the following key-value pairs:
+   *   - title: The localized title of the operation.
+   *   - url: An instance of \Drupal\Core\Url for the operation URL.
+   *   - weight: The weight of this operation.
+   *   - attributes: The link attributes for the operation URL.
+   */
+  public function getStatusChangeOperations();
 
 }

@@ -35,12 +35,12 @@ const removeFalseyProps = obj => pickBy(obj, prop => prop);
 
 const encodeDate = (value) => {
   return !value ? null : utils.getDayTimeStamp(value);
-}
+};
 
 const decodeDate = (value) => {
   // We fallback to undefined to allow the underlying app to set its own default date prop.
   return value ? utils.getDateFromDayTimeStamp(value) : undefined;
-}
+};
 
 const encodeFilters = (value) => {
   const filters = removeFalseyProps({
@@ -92,7 +92,7 @@ const urlPropsQueryConfig = {
     type: {
       decode: decodeDate,
       encode: encodeDate,
-    }
+    },
   },
   filters: {
     type: {
@@ -100,6 +100,8 @@ const urlPropsQueryConfig = {
       encode: encodeFilters,
     },
   },
+  page: { type: UrlQueryParamTypes.number },
+  scroll: { type: UrlQueryParamTypes.number, queryParam: 'page' },
 };
 
 const connectQueryParams = component =>

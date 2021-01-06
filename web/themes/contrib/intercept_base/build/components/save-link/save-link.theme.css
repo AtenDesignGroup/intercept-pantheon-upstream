@@ -1,4 +1,9 @@
 .action-flag .save-link__star .star {
   fill: #fff;
   stroke-width: 3rem;
-  stroke: #99c221; }
+  stroke: #51832f; }
+
+.action-unflag .save-link__star .star {
+  fill: #51832f;
+  stroke-width: 3rem;
+  stroke: #51832f; }

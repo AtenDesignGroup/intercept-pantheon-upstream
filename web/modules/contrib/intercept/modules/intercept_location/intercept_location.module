@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function intercept_location_theme($existing, $type, $theme, $path) {
+  return [
+    'intercept_room_location' => [
+      'variables' => [
+        'room' => NULL,
+        'location' => NULL,
+      ],
+    ],
+  ];
+}

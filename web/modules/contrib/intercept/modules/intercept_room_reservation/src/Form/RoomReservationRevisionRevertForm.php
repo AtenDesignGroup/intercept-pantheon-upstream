@@ -29,7 +29,7 @@ class RoomReservationRevisionRevertForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $RoomReservationStorage;
+  protected $roomReservationStorage;
 
   /**
    * The date formatter service.
@@ -47,7 +47,7 @@ class RoomReservationRevisionRevertForm extends ConfirmFormBase {
    *   The date formatter service.
    */
   public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter) {
-    $this->RoomReservationStorage = $entity_storage;
+    $this->roomReservationStorage = $entity_storage;
     $this->dateFormatter = $date_formatter;
   }
 
@@ -100,7 +100,7 @@ class RoomReservationRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $room_reservation_revision = NULL) {
-    $this->revision = $this->RoomReservationStorage->loadRevision($room_reservation_revision);
+    $this->revision = $this->roomReservationStorage->loadRevision($room_reservation_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;

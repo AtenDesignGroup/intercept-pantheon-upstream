@@ -20,9 +20,16 @@ class RoomReservationUpdateStatusForm extends EntityUpdateStatusFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Do you really want to @action this reservation?', [
+    return $this->t('Are you sure you want to @action this reservation?', [
       '@action' => $this->getStatus()->action,
     ]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    return '';
   }
 
   /**
@@ -39,6 +46,20 @@ class RoomReservationUpdateStatusForm extends EntityUpdateStatusFormBase {
    */
   protected function getStatusField() {
     return 'field_status';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmText() {
+    return $this->t('Yes');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelText() {
+    return $this->t('No');
   }
 
 }

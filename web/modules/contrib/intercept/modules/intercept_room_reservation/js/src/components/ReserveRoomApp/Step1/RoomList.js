@@ -17,7 +17,15 @@ class RoomList extends React.PureComponent {
       rooms.length > 0 ? (
         <ContentList items={teasers(rooms)} key={0} />
       ) : (
-        !loading && <p key={0}>No rooms available</p>
+        !loading && <div key={0}>
+          <p>No rooms were found.</p>
+          <p>Try:
+            <ul>
+              <li>Confirming the spelling of your search words.</li>
+              <li>Using other words for the subject of your searches.</li>
+            </ul>
+          </p>
+        </div>
       );
 
     return <div className="rooms-list">{list}</div>;

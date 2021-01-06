@@ -1,0 +1,238 @@
+<?php
+
+/**
+ * @file
+ * Contains intercept_messages.module.
+ */
+
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\intercept_messages\Form\EventAttendanceMessagesSettings;
+use Drupal\intercept_messages\Form\EventRegistrationMessagesSettings;
+use Drupal\intercept_messages\Form\EventSavedMessagesSettings;
+use Drupal\intercept_messages\Utility\MessageSettingsHelper;
+
+/**
+ * Implements hook_help().
+ */
+function intercept_messages_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the intercept_messages module.
+    case 'help.page.intercept_messages':
+      $output = '';
+      $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
+      $output .= '<p>' . new TranslatableMarkup('Provides message functionality for Intercept.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_messages_form_event_attendance_settings_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EventAttendanceMessagesSettings::class)
+    ->alterSettingsForm($form, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_messages_form_event_registration_settings_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EventRegistrationMessagesSettings::class)
+    ->alterSettingsForm($form, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_messages_form_event_saved_settings_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EventSavedMessagesSettings::class)
+    ->alterSettingsForm($form, $form_state);
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function intercept_messages_entity_insert(EntityInterface $entity) {
+  $entity_type_id = $entity->getEntityTypeId();
+  $bundle = $entity->bundle();
+  if (!in_array($entity_type_id, ['event_registration', 'event_attendance', 'flagging'])) {
+    return;
+  }
+  if ($entity_type_id == 'flagging' && $bundle != 'saved_event') {
+    return; // The only type of flags we're worried about are saved events.
+  }
+  $templates = \Drupal::service('plugin.manager.intercept_message_template')->getDefinitionsByType($entity_type_id);
+  $event_config = \Drupal::config('intercept_event.settings');
+  if ($event_config && is_array($event_config->get('email'))) {
+    $filtered_emails = array_filter($event_config->get('email'), function ($email_id) use ($templates) {
+      return in_array($email_id, array_column($templates, 'id'));
+    }, ARRAY_FILTER_USE_KEY);
+    foreach ($filtered_emails as $plugin_id => $email_setting) {
+      if ($email_setting['enabled'] && $interval = NestedArray::getValue($email_setting, ['schedule', 'interval'])) {
+        $interval_time = \Drupal::service('duration_field.service')->getSecondsFromDurationString($interval);
+        if ($entity_type_id == 'flagging') {
+          // Get the associated event for a flagging.
+          $saved_event_id = $entity->get('entity_id')->getString();
+          $event = Node::load($saved_event_id);
+          $registration = $event->get('field_must_register')->value;
+          if ($registration == TRUE) {
+            return; // Don't send emails for saves when registration is required.
+          }
+        }
+        else {
+          $event = $entity->getEvent();
+        }
+        if ($event->hasField('field_date_time')) {
+          switch ($entity_type_id) {
+            case 'event_registration':
+            case 'flagging':
+              $event_date = $event->get('field_date_time')->start_date;
+              $send_timestamp = $event_date->format('U') - $interval_time;
+              if ($send_timestamp < time()) {
+                return;
+              }
+              break;
+
+            case 'event_attendance':
+              $event_date = $event->get('field_date_time')->end_date;
+              $send_timestamp = $event_date->format('U') + $interval_time;
+              break;
+          }
+          \Drupal::service('database')
+            ->insert('intercept_messages_scheduled_message')
+            ->fields([
+              'template_id' => $plugin_id,
+              'entity_type' => $entity_type_id,
+              'entity_id' => $entity->id(),
+              'is_sent' => 0,
+              'send' => $send_timestamp,
+            ])
+            ->execute();
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function intercept_messages_entity_update(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() !== 'node' || $entity->bundle() !== 'event') {
+    return;
+  }
+  /** @var \Drupal\node\NodeInterface $entity */
+  if (!$entity->isPublished() || ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled')) {
+    $event_registration_provider = \Drupal::service('intercept_event.event_registration_provider');
+    /** @var \Drupal\intercept_event\EventRegistrationProviderInterface $event_registration_provider */
+    foreach ($event_registration_provider->getEventRegistrationIdsByEvent($entity) as $registration_id) {
+      $messages = \Drupal::service('database')
+        ->select('intercept_messages_scheduled_message', 'm')
+        ->fields('m', [
+          'message_id',
+        ])
+        ->condition('entity_id', $registration_id)
+        ->execute()
+        ->fetchAll();
+      foreach ($messages as $message) {
+        intercept_messages_delete_message($message->message_id);
+      }
+    }
+    // Find flaggings/saves that pertain to this event node.
+    $flag = \Drupal::service('flag')->getFlagById('saved_event');
+    $flaggings = \Drupal::service('flag')->getEntityFlaggings($flag, $entity);
+    foreach ($flaggings as $flagging) {
+      $flagging_id = 
+      $messages = \Drupal::service('database')
+        ->select('intercept_messages_scheduled_message', 'm')
+        ->fields('m', [
+          'message_id',
+        ])
+        ->condition('entity_id', $flagging->id())
+        ->execute()
+        ->fetchAll();
+      foreach ($messages as $message) {
+        intercept_messages_delete_message($message->message_id);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function intercept_messages_cron() {
+  $messages = \Drupal::service('database')
+    ->select('intercept_messages_scheduled_message', 'm')
+    ->fields('m', [
+      'message_id',
+      'entity_type',
+      'entity_id',
+      'template_id',
+    ])
+    ->condition('is_sent', 0)
+    ->condition('send', time(), '<')
+    ->execute()
+    ->fetchAll();
+  if (!empty($messages)) {
+    $event_config = \Drupal::config('intercept_event.settings')->get();
+    foreach ($messages as $message) {
+      if ($email_setting = NestedArray::getValue($event_config, ['email', $message->template_id])) {
+        if ($email_setting['enabled'] && $entity = \Drupal::entityTypeManager()->getStorage($message->entity_type)->load($message->entity_id)) {
+          switch ($message->entity_type) {
+            case 'event_attendance':
+            default:
+              $emails = MessageSettingsHelper::getEventAttendanceEmails($entity, $email_setting);
+              break;
+            case 'event_registration':
+              $emails = MessageSettingsHelper::getEventRegistrationEmails($entity, $email_setting);
+              break;
+            case 'flagging': // Saved events
+              $emails = MessageSettingsHelper::getEventSavedEmails($entity, $email_setting);
+              break;
+          }
+          foreach ($emails as $email) {
+            MessageSettingsHelper::mail($entity, $email, [
+              'mail_key' => $message->template_id,
+              'subject' => $email_setting['subject'],
+              'body' => $email_setting['body'],
+            ]);
+          }
+          intercept_messages_delete_message($message->message_id);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Deletes a message.
+ */
+function intercept_messages_delete_message($message_id) {
+  \Drupal::service('database')
+    ->delete('intercept_messages_scheduled_message')
+    ->condition('message_id', $message_id)
+    ->execute();
+}
+
+/**
+ * Implements hook_mail().
+ */
+function intercept_messages_mail($key, &$message, $params) {
+  $token_service = \Drupal::token();
+  $context = $params['context'];
+  $message['headers']['content-type'] = 'text/html';
+  $message['from'] = \Drupal::config('system.site')->get('mail');
+  $message['subject'] = $token_service->replace($context['subject'], $context['tokens']);
+  $message['body'][] = $token_service->replace($context['body'], $context['tokens']);
+}

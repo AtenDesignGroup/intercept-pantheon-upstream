@@ -11,7 +11,7 @@ use Drupal\user\Entity\User;
 /**
  * Form controller for Equipment reservation edit forms.
  *
- * @ingroup intercept_equipment_reservation
+ * @ingroup intercept_equipment
  */
 class EquipmentReservationForm extends ContentEntityForm {
 
@@ -19,7 +19,7 @@ class EquipmentReservationForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var $entity \Drupal\intercept_equipment\Entity\EquipmentReservation */
+    /* @var $entity \Drupal\intercept_equipment\Entity\EquipmentReservationInterface */
     $form = parent::buildForm($form, $form_state);
 
     if (!$this->entity->isNew()) {
@@ -92,7 +92,7 @@ class EquipmentReservationForm extends ContentEntityForm {
     // field_duration_min, image_primary.
     $minimum_reservation = $equipment_node->get('field_duration_min')->getValue();
     if (!empty($minimum_reservation)) {
-      $minimum_reservation = new \DateInterval($minimum_reservation[0]['value']);
+      $minimum_reservation = new \DateInterval($minimum_reservation[0]['duration']);
       // Set it up like 0:1 meaning "0 days:1 hour".
       $minimum_reservation = $minimum_reservation->format('%d') . ':' . $minimum_reservation->format('%h');
 
@@ -133,7 +133,7 @@ class EquipmentReservationForm extends ContentEntityForm {
       $entity->setNewRevision();
 
       // If a new revision is created, save the current user as revision author.
-      $entity->setRevisionCreationTime(REQUEST_TIME);
+      $entity->setRevisionCreationTime($this->time->getRequestTime());
       $entity->setRevisionUserId($this->currentUser()->id());
     }
     else {
@@ -142,7 +142,7 @@ class EquipmentReservationForm extends ContentEntityForm {
 
     parent::save($form, $form_state);
 
-    \Drupal::messenger()->addMessage('Your equipment was successfully reserved.');
+    $this->messenger()->addMessage('Your equipment was successfully reserved.');
     // Redirect to the staff member's reservation screen on the site.
     // (e.g., /user/6/room-reservations)
     $form_state->setRedirect('intercept_equipment.account.equipment_reservations');

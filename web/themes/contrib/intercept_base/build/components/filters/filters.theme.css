@@ -2,8 +2,9 @@
   background-color: #eef1f4;
   padding: 2.17391% 4.34783% 4.34783%; }
 
+.filters--uniform-padding .filters__inputs,
 .filters__inputs--uniform-padding {
-  padding: 2.17391% 4.34783%; }
+  padding: 2.17391%; }
 
 .input--textarea .input__label {
   font-weight: 900; }

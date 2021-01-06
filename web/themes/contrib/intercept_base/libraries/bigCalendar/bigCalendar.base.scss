@@ -266,6 +266,8 @@ button.rbc-input::-moz-focus-inner {
 
 .rbc-event-content {
   @include fs(micro);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rbc-event-overlaps {

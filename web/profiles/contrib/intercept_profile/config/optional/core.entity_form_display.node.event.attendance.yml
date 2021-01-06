@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_status
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
@@ -43,7 +44,8 @@ content:
     type: tally_default
     weight: 0
     region: content
-    settings: {  }
+    settings:
+      placeholder: ''
     third_party_settings: {  }
 hidden:
   created: true
@@ -58,6 +60,7 @@ hidden:
   field_event_is_template: true
   field_event_register_period: true
   field_event_series: true
+  field_event_status: true
   field_event_tags: true
   field_event_type: true
   field_event_type_primary: true

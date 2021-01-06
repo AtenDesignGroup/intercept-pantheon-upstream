@@ -15,6 +15,8 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\LocalRedirectResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -24,6 +26,7 @@ use Drupal\intercept_core\EntityImageThumbnailUriField;
 use Drupal\intercept_event\EventRegistrationField;
 use Drupal\node\NodeInterface;
 use Drupal\pathauto\AliasUniquifier;
+use Drupal\user\Entity\User;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 
@@ -54,6 +57,23 @@ function intercept_event_theme() {
     'event_registration_event_form' => [
       'render element' => 'form',
     ],
+    'event_registration_user_form' => [
+      'variables' => [
+        'event' => NULL,
+        'header' => NULL,
+        'form' => NULL,
+      ],
+    ],
+    'event_registration_guest_form' => [
+      'variables' => [
+        'event' => NULL,
+        'header' => NULL,
+        'form' => NULL,
+      ],
+    ],
+    'event_registration_warnings' => [
+      'variables' => ['warnings' => NULL],
+    ],
     'event_recurrence_event_form' => [
       'render element' => 'form',
     ],
@@ -82,6 +102,9 @@ function intercept_event_theme() {
         'user' => NULL,
       ],
       'template' => 'event-eval-feedback',
+    ],
+    'intercept_event_list' => [
+      'template' => 'intercept-event-list',
     ],
   ];
 }
@@ -241,7 +264,7 @@ function intercept_event_pathauto_alias_alter(&$alias, array &$context) {
 }
 
 /**
- * Implements hook_node_delete().
+ * Implements hook_node_update().
  */
 function intercept_event_node_update(NodeInterface $node) {
   if ($node->bundle() == 'event') {
@@ -257,6 +280,9 @@ function intercept_event_node_update(NodeInterface $node) {
  */
 function intercept_event_node_insert(NodeInterface $node) {
   if ($node->bundle() == 'event') {
+    if (!$node->path->pathauto) {
+      \Drupal::service('intercept_event.manager')->addRegisterAlias($node);
+    }
     $event_recurrences = $node->get('event_recurrence')->referencedEntities();
     foreach ($event_recurrences as $recurrence) {
       if (!$recurrence->get('event')->target_id) {
@@ -264,10 +290,17 @@ function intercept_event_node_insert(NodeInterface $node) {
         $recurrence->save();
       }
     }
-    if ($node->path->pathauto) {
-      return;
+    if ($recurrence = \Drupal::service('intercept_event.recurring_manager')->getBaseEventRecurrence($node) && !empty($event_recurrences)) {
+      // Redirect to the recurrences page.
+      $recurrences_url = Url::fromRoute('entity.node.recurrence_form', [
+        'node' => $node->id(),
+      ]);
+      $response = new LocalRedirectResponse($recurrences_url->toString());
+      $response->setMaxAge(0);
+      $response->addCacheableDependency($recurrence);
+      $response->addCacheableDependency($node);
+      $response->send();
     }
-    \Drupal::service('intercept_event.manager')->addRegisterAlias($node);
   }
 }
 
@@ -304,10 +337,38 @@ function intercept_event_entity_presave(EntityInterface $entity) {
       // Setting the value into the keywords field.
       $entity->field_keywords->value = $keywords;
 
-      // Translation waitlisted attendees to an active state in case
+      // Transition waitlisted attendees to an active state in case
       // capacity was increased.
       \Drupal::service('intercept_event.manager')->fillEventOpenCapacity($entity);
 
+      // STATUS CHANGES
+      if ($entity->isNew() == FALSE) {
+        $event_status_original = $entity->original->get('field_event_status')->value;
+        $event_status = $entity->get('field_event_status')->value;
+        // Did the event status change?
+        if ($event_status != $event_status_original) {
+          if ($event_status == 'canceled') {
+            // Update the node and prepend "Canceled: " to the title.
+            if (strpos($title, 'Canceled') == FALSE) {
+              $entity->title = 'Canceled: ' . trim($title);
+            }
+            // Cancel the room reservation (if present)
+            if ($reservation = \Drupal::service('intercept_core.reservation.manager')->getEventReservation($entity)) {
+              $reservation->cancel();
+            }
+            // Notify the staff member that it's a recurring event and only 1 has been canceled.
+            $recurring_event = \Drupal::service('intercept_event.recurring_manager')->isRecurringEvent($entity);
+            if ($recurring_event) {
+              \Drupal::messenger()->addMessage(t('You have successfully canceled this instance of the event. If you need to cancel other recurrences, please use the Recurrences tab.'));
+            }
+          }
+          if ($event_status == 'scheduled') {
+            if (strpos($title, 'Canceled') !== FALSE) {
+              $entity->title = str_replace('Canceled: ', '', $title);
+            }
+          }
+        }
+      }
       break;
 
     case 'audience':
@@ -375,6 +436,39 @@ function intercept_event_preprocess_views_view(&$variables) {
       '#markup' => $view->getTitle(),
     ];
   }
+
+  if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'page') {
+    $variables['title'] = [
+      '#markup' => $view->getTitle(),
+    ];
+  }
+  if ($view->id() == 'intercept_user_events' && $view->current_display == 'page') {
+    $variables['#attached']['library'][] = 'intercept_event/eventCustomerEvaluation';
+  }
+}
+
+
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function intercept_event_preprocess_views_view_field(&$variables) {
+  $view = $variables['view'];
+  $row = $variables['row'];
+  if ($view->id() == 'intercept_event_templates' && $view->current_display == 'embed') {
+    if ($variables['field']->field == 'title') {
+      $title = $variables['field']->getValue($row);
+      if ($title) {
+        $current_user = \Drupal::currentUser();
+        $user = User::load($current_user->id());
+        if (!$user->hasPermission('edit event field field_event_is_template')) {
+          return;
+        }
+        $nid = $variables['row']->nid;
+        $variables['output'] = Markup::create('<a href="/node/' . $nid . '">' . $variables['output'] . '</a>');
+      }
+    }
+  }
 }
 
 /**
@@ -402,7 +496,7 @@ function intercept_event_theme_suggestions_form_element_alter(&$suggestions, $va
  * Implements hook_views_post_execute().
  */
 function intercept_event_views_post_execute(ViewExecutable $view) {
-  if ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
+  if ($view->id() == 'intercept_user_events' && $view->current_display == 'page') {
     // FIXME: Make this at least not hardcoded for the group info, but then
     // also see if there is a better solution.
     $conditions = $view->query->where[3]['conditions'];
@@ -430,7 +524,7 @@ function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterfac
       $form['field_date_time_value']['max']['#default_value'] = date_format($end_date, 'm/d/Y');
     }
   }
-  elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
+  elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'page') {
     $query = \Drupal::request()->query->all();
     if (empty($query)) {
       foreach (['attended', 'registered', 'saved'] as $field) {
@@ -507,17 +601,6 @@ function intercept_event_form_node_form_alter(&$form, FormStateInterface $form_s
   }
   if ($form_state->getFormObject()->getEntity()->bundle() == 'event') {
     $form['#validate'][] = 'intercept_event_node_event_form_validate';
-  }
-}
-
-/**
- * Implements hook_form_alter().
- */
-function intercept_event_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
-  switch ($form_id) {
-    case 'node_event_attendance_form':
-      $form['#attached']['library'][] = 'intercept_event/eventNumberAttendees';
-      break;
   }
 }
 
@@ -705,7 +788,7 @@ function intercept_event_entity_base_field_info(EntityTypeInterface $entity_type
   if ($entity_type->id() == 'node') {
     $definitions = [];
     $definitions['event_recurrence'] = BaseFieldDefinition::create('entity_reference')
-      ->setName('event_reccurence')
+      ->setName('event_recurrence')
       ->setLabel(new TranslatableMarkup('Event recurrence'))
       ->setTargetEntityTypeId($entity_type->id())
       ->setSettings([
@@ -734,22 +817,6 @@ function intercept_event_jsonapi_event_registration_filter_access(EntityTypeInte
   return ([
     JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, ['view event_registration', 'view referenced user event_registration'], 'OR'),
   ]);
-}
-
-/**
- * Implements hook_mail().
- */
-function intercept_event_mail($key, &$message, $params) {
-  $token_service = \Drupal::token();
-  $context = $params['context'];
-  switch ($key) {
-    case 'status_change':
-      $message['headers']['content-type'] = 'text/html';
-      $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = $token_service->replace($context['subject'], $context['tokens']);
-      $message['body'][] = $token_service->replace($context['body'], $context['tokens']);
-      break;
-  }
 }
 
 /**
@@ -785,7 +852,7 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
     $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
     $query->addGroupBy('node.nid');
   }
-  elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'embed') {
+  elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'page') {
     $query_params = \Drupal::request()->query->all();
     if ($query_params['field_date_time_value'] == 1) {
       // Past events under My Account need to be sorted DESC instead of ASC.
@@ -835,7 +902,28 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
       'admin_label' => '',
       'empty' => TRUE,
       'tokenize' => FALSE,
-      'content' => '<h1 class="title">Meetings</h1>' .
+      'content' => '<h1 class="title">Export Meetings</h1>' .
+      $link,
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('page', 'header', 'area_text_custom', $options);
+  }
+  else if ($view->id() == 'intercept_export_room_reservations' && $display_id == 'page') {
+    // Build the link to download the CSV.
+    $request = \Drupal::request();
+    $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_export_room_reservations.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable['#attributes'] = ['class' => ['button', 'button--arrow-green']];
+    $link = \Drupal::service('renderer')->renderPlain($link_renderable);
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => '<h1 class="title">Export Room Reservations</h1>' .
       $link,
       'plugin_id' => 'text_custom',
     ];

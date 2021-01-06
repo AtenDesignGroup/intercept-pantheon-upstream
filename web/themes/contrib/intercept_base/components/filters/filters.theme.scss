@@ -5,8 +5,9 @@
   padding: percentage(.5/23) percentage(1/23) percentage(1/23);
 }
 
+.filters--uniform-padding .filters__inputs,
 .filters__inputs--uniform-padding {
-  padding: percentage(.5/23) percentage(1/23);
+  padding: percentage(.5/23);
 }
 
 .input--textarea {

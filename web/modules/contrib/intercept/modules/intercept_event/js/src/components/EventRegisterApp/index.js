@@ -10,6 +10,8 @@ import interceptClient from 'interceptClient';
 import LoadingIndicator from 'intercept/LoadingIndicator';
 /* eslint-enable */
 
+import EventRegisterGuestForm from './EventRegisterGuestForm';
+
 import EventRegisterForm from './EventRegisterForm';
 import EventRegistrationTable from './EventRegistrationTable';
 
@@ -61,13 +63,20 @@ class EventRegisterApp extends React.Component {
       return <LoadingIndicator loading />;
     }
 
-    const userHasNotRegistered = this.onlyActiveOrWaitlist().length <= 0;
-
+    let action = null;
     let form = null;
+    if (window.drupalSettings.user.uid === 0) {
+      action = <EventRegisterGuestForm {...this.props} eventId={eventId} />;
+    }
+    else {
+      action = <EventRegisterForm {...this.props} eventId={eventId} />;
+    }
+
+    const userHasNotRegistered = this.onlyActiveOrWaitlist().length <= 0;
 
     if (userHasNotRegistered) {
       form = this.acceptingReservations() ? (
-        <EventRegisterForm {...this.props} eventId={eventId} />
+        action
       ) : (
         <p>Registrations are not being accepted at this time.</p>
       );
@@ -123,6 +132,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
       api[c.TYPE_EVENT].fetchResource(id, {
         fields: {
           [c.TYPE_EVENT]: [
+            'drupal_internal__nid',
             'field_capacity_max',
             'field_waitlist_max',
             'field_event_register_period',

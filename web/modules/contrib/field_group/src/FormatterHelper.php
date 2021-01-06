@@ -73,7 +73,14 @@ class FormatterHelper implements TrustedCallbackInterface {
         }
 
         $group_parents = $element['#array_parents'];
-        $group_parents[] = empty($group->parent_name) ? $group->region : $group->parent_name;
+        if (empty($group->parent_name)) {
+          if (isset($group->region)) {
+            $group_parents[] = $group->region;
+          }
+        }
+        else {
+          $group_parents[] = $group->parent_name;
+        }
         $group_references[$group_name] = &$element[$group_name];
         $element[$group_name]['#group'] = implode('][', $group_parents);
 

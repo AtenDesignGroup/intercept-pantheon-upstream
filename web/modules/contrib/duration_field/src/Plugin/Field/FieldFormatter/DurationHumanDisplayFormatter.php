@@ -7,10 +7,12 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\duration_field\Service\DurationServiceInterface;
+use Drupal\duration_field\Service\GranularityServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a formatter for the duration field type.
+ * Provides a human friendly formatter for the Duration field type.
  *
  * @FieldFormatter(
  *   id = "duration_human_display",
@@ -28,6 +30,20 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
+
+  /**
+   * The granularity service.
+   *
+   * @var \Drupal\duration_field\Service\GranularityServiceInterface
+   */
+  protected $granularityService;
+
+  /**
+   * The Duration service.
+   *
+   * @var \Drupal\duration_field\Service\DurationServiceInterface
+   */
+  protected $durationService;
 
   /**
    * Constructs a DurationHumanDisplayFormatter object.
@@ -48,6 +64,10 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
    *   The third party settings.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler service.
+   * @param \Drupal\duration_field\Service\GranularityServiceInterface $granularityService
+   *   The granularity service.
+   * @param \Drupal\duration_field\Service\DurationServiceInterface $durationService
+   *   The duration service.
    */
   public function __construct(
     $plugin_id,
@@ -57,11 +77,15 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
     $label,
     $view_mode,
     array $third_party_settings,
-    ModuleHandlerInterface $moduleHandler
+    ModuleHandlerInterface $moduleHandler,
+    GranularityServiceInterface $granularityService,
+    DurationServiceInterface $durationService
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_config, $settings, $label, $view_mode, $third_party_settings);
 
     $this->moduleHandler = $moduleHandler;
+    $this->granularityService = $granularityService;
+    $this->durationService = $durationService;
   }
 
   /**
@@ -77,7 +101,9 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
       $configuration['label'],
       $configuration['view_mode'],
       $configuration['third_party_settings'],
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('duration_field.granularity.service'),
+      $container->get('duration_field.service')
     );
   }
 
@@ -89,13 +115,9 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
 
     $settings = $this->getSettings();
 
-    $summary[] = $this->t(
-      'Displays the duration in a human-friendly format. Words are shown in @text_length form, and separated by @separator',
-      [
-        '@text_length' => $this->getHumanFriendlyLabel($settings['text_length'], FALSE),
-        '@separator' => $this->getHumanFriendlyLabel($settings['separator'], FALSE),
-      ]
-    );
+    $summary['summary'] = $this->t('Displays the duration in a human-friendly format');
+    $summary['text_length'] = $this->t('Format: @text_length', ['@text_length' => $this->getHumanFriendlyLabel($settings['text_length'], FALSE)]);
+    $summary['separator'] = $this->t('Separator: @separator', ['@separator' => $this->getHumanFriendlyLabel($settings['separator'], FALSE)]);
 
     return $summary;
   }
@@ -117,7 +139,7 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
   public function settingsForm(array $form, FormStateInterface $form_state) {
 
     $element['text_length'] = [
-      '#title' => t('Text length'),
+      '#title' => $this->t('Text length'),
       '#type' => 'select',
       '#options' => [
         'full' => $this->getHumanFriendlyLabel('full'),
@@ -154,41 +176,14 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
 
     $element = [];
 
-    $granularity = $this->getFieldSetting('granularity');
-
     foreach ($items as $delta => $item) {
-      $duration = new \DateInterval($item->value);
-
-      $output = [];
-      if ($granularity['year'] && $years = $duration->format('%y')) {
-        $output[] = $this->getTimePeriod('year', $years);
-      }
-
-      if ($granularity['month'] && $months = $duration->format('%m')) {
-        $output[] = $this->getTimePeriod('month', $months);
-      }
-
-      if ($granularity['day'] && $days = $duration->format('%d')) {
-        $output[] = $this->getTimePeriod('day', $days);
-      }
-
-      if ($granularity['hour'] && $hours = $duration->format('%h')) {
-        $output[] = $this->getTimePeriod('hour', $hours);
-      }
-
-      if ($granularity['minute'] && $minutes = $duration->format('%i')) {
-        $output[] = $this->getTimePeriod('minute', $minutes);
-      }
-
-      if ($granularity['second'] && $seconds = $duration->format('%s')) {
-        $output[] = $this->getTimePeriod('second', $seconds);
-      }
-
-      $value = count($output) ? implode($this->getSeparator(), $output) : '0';
-
-      // Render each element as markup.
       $element[$delta] = [
-        '#markup' => $value,
+        '#markup' => $this->durationService->getHumanReadableStringFromDateInterval(
+          $item->get('duration')->getCastedValue(),
+          $this->granularityService->convertGranularityStringToGranularityArray($this->getFieldSetting('granularity')),
+          $this->getSeparator(),
+          $this->getSetting('text_length')
+        ),
       ];
     }
 
@@ -219,22 +214,22 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
 
     if ($capitalize) {
       $values = [
-        'full' => t('Full'),
-        'short' => t('Short'),
-        'space' => t('Spaces'),
-        'hyphen' => t('Hyphens'),
-        'comma' => t('Commas'),
-        'newline' => t('New lines'),
+        'full' => $this->t('Full'),
+        'short' => $this->t('Short'),
+        'space' => $this->t('Spaces'),
+        'hyphen' => $this->t('Hyphens'),
+        'comma' => $this->t('Commas'),
+        'newline' => $this->t('New lines'),
       ] + $custom_labels['capitalized'];
     }
     else {
       $values = [
-        'full' => t('full'),
-        'short' => t('short'),
-        'space' => t('spaces'),
-        'hyphen' => t('hyphens'),
-        'comma' => t('commas'),
-        'newline' => t('new lines'),
+        'full' => $this->t('full'),
+        'short' => $this->t('short'),
+        'space' => $this->t('spaces'),
+        'hyphen' => $this->t('hyphens'),
+        'comma' => $this->t('commas'),
+        'newline' => $this->t('new lines'),
       ] + $custom_labels['lowercase'];
     }
 
@@ -259,65 +254,6 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
     ] + $custom_separators;
 
     return $separators[$this->getSetting('separator')];
-  }
-
-  /**
-   * Returns a human-friendly value for a given time period key.
-   *
-   * @param string $type
-   *   The type of the humann readable value to retrieve.
-   * @param int $value
-   *   The amount for that time period.
-   *
-   * @return string
-   *   The translateable human-friendly count of the given type
-   */
-  protected function getTimePeriod($type, $value) {
-
-    $text_length = $this->getSetting('text_length');
-    if ($type == 'year') {
-      if ($text_length == 'full') {
-        return $this->formatPlural($value, '1 year', '@count years');
-      }
-      else {
-        return $this->formatPlural($value, '1 yr', '@count yr');
-      }
-    }
-    elseif ($type == 'month') {
-      if ($text_length == 'full') {
-        return $this->formatPlural($value, '1 months', '@count months');
-      }
-      else {
-        return $this->formatPlural($value, '1 mo', '@count mo');
-      }
-    }
-    elseif ($type == 'day') {
-      return $this->formatPlural($value, '1 day', '@count days');
-    }
-    elseif ($type == 'hour') {
-      if ($text_length == 'full') {
-        return $this->formatPlural($value, '1 hour', '@count hours');
-      }
-      else {
-        return $this->formatPlural($value, '1 hr', '@count hr');
-      }
-    }
-    elseif ($type == 'minute') {
-      if ($text_length == 'full') {
-        return $this->formatPlural($value, '1 minute', '@count minutes');
-      }
-      else {
-        return $this->formatPlural($value, '1 min', '@count min');
-      }
-    }
-    elseif ($type == 'second') {
-      if ($text_length == 'full') {
-        return $this->formatPlural($value, '1 second', '@count seconds');
-      }
-      else {
-        return $this->formatPlural($value, '1 s', '@count s');
-      }
-    }
   }
 
 }

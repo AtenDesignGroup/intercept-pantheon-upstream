@@ -2,15 +2,52 @@
 
 namespace Drupal\intercept_event\Form;
 
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class EventAttendanceSettingsForm.
  *
  * @ingroup intercept_event
  */
-class EventAttendanceSettingsForm extends FormBase {
+class EventAttendanceSettingsForm extends ConfigFormBase {
+
+  /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Constructs a EventRegistrationSettingsForm object.
+   *
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   */
+  public function __construct(ModuleHandlerInterface $module_handler) {
+    $this->moduleHandler = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('module_handler'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return [
+      'intercept_event.settings',
+    ];
+  }
 
   /**
    * Returns a unique string identifying the form.
@@ -19,35 +56,14 @@ class EventAttendanceSettingsForm extends FormBase {
    *   The unique string identifying the form.
    */
   public function getFormId() {
-    return 'eventattendance_settings';
+    return 'event_attendance_settings';
   }
 
   /**
-   * Form submission handler.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Empty implementation of the abstract submit class.
-  }
-
-  /**
-   * Defines the settings form for Event Attendance entities.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return array
-   *   Form definition array.
-   */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['eventattendance_settings']['#markup'] = 'Settings form for Event Attendance entities. Manage field settings here.';
-    return $form;
+    $this->messenger()->addStatus($this->t('The configuration options have been saved.'));
   }
 
 }

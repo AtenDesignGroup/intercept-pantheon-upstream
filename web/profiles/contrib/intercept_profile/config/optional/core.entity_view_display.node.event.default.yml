@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_status
     - field.field.node.event.field_event_tags
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
@@ -43,14 +44,14 @@ bundle: event
 mode: default
 content:
   field_attendees:
-    weight: 19
+    weight: 20
     label: above
     settings: {  }
     third_party_settings: {  }
     type: tally_default
     region: content
   field_audience_primary:
-    weight: 21
+    weight: 22
     label: above
     settings:
       link: true
@@ -68,16 +69,47 @@ content:
     region: content
   field_date_time:
     weight: 3
-    label: above
+    label: hidden
     settings:
-      separator: '-'
-      format_type: medium
       timezone_override: ''
-    third_party_settings: {  }
+      format_type: event_date
+      separator: '-'
+    third_party_settings:
+      addtocalendar:
+        addtocalendar_settings:
+          style: blue
+          display_text: 'Add to Calendar'
+          atc_title:
+            field: token
+            tokenized: Title
+          atc_description:
+            field: token
+            tokenized: Description
+          atc_location:
+            field: token
+            tokenized: Location
+          atc_organizer:
+            field: token
+            tokenized: 'Richland Library'
+          atc_organizer_email:
+            field: token
+            tokenized: no-reply@richlandlibrary.com
+          atc_date_end:
+            field: token
+            tokenized: ''
+          atc_privacy: public
+          data_secure: auto
+          data_calendars:
+            iCalendar: 0
+            'Google Calendar': 0
+            Outlook: 0
+            'Outlook Online': 0
+            'Yahoo! Calendar': 0
+        addtocalendar_show: 0
     type: daterange_default
     region: content
   field_event_audience:
-    weight: 13
+    weight: 14
     label: above
     settings:
       link: true
@@ -85,7 +117,7 @@ content:
     type: entity_reference_label
     region: content
   field_event_designation:
-    weight: 22
+    weight: 23
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -103,14 +135,14 @@ content:
     region: content
   field_event_series:
     type: entity_reference_label
-    weight: 11
+    weight: 12
     region: content
     label: above
     settings:
       link: true
     third_party_settings: {  }
   field_event_tags:
-    weight: 14
+    weight: 15
     label: above
     settings:
       link: true
@@ -118,7 +150,7 @@ content:
     type: entity_reference_label
     region: content
   field_event_type:
-    weight: 12
+    weight: 13
     label: above
     settings:
       link: true
@@ -126,15 +158,24 @@ content:
     type: entity_reference_label
     region: content
   field_event_type_primary:
-    weight: 20
+    weight: 21
     label: above
     settings:
       link: true
     third_party_settings: {  }
     type: entity_reference_label
     region: content
+  field_event_user_reg_max:
+    weight: 26
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
   field_featured:
-    weight: 17
+    weight: 18
     label: above
     settings:
       format: default
@@ -154,7 +195,7 @@ content:
     type: boolean
     region: content
   field_location:
-    weight: 15
+    weight: 16
     label: above
     settings:
       link: true
@@ -172,7 +213,7 @@ content:
     type: boolean
     region: content
   field_presented_by_non_staff:
-    weight: 24
+    weight: 25
     label: above
     settings:
       format: default
@@ -182,7 +223,7 @@ content:
     type: boolean
     region: content
   field_presenter:
-    weight: 23
+    weight: 24
     label: above
     settings:
       link_to_entity: false
@@ -219,7 +260,7 @@ content:
     type: basic_string
     region: content
   field_waitlist_max:
-    weight: 18
+    weight: 19
     label: above
     settings:
       thousand_separator: ''
@@ -232,8 +273,13 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  flag_subscribe_node:
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   image_primary:
-    weight: 16
+    weight: 17
     label: above
     settings:
       link: true
@@ -241,7 +287,7 @@ content:
     type: entity_reference_label
     region: content
   links:
-    weight: 10
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -253,5 +299,5 @@ hidden:
   field_add_to_cal: true
   field_evanced_id: true
   field_event_is_template: true
-  field_event_user_reg_max: true
+  field_event_status: true
   field_keywords: true

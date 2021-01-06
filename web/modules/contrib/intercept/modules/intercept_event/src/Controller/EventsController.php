@@ -4,13 +4,65 @@ namespace Drupal\intercept_event\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Url;
+use Drupal\intercept_event\EventEvaluationManager;
+use Drupal\intercept_event\SuggestedEventsProvider;
 use Drupal\node\NodeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class EventsController.
  */
 class EventsController extends ControllerBase {
+
+  /**
+   * The entity field manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * The Intercept event evaluation manager.
+   *
+   * @var \Drupal\intercept_event\EventEvaluationManager
+   */
+  protected $evaluationManager;
+
+  /**
+   * The Intercept suggested events provider.
+   *
+   * @var \Drupal\intercept_event\SuggestedEventsProvider
+   */
+  protected $suggestedEventsProvider;
+
+  /**
+   * Constructs an EventsController object.
+   *
+   * @param \Drupal\intercept_event\SuggestedEventsProvider $suggested_events_provider
+   *   The Intercept suggested events provider.
+   * @param \Drupal\intercept_event\EventEvaluationManager $evaluation_manager
+   *   The Intercept event evaluation manager.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
+   */
+  public function __construct(SuggestedEventsProvider $suggested_events_provider, EventEvaluationManager $evaluation_manager, EntityFieldManagerInterface $entity_field_manager) {
+    $this->suggestedEventsProvider = $suggested_events_provider;
+    $this->evaluationManager = $evaluation_manager;
+    $this->entityFieldManager = $entity_field_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('intercept_event.suggested_events_provider'),
+      $container->get('intercept_event.evaluation_manager'),
+      $container->get('entity_field.manager')
+    );
+  }
 
   /**
    * List.
@@ -19,16 +71,72 @@ class EventsController extends ControllerBase {
    *   Return a render array containing the events list block.
    */
   public function list() {
-    $build = [];
-    $build['#attached']['library'][] = 'intercept_event/eventList';
-    $build['intercept_event_list']['#markup'] = '<div id="eventListRoot" ></div>';
-    $build['#attached']['drupalSettings']['intercept']['events']['recommended'] = \Drupal::service('intercept_event.suggested_events_provider')->getSuggestedEventIds();
+    $suggested_events = $this->suggestedEventsProvider->getSuggestedEventIds();
+
+    $build = [
+      '#theme' => 'intercept_event_list',
+      '#attached' => [
+        'drupalSettings' => [
+          'intercept' => [
+            'events' => [
+              'recommended' => $suggested_events,
+            ],
+          ],
+        ],
+        'library' => [
+          'intercept_event/eventList',
+        ],
+      ],
+    ];
     $this->attachFieldSettings($build);
     return $build;
   }
 
   /**
    * Check bundle access and permissions.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Event node to check registration access for.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   The AccessResult object.
+   */
+  public function registerAccess(NodeInterface $node) {
+    $access_handler = $this->entityTypeManager()->getAccessControlHandler('event_registration');
+    if (!$access_handler->createAccess('event_registration')) {
+      return AccessResult::forbidden();
+    }
+    if (!$this->isEventBundle($node)) {
+      return AccessResult::forbidden();
+    }
+    if ($node->hasField('field_must_register') && !$node->field_must_register->value) {
+      return AccessResult::forbidden();
+    }
+    switch ($node->registration->status) {
+      case 'expired':
+      case 'closed':
+      case 'full':
+      case 'open_pending':
+        return AccessResult::forbidden();
+    }
+    $access = $this->moduleHandler()->invokeAll('event_registration_event_create_access', [$node]);
+    if (!empty($access)) {
+      $result = array_shift($access);
+      if ($result->isForbidden()) {
+        return AccessResult::forbidden();
+      }
+    }
+    return AccessResult::allowed();
+  }
+
+  /**
+   * Check bundle access and permissions.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The Event node to check Registrations tab access for.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   The AccessResult object.
    */
   public function registrationsAccess(NodeInterface $node) {
     $has_permission = $this->currentUser()->hasPermission('access event registrations tab');
@@ -37,6 +145,12 @@ class EventsController extends ControllerBase {
 
   /**
    * Check bundle access and permissions.
+   *
+   * * @param \Drupal\node\NodeInterface $node
+   *   The Event node to check Attendance tab access for.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   The AccessResult object.
    */
   public function attendanceAccess(NodeInterface $node) {
     $has_permission = $this->currentUser()->hasPermission('access event attendance tab');
@@ -80,7 +194,7 @@ class EventsController extends ControllerBase {
    */
   protected function attachFieldSettings(array &$build) {
     // Load field_event_designation options.
-    $event_fields = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions('node', 'event');
+    $event_fields = $this->entityFieldManager->getFieldStorageDefinitions('node', 'event');
     if (array_key_exists('field_event_designation', $event_fields)) {
       $options = options_allowed_values($event_fields['field_event_designation']);
       $build['#attached']['drupalSettings']['intercept']['events']['field_event_designation']['options'] = $options;
@@ -159,7 +273,7 @@ class EventsController extends ControllerBase {
   public function analysis(NodeInterface $node) {
     $event_uuid = $node->uuid();
     $event_nid = $node->id();
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder('node');
+    $view_builder = $this->entityTypeManager()->getViewBuilder('node');
 
     return [
       '#theme' => 'node_event_analysis',
@@ -167,11 +281,11 @@ class EventsController extends ControllerBase {
         'header' => $view_builder->view($node, 'header'),
         'attendance' => [
           'title' => $this->t('Number of Attendees'),
-          'form' => \Drupal::service('entity.form_builder')->getForm($node, 'attendance'),
+          'form' => $this->entityFormBuilder()->getForm($node, 'attendance'),
         ],
         'staff_evaluation' => [
           'title' => $this->t('Evaluate Your Event'),
-          'form' => \Drupal::service('intercept_event.evaluation_manager')->getStaffForm($node),
+          'form' => $this->evaluationManager->getStaffForm($node),
         ],
         'attendance_list' => [
           '#markup' => '<div id="eventAttendanceListRoot" data-event-uuid="' . $event_uuid . '" data-event-nid="' . $event_nid . '"></div>',

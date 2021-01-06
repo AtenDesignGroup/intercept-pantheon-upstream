@@ -1,5 +1,5 @@
 agreement_text:
-  value: ''
+  value: "<p>As a service to the community, the library offers a variety of meeting and study spaces for use by community groups, non-profit agencies and other organizations.</p>\r\n\r\n<p>Meeting rooms may be reserved by library cardholders on a first-come, first-served basis.</p>"
   format: basic_html
 reservation_limit: '0'
 reservation_limit_text:
@@ -102,3 +102,6 @@ email:
       intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
+off_canvas_view_mode: off_canvas
+last_reservation_before_closing: '15'
+off_canvas_form_mode: ''

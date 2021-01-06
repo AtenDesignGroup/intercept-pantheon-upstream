@@ -91,3 +91,9 @@ intercept_event.config_event:
   route_name: intercept_event.management.event_configuration.redirect
   menu_name: intercept-manage
   class: Drupal\intercept_core\Plugin\Menu\ConfigMenuLink
+
+saved_event.admin.structure.settings:
+  title: Saved events
+  description: 'Configure settings for saved events'
+  route_name: intercept_event.saved_event.settings
+  parent: intercept_core.admin_structure

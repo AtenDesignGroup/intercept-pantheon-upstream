@@ -59,6 +59,11 @@ class RegistrationLimitConstraintValidator extends ConstraintValidator implement
       return;
     }
 
+    $current_user = \Drupal::currentUser();
+    if ($current_user->hasPermission('bypass event registration limit') && !$entity->__get('warning')) {
+      return;
+    }
+
     $event = $entity->field_event->entity;
     $registrant_id = ($entity->hasField('field_user') && $entity->field_user->target_id) ? $entity->field_user->target_id : NULL;
 
@@ -74,7 +79,10 @@ class RegistrationLimitConstraintValidator extends ConstraintValidator implement
           return FALSE;
         }
         $field_user_target_id = ($registration->hasField('field_user') && $registration->field_user->target_id) ? $registration->field_user->target_id : NULL;
-        return $field_user_target_id == $registrant_id;
+
+        // Registrant id will be null if it's a guest registration made by staff.
+        $result = (is_null($registrant_id)) ? FALSE : $field_user_target_id == $registrant_id;
+        return $result;
       });
     }
 

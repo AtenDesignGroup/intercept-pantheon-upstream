@@ -1,0 +1,32 @@
+
+@import '_partials';
+
+.scheduler__group-toggle {
+  background-color: transparent;
+
+  &:active {
+    background-color: $gray-70;
+  }
+
+  &:focus,
+  &:hover {
+    background-color: $gray-60;
+  }
+}
+
+.scheduler__group-toggle::after {
+  background-image: inline-svg('<svg width="10" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M0 5l5-5 5 5z" fill="#7A7D81" fill-rule="evenodd"/></svg>');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  content: "";
+  transition: transform .2s ease-out;
+}
+
+.scheduler__group-toggle[aria-expanded="true"]::after {
+  content: "";
+  transform: rotateZ(180deg);
+}
+
+.scheduler__group-toggle[aria-expanded="false"]::after {
+  content: "";
+}

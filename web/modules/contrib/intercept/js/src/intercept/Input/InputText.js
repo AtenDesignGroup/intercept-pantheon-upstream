@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 import { TextField } from '@material-ui/core';
 
-class InputText extends React.Component {
+class InputText extends React.PureComponent {
   render() {
     const {
+      errorMessage,
       label,
       isValid,
       onChange,
-      getErrorMessages,
       isRequired,
-      disabled
+      disabled,
+      value,
     } = this.props;
 
     const handleChange = (event) => {
@@ -19,7 +20,7 @@ class InputText extends React.Component {
       this.props.setValue(event.target.value);
     };
 
-    let helperText = this.props.getErrorMessage() || '';
+    let helperText = errorMessage || '';
 
     if (this.props.helperText) {
       helperText = `${this.props.helperText} ${helperText}`;
@@ -31,16 +32,16 @@ class InputText extends React.Component {
         type="text"
         disabled={disabled}
         onChange={handleChange}
-        value={this.props.getValue()}
+        value={value}
         className="input input--text"
         InputLabelProps={{
           // shrink: true,
           className: 'input__label',
         }}
         inputProps={{}}
-        error={!isValid()}
+        error={!isValid}
         helperText={helperText}
-        required={isRequired()}
+        required={isRequired}
         fullWidth
       />
     );

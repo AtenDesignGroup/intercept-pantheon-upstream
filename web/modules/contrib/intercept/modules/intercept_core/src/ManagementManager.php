@@ -34,9 +34,10 @@ class ManagementManager extends DefaultPluginManager implements ManagementManage
    *   Cache backend instance to use.
    */
   public function __construct(ModuleHandlerInterface $module_handler, CacheBackendInterface $cache_backend) {
-    // Add more services as required.
     $this->moduleHandler = $module_handler;
+    // Add more services as required.
     $this->setCacheBackend($cache_backend, 'intercept_management', ['intercept_management']);
+    $this->alterInfo('intercept_management_info');
   }
 
   /**
@@ -74,7 +75,12 @@ class ManagementManager extends DefaultPluginManager implements ManagementManage
         continue;
       }
       foreach ($definition->pages as $key => $page) {
+        // Set a default value for the user_context_redirect setting.
+        if (!isset($page['user_context_redirect'])) {
+          $page['user_context_redirect'] = TRUE;
+        }
         $return["{$definition->id}.management.{$key}"] = $page + [
+          'id' => "{$definition->id}.management.{$key}",
           'title' => $page['title'],
           'key' => $key,
           'controller' => $definition->controller,

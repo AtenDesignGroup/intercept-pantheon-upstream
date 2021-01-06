@@ -93,7 +93,7 @@ class RoomReservationRevisionRevertTranslationForm extends RoomReservationRevisi
     $revert_untranslated_fields = $form_state->getValue('revert_untranslated_fields');
 
     /** @var \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $default_revision */
-    $latest_revision = $this->RoomReservationStorage->load($revision->id());
+    $latest_revision = $this->roomReservationStorage->load($revision->id());
     $latest_revision_translation = $latest_revision->getTranslation($this->langcode);
 
     $revision_translation = $revision->getTranslation($this->langcode);

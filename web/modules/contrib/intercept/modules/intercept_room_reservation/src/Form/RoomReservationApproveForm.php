@@ -20,16 +20,9 @@ class RoomReservationApproveForm extends RoomReservationUpdateStatusForm {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Do you really want to @action this reservation?', [
+    return $this->t('Are you sure you want to @action this reservation?', [
       '@action' => $this->getStatus()->action,
     ]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDescription() {
-    return '';
   }
 
   /**
@@ -50,20 +43,6 @@ class RoomReservationApproveForm extends RoomReservationUpdateStatusForm {
     ];
 
     return parent::buildForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfirmText() {
-    return $this->t('Approve');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCancelText() {
-    return $this->t('Go back');
   }
 
 }

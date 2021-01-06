@@ -24,7 +24,7 @@ window.onload = function () {
     // close slide-menu and collapse any expanded
 
 
-    var menuItems = document.querySelectorAll("INPUT[type='radio']");
+    var menuItems = document.querySelectorAll(".accordion INPUT[type='radio']");
     var slideMenuToggle = document.getElementById("slide-menu-toggle");
     var subMenuOpen = null;
 

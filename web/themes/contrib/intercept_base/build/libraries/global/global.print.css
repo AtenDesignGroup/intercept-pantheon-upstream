@@ -16,6 +16,9 @@ nav,
 .loading-indicator {
   display: none; }
 
+.header {
+  margin: 0; }
+
 .header__logo {
   width: 70pt;
   margin-left: auto;
@@ -83,7 +86,7 @@ h1 {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex; }
-  .events-list .teaser__main .teser__content {
+  .events-list .teaser__main .teaser__content {
     -webkit-box-flex: 1;
         -ms-flex: auto;
             flex: auto;
@@ -134,9 +137,31 @@ h1 {
     white-space: normal;
     overflow: visible; }
   .rbc-calendar .calendar-event__title {
-    font-size: 6pt;
+    font-size: 12pt;
     line-height: 1.2; }
 
 @media (orientation: portrait) {
   .rbc-calendar .rbc-month-view {
     min-height: 620pt; } }
+
+.current-filter__label {
+  color: #747481;
+  font-weight: 900;
+  margin-right: .5em; }
+
+.current-filter .option-chip {
+  font-size: 0.65278rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0; }
+  @media (min-width: 48em) {
+    .current-filter .option-chip {
+      font-size: 0.83333rem; } }
+  @media (min-width: 62em) {
+    .current-filter .option-chip {
+      font-size: 1rem; } }
+  .current-filter .option-chip > span {
+    padding: 0; }
+  .current-filter .option-chip > svg {
+    margin-left: .5em; }

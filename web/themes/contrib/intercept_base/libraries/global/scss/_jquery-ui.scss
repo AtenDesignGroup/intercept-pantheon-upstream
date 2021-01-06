@@ -1,0 +1,26 @@
+//
+// @file
+// JQuery UI Styles
+//
+// Classes to support jQuery UI.
+//
+
+/**
+ * Dialogs
+ */
+
+.ui-dialog {
+  background-color: $white;
+  color: rgba(0, 0, 0, 0.87);
+  transition: all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+/**
+ * Overlays
+ */
+
+.ui-widget-overlay {
+  background: #000;
+  filter: alpha(Opacity=70);
+  opacity: 0.7;
+}

@@ -1,0 +1,12 @@
+{% import '@intercept-base-components/component.twig' as component %}
+{{ attach_library('intercept_base/contact') }}
+
+<div {{ component.attributes('contact', modifiers, attr) }}>
+  {% if name %}
+    <span class="contact__name">{{name}}</span>
+  {% endif %}
+
+  {% if content %}
+    {{ content }}
+  {% endif %}
+</div>

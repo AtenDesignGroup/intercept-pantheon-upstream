@@ -4,7 +4,9 @@ namespace Drupal\intercept_event\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\EntityOwnerInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Provides an interface for defining Event Registration entities.
@@ -22,6 +24,58 @@ interface EventRegistrationInterface extends ContentEntityInterface, EntityChang
   public function getTitle();
 
   /**
+   * Gets the Event entity.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The event entity.
+   */
+  public function getEvent();
+
+  /**
+   * Gets the Event ID.
+   *
+   * @return int
+   *   The event entity ID.
+   */
+  public function getEventId();
+
+  /**
+   * Sets the Event entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $event
+   *   The event entity.
+   *
+   * @return $this
+   */
+  public function setEventEntity(EntityInterface $event);
+
+  /**
+   * Gets the parent entity.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The event entity.
+   */
+  public function getParentEntity();
+
+  /**
+   * Gets the parent ID.
+   *
+   * @return int
+   *   The event entity ID.
+   */
+  public function getParentId();
+
+  /**
+   * Sets the parent entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $parent
+   *   The parent entity.
+   *
+   * @return $this
+   */
+  public function setParentEntity(EntityInterface $parent);
+
+  /**
    * Gets the total event registrants.
    *
    * @return int
@@ -36,6 +90,17 @@ interface EventRegistrationInterface extends ContentEntityInterface, EntityChang
    *   The registration user entity.
    */
   public function getRegistrant();
+
+  /**
+   * Set the user the registration is for.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The User entity.
+   *
+   * @return \Drupal\intercept_event\Entity\EventRegistrationInterface
+   *   The called Event Registration entity.
+   */
+  public function setRegistrant(UserInterface $user);
 
   /**
    * Gets the original event registration status.
@@ -81,19 +146,12 @@ interface EventRegistrationInterface extends ContentEntityInterface, EntityChang
   public function setCreatedTime($timestamp);
 
   /**
-   * Gets the Event entity.
+   * Gets validation constraint violations.
    *
-   * @return \Drupal\Core\Entity\EntityInterface
-   *   The event entity.
+   * @return \Symfony\Component\Validator\ConstraintViolationListInterface
+   *   A list of constraint violations. If the list is empty, validation
+   *   succeeded.
    */
-  public function getEvent();
-
-  /**
-   * Gets the Event ID.
-   *
-   * @return int
-   *   The event entity ID.
-   */
-  public function getEventId();
+  public function validationWarnings();
 
 }

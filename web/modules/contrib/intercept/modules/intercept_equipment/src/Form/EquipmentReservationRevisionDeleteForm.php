@@ -29,7 +29,7 @@ class EquipmentReservationRevisionDeleteForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $EquipmentReservationStorage;
+  protected $equipmentReservationStorage;
 
   /**
    * The database connection.
@@ -47,7 +47,7 @@ class EquipmentReservationRevisionDeleteForm extends ConfirmFormBase {
    *   The database connection.
    */
   public function __construct(EntityStorageInterface $entity_storage, Connection $connection) {
-    $this->EquipmentReservationStorage = $entity_storage;
+    $this->equipmentReservationStorage = $entity_storage;
     $this->connection = $connection;
   }
 
@@ -94,7 +94,7 @@ class EquipmentReservationRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $equipment_reservation_revision = NULL) {
-    $this->revision = $this->EquipmentReservationStorage->loadRevision($equipment_reservation_revision);
+    $this->revision = $this->equipmentReservationStorage->loadRevision($equipment_reservation_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -104,7 +104,7 @@ class EquipmentReservationRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->EquipmentReservationStorage->deleteRevision($this->revision->getRevisionId());
+    $this->equipmentReservationStorage->deleteRevision($this->revision->getRevisionId());
 
     $this->logger('content')->notice('Equipment reservation: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
     \Drupal::messenger()->addMessage($this->t('Revision from %revision-date of Equipment reservation %title has been deleted.', ['%revision-date' => \Drupal::service('date.formatter')->format($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));

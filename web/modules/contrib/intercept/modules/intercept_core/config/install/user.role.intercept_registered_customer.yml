@@ -8,6 +8,7 @@ is_admin: null
 permissions:
   - 'add event registration entities'
   - 'add room reservation entities'
+  - 'cancel referenced user room_reservation'
   - 'change own username'
   - 'create event_registration'
   - 'create room_reservation'
@@ -21,6 +22,7 @@ permissions:
   - 'update own room_reservation'
   - 'update referenced user event_attendance'
   - 'update referenced user event_registration'
+  - 'update referenced user room_reservation'
   - 'view any audience taxonomy_term'
   - 'view any equipment_type taxonomy_term'
   - 'view any evaluation_criteria taxonomy_term'
@@ -41,3 +43,4 @@ permissions:
   - 'view published room reservation entities'
   - 'view referenced user event_attendance'
   - 'view referenced user event_registration'
+  - 'view referenced user room_reservation'

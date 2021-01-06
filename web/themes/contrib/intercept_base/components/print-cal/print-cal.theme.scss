@@ -1,0 +1,20 @@
+@import '_partials';
+
+.print-legend {
+  background-color: $clr-primary-dark;
+  color: $white;
+  padding: percentage(.25/23) percentage(0.5/23);
+  text-align: right;
+}
+
+.print-legend__item {
+  &-title {
+    font-weight: $fw-bold;
+  }
+}
+
+.print-event--highlight {
+  background-color: $clr-primary-dark;
+  color: $white;
+  padding: .75em;
+}

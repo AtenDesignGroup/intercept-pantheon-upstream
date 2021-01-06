@@ -1,0 +1,105 @@
+/**
+ * @file
+ * Styling for the off-canvas ui dialog. Including overrides for jQuery UI.
+ */
+.ui-dialog.ui-dialog-off-canvas #drupal-off-canvas {
+  padding: 0 1.875rem 1.875rem; }
+
+/* Style the dialog-off-canvas container. */
+.ui-dialog.ui-dialog-off-canvas {
+  /* Layer the dialog just under the toolbar. */
+  z-index: 501;
+  padding: 0;
+  color: #4c4d4f;
+  border-radius: 0;
+  background: white;
+  -webkit-box-shadow: 0 -5px 50px 0 rgba(0, 0, 0, 0.1);
+          box-shadow: 0 -5px 50px 0 rgba(0, 0, 0, 0.1);
+  font-size: inherit;
+  font-family: inherit; }
+
+.ui-widget.ui-dialog.ui-dialog-off-canvas {
+  border: 0; }
+
+.ui-dialog.ui-dialog-off-canvas .l--offset {
+  padding-left: 0;
+  padding-right: 0; }
+
+/* Style the off-canvas dialog header. */
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 1.5rem 1.875rem;
+  color: #4c4d4f;
+  border: 0;
+  border-radius: 0;
+  background-color: #eef1f4;
+  font-weight: normal; }
+
+/* Hide the default jQuery UI dialog close button. */
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close .ui-icon {
+  visibility: hidden; }
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close {
+  position: absolute;
+  top: -webkit-calc(50% - 6px);
+  top: calc(50% - 6px);
+  right: 1em;
+  width: 30px;
+  height: 30px;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  border: 3px solid transparent;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%236DAD44%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M-.02%2021.192L21.191-.02l2.829%202.829L2.808%2024.02z%22%2F%3E%3Cpath%20d%3D%22M21.192%2024.02L-.02%202.809%202.808-.021%2024.02%2021.192z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 18px; }
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close:hover,
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close:focus {
+  border: 3px solid #fff;
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%236DAD44%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M-.02%2021.192L21.191-.02l2.829%202.829L2.808%2024.02z%22%2F%3E%3Cpath%20d%3D%22M21.192%2024.02L-.02%202.809%202.808-.021%2024.02%2021.192z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); }
+
+[dir="rtl"] .ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close {
+  right: auto;
+  left: 1em; }
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-title {
+  /* Ensure that long titles do not overlap the close button. */
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+  margin: 0;
+  max-width: none;
+  /* Push the text away from the icon. */
+  padding-left: 0;
+  /* LTR */
+  padding-right: 0;
+  /* LTR */
+  text-align: left;
+  /* LTR */
+  /* Ensure that long titles are not truncated. */
+  white-space: normal; }
+
+[dir="rtl"] .ui-dialog.ui-dialog-off-canvas .ui-dialog-title {
+  float: right;
+  padding-right: 30px;
+  padding-left: 0;
+  text-align: right; }
+
+.ui-dialog.ui-dialog-off-canvas .ui-dialog-title:before {
+  content: none; }
+
+/* Override default styling from jQuery UI. */
+#drupal-off-canvas .ui-state-default,
+#drupal-off-canvas .ui-widget-content .ui-state-default,
+#drupal-off-canvas .ui-widget-header .ui-state-default {
+  color: #333;
+  border: 0;
+  font-size: 14px;
+  font-weight: normal; }
+
+#drupal-off-canvas .ui-widget-content a {
+  color: #85bef4; }

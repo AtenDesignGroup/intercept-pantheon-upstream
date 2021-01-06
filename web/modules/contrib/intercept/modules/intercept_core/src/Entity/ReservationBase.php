@@ -3,6 +3,7 @@
 namespace Drupal\intercept_core\Entity;
 
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\RevisionableContentEntityBase;
@@ -17,7 +18,7 @@ use Drupal\user\UserInterface;
 /**
  * Base class for Equipment and Room Reservations.
  */
-abstract class ReservationBase extends RevisionableContentEntityBase {
+abstract class ReservationBase extends RevisionableContentEntityBase implements ReservationInterface {
 
   use EntityChangedTrait;
 
@@ -37,6 +38,9 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
    * {@inheritdoc}
    */
   public function label() {
+    if ($this->isNew()) {
+      return '';
+    }
     $timezone = date_default_timezone_get();
     return $this->getDateRange($timezone);
   }
@@ -46,6 +50,27 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
    */
   public static function reservationType() {
     return '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParentEntity() {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParentId() {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setParentEntity(EntityInterface $parent) {
+    return $this;
   }
 
   /**
@@ -112,13 +137,20 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
    * {@inheritdoc}
    */
   public function getOriginalStatus() {
-    return isset($this->original) ? $this->original->field_status->getString() : FALSE;
+    return isset($this->original) ? $this->original->getStatus() : FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getNewStatus() {
+    return $this->getStatus();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getStatus() {
     return $this->field_status->getString();
   }
 
@@ -136,19 +168,7 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
    * {@inheritdoc}
    */
   public function location() {
-    $type = $this->reservationType();
-    if ($type == 'room') {
-      return $this->t('At @location @reservation_type', [
-        '@location' => $this->get("{$type}_location")->entity ? $this->get("{$type}_location")->entity->label() : '',
-        '@reservation_type' => $this->get("field_{$type}")->entity ? $this->get("field_{$type}")->entity->label() : '',
-      ]);
-    }
-    elseif ($type == 'equipment') {
-      return $this->t('At @location @reservation_type', [
-        '@location' => $this->get("field_location")->entity ? $this->get("field_location")->entity->label() : '',
-        '@reservation_type' => $this->get("field_{$type}")->entity ? $this->get("field_{$type}")->entity->label() : '',
-      ]);
-    }
+    return '';
   }
 
   /**
@@ -226,6 +246,54 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
   /**
    * {@inheritdoc}
    */
+  public function getStatusOperations() {
+    $operations = [];
+
+    $status_transitions = [
+      'canceled' => [
+        'request',
+        'archive',
+      ],
+      'approved' => [
+        'cancel',
+        'deny',
+      ],
+      'requested' => [
+        'approve',
+        'deny',
+        'cancel',
+      ],
+      'denied' => [
+        'approve',
+        'cancel',
+        'archive',
+      ],
+      'archived' => [
+        'request',
+      ],
+    ];
+
+    try {
+      $state = $this->get('field_status')->value;
+      $transistions = $status_transitions[$state];
+    }
+    catch (\Throwable $th) {
+      return $operations;
+    }
+
+    foreach ($transistions as $type) {
+      if (!$this->access($type)) {
+        continue;
+      }
+      $operations[] = $type;
+    }
+
+    return $operations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOwner() {
     return $this->get('author')->entity;
   }
@@ -256,8 +324,83 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
   /**
    * {@inheritdoc}
    */
-  public function getRegistrant() {
+  public function getReservor() {
     return $this->get('field_user') ? $this->get('field_user')->entity : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOperations() {
+    $operations = [];
+    if ($this->access('view')) {
+      $operations['view'] = [
+        'title' => $this->t('View'),
+        'weight' => 10,
+        'url' => $this->toUrl('canonical'),
+      ];
+    }
+    if ($this->access('update')) {
+      $operations['update'] = [
+        'title' => $this->t('Edit'),
+        'weight' => 20,
+        'url' => $this->toUrl('edit-form'),
+      ];
+    }
+    if ($this->access('approve')) {
+      $operations['approve'] = [
+        'title' => $this->t('Approve'),
+        'weight' => 30,
+        'url' => $this->toUrl('approve-form'),
+      ];
+    }
+    if ($this->access('request')) {
+      $operations['request'] = [
+        'title' => $this->t('Request'),
+        'weight' => 40,
+        'url' => $this->toUrl('request-form'),
+      ];
+    }
+    if ($this->access('deny')) {
+      $operations['deny'] = [
+        'title' => $this->t('Deny'),
+        'weight' => 50,
+        'url' => $this->toUrl('deny-form'),
+      ];
+    }
+    if ($this->access('cancel')) {
+      $operations['cancel'] = [
+        'title' => $this->t('Cancel'),
+        'weight' => 100,
+        'url' => $this->toUrl('cancel-form'),
+      ];
+    }
+    if ($this->access('delete')) {
+      $operations['delete'] = [
+        'title' => $this->t('Delete'),
+        'weight' => 200,
+        'url' => $this->toUrl('delete-form'),
+      ];
+    }
+    \Drupal::moduleHandler()->alter('reservation_operation', $operations, $this);
+    uasort($operations, '\Drupal\Component\Utility\SortArray::sortByWeightElement');
+    return $operations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getStatusChangeOperations() {
+    $operations = $this->getOperations();
+    if (isset($operations['view'])) {
+      unset($operations['view']);
+    }
+    if (isset($operations['delete'])) {
+      unset($operations['delete']);
+    }
+    \Drupal::moduleHandler()->alter('reservation_status_operation', $operations, $this);
+    uasort($operations, '\Drupal\Component\Utility\SortArray::sortByWeightElement');
+    return $operations;
   }
 
   /**
@@ -296,7 +439,7 @@ abstract class ReservationBase extends RevisionableContentEntityBase {
       ->setReadOnly(TRUE);
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setLabel(new TranslatableMarkup('Reserved by'))
       ->setDescription(new TranslatableMarkup('The user ID of author of the @label entity.', [
         '@label' => $entity_type->getLabel(),
       ]))

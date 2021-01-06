@@ -66,7 +66,10 @@ class ManagementControllerBase extends ControllerBase {
    * @return array
    *   Rendered array for admin page.
    */
-  public function view(AccountInterface $user, Request $request) {
+  public function view(Request $request, AccountInterface $user = NULL) {
+    if (!$user) {
+      $user = $this->currentUser();
+    }
     $page_name = $this->routeMatch->getRouteObject()->getOption('_page_name');
     $subpage = $request->query->get('view');
     // First check if there is a subpage from the query string.

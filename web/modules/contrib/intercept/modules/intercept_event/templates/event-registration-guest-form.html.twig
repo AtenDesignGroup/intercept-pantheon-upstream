@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Event registration guest page two column template.
+ *
+ * Available variables:
+ * - header: The event header.
+ * - event: The Event Node.
+ * - form: The form.
+ *
+ * @ingroup themeable
+ */
+#}
+{% set destination = path('entity.node.register', {'node': event.id()}) %}
+{{ header }}
+<div class="l--offset">
+  <div class="l--section">
+    <div class="l--section">
+      <div class="l--subsection">
+        <h2>Select your preferred registration method</h2>
+      </div>
+      <div class="l--subsection l--2-col-50">
+        <div class="card card--registration">
+          <div class="card__content">
+            <div class="card__header">
+              <h3 class="card__title">Returning Customer</h3>
+            </div>
+            <div class="card__body">Please use your library card info to sign in and register for the event. Using your login helps us make decisions about future events and suggest events for you.</div>
+            <div class="card__footer">
+              <a class="button button--primary" href="{{ path('user.login') }}/?destination={{ destination }}">Login and register</a>
+            </div>
+          </div>
+        </div>
+        <div class="card card--registration">
+          <div class="card__content">
+            <div class="card__header">
+              <h3 class="card__title">Guest</h3>
+            </div>
+            <div class="card__body">Please note that registering as a guest means that no information will be saved to your account. Save time and get personal recommendations for future events like this one by using your library card to login instead.</div>
+            <div class="card__footer">
+              <a class="button button--primary" href="{{ path('entity.node.guest_register', {'node': event.id()}) }}">Continue as guest</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="l--section"></div>
+</div>
+

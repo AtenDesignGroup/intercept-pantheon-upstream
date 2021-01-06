@@ -1,0 +1,23 @@
+uuid: 6e5d0a73-0df9-43fd-8b3f-0242acbea125
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_status
+    - node.type.event
+  module:
+    - options
+id: node.event.field_event_status
+field_name: field_event_status
+entity_type: node
+bundle: event
+label: Status
+description: 'The default value for an event is "scheduled". Changing the status to canceled will update the title of the event to include the word "Canceled" at the beginning, cancel associated room reservations, and recurrences (if it''s a recurring event and you''re cancelling the main event entry).'
+required: true
+translatable: false
+default_value:
+  -
+    value: scheduled
+default_value_callback: ''
+settings: {  }
+field_type: list_string

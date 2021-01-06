@@ -43,6 +43,16 @@
   }
 }
 
+.current-filter .option-label {
+  @include fs(micro);
+  display: inline-block;
+  padding-right: .25em;
+
+  &:not(:last-of-type)::after {
+    content: ", ";
+  }
+}
+
 .current-filter--embedded .option-chip {
   margin: .25em .25em .25em 0;
 }

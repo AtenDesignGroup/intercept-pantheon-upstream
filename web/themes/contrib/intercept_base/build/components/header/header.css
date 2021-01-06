@@ -5,6 +5,12 @@
     position: fixed;
     width: 100%; } }
 
+.js-prevent-scroll .view-announcements {
+  display: none; }
+  @media (min-width: 62em) {
+    .js-prevent-scroll .view-announcements {
+      display: block; } }
+
 .header {
   position: relative;
   z-index: 3; }
@@ -37,7 +43,8 @@
     .header__inner {
       -webkit-box-align: center;
           -ms-flex-align: center;
-              align-items: center; } }
+              align-items: center;
+      background-color: #fff; } }
   @media (min-width: 62em) {
     .header__inner {
       height: auto;

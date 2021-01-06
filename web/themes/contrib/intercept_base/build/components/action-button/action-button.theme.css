@@ -49,6 +49,50 @@
   [role="dialog"] .action-button__button.action-button__button {
     width: auto; }
 
+.action-button__button:hover, .action-button__button:focus {
+  background-color: rgba(2, 136, 209, 0.16); }
+
+.action-button__button--outlined {
+  margin-bottom: 0.1875rem;
+  margin-top: 0.1875rem;
+  padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
+  background-color: #fff;
+  border: 1px solid #d3d8df;
+  border-radius: 0;
+  color: #0288d1;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  text-align: center; }
+  @media (min-width: 48em) {
+    .action-button__button--outlined {
+      margin-bottom: 0.12375rem; } }
+  @media (min-width: 62em) {
+    .action-button__button--outlined {
+      margin-bottom: 0.1875rem; } }
+  @media (min-width: 48em) {
+    .action-button__button--outlined {
+      margin-top: 0.12375rem; } }
+  @media (min-width: 62em) {
+    .action-button__button--outlined {
+      margin-top: 0.1875rem; } }
+  @media (min-width: 48em) {
+    .action-button__button--outlined {
+      padding-bottom: 0.33rem; } }
+  @media (min-width: 62em) {
+    .action-button__button--outlined {
+      padding-bottom: 0.5rem; } }
+  @media (min-width: 48em) {
+    .action-button__button--outlined {
+      padding-top: 0.33rem; } }
+  @media (min-width: 62em) {
+    .action-button__button--outlined {
+      padding-top: 0.5rem; } }
+
+.action-button__button--small {
+  font-size: 0.8125rem; }
+
 .action-button__message {
   font-size: 0.65278rem;
   line-height: 1.2;

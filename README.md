@@ -29,9 +29,9 @@ Before the next step, you should have a generic email address set up to use. Thi
 This may take a few minutes.
 2. Configure the site.<br>
 ![Configure site](https://imgur.com/K6EcjvB.jpg)
-3. There are two boxes at the bottom of this page:
-  *	Generate demo content?
-  *	Equipment?
+3. There are two checkboxes at the bottom of this page:
+  *	Generate demo content
+  *	Equipment
 
 Click these if you want to pre-populate the site with generic events and locations. You can always delete these later, or create a new site and delete this one.
 

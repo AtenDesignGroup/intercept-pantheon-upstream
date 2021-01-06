@@ -1,0 +1,15 @@
+intercept_core.settings:
+  type: config_object
+  label: 'Intercept Core settings'
+  mapping:
+    enable_dashboard_redirect:
+      type: integer
+      label: 'Enable dashboard redirect'
+    dashboard_redirect_whitelist:
+      type: string
+      label: 'Dashboard redirect whitelist'
+    dashboard_redirect_limit_roles:
+      type: sequence
+      label: 'Limit dashboard redirect to certain user roles'
+      sequence:
+        type: string

@@ -14,7 +14,6 @@
   },
   "require": {
     "drupal/components": "^1.0",
-    "drupal/prototype": "2.x-dev",
     "drupal/twig_field_value": "^1.1",
     "drupal/twig_tweak": "^2.1"
   }

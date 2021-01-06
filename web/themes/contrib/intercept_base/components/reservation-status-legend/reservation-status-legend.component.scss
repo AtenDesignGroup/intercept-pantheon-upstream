@@ -1,0 +1,10 @@
+@import "_partials";
+
+.reservation-status-legend {
+  display: flex;
+  margin: rem(15px) rem(-15px);
+
+  > * {
+    margin: rem(15px);
+  }
+}

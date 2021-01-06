@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Update hooks.
+ */
+
+use Drupal\node\Entity\Node;
+
+/**
+ * Add status of "scheduled" to future published events and templates.
+ */
+function intercept_event_update_8001(&$sandbox) {
+  // See: intercept_event_post_update_8001_add_status()
+  // This is a placeholder to trigger the post update via drush.
+}

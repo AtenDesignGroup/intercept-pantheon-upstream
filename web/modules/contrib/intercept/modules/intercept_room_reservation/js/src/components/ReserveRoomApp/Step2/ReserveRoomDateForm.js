@@ -268,7 +268,7 @@ class ReserveRoomDateForm extends PureComponent {
     const validationErrors = (!utils.userIsStaff() && isClosed) ? { [c.DATE]: 'Location is closed' } : {};
     const conflictProp = utils.userIsStaff()
       ? 'has_reservation_conflict'
-      : 'has_open_hours_conflict';
+      : 'has_conflict';
     let conflictMessage = 'Room is not available at this time';
 
     const {

@@ -4,8 +4,14 @@
   .rbc-btn-group > button:not(:first-child):not(:last-child) {
     border-radius: 0; }
 
+.rbc-btn--print {
+  margin-left: 0.3125rem; }
+
 .rbc-toolbar__label {
-  color: #747481; }
+  color: #4c4d4f;
+  line-height: 1; }
+  .rbc-toolbar__label + .MuiButton-endIcon {
+    margin-top: -1px; }
 
 .rbc-toolbar__pager-button.rbc-toolbar__pager-button:focus {
   background-color: #e4e8eb; }
@@ -18,7 +24,8 @@
 .rbc-event:hover,
 .rbc-event:focus,
 .rbc-event.rbc-selected {
-  background-color: #0277bd; }
+  background-color: #0277bd;
+  color: white; }
 
 .rbc-event-content {
   font-weight: 900; }
@@ -87,26 +94,32 @@
     color: #4c4d4f;
     color: #747481; }
 
+.rbc-date-cell.rbc-now:hover, .rbc-date-cell.rbc-now:focus,
+.rbc-header.rbc-today:hover,
+.rbc-header.rbc-today:focus {
+  -webkit-box-shadow: 0;
+          box-shadow: 0; }
+
 .rbc-date-cell.rbc-now > a,
 .rbc-header.rbc-today > a {
-  color: #ffa726;
+  color: #D13400;
   text-decoration: none;
   -webkit-transition: color .2s ease-out;
   transition: color .2s ease-out; }
   .rbc-date-cell.rbc-now > a:hover, .rbc-date-cell.rbc-now > a:focus,
   .rbc-header.rbc-today > a:hover,
   .rbc-header.rbc-today > a:focus {
-    color: #e48613;
+    color: #C73200;
     text-decoration: none; }
   .rbc-date-cell.rbc-now > a:active, .rbc-date-cell.rbc-now > a.active--trail,
   .rbc-header.rbc-today > a:active,
   .rbc-header.rbc-today > a.active--trail {
-    color: #e48613;
+    color: #C73200;
     color: #747481; }
 
 .rbc-header.rbc-today:before,
 .rbc-month-view .rbc-date-cell.rbc-now:before {
-  background-color: #ffa726; }
+  background-color: #D13400; }
 
 .rbc-off-range-bg {
   background-color: #eef1f4; }

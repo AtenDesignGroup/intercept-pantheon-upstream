@@ -5,9 +5,9 @@ namespace Drupal\Tests\duration_field\Functional;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- * Provides some helper functions for functional tests.
+ * Base class that provides some helper functions for functional tests.
  */
-class DurationFieldBrowserTestBase extends BrowserTestBase {
+abstract class DurationFieldBrowserTestBase extends BrowserTestBase {
 
   /**
    * Asserts that a status code is what it is supposed to be.

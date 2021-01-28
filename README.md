@@ -29,11 +29,14 @@ Before the next step, you should have a generic email address set up to use. Thi
 This may take a few minutes.
 2. Configure the site.<br>
 ![Configure site](https://imgur.com/K6EcjvB.jpg)
-3. There are two checkboxes at the bottom of this page:
-  *	Generate demo content
+3. There are two checkboxes at the bottom of this page under "Generate Demo Content":
+  *	Events, Room Reservations, Locations, and Rooms
   *	Equipment
 
-Click these if you want to pre-populate the site with generic events and locations. You can always delete these later, or create a new site and delete this one.
+Click these if you want to pre-populate the site with generic events, locations, etc. You can always delete these later, or create a new site and delete this one.
+
+4. We also recommend that you clear the Pantheon caches after first installing the site<br>
+![Clear caches](https://i.imgur.com/jjrcuk6.png)
 
 **Now your site is installed and it’s time to [configure the site to your individual library specifications](https://www.drupal.org/docs/8/modules/intercept/installation-guide#s-intercept-initial-configuration).**
 

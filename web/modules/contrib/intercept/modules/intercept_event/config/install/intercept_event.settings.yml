@@ -1,0 +1,122 @@
+email:
+  registration_active:
+    enabled: 1
+    subject: 'You''re registered - [event_registration:field_event:entity:title]'
+    body: "Hello [event_registration:first-name],<br />\r\nYou are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    status_original:
+      empty: empty
+      canceled: canceled
+    status_new:
+      active: active
+    user:
+      registration_user: registration_user
+    user_email_other: ''
+    user_settings_override: 0
+  registration_active_guest:
+    enabled: 1
+    subject: 'You''re registered - [event_registration:field_event:entity:title]'
+    body: "Hello [event_registration:field_guest_name_first],<br />\r\nYou are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time]."
+    status_original:
+      empty: empty
+      canceled: canceled
+    status_new:
+      active: active
+    user:
+      other: other
+    user_email_other: '[event_registration:field_guest_email]'
+  registration_canceled:
+    enabled: 1
+    subject: 'Your registration has been canceled - [event_registration:field_event:entity:title]'
+    body: "Hello [event_registration:first-name],<br />\r\nYour registration for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time] has been canceled.<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    status_original:
+      active: active
+      waitlist: waitlist
+    status_new:
+      canceled: canceled
+    user:
+      registration_user: registration_user
+    user_email_other: ''
+    user_settings_override: 0
+  registration_waitlisted:
+    enabled: 1
+    subject: 'You''re on the waitlist - [event_registration:field_event:entity:title]'
+    body: "Hello [event_registration:first-name],<br />\r\nYou are now on the waitlist for for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    status_original:
+      any: any
+    status_new:
+      waitlist: waitlist
+    user:
+      registration_user: registration_user
+    user_email_other: ''
+    user_settings_override: 0
+  registration_unwaitlisted:
+    enabled: 1
+    subject: 'You are now registered - [event_registration:field_event:entity:title]'
+    body: "Hello [event_registration:first-name],<br />\r\nYou are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    status_original:
+      waitlist: waitlist
+    status_new:
+      active: active
+    user:
+      registration_user: registration_user
+    user_email_other: ''
+    user_settings_override: 1
+  registration_reminder:
+    enabled: 1
+    subject: 'Reminder - [event_registration:field_event:entity:title]'
+    body: "Hello [event_registration:first-name],<br />\r\nYou are registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    user:
+      registration_user: registration_user
+    user_email_other: ''
+    schedule:
+      interval: P3D
+    user_settings_override: 0
+  attendance_created:
+    enabled: 1
+    subject: 'Thank you for attending [event_attendance:field_event:entity:title]'
+    body: "Hello [event_attendance:first-name],<br />\r\nThank you for attending [event_attendance:field_event:entity:title] at [event_attendance:field_event:entity:field_date_time].  Please take a moment to rate [event_attendance:field_event:entity:title].<br />\r\n<br />\r\n<a href=\"[site:url]account/events?field_date_time_value=1&attended=1&registered=1&saved=1\">Rate This Event</a>"
+    user:
+      user: user
+    user_email_other: ''
+    schedule:
+      interval: P0M
+  saved_reminder:
+    enabled: 1
+    subject: 'Reminder - [flagging:event-saved-title]'
+    body: "Hello [flagging:event-saved-first-name],<br />\r\nYour saved event [flagging:event-saved-title] is coming up on [flagging:event-saved-field-date-time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    user:
+      user: user
+    user_email_other: ''
+    schedule:
+      interval: P3D
+  registration_event_canceled:
+    enabled: 1
+    subject: 'An upcoming event has been canceled - [event_registration:field_event:entity:title]'
+    body: "Hello [event_registration:first-name],<br />\r\nAn event you previously registration for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time] has been canceled.<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    status_original: {  }
+    status_new: {  }
+    user:
+      registration_user: registration_user
+    user_email_other: ''
+    user_settings_override: 0
+  saved_registration_active:
+    enabled: 1
+    subject: 'Registration Now Open - [flagging:event-saved-title]'
+    body: "Hello [flagging:event-saved-first-name],<br />\r\nRegistration is now open for your saved event [flagging:event-saved-title] which is coming up on [flagging:event-saved-field-date-time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    user:
+      user: user
+    user_email_other: ''
+    schedule:
+      interval: ''
+form_settings:
+  register: default
+  scan: default
+sms:
+  registration_sms_active:
+    enabled: 1
+    body: 'You are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_location], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a].'
+    status_original:
+      empty: empty
+      canceled: canceled
+    status_new:
+      active: active

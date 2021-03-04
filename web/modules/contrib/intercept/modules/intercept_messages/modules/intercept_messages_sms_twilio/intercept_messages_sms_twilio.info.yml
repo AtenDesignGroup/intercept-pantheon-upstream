@@ -1,0 +1,8 @@
+name: Intercept Messages - Twilio for SMS Framework
+type: module
+description: 'Integrates Twilio with SMS Framework.'
+core: 8.x
+package: 'Intercept'
+
+dependencies:
+  - intercept:intercept_messages_sms

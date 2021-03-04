@@ -155,6 +155,12 @@ class RoomFilters extends PureComponent {
         <Formsy className="">
           <div className="l--subsection">
             <h4 className="section-title--secondary">Filter Rooms By</h4>
+            <KeywordFilter
+              handleChange={this.onInputChange(c.KEYWORD)}
+              value={filters[c.KEYWORD]}
+              name={c.KEYWORD}
+              label={labels[c.KEYWORD]}
+            />
             <InputDate
               handleChange={this.onDateChange}
               defaultValue={null}
@@ -194,12 +200,6 @@ class RoomFilters extends PureComponent {
               options={durationOptions}
               disabled={!filters[NOW] && !filters[c.DATE]}
               clearable
-            />
-            <KeywordFilter
-              handleChange={this.onInputChange(c.KEYWORD)}
-              value={filters[c.KEYWORD]}
-              name={c.KEYWORD}
-              label={labels[c.KEYWORD]}
             />
             <SelectResource
               multiple

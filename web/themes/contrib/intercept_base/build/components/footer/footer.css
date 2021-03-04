@@ -34,10 +34,15 @@
         -webkit-box-direction: normal;
             -ms-flex-direction: row;
                 flex-direction: row; } }
+  .footer .menu a:not(:last-of-type) {
+    width: 20px; }
   .footer .menu a {
     text-decoration: none;
     -webkit-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out; }
+    transition: all 0.2s ease-in-out;
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position-y: center; }
     @media (min-width: 68.75em) {
       .footer .menu a {
         display: block; } }
@@ -155,6 +160,11 @@
   @media (min-width: 68.75em) {
     .menu--social-media-menu {
       margin: 0; } }
+  .menu--social-media-menu li:first-of-type {
+    width: 25px;
+    margin-left: 1em; }
+  .menu--social-media-menu li:not(:last-of-type):not(:first-of-type) {
+    width: 35px; }
   .menu--social-media-menu li:last-of-type {
     margin-left: 0.5rem; }
   .menu--social-media-menu a {
@@ -178,9 +188,12 @@
   .menu--social-media-menu [href*='instagram.com'],
   .menu--social-media-menu [href*='linkedin.com'],
   .menu--social-media-menu [href*='youtube.com'] {
-    background-color: transparent;
-    background-position: center;
+    background-color: #51832f;
     background-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
     overflow: hidden;
     text-indent: -9999px;
     width: 2rem;
@@ -197,14 +210,22 @@
     .menu--social-media-menu [href*='instagram.com']:hover,
     .menu--social-media-menu [href*='linkedin.com']:hover,
     .menu--social-media-menu [href*='youtube.com']:hover {
-      background-color: transparent; }
+      background-color: #4c752c; }
   .menu--social-media-menu [href*='facebook.com'] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/facebook.svg"); }
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg"); }
   .menu--social-media-menu [href*='twitter.com'] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/twitter.svg"); }
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg"); }
   .menu--social-media-menu [href*='instagram.com'] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/instagram.svg"); }
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg"); }
   .menu--social-media-menu [href*='linkedin.com'] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/linkedin.svg"); }
+    background-image: url("/themes/contrib/intercept_base/images/icons/linkedin.svg");
+    background-color: transparent;
+    background-position: center; }
+    .menu--social-media-menu [href*='linkedin.com']:hover {
+      background-color: transparent; }
   .menu--social-media-menu [href*='youtube.com'] {
-    background-image: url("/themes/contrib/intercept_base/images/icons/youtube.svg"); }
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/youtube.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/youtube.svg"); }

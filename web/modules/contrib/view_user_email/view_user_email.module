@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Contains view_user_email.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Access\AccessResult;
+
+/**
+ * Implements hook_help().
+ */
+function view_user_email_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the view_user_email module.
+    case 'help.page.view_user_email':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Allow site administrator the ability to grant users of certain roles access to another users email address.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function view_user_email_entity_field_access($operation, \Drupal\Core\Field\FieldDefinitionInterface $field_definition, \Drupal\Core\Session\AccountInterface $account, \Drupal\Core\Field\FieldItemListInterface $items = NULL) {
+  if ($field_definition->getName() != 'mail' || $operation != 'view') {
+    return AccessResult::neutral();
+  }
+  if ($account->hasPermission('access email field')) {
+    return AccessResult::allowed();
+  }
+  return AccessResult::neutral();
+}

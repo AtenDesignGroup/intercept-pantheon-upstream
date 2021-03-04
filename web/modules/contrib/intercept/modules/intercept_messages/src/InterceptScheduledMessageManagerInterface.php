@@ -34,9 +34,9 @@ interface InterceptScheduledMessageManagerInterface {
    *   The Intercept message template plugin ID.
    *
    * @return bool
-   *   TRUE if submission has scheduled email.
+   *   TRUE if submission has scheduled message.
    */
-  public function hasScheduledEmail(EntityInterface $entity, $plugin_id);
+  public function hasScheduledMessage(EntityInterface $entity, $plugin_id);
 
   /**
    * Load scheduled messages for specified submission and handler.
@@ -52,7 +52,7 @@ interface InterceptScheduledMessageManagerInterface {
   public function load(EntityInterface $entity, $plugin_id);
 
   /**
-   * Scheduled an email to be send at a later date.
+   * Scheduled an message to be send at a later date.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The source entity.
@@ -60,7 +60,7 @@ interface InterceptScheduledMessageManagerInterface {
    *   The Intercept message template plugin ID.
    *
    * @return string|false
-   *   The status of scheduled emails. FALSE if send date is invalid.
+   *   The status of scheduled messages. FALSE if send date is invalid.
    *   (EMAIL_SCHEDULED, EMAIL_RESCHEDULED, or EMAIL_ALREADY_SCHEDULED)
    */
   public function create(EntityInterface $entity, $plugin_id);
@@ -84,18 +84,18 @@ interface InterceptScheduledMessageManagerInterface {
   public function delete(EntityInterface $entity);
 
   /**
-   * Cron task for scheduling and sending emails.
+   * Cron task for scheduling and sending messages.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The source entity.
    * @param string|null $plugin_id
    *   A Intercept message template plugin ID.
    * @param int $schedule_limit
-   *   The maximum number of emails to be scheduled.
-   *   If set to 0 no emails will be scheduled.
+   *   The maximum number of messages to be scheduled.
+   *   If set to 0 no messages will be scheduled.
    * @param int $send_limit
-   *   The maximum number of emails to be sent.
-   *   If set to 0 no emails will be sent.
+   *   The maximum number of messages to be sent.
+   *   If set to 0 no messages will be sent.
    *
    * @return array
    *   An associative array containing cron task stats.

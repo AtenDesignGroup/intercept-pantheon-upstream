@@ -59,6 +59,7 @@ class EventRegistrationActive extends EventRegistrationMessageTemplateBase imple
 
     $form = array_merge($form, $this->statusSubform());
     $form = array_merge($form, $this->recipientSubform());
+    $form = array_merge($form, $this->recipientSettingsOverrideSubform());
 
     return $form;
   }
@@ -71,6 +72,7 @@ class EventRegistrationActive extends EventRegistrationMessageTemplateBase imple
 
     $this->submitStatusSubform($form, $form_state);
     $this->submitRecipientSubform($form, $form_state);
+    $this->submitRecipientSettingsOverrideSubform($form, $form_state);
   }
 
 }

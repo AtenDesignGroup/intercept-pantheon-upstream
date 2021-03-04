@@ -1176,14 +1176,14 @@ display:
             group_items: {  }
           entity_type: user
           plugin_id: user_current
-        field_dates_end_value:
-          id: field_dates_end_value
+        field_dates_value:
+          id: field_dates_value
           table: room_reservation__field_dates
-          field: field_dates_end_value
+          field: field_dates_value
           relationship: none
           group_type: group
-          admin_label: 'Room reservation: After date'
-          operator: '>='
+          admin_label: 'Room reservation: Dates between'
+          operator: between
           value:
             min: ''
             max: ''
@@ -1192,69 +1192,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: field_dates_end_value_op
-            label: 'After Date'
+            operator_id: field_dates_value_op
+            label: 'Dates between'
             description: ''
             use_operator: false
-            operator: field_dates_end_value_op
+            operator: field_dates_value_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: date--start
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_room_reservation_approver: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-            placeholder: ''
-            min_placeholder: ''
-            max_placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          plugin_id: datetime
-        field_dates_end_value_1:
-          id: field_dates_end_value_1
-          table: room_reservation__field_dates
-          field: field_dates_end_value
-          relationship: none
-          group_type: group
-          admin_label: 'Room reservation: Before date'
-          operator: '<='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_dates_end_value_1_op
-            label: 'Before Date'
-            description: ''
-            use_operator: false
-            operator: field_dates_end_value_1_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: date--end
+            identifier: field_dates_value
             required: false
             remember: false
             multiple: false
@@ -1463,12 +1408,7 @@ display:
               more_options:
                 is_secondary: false
                 placeholder_text: ''
-            field_dates_end_value:
-              bef_format: bef_datepicker
-              more_options:
-                is_secondary: false
-                placeholder_text: ''
-            field_dates_end_value_1:
+            field_dates_value:
               bef_format: bef_datepicker
               more_options:
                 is_secondary: false

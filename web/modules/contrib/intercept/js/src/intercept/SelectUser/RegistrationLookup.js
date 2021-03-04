@@ -138,6 +138,7 @@ class RegistrationLookup extends React.Component {
     }
     else {
       status = INVALID;
+      this.props.onFailure();
     }
 
     this.setState({
@@ -196,6 +197,7 @@ RegistrationLookup.defaultProps = {
 RegistrationLookup.propTypes = {
   name: PropTypes.string.isRequired,
   onSuccess: PropTypes.func.isRequired,
+  onFailure: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   required: PropTypes.bool,
   value: PropTypes.string,

@@ -9,7 +9,6 @@ entity.event_attendance.add_form:
   title: 'Add Event Attendance'
   appears_on:
     - entity.event_attendance.collection
-    - entity.node.attendance
 
 entity.event_registration.add_form:
   route_name: entity.event_registration.add_form

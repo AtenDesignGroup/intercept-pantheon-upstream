@@ -7,3 +7,6 @@
 
 .reservation-status--selected::before {
   background-color: #747481; }
+
+.reservation-status--event::before {
+  background-color: #ff7548; }

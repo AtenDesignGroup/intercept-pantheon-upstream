@@ -1,0 +1,8 @@
+name: 'Intercept Messages - SMS Framework'
+type: module
+description: 'Provides SMS Framework integration for Intercept Messages.'
+core: 8.x
+package: 'Intercept'
+dependencies:
+  - intercept:intercept_messages
+  - smsframework:sms

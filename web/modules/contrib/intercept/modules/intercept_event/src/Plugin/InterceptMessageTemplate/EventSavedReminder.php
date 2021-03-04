@@ -74,9 +74,15 @@ class EventSavedReminder extends InterceptMessageTemplateBase implements Schedul
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $description = [
+      'description' => [
+        '#markup' => '<p>This notification is sent as a reminder to customers who save an upcoming non-registration event.</p>',
+        '#allowed_tags' => ['p'],
+      ]
+    ];
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    $form = array_merge($form, $this->recipientSubform());
+    $form = array_merge($description, $form, $this->recipientSubform());
     $form = array_merge($form, $this->scheduleSubform());
 
     return $form;

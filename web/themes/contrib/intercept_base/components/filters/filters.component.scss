@@ -260,6 +260,10 @@
 }
 
 .input--incrementer {
+
+  button:focus {
+    background-color: rgba(0,0,0,0.4);
+  }
   /* disable up/down arrows on number inputs */
   /* Chrome, Safari, Edge, Opera */
   input::-webkit-outer-spin-button,

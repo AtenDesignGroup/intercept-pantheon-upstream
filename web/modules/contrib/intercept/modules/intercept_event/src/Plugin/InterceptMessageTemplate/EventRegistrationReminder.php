@@ -68,6 +68,7 @@ class EventRegistrationReminder extends EventRegistrationMessageTemplateBase imp
 
     $form = array_merge($form, $this->recipientSubform());
     $form = array_merge($form, $this->scheduleSubform());
+    $form = array_merge($form, $this->recipientSettingsOverrideSubform());
 
     return $form;
   }
@@ -80,6 +81,7 @@ class EventRegistrationReminder extends EventRegistrationMessageTemplateBase imp
 
     $this->submitRecipientSubform($form, $form_state);
     $this->submitScheduleSubform($form, $form_state);
+    $this->submitRecipientSettingsOverrideSubform($form, $form_state);
   }
 
 }

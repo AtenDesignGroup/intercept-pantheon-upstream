@@ -231,7 +231,7 @@ class RoomReservationCalendar extends React.Component {
           }}
           endAccessor={this.props.endAccessor}
           eventPropGetter={event => ({
-            className: `rbc-event--${event.status}`,
+            className: `rbc-event--${event.status} ${event.hasEvent ? 'rbc-event--hasEvent' : ''} ${event.isReservedByStaff ? 'rbc-event--isReservedByStaff' : ''}`,
           })}
           events={applySelectedEvent(events, selected)}
           resources={this.props.view === 'day' ? resources : undefined}

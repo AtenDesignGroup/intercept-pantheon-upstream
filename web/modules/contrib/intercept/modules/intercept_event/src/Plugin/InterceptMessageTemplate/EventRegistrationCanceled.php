@@ -37,6 +37,7 @@ class EventRegistrationCanceled extends EventRegistrationMessageTemplateBase imp
 
     $form = array_merge($form, $this->statusSubform());
     $form = array_merge($form, $this->recipientSubform());
+    $form = array_merge($form, $this->recipientSettingsOverrideSubform());
 
     return $form;
   }
@@ -49,6 +50,7 @@ class EventRegistrationCanceled extends EventRegistrationMessageTemplateBase imp
 
     $this->submitStatusSubform($form, $form_state);
     $this->submitRecipientSubform($form, $form_state);
+    $this->submitRecipientSettingsOverrideSubform($form, $form_state);
   }
 
 }

@@ -1581,6 +1581,24 @@ tbody + tbody {
 .view-intercept-equipment .view__content {
   margin: 2em 0 1em; }
 
+.view-intercept-event-series .views-row:not(:last-of-type) {
+  margin-bottom: 3.09375rem; }
+  @media (min-width: 48em) {
+    .view-intercept-event-series .views-row:not(:last-of-type) {
+      margin-bottom: 6.1875rem; } }
+  @media (min-width: 62em) {
+    .view-intercept-event-series .views-row:not(:last-of-type) {
+      margin-bottom: 9.375rem; } }
+  @media (min-width: 37.5em) {
+    .view-intercept-event-series .views-row:not(:last-of-type) {
+      margin-bottom: 1.5625rem; } }
+  @media (min-width: 37.5em) and (min-width: 48em) {
+    .view-intercept-event-series .views-row:not(:last-of-type) {
+      margin-bottom: 2.0625rem; } }
+  @media (min-width: 37.5em) and (min-width: 62em) {
+    .view-intercept-event-series .views-row:not(:last-of-type) {
+      margin-bottom: 3.125rem; } }
+
 .align-left {
   margin: 0 1rem 1rem 0; }
 

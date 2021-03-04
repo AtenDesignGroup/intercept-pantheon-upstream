@@ -338,9 +338,9 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
 function intercept_room_reservation_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
   if ($view->id() == 'intercept_room_reservations' && $display_id == 'page') {
     $exposed_input = $view->getExposedInput();
-    if (!isset($exposed_input['date--start'])) {
+    if (!isset($exposed_input['field_dates_value'])) {
       $date = new DateTime('now');
-      $exposed_date['date--start'] = $date->format('m/d/Y');
+      $exposed_date['field_dates_value']['min'] = $date->format('m/d/Y');
       $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
 

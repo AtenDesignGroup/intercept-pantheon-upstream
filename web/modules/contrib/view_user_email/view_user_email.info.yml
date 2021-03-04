@@ -1,0 +1,11 @@
+name: 'View User Email'
+type: module
+description: 'Allow site administrator the ability to grant users of certain roles access to another users email address.'
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: 'User'
+
+# Information added by Drupal.org packaging script on 2020-09-02
+version: '1.0.1'
+project: 'view_user_email'
+datestamp: 1599077594

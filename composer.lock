@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d46c9494b0e3e8da44dca3cbc15a106",
+    "content-hash": "f9e22dd9fb7b238db0e2d1f8a07be5d3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1683,16 +1683,16 @@
         },
         {
             "name": "drupal/core",
-            "version": "8.9.11",
+            "version": "8.9.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core.git",
-                "reference": "8fc1d510b8fcff90e2f3a7c96a893ba16bbdc62d"
+                "reference": "a53db77b55a035453d7229e0c3069f8591cb4cb6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal/core/zipball/8fc1d510b8fcff90e2f3a7c96a893ba16bbdc62d",
-                "reference": "8fc1d510b8fcff90e2f3a7c96a893ba16bbdc62d",
+                "url": "https://api.github.com/repos/drupal/core/zipball/a53db77b55a035453d7229e0c3069f8591cb4cb6",
+                "reference": "a53db77b55a035453d7229e0c3069f8591cb4cb6",
                 "shasum": ""
             },
             "require": {
@@ -1719,7 +1719,7 @@
                 "laminas/laminas-diactoros": "^1.8",
                 "laminas/laminas-feed": "^2.12",
                 "masterminds/html5": "^2.1",
-                "pear/archive_tar": "^1.4.11",
+                "pear/archive_tar": "^1.4.12",
                 "php": "^7.0.8",
                 "psr/log": "^1.0",
                 "stack/builder": "^1.0",
@@ -1890,7 +1890,8 @@
                 },
                 "patches_applied": {
                     "JSON:API returns a CacheableResponseInterface instance for non-cacheable methods; causes unnecessary exceptions.": "https://www.drupal.org/files/issues/2020-03-11/jsonapi-3072076-60.patch",
-                    "Issue #3022864: Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch"
+                    "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",
+                    "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch"
                 }
             },
             "autoload": {
@@ -1914,11 +1915,11 @@
                 "GPL-2.0-or-later"
             ],
             "description": "Drupal is an open source content management platform powering millions of websites and applications.",
-            "time": "2020-12-03T20:57:10+00:00"
+            "time": "2021-01-19T23:11:00+00:00"
         },
         {
             "name": "drupal/core-composer-scaffold",
-            "version": "8.9.11",
+            "version": "8.9.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-composer-scaffold.git",
@@ -1965,16 +1966,16 @@
         },
         {
             "name": "drupal/core-recommended",
-            "version": "8.9.11",
+            "version": "8.9.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-recommended.git",
-                "reference": "c8e6bfedd8fcec50ddc9e96e0f5f3d0779e3accb"
+                "reference": "7a940fd5b64d2b22366680e2a60d96bf2c10089d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal/core-recommended/zipball/c8e6bfedd8fcec50ddc9e96e0f5f3d0779e3accb",
-                "reference": "c8e6bfedd8fcec50ddc9e96e0f5f3d0779e3accb",
+                "url": "https://api.github.com/repos/drupal/core-recommended/zipball/7a940fd5b64d2b22366680e2a60d96bf2c10089d",
+                "reference": "7a940fd5b64d2b22366680e2a60d96bf2c10089d",
                 "shasum": ""
             },
             "require": {
@@ -1986,7 +1987,7 @@
                 "doctrine/common": "v2.7.3",
                 "doctrine/inflector": "v1.2.0",
                 "doctrine/lexer": "1.0.2",
-                "drupal/core": "8.9.11",
+                "drupal/core": "8.9.13",
                 "easyrdf/easyrdf": "0.9.1",
                 "egulias/email-validator": "2.1.17",
                 "guzzlehttp/guzzle": "6.5.4",
@@ -1999,7 +2000,7 @@
                 "laminas/laminas-zendframework-bridge": "1.0.4",
                 "masterminds/html5": "2.3.0",
                 "paragonie/random_compat": "v9.99.99",
-                "pear/archive_tar": "1.4.11",
+                "pear/archive_tar": "1.4.12",
                 "pear/console_getopt": "v1.4.3",
                 "pear/pear-core-minimal": "v1.10.10",
                 "pear/pear_exception": "v1.0.1",
@@ -2043,7 +2044,7 @@
                 "GPL-2.0-or-later"
             ],
             "description": "Locked core dependencies; require this project INSTEAD OF drupal/core.",
-            "time": "2020-12-03T20:57:10+00:00"
+            "time": "2021-01-19T23:11:00+00:00"
         },
         {
             "name": "drupal/crop",
@@ -3050,7 +3051,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept.git",
-                "reference": "8b7c55de9fce48977417416d617fdea54b2d16c0"
+                "reference": "71c354c760716ecc990d531e078285037975f7be"
             },
             "require": {
                 "drupal/address": "^1.3",
@@ -3096,9 +3097,12 @@
                 "drupal/intercept_event": "*",
                 "drupal/intercept_ils": "*",
                 "drupal/intercept_location": "*",
+                "drupal/intercept_messages": "*",
+                "drupal/intercept_messages_sms": "*",
                 "drupal/office_hours": "*",
                 "drupal/pathauto": "*",
                 "drupal/profile": "*",
+                "drupal/sms": "*",
                 "drupal/tally": "*",
                 "drupal/votingapi": "*"
             },
@@ -3108,8 +3112,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha28+0-dev",
-                    "datestamp": "1608656390",
+                    "version": "8.x-1.0-alpha30+0-dev",
+                    "datestamp": "1614872892",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3128,6 +3132,10 @@
                 {
                     "name": "attheshow",
                     "homepage": "https://www.drupal.org/user/249768"
+                },
+                {
+                    "name": "edmund.dunn",
+                    "homepage": "https://www.drupal.org/user/3534438"
                 },
                 {
                     "name": "kaythay",
@@ -3151,7 +3159,7 @@
                 "source": "http://cgit.drupalcode.org/intercept",
                 "issues": "https://www.drupal.org/project/issues/intercept"
             },
-            "time": "2020-12-22T16:58:12+00:00"
+            "time": "2021-03-04T15:47:28+00:00"
         },
         {
             "name": "drupal/intercept_base",
@@ -3159,7 +3167,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept_base.git",
-                "reference": "ab9d6efb0942eae2568743dcb4097bf564f5e7d4"
+                "reference": "813da3f42572a11b6bfe2eb8609da0d9d1a91be5"
             },
             "require": {
                 "drupal/components": "^1.0",
@@ -3173,8 +3181,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha25+0-dev",
-                    "datestamp": "1608656337",
+                    "version": "8.x-1.0-alpha26+0-dev",
+                    "datestamp": "1614872952",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
@@ -3191,8 +3199,8 @@
                     "homepage": "https://www.drupal.org/user/249768"
                 },
                 {
-                    "name": "briangervais",
-                    "homepage": "https://www.drupal.org/user/1825630"
+                    "name": "edmund.dunn",
+                    "homepage": "https://www.drupal.org/user/3534438"
                 },
                 {
                     "name": "kaythay",
@@ -3216,7 +3224,7 @@
                 "source": "http://cgit.drupalcode.org/intercept_base",
                 "issues": "https://www.drupal.org/project/issues/intercept_base"
             },
-            "time": "2020-12-22T16:55:31+00:00"
+            "time": "2021-03-04T15:48:28+00:00"
         },
         {
             "name": "drupal/intercept_profile",
@@ -3224,7 +3232,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept_profile.git",
-                "reference": "acc6df6faaa26ef4e7585568113a737dc0596f41"
+                "reference": "1fdfc110a826645c98cfad3b31c0194524169fd1"
             },
             "require": {
                 "drupal/core": "~8.0"
@@ -3235,8 +3243,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha4+1-dev",
-                    "datestamp": "1605808526",
+                    "version": "8.x-1.0-alpha8+0-dev",
+                    "datestamp": "1614873050",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
@@ -3253,15 +3261,23 @@
                     "homepage": "https://www.drupal.org/user/249768"
                 },
                 {
+                    "name": "edmund.dunn",
+                    "homepage": "https://www.drupal.org/user/3534438"
+                },
+                {
                     "name": "kaythay",
                     "homepage": "https://www.drupal.org/user/2182186"
+                },
+                {
+                    "name": "tyleryoungblood",
+                    "homepage": "https://www.drupal.org/user/3604759"
                 }
             ],
             "homepage": "https://www.drupal.org/project/intercept_profile",
             "support": {
                 "source": "https://git.drupalcode.org/project/intercept_profile"
             },
-            "time": "2021-01-06T22:01:24+00:00"
+            "time": "2021-03-04T15:50:13+00:00"
         },
         {
             "name": "drupal/jsonapi_extras",
@@ -3935,6 +3951,50 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/twig_tweak",
                 "issues": "https://www.drupal.org/project/issues/twig_tweak"
+            }
+        },
+        {
+            "name": "drupal/view_user_email",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/view_user_email.git",
+                "reference": "1.0.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/view_user_email-1.0.1.zip",
+                "reference": "1.0.1",
+                "shasum": "00e480e03951dcb5a65e2128b7814c0224733c42"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.0.1",
+                    "datestamp": "1599077592",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "davo20019",
+                    "homepage": "https://www.drupal.org/user/1486628"
+                }
+            ],
+            "description": "Allow site administrator the ability to grant users of certain roles access to another users email address.",
+            "homepage": "https://www.drupal.org/project/view_user_email",
+            "support": {
+                "source": "https://git.drupalcode.org/project/view_user_email"
             }
         },
         {
@@ -5123,16 +5183,16 @@
         },
         {
             "name": "pear/archive_tar",
-            "version": "1.4.11",
+            "version": "1.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Archive_Tar.git",
-                "reference": "17d355cb7d3c4ff08e5729f29cd7660145208d9d"
+                "reference": "19bb8e95490d3e3ad92fcac95500ca80bdcc7495"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/17d355cb7d3c4ff08e5729f29cd7660145208d9d",
-                "reference": "17d355cb7d3c4ff08e5729f29cd7660145208d9d",
+                "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/19bb8e95490d3e3ad92fcac95500ca80bdcc7495",
+                "reference": "19bb8e95490d3e3ad92fcac95500ca80bdcc7495",
                 "shasum": ""
             },
             "require": {
@@ -5185,7 +5245,17 @@
                 "archive",
                 "tar"
             ],
-            "time": "2020-11-19T22:10:24+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/mrook",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/michielrook",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2021-01-18T19:32:54+00:00"
         },
         {
             "name": "pear/console_getopt",
@@ -7610,12 +7680,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
@@ -7749,9 +7819,9 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "drupal/intercept_profile": 20,
+        "drupal/better_normalizers": 10,
         "drupal/intercept_base": 20,
-        "drupal/intercept": 20,
-        "drupal/better_normalizers": 10
+        "drupal/intercept": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

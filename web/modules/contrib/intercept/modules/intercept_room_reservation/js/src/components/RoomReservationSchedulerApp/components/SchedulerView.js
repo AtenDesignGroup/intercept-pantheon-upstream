@@ -52,7 +52,6 @@ const SchedulerViewScrollArea = ({
     if (overflow) {
       frameStyles.overflowX = 'auto';
     }
-    if (hideScrollbar) frameStyles.marginBottom = `-${scrollbarSize.height}px`;
   }
   if (vertical) {
     frameStyles.height = `${height}px`;

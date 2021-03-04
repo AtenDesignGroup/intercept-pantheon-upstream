@@ -223,17 +223,6 @@ class EventsController extends ControllerBase {
         '#markup' => $node->field_event_user_reg_max->value ?: "No maximum",
       ];
     }
-    $content['add'] = [
-      '#title' => 'Add event registration',
-      '#type' => 'link',
-      '#url' => Url::fromRoute('entity.event_registration.event_form', [
-        'node' => $node->id(),
-        'destination' => Url::fromRoute('<current>')->toString(),
-      ]),
-      '#attributes' => [
-        'class' => ['button button-action'],
-      ],
-    ];
     $properties = $node->registration->getItemDefinition()->getSetting('properties');
     $field = $node->registration;
     foreach ($properties as $name => $property) {
@@ -248,6 +237,26 @@ class EventsController extends ControllerBase {
         '#markup' => $field->{$name},
       ];
     }
+    $content['add'] = [
+      '#title' => 'Add event registration',
+      '#type' => 'link',
+      '#url' => Url::fromRoute('entity.event_registration.event_form', [
+        'node' => $node->id(),
+        'destination' => Url::fromRoute('<current>')->toString(),
+      ]),
+      '#attributes' => [
+        'class' => ['button button-action'],
+      ],
+    ];
+    $content['export'] = [
+      '#title' => 'Export Registrant Email Addresses',
+      '#type' => 'link',
+      '#url' => Url::fromRoute('view.intercept_event_registration.rest_export_1', ['nid' => $node->id()]),
+      '#attributes' => [
+        'class' => ['button button-action'],
+      ],
+      '#prefix' => '&nbsp;&nbsp;'
+    ];
     $content['list'] = $this->getListBuilder('event_registration', $node)->render();
     return $build;
   }
@@ -263,6 +272,14 @@ class EventsController extends ControllerBase {
    */
   public function attendance(NodeInterface $node) {
     $build = [];
+    $build['export'] = [
+      '#title' => 'Export Attendee Email Addresses',
+      '#type' => 'link',
+      '#url' => Url::fromRoute('view.intercept_event_attendance.rest_export_1', ['nid' => $node->id()]),
+      '#attributes' => [
+        'class' => ['button button-action'],
+      ],
+    ];
     $build['list'] = $this->getListBuilder('event_attendance', $node)->render();
     return $build;
   }

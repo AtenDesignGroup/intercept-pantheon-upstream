@@ -10,23 +10,26 @@ use Drupal\Core\Ajax\OpenOffCanvasDialogCommand;
 use Drupal\Core\Ajax\SetDialogTitleCommand;
 use Drupal\Core\Ajax\AjaxHelperTrait;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Link;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
 use Drupal\intercept_core\ReservationManagerInterface;
 use Drupal\intercept_room_reservation\Entity\RoomReservation;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Drupal\intercept_room_reservation\Form\RoomReservationAvailabilityForm;
-use Drupal\jsonapi\Resource\JsonApiDocumentTopLevel;
+use Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Class RoomReservationController.
@@ -45,13 +48,6 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   protected $reservationManager;
 
   /**
-   * The private temp store factory.
-   *
-   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
-   */
-  protected $tempStoreFactory;
-
-  /**
    * The current user.
    *
    * @var \Drupal\Core\Session\AccountInterface
@@ -59,13 +55,59 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   protected $currentUser;
 
   /**
-   * Create a new RoomReservationController.
+   * The entity form builder.
+   *
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
    */
-  public function __construct(ReservationManagerInterface $reservation_manager, PrivateTempStoreFactory $temp_store_factory, EntityDisplayRepositoryInterface $entity_display_repository, AccountInterface $current_user) {
+  protected $entityFormBuilder;
+
+  /**
+   * The entity field manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * The date formatter service.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
+   */
+  protected $dateFormatter;
+
+  /**
+   * The serializer which serializes the views result.
+   *
+   * @var \Symfony\Component\Serializer\Serializer
+   */
+  protected $serializer;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * Create a new RoomReservationController.
+   *
+   * @param \Drupal\intercept_core\ReservationManagerInterface $reservation_manager
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   * @param \Symfony\Component\Serializer\SerializerInterface $serializer
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   */
+  public function __construct(ReservationManagerInterface $reservation_manager, AccountInterface $current_user, EntityFormBuilderInterface $entity_form_builder, DateFormatterInterface $date_formatter, EntityFieldManagerInterface $entity_field_manager, SerializerInterface $serializer, RendererInterface $renderer) {
     $this->reservationManager = $reservation_manager;
-    $this->tempStoreFactory = $temp_store_factory;
-    $this->entityDisplayRepository = $entity_display_repository;
     $this->currentUser = $current_user;
+    $this->entityFormBuilder = $entity_form_builder;
+    $this->entityFieldManager = $entity_field_manager;
+    $this->dateFormatter = $date_formatter;
+    $this->serializer = $serializer;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -74,9 +116,12 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('intercept_core.reservation.manager'),
-      $container->get('user.private_tempstore'),
-      $container->get('entity_display.repository'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('entity.form_builder'),
+      $container->get('date.formatter'),
+      $container->get('entity_field.manager'),
+      $container->get('serializer'),
+      $container->get('renderer')
     );
   }
 
@@ -106,7 +151,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     $reservation_barred_text = $room_reservation_settings->get('reservation_barred_text');
 
     // Add publicize field.
-    $reservation_fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('room_reservation', 'room_reservation');
+    $reservation_fields = $this->entityFieldManager->getFieldDefinitions('room_reservation', 'room_reservation');
     if (array_key_exists('field_publicize', $reservation_fields)) {
       $publicize_description = $reservation_fields['field_publicize']->getDescription();
     }
@@ -126,7 +171,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
         $customer = reset($customer);
         // See if the customer is allowed to make reservations or is barred.
         $customer_barred = $customer->get('field_room_reservation_barred')->getString();
-        $customer_barred = ($customer_barred === '1') ? TRUE : FALSE;
+        $customer_barred = $customer_barred === '1';
       }
 
       if ($reservations = $this->reservationManager->getReservationsByUser('room', $user)) {
@@ -213,6 +258,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       'requested',
       'approved',
       'selected',
+      'event'
     ];
 
     $build['#content']['status_legend'] = [
@@ -313,6 +359,8 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   /**
    * User account reservations.
    *
+   * @param \Drupal\user\UserInterface $user
+   *
    * @return array
    *   Page callback for user/{user}/reservations.
    */
@@ -342,9 +390,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    */
   public function revisionShow($room_reservation_revision) {
     $room_reservation = $this->entityTypeManager()->getStorage('room_reservation')->loadRevision($room_reservation_revision);
-    $view_builder = $this->entityTypeManager()->getViewBuilder('room_reservation');
-
-    return $view_builder->view($room_reservation);
+    return $this->entityTypeManager()->getViewBuilder('room_reservation')->view($room_reservation);
   }
 
   /**
@@ -402,7 +448,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
         ];
 
         // Use revision link to link to revisions that are not active.
-        $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
+        $date = $this->dateFormatter->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $room_reservation->getRevisionId()) {
           $link = Link::fromTextAndUrl($date, new Url('entity.room_reservation.revision', ['room_reservation' => $room_reservation->id(), 'room_reservation_revision' => $vid]));
         }
@@ -539,10 +585,12 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   }
 
   /**
-   * Custom callback to check availabiity before reserving a room.
+   * Custom callback to check availability before reserving a room.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
   public function reserveRoom(Request $request) {
     $decode = \Drupal::service('serializer')->encode($request->getContent(), 'json');
@@ -583,9 +631,11 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
   public function availability(Request $request) {
-    // Accept query sring params, and then also accept a post request.
+    // Accept query string params, and then also accept a post request.
     $params = $request->query->get('filter');
 
     if ($post = Json::decode($request->getContent())) {

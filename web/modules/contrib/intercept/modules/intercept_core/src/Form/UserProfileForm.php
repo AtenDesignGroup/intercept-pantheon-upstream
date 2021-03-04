@@ -203,7 +203,10 @@ class UserProfileForm extends ProfileForm {
   public function validateInlineEntityForm(array &$form, FormStateInterface $form_state) {
     $patron = $form_state->get('patron');
     // Update ILS username if requested.
-    $ils_username = $form_state->cleanValues()->getValue(['customer_profile', 'field_ils_username']);
+    $ils_username = $form_state->cleanValues()->getValue([
+      'customer_profile',
+      'field_ils_username',
+    ]);
     $ils_username = $ils_username[0]['value'];
     $response = $patron->updateUsername($ils_username);
     if (isset($response->PAPIErrorCode)) {
@@ -226,9 +229,15 @@ class UserProfileForm extends ProfileForm {
    */
   public function saveInlineEntityForm(array &$form, FormStateInterface $form_state) {
     $pin = $form_state->cleanValues()->getValue('pin');
-    $email_address = $form_state->cleanValues()->getValue(['customer_profile', 'field_email_address']);
+    $email_address = $form_state->cleanValues()->getValue([
+      'customer_profile',
+      'field_email_address',
+    ]);
     $email_address = $email_address[0]['value'];
-    $phone = $form_state->cleanValues()->getValue(['customer_profile', 'field_phone']);
+    $phone = $form_state->cleanValues()->getValue([
+      'customer_profile',
+      'field_phone',
+    ]);
     $phone = $phone[0]['value'];
     if (!empty($pin) || !empty($phone) || !empty($email_address)) {
       // If $patron is empty, this submit handler is never set.

@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class EventRegistrationMessageTemplateBase extends InterceptMessageTemplateBase {
 
   use EventRegistrationRecipientSubformTrait;
+  use RecipientSettingsOverrideSubformTrait;
   use StatusSubformTrait;
 
   /**
@@ -51,6 +52,23 @@ abstract class EventRegistrationMessageTemplateBase extends InterceptMessageTemp
       $container->get('renderer'),
       $container->get('entity_field.manager')
     );
+  }
+
+  /**
+   * Returns the form array for message template recipients.
+   *
+   * @return array
+   *   The recipient settings override subform.
+   */
+  public function recipientSettingsOverrideSubform() {
+    return [
+      'user_settings_override' => [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Override user notification preferences'),
+        '#default_value' => $this->configuration['user_settings_override'] ?: FALSE,
+        '#description' => $this->t('Send this message even if the user has disabled notifications.'),
+      ],
+    ];
   }
 
   /**

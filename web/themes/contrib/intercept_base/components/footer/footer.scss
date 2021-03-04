@@ -23,9 +23,15 @@
     }
   }
 
+  .menu a:not(:last-of-type) {
+    width: 20px;
+  };
+
   .menu a {
     text-decoration: none;
     transition: all $duration $easing;
+    mask-repeat: no-repeat;
+    -webkit-mask-position-y: center;
 
     @include bp(m-large) {
       display: block;
@@ -151,6 +157,15 @@
     margin: 0;
   }
 
+  li:first-of-type {
+    width: 25px;
+    margin-left: 1em;
+  }
+  
+  li:not(:last-of-type):not(:first-of-type) {
+    width: 35px;
+  }
+
   li:last-of-type {
     margin-left: 0.5rem;
   }
@@ -173,9 +188,10 @@
   [href*='instagram.com'],
   [href*='linkedin.com'],
   [href*='youtube.com'] {
-    background-color: transparent;
-    background-position: center;
+    background-color: #51832f;
     background-repeat: no-repeat;
+    mask-position: center;
+    mask-repeat: no-repeat;
     overflow: hidden;
     text-indent: -9999px;
     width: rem(32px);
@@ -186,32 +202,38 @@
     }
 
     &:hover {
-      background-color: transparent;
+      background-color: #4c752c;
     }
   }
 
   // Facebook
   [href*='facebook.com'] {
-    background-image: url('/themes/contrib/intercept_base/images/icons/facebook.svg');
+    mask: url('/themes/contrib/intercept_base/images/icons/facebook.svg');
   }
 
   // Twitter
   [href*='twitter.com'] {
-    background-image: url('/themes/contrib/intercept_base/images/icons/twitter.svg');
+    mask: url('/themes/contrib/intercept_base/images/icons/twitter.svg');
   }
 
   // Instagram
   [href*='instagram.com'] {
-    background-image: url('/themes/contrib/intercept_base/images/icons/instagram.svg');
+    mask: url('/themes/contrib/intercept_base/images/icons/instagram.svg');
   }
 
   // LinkedIn
   [href*='linkedin.com'] {
-    background-image: url('/themes/contrib/intercept_base/images/icons/linkedin.svg');
+    background-image: url('/themes/contrib/intercept_base/images/icons/linkedin.svg'); // if you make this a mask like the rest it breaks in the sharing section of the event details content header
+    background-color: transparent;
+    background-position: center;
+
+    &:hover {
+      background-color: transparent;
+    }
   }
 
   // Youtube
   [href*='youtube.com'] {
-    background-image: url('/themes/contrib/intercept_base/images/icons/youtube.svg');
+    mask: url('/themes/contrib/intercept_base/images/icons/youtube.svg');
   }
 }

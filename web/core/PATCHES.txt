@@ -5,7 +5,11 @@ JSON:API returns a CacheableResponseInterface instance for non-cacheable methods
 Source: https://www.drupal.org/files/issues/2020-03-11/jsonapi-3072076-60.patch
 
 
-Issue #3022864: Filtering on multiple relationships in JSON:API
+Filtering on multiple relationships in JSON:API
 Source: https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch
+
+
+Pinpoint source of JSONAPI Errors during installation
+Source: https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch
 
 

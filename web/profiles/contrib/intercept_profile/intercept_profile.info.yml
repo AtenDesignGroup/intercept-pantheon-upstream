@@ -37,10 +37,13 @@ dependencies:
   - intercept_event:intercept_event
   - intercept_room_reservation:intercept_room_reservation
   - intercept_equipment:intercept_equipment
+  - intercept_location:intercept_location
+  - intercept_location_closing:intercept_location_closing
   - quick_node_clone:quick_node_clone
   - stories:stories_media
   - twig_tweak:twig_tweak
   - twig_field_value:twig_field_value
+  - view_user_email:view_user_email
 themes:
   - adminimal_theme
   - intercept_base

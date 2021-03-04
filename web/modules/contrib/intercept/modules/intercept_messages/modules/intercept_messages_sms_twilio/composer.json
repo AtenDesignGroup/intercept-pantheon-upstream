@@ -1,0 +1,19 @@
+{
+  "name": "drupal/intercept_messages_sms_twilio",
+  "description": "Integrates Twilio with SMS Framework.",
+  "type": "drupal-module",
+  "license": "GPL-2.0",
+  "autoload": {
+    "psr-4": {
+      "Drupal\\sms_twilio\\": "src"
+    }
+  },
+  "require": {
+    "drupal/core": "^8.9",
+    "drupal/smsframework": "^2",
+    "twilio/sdk": "^6"
+  },
+  "suggest": {
+    "drupal/smsframework": "Provides integration with SMS Framework"
+  }
+}

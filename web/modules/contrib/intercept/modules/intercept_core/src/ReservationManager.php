@@ -253,6 +253,35 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
+   * Checks if a reservation has an event.
+   *
+   * @param $reservation
+   *   The reservation entity.
+   *
+   * @return bool
+   */
+  public function hasEvent($reservation) {
+    return $reservation->hasField('field_event') && !empty($reservation->field_event->getValue());
+  }
+
+  /**
+   * Checks if the user associated with the reservation is staff.
+   *
+   * @param $reservation
+   *   The reservation entity.
+   *
+   * @return bool
+   */
+  public function isStaff($reservation) {
+    $is_staff = FALSE;
+    $user_roles = $reservation->get('field_user')->entity->getRoles();
+    if (in_array('intercept_staff', $user_roles, TRUE)) {
+      $is_staff = TRUE;
+    }
+    return $is_staff;
+  }
+
+  /**
    * Check the availability of a room at a given date range.
    *
    * Determines the availability of a specified time in a specified room.
@@ -299,8 +328,7 @@ class ReservationManager implements ReservationManagerInterface {
       $return[$uuid]['has_conflict'] = $this->aggressiveOpeningHoursConflict($blocked_dates, $params, $room);
       $return[$uuid]['has_open_hours_conflict'] = $this->hasOpeningHoursConflict($blocked_dates, $params, $room);
       $return[$uuid]['has_max_duration_conflict'] = $this->hasMaxDurationConflict($params, $room);
-      $is_closed = $this->isClosed($params, $room);
-      $return[$uuid]['is_closed'] = $is_closed;
+      $return[$uuid]['is_closed'] = $this->isClosed($params, $room);
       $return[$uuid]['closed_message'] = $this->closedMessage($params, $room);
       $return[$uuid]['has_location'] = !empty($this->getLocation($room));
       if ($debug) {
@@ -330,6 +358,7 @@ class ReservationManager implements ReservationManagerInterface {
         $debug_data['timezone_info'] = $timezone_info;
       }
     }
+    $debug = 'da';
     return $return;
   }
 
@@ -362,6 +391,8 @@ class ReservationManager implements ReservationManagerInterface {
         'end' => $reservation->getEndDate()->format('c'),
         'status' => $reservation->getStatus(),
         'message' => $message,
+        'hasEvent' => $this->hasEvent($reservation),
+        'isReservedByStaff' => $this->isStaff($reservation),
       ];
     }
 
@@ -434,7 +465,11 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * {}.
+   *
+   * @param array $params
+   *
+   * @return array
    */
   public function roomReservationsByNode(array $params) {
     return $this->reservationsByNode('room', function ($query) use ($params) {
@@ -590,7 +625,7 @@ class ReservationManager implements ReservationManagerInterface {
     // Check if there is open space between existing reservations.
     $preceding = [];
     $parameter_start_date = $this->dateUtility->getDrupalDate($params['start']);
-    $parameter_end_date = $this->dateUtility->getDrupalDate($params['start']);
+    $parameter_end_date = $this->dateUtility->getDrupalDate($params['end']);
 
     foreach ($blocked_times as $blocked_time) {
       $blocked_start_date = $this->dateUtility->getDrupalDate($blocked_time['start']);
@@ -1074,7 +1109,7 @@ class ReservationManager implements ReservationManagerInterface {
    *   Whether the provided uid matches the currently logged-in user.
    */
   private function matchesCurrentUser($uid) {
-    return $uid == $this->currentUser->id();
+    return $uid === $this->currentUser->id();
   }
 
   /**

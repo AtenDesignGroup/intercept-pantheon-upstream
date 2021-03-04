@@ -36,7 +36,7 @@ class EventAttendanceSettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('module_handler'),
+      $container->get('module_handler')
     );
   }
 

@@ -42,7 +42,7 @@ const babelLoader = {
           corejs: 3,
           debug: true,
           targets: {
-            browsers: ['last 2 version', '> .25%', 'ie 11', 'android 4', 'ios 9'],
+            browsers: ['last 2 version', '> .25%', 'ie 11', 'android 4', 'ios 9', 'edge 18'],
           },
           useBuiltIns: 'usage',
           modules: false,

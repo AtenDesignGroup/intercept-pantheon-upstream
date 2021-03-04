@@ -1,11 +1,24 @@
 {% import '@intercept-base-components/component.twig' as component %}
 {{ attach_library('intercept_base/evaluation') }}
 
+{% if actions %}
+{% set modifiers = modifiers|default([])|merge(['with-actions'])%}
+{% endif %}
+
 <div {{ component.attributes('evaluation', modifiers, attr) }}>
+  {% if subject %}
   <div class="evaluation__subject">
-    {{subject}}
+    {{ subject }}
   </div>
+  {% endif %}
+  {% if widget %}
   <div class="evaluation__widget">
-    {{widget}}
+    {{ widget }}
   </div>
+  {% endif %}
+  {% if actions %}
+  <div class="evaluation__actions">
+    {{ actions }}
+  </div>
+  {% endif %}
 </div>

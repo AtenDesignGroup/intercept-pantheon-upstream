@@ -200,7 +200,7 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
     $node = $this->entityTypeManager->getDefinition('node');
     $current_date = $this->currentDate()->setTimezone(new \DateTimeZone('UTC'));
     $query = new SuggestedEventsQuery($node, 'AND', \Drupal::service('database'), ['Drupal\Core\Entity\Query\Sql']);
-    
+
     $query->condition('type', 'event', '=')
       ->condition('field_date_time', $current_date->format('c'), '>=')
       ->condition('status', 1, '=')

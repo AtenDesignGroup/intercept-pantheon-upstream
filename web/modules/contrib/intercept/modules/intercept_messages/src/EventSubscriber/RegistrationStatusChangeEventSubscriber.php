@@ -130,6 +130,10 @@ class RegistrationStatusChangeEventSubscriber implements EventSubscriberInterfac
     $new_status = $event->getNewStatus();
 
     foreach ($this->emailSettings as $key => $setting) {
+      // A setting is disabled if it is not enabled.
+      if ((bool) $setting['enabled'] === FALSE) {
+        continue;
+      }
       // A setting is disabled if there is no original or new status set.
       if (empty($setting['status_original']) || empty($setting['status_new'])) {
         continue;

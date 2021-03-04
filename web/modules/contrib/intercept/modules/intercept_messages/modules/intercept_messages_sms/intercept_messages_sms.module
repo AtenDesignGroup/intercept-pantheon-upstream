@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ * Contains intercept_messages_sms.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\intercept_messages_sms\Form\EventRegistrationSmsMessagesSettings;
+use Drupal\intercept_messages_sms\Form\UserSettings;
+
+/**
+ * Implements hook_help().
+ */
+function intercept_messages_sms_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the intercept_messages module.
+    case 'help.page.intercept_messages_sms':
+      $output = '';
+      $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
+      $output .= '<p>' . new TranslatableMarkup('Provides SMS Framework integration for Intercept Messages.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_messages_sms_form_event_registration_settings_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EventRegistrationSmsMessagesSettings::class)
+    ->alterSettingsForm($form, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_messages_sms_form_user_form_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(UserSettings::class)
+    ->alterSettingsForm($form, $form_state);
+}

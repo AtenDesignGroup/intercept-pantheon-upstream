@@ -1,10 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import 'react-app-polyfill/stable';
 
 import isEmpty from 'lodash/isEmpty';
 import get from 'lodash/get';
 
 import Formsy from 'formsy-react';
+import {
+  isIE,
+  isEdge,
+  isEdgeChromium,
+  browserVersion
+} from "react-device-detect";
 
 // Intercept Components
 /* eslint-disable */
@@ -39,6 +46,15 @@ class RegisterEventStep1 extends React.Component {
       user: null,
       dialogOpen: false,
     };
+  }
+
+  isOutdatedBrowser() {
+    if (isIE) {
+      return true;
+    } else if (isEdge && !isEdgeChromium && browserVersion < 79) {
+      return true;
+    }
+    return false;
   }
 
   onValueChange(key) {
@@ -230,7 +246,24 @@ class RegisterEventStep1 extends React.Component {
         },
       };
     }
+    if (this.isOutdatedBrowser()) {
+      return {
+        heading: 'Please Upgrade Your Browser',
+        text: 'In order to register for your event as a guest, please upgrade your browser. Older or outdated browsers can be slow, put your computer at risk and impact some of the features of our website. For the best experience, we recommend updating your browser or switching to the latest version of a supported browser like Chrome, Safari or Firefox.',
+        confirmText: 'Ok',
+        onConfirm: () => {
+          window.location.href = this.registerUrl();
+        },
+      };
+    }
     return {};
+  }
+
+  registerUrl = () => {
+    const { event } = this.props;
+    const eventNid = get(event, 'data.attributes.drupal_internal__nid');
+
+    return `/event/${eventNid}/register`;
   }
 
   loginUrl = () => {
@@ -244,11 +277,26 @@ class RegisterEventStep1 extends React.Component {
     || (this.state.emailChecked
     && this.state.registrationExists);
 
+  componentDidMount() {
+    if (this.isOutdatedBrowser()) {
+      this.openDialog();
+    }
+  }
+
   render() {
     const {
       onChangeStep,
     } = this.props;
 
+    if (this.isOutdatedBrowser()) {
+      return (
+        <DialogConfirm
+          {...this.dialogProps()}
+          open={this.state.dialogOpen}
+          onClose={() => this.closeDialog()}
+        />
+      )
+    }
     return (
       <FormWrapper>
         <Formsy

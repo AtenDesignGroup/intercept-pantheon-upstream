@@ -6,11 +6,44 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\flag\FlaggingInterface;
 use Drupal\intercept_event\Entity\EventAttendanceInterface;
 use Drupal\intercept_event\Entity\EventRegistrationInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Helper functions for message settings.
  */
 class MessageSettingsHelper {
+
+  /**
+   * Whether the user allows email notifications for events.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The User entity.
+   *
+   * @return bool
+   *   Whether the user allows email notifications for events, TRUE by default.
+   */
+  public static function eventEmailEnabled(UserInterface $user) {
+    if (NULL == \Drupal::service('user.data')->get('intercept_messages', $user->id(), 'email_event')) {
+      return TRUE;
+    }
+    return (bool) \Drupal::service('user.data')->get('intercept_messages', $user->id(), 'email_event');
+  }
+
+  /**
+   * Whether the email notification overrides the user settings.
+   *
+   * @param array $settings
+   *   The email notification settings.
+   *
+   * @return bool
+   *   Whether the email settings overrides the user settings, default FALSE.
+   */
+  public static function eventEmailOverridden(array $settings) {
+    if ((bool) $settings['user_settings_override'] === TRUE) {
+      return TRUE;
+    }
+    return FALSE;
+  }
 
   /**
    * Gets an array of emails from an event registration email settings.
@@ -22,18 +55,19 @@ class MessageSettingsHelper {
    */
   public static function getEventAttendanceEmails(EventAttendanceInterface $event_attendance, array $settings) {
     $addresses = [];
+    $email_settings_overridden = self::eventEmailOverridden($settings);
     // Gather the email addresses to send to.
     foreach ($settings['user'] as $user_type) {
       switch ($user_type) {
         case 'user':
         default:
-          if ($event_attendance->getAttendee()) {
+          if ($event_attendance->getAttendee() && (self::eventEmailEnabled($event_attendance->getAttendee()) || $email_settings_overridden)) {
             $addresses[] = $event_attendance->getAttendee()->getEmail();
           }
           break;
 
         case 'author':
-          if ($event_attendance->getOwner()) {
+          if ($event_attendance->getOwner() && (self::eventEmailEnabled($event_attendance->getOwner()) || $email_settings_overridden)) {
             $addresses[] = $event_attendance->getOwner()->getEmail();
           }
           break;
@@ -62,18 +96,19 @@ class MessageSettingsHelper {
    */
   public static function getEventRegistrationEmails(EventRegistrationInterface $event_registration, array $settings) {
     $addresses = [];
+    $email_settings_overridden = self::eventEmailOverridden($settings);
     // Gather the email addresses to send to.
     foreach ($settings['user'] as $user_type) {
       switch ($user_type) {
         case 'registration_user':
         default:
-          if ($event_registration->getRegistrant()) {
+          if ($event_registration->getRegistrant() && (self::eventEmailEnabled($event_registration->getRegistrant()) || $email_settings_overridden)) {
             $addresses[] = $event_registration->getRegistrant()->getEmail();
           }
           break;
 
         case 'registration_author':
-          if ($event_registration->getOwner()) {
+          if ($event_registration->getOwner() && (self::eventEmailEnabled($event_registration->getOwner()) || $email_settings_overridden)) {
             $addresses[] = $event_registration->getOwner()->getEmail();
           }
           break;
@@ -108,7 +143,7 @@ class MessageSettingsHelper {
       switch ($user_type) {
         case 'user':
         default:
-          if ($flagging->getOwner()) {
+          if ($flagging->getOwner() && self::eventEmailEnabled($flagging->getOwner())) {
             $addresses[] = $flagging->getOwner()->getEmail();
           }
           break;

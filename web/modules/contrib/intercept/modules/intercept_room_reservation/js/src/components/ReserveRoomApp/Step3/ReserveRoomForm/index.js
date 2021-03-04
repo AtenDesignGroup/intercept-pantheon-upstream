@@ -189,12 +189,6 @@ class ReserveRoomForm extends PureComponent {
     };
   }
 
-  onValueUserChange(key) {
-    return (value) => {
-      this.updateValue(key, value);
-    };
-  }
-
   onOpenDialog = () => {
     this.setState({ openDialog: true });
   };

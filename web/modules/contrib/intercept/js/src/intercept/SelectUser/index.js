@@ -71,7 +71,8 @@ class SelectUser extends React.Component {
           <RegistrationLookup
             name={name}
             onSuccess={this.handleChange}
-            onChange={formValue => this.setState({ formValue }) }
+            onFailure={this.resetValues}
+            onChange={formValue => this.setState({ formValue })}
             value={this.state.formValue}
           />
           {this.resetLink()}

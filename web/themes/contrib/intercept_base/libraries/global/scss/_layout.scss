@@ -389,3 +389,16 @@
     margin: 2em 0 1em;
   }
 }
+
+// Event series
+.view-intercept-event-series {
+  .views-row {
+    &:not(:last-of-type) {
+      @include spacing(margin-bottom, sparse);
+
+      @include bp(small) {
+        @include spacing(margin-bottom, normal);
+      }
+    }
+  }
+}

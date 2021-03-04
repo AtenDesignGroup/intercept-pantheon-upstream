@@ -52,6 +52,8 @@ const getEventFromBlockedTime = (time, roomId) => ({
   status: get(time, 'status', 'disabled'),
   start: get(time, 'start'),
   end: get(time, 'end'),
+  hasEvent: get(time, 'hasEvent'),
+  isReservedByStaff: get(time,'isReservedByStaff'),
   drupal_internal__id: get(time, 'id', roomId),
 });
 

@@ -156,7 +156,12 @@
           justify-content: left; }
   .content-header .menu--social-media-menu a {
     -webkit-filter: brightness(100);
-            filter: brightness(100); }
+            filter: brightness(100);
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position-y: center; }
+    .content-header .menu--social-media-menu a:first-of-type {
+      margin-left: 2rem; }
   .content-header .menu--social-media-menu a[href*='linkedin.com'] {
     -webkit-filter: none;
             filter: none;

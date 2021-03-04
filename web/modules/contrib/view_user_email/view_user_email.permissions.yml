@@ -1,0 +1,4 @@
+access email field:
+  title: 'Access other users email field'
+  description: 'View other users email field.'
+  restrict access: TRUE

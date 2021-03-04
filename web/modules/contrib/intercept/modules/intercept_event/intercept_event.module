@@ -362,7 +362,7 @@ function intercept_event_entity_presave(EntityInterface $entity) {
               \Drupal::messenger()->addMessage(t('You have successfully canceled this instance of the event. If you need to cancel other recurrences, please use the Recurrences tab.'));
             }
           }
-          if ($event_status == 'scheduled') {
+          elseif ($event_status == 'scheduled') {
             if (strpos($title, 'Canceled') !== FALSE) {
               $entity->title = str_replace('Canceled: ', '', $title);
             }
@@ -886,6 +886,14 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
       'plugin_id' => 'text_custom',
     ];
     $view->setHandler('page', 'header', 'area_text_custom', $options);
+
+    // Default to showing data in the last 6 months.
+    $exposed_input = $view->getExposedInput();
+    if (!isset($exposed_input['field_date_time_value']['min'])) {
+      $date = new DateTime('first day of -6 months');
+      $exposed_date['field_date_time_value']['min'] = $date->format('m/d/Y');
+      $view->setExposedInput(array_merge($exposed_input, $exposed_date));
+    }
   }
   else if ($view->id() == 'intercept_meetings' && $display_id == 'page') {
     // Build the link to download the CSV.

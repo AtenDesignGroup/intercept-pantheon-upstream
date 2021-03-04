@@ -10,7 +10,7 @@ use Drupal\Core\Session\AccountInterface;
  */
 interface ReservationManagerInterface {
 
-  const FORMAT = 'Y-m-d\TH:i:s';
+  public const FORMAT = 'Y-m-d\TH:i:s';
 
   /**
    * Expose the date utility for functions that use this service.

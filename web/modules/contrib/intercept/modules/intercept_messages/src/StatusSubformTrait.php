@@ -27,14 +27,14 @@ trait StatusSubformTrait {
         '#type' => 'checkboxes',
         '#multiple' => TRUE,
         '#options' => $this->getStatusOptions(),
-        '#description' => $this->t('The previous status. If no value is selected, the email will be inactive.'),
+        '#description' => $this->t('The previous status. If no value is selected, the message will be inactive.'),
         '#default_value' => $this->configuration['status_original'] ?: '',
       ],
       'status_new' => [
         '#title' => $this->t('New status'),
         '#type' => 'checkboxes',
         '#options' => $this->getStatusOptions(),
-        '#description' => $this->t('The new status. If no value is selected, the email will be inactive.'),
+        '#description' => $this->t('The new status. If no value is selected, the message will be inactive.'),
         '#default_value' => $this->configuration['status_new'] ?: '',
       ],
     ];

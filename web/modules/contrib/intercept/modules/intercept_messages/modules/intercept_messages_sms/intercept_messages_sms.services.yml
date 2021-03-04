@@ -1,0 +1,6 @@
+services:
+  intercept_messages_sms.event_registration_status_change:
+    class: '\Drupal\intercept_messages_sms\EventSubscriber\RegistrationStatusChangeEventSubscriber'
+    arguments: ['@config.factory', '@entity_type.manager', '@sms.provider', '@token', '@user.data']
+    tags:
+      - { name: event_subscriber }

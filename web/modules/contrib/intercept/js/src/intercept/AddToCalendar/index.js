@@ -42,7 +42,10 @@ export default class ReactAddToCalendar extends React.Component {
     this.setState({ isCrappyIE });
   }
 
-  toggleCalendarDropdown() {
+  toggleCalendarDropdown(e) {
+    if (e !== undefined) {
+      e.stopPropagation();
+    }
     const showOptions = !this.state.optionsOpen;
 
     if (showOptions) {

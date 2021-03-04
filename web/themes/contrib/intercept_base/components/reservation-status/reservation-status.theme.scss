@@ -18,3 +18,9 @@
     background-color: $clr-accent;
   }
 }
+
+.reservation-status--event {
+  &::before {
+    background-color: $orange-30;
+  }
+}

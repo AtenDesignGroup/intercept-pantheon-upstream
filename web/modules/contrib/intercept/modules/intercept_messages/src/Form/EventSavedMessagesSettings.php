@@ -22,7 +22,7 @@ class EventSavedMessagesSettings extends MessagesSettingsBase {
    * {@inheritdoc}
    */
   protected function getMessageTemplateTypes() {
-    return ['event_saved'];
+    return ['flagging'];
   }
 
   /**

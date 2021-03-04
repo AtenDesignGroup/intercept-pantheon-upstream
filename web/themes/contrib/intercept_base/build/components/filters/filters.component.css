@@ -230,6 +230,8 @@
   /* Chrome, Safari, Edge, Opera */
   /* Firefox */
   font-size: 0.72917rem; }
+  .input--incrementer button:focus {
+    background-color: rgba(0, 0, 0, 0.4); }
   .input--incrementer input::-webkit-outer-spin-button,
   .input--incrementer input::-webkit-inner-spin-button {
     -webkit-appearance: none;

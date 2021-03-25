@@ -6,7 +6,7 @@ import EntityStatus from 'intercept/EntityStatus';
 const c = interceptClient.constants;
 
 const messages = {
-  default: 'The status of the registration is unknown',
+  default: 'The status of the registration is unknown.',
   dirty: {
     waitlist: 'Submitting registration to the waitlist',
     active: 'Submitting registration',
@@ -18,14 +18,14 @@ const messages = {
     canceled: 'Cancelling registration',
   },
   saved: {
-    waitlist: 'This registration has been added to the waitlist',
-    active: 'This registration has been confirmed',
-    canceled: 'This registration has been canceled',
+    waitlist: 'This registration has been added to the waitlist.',
+    active: 'This registration has been confirmed.',
+    canceled: 'This registration has been canceled.',
   },
   error: {
-    waitlist: 'An error occured while adding to the waitlist',
-    active: 'An error occured while submitting this registration',
-    canceled: 'An error occured while cancelling this registration',
+    waitlist: 'An error occured while adding to the waitlist.',
+    active: 'An error occured while submitting this registration.',
+    canceled: 'An error occured while cancelling this registration.',
   },
 };
 

@@ -454,7 +454,7 @@ class ReserveRoomEditForm extends PureComponent {
           <small>
             Telephone: {drupalSettings.intercept.user.telephone}<br />
             Email: {drupalSettings.intercept.user.email}<br />
-            <em>Need to update your info? After finishing your reservation visit My Account &gt; Settings</em>
+            <em>Need to update your info? After finishing your reservation visit My Account &gt; Profile.</em>
           </small>
         </div>
       );

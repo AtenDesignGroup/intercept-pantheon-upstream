@@ -340,7 +340,9 @@ function intercept_room_reservation_views_pre_view(ViewExecutable $view, $displa
     $exposed_input = $view->getExposedInput();
     if (!isset($exposed_input['field_dates_value'])) {
       $date = new DateTime('now');
+      $date_future = new DateTime('+6 months');
       $exposed_date['field_dates_value']['min'] = $date->format('m/d/Y');
+      $exposed_date['field_dates_value']['max'] = $date_future->format('m/d/Y');
       $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
 

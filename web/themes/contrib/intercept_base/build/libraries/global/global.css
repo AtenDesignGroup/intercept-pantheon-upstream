@@ -713,10 +713,10 @@ tbody + tbody {
   border-top: 2px solid #d3d8df; }
 
 :focus {
-  outline-width: 3px;
-  outline-style: dashed;
-  outline-color: #008db1;
-  outline-color: rgba(0, 141, 177, 0.6); }
+  outline-width: 3px !important;
+  outline-style: dashed !important;
+  outline-color: #008db1 !important;
+  outline-color: rgba(0, 141, 177, 0.6) !important; }
 
 :active {
   outline: 0; }
@@ -1195,6 +1195,10 @@ tbody + tbody {
 .table-overflow-x-scroll .view__content {
   overflow-x: scroll; }
 
+.adminimal-admin-toolbar .l--page-wrapper {
+  min-height: -webkit-calc(100vh - 80px);
+  min-height: calc(100vh - 80px); }
+
 .l--page-wrapper {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -1213,7 +1217,10 @@ tbody + tbody {
   .l--page-wrapper > .l--page {
     margin-left: auto;
     margin-right: auto;
-    width: 100%; }
+    width: 100%;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1; }
 
 .l--page {
   -webkit-box-sizing: content-box;
@@ -1579,6 +1586,12 @@ tbody + tbody {
       width: calc(33.33% - 30px); } }
 
 .view-intercept-equipment .view__content {
+  margin: 2em 0 1em; }
+
+#views-exposed-form-intercept-room-reservations-page + .view__content {
+  margin: 2em 0 1em; }
+
+.view__empty {
   margin: 2em 0 1em; }
 
 .view-intercept-event-series .views-row:not(:last-of-type) {

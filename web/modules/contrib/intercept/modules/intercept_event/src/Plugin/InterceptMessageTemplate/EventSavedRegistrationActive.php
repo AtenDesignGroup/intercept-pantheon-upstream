@@ -56,7 +56,6 @@ class EventSavedRegistrationActive extends InterceptMessageTemplateBase implemen
     $default_configuration = parent::defaultConfiguration();
     $default_configuration['user'] = [];
     $default_configuration['user_email_other'] = '';
-    $default_configuration['schedule']['interval'] = '';
     return $default_configuration;
   }
 

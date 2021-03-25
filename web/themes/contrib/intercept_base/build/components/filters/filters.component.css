@@ -129,6 +129,26 @@
 [id="views-exposed-form-intercept-events-embed"] .filters__inputs-inner {
   margin-top: 0; }
 
+#views-exposed-form-research-learn-page-2 .filters__inputs-inner {
+  display: -webkit-box;
+  margin-left: 0;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column; }
+  @media (min-width: 37.5em) {
+    #views-exposed-form-research-learn-page-2 .filters__inputs-inner {
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+              flex-direction: row; } }
+  @media (min-width: 48em) {
+    #views-exposed-form-research-learn-page-2 .filters__inputs-inner {
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: column;
+              flex-direction: column; } }
+
 .select-filter, .keyword-filter, .js-form-type-entity-autocomplete, .date-filter, .time-filter, .input {
   display: -webkit-box;
   display: -ms-flexbox;

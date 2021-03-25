@@ -76,7 +76,7 @@ function intercept_messages_form_user_form_alter(array &$form, FormStateInterfac
 function intercept_messages_entity_insert(EntityInterface $entity) {
   $entity_type_id = $entity->getEntityTypeId();
   $bundle = $entity->bundle();
-  if (!in_array($entity_type_id, ['event_registration', 'event_attendance', 'flagging'])) {
+  if (!in_array($entity_type_id, ['event_attendance', 'event_registration', 'flagging'])) {
     return;
   }
   if ($entity_type_id == 'flagging' && $bundle != 'saved_event') {
@@ -84,9 +84,9 @@ function intercept_messages_entity_insert(EntityInterface $entity) {
   }
   $templates = \Drupal::service('plugin.manager.intercept_message_template')->getDefinitionsByType($entity_type_id);
   $event_config = \Drupal::config('intercept_event.settings');
-  if ($event_config && is_array($event_config->get('email'))) {
-    $filtered_emails = array_filter($event_config->get('email'), function ($email_id) use ($templates) {
-      return in_array($email_id, array_column($templates, 'id'));
+  if ($event_config && is_array($event_config->get('message'))) {
+    $filtered_messages = array_filter($event_config->get('email'), function ($message_id) use ($templates) {
+      return in_array($message_id, array_column($templates, 'id'));
     }, ARRAY_FILTER_USE_KEY);
     if ($entity_type_id == 'flagging') {
       // Get the associated event for a flagging.
@@ -97,17 +97,21 @@ function intercept_messages_entity_insert(EntityInterface $entity) {
     else {
       $event = $entity->getEvent();
     }
-    foreach ($filtered_emails as $plugin_id => $email_setting) {
+    foreach ($filtered_messages as $plugin_id => $message_setting) {
 
-      if ($email_setting['enabled'] && $interval = NestedArray::getValue($email_setting, ['schedule', 'interval'])) {
+      if ($message_setting['enabled'] && $interval = NestedArray::getValue($message_setting, ['schedule', 'interval'])) {
         $interval_time = \Drupal::service('duration_field.service')->getSecondsFromDurationString($interval);
         if ($entity_type_id == 'flagging') {
           if ($registration == TRUE) {
-            continue; // Don't send emails for saves when registration is required.
+            continue; // Don't send messages for saves when registration is required.
           }
         }
         if ($event->hasField('field_date_time')) {
           switch ($entity_type_id) {
+            case 'event_attendance':
+              $event_date = $event->get('field_date_time')->end_date;
+              $send_timestamp = $event_date->format('U') + $interval_time;
+              break;
             case 'event_registration':
             case 'flagging':
               // When the customer flags/saves the event, we're going to use the
@@ -120,16 +124,11 @@ function intercept_messages_entity_insert(EntityInterface $entity) {
                 return;
               }
               break;
-
-            case 'event_attendance':
-              $event_date = $event->get('field_date_time')->end_date;
-              $send_timestamp = $event_date->format('U') + $interval_time;
-              break;
           }
           intercept_messages_schedule_message($plugin_id, $entity_type_id, $entity->id(), 0, $send_timestamp);
         }
       }
-      elseif ($email_setting['enabled'] && $plugin_id == 'saved_registration_active' && $registration == TRUE) {
+      elseif ($message_setting['enabled'] && $plugin_id == 'saved_registration_active' && $registration == TRUE) {
         // When we want to alert the customer that registration is opening,
         // the send_timestamp should be the exact same date that
         // registration opens.
@@ -169,7 +168,7 @@ function intercept_messages_entity_update(EntityInterface $entity) {
   }
   $dateTime = new DrupalDateTime($entity->get('field_date_time')->value, 'UTC');
   $event_date = $dateTime->getTimestamp();
-  $timestamp = $send_timestamp = strtotime('now'); // Send any update emails immediately.
+  $timestamp = $send_timestamp = strtotime('now'); // Send any update messages immediately.
   /** @var \Drupal\node\NodeInterface $entity */
   if (!$entity->isPublished() || ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled')) {
     $event_registration_provider = \Drupal::service('intercept_event.event_registration_provider');
@@ -223,6 +222,7 @@ function intercept_messages_entity_update(EntityInterface $entity) {
       }
     }
   }
+  // @TODO: Remove reminders for canceled event_registration
 }
 
 /**

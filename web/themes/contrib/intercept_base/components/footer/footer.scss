@@ -157,17 +157,22 @@
     margin: 0;
   }
 
-  li:first-of-type {
-    width: 25px;
-    margin-left: 1em;
-  }
+  @include bp(large) {
+    li {
+      margin-right: .5em;
+    }
+    li:first-of-type {
+      width: 25px;
+      margin-left: 1em;
+    }
+    
+    li:not(:last-of-type):not(:first-of-type) {
+      width: 35px;
+    }
   
-  li:not(:last-of-type):not(:first-of-type) {
-    width: 35px;
-  }
-
-  li:last-of-type {
-    margin-left: 0.5rem;
+    li:last-of-type {
+      margin-left: 1rem;
+    }
   }
 
   a {
@@ -181,6 +186,26 @@
     @include bp(small) {
       padding: 1rem 1.5rem;
     }
+  }
+
+  // Facebook
+  [href*='facebook.com'] {
+    mask: url('/themes/contrib/intercept_base/images/icons/facebook.svg');
+  }
+
+  // Twitter
+  [href*='twitter.com'] {
+    mask: url('/themes/contrib/intercept_base/images/icons/twitter.svg');
+  }
+
+  // Instagram
+  [href*='instagram.com'] {
+    mask: url('/themes/contrib/intercept_base/images/icons/instagram.svg');
+  }
+
+  // Youtube
+  [href*='youtube.com'] {
+    mask: url('/themes/contrib/intercept_base/images/icons/youtube.svg');
   }
 
   [href*='facebook.com'],
@@ -206,22 +231,7 @@
     }
   }
 
-  // Facebook
-  [href*='facebook.com'] {
-    mask: url('/themes/contrib/intercept_base/images/icons/facebook.svg');
-  }
-
-  // Twitter
-  [href*='twitter.com'] {
-    mask: url('/themes/contrib/intercept_base/images/icons/twitter.svg');
-  }
-
-  // Instagram
-  [href*='instagram.com'] {
-    mask: url('/themes/contrib/intercept_base/images/icons/instagram.svg');
-  }
-
-  // LinkedIn
+  // LinkedIn (needs to be last because it's a bg-image and not masked)
   [href*='linkedin.com'] {
     background-image: url('/themes/contrib/intercept_base/images/icons/linkedin.svg'); // if you make this a mask like the rest it breaks in the sharing section of the event details content header
     background-color: transparent;
@@ -230,10 +240,5 @@
     &:hover {
       background-color: transparent;
     }
-  }
-
-  // Youtube
-  [href*='youtube.com'] {
-    mask: url('/themes/contrib/intercept_base/images/icons/youtube.svg');
   }
 }

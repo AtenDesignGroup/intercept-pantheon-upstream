@@ -116,6 +116,18 @@
   margin-top: 0;
 }
 
+#views-exposed-form-research-learn-page-2 .filters__inputs-inner {
+  display: -webkit-box;
+  margin-left: 0;
+  flex-direction: column;
+  @include bp(small) {
+    flex-direction: row;
+  }
+  @include bp(medium) {
+    flex-direction: column;
+  }
+}
+
 %filter {
   display: flex;
 

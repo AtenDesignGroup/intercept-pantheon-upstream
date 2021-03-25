@@ -446,7 +446,7 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
     case 'waitlist':
       switch (availableWaitlist) {
         case 1:
-          return `There is ${availableWaitlist} of ${totalWaitlist} waitlist seats available.`;
+          return `There is ${availableWaitlist} of ${totalWaitlist} waitlist seat available.`;
         default:
           return `There are ${availableWaitlist} of ${totalWaitlist} waitlist seats available.`;
       }
@@ -461,7 +461,7 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
         case 0:
           return 'This event is full.';
         case 1:
-          return `There is ${availableCapacity} of ${totalCapacity} seats available.`;
+          return `There is ${availableCapacity} of ${totalCapacity} seat available.`;
         default:
           return `There are ${availableCapacity} of ${totalCapacity} seats available.`;
       }

@@ -10,9 +10,8 @@
     }
   ],
   "require": {
-    "composer/installers": "^1.0.20",
-    "rvtraveller/qs-composer-installer": "^1.1",
-    "cweagans/composer-patches": "^1.7.0",
+    "composer/installers": "^1.9",
+    "cweagans/composer-patches": "^1.7",
     "drupal/config_direct_save": "^1.0",
     "drupal/core-recommended": "^8.9.13",
     "drupal/intercept_profile": "1.x-dev",
@@ -26,6 +25,7 @@
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept": "1.x-dev",
     "drupal/quick_node_clone": "^1.12",
+    "drupal/smsframework": "^2",
     "drupal/view_user_email": "^1.0.1",
     "zaporylie/composer-drupal-optimizations": "^1.0",
     "drupal/core-composer-scaffold": "^8.8"
@@ -104,14 +104,16 @@
       "drupal/core": {
         "JSON:API returns a CacheableResponseInterface instance for non-cacheable methods; causes unnecessary exceptions.": "https://www.drupal.org/files/issues/2020-03-11/jsonapi-3072076-60.patch",
         "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",
-        "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch",
-        "Fixes JSON:API errors during installation": "https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch"
+        "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch"
       },
       "drupal/csv_serialization": {
         "Unable to Override Headers/Labels with hook_views_pre_render(). Used in export by age group": "https://www.drupal.org/files/issues/2019-10-10/3087166-csv_serialization-8.x-2.x-dev-views-pre-render-alter-headers.patch"
       },
       "drupal/field_group": {
         "Resolves PHP notices on My Account Settings form": "https://www.drupal.org/files/issues/2020-06-15/3059614-37.patch"
+      },
+      "drupal/smsframework": {
+        "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"
       }
     }
   }

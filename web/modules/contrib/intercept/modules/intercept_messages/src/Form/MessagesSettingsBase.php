@@ -98,10 +98,18 @@ class MessagesSettingsBase implements ContainerInjectionInterface {
    *   An array of InterceptMessageTemplate plugin instances.
    */
   protected function getMessageTemplatePlugins() {
-    return array_map(function ($template_definition) {
+    $types = $this->getMessageTemplateTypes();
+    $definitions = $this->messageManager->getDefinitionsByTypes($types);
+    $plugins = array_map(function ($template_definition) {
       $template_id = $template_definition['id'];
       return $this->messageManager->createInstance($template_id);
-    }, $this->messageManager->getDefinitionsByTypes($this->getMessageTemplateTypes()));
+    }, $definitions);
+    foreach ($plugins as $plugin_name => $plugin) {
+      if (strstr($plugin_name, 'sms')) {
+        unset($plugins[$plugin_name]);
+      }
+    }
+    return $plugins;
   }
 
   /**

@@ -1,0 +1,12 @@
+name: Send To Phone
+type: module
+description: Provides various tools for sending bits of information via SMS.
+dependencies:
+  - smsframework:sms
+package: SMS Framework
+core_version_requirement: ^8.9 || ^9
+
+# Information added by Drupal.org packaging script on 2020-04-27
+version: '2.0.0-alpha1'
+project: 'smsframework'
+datestamp: 1587947754

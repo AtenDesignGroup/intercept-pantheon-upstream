@@ -38,7 +38,8 @@ class ManagementController extends ManagementControllerBase {
   public function viewEquipmentReservations(AccountInterface $user, Request $request) {
     return [
       'title' => $this->title('Equipment Reservations'),
-      'equipment_reservation_create' => $this->getButton('Reserve Equipment', 'view.intercept_equipment.page'),
+      'equipment_reservation_create' => $this->getButton('Reserve Equipment', 'view.intercept_equipment.page',
+      [], ['attributes' => ['class' => ['button', 'create-content-button']]]),
       'content' => [
         '#type' => 'view',
         '#name' => 'intercept_equipment_reservations',

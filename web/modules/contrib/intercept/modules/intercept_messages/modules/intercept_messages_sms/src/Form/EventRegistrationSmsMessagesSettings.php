@@ -22,7 +22,7 @@ class EventRegistrationSmsMessagesSettings extends MessagesSettingsBase {
    * {@inheritdoc}
    */
   protected function getMessageTemplateTypes() {
-    return ['event_registration_sms'];
+    return ['event_registration'];
   }
 
   /**

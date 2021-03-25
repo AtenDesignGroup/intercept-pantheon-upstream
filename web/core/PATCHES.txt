@@ -13,3 +13,7 @@ Pinpoint source of JSONAPI Errors during installation
 Source: https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch
 
 
+Fixes JSON:API errors during installation
+Source: https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch
+
+

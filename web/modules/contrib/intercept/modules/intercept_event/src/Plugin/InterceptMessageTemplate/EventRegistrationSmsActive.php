@@ -3,8 +3,8 @@
 namespace Drupal\intercept_event\Plugin\InterceptMessageTemplate;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\intercept_messages\InterceptMessageTemplateInterface;
 use Drupal\intercept_messages_sms\EventRegistrationSmsMessageTemplateBase;
+use Drupal\intercept_messages\InterceptMessageTemplateInterface;
 use Drupal\intercept_messages\StatusSubformTrait;
 
 /**
@@ -13,7 +13,7 @@ use Drupal\intercept_messages\StatusSubformTrait;
  * @InterceptMessageTemplate(
  *  id = "registration_sms_active",
  *  label = @Translation("Registration Active"),
- *  type = "event_registration_sms"
+ *  type = "event_registration"
  * )
  */
 class EventRegistrationSmsActive extends EventRegistrationSmsMessageTemplateBase implements InterceptMessageTemplateInterface {

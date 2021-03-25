@@ -160,13 +160,16 @@
   @media (min-width: 68.75em) {
     .menu--social-media-menu {
       margin: 0; } }
-  .menu--social-media-menu li:first-of-type {
-    width: 25px;
-    margin-left: 1em; }
-  .menu--social-media-menu li:not(:last-of-type):not(:first-of-type) {
-    width: 35px; }
-  .menu--social-media-menu li:last-of-type {
-    margin-left: 0.5rem; }
+  @media (min-width: 62em) {
+    .menu--social-media-menu li {
+      margin-right: .5em; }
+    .menu--social-media-menu li:first-of-type {
+      width: 25px;
+      margin-left: 1em; }
+    .menu--social-media-menu li:not(:last-of-type):not(:first-of-type) {
+      width: 35px; }
+    .menu--social-media-menu li:last-of-type {
+      margin-left: 1rem; } }
   .menu--social-media-menu a {
     font-size: 0.65278rem;
     background-color: #0288d1;
@@ -183,6 +186,18 @@
     @media (min-width: 37.5em) {
       .menu--social-media-menu a {
         padding: 1rem 1.5rem; } }
+  .menu--social-media-menu [href*='facebook.com'] {
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg"); }
+  .menu--social-media-menu [href*='twitter.com'] {
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg"); }
+  .menu--social-media-menu [href*='instagram.com'] {
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg"); }
+  .menu--social-media-menu [href*='youtube.com'] {
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/youtube.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/youtube.svg"); }
   .menu--social-media-menu [href*='facebook.com'],
   .menu--social-media-menu [href*='twitter.com'],
   .menu--social-media-menu [href*='instagram.com'],
@@ -211,21 +226,9 @@
     .menu--social-media-menu [href*='linkedin.com']:hover,
     .menu--social-media-menu [href*='youtube.com']:hover {
       background-color: #4c752c; }
-  .menu--social-media-menu [href*='facebook.com'] {
-    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg");
-            mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg"); }
-  .menu--social-media-menu [href*='twitter.com'] {
-    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg");
-            mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg"); }
-  .menu--social-media-menu [href*='instagram.com'] {
-    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg");
-            mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg"); }
   .menu--social-media-menu [href*='linkedin.com'] {
     background-image: url("/themes/contrib/intercept_base/images/icons/linkedin.svg");
     background-color: transparent;
     background-position: center; }
     .menu--social-media-menu [href*='linkedin.com']:hover {
       background-color: transparent; }
-  .menu--social-media-menu [href*='youtube.com'] {
-    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/youtube.svg");
-            mask: url("/themes/contrib/intercept_base/images/icons/youtube.svg"); }

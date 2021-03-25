@@ -8,6 +8,7 @@
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 
 /**
@@ -52,7 +53,10 @@ function intercept_event_token_info() {
   $info['tokens']['flagging']['event-saved-field-date-time'] = [
     'name' => t('Saved event - Date and time'),
     'description' => t('The date and time of the saved event node.'),
-    // 'type' => 'date',
+  ];
+  $info['tokens']['flagging']['event-saved-url'] = [
+    'name' => t('Saved event - URL'),
+    'description' => t('A plaintext version of the event\'s URL.'),
   ];
   return $info;
 }
@@ -121,7 +125,7 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           break;
         case 'event-saved-field-date-time':
           $dateTime = new DrupalDateTime($event->get('field_date_time')->value, 'UTC');
-          $saved_event_date = date('l, F j, Y \a\t g:i a', $dateTime->getTimestamp());
+          $saved_event_date = date('m/d/y \a\t g:i a', $dateTime->getTimestamp());
           $replacements[$original] = $saved_event_date;
           break;
         case 'event-saved-first-name':
@@ -129,6 +133,10 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           break;
         case 'event-saved-full-name':
           $replacements[$original] = $user && $user->full_name ? $user->full_name : 'User';
+          break;
+        case 'event-saved-url':
+          $url = Url::fromRoute('entity.node.canonical', ['node' => $saved_event_id], ['absolute' => true])->toString();
+          $replacements[$original] = $url;
           break;
       }
     }

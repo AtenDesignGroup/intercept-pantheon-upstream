@@ -155,69 +155,83 @@ class RoomFilters extends PureComponent {
         <Formsy className="">
           <div className="l--subsection">
             <h4 className="section-title--secondary">Filter Rooms By</h4>
-            <KeywordFilter
-              handleChange={this.onInputChange(c.KEYWORD)}
-              value={filters[c.KEYWORD]}
-              name={c.KEYWORD}
-              label={labels[c.KEYWORD]}
-            />
-            <InputDate
-              handleChange={this.onDateChange}
-              defaultValue={null}
-              value={filters[c.DATE] || null}
-              maxDate={maxDate}
-              minDate={minDate}
-              name={c.DATE}
-              clearable
-              validations="isFutureDate"
-              validationError="Date must be in the future"
-              disabled={filters[NOW]}
-            />
-            <SelectResource
-              multiple
-              type={c.TYPE_LOCATION}
-              name={c.TYPE_LOCATION}
-              handleChange={this.onInputChange(c.TYPE_LOCATION)}
-              value={filters[c.TYPE_LOCATION]}
-              label={labels[c.TYPE_LOCATION]}
-              chips
-              shouldFetch={false}
-            />
-            <SelectSingle
-              name={TIME}
-              handleChange={this.onInputChange(TIME)}
-              value={filters[TIME]}
-              label={labels[TIME]}
-              disabled={filters[NOW] || !filters[c.DATE]}
-              options={timeOptions}
-              clearable
-            />
-            <SelectSingle
-              name={DURATION}
-              handleChange={this.onInputChange(DURATION)}
-              value={filters[DURATION]}
-              label={labels[DURATION]}
-              options={durationOptions}
-              disabled={!filters[NOW] && !filters[c.DATE]}
-              clearable
-            />
-            <SelectResource
-              multiple
-              type={c.TYPE_ROOM_TYPE}
-              name={c.TYPE_ROOM_TYPE}
-              handleChange={this.onInputChange(c.TYPE_ROOM_TYPE)}
-              value={filters[c.TYPE_ROOM_TYPE]}
-              label={labels[c.TYPE_ROOM_TYPE]}
-              chips
-            />
-            <InputNumber
-              label={labels[ATTENDEES]}
-              value={filters[ATTENDEES]}
-              onChange={this.onAttendeesChange}
-              name={'attendees'}
-              min={0}
-              int
-            />
+            <div className="form-item">
+              <KeywordFilter
+                handleChange={this.onInputChange(c.KEYWORD)}
+                value={filters[c.KEYWORD]}
+                name={c.KEYWORD}
+                label={labels[c.KEYWORD]}
+              />
+            </div>
+            <div className="form-item">
+              <InputDate
+                handleChange={this.onDateChange}
+                defaultValue={null}
+                value={filters[c.DATE] || null}
+                maxDate={maxDate}
+                minDate={minDate}
+                name={c.DATE}
+                clearable
+                validations="isFutureDate"
+                validationError="Date must be in the future"
+                disabled={filters[NOW]}
+              />
+            </div>
+            <div className="form-item">
+              <SelectResource
+                multiple
+                type={c.TYPE_LOCATION}
+                name={c.TYPE_LOCATION}
+                handleChange={this.onInputChange(c.TYPE_LOCATION)}
+                value={filters[c.TYPE_LOCATION]}
+                label={labels[c.TYPE_LOCATION]}
+                chips
+                shouldFetch={false}
+              />
+            </div>
+            <div className="form-item">
+              <SelectSingle
+                name={TIME}
+                handleChange={this.onInputChange(TIME)}
+                value={filters[TIME]}
+                label={labels[TIME]}
+                disabled={filters[NOW] || !filters[c.DATE]}
+                options={timeOptions}
+                clearable
+              />
+            </div>
+            <div className="form-item">
+              <SelectSingle
+                name={DURATION}
+                handleChange={this.onInputChange(DURATION)}
+                value={filters[DURATION]}
+                label={labels[DURATION]}
+                options={durationOptions}
+                disabled={!filters[NOW] && !filters[c.DATE]}
+                clearable
+              />
+            </div>
+            <div className="form-item">
+              <SelectResource
+                multiple
+                type={c.TYPE_ROOM_TYPE}
+                name={c.TYPE_ROOM_TYPE}
+                handleChange={this.onInputChange(c.TYPE_ROOM_TYPE)}
+                value={filters[c.TYPE_ROOM_TYPE]}
+                label={labels[c.TYPE_ROOM_TYPE]}
+                chips
+              />
+            </div>
+            <div className="form-item">
+              <InputNumber
+                label={labels[ATTENDEES]}
+                value={filters[ATTENDEES]}
+                onChange={this.onAttendeesChange}
+                name={'attendees'}
+                min={0}
+                int
+              />
+            </div>
           </div>
           <div className="l--subsection">
             <h4 className="section-title--secondary">

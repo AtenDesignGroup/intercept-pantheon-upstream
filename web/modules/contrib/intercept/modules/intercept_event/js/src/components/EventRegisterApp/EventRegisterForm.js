@@ -184,7 +184,7 @@ class EventRegisterForm extends React.Component {
       case 0:
         return 'This event is full.';
       case 1:
-        return `There is ${availableCapacity} of ${totalCapacity} seats available.`;
+        return `There is ${availableCapacity} of ${totalCapacity} seat available.`;
       default:
         return `There are ${availableCapacity} of ${totalCapacity} seats available.`;
     }
@@ -370,7 +370,7 @@ class EventRegisterForm extends React.Component {
           <small>
             Telephone: {drupalSettings.intercept.user.telephone}<br />
             Email: {drupalSettings.intercept.user.email}<br />
-            <em>Need to update your info? After finishing your registration visit My Account &gt; Settings</em>
+            <em>Need to update your info? After finishing your registration visit My Account &gt; Profile.</em>
           </small>
         </div>
       );
@@ -410,7 +410,7 @@ class EventRegisterForm extends React.Component {
                     validationError="Attendees must be a positive number"
                   />
                 ))}
-                <p>Total {total}</p>
+                <p>Total: {total}</p>
               </div>
 
               <div className="form__actions">

@@ -2,13 +2,15 @@
 
 namespace Drupal\intercept_event\Controller;
 
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Url;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\intercept_event\EventEvaluationManager;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\intercept_event\SuggestedEventsProvider;
-use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -17,11 +19,25 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EventsController extends ControllerBase {
 
   /**
+   * Drupal\Core\Session\AccountProxyInterface definition.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $currentUser;
+
+  /**
    * The entity field manager service.
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
   protected $entityFieldManager;
+
+  /**
+   * Drupal\Core\Entity\EntityTypeManagerInterface definition.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * The Intercept event evaluation manager.
@@ -40,17 +56,23 @@ class EventsController extends ControllerBase {
   /**
    * Constructs an EventsController object.
    *
-   * @param \Drupal\intercept_event\SuggestedEventsProvider $suggested_events_provider
-   *   The Intercept suggested events provider.
-   * @param \Drupal\intercept_event\EventEvaluationManager $evaluation_manager
-   *   The Intercept event evaluation manager.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user interface.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   * @param \Drupal\intercept_event\EventEvaluationManager $evaluation_manager
+   *   The Intercept event evaluation manager.
+   * @param \Drupal\intercept_event\SuggestedEventsProvider $suggested_events_provider
+   *   The Intercept suggested events provider.
    */
-  public function __construct(SuggestedEventsProvider $suggested_events_provider, EventEvaluationManager $evaluation_manager, EntityFieldManagerInterface $entity_field_manager) {
-    $this->suggestedEventsProvider = $suggested_events_provider;
-    $this->evaluationManager = $evaluation_manager;
+  public function __construct(AccountProxyInterface $currentUser, EntityFieldManagerInterface $entity_field_manager, EntityTypeManagerInterface $entityTypeManager, EventEvaluationManager $evaluation_manager, SuggestedEventsProvider $suggested_events_provider) {
+    $this->currentUser = $currentUser;
     $this->entityFieldManager = $entity_field_manager;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->evaluationManager = $evaluation_manager;
+    $this->suggestedEventsProvider = $suggested_events_provider;
   }
 
   /**
@@ -58,9 +80,11 @@ class EventsController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('intercept_event.suggested_events_provider'),
+      $container->get('current_user'),
+      $container->get('entity_field.manager'),
+      $container->get('entity_type.manager'),
       $container->get('intercept_event.evaluation_manager'),
-      $container->get('entity_field.manager')
+      $container->get('intercept_event.suggested_events_provider'),
     );
   }
 
@@ -112,9 +136,21 @@ class EventsController extends ControllerBase {
     if ($node->hasField('field_must_register') && !$node->field_must_register->value) {
       return AccessResult::forbidden();
     }
+
+    // See if the current user is registered for this event.
+    $query = $this->entityTypeManager->getStorage('event_registration')->getQuery()
+      ->condition('field_user', $this->currentUser->Id())
+      ->condition('status', 'active')
+      ->condition('field_event', $node->Id());
+    $results = $query->execute();
+
+    $accessResult = !empty($results) ? AccessResult::allowed() : AccessResult::forbidden();
+
     switch ($node->registration->status) {
       case 'expired':
       case 'closed':
+        return $accessResult;
+
       case 'full':
       case 'open_pending':
         return AccessResult::forbidden();

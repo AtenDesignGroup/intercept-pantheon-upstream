@@ -86,13 +86,13 @@
       -webkit-box-direction: normal;
           -ms-flex-direction: column;
               flex-direction: column;
-      max-height: 7.1875rem; } }
+      max-height: 9.375rem; } }
   @media (min-width: 62em) {
     .menu--account li {
       min-width: 50%; } }
   @media (min-width: 75em) {
     .menu--account li {
-      min-width: 25%;
+      min-width: 33.33333%;
       padding-right: 1.25rem; } }
   .menu--account a {
     color: #fff;

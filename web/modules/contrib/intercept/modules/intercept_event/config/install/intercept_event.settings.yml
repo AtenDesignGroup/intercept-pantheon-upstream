@@ -106,12 +106,15 @@ email:
     user:
       user: user
     user_email_other: ''
-    schedule:
-      interval: ''
 form_settings:
   register: default
   scan: default
 sms:
+  attendance_sms_created:
+    enabled: 1
+    body: 'Thanks for attending [event_attendance:field_event:entity:title]. Please rate this event: [site:url]account/events?field_date_time_value=1&attended=1'
+    schedule:
+      interval: P0M
   registration_sms_active:
     enabled: 1
     body: 'You are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_location], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a].'
@@ -120,3 +123,23 @@ sms:
       canceled: canceled
     status_new:
       active: active
+  registration_sms_reminder:
+    enabled: 1
+    body: 'Just sending a reminder that you are registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_location], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a].'
+    schedule:
+      interval: P3D
+  registration_sms_unwaitlisted:
+    enabled: 1
+    body: 'You are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_location], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a].'
+    status_original:
+      waitlist: waitlist
+    status_new:
+      active: active
+  saved_sms_reminder:
+    enabled: 1
+    body: 'Just sending a reminder that your saved event [flagging:event-saved-title] is coming up on [flagging:event-saved-field-date-time].'
+    schedule:
+      interval: P3D
+  saved_sms_registration_active:
+    enabled: 1
+    body: 'Registration is open for your saved event [flagging:event-saved-title] [flagging:event-saved-field-date-time]. [flagging:event-saved-url]'

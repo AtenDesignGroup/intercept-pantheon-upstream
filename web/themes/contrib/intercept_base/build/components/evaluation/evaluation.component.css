@@ -63,7 +63,7 @@
     width: 54.54545%; }
   .evaluation .evaluation__radio-icon[class*="checked"] {
     background-color: #747481; }
-  .evaluation .evaluation__radio-icon:first-child {
+  .evaluation .evaluation__radio-icon:not(:first-child) {
     margin-right: 0.625rem; }
 
 @media (min-width: 48em) {

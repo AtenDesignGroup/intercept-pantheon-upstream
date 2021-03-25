@@ -119,7 +119,7 @@ class RegisterEventStep2 extends React.PureComponent {
       case 0:
         return 'This event is full.';
       case 1:
-        return `There is ${availableCapacity} of ${totalCapacity} seats available.`;
+        return `There is ${availableCapacity} of ${totalCapacity} seat available.`;
       default:
         return `There are ${availableCapacity} of ${totalCapacity} seats available.`;
     }
@@ -312,7 +312,7 @@ class RegisterEventStep2 extends React.PureComponent {
                 validationError="Attendees must be a positive number"
               />
             ))}
-            <p>Total {total}</p>
+            <p>Total: {total}</p>
           </div>
 
           <div className="form__actions">

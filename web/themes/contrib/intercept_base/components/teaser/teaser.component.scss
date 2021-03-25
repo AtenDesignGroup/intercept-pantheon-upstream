@@ -190,7 +190,8 @@
     width: 100%;
   }
 
-  .teaser--with-image & {
+  .teaser--with-image &,
+  .teaser--has-image & {
     background-image: linear-gradient(to right, rgba($black, .75), rgba($black, 0) 50%);
   }
 }
@@ -335,8 +336,10 @@ a.teaser__title {
 
 .teaser--has-image {
   .teaser__image {
+    aspect-ratio: auto 500 / 500;
     img {
-      min-height: 6em;
+      object-fit: cover;
+      min-height: 100%;
     }
   }
 }

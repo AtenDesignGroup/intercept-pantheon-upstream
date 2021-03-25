@@ -380,6 +380,9 @@ class ReservationManager implements ReservationManagerInterface {
     foreach ($reservations as $reservation) {
       /** @var \Drupal\intercept_core\Entity\ReservationInterface $reservation */
       $message = $this->t('Booked');
+      if ($reservation->hasField('field_event') && !empty($reservation->field_event->getValue())) {
+        $message = $reservation->field_event->entity->title->value;
+      }
       if ($reservation->hasField('field_group_name') && $reservation->field_group_name->value && $this->currentUser->hasPermission('update any room_reservation')) {
         $message = $reservation->field_group_name->value;
       }

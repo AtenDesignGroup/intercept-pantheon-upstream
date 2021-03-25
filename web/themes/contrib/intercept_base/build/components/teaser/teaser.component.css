@@ -169,7 +169,8 @@
       left: 0;
       height: 100%;
       width: 100%; } }
-  .teaser--with-image .teaser__date-wrapper {
+  .teaser--with-image .teaser__date-wrapper,
+  .teaser--has-image .teaser__date-wrapper {
     background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0.75)), color-stop(50%, transparent));
     background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.75), transparent 50%);
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0.75), transparent 50%); }
@@ -366,8 +367,12 @@ a.teaser__title {
 .teaser--no-image .teaser__main {
   width: 100%; }
 
-.teaser--has-image .teaser__image img {
-  min-height: 6em; }
+.teaser--has-image .teaser__image {
+  aspect-ratio: auto 500 / 500; }
+  .teaser--has-image .teaser__image img {
+    -o-object-fit: cover;
+       object-fit: cover;
+    min-height: 100%; }
 
 .teaser--canceled {
   opacity: .6; }

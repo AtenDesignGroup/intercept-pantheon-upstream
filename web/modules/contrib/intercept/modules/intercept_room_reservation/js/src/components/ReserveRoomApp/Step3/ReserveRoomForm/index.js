@@ -331,7 +331,7 @@ class ReserveRoomForm extends PureComponent {
             <small>
               Telephone: {drupalSettings.intercept.user.telephone}<br />
               Email: {drupalSettings.intercept.user.email}<br />
-              <em>Need to update your info? After finishing your reservation visit My Account &gt; Settings</em>
+              <em>Need to update your info? After finishing your reservation visit My Account &gt; Profile.</em>
             </small>
           </div>
         );
@@ -349,58 +349,66 @@ class ReserveRoomForm extends PureComponent {
               <div className="l__primary">
                 <div className="l--subsection">
                   <h4 className="section-title section-title--secondary">Reservation Details</h4>
-                  <InputNumber
-                    label="Number of Attendees"
-                    value={values.attendees}
-                    onChange={this.onValueChange('attendees')}
-                    min={roomCapacity.min}
-                    // Disable max because manually input of an out of range value has
-                    // unexpected side effects with validation since the underlying input sets
-                    // an out of range value to null.
-                    // max={roomCapacity.max}
-                    name={'attendees'}
-                    int
-                    required
-                    validations={{
-                      isPositive: true,
-                      isLesserOrEqualTo: roomCapacity.max,
-                      isGreaterOrEqualTo: roomCapacity.min,
-                    }}
-                    validationErrors={{
-                      isPositive: 'Attendees must be a positive number',
-                      isLesserOrEqualTo: `The maximum capacity of this room is ${roomCapacity.max}`,
-                      isGreaterOrEqualTo: `The minimum capacity of this room is ${
-                        roomCapacity.min
-                      }`,
-                    }}
-                    helperText={
-                      roomCapacity.max &&
-                      `This room holds ${roomCapacity.min} to ${roomCapacity.max} people`
-                    }
-                  />
-                  <InputText
-                    label="Group Name"
-                    onChange={this.onValueChange('groupName')}
-                    value={values.groupName}
-                    name="groupName"
-                    helperText={'Help others find you by name.'}
-                    required={!utils.userIsStaff()}
-                  />
-                  <SelectResource
-                    type={c.TYPE_MEETING_PURPOSE}
-                    name={c.TYPE_MEETING_PURPOSE}
-                    handleChange={this.onInputChange(c.TYPE_MEETING_PURPOSE)}
-                    value={values.meetingPurpose}
-                    label={'Purpose for using this room'}
-                    required
-                  />
-                  <InputText
-                    label="Description"
-                    onChange={this.onValueChange('meetingDetails')}
-                    value={values.meetingDetails}
-                    name="meetingDetails"
-                    required={showMeetingPurposeExplanation}
-                  />
+                  <div className="form-item">
+                    <InputNumber
+                      label="Number of Attendees"
+                      value={values.attendees}
+                      onChange={this.onValueChange('attendees')}
+                      min={roomCapacity.min}
+                      // Disable max because manually input of an out of range value has
+                      // unexpected side effects with validation since the underlying input sets
+                      // an out of range value to null.
+                      // max={roomCapacity.max}
+                      name={'attendees'}
+                      int
+                      required
+                      validations={{
+                        isPositive: true,
+                        isLesserOrEqualTo: roomCapacity.max,
+                        isGreaterOrEqualTo: roomCapacity.min,
+                      }}
+                      validationErrors={{
+                        isPositive: 'Attendees must be a positive number',
+                        isLesserOrEqualTo: `The maximum capacity of this room is ${roomCapacity.max}`,
+                        isGreaterOrEqualTo: `The minimum capacity of this room is ${
+                          roomCapacity.min
+                        }`,
+                      }}
+                      helperText={
+                        roomCapacity.max &&
+                        `This room holds ${roomCapacity.min} to ${roomCapacity.max} people`
+                      }
+                    />
+                  </div>
+                  <div className="form-item">
+                    <InputText
+                      label="Group Name"
+                      onChange={this.onValueChange('groupName')}
+                      value={values.groupName}
+                      name="groupName"
+                      helperText={'Help others find you by name.'}
+                      required={!utils.userIsStaff()}
+                    />
+                  </div>
+                  <div className="form-item">
+                    <SelectResource
+                      type={c.TYPE_MEETING_PURPOSE}
+                      name={c.TYPE_MEETING_PURPOSE}
+                      handleChange={this.onInputChange(c.TYPE_MEETING_PURPOSE)}
+                      value={values.meetingPurpose}
+                      label={'Purpose for using this room'}
+                      required
+                    />
+                  </div>
+                  <div className="form-item">
+                    <InputText
+                      label="Description"
+                      onChange={this.onValueChange('meetingDetails')}
+                      value={values.meetingDetails}
+                      name="meetingDetails"
+                      required={showMeetingPurposeExplanation}
+                    />
+                  </div>
                   {contact}
                 </div>
               </div>
@@ -424,14 +432,16 @@ class ReserveRoomForm extends PureComponent {
                     required
                     options={FIELD_REFRESHMENTS_OPTIONS}
                   />
-                  <InputText
-                    label="Please describe your light refreshments."
-                    value={values.refreshmentsDesc}
-                    onChange={this.onValueChange('refreshmentsDesc')}
-                    name="refreshmentDesc"
-                    required={values.refreshments === '1'}
-                    disabled={values.refreshments !== '1'}
-                  />
+                  <div className="form-item">
+                    <InputText
+                      label="Please describe your light refreshments."
+                      value={values.refreshmentsDesc}
+                      onChange={this.onValueChange('refreshmentsDesc')}
+                      name="refreshmentDesc"
+                      required={values.refreshments === '1'}
+                      disabled={values.refreshments !== '1'}
+                    />
+                    </div>
                 </div>
                 <div className="l--subsection">
                   <h4 className="section-title section-title--secondary">Publicize</h4>

@@ -40,7 +40,8 @@ class ManagementController extends ManagementControllerBase {
   public function viewLocationClosings(AccountInterface $user, Request $request) {
     return [
       'title' => $this->title('Manage Closings'),
-      'location_create' => $this->getButton('Create closing', 'entity.intercept_location_closing.add_form'),
+      'location_create' => $this->getButton('Create closing', 'entity.intercept_location_closing.add_form',
+      [], ['attributes' => ['class' => ['button', 'create-content-button']]]),
       'sections' => [
         'list' => [
           '#content' => $this->getList(InterceptLocationClosingListBuilder::class, 'intercept_location_closing'),

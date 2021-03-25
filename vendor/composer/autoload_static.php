@@ -46,10 +46,6 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         array (
             'zaporylie\\ComposerDrupalOptimizations\\' => 38,
         ),
-        'r' => 
-        array (
-            'rvtraveller\\QuicksilverComposerInstaller\\' => 41,
-        ),
         'c' => 
         array (
             'cweagans\\Composer\\' => 18,
@@ -169,10 +165,6 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'zaporylie\\ComposerDrupalOptimizations\\' => 
         array (
             0 => __DIR__ . '/..' . '/zaporylie/composer-drupal-optimizations/src',
-        ),
-        'rvtraveller\\QuicksilverComposerInstaller\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/rvtraveller/qs-composer-installer/src',
         ),
         'cweagans\\Composer\\' => 
         array (
@@ -512,6 +504,8 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
     public static $classMap = array (
         'ArithmeticError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
         'AssertionError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/AssertionError.php',
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Console_Table' => __DIR__ . '/..' . '/pear/console_table/Table.php',
         'DivisionByZeroError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/DivisionByZeroError.php',
         'Drupal' => __DIR__ . '/../..' . '/web/core/lib/Drupal.php',
@@ -529,6 +523,7 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'SessionUpdateTimestampHandlerInterface' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/SessionUpdateTimestampHandlerInterface.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'TypeError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/TypeError.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
     );
 

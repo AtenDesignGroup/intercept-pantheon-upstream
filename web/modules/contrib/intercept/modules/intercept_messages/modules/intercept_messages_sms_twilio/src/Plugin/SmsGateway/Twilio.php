@@ -108,55 +108,85 @@ class Twilio extends SmsGatewayPluginBase {
     // Testing API: https://www.twilio.com/docs/api/rest/test-credentials
 
     $recipient = $sms_message->getRecipients()[0];
-    $result = new SmsMessageResult();
-
-    $account_sid = $this->configuration['account_sid'];
-    $auth_token = $this->configuration['auth_token'];
-
-    $client = new Client($account_sid, $auth_token);
-    $options = [
-      'from' => $this->configuration['from'],
-      'body' => $sms_message->getMessage(),
-    ];
-
-    $report = new SmsDeliveryReport();
-    $report->setRecipient($recipient);
-    try {
-      $message = $client->messages->create($recipient, $options);
-      $report->setStatus(SmsMessageReportStatus::QUEUED);
-      $report->setMessageId($message->uri);
+    $previously_scheduled = $sms_message->getOption('recipient');
+    if (method_exists($sms_message, 'getSendTime')) {
+      $time = $sms_message->getSendTime();
     }
-    catch (RestException $e) {
-      $code = $e->getCode();
-      $message = $e->getMessage();
-
-      if (in_array($code, [21211, 21612, 21610, 21614])) {
-        // 21211: Recipient is invalid. (Test recipient: +15005550001)
-        // 21612: Cannot route to this recipient. (Test recipient: +15005550002)
-        // 21610: Recipient is blacklisted. (Test recipient: +15005550004)
-        // 21614: Recipient is incapable of receiving SMS.
-        //       (Test recipient: +15005550009)
-        $report->setStatus(SmsMessageReportStatus::INVALID_RECIPIENT);
-        $report->setStatusMessage($message);
-      }
-      elseif ($code == 21408) {
-        // 21408: Account doesn't have the international permission.
-        //       (Test recipient: +15005550003)
-        $result->setError(SmsMessageResultStatus::ACCOUNT_ERROR);
-        $report->setStatus(SmsMessageReportStatus::ERROR);
-        $report->setStatusMessage($message);
-      }
-      else {
-        $report->setStatus(SmsMessageReportStatus::ERROR);
-        $report->setStatusMessage($message);
-      }
+    else {
+      $time = '';
     }
 
-    if ($report->getStatus()) {
-      $result->addReport($report);
+    // Handle scheduled messages.
+    if (!empty($time) && empty($previously_scheduled)) {
+      // Insert into the queue table for SMS Framework module.
+      $options = ['recipient' => $recipient];
+      $result = \Drupal::service('database')
+        ->insert('sms')
+        ->fields([
+          'uuid' => $sms_message->getUuid(),
+          'gateway' => $this->pluginId,
+          'direction' => $sms_message->getDirection(),
+          'sender_phone_number' => $this->configuration['from'],
+          'options' => serialize($options),
+          'queued' => 0,
+          'send_on' => $time,
+          'message' => $sms_message->getMessage()
+        ])
+        ->execute();
+      return null;
     }
+     // Immediate messages or scheduled ones that are now ready to send
+    else {
+      $result = new SmsMessageResult();
 
-    return $result;
+      $account_sid = $this->configuration['account_sid'];
+      $auth_token = $this->configuration['auth_token'];
+
+      $client = new Client($account_sid, $auth_token);
+      $options = [
+        'from' => $this->configuration['from'],
+        'body' => $sms_message->getMessage(),
+      ];
+
+      $report = new SmsDeliveryReport();
+      $report->setRecipient($recipient);
+      try {
+        $message = $client->messages->create($recipient, $options);
+        $report->setStatus(SmsMessageReportStatus::QUEUED);
+        $report->setMessageId($message->uri);
+      }
+      catch (RestException $e) {
+        $code = $e->getCode();
+        $message = $e->getMessage();
+
+        if (in_array($code, [21211, 21612, 21610, 21614])) {
+          // 21211: Recipient is invalid. (Test recipient: +15005550001)
+          // 21612: Cannot route to this recipient. (Test recipient: +15005550002)
+          // 21610: Recipient is blacklisted. (Test recipient: +15005550004)
+          // 21614: Recipient is incapable of receiving SMS.
+          //       (Test recipient: +15005550009)
+          $report->setStatus(SmsMessageReportStatus::INVALID_RECIPIENT);
+          $report->setStatusMessage($message);
+        }
+        elseif ($code == 21408) {
+          // 21408: Account doesn't have the international permission.
+          //       (Test recipient: +15005550003)
+          $result->setError(SmsMessageResultStatus::ACCOUNT_ERROR);
+          $report->setStatus(SmsMessageReportStatus::ERROR);
+          $report->setStatusMessage($message);
+        }
+        else {
+          $report->setStatus(SmsMessageReportStatus::ERROR);
+          $report->setStatusMessage($message);
+        }
+      }
+
+      if ($report->getStatus()) {
+        $result->addReport($report);
+      }
+
+      return $result;
+    }
   }
 
   /**

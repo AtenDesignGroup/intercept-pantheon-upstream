@@ -31,9 +31,12 @@ class ManagementController extends ManagementControllerBase {
    */
   private function getCreateEventButton() {
     $route = "intercept_event.management.event_templates";
-    return $this->getButton('Create an Event', $route, [
+    return $this->getButton('Create an Event', 
+    $route, [
       'user' => $this->currentUser()->id(),
-    ]);
+    ],
+    ['attributes' => ['class' => ['button', 'create-content-button']]]
+  );
   }
 
   /**
@@ -53,7 +56,7 @@ class ManagementController extends ManagementControllerBase {
       'download_link' => $this->getButton('Download CSV',
         'view.intercept_event_attendance.rest_export',
         ['_format' => 'csv'] + $request->query->all(),
-        ['attributes' => ['class' => ['button', 'button--arrow-green']]]
+        ['attributes' => ['class' => ['button', 'create-content-button']]]
       ),
       'view' => [
         '#type' => 'view',
@@ -141,7 +144,8 @@ class ManagementController extends ManagementControllerBase {
                 [
                   'node_type' => 'event',
                   'template' => 1,
-                ]
+                ],
+                ['attributes' => ['class' => ['button', 'create-content-button']]]
               ),
             ],
             'event_series' => [

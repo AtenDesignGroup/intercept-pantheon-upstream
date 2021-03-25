@@ -1,7 +1,0 @@
-default:
-  label: Default
-  category: STARTER_KIT
-  template: templates/layouts/default
-  regions:
-    content:
-      label: Content

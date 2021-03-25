@@ -301,67 +301,74 @@ class ReserveRoomDateForm extends PureComponent {
         >
           <div className="l--subsection">
             <h4 className="section-title--secondary">Choose a Time</h4>
-            <InputDate
-              handleChange={this.onDateChange}
-              defaultValue={null}
-              value={values[c.DATE]}
-              name={c.DATE}
-              required
-              clearable={false}
-              validations="isFutureDate,isLessThanMaxDate"
-              validationErrors={{
-                isFutureDate: "Date must be in the future",
-                isLessThanMaxDate: maxDateDescription
-              }}
-              maxDate={maxDate}
-              minDate={minDate}
-              helperText={maxDateDescription}
-            />
-            {utils.userIsStaff() && (<InputCheckbox
-              label="Show Closed Hours"
-              checked={values[SHOW_CLOSED]}
-              onChange={() => this.updateValue(SHOW_CLOSED, !values[SHOW_CLOSED])}
-              value={SHOW_CLOSED}
-              name={SHOW_CLOSED}
-            />)}
-            <SelectTime
-              clearable
-              label="Start Time"
-              value={values.start}
-              onChange={this.onValueChange('start')}
-              name="start"
-              required
-              validations="isFutureTime"
-              validationError="Must be in the future"
-              min={min}
-              max={max}
-              step={step}
-              disabled={utils.userIsStaff() ? false : isClosed}
-              disabledSpans={disabledTimespans}
-              disabledExclude={'trailing'}
-            />
-            <SelectTime
-              clearable
-              label="End Time"
-              value={values.end}
-              onChange={this.onValueChange('end')}
-              name="end"
-              required
-              validations={{
-                isFutureTime: true,
-                isAfterStart: true,
-              }}
-              validationErrors={{
-                isFutureTime: 'Must be in the future',
-                isAfterStart: 'Must be after start time',
-              }}
-              min={min}
-              max={max}
-              step={step}
-              disabled={utils.userIsStaff() ? false : isClosed}
-              disabledSpans={disabledTimespans}
-              disabledExclude={'leading'}
-            />
+            
+            <div className="form-item">
+              <InputDate
+                handleChange={this.onDateChange}
+                defaultValue={null}
+                value={values[c.DATE]}
+                name={c.DATE}
+                required
+                clearable={false}
+                validations="isFutureDate,isLessThanMaxDate"
+                validationErrors={{
+                  isFutureDate: "Date must be in the future",
+                  isLessThanMaxDate: maxDateDescription
+                }}
+                maxDate={maxDate}
+                minDate={minDate}
+                helperText={maxDateDescription}
+              />
+              {utils.userIsStaff() && (<InputCheckbox
+                label="Show Closed Hours"
+                checked={values[SHOW_CLOSED]}
+                onChange={() => this.updateValue(SHOW_CLOSED, !values[SHOW_CLOSED])}
+                value={SHOW_CLOSED}
+                name={SHOW_CLOSED}
+              />)}
+            </div>
+            <div className="form-item">
+              <SelectTime
+                clearable
+                label="Start Time"
+                value={values.start}
+                onChange={this.onValueChange('start')}
+                name="start"
+                required
+                validations="isFutureTime"
+                validationError="Must be in the future"
+                min={min}
+                max={max}
+                step={step}
+                disabled={utils.userIsStaff() ? false : isClosed}
+                disabledSpans={disabledTimespans}
+                disabledExclude={'trailing'}
+              />
+            </div>
+            <div className="form-item">
+              <SelectTime
+                clearable
+                label="End Time"
+                value={values.end}
+                onChange={this.onValueChange('end')}
+                name="end"
+                required
+                validations={{
+                  isFutureTime: true,
+                  isAfterStart: true,
+                }}
+                validationErrors={{
+                  isFutureTime: 'Must be in the future',
+                  isAfterStart: 'Must be after start time',
+                }}
+                min={min}
+                max={max}
+                step={step}
+                disabled={utils.userIsStaff() ? false : isClosed}
+                disabledSpans={disabledTimespans}
+                disabledExclude={'leading'}
+              />
+            </div>
           </div>
 
           <div className="form__actions">

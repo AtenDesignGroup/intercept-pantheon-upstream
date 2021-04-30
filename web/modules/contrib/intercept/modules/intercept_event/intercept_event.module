@@ -523,6 +523,13 @@ function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterfac
       $end_date = new DateTime('+3 months');
       $form['field_date_time_value']['max']['#default_value'] = date_format($end_date, 'm/d/Y');
     }
+
+    $form['field_location_abbreviation_value'] = [
+      '#type' => 'textfield',
+      '#title' => t('Location'),
+      '#autocomplete_route_name' => 'intercept_event.location.autocomplete',
+      '#autocomplete_route_parameters' => array('field_name' => 'location', 'count' => 10, 'entity_type_id' => 'node'),
+    ];
   }
   elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'page') {
     $query = \Drupal::request()->query->all();

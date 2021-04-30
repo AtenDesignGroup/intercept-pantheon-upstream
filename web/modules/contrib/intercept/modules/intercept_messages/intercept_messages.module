@@ -84,7 +84,7 @@ function intercept_messages_entity_insert(EntityInterface $entity) {
   }
   $templates = \Drupal::service('plugin.manager.intercept_message_template')->getDefinitionsByType($entity_type_id);
   $event_config = \Drupal::config('intercept_event.settings');
-  if ($event_config && is_array($event_config->get('message'))) {
+  if ($event_config && is_array($event_config->get('email'))) {
     $filtered_messages = array_filter($event_config->get('email'), function ($message_id) use ($templates) {
       return in_array($message_id, array_column($templates, 'id'));
     }, ARRAY_FILTER_USE_KEY);
@@ -163,7 +163,22 @@ function intercept_messages_schedule_message($template_id, $entity_type_id, $ent
  * Implements hook_entity_update().
  */
 function intercept_messages_entity_update(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() !== 'node' || $entity->bundle() !== 'event') {
+  // Remove registration reminders when registration is canceled.
+  if ($entity->getEntityTypeId() == 'event_registration' && $entity->status->value == 'canceled') {
+    $messages = \Drupal::service('database')
+      ->select('intercept_messages_scheduled_message', 'm')
+      ->fields('m', [
+        'message_id',
+      ])
+      ->condition('entity_id', $entity->id())
+      ->execute()
+      ->fetchAll();
+    foreach ($messages as $message) {
+      intercept_messages_delete_message($message->message_id);
+    }
+    return;
+  }
+  elseif ($entity->getEntityTypeId() !== 'node' || $entity->bundle() !== 'event') {
     return;
   }
   $dateTime = new DrupalDateTime($entity->get('field_date_time')->value, 'UTC');
@@ -222,7 +237,6 @@ function intercept_messages_entity_update(EntityInterface $entity) {
       }
     }
   }
-  // @TODO: Remove reminders for canceled event_registration
 }
 
 /**

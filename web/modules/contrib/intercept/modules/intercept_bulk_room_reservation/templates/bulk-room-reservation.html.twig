@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a bulk room reservation entity.
+ *
+ * This template is used when viewing a registered bulk room reservation's page,
+ * e.g., /admin/content/bulk-room-reservation)/123. 123 being the bulk room reservation's ID.
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.title'.
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_bulk_room_reservation()
+ */
+#}
+{{ attach_library('richland/bulk-room-reservations') }}
+<article{{attributes.addClass('l--offset','bulk-room-reservation-detail')}}>
+	{% if content %}
+		{{- content -}}
+	{% endif %}
+</article>

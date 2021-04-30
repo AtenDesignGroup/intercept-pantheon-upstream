@@ -1,0 +1,390 @@
+<?php
+
+/**
+ * @file
+ * Provides a bulk room reservation entity type.
+ */
+
+use Drupal\Core\Render\Element;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function intercept_bulk_room_reservation_theme() {
+  return [
+    'bulk_room_reservation' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for bulk room reservation templates.
+ *
+ * Default template: bulk-room-reservation.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the bulk room reservation information and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function intercept_bulk_room_reservation_preprocess_bulk_room_reservation(array &$variables) {
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Builds array of room options for a location and event series.
+ *
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   The FormStateInterface from BulkReservationForm.
+ *
+ * @return array
+ *   Array of rooms at the location with attributes for unavailable rooms.
+ */
+function intercept_bulk_room_reservation_get_rooms_for_location(FormStateInterface $form_state) {
+  $results = [];
+  $room_options = [];
+  $room_attributes = [];
+  $location = $form_state->getUserInput()['location'];
+  $values = $form_state->getValues();
+  $format = 'Y-m-d H:i:s';
+
+  // First parse the autocomplete string to obtain the location nid.
+  preg_match('#\((.*?)\)#', $location, $match);
+  if (array_key_exists(1, $match)) {
+    $nid = $match[1];
+    $query = \Drupal::entityQuery('node')
+      ->condition('status', 1)
+      ->condition('type', 'room')
+      ->condition('field_location', $nid);
+    $room_nids = $query->execute();
+
+    // Need to return an array of Room labels keyed by Room node ids, and
+    // another array similarly keyed with availability attributes.
+    $rooms = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($room_nids);
+
+    $daysToCheck = round((strtotime($values['end_date']) - strtotime($values['start_date'])) / (60 * 60 * 24));
+    $startDate = strtotime($values['start_date']);
+
+    // Create an array of dates to check for availability.
+    $dates = [];
+
+    switch ($values['recurrence']) {
+      case 'none':
+        $dates[] = date('Y-m-d', $values['start_date']);
+        break;
+
+      case 'daily':
+        $daysToCheck = round((strtotime($values['end_date']) - strtotime($values['start_date'])) / (60 * 60 * 24));
+        for ($day = 0; $day <= $daysToCheck; $day++) {
+          $increment = (string) $day . ' days';
+          $dates[] = date('Y-m-d', strtotime($values['start_date']. $increment));
+        }
+        break;
+
+      case 'weekly':
+        // On which days of the week should the reservation recur? Using
+        // is_string here because Sunday is day zero which array_filter would
+        // otherwise eliminate.
+        $days = array_filter($values['weekly_pattern'], 'is_string');
+        $daysToCheck = round((strtotime($values['end_date']) - strtotime($values['start_date'])) / (60 * 60 * 24));
+
+        for ($day = 0; $day <= $daysToCheck; $day++) {
+          $increment = (string) $day . ' days';
+          $dateToCheck = date('Y-m-d', strtotime($values['start_date'] . $increment));
+          $dayOfWeek = _getDayOfWeek($dateToCheck);
+          if (in_array($dayOfWeek, $days)) {
+            $dates[] = $dateToCheck;
+          }
+        }
+
+        break;
+
+    }
+
+    $range = [
+      'start' => \DateTime::createFromFormat($format, date('Y-m-d', $startDate) . ' ' . $values['start_time']),
+      'end' => \DateTime::createFromFormat($format, date('Y-m-d', $startDate) . ' ' . $values['end_time']),
+    ];
+    foreach ($rooms as $nid => $room) {
+      $room_options[$nid] = $room->label();
+      // Determine this room's availability for the series.
+      $available = intercept_bulk_room_reservation_check_availability([$nid], $range);
+      $attribute = ($available) ? '' : 'disabled';
+      $room_attributes[$nid] = [
+        'disabled' => [$attribute],
+      ];
+    }
+  }
+
+  $results = [
+    'room_options' => $room_options,
+    'room_attributes' => $room_attributes,
+  ];
+
+  return $results;
+}
+
+/**
+ * Checks to see if a room is available for a date/time range.
+ *
+ * @param array $room
+ *   A array of room node ids.
+ * @param array $range
+ *   Array with elements 'start', 'end'. Note that these each need to be
+ *   formatted properly and adjusted to UTC:
+ *     ->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT)
+ *
+ * @return bool
+ *   TRUE if the room is available for the parameters.
+ */
+function intercept_bulk_room_reservation_check_availability($room, array $range) {
+  $available = FALSE;
+  $keys = array_keys($range);
+  $params = [
+    // 'debug' => TRUE,
+    'rooms' => $room,
+    'start' => ($range[$keys[0]])->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
+    'end' => ($range[$keys[1]])->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
+  ];
+  $reservationManager = \Drupal::service('intercept_core.reservation.manager');
+
+  if ($availability = $reservationManager->availability($params)) {
+    foreach ($availability as $room_availability) {
+      if (! ($room_availability['user_exceeded_limit']
+        || $room_availability['has_reservation_conflict']
+        || $room_availability['has_conflict']
+        || $room_availability['has_open_hours_conflict']
+        || $room_availability['has_max_duration_conflict']
+        || $room_availability['is_closed'])) {
+        $available = TRUE;
+      }
+    }
+  }
+
+  // Intercept can check if availability conflicts exist because of the current
+  // event node. Here we'll check availability conflicts with the current bulk
+  // room reservation.
+
+  if (!$available) {
+    $route_match = \Drupal::routeMatch();
+    // Entity will be found in the route parameters.
+    if (($route = $route_match->getRouteObject()) && ($parameters = $route->getOption('parameters'))) {
+      // Determine if the current route represents an entity.
+      foreach ($parameters as $name => $options) {
+        if (isset($options['type']) && strpos($options['type'], 'entity:') === 0) {
+          $entity = $route_match->getParameter($name);
+          if ($entity instanceof \Drupal\Core\Entity\ContentEntityInterface && $entity->hasLinkTemplate('canonical')) {
+            break;
+          }
+        }
+      }
+    }
+    // The entity-from-route-parameters bit fails on an add form - on which a
+    // conflict is certainly not with the entity in the add form.
+    if (empty($entity)) {
+      return $available;
+    }
+
+    $storage = \Drupal::entityTypeManager()->getStorage('room_reservation');
+    if (count($entity->field_related_room_reservations) == 0) {
+      return $available;
+    }
+    foreach ($entity->field_related_room_reservations as $key => $room_reservation) {
+      // Load this room_reservation and see if it conflicts. Define conflict as
+      // having any overlap; see https://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap#answer-325964.
+      $room_reservation_entity = $storage->load($room_reservation->target_id);
+      $timezone = new \DateTimeZone('America/New_York');
+      $room_res = [
+        'start' => DateTime::createFromFormat('Y-m-d\TH:i:s', $room_reservation_entity->field_dates->value)->getTimestamp(),
+        'end' => DateTime::createFromFormat('Y-m-d\TH:i:s', $room_reservation_entity->field_dates->end_value)->getTimestamp(),
+      ];
+      if (($room_res['start'] <= DateTime::createFromFormat('Y-m-d\TH:i:s', $params['end'])->getTimestamp())
+        && ($room_res['end'] >= DateTime::createFromFormat('Y-m-d\TH:i:s', $params['start'])->getTimestamp())
+        && $room_reservation_entity->field_room->target_id == $room[0]) {
+          // Treat overridden room reservations as though they are not part of
+          // the series in determining availability.
+          if (count($entity->field_overridden) > 0) {
+            foreach ($entity->field_overridden as $overridden_id) {
+              if ($overridden_id->target_id == $room_reservation->target_id) {
+                $message = t('<a href=":room_reservation_edit">This overridden room reservation</a> is in conflict with your series, making your desired room unavailable for the series. You can <a href=":delete_overridden" target="_blank">delete the overridden room reservation</a>, <a href=":remove_override" target="_blank">remove the override</a> or change the dates or desired room for your series.',
+                [
+                  ':room_reservation_edit' => \Drupal::request()->getSchemeAndHttpHost() . '/bulk-room-reservation/' . $room_reservation->target_id,
+                  ':delete_overridden' => \Drupal::request()->getSchemeAndHttpHost() . '/room-reservation/' . $room_reservation->target_id . '/delete',
+                  ':remove_override' => \Drupal::request()->getSchemeAndHttpHost() . '/bulk-room-reservation/' . $room_reservation->target_id . '/remove-override',
+                ]);
+                \Drupal::messenger()->addError($message);
+                return FALSE;
+              }
+            }
+          }
+          $available = TRUE;
+          break;
+      }
+    }
+  }
+
+  return $available;
+}
+
+/**
+ * {@inheritDoc}
+ */
+function _getDayOfWeek($date) {
+  return date('w', strtotime($date));
+}
+
+/**
+ * Converts a date to the storage format's timezone.
+ *
+ * @param object $date
+ *   The DateTime object.
+ * @param string $timezone
+ *   PHP Timezone name.
+ *
+ * @return \Drupal\Core\Datetime\DrupalDateTime
+ *   The converted DrupalDateTime object.
+ */
+function intercept_bulk_room_reservation_compensate($date, $timezone = 'default') {
+  $converted = \Drupal::service('intercept_core.utility.dates')->convertTimezone($date, 'storage')
+    ->format(\Drupal::service('intercept_core.utility.dates')->getStorageFormat());
+  $new_date = \Drupal::service('intercept_core.utility.dates')->getDrupalDate($converted, 'default');
+  return $timezone == 'default' ? $new_date : \Drupal::service('intercept_core.utility.dates')->convertTimezone($new_date, 'storage');
+}
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity object.
+ */
+function intercept_bulk_room_reservation_room_reservation_presave(EntityInterface $entity) {
+  // If this room reservation is related to a bulk room reservation, mark it as
+  // overridden on that bulk room reservation, unless the user is in the process
+  // of saving the bulk room reservation.
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route == 'system.batch_page.json') {
+    return;
+  }
+
+  $query = \Drupal::entityQuery('bulk_room_reservation')
+    ->condition('field_related_room_reservations', $entity->id(), 'IN');
+  $result = $query->execute();
+  if (!empty($result)) {
+    $storage = \Drupal::entityTypeManager()->getStorage('bulk_room_reservation');
+    $bulk_room_reservation = $storage->load(array_shift($result));
+
+    // Add this room reservation as overridden if it isn't already.
+    foreach ($bulk_room_reservation->field_overridden as $id) {
+      if ($id->target_id == $entity->id()) {
+        return;
+      }
+    }
+
+    $bulk_room_reservation->field_overridden[] = [
+      'target_id' => $entity->id(),
+    ];
+    $bulk_room_reservation->save();
+  }
+}
+
+/**
+ * Implements hook_entity_predelete().
+ *
+ * When deleting room_reservations, remove them from any bulk room reservation
+ * to which they belong.
+ *
+ * @param EntityInterface $entity
+ *   The RoomReservation entity to delete.
+ */
+function intercept_bulk_room_reservation_room_reservation_predelete(EntityInterface $entity) {
+  $query = \Drupal::entityQuery('bulk_room_reservation')
+    ->condition('field_related_room_reservations', $entity->id(), 'IN');
+  $result = $query->execute();
+  if (!empty($result)) {
+    $bulk_room_reservation = \Drupal::entityTypeManager()->getStorage('bulk_room_reservation')->load(array_shift($result));
+    // Remove from field_related_room_reservations and field_overridden, as
+    // appropriate.
+    foreach (['field_related_room_reservations', 'field_overridden'] as $field) {
+      foreach ($bulk_room_reservation->$field->getValue() as $key => $target_id) {
+        if ($target_id['target_id'] == $entity->id()) {
+          $bulk_room_reservation->get($field)->removeItem($key);
+          $bulk_room_reservation->save();
+          break;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Returns an array of room reservation entity ids to be deleted.
+ *
+ * Invoked in BulkRoomReservation::preDelete().
+ *
+ * @param array $entities
+ *   Array of BulkRoomReservation entities.
+ * @return array
+ *   Array of room reservation entity ids.
+ */
+function intercept_bulk_room_reservation_delete_ids(array $entities) {
+  $deleteIds = [];
+
+  foreach ($entities as $key => $entity) {
+    foreach ($entity->field_related_room_reservations->referencedEntities() as $room_reservation) {
+      if (in_array($room_reservation, $entity->field_overridden->referencedEntities())) {
+        // This room_reservation is overridden; don't delete.
+        continue;
+      }
+      $deleteIds[] = $room_reservation->id();
+    }
+  }
+
+  return $deleteIds;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * @param array $form
+ *   Nested array of form elements that comprise the form.
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   The current state of the form.
+ * @param string $form_id
+ *   String representing the name of the form itself. Typically this is the
+ *   name of the function that generated the form.
+ */
+function intercept_bulk_room_reservation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $node = $form_state->getFormObject()->getEntity();
+  if ($node->getType() !== 'event') {
+    return;
+  }
+
+  $input = $form_state->getUserInput();
+  if (!$location = $form_state->getValue('field_location')) {
+    $location = $form['field_location']['widget']['#default_value'];
+  }
+  if (empty($location) && !array_key_exists('field_location', $input)) {
+    $form['field_room']['widget']['#options'] = ['_none' => '- Select a location -'];
+  }
+  else {
+    $room_data = \Drupal::service('intercept_bulk_room_reservation.series_generator')->generateSeries($form_state, 'room_data');
+    $options = ['_none' => '- Select -'];
+    if (!empty($room_data['room_options'])) {
+      $form['field_room']['widget']['#default_value'] = '_none';
+      $options = ['_none' => '- Select -'] + $room_data['room_options'];
+      $roomAttributes = ['_none' => []] + $room_data['room_attributes'];
+      $form['field_room']['widget']['#options_attributes'] = $roomAttributes;
+    }
+  }
+}
+
+function intercept_bulk_room_reservation_theme_suggestions_date_recur_modular_alpha_widget_alter(array &$suggestions, array $variables) {
+  $suggestions[] = 'date_recur_modular_alpha_widget__bulk_room_reservation';
+}

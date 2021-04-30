@@ -88,3 +88,17 @@ intercept_room_reservation.api.availability:
     _controller: 'Drupal\intercept_room_reservation\Controller\RoomReservationController::availability'
   requirements:
     _access: 'TRUE'
+
+intercept_room_reservation.reservation.version_history:
+  path: '/manage/room-reservations/{room_reservation}/version-history'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationVersionController::revisionOverviewController'
+    _title: 'View Reservation History'
+  options:
+    parameters:
+      room_reservation:
+        type: entity:room_reservation
+  requirements:
+    room_reservation: \d+
+    _entity_access: 'room_reservation.update'
+    _entity_bundle: 'room_reservation'

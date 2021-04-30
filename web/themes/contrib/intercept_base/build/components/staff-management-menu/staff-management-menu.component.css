@@ -52,6 +52,13 @@ body.adminimal-admin-toolbar {
 .my-account-btn {
   cursor: pointer; }
 
+details summary {
+  display: revert;
+  cursor: pointer; }
+
+details summary > * {
+  display: inline; }
+
 .accordion {
   color: #fff;
   width: 100%; }

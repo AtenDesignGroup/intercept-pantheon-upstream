@@ -54,6 +54,7 @@ permissions:
   - 'update own equipment_reservation'
   - 'update own room_reservation'
   - 'update referenced user event_registration'
+  - 'view all room_reservation revisions'
   - 'view any audience taxonomy_term'
   - 'view any customer profile'
   - 'view any equipment content'

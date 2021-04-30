@@ -13,11 +13,18 @@ services:
 
   intercept_event.suggested_events_provider:
     class: Drupal\intercept_event\SuggestedEventsProvider
-    arguments: ['@entity_type.manager', '@current_user', '@intercept_event.event_attendance_provider', '@intercept_event.event_registration_provider']
+    arguments:
+      [
+        '@entity_type.manager',
+        '@current_user',
+        '@intercept_event.event_attendance_provider',
+        '@intercept_event.event_registration_provider',
+      ]
 
   intercept_event.recurring_manager:
     class: Drupal\intercept_event\RecurringEventManager
-    arguments: ['@current_user', '@entity_type.manager', '@messenger', '@intercept_core.utility.dates']
+    arguments:
+      ['@current_user', '@entity_type.manager', '@messenger', '@intercept_core.utility.dates']
 
   intercept_event.evaluation_manager:
     class: Drupal\intercept_event\EventEvaluationManager

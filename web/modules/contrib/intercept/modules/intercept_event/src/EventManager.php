@@ -135,6 +135,10 @@ class EventManager implements EventManagerInterface {
     // depending on location.
     $form['#attached']['library'][] = 'intercept_event/event_form_helper';
     $form['field_location']['widget']['#multiple'] = FALSE;
+
+    // Sort locations alphabetically.
+    asort($form['field_location']['widget']['#options']);
+
     $form['field_location']['widget']['#options'] = [0 => '- None -'] + $form['field_location']['widget']['#options'];
     $form['field_location']['widget']['#ajax'] = [
       'callback' => [$this, 'fieldRoomAjaxCallback'],

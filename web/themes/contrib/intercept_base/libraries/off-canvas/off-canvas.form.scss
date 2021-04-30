@@ -162,7 +162,9 @@
     margin-top: rem(15px);
   }
 
-  label {
+  label,
+  .form-item__label,
+  .form-item__help-text {
     font-family: inherit;
     font-size: rem(12px);
     font-weight: bold;
@@ -222,6 +224,7 @@
     }
   }
   /* Reduce contrast for fields against dark background. */
+  details,
   .form-select,
   .form-text,
   .form-tel,
@@ -368,5 +371,23 @@
     .description {
       margin-bottom: .5em;
     }
+  }
+
+  details.entity-content-form-revision-information,
+  p {
+    color: #333;
+    background: unset;
+    box-shadow: unset;
+    font-size: rem(12px);
+    font-family: inherit;
+  }
+
+  .vertical-tabs__menu {
+    display: none;
+  }
+
+  .form-item .vertical-tabs {
+    margin: unset;
+    border: unset;
   }
 }

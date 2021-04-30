@@ -2,22 +2,24 @@
 
 namespace Drupal\intercept_room_reservation\Form;
 
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Ajax\AjaxFormHelperTrait;
-use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
-use Drupal\Core\Ajax\SetDialogTitleCommand;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\intercept_core\Utility\Dates;
+use Drupal\Core\Ajax\AjaxFormHelperTrait;
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Ajax\SetDialogTitleCommand;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\intercept_core\Utility\Dates;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**
  * Form controller for Room reservation edit forms.
@@ -156,12 +158,25 @@ class RoomReservationForm extends ContentEntityForm {
       'delayed-keyup',
     ];
 
-    if (!$this->entity->isNew()) {
-      $form['new_revision'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Create new revision'),
-        '#default_value' => TRUE,
-        '#weight' => 10,
+    // Add information about the current revision and a link to the room
+    // reservation's revisions page.
+    $createdTime = $form_state->getFormObject()->getEntity()->getCreatedTime();
+    $createdTime = new \DateTime('@' . $createdTime);
+    $timezone = new \DateTimeZone('America/New_York');
+    $createdTime->setTimezone($timezone);
+    $formattedDate = $createdTime->format('Y-m-d H:i:s');
+    $room_reservation = $form_state->getFormObject()->getEntity();
+    if ($room_reservation->id()) {
+      $revisionsLink = Link::createFromRoute($this->t('Manage revisions'), 'entity.room_reservation.version_history', [
+        'room_reservation' => $room_reservation->id(),
+      ]);
+      $revisionsLink = $revisionsLink->toRenderable();
+
+      $form['revision_info'] = [
+        '#theme' => 'room_reservation_revision_summary',
+        '#current_revision_date' => $formattedDate,
+        '#revisions_link' => $revisionsLink,
+        '#weight' => 15,
       ];
     }
 

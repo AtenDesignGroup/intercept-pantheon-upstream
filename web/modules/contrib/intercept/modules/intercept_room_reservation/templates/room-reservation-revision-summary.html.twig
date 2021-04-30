@@ -1,0 +1,20 @@
+{#
+/**
+ * @file room-reservation-revision-summary.html.twig
+ * Default theme implementation to present Room reservation revision summary.
+ *
+ * This template is used when viewing Room reservation edit form.
+ *
+ * Available variables:
+ * - current_revision_date: The formatted date of the current revision.
+ * - revisions_link: Link to this room reservation's version history page.
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="form-item">
+  <span class="form-item__label">{{'Current revision'|t}}</span>
+  <p>{{'This revision created:'|t}} {{current_revision_date}}</p>
+  <div class="form-item__help-text">{{revisions_link}}</div>
+</div>
+

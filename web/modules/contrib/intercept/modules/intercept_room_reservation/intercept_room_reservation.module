@@ -82,6 +82,12 @@ function intercept_room_reservation_theme() {
     'room_reservation_scheduler' => [
       'variables' => ['content' => NULL],
     ],
+    'room_reservation_revision_summary' => [
+      'variables' => [
+        'current_revision_date' => NULL,
+        'revisions_link' => NULL,
+      ],
+    ],
   ];
 }
 

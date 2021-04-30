@@ -1,0 +1,5 @@
+bulk_room_reservation.add_form:
+  route_name: entity.bulk_room_reservation.add_form
+  title: 'Add bulk room reservation'
+  appears_on:
+    - entity.bulk_room_reservation.collection

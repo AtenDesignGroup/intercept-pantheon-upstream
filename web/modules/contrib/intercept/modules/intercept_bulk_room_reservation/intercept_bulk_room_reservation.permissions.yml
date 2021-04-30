@@ -1,0 +1,13 @@
+administer bulk room reservation:
+  title: 'Administer bulk room reservation settings'
+  restrict access: true
+access bulk room reservation overview:
+  title: 'Access bulk room reservation overview page'
+delete bulk room reservation:
+  title: Delete bulk room reservation
+create bulk room reservation:
+  title: Create bulk room reservation
+view bulk room reservation:
+  title: View bulk room reservation
+edit bulk room reservation:
+  title: Edit bulk room reservation

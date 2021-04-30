@@ -154,7 +154,7 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
               }
               break;
           }
-          intercept_messages_sms_schedule_message($message_setting['body'], $token_replacements, $send_timestamp, $telephone);
+          intercept_messages_sms_schedule_message($message_setting['body'], $token_replacements, $send_timestamp, $telephone, $entity);
         }
       }
       elseif ($message_setting['enabled'] && $plugin_id == 'saved_sms_registration_active' && $registration == TRUE) {
@@ -166,7 +166,7 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
         if ($send_timestamp < time()) {
           continue;
         }
-        intercept_messages_sms_schedule_message($message_setting['body'], $token_replacements, $send_timestamp, $telephone);
+        intercept_messages_sms_schedule_message($message_setting['body'], $token_replacements, $send_timestamp, $telephone, $entity);
       }
     }
   }
@@ -175,7 +175,7 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
 /**
  * Inserts/schedules a message into the database table.
  */
-function intercept_messages_sms_schedule_message($message, $token_replacements, $send_timestamp, $telephone) {
+function intercept_messages_sms_schedule_message($message, $token_replacements, $send_timestamp, $telephone, $entity) {
   $token_service = \Drupal::token();
   $message_final = PlainTextOutput::renderFromHtml($token_service->replace($message, $token_replacements));
   /** @var \Drupal\sms\Provider\SmsProviderInterface $sms_service */
@@ -185,6 +185,7 @@ function intercept_messages_sms_schedule_message($message, $token_replacements, 
   $sms = SmsMessageAdvanced::create()
     ->setMessage($message_final)
     ->addRecipient($telephone)
+    ->setOption('sender_entity__target_id', $entity->id())
     ->setAutomated(TRUE)
     ->setDirection(Direction::OUTGOING)
     ->setSendTime($send_timestamp);
@@ -205,7 +206,22 @@ function intercept_messages_sms_schedule_message($message, $token_replacements, 
  * Implements hook_entity_update().
  */
 function intercept_messages_sms_entity_update(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() !== 'node' || $entity->bundle() !== 'event') {
+  // Remove registration reminders when registration is canceled.
+  if ($entity->getEntityTypeId() == 'event_registration' && $entity->status->value == 'canceled') {
+    $messages = \Drupal::service('database')
+      ->select('sms', 'm')
+      ->fields('m', [
+        'id',
+      ])
+      ->condition('sender_entity__target_id', $entity->id())
+      ->execute()
+      ->fetchAll();
+    foreach ($messages as $message) {
+      intercept_messages_sms_delete_message($message->id);
+    }
+    return;
+  }
+  elseif ($entity->getEntityTypeId() !== 'node' || $entity->bundle() !== 'event') {
     return;
   }
   $dateTime = new DrupalDateTime($entity->get('field_date_time')->value, 'UTC');
@@ -222,7 +238,7 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
         ->fields('m', [
           'id',
         ])
-        ->condition('uuid', $registration->uuid)
+        ->condition('sender_entity__target_id', $registration->id)
         ->execute()
         ->fetchAll();
       foreach ($messages as $message) {
@@ -256,7 +272,7 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
         ->fields('m', [
           'id',
         ])
-        ->condition('uuid', $flagging->uuid())
+        ->condition('sender_entity__target_id', $flagging->id())
         ->execute()
         ->fetchAll();
       foreach ($messages as $message) {
@@ -264,27 +280,31 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
       }
     }
   }
-  // @TODO: Remove reminders for canceled event_registration
 }
 
 /**
  * Implements hook_entity_delete().
  */
 function intercept_messages_sms_entity_delete(EntityInterface $entity) {
-  // The only type of flags we're worried about are saved events.
-  if ($entity->getEntityTypeId() == 'flagging' && $entity->bundle() == 'saved_event') {
-    // Delete existing event save reminder messages
-    $messages = \Drupal::service('database')
-      ->select('sms', 'm')
-      ->fields('m', [
-        'id',
-      ])
-      ->condition('uuid', $entity->uuid())
-      ->execute()
-      ->fetchAll();
-    foreach ($messages as $message) {
-      intercept_messages_sms_delete_message($message->id);
-    }
+  $entity_type_id = $entity->getEntityTypeId();
+  $bundle = $entity->bundle();
+  if (!in_array($entity_type_id, ['event_attendance', 'event_registration', 'flagging'])) {
+    return;
+  }
+  if ($entity_type_id == 'flagging' && $bundle != 'saved_event') {
+    return; // The only type of flags we're worried about are saved events.
+  }
+  // Delete existing event save reminder messages
+  $messages = \Drupal::service('database')
+    ->select('sms', 'm')
+    ->fields('m', [
+      'id',
+    ])
+    ->condition('sender_entity__target_id', $entity->id())
+    ->execute()
+    ->fetchAll();
+  foreach ($messages as $message) {
+    intercept_messages_sms_delete_message($message->id);
   }
 }
 

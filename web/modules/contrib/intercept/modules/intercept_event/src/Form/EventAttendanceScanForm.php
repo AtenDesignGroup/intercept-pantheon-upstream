@@ -65,6 +65,8 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
       ]),
     ];
 
+    $form['cancel'] = $this->cancelButton();
+
     $form['#attached']['library'][] = 'intercept_event/eventCheckin';
     $form['#attached']['drupalSettings']['eventCheckinMessage'] = $this->t(self::SUCCESS_MESSAGE);
     return $form;
@@ -89,4 +91,19 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
     return parent::validateForm($form, $form_state);
   }
 
+  /**
+   * Cancel link to return to the event node's canonical display.
+   *
+   * @return array
+   *   The link render array.
+   */
+  protected function cancelButton() {
+    return [
+      '#type' => 'link',
+      '#title' => $this->t('Cancel'),
+      '#url' => Url::fromRoute('entity.node.canonical', [
+        'node' => $this->event()->id(),
+      ]),
+    ];
+  }
 }

@@ -1,11 +1,11 @@
 agreement_text:
   value: "<p>As a service to the community, the library offers a variety of meeting and study spaces for use by community groups, non-profit agencies and other organizations.</p>\r\n\r\n<p>Meeting rooms may be reserved by library cardholders on a first-come, first-served basis.</p>"
   format: basic_html
-reservation_limit: '0'
+reservation_limit: '1'
 reservation_limit_text:
   value: "<p>You are only allowed to reserve a maximum of @max-room-reservations room(s) at a time. You can view your reservations in @account-link.</p>\r\n"
   format: basic_html
-advanced_reservation_limit: '0'
+advanced_reservation_limit: '60'
 advanced_reservation_limit_text:
   value: ''
   format: basic_html

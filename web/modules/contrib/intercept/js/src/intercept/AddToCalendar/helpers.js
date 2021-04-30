@@ -11,6 +11,10 @@ export default class helpers {
     return formattedDate.replace('+00:00', 'Z');
   }
 
+  formatISO(date) {
+    return moment.utc(date).toISOString();
+  }
+
   calculateDuration(startTime, endTime) {
     // snag parameters and format properly in UTC
     const end = moment.utc(endTime).format('DD/MM/YYYY HH:mm:ss');
@@ -61,9 +65,9 @@ export default class helpers {
         break;
 
       case 'outlookcom':
-        calendarUrl = 'https://outlook.live.com/owa/?rru=addevent';
-        calendarUrl += `&startdt=${this.formatTime(event.startTime)}`;
-        calendarUrl += `&enddt=${this.formatTime(event.endTime)}`;
+        calendarUrl = 'https://outlook.live.com/calendar/0/deeplink/compose?rru=addevent';
+        calendarUrl += `&startdt=${this.formatISO(event.startTime)}`;
+        calendarUrl += `&enddt=${this.formatISO(event.endTime)}`;
         calendarUrl += `&subject=${encodeURIComponent(event.title)}`;
         calendarUrl += `&location=${encodeURIComponent(event.location)}`;
         calendarUrl += `&body=${encodeURIComponent(`${event.description} ${event.url ? `View Event: ${event.url}` : ''}`)}`;

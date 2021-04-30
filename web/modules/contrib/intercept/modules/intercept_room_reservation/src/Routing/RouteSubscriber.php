@@ -21,6 +21,17 @@ class RouteSubscriber extends RouteSubscriberBase {
     $route = $collection->get('entity.room_reservation.edit_form');
     $route->setDefault('_title', 'Edit Reservation');
     $route->setDefault('_title_callback', NULL);
+
+    if ($route = $collection->get('entity.room_reservation.version_history')) {
+      $route->setDefaults([
+        '_controller' => '\Drupal\intercept_room_reservation\Controller\RoomReservationVersionController::revisionOverviewController',
+      ]);
+      $route->setOption('parameters', [
+        'room_reservation' => [
+          'type' => 'entity:room_reservation',
+        ],
+      ]);
+    }
   }
 
 }

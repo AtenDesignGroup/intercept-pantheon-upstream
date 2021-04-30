@@ -1,0 +1,18 @@
+entity.bulk_room_reservation.settings:
+  title: Bulk Room Reservation
+  description: Configure a Bulk Room Reservation entity type
+  route_name:  entity.bulk_room_reservation.settings
+  parent: system.admin_structure
+entity.bulk_room_reservation.collection:
+  title: Bulk Room Reservations
+  description: List of bulk room reservations
+  route_name: entity.bulk_room_reservation.collection
+  parent: entity.room_reservation.collection
+bulk_room_reservation.admin.structure.settings:
+  parent: intercept_room_reservation.room_parent
+  title: 'Bulk Reservation'
+  weight: 3
+  route_name: entity.bulk_room_reservation.collection
+  menu_name: intercept-manage
+  class: Drupal\intercept_room_reservation\Plugin\Menu\BulkMenuLink
+   

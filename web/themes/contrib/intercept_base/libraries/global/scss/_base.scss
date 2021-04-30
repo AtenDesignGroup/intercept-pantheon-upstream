@@ -333,7 +333,8 @@ input[type='submit'],
 
   &:hover,
   &:focus {
-    background-color: $clr-primary-light;
+    background-color: $clr-primary-light !important;
+    color: $white !important;
   }
 
   &:active {

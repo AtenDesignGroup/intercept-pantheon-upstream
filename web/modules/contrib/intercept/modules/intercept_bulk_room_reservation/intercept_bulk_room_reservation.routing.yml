@@ -1,0 +1,15 @@
+entity.bulk_room_reservation.settings:
+  path: 'admin/structure/bulk-room-reservation'
+  defaults:
+    _form: '\Drupal\intercept_bulk_room_reservation\Form\BulkRoomReservationSettingsForm'
+    _title: 'Bulk Room Reservation'
+  requirements:
+    _permission: 'administer bulk room reservation'
+
+intercept_bulk_room_reservation.remove_override_confirm:
+  path: '/bulk-room-reservation/{room_reservation_id}/remove-override'
+  defaults:
+    _title: 'Remove override confirm'
+    _form: 'Drupal\intercept_bulk_room_reservation\Form\RemoveOverrideConfirmForm'
+  requirements:
+    _permission: 'edit bulk room reservation'

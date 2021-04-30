@@ -80,7 +80,7 @@
 @mixin list--numbered($item-selector: li) {
   @include list--reset;
   counter-reset: number;
-  padding-left: 1.25em;
+  padding-left: 1.5em;
 
   > #{$item-selector} {
     margin-bottom: 1em;

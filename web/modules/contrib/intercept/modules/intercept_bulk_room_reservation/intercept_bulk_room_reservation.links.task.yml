@@ -1,0 +1,22 @@
+entity.bulk_room_reservation.settings:
+  title: Settings
+  route_name: entity.bulk_room_reservation.settings
+  base_route: entity.bulk_room_reservation.settings
+entity.bulk_room_reservation.view:
+  title: View
+  route_name: entity.bulk_room_reservation.canonical
+  base_route: entity.bulk_room_reservation.canonical
+entity.bulk_room_reservation.edit_form:
+  title: Edit
+  route_name: entity.bulk_room_reservation.edit_form
+  base_route: entity.bulk_room_reservation.canonical
+entity.bulk_room_reservation.delete_form:
+  title: Delete
+  route_name: entity.bulk_room_reservation.delete_form
+  base_route: entity.bulk_room_reservation.canonical
+  weight: 10
+entity.bulk_room_reservation.collection:
+  title: Bulk Room Reservation
+  route_name: entity.bulk_room_reservation.collection
+  base_route: system.admin_content
+  weight: 10

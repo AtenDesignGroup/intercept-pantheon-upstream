@@ -482,7 +482,7 @@ ol:not([class]) {
   margin-left: 0;
   padding-left: 0;
   counter-reset: number;
-  padding-left: 1.25em; }
+  padding-left: 1.5em; }
   ol:not([class]) > li {
     margin-bottom: 1em;
     position: relative; }
@@ -554,7 +554,8 @@ input[type='submit'],
   input[type='submit']:focus,
   .button:hover,
   .button:focus {
-    background-color: #039be5; }
+    background-color: #039be5 !important;
+    color: #fff !important; }
   button:active,
   input[type='submit']:active,
   .button:active {
@@ -815,7 +816,7 @@ tbody + tbody {
   margin-left: 0;
   padding-left: 0;
   counter-reset: number;
-  padding-left: 1.25em; }
+  padding-left: 1.5em; }
   .list--numbered > li {
     margin-bottom: 1em;
     position: relative; }

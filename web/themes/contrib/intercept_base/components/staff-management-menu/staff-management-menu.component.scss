@@ -76,6 +76,15 @@ $accent-color: #21ccfc;
   cursor: pointer;
 }
 
+details summary { 
+  display: revert;
+  cursor: pointer;
+}
+
+details summary > * {
+  display: inline;
+}
+
 .accordion {
   color: #fff;
   width: 100%;

@@ -225,7 +225,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
           'start' => \DateTime::createFromFormat('Y-m-d\TH:i:s', $entity->field_date_time->value)->format('H:i:s'),
           'end' => \DateTime::createFromFormat('Y-m-d\TH:i:s', $entity->field_date_time->value)->format('H:i:s'),
         ];
-        if (!is_null($entity->get('event_recurrence'))) {
+        if (!empty($entity->get('event_recurrence')->referencedEntities())) {
           $rules = $entity->get('event_recurrence')->referencedEntities()[0]->field_event_rrule->rrule;
           $dtStartString = $entity->get('event_recurrence')->referencedEntities()[0]->field_event_rrule->value;
           $timezone = new \DateTimeZone('America/New_York');

@@ -30,7 +30,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '335c9f33e2cc4e136504cc917bfabb7d8968f7fe',
+    'reference' => '97fff542c8a539d5fa1df60ab72e948480c020cc',
     'name' => 'atendesigngroup/intercept-pantheon-upstream',
   ),
   'versions' => 
@@ -51,7 +51,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '335c9f33e2cc4e136504cc917bfabb7d8968f7fe',
+      'reference' => '97fff542c8a539d5fa1df60ab72e948480c020cc',
     ),
     'chi-teck/drupal-code-generator' => 
     array (
@@ -1018,7 +1018,7 @@ private static $installed = array (
       array (
         0 => '1.x-dev',
       ),
-      'reference' => '1fdfc110a826645c98cfad3b31c0194524169fd1',
+      'reference' => '6b9f6857b50562725557ae9338669f410b5feb42',
     ),
     'drupal/jsonapi' => 
     array (
@@ -1730,8 +1730,8 @@ private static $installed = array (
     array (
       'provided' => 
       array (
-        0 => '1.0',
-        1 => '^1.0',
+        0 => '^1.0',
+        1 => '1.0',
       ),
     ),
     'psr/http-message' => 

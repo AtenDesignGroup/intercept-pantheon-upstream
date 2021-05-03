@@ -1,0 +1,7 @@
+name: Intercept Profile Copyright
+type: module
+description: Adds copyright info for use in the footer.
+core: 8.x
+package: Custom
+dependencies: 
+  - block

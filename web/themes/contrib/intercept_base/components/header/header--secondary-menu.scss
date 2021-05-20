@@ -4,6 +4,8 @@
 .header__utilities {
   display: flex;
   grid-column: 2;
+  height: 3.5rem;
+  min-height: 100%;
 
   @include bp(large) {
     position: relative;
@@ -13,6 +15,14 @@
 
 .header__utilities .region--secondary-menu {
   background-color: $clr-secondary-dark;
+
+  /* Fix the default input background color on autofilled inputs */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px $white inset !important;
+  }
 
   label {
     color: $white;
@@ -327,11 +337,17 @@ label[for='account-trigger'].account-trigger--logged-out {
   }
 
   + .item-list {
-    ul > li {
-      margin-bottom: 0.5rem;
-
-      a {
-        color: $white;
+    ul {
+      margin-top: 1rem;
+      padding-left: 0;
+      li {
+        margin-bottom: 0.5rem;
+        &:before {
+          content: '';
+        }
+        a {
+          color: $gray-30;
+        }
       }
     }
   }

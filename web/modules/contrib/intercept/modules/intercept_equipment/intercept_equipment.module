@@ -237,6 +237,9 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInte
     $options = [];
     $nodes = $storage->loadMultiple($nids);
 
+    // Specify the empty option for our select list.
+    $options[''] = 'Any';
+
     // Push titles into select list.
     foreach ($nodes as $node) {
       $title = $node->getTitle();
@@ -247,9 +250,6 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInte
     $location_field = 'title_1';
     $form[$location_field]['#type'] = 'select';
     $form[$location_field]['#multiple'] = FALSE;
-
-    // Specify the empty option for our select list.
-    $form[$location_field]['#empty_option'] = new TranslatableMarkup('Any');
 
     // Add the $options from above to our select list.
     $form[$location_field]['#options'] = $options;

@@ -179,7 +179,7 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
       currentAction = EDIT_ACTION;
 
       // Manually open the reservation edit dialog.
-      activateDialog('/manage/room-reservations/add', {
+      activateDialog('/room-reservation/add', {
         room: currentValues.resource.drupal_internal__nid,
         date: {
           start: currentValues.start,

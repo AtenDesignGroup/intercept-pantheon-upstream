@@ -64,28 +64,51 @@ display:
           text_input_required: 'Select any filter and click on Apply to see results'
           bef:
             general:
-              allow_secondary: false
-              secondary_label: 'Advanced options'
               autosubmit: false
-              autosubmit_debounce_delay: 500
               autosubmit_exclude_textfield: false
               autosubmit_hide: false
-            field_date_time_value:
-              bef_format: bef_datepicker
-              more_options:
-                is_secondary: false
-            field_date_time_value_1:
-              bef_format: bef_datepicker
-              more_options:
-                is_secondary: false
-            created:
-              bef_format: bef_datepicker
-              more_options:
-                is_secondary: false
-            created_1:
-              bef_format: bef_datepicker
-              more_options:
-                is_secondary: false
+              input_required: false
+              text_input_required: 'Select any filter and click on Apply to see results'
+              text_input_required_format: basic_html
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+            filter:
+              field_date_time_value:
+                plugin_id: bef_datepicker
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              field_date_time_value_1:
+                plugin_id: bef_datepicker
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              created:
+                plugin_id: bef_datepicker
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              created_1:
+                plugin_id: bef_datepicker
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
           text_input_required_format: basic_html
       pager:
         type: full
@@ -1078,7 +1101,6 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
               administrator: '0'
-              intercept_room_reservation_approver: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
@@ -1133,8 +1155,6 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
               administrator: '0'
-              rfp_admin: '0'
-              rfp_selector: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
@@ -1188,7 +1208,6 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
               administrator: '0'
-              intercept_room_reservation_approver: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''

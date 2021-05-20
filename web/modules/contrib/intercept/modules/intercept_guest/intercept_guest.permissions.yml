@@ -1,0 +1,15 @@
+add intercept guest entity:
+  title: Add Intercept guest entities
+  restrict access: true
+administer intercept guest entity:
+  title: 'Administer intercept guest entity'
+  restrict access: true
+delete intercept guest entity:
+  title: Delete Intercept guest entities
+  restrict access: true
+edit intercept guest entity:
+  title: Edit Intercept guest entities
+  restrict access: true
+view intercept guest entity:
+  title: View Intercept guest entities
+  restrict access: true

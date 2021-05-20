@@ -3,14 +3,22 @@
   display: -ms-flexbox;
   display: flex;
   -ms-grid-column: 2;
-  grid-column: 2; }
+  grid-column: 2;
+  height: 3.5rem;
+  min-height: 100%; }
   @media (min-width: 62em) {
     .header__utilities {
       position: relative;
       z-index: 2; } }
 
 .header__utilities .region--secondary-menu {
-  background-color: #4c4d4f; }
+  background-color: #4c4d4f;
+  /* Fix the default input background color on autofilled inputs */ }
+  .header__utilities .region--secondary-menu input:-webkit-autofill,
+  .header__utilities .region--secondary-menu input:-webkit-autofill:hover,
+  .header__utilities .region--secondary-menu input:-webkit-autofill:focus,
+  .header__utilities .region--secondary-menu input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #fff inset !important; }
   .header__utilities .region--secondary-menu label {
     color: #fff; }
   @media (max-width: 61.9375em) {
@@ -312,7 +320,12 @@ label[for='account-trigger'].account-trigger--logged-out {
     padding-bottom: 1.25rem;
     padding-top: 1.25rem; }
 
-.header #user-login-form + .item-list ul > li {
-  margin-bottom: 0.5rem; }
-  .header #user-login-form + .item-list ul > li a {
-    color: #fff; }
+.header #user-login-form + .item-list ul {
+  margin-top: 1rem;
+  padding-left: 0; }
+  .header #user-login-form + .item-list ul li {
+    margin-bottom: 0.5rem; }
+    .header #user-login-form + .item-list ul li:before {
+      content: ''; }
+    .header #user-login-form + .item-list ul li a {
+      color: #747481; }

@@ -360,30 +360,30 @@ function intercept_bulk_room_reservation_delete_ids(array $entities) {
  *   String representing the name of the form itself. Typically this is the
  *   name of the function that generated the form.
  */
-function intercept_bulk_room_reservation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $node = $form_state->getFormObject()->getEntity();
-  if ($node->getType() !== 'event') {
-    return;
-  }
+// function intercept_bulk_room_reservation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+//   $node = $form_state->getFormObject()->getEntity();
+//   if ($node->getType() !== 'event') {
+//     return;
+//   }
 
-  $input = $form_state->getUserInput();
-  if (!$location = $form_state->getValue('field_location')) {
-    $location = $form['field_location']['widget']['#default_value'];
-  }
-  if (empty($location) && !array_key_exists('field_location', $input)) {
-    $form['field_room']['widget']['#options'] = ['_none' => '- Select a location -'];
-  }
-  else {
-    $room_data = \Drupal::service('intercept_bulk_room_reservation.series_generator')->generateSeries($form_state, 'room_data');
-    $options = ['_none' => '- Select -'];
-    if (!empty($room_data['room_options'])) {
-      $form['field_room']['widget']['#default_value'] = '_none';
-      $options = ['_none' => '- Select -'] + $room_data['room_options'];
-      $roomAttributes = ['_none' => []] + $room_data['room_attributes'];
-      $form['field_room']['widget']['#options_attributes'] = $roomAttributes;
-    }
-  }
-}
+//   $input = $form_state->getUserInput();
+//   if (!$location = $form_state->getValue('field_location')) {
+//     $location = $form['field_location']['widget']['#default_value'];
+//   }
+//   if (empty($location) && !array_key_exists('field_location', $input)) {
+//     $form['field_room']['widget']['#options'] = ['_none' => '- Select a location -'];
+//   }
+//   else {
+//     $room_data = \Drupal::service('intercept_bulk_room_reservation.series_generator')->generateSeries($form_state, 'room_data');
+//     $options = ['_none' => '- Select -'];
+//     if (!empty($room_data['room_options'])) {
+//       $form['field_room']['widget']['#default_value'] = '_none';
+//       $options = ['_none' => '- Select -'] + $room_data['room_options'];
+//       $roomAttributes = ['_none' => []] + $room_data['room_attributes'];
+//       $form['field_room']['widget']['#options_attributes'] = $roomAttributes;
+//     }
+//   }
+// }
 
 function intercept_bulk_room_reservation_theme_suggestions_date_recur_modular_alpha_widget_alter(array &$suggestions, array $variables) {
   $suggestions[] = 'date_recur_modular_alpha_widget__bulk_room_reservation';

@@ -1,4 +1,3 @@
-uuid: 9289ab61-5922-4bab-8465-bcf0ba4b828c
 langcode: en
 status: true
 dependencies:
@@ -64,36 +63,51 @@ display:
           text_input_required: 'Select any filter and click on Apply to see results'
           bef:
             general:
-              allow_secondary: false
-              secondary_label: 'Advanced options'
               autosubmit: false
               autosubmit_exclude_textfield: false
-              autosubmit_textfield_delay: 500
               autosubmit_hide: false
-            field_location_target_id:
-              bef_format: default
-              more_options:
-                bef_select_all_none: false
-                bef_collapsible: false
-                is_secondary: false
-                placeholder_text: ''
-                rewrite:
-                  filter_rewrite_values: ''
-            field_dates_value:
-              bef_format: bef_datepicker
-              more_options:
-                is_secondary: false
-                placeholder_text: ''
-            field_dates_value_1:
-              bef_format: bef_datepicker
-              more_options:
-                is_secondary: false
-                placeholder_text: ''
-            field_group_name_value:
-              bef_format: default
-              more_options:
-                is_secondary: false
-                placeholder_text: ''
+              input_required: false
+              text_input_required: 'Select any filter and click on Apply to see results'
+              text_input_required_format: basic_html
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+            filter:
+              field_location_target_id:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              field_dates_value:
+                plugin_id: bef_datepicker
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              field_dates_value_1:
+                plugin_id: bef_datepicker
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              field_group_name_value:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
           text_input_required_format: basic_html
       pager:
         type: full
@@ -976,9 +990,9 @@ display:
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
-              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+            reduce: 0
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
@@ -994,10 +1008,19 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+          reduce_duplicates: 0
           handler: 'default:node'
-          handler_settings: {  }
+          handler_settings:
+            target_bundles:
+              location: location
+            sort:
+              field: _none
+            auto_create: false
+            auto_create_bundle: ''
           widget: autocomplete
+          list_max: '10'
           plugin_id: numeric_reference
+          handler_submit: 'Change handler'
         field_dates_value:
           id: field_dates_value
           table: room_reservation__field_dates
@@ -1028,23 +1051,12 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              blog_author: '0'
-              blog_editor: '0'
-              booklist_author: '0'
-              booklist_editor: '0'
-              finance: '0'
-              job_creator: '0'
-              page_editor: '0'
-              rfp_admin: '0'
-              rfp_selector: '0'
-              schema_viewer: '0'
               administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
-              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
@@ -1093,15 +1105,6 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              blog_author: '0'
-              blog_editor: '0'
-              booklist_author: '0'
-              booklist_editor: '0'
-              finance: '0'
-              job_creator: '0'
-              page_editor: '0'
-              rfp_admin: '0'
-              rfp_selector: '0'
               schema_viewer: '0'
               administrator: '0'
               intercept_registered_customer: '0'
@@ -1109,7 +1112,6 @@ display:
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
-              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
@@ -1154,23 +1156,12 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              blog_author: '0'
-              blog_editor: '0'
-              booklist_author: '0'
-              booklist_editor: '0'
-              finance: '0'
-              job_creator: '0'
-              page_editor: '0'
-              rfp_admin: '0'
-              rfp_selector: '0'
-              schema_viewer: '0'
               administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
-              intercept_room_reservation_approver: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
@@ -1263,7 +1254,7 @@ display:
     display_title: Page
     position: 1
     display_options:
-      display_extenders: { }
+      display_extenders: {  }
       path: account/manage/intercept-export-room-reservations
     cache_metadata:
       max-age: -1
@@ -1287,7 +1278,7 @@ display:
     display_title: 'REST export'
     position: 2
     display_options:
-      display_extenders: { }
+      display_extenders: {  }
       path: data/export/room-reservations.csv
       style:
         type: serializer

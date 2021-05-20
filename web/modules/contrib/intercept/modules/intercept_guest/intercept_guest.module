@@ -1,0 +1,172 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * @file
+ * Primary module hooks for Intercept Guest module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+/**
+ * Implements hook_theme().
+ *
+ * Placeholder implementation of hook_theme().
+ */
+function intercept_guest_theme() {
+  return [
+    'intercept_guest' => [
+      'variables' => ['foo' => NULL],
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for intercept_guest template.
+ *
+ * Default template: intercept_guest.html.twig.
+ *
+ * Placeholder preprocess function for intercept_guest entities.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - foo: Foo variable description.
+ */
+function template_preprocess_intercept_guest(array &$variables) {
+  $variables['foo'] = 'bar';
+}
+
+/**
+  * Implements hook_form_BASE_FORM_ID_alter().
+  *
+  * @param $form
+  *   Nested array of form elements that comprise the form.
+  * @param \Drupal\Core\Form\FormStateInterface $form_state
+  *   The current state of the form.
+  * @param $form_id
+  *   String representing the name of the form itself.
+  */
+function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  $options = [
+    'member' => t('Member'),
+    'guest' => t('Guest'),
+  ];
+
+  $default = (!empty($form_state->getUserInput()['reservation_member_guest']))
+    ? [$form_state->getUserInput()['reservation_member_guest']]
+    : ['member'];
+  $entity = $form_state->getformObject()->getEntity();
+  if (!$entity->get('field_guest')->isEmpty()) {
+    $default = ['guest'];
+  }
+
+  $form['type'] = [
+    '#type' => 'select',
+    '#name' => 'reservation_member_guest',
+    '#title' => t('Is the reservation for a member or a guest?'),
+    '#options' => $options,
+    '#default_value' => $default,
+    '#weight' => 2,
+  ];
+
+  if ($default === 'guest') {
+    // Update the reservation entity's user to be the guest user.
+    $config = \Drupal::config('intercept_guest.settings');
+    $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '101';
+    $form['field_user']['widget'][0]['target_id']['#default_value'] = $guest_uid;
+    $form_state->setValue('field_user', [0 => ['target_id' => $guest_uid]]);
+  }
+
+  // Use form api's #states system to hide/show make required/optional
+  // field_user and field_guest.
+  $form['field_user']['#states'] = [
+    'invisible' => [
+      'select[name="reservation_member_guest"]' => ['value' => 'guest'],
+    ],
+    'required' => [
+      'select[name="reservation_member_guest"]' => ['value' => 'member'],
+    ],
+  ];
+  $form['field_guest']['#states'] = [
+    'invisible' => [
+      'select[name="reservation_member_guest"]' => ['value' => 'member'],
+    ],
+    'required' => [
+      'select[name="reservation_member_guest"]' => ['value' => 'guest'],
+    ],
+  ];
+
+  $form['guest_information'] = [
+    '#type' => 'container',
+    '#weight' => 2,
+    '#prefix' => '<div id="guest-information">',
+    '#suffix' => '</div>',
+    '#states' => [
+      'visible' => [
+        'select[name="reservation_member_guest"]' => ['value' => 'guest'],
+      ],
+    ],
+    '#attached' => [
+      'library' => [
+        'richland/intercept-guest',
+      ],
+    ],
+  ];
+
+  $form['guest_information']['info'] = [
+    '#type' => 'item',
+    '#markup' => '<h2>' . t('Guest information') . '</h2><p>' . t('All guest fields are required **') . '</p>',
+  ];
+
+  // Add a validate callback.
+  $form['#validate'][] = 'intercept_guest_reservation_form_validate';
+
+  // Add a submit callback to be run before any others.
+  $submit_callbacks = $form['actions']['submit']['#submit'];
+  $form['actions']['submit']['#submit'] = ['intercept_guest_reservation_form_submit'];
+  $form['actions']['submit']['#submit'] += $submit_callbacks;
+
+}
+
+
+function intercept_guest_reservation_form_validate($form, FormStateInterface &$form_state) {
+  $input = $form_state->getUserInput();
+  if ($input['reservation_member_guest'] == 'member') {
+    return;
+  }
+
+  // Update the reservation entity's user to be the guest user.
+  $config = \Drupal::config('intercept_guest.settings');
+  $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '101';
+  $form_state->setValue('field_user', [0 => ['target_id' => $guest_uid]]);
+
+}
+
+/**
+ * Perform alterations before an entity form is included in the IEF widget.
+ *
+ * @param array $entity_form
+ *   Nested array of form elements that comprise the entity form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state of the parent form.
+ */
+function intercept_guest_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state) {
+  // Only alter IEF for intercept_guest entities.
+  if ($entity_form['#entity_type'] !== 'intercept_guest') {
+    return;
+  }
+
+  // Hide field_room_reservations and populate it with this reservation's id.
+  $entity_form['field_room_reservations']['#access'] = 'false';
+
+  // Set owner to the current user and hide the field.
+  $entity_form['user_id']['#type'] = 'hidden';
+  $entity_form['user_id']['#default_value'] = \Drupal::currentUser()->id();
+
+  // Add custom validation function.
+  $entity_form['#element_validate'][] = 'intercept_guest_reservation_ief_validate';
+}

@@ -25,7 +25,7 @@
 
   .menu a:not(:last-of-type) {
     width: 20px;
-  };
+  }
 
   .menu a {
     text-decoration: none;
@@ -94,6 +94,13 @@
   }
 }
 
+// CSS for the copyright - only affects Intercept Pantheon Upstream
+#block-intercept-profile-copyright {
+  @include bp(m-large) {
+    padding: 30px 0;
+  }
+}
+
 #block-footermenu {
   order: 1;
 }
@@ -110,7 +117,6 @@
 
 // Copyright
 #block-copyrightblock {
-  
   order: 6;
   @include bp(x-large) {
     order: 2;
@@ -123,7 +129,8 @@
   }
 }
 
-#block-gtranslate, #block-gtranslate--2 {
+#block-gtranslate,
+#block-gtranslate--2 {
   margin: 0 auto 10px 0;
   order: 3;
   @include bp(x-large) {
@@ -159,17 +166,17 @@
 
   @include bp(large) {
     li {
-      margin-right: .5em;
+      margin-right: 0.5em;
     }
     li:first-of-type {
       width: 25px;
       margin-left: 1em;
     }
-    
+
     li:not(:last-of-type):not(:first-of-type) {
       width: 35px;
     }
-  
+
     li:last-of-type {
       margin-left: 1rem;
     }

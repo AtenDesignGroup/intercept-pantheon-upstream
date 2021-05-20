@@ -8,6 +8,7 @@ dependencies:
   - admin_toolbar:admin_toolbar
   - adminimal_admin_toolbar:adminimal_admin_toolbar
   - components:components
+  - better_exposed_filters:better_exposed_filters
   - default_content:default_content
   - drupal:automated_cron
   - drupal:block
@@ -40,6 +41,10 @@ dependencies:
   - intercept_location:intercept_location
   - intercept_location_closing:intercept_location_closing
   - intercept_profile_copyright:intercept_profile_copyright
+  - jquery_ui:jquery_ui
+  - jquery_ui_datepicker:jquery_ui_datepicker
+  - jquery_ui_slider:jquery_ui_slider
+  - jquery_ui_touch_punch:jquery_ui_touch_punch
   - quick_node_clone:quick_node_clone
   - stories:stories_media
   - twig_tweak:twig_tweak

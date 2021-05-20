@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 
-import { Input, InputLabel, MenuItem, FormControl, ListItemText, Select, Checkbox } from '@material-ui/core';
+import { Input, InputLabel, MenuItem, FormControl, ListItemText, Select, Checkbox, Collapse } from '@material-ui/core';
+import { ExpandLess, ExpandMore } from '@material-ui/icons';
 
 const styles = theme => ({
   root: {
@@ -46,9 +47,27 @@ const MenuProps = {
 };
 
 class SelectMultiple extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {open: false};
+  }
+
   handleChange = (event) => {
     this.props.handleChange(event);
   };
+
+  // handleClick = () => {
+  //   console.log('fired');
+  //   if (this.state.open === false) {
+  //     this.setState({
+  //       open: true
+  //     });
+  //   } else {
+  //     this.setState({
+  //       open: false
+  //     });
+  //   }
+  // };
 
   render() {
     const { chips, labels, isValid, renderValue, options, label, multiple, name, required, value } = this.props;
@@ -56,15 +75,55 @@ class SelectMultiple extends React.Component {
     const checkboxLabel = (text, id) => (
       <label className="select-filter__checkbox-label">{text}</label>
     );
+    // const [open, setOpen] = React.useState(true);
 
     const toOptionItems = (depth = 0) => (all, option) => {
-      return [].concat(
+      let indeterminate = false;
+      let selected = [];
+      if (option.children.length > 0) {
+        option.children.forEach((child) => {
+          selected.push(value.indexOf(child.key) > -1);
+        })
+        const all = selected.every( v => v === true );
+        const some = selected.indexOf(true) > -1;
+        if (some && !all) {
+          indeterminate = true;
+        }
+      }
+      if (option.children.length > 0) {
+        return [].concat(
+          all,
+          (<MenuItem
+            onClick={this.handleClick}
+            key={option.key}
+            value={option.key}
+            className="select-filter__menu-item"
+            data-depth={depth}>
+            <Checkbox
+              checked={multiple ? value.indexOf(option.key) > -1 : value === option.key}
+              id={checkboxId(option.key)}
+              className="select-filter__checkbox"
+              indeterminate={indeterminate}
+            />
+            <ListItemText
+              disableTypography
+              primary={checkboxLabel(option.value, checkboxId(option.key))}
+            />
+          </MenuItem>),
+          option.children && option.children.reduce(toOptionItems(depth + 1), []))
+      } else {
+        return [].concat(
         all,
-        (<MenuItem key={option.key} value={option.key} className="select-filter__menu-item" data-depth={depth}>
+        (<MenuItem
+          key={option.key}
+          value={option.key}
+          className="select-filter__menu-item"
+          data-depth={depth}>
           <Checkbox
             checked={multiple ? value.indexOf(option.key) > -1 : value === option.key}
             id={checkboxId(option.key)}
             className="select-filter__checkbox"
+            indeterminate={indeterminate}
           />
           <ListItemText
             disableTypography
@@ -72,6 +131,7 @@ class SelectMultiple extends React.Component {
           />
         </MenuItem>),
         option.children && option.children.reduce(toOptionItems(depth + 1), []))
+      }
     };
 
     return (

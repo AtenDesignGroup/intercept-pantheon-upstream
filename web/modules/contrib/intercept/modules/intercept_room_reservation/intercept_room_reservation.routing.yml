@@ -20,10 +20,10 @@ entity.node.reservations:
     _admin_route: TRUE
 
 intercept_room_reservation.reservation.add:
-  path: '/manage/room-reservations/add'
+  path: '/room-reservation/add'
   defaults:
     # _form: '\Drupal\intercept_room_reservation\Form\RoomReservationForm'
-    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::add'
+#    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::add'
     _title: 'Create Reservation'
   requirements:
     # _entity_access: 'room_reservation.update'

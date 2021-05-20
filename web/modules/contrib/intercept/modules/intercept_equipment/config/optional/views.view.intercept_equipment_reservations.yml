@@ -3,11 +3,13 @@ status: true
 dependencies:
   config:
     - field.storage.equipment_reservation.field_dates
+    - field.storage.equipment_reservation.field_event
     - field.storage.equipment_reservation.field_location
     - field.storage.equipment_reservation.field_room
     - field.storage.node.field_equipment_type
     - taxonomy.vocabulary.equipment_type
   module:
+    - better_exposed_filters
     - datetime
     - datetime_range
     - intercept_equipment
@@ -44,7 +46,7 @@ display:
           query_comment: ''
           query_tags: {  }
       exposed_form:
-        type: basic
+        type: bef
         options:
           submit_button: Apply
           reset_button: true
@@ -53,6 +55,74 @@ display:
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
+          input_required: false
+          text_input_required: 'Select any filter and click on Apply to see results'
+          bef:
+            general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_hide: false
+              input_required: false
+              text_input_required: 'Select any filter and click on Apply to see results'
+              text_input_required_format: basic_html
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+            filter:
+              uid:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              field_dates_value:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              title:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              title_1:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              field_equipment_type_target_id:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+              field_dates_value_1:
+                plugin_id: bef_datepicker
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  sort_options: false
+          text_input_required_format: basic_html
       pager:
         type: full
         options:
@@ -61,8 +131,8 @@ display:
           id: 0
           total_pages: null
           tags:
-            previous: ‹‹
-            next: ››
+            previous: '‹ Prev'
+            next: 'Next ›'
             first: '« First'
             last: 'Last »'
           expose:
@@ -91,6 +161,7 @@ display:
             field_dates: field_dates
             field_location: field_location
             field_room: field_room
+            field_event: field_event
             name: name
             field_equipment_type: field_equipment_type
           info:
@@ -123,6 +194,13 @@ display:
               empty_column: false
               responsive: ''
             field_room:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_event:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -475,6 +553,69 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
+        field_event:
+          id: field_event
+          table: equipment_reservation__field_event
+          field: field_event
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Event
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
         name:
           id: name
           table: users_field_data
@@ -630,8 +771,11 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
             reduce: false
             operator_limit_selection: false
             operator_list: {  }
@@ -676,8 +820,11 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
             placeholder: ''
             operator_limit_selection: false
             operator_list: {  }
@@ -722,8 +869,11 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
             placeholder: ''
             operator_limit_selection: false
             operator_list: {  }
@@ -768,8 +918,11 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
             reduce: false
             operator_limit_selection: false
             operator_list: {  }
@@ -822,8 +975,11 @@ display:
               anonymous: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
+              administrator: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
@@ -941,6 +1097,7 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.equipment_reservation.field_dates'
+        - 'config:field.storage.equipment_reservation.field_event'
         - 'config:field.storage.equipment_reservation.field_location'
         - 'config:field.storage.equipment_reservation.field_room'
         - 'config:field.storage.node.field_equipment_type'
@@ -963,6 +1120,7 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.equipment_reservation.field_dates'
+        - 'config:field.storage.equipment_reservation.field_event'
         - 'config:field.storage.equipment_reservation.field_location'
         - 'config:field.storage.equipment_reservation.field_room'
         - 'config:field.storage.node.field_equipment_type'

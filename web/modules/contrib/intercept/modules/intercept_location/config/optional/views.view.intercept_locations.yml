@@ -4,7 +4,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.listing
     - node.type.location
-    - system.menu.main
+    - system.menu.main-navigation-secondary
   module:
     - node
     - user
@@ -12,7 +12,7 @@ id: intercept_locations
 label: 'Intercept Locations'
 module: views
 description: ''
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
 display:
@@ -206,6 +206,27 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
+  branch_location_reference:
+    display_plugin: entity_reference
+    id: branch_location_reference
+    display_title: 'Branch Location Reference'
+    position: 2
+    display_options:
+      display_extenders: {  }
+      style:
+        type: entity_reference
+        options:
+          search_fields:
+            title: title
+      display_description: ''
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }
   landing:
     display_plugin: page
     id: landing
@@ -222,7 +243,7 @@ display:
         parent: ''
         weight: 0
         context: '0'
-        menu_name: main
+        menu_name: main-navigation-secondary
     cache_metadata:
       max-age: -1
       contexts:

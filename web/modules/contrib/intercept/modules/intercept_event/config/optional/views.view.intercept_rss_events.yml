@@ -21,7 +21,7 @@ id: intercept_rss_events
 label: 'Intercept RSS Events'
 module: views
 description: 'Useful for displaying Intercept content on digital signage.'
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
 display:
@@ -1041,6 +1041,7 @@ display:
           description_field: field_text_teaser
           creator_field: name
           date_field: created
+          enclosure_field: thumbnail__target_id
           guid_field_options:
             guid_field: nid
             guid_field_is_permalink: false

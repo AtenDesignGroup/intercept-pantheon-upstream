@@ -36,8 +36,15 @@ intercept_room_reservation.room_create:
   parent: intercept_room_reservation.room_parent
   title: 'Create Reservation'
   weight: 1
-  route_name: intercept_room_reservation.reserve_room
+  route_name: intercept_room_reservation.reservation.add
   menu_name: intercept-manage
+  options:
+    attributes:
+      class:
+        - use-ajax
+      data-dialog-type:  dialog
+      data-dialog-options: '{"width": "400"}'
+      data-dialog-renderer: off_canvas
   class: Drupal\intercept_room_reservation\Plugin\Menu\RoomMenuLink
 
 intercept_room_reservation.room_my:

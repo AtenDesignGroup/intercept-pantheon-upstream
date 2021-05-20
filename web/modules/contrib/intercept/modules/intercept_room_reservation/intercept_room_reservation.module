@@ -138,6 +138,9 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $options = [];
     $nodes = $storage->loadMultiple($nids);
 
+    // Specify the empty option for our select list.
+    $options[''] = 'Any';
+
     // Push titles into select list.
     foreach ($nodes as $node) {
       $title = $node->getTitle();
@@ -149,9 +152,6 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $form[$location_field]['#type'] = 'select';
     $form[$location_field]['#multiple'] = FALSE;
 
-    // Specify the empty option for our select list.
-    $form[$location_field]['#empty_option'] = new TranslatableMarkup('Any');
-
     // Add the $options from above to our select list.
     $form[$location_field]['#options'] = $options;
     unset($form[$location_field]['#size']);
@@ -159,6 +159,18 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     // Remove autocomplete from the reservation form's date fields.
     $form['date']['min']['#attributes']['autocomplete'] = 'off';
     $form['date']['max']['#attributes']['autocomplete'] = 'off';
+  }
+
+  // Room Reserve Staff Calendar View
+  if ($form['#id'] == 'views-exposed-form-intercept-rooms-default') {
+    if (isset($form['min-capacity']) && isset($form['max-capacity'])) {
+      // Hide min-capacity as we will set the value to match max capacity
+      // to mimic an IS_BETWEEN query. See: intercept_room_reservation_views_pre_view().
+      $form['min-capacity']['#type'] = 'hidden';
+      $form['min-capacity']['#attributes'] = [
+        'class' => ['visually-hidden'],
+      ];
+    }
   }
 }
 
@@ -354,6 +366,14 @@ function intercept_room_reservation_views_pre_view(ViewExecutable $view, $displa
 
     // Attach JS
     $view->element['#attached']['library'][] = 'intercept_room_reservation/roomReservationList';
+  }
+  elseif ($view->id() === 'intercept_rooms' && $display_id === 'default') {
+    $filters = $view->getExposedInput();
+    // Match min-capacity to max-capacity to mimic an IS_BETWEEN query.
+    if (isset($filters['max-capacity'])) {
+      $filters['min-capacity'] = $filters['max-capacity'];
+      $view->setExposedInput($filters);
+    }
   }
 }
 

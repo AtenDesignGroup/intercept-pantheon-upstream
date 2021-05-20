@@ -1,0 +1,70 @@
+intercept_guest.example:
+  path: '/intercept-guest/example'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\intercept_guest\Controller\InterceptGuestController::build'
+  requirements:
+    _permission: 'access content'
+
+intercept_guest.settings:
+  path: '/admin/structure/intercept/intercept-guest'
+  defaults:
+    _title: 'Intercept Guest settings'
+    _form: 'Drupal\intercept_guest\Form\SettingsForm'
+  requirements:
+    _permission: 'administer intercept guest entity'
+
+entity.intercept_guest.canonical:
+  path: '/intercept-guest/{intercept_guest}'
+  defaults:
+  # Calls the view controller, defined in the annotation of the Intercept guest entity
+    _entity_view: 'intercept_guest'
+    _title: 'Intercept Guest Content'
+  requirements:
+  # Calls the access controller of the entity, $operation 'view'
+    _entity_access: 'intercept_guest.view'
+
+entity.intercept_guest.collection:
+  path: 'admin/content/intercept-guests'
+  defaults:
+  # Calls the list controller, defined in the annotation of the Intercept Guest entity.
+    _entity_list: 'intercept_guest'
+    _title: 'Intercept Guest List'
+  requirements:
+  # Checks for permission directly.
+    _permission: 'view intercept guest entity'
+
+entity.intercept_guest.add_form:
+  path: '/intercept-guest/add'
+  defaults:
+  # Calls the form.add controller, defined in the Intercept Guest entity.
+    _entity_form: intercept_guest.add
+    _title: 'Add Intercept Guest'
+  requirements:
+    _entity_create_access: 'intercept_guest'
+
+entity.intercept_guest.edit_form:
+  path: '/intercept-guest/{intercept_guest}/edit'
+  defaults:
+  # Calls the form.edit controller, defined in the Intercept Guest entity.
+    _entity_form: intercept_guest.edit
+    _title: 'Edit Intercept Guest'
+  requirements:
+    _entity_access: 'intercept_guest.edit'
+
+entity.intercept_guest.delete_form:
+  path: '/intercept-guest/{intercept_guest}/delete'
+  defaults:
+    # Calls the form.delete controller, defined in the Intercept Guest entity.
+    _entity_form: intercept_guest.delete
+    _title: 'Delete Intercept Guest'
+  requirements:
+    _entity_access: 'intercept_guest.delete'
+
+intercept_guest.guest_user_settings:
+  path: '/admin/config/system/guest-user-settings'
+  defaults:
+    _title: 'Configure Intercept Guest user'
+    _form: 'Drupal\intercept_guest\Form\GuestUserSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

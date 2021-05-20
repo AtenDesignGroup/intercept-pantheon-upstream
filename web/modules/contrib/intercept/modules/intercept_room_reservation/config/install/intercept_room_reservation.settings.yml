@@ -39,7 +39,6 @@ email:
     user: reservation_user
     user_role:
       intercept_staff: intercept_staff
-      intercept_room_reservation_approver: intercept_room_reservation_approver
       intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
@@ -59,7 +58,6 @@ email:
     user: user_role
     user_role:
       intercept_staff: intercept_staff
-      intercept_room_reservation_approver: intercept_room_reservation_approver
       intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
@@ -73,7 +71,6 @@ email:
     user: user_role
     user_role:
       intercept_staff: intercept_staff
-      intercept_room_reservation_approver: intercept_room_reservation_approver
       intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
@@ -98,7 +95,6 @@ email:
     user: user_role
     user_role:
       intercept_staff: intercept_staff
-      intercept_room_reservation_approver: intercept_room_reservation_approver
       intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin

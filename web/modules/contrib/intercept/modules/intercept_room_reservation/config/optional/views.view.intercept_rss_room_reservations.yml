@@ -21,7 +21,7 @@ id: intercept_rss_room_reservations
 label: 'Intercept RSS Room Reservations'
 module: views
 description: 'Useful for displaying Intercept content on digital signage.'
-tag: ''
+tag: Intercept
 base_table: room_reservation_field_data
 base_field: id
 display:

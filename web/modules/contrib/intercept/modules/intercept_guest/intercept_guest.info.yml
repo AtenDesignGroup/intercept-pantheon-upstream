@@ -1,0 +1,8 @@
+name: Intercept Guest
+type: module
+description: Provides guest-related functionality for the Intercept suite.
+package: Intercept
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - intercept_room_reservation

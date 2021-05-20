@@ -1,0 +1,5 @@
+entity.intercept_guest.add_form:
+  route_name: entity.intercept_guest.add_form
+  title: 'Add Intercept Guest'
+  appears_on:
+    - entity.intercept_guest.collection

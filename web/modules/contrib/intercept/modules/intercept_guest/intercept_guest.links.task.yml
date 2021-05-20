@@ -1,0 +1,26 @@
+intercept_guest.settings_tab:
+  route_name: intercept_guest.settings
+  title: 'Settings'
+  base_route: intercept_guest.settings
+
+entity.intercept_guest.canonical:
+  route_name: entity.intercept_guest.canonical
+  base_route: entity.intercept_guest.canonical
+  title: 'View'
+
+entity.intercept_guest.edit_form:
+  route_name: entity.intercept_guest.edit_form
+  base_route: entity.intercept_guest.canonical
+  title: 'Edit'
+
+entity.intercept_guest.delete_form:
+  route_name:  entity.intercept_guest.delete_form
+  base_route:  entity.intercept_guest.canonical
+  title: 'Delete'
+  weight: 10
+
+entity.intercept_guest.collection:
+  title: 'Room Reservations'
+  route_name: entity.intercept_guest.collection
+  base_route: system.admin_content
+  weight: 15

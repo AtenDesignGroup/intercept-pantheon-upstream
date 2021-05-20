@@ -8,10 +8,10 @@ dependencies:
   module:
     - node
 id: intercept_event_templates
-label: 'Intercept Event templates'
+label: 'Intercept Event Templates'
 module: views
 description: ''
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
 display:
@@ -550,27 +550,14 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          empty: false
+          empty: true
           tokenize: false
           content:
             value: 'Start from a template? <a href="/node/add/event?destination=[current-page:url:path]">No thanks, start from scratch ></a>'
             format: basic_html
           plugin_id: text
       footer: {  }
-      empty:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content:
-            value: 'No event templates created.  <a href="/node/add/event?destination=[current-page:url:path]">Create an event ></a>'
-            format: basic_html
-          plugin_id: text
+      empty: {  }
       relationships: {  }
       arguments: {  }
       display_extenders: {  }
@@ -584,6 +571,7 @@ display:
       tags:
         - 'config:field.storage.node.field_event_audience'
         - 'config:field.storage.node.field_event_type'
+        - extensions
   embed:
     display_plugin: embed
     id: embed
@@ -601,3 +589,4 @@ display:
       tags:
         - 'config:field.storage.node.field_event_audience'
         - 'config:field.storage.node.field_event_type'
+        - extensions

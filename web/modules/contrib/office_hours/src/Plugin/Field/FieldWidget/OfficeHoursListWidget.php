@@ -30,34 +30,35 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
     $daynames = OfficeHoursDateHelper::weekDays(FALSE);
 
     $element['value'] = [
-        '#type' => 'office_hours_list',
-        '#default_value' => $default_value,
-        '#day' => $day,
-        // Make sure the value is shown in OfficeHoursSlot.
-        '#daydelta' => 0,
-        '#dayname' => $daynames[$day],
-        // Wrap all of the select elements with a fieldset.
-        '#theme_wrappers' => [
-          'fieldset',
+      '#type' => 'office_hours_list',
+      '#default_value' => $default_value,
+      '#day' => $day,
+      // Make sure the value is shown in OfficeHoursSlot.
+      '#daydelta' => 0,
+      '#dayname' => $daynames[$day],
+      // Wrap all of the select elements with a fieldset.
+      '#theme_wrappers' => [
+        'fieldset',
+      ],
+      '#attributes' => [
+        'class' => [
+          'container-inline',
         ],
-        '#attributes' => [
-          'class' => [
-            'container-inline',
-          ],
-        ],
+      ],
 
-      ] + $element['value'];
+    ] + $element['value'];
 
     return $element;
   }
 
   /**
+   * This function repairs the anomaly we mentioned before.
+   *
+   * @see formElement()
+   *
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    // This repairs the anomaly we mentioned before.
-    // See also function formElement().
-
     // Reformat the $values, before passing to database.
     foreach ($values as &$item) {
       $item = $item['value'];

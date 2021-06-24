@@ -140,8 +140,8 @@ class ActionLinkNoJsController implements ContainerInjectionInterface {
     else {
       // For entities that don't have a canonical URL (like paragraphs),
       // redirect to the front page.
-      $front = Url::fromUri('internal:/');
-      $response = new RedirectResponse($front);
+      $front = Url::fromRoute('<front>');
+      $response = new RedirectResponse($front->toString());
     }
 
     return $response;

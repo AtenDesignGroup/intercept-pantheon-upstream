@@ -3,7 +3,6 @@
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
  * Plugin implementation of the formatter.
@@ -33,14 +32,15 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
 
-    $settings = $this->getSettings();
     // If no data is filled for this entity, do not show the formatter.
     // N.B. 'Show current day' may return nothing in getRows(), while other days are filled.
-    /* @var $items OfficeHoursItemListInterface */
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
     if (!$items->getValue()) {
       return $elements;
     }
-    $office_hours = $items->getRows($settings, $this->getFieldSettings());
+
+    $settings = $this->getSettings();
+    $office_hours = $this->getRows($items->getValue(), $this->getSettings(), $this->getFieldSettings());
 
     if ($office_hours) {
       $elements[] = [
@@ -49,9 +49,9 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
         '#item_separator' => $settings['separator']['days'],
         '#slot_separator' => $settings['separator']['more_hours'],
         '#attributes' => [
-          'class' => ['office-hours', ],
+          'class' => ['office-hours'],
         ],
-        //'#empty' => $this->t('This location has no opening hours.'),
+        // '#empty' => $this->t('This location has no opening hours.'),
         '#attached' => [
           'library' => [
             'office_hours/office_hours_formatter',

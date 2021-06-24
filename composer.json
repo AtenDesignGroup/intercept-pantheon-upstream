@@ -24,7 +24,7 @@
     "drupal/default_content": "^1.0",
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept": "1.x-dev",
-    "drupal/quick_node_clone": "^1.12",
+    "drupal/quick_node_clone": "^1.14",
     "drupal/smsframework": "^2",
     "drupal/view_user_email": "^1.0.1",
     "zaporylie/composer-drupal-optimizations": "^1.0",
@@ -110,7 +110,7 @@
         "Unable to Override Headers/Labels with hook_views_pre_render(). Used in export by age group": "https://www.drupal.org/files/issues/2019-10-10/3087166-csv_serialization-8.x-2.x-dev-views-pre-render-alter-headers.patch"
       },
       "drupal/field_group": {
-        "Resolves PHP notices on My Account Settings form": "https://www.drupal.org/files/issues/2020-06-15/3059614-37.patch"
+        "Resolves PHP notices on My Account Settings form": "https://www.drupal.org/files/issues/2021-02-26/3059614-field_group-8.x-dev-fix-undefined-property-48.patch"
       },
       "drupal/smsframework": {
         "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"

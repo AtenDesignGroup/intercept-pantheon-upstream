@@ -10,7 +10,7 @@
   // link so that styles can be applied while the XHR is in flight.
   Drupal.behaviors.flagAttach = {
     attach: (context) => {
-      const links = context.querySelectorAll('.flag a');
+      const links = [...context.querySelectorAll('.flag a')];
       links.forEach(link => link.addEventListener('click', event => event.target.parentNode.classList.add('flag-waiting')));
     },
   };
@@ -45,7 +45,7 @@
     else {
       // If the XHR failed, assume the replace command that would normally make
       // the styling disapear has also failed and remove the temporary styling.
-      const links = document.querySelectAll('.flag-waiting');
+      const links = [...document.querySelectAll('.flag-waiting')];
       links.forEach(link => link.classList.remove('flag-waiting'));
     }
   };

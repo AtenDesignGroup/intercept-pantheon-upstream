@@ -5,10 +5,6 @@
  * https://github.com/googlei18n/libaddressinput/issues
  * Since Google has been slow to resolve them, the library maintains its own
  * list of customizations, in PHP format for easier contribution.
- *
- * @todo
- * PE subdivisions (https://github.com/googlei18n/libaddressinput/issues/50)
- * Other points raised in https://github.com/googlei18n/libaddressinput/issues/49
  */
 
 /**
@@ -16,6 +12,11 @@
  */
 function get_address_format_customizations($countryCode) {
     $formatCustomizations = [];
+    // Replace the postal code pattern.
+    // https://github.com/google/libaddressinput/issues/207
+    $formatCustomizations['BH'] = [
+        'postal_code_pattern' => '(?:^|\b)(?:1[0-2]|[1-9])\d{2}(?:$|\b)',
+    ];
     // Make the locality required.
     $formatCustomizations['CO'] = [
         'required_fields' => [

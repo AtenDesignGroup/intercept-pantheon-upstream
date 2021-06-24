@@ -2,12 +2,13 @@ name: JSON API Defaults
 type: module
 description: Builds on top of JSON API to deliver extra functionality.
 core: 8.x
+core_version_requirement: '^8 || ^9'
 package: Web services
 dependencies:
   - jsonapi:jsonapi
   - jsonapi_extras:jsonapi_extras
 
-# Information added by Drupal.org packaging script on 2020-03-28
-version: '8.x-3.14'
+# Information added by Drupal.org packaging script on 2021-06-14
+version: '8.x-3.18'
 project: 'jsonapi_extras'
-datestamp: 1585437199
+datestamp: 1623673083

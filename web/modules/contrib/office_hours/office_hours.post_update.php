@@ -38,8 +38,8 @@ function office_hours_post_update_implement_office_hours_entity_view_display_sch
   \Drupal::classResolver(ConfigEntityUpdater::class)
     ->update($sandbox, 'entity_view_display', function (EntityViewDisplayInterface $entityViewDisplay) {
       $updated = FALSE;
-      foreach($entityViewDisplay->getComponents() as $key => $component) {
-        if($component['type'] === 'office_hours_table') {
+      foreach ($entityViewDisplay->getComponents() as $key => $component) {
+        if ($component['type'] === 'office_hours_table') {
           $component['settings']['compress'] = (bool) $component['settings']['compress'];
           $component['settings']['grouped'] = (bool) $component['settings']['grouped'];
           $component['settings']['schema']['enabled'] = (bool) $component['settings']['schema']['enabled'];

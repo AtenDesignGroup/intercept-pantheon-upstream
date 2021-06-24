@@ -13,14 +13,20 @@ field.storage_settings.office_hours:
     increment:
       type: integer
       label: 'Restrict the input to fixed fractions of an hour'
+    required_start:
+      type: boolean
+      label: 'Required widget hours - from'
     limit_start:
       type: string
       label: 'Limit widget hours - from'
+    required_end:
+      type: boolean
+      label: 'Required widget hours - until'
     limit_end:
       type: string
       label: 'Limit widget hours - until'
     comment:
-      type: boolean
+      type: integer
       label: 'Allow a comment per time slot'
     valhrs:
       type: boolean
@@ -49,7 +55,7 @@ field.formatter.settings.office_hours:
       type: string
       label: 'Number of days to show'
     closed_format:
-      type: string
+      type: text
       label: 'Empty days notation'
     separator:
       type: mapping
@@ -125,5 +131,5 @@ field.value.office_hours:
       type: integer
       label: 'End hours'
     comment:
-      type: string
+      type: text
       label: 'Comment'

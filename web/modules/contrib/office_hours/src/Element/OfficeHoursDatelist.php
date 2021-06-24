@@ -36,12 +36,10 @@ class OfficeHoursDatelist extends Datelist {
       '#date_date_element' => 'none', // {'none'|'date'}
       '#date_time_element' => 'time', // {'none'|'time'|'text'}
       '#date_date_format' => 'none',
-      //'#date_date_callbacks' => [],
-      //'#date_time_format' => 'time', // see format_date()
       '#date_time_callbacks' => [], // Can be used to add a jQuery time picker or an 'All day' checkbox.
       '#date_year_range' => '1900:2050',
       // @see Drupal\Core\Datetime\Element\DateElementBase.
-      '#date_timezone' => '+0000', // new \DateTimezone(DATETIME_STORAGE_TIMEZONE),
+      '#date_timezone' => '+0000',
     ];
 
     // #process, #validate bottom-up.
@@ -54,17 +52,18 @@ class OfficeHoursDatelist extends Datelist {
   /**
    * Callback for office_hours_select element.
    *
+   * Takes #default_value and dissects it in hours, minutes and ampm indicator.
+   * Mimics the date_parse() function.
+   * - g = 12-hour format of an hour without leading zeros 1 through 12
+   * - G = 24-hour format of an hour without leading zeros 0 through 23
+   * - h = 12-hour format of an hour with leading zeros   01 through 12
+   * - H = 24-hour format of an hour with leading zeros   00 through 23
+   *
    * @param array $element
    * @param mixed $input
-   * @param FormStateInterface $form_state
-   * @return array|mixed|null
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *
-   * Takes the #default_value and dissects it in hours, minutes and ampm indicator.
-   * Mimics the date_parse() function.
-   *   g = 12-hour format of an hour without leading zeros 1 through 12
-   *   G = 24-hour format of an hour without leading zeros 0 through 23
-   *   h = 12-hour format of an hour with leading zeros   01 through 12
-   *   H = 24-hour format of an hour with leading zeros   00 through 23
+   * @return array|mixed|null
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
 
@@ -100,10 +99,11 @@ class OfficeHoursDatelist extends Datelist {
    * Process the office_hours_select element before showing it.
    *
    * @param $element
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    * @param $complete_form
    *
-   * @return
+   * @return array
+   *   The screen element.
    */
   public static function processOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {
     $element['hour']['#options'] = $element['#hour_options'];
@@ -114,7 +114,7 @@ class OfficeHoursDatelist extends Datelist {
    * Validate the hours selector element.
    *
    * @param $element
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    * @param $complete_form
    */
   public static function validateOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {

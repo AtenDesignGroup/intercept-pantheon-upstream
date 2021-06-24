@@ -3,11 +3,10 @@
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
- * Plugin implementation of the formatter, from
- * https://schema.org/openingHours
+ * Plugin implementation of the formatter, from https://schema.org/openingHours.
+ *
  * No field type attached, so not visible on Field's 'Manage display' page.
  *
  * @FieldFormatter(
@@ -30,16 +29,21 @@ class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {
    *   Mo, Tu, We, Th, Fr, Sa, Su.
    * Times are specified using 24:00 time. For example,
    *   3pm is specified as 15:00.
+   *
    *  Here is an example:
-   *   <time itemprop="openingHours" datetime="Tu,Th 16:00-20:00">Tuesdays and Thursdays 4-8pm</time>.
+   *   <time itemprop="openingHours" datetime="Tu,Th 16:00-20:00">
+   *     Tuesdays and Thursdays 4-8pm
+   *   </time>.
    *  If a business is open 7 days a week, then it can be specified as
-   *   <time itemprop="openingHours" datetime="Mo-Su">Monday through Sunday, all day</time>.
+   *   <time itemprop="openingHours" datetime="Mo-Su">
+   *     Monday through Sunday, all day
+   *   </time>.
    */
   public static function defaultSettings() {
     return [
-      // The following settings are fixed in the Microdata settings
-      'day_format' => 'two_letter', // Mo, Tu, We, Th, Fr, Sa, Su
-      'time_format' => 'H',         // 24:00 time.
+      // The following settings are fixed in the Microdata settings.
+      'day_format' => 'two_letter', // Mo, Tu, We, Th, Fr, Sa, Su.
+      'time_format' => 'H', // 24:00 time.
       'separator' => [
         'days' => ', ',
         'grouped_days' => '-',
@@ -66,15 +70,15 @@ class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {
     unset($settings['show_closed']);
     $settings += $this->getSettings();
 
-    /* @var $items OfficeHoursItemListInterface */
-    $office_hours = $items->getRows($settings, $this->getFieldSettings());
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
+    $office_hours = $this->getRows($items->getValue(), $this->getSettings(), $this->getFieldSettings());
     $elements[] = [
       '#theme' => 'office_hours_schema',
       '#office_hours' => $office_hours,
       '#item_separator' => $settings['separator']['days'],
       '#slot_separator' => $settings['separator']['more_hours'],
       '#attributes' => [
-        'class' => ['office-hours', ],
+        'class' => ['office-hours'],
       ],
       '#cache' => [
         'max-age' => $this->getStatusTimeLeft($items, $langcode),

@@ -72,3 +72,4 @@ MAINTAINERS
 -----------
 
  * David Lohmeyer (vilepickle) - https://www.drupal.org/u/vilepickle
+ * Neslee Canil Pinto - https://www.drupal.org/u/neslee-canil-pinto

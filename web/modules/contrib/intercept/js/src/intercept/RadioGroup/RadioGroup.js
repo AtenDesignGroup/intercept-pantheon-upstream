@@ -40,12 +40,8 @@ class Radios extends React.Component {
     }
 
     return (
-      <FormControl
-        component="fieldset"
-        className={'radios'}
-        required={required}
-        error={!isValid} >
-        {label && (<FormLabel component="legend">{label}</FormLabel>)}
+      <FormControl component="fieldset" className={'radios'} required={required} error={!isValid}>
+        {label && <FormLabel component="legend">{label}</FormLabel>}
         <RadioGroup
           aria-label={ariaLabel}
           name={name}
@@ -53,11 +49,17 @@ class Radios extends React.Component {
           className={'radios__group'}
           onChange={handleChange}
         >
-          {options.map(option => (
-            <FormControlLabel key={option.key} value={option.key} control={<Radio />} label={option.value} className={'radios__radio-label'} />
+          {options.map((option) => (
+            <FormControlLabel
+              key={option.key}
+              value={option.key}
+              control={<Radio />}
+              label={option.value}
+              className={'radios__radio-label'}
+            />
           ))}
         </RadioGroup>
-        {helperText && (<FormHelperText error={!isValid}>{helperText}</FormHelperText>)}
+        {helperText && <FormHelperText error={!isValid}>{helperText}</FormHelperText>}
       </FormControl>
     );
   }

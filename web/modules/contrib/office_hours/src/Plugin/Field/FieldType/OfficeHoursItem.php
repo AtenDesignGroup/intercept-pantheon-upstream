@@ -2,6 +2,7 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -54,8 +55,6 @@ class OfficeHoursItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
-    //    $properties['value'] = DataDefinition::create('string')
-    //      ->setLabel( $this->t('Office hours'));
     $properties['day'] = DataDefinition::create('integer')
       ->setLabel(t('Day'))
       ->setDescription("Stores the day of the week's numeric representation (0-6)");
@@ -78,15 +77,17 @@ class OfficeHoursItem extends FieldItemBase {
    */
   public static function defaultStorageSettings() {
     $defaultStorageSettings = [
-        'time_format' => 'G',
-        'element_type' => 'office_hours_datelist',
-        'increment' => 30,
-        'limit_start' => '',
-        'limit_end' => '',
-        'comment' => TRUE,
-        'valhrs' => FALSE,
-        'cardinality_per_day' => 2,
-      ] + parent::defaultStorageSettings();
+      'time_format' => 'G',
+      'element_type' => 'office_hours_datelist',
+      'increment' => 30,
+      'required_start' => FALSE,
+      'required_end' => FALSE,
+      'limit_start' => '',
+      'limit_end' => '',
+      'comment' => 1,
+      'valhrs' => FALSE,
+      'cardinality_per_day' => 2,
+    ] + parent::defaultStorageSettings();
 
     return $defaultStorageSettings;
   }
@@ -121,12 +122,9 @@ class OfficeHoursItem extends FieldItemBase {
     $element['cardinality_per_day'] = [
       '#type' => 'select',
       '#title' => $this->t('Number of time slots per day'),
-      // @todo For 'multiple slots per day': add support for FIELD_CARDINALITY_UNLIMITED.
-      // '#options' => [FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED => $this->t('unlimited')) + drupal_map_assoc(range(1, 10)],
       '#options' => array_combine(range(1, 12), range(1, 12)),
       '#default_value' => $settings['cardinality_per_day'],
       '#description' => $description,
-      // '#disabled' => $has_data,
     ];
 
     // @todo D8 Align with DateTimeDatelistWidget.
@@ -134,10 +132,10 @@ class OfficeHoursItem extends FieldItemBase {
       '#type' => 'select',
       '#title' => $this->t('Time notation'),
       '#options' => [
-        'G' => $this->t('24 hour time') . ' (9:00)', // D7: key = 0
-        'H' => $this->t('24 hour time') . ' (09:00)', // D7: key = 2
-        'g' => $this->t('12 hour time') . ' (9:00 am)', // D7: key = 1
-        'h' => $this->t('12 hour time') . ' (09:00 am)', // D7: key = 1
+        'G' => $this->t('24 hour time @example', ['@example' => '(9:00)']), // D7: key = 0.
+        'H' => $this->t('24 hour time @example', ['@example' => '(09:00)']), // D7: key = 2.
+        'g' => $this->t('12 hour time @example', ['@example' => '09:00 am)']), // D7: key = 1.
+        'h' => $this->t('12 hour time @example', ['@example' => '(09:00 am)']), // D7: key = 1.
       ],
       '#default_value' => $settings['time_format'],
       '#required' => FALSE,
@@ -163,17 +161,22 @@ class OfficeHoursItem extends FieldItemBase {
         5 => $this->t('5 minute'),
         15 => $this->t('15 minute'),
         30 => $this->t('30 minute'),
-        60 => $this->t('60 minute')
+        60 => $this->t('60 minute'),
       ],
       '#required' => FALSE,
       '#description' => $this->t('Restrict the input to fixed fractions of an hour.'),
     ];
 
     $element['comment'] = [
-      '#type' => 'checkbox',
+      '#type' => 'select',
       '#title' => $this->t('Allow a comment per time slot'),
       '#required' => FALSE,
       '#default_value' => $settings['comment'],
+      '#options' => [
+        0 => $this->t('No comments allowed'),
+        1 => $this->t('Allow comments (HTML tags possible)'),
+        2 => $this->t('Allow translatable comments (no HTML)'),
+      ]
     ];
     $element['valhrs'] = [
       '#type' => 'checkbox',
@@ -184,16 +187,26 @@ class OfficeHoursItem extends FieldItemBase {
         Please note that this will work as long as both hours are set and
         the opening hours are not through midnight.'),
     ];
+    $element['required_start'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Require Start time'),
+      '#default_value' => $settings['required_start'],
+    ];
+    $element['required_end'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Require End time'),
+      '#default_value' => $settings['required_end'],
+    ];
     $element['limit_start'] = [
       '#type' => 'select',
-      '#title' => $this->t('Limit widget hours - from'),
+      '#title' => $this->t('Limit hours - from'),
       '#description' => $this->t('Restrict the hours available - select options will start from this hour.'),
       '#default_value' => $settings['limit_start'],
       '#options' => $hours,
     ];
     $element['limit_end'] = [
       '#type' => 'select',
-      '#title' => $this->t('Limit widget hours - until'),
+      '#title' => $this->t('Limit hours - until'),
       '#description' => $this->t('Restrict the hours available - select options
          will end at this hour. You may leave \'until\' time empty.
          Use \'00:00\' for closing at midnight.'),
@@ -207,15 +220,21 @@ class OfficeHoursItem extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
+  public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
+    $values['day'] = mt_rand(0, 6);
+    $values['starthours'] = mt_rand(00, 23) * 100;
+    $values['endhours'] = mt_rand(00, 23) * 100;
+    $values['comment'] = mt_rand(0,1) ? 'additional text': '';
+    return $values;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isEmpty() {
     // Note: in Week-widget, day is <> '', in List-widget, day can be ''.
     // Note: test every change with Week/List widget and Select/HTML5 element!
-    if (OfficeHoursDatetime::isEmpty($this->get('starthours')->getValue())
-      && OfficeHoursDatetime::isEmpty($this->get('endhours')->getValue())
-      && empty($this->get('comment')->getValue())) {
-      return TRUE;
-    }
-    return FALSE;
+    return OfficeHoursDatetime::isEmpty($this->getValue());
   }
 
   /**

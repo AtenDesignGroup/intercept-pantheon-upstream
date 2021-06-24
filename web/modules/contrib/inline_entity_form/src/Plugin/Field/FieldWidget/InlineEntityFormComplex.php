@@ -17,7 +17,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\inline_entity_form\TranslationHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Component\Utility\Crypt;
 
 /**
  * Complex inline widget.
@@ -216,7 +215,7 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
     // Assign a unique identifier to each IEF widget.
     // Since $parents can get quite long, hashing ensures that every id has
     // a consistent and relatively short length while maintaining uniqueness.
-    $this->setIefId(Crypt::hashBase64(implode('-', $parents)));
+    $this->setIefId($this->makeIefId($parents));
 
     // Get the langcode of the parent entity.
     $parent_langcode = $items->getEntity()->language()->getId();
@@ -239,7 +238,8 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
       ],
     ] + $element;
     if ($element['#type'] == 'details') {
-      $element['#open'] = !$this->getSetting('collapsed');
+      // If there's user input, keep the details open. Otherwise, use settings.
+      $element['#open'] = $form_state->getUserInput() ?: !$this->getSetting('collapsed');
     }
 
     $this->prepareFormState($form_state, $items, $element['#translating']);
@@ -279,7 +279,8 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
 
     $weight_delta = max(ceil($entities_count * 1.2), 50);
     foreach ($entities as $key => $value) {
-      // Data used by theme_inline_entity_form_entity_table().
+      // Data used by inline-entity-form-entity-table.html.twig.
+      // @see template_preprocess_inline_entity_form_entity_table()
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = $value['entity'];
       $element['entities'][$key]['#label'] = $this->inlineFormHandler->getEntityLabel($value['entity']);
@@ -574,12 +575,6 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
         }
         $process_element['#process'][] = [get_class($this), 'hideCancel'];
       }
-
-      // No entities have been added. Remove the outer fieldset to reduce
-      // visual noise caused by having two titles.
-      if (empty($entities)) {
-        $element['#type'] = 'container';
-      }
     }
 
     return $element;
@@ -600,7 +595,7 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
 
     $field_name = $this->fieldDefinition->getName();
     $parents = array_merge($form['#parents'], [$field_name, 'form']);
-    $ief_id = Crypt::hashBase64(implode('-', $parents));
+    $ief_id = $this->makeIefId($parents);
     $this->setIefId($ief_id);
     $widget_state = &$form_state->get(['inline_entity_form', $ief_id]);
     foreach ($widget_state['entities'] as $key => $value) {

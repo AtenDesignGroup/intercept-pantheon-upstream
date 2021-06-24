@@ -17,7 +17,6 @@ use OutOfRangeException;
 use php_user_filter;
 use function array_combine;
 use function array_map;
-use function array_walk;
 use function in_array;
 use function is_numeric;
 use function mb_convert_encoding;
@@ -47,10 +46,7 @@ class CharsetConverter extends php_user_filter
     public $filtername;
 
     /**
-     * Contents of the params parameter passed to stream_filter_append
-     * or stream_filter_prepend functions.
-     *
-     * @var mixed
+     * @var mixed value passed to passed to stream_filter_append or stream_filter_prepend functions.
      */
     public $params;
 
@@ -120,7 +116,7 @@ class CharsetConverter extends php_user_filter
             return $encoding_list[$key];
         }
 
-        throw new OutOfRangeException(sprintf('The submitted charset %s is not supported by the mbstring extension', $encoding));
+        throw new OutOfRangeException('The submitted charset '.$encoding.' is not supported by the mbstring extension.');
     }
 
     /**
@@ -178,6 +174,7 @@ class CharsetConverter extends php_user_filter
             return array_map($this, $records);
         }
 
+        /* @var \Traversable $records */
         return new MapIterator($records, $this);
     }
 
@@ -186,18 +183,22 @@ class CharsetConverter extends php_user_filter
      */
     public function __invoke(array $record): array
     {
-        array_walk($record, [$this, 'encodeField']);
+        $outputRecord = [];
+        foreach ($record as $offset => $value) {
+            [$newOffset, $newValue] = $this->encodeField($value, $offset);
+            $outputRecord[$newOffset] = $newValue;
+        }
 
-        return $record;
+        return $outputRecord;
     }
 
     /**
      * Walker method to convert the offset and the value of a CSV record field.
      *
-     * @param mixed $value
-     * @param mixed $offset
+     * @param mixed $value  can be a scalar type or null
+     * @param mixed $offset can be a string or an int
      */
-    protected function encodeField(&$value, &$offset): void
+    protected function encodeField($value, $offset): array
     {
         if (null !== $value && !is_numeric($value)) {
             $value = mb_convert_encoding((string) $value, $this->output_encoding, $this->input_encoding);
@@ -206,6 +207,8 @@ class CharsetConverter extends php_user_filter
         if (!is_numeric($offset)) {
             $offset = mb_convert_encoding((string) $offset, $this->output_encoding, $this->input_encoding);
         }
+
+        return [$offset, $value];
     }
 
     /**

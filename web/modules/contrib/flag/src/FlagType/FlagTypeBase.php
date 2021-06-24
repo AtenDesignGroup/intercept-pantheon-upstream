@@ -7,6 +7,8 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\flag\FlagInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -16,6 +18,8 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  * Provides a base class for flag type plugins.
  */
 abstract class FlagTypeBase extends PluginBase implements FlagTypePluginInterface {
+
+  use StringTranslationTrait;
 
   /**
    * The module handler.
@@ -27,10 +31,11 @@ abstract class FlagTypeBase extends PluginBase implements FlagTypePluginInterfac
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, TranslationInterface $string_translation) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->moduleHandler = $module_handler;
     $this->configuration += $this->defaultConfiguration();
+    $this->stringTranslation = $string_translation;
   }
 
   /**
@@ -41,7 +46,8 @@ abstract class FlagTypeBase extends PluginBase implements FlagTypePluginInterfac
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('string_translation')
     );
   }
 
@@ -149,12 +155,12 @@ abstract class FlagTypeBase extends PluginBase implements FlagTypePluginInterfac
   public function actionPermissions(FlagInterface $flag) {
     return [
       'flag ' . $flag->id() => [
-        'title' => t('Flag %flag_title', [
+        'title' => $this->t('Flag %flag_title', [
           '%flag_title' => $flag->label(),
         ]),
       ],
       'unflag ' . $flag->id() => [
-        'title' => t('Unflag %flag_title', [
+        'title' => $this->t('Unflag %flag_title', [
           '%flag_title' => $flag->label(),
         ]),
       ],

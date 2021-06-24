@@ -57,10 +57,10 @@ class FlagDisableConfirmForm extends ConfirmFormBase {
    */
   public function getDescription() {
     if ($this->flag->status()) {
-      return t('Users will no longer be able to use the flag, but no data will be lost.');
+      return $this->t('Users will no longer be able to use the flag, but no data will be lost.');
     }
 
-    return t('The flag will appear once more on configured nodes.');
+    return $this->t('The flag will appear once more on configured nodes.');
   }
 
   /**

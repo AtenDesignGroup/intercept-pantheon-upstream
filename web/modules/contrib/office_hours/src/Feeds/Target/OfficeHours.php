@@ -30,4 +30,5 @@ class OfficeHours extends FieldTargetBase {
     }
     return $definition;
   }
+
 }

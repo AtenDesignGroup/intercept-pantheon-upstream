@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\flag\Kernel;
 
-use Drupal\Component\Utility\Unicode;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\flag\Entity\Flag;
 use Drupal\flag\Plugin\Action\DeleteFlaggingAction;
@@ -89,7 +88,7 @@ class FlagActionTest extends FlagKernelTestBase {
   public function testFlagActions() {
     /** @var \Drupal\flag\FlagInterface $entity_flag */
     $entity_flag = Flag::create([
-      'id' => Unicode::strtolower($this->randomMachineName()),
+      'id' => mb_strtolower($this->randomMachineName()),
       'label' => $this->randomString(),
       'entity_type' => 'entity_test',
       'flag_type' => 'entity:entity_test',
@@ -141,7 +140,7 @@ class FlagActionTest extends FlagKernelTestBase {
 
     /** @var \Drupal\flag\FlagInterface $entity_flag */
     $entity_flag = Flag::create([
-      'id' => Unicode::strtolower($this->randomMachineName()),
+      'id' => mb_strtolower($this->randomMachineName()),
       'label' => $this->randomString(),
       'entity_type' => 'entity_test',
       'flag_type' => 'entity:entity_test',

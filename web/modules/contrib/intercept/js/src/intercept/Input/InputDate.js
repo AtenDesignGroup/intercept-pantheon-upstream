@@ -9,7 +9,7 @@ import interceptClient from 'interceptClient';
 
 const { utils } = interceptClient;
 
-const styles = theme => ({
+const styles = (theme) => ({
   container: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -21,7 +21,7 @@ const styles = theme => ({
   },
 });
 
-const InputLabelProps = value => ({
+const InputLabelProps = (value) => ({
   shrink: value !== null,
   className: 'date-filter__label',
 });
@@ -45,9 +45,7 @@ class InputDate extends React.Component {
         ? date.clone()
         : moment.tz(date.format('YYYY-MM-DD'), 'YYYY-MM-DD', utils.getUserTimezone());
 
-      d = value
-        .startOf('day')
-        .toDate();
+      d = value.startOf('day').toDate();
     }
 
     return d;
@@ -82,6 +80,7 @@ class InputDate extends React.Component {
       isValid,
       required,
       label,
+      id,
       helperText,
       maxDate,
       maxDateMessage,
@@ -92,7 +91,6 @@ class InputDate extends React.Component {
 
     const inputValue = this.constructor.denormalize(value);
 
-
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
         <DatePicker
@@ -101,6 +99,7 @@ class InputDate extends React.Component {
           clearable={clearable}
           disabled={disabled}
           label={label}
+          id={label}
           required={required}
           InputLabelProps={InputLabelProps(inputValue)}
           value={inputValue}
@@ -123,6 +122,7 @@ InputDate.propTypes = {
   handleChange: PropTypes.func.isRequired,
   clearable: PropTypes.bool,
   disabled: PropTypes.bool,
+  id: PropTypes.string,
   label: PropTypes.string,
 };
 // Specifies the default values for props:
@@ -130,6 +130,7 @@ InputDate.defaultProps = {
   ...defaultProps,
   value: null,
   label: 'Date',
+  id: 'Date',
   clearable: true,
   disabled: false,
 };

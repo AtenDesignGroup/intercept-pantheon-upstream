@@ -73,7 +73,10 @@ function template_preprocess_office_hours(&$variables) {
     foreach ($office_hours['schema'] as $schema) {
       $schema_items[] = [
         'label' => $schema['label'],
-        'slots' => ['#type' => 'markup', '#markup' => $schema['formatted_slots']],
+        'slots' => [
+          '#type' => 'markup',
+          '#markup' => $schema['formatted_slots'],
+        ],
       ];
     }
     $variables['schema'] = $schema_items;

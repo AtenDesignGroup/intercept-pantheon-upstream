@@ -11,6 +11,7 @@
   }
 
   .l--offset > div {
+    padding: 1rem 0;
     display: flex;
 
     @include bp(none m-large) {
@@ -21,10 +22,6 @@
       align-items: center;
       flex-direction: row;
     }
-  }
-
-  .menu a:not(:last-of-type) {
-    width: 20px;
   }
 
   .menu a {
@@ -43,39 +40,26 @@
   margin-top: 0;
 }
 
-// Footer Menu (Primary)
+// Footer Menu (Primary) - About, Work With Us, Blog
+
 .menu--footer-menu {
   display: flex;
-  justify-content: center;
   list-style: none;
-  margin: 0 0 1rem;
   padding: 0;
+  margin-top: 0;
 
   @include bp(none medium) {
     flex-direction: row;
-  }
-
-  @include bp(none m-large) {
-    margin-bottom: 1rem;
   }
 
   @include bp(medium) {
     flex-direction: row;
   }
 
-  @include bp(m-large) {
-    margin: 0;
-  }
-
   li {
     display: inline-block;
     margin-right: 0.5rem;
     margin-left: 0.5rem;
-
-    @include bp(m-large) {
-      margin-left: 0;
-      margin-right: 1.5rem;
-    }
   }
 
   a {
@@ -105,81 +89,99 @@
   order: 1;
 }
 
-// Secondary Menu
-#block-footermenusecondary {
-  order: 5;
-
-  @include bp(m-large) {
-    margin-left: 0.5rem;
-    order: initial;
-  }
-}
-
 // Copyright
 #block-copyrightblock {
+  flex-basis: 50%;
   order: 6;
-  @include bp(x-large) {
-    order: 2;
-    text-align: center;
+  @include bp(large) {
+    order: 3;
   }
 
   // Privacy Policy
   a {
     text-decoration: none;
+    margin-right: 1rem;
+  }
+  span {
+    display: block;
+    @include bp(x-large) {
+      display: inline;
+    }
   }
 }
 
 #block-gtranslate,
 #block-gtranslate--2 {
+  display: flex;
+  flex-basis: 50%;
+  justify-content: flex-start;
   margin: 0 auto 10px 0;
-  order: 3;
-  @include bp(x-large) {
-    margin: 5px auto;
+  order: 4;
+
+  select {
+    display: block;
+    margin-right: 1rem;
+    width: 250px;
+    margin-bottom: 1rem;
+
+    @include bp(large) {
+      width: 150px;
+    }
+  }
+
+  .menu__link {
+    background-color: #51832f;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 1rem;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 0.4rem 1.5rem;
+    height: 100%;
+    max-height: 45px;
+    display: inline-block;
+    margin: 0 auto 1rem auto;
+    text-align: center;
+    width: 250px;
+    vertical-align: bottom;
+    // margin-bottom: 1rem;
+  }
+
+  @include bp(large) {
+    justify-content: flex-end;
+
+    select {
+      display: inline-block;
+      margin-bottom: 0;
+    }
+
+    .menu__link {
+      width: unset;
+      margin-bottom: 0;
+    }
   }
 }
 
 // Footer Menu (Social)
 #block-socialmediamenu {
+  flex-basis: 100%;
+  justify-content: flex-start;
+  @include bp(large) {
+    flex-basis: 50%;
+    justify-content: flex-end;
+  }
+
   margin-bottom: 1rem;
-  order: 4;
-
-  @include bp(small) {
-  }
-
-  @include bp(m-large) {
-    margin-bottom: 0;
-    margin-left: auto;
-    margin-right: 0;
-  }
+  order: 2;
 }
 
 .menu--social-media-menu {
   display: flex;
-  justify-content: center;
+  flex-wrap: nowrap;
   list-style: none;
-  margin: 0.5rem 0;
-  padding: 0;
-
-  @include bp(m-large) {
-    margin: 0;
-  }
-
-  @include bp(large) {
-    li {
-      margin-right: 0.5em;
-    }
-    li:first-of-type {
-      width: 25px;
-      margin-left: 1em;
-    }
-
-    li:not(:last-of-type):not(:first-of-type) {
-      width: 35px;
-    }
-
-    li:last-of-type {
-      margin-left: 1rem;
-    }
+  @include bp(small) {
+    margin-left: 0;
   }
 
   a {
@@ -188,11 +190,11 @@
     color: $white;
     font-weight: bold;
     display: block;
-    padding: 0.5rem;
+  }
 
-    @include bp(small) {
-      padding: 1rem 1.5rem;
-    }
+  a + a,
+  li + li {
+    margin-left: 1rem;
   }
 
   // Facebook
@@ -215,37 +217,31 @@
     mask: url('/themes/contrib/intercept_base/images/icons/youtube.svg');
   }
 
+  // Linkedin
+  [href*='linkedin.com'] {
+    mask: url('/themes/contrib/intercept_base/images/icons/linkedin.svg');
+  }
+
   [href*='facebook.com'],
   [href*='twitter.com'],
   [href*='instagram.com'],
-  [href*='linkedin.com'],
-  [href*='youtube.com'] {
+  [href*='youtube.com'],
+  [href*='linkedin.com'] {
     background-color: #51832f;
     background-repeat: no-repeat;
     mask-position: center;
     mask-repeat: no-repeat;
     overflow: hidden;
     text-indent: -9999px;
-    width: rem(32px);
+    width: 30px;
     color: #000;
-
-    @include bp(small) {
-      width: rem(50px);
-    }
 
     &:hover {
       background-color: #4c752c;
     }
   }
 
-  // LinkedIn (needs to be last because it's a bg-image and not masked)
-  [href*='linkedin.com'] {
-    background-image: url('/themes/contrib/intercept_base/images/icons/linkedin.svg'); // if you make this a mask like the rest it breaks in the sharing section of the event details content header
-    background-color: transparent;
-    background-position: center;
-
-    &:hover {
-      background-color: transparent;
-    }
+  [href*='facebook.com'] {
+    width: 14px;
   }
 }

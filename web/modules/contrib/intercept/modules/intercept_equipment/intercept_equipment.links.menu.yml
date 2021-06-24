@@ -4,7 +4,6 @@ entity.equipment_reservation.collection:
   route_name: entity.equipment_reservation.collection
   description: 'List Equipment reservation entities'
   parent: system.admin_content
-  weight: 50
 
 equipment_reservation.admin.structure.settings:
   title: 'Equipment reservations'

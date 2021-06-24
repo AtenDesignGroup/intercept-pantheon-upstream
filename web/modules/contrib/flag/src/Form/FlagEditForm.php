@@ -31,7 +31,7 @@ class FlagEditForm extends FlagFormBase {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
-    $actions['submit']['#value'] = t('Save Flag');
+    $actions['submit']['#value'] = $this->t('Save Flag');
     return $actions;
   }
 

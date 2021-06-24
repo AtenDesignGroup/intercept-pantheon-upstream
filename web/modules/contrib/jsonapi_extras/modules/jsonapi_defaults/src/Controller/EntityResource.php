@@ -4,6 +4,7 @@ namespace Drupal\jsonapi_defaults\Controller;
 
 use Drupal\Component\Serialization\Json;
 use Drupal\jsonapi\Controller\EntityResource as JsonApiEntityResourse;
+use Drupal\jsonapi\Query\OffsetPage;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\Routing\Routes;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
@@ -45,7 +46,15 @@ class EntityResource extends JsonApiEntityResourse {
       []
     );
 
+    $default_sorting_input = $resource_config->getThirdPartySetting(
+      'jsonapi_defaults',
+      'default_sorting',
+      []
+    );
+
     $default_filter = [];
+    $default_sorting = [];
+
     foreach ($default_filter_input as $key => $value) {
       if (substr($key, 0, 6) === 'filter') {
         $key = str_replace('filter:', '', $key);
@@ -53,22 +62,43 @@ class EntityResource extends JsonApiEntityResourse {
         $this->setFilterValue($default_filter, $key, $value);
       }
     }
+
+    foreach ($default_sorting_input as $key => $value) {
+      if (substr($key, 0, 4) === 'sort') {
+        $key = str_replace('sort:', '', $key);
+        // TODO: Replace this with use of the NestedArray utility.
+        $this->setFilterValue($default_sorting, $key, $value);
+      }
+    }
+
     $filters = array_merge(
       $default_filter,
       $request->query->get('filter', [])
+    );
+
+    $sorting = array_merge(
+      $default_sorting,
+      $request->query->get('sort', [])
     );
 
     if (!empty($filters)) {
       $request->query->set('filter', $filters);
     }
 
-    return parent::getJsonApiParams($request, $resource_type);
+    if (!empty($sorting)) {
+      $request->query->set('sort', $sorting);
+    }
+
+    // Implements overridden page limits.
+    $params = parent::getJsonApiParams($request, $resource_type);
+    $this->setPageLimit($request, $resource_config, $params);
+    return $params;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getIncludes(Request $request, $data, $related = NULL) {
+  public function getIncludes(Request $request, $data) {
     /** @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType $resourceConfig */
     if (
       ($resource_type = $request->get(Routes::RESOURCE_TYPE_KEY))
@@ -80,14 +110,14 @@ class EntityResource extends JsonApiEntityResourse {
       }
       catch (\LengthException $e) {
         watchdog_exception('jsonapi_defaults', $e);
-        return parent::getIncludes($request, $data, $related);
+        return parent::getIncludes($request, $data);
       }
       if (!$resource_type instanceof ConfigurableResourceType) {
-        return parent::getIncludes($request, $data, $related);
+        return parent::getIncludes($request, $data);
       }
       $resource_config = $resource_type->getJsonapiResourceConfig();
       if (!$resource_config instanceof JsonapiResourceConfig) {
-        return parent::getIncludes($request, $data, $related);
+        return parent::getIncludes($request, $data);
       }
       $default_includes = $resource_config->getThirdPartySetting(
         'jsonapi_defaults',
@@ -103,7 +133,7 @@ class EntityResource extends JsonApiEntityResourse {
       }
     }
 
-    return parent::getIncludes($request, $data, $related);
+    return parent::getIncludes($request, $data);
   }
 
   /**
@@ -140,7 +170,7 @@ class EntityResource extends JsonApiEntityResourse {
       );
       throw new \LengthException($message);
     }
-    return $relatable_resource_types[0];
+    return isset($relatable_resource_types[0]) ? $relatable_resource_types[0] : NULL;
   }
 
   /**
@@ -161,6 +191,49 @@ class EntityResource extends JsonApiEntityResourse {
     }
 
     $arr = $value;
+  }
+
+  /**
+   * Get amount of items displayed per page considering the request query.
+   *
+   * Fall back to the JSON:API standard value of 50 if not customized.
+   *
+   * @param array $page_params
+   *   The values of the page query parameter of the request.
+   * @param Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config
+   *   This resource's config entity.
+   *
+   * @return int
+   *   Max number of items.
+   */
+  protected function determinePageLimit(array $page_params, JsonapiResourceConfig $resource_config) {
+    $query_limit = !empty($page_params['limit']) ? (int) $page_params['limit'] : OffsetPage::SIZE_MAX;
+    $page_limit = $resource_config->getThirdPartySetting(
+      'jsonapi_defaults',
+      'page_limit'
+    ) ?: OffsetPage::SIZE_MAX;
+    return min($query_limit, (int) $page_limit);
+  }
+
+  /**
+   * Sets a jsonapi parameter for the page limit if applicable.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request object.
+   * @param \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config
+   *   The resource config entity to check for an override of the page limit.
+   * @param array $params
+   *   The parameters passed to jsonapi, passed by reference.
+   */
+  protected function setPageLimit(Request $request, JsonapiResourceConfig $resource_config, array &$params) {
+    if ($request->query->has('page')) {
+      $page_params = $request->query->get('page');
+      $offset = array_key_exists(OffsetPage::OFFSET_KEY, $page_params) ? (int) $page_params[OffsetPage::OFFSET_KEY] : OffsetPage::DEFAULT_OFFSET;
+      $params[OffsetPage::KEY_NAME] = new OffsetPage(
+        $offset,
+        $this->determinePageLimit($page_params, $resource_config)
+      );
+    }
   }
 
 }

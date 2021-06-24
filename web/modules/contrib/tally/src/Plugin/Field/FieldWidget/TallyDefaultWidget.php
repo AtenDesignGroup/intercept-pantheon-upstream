@@ -4,9 +4,9 @@ namespace Drupal\tally\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
-use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Plugin implementation of the 'default' widget.
@@ -36,9 +36,9 @@ class TallyDefaultWidget extends OptionsWidgetBase {
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $element['placeholder'] = [
       '#type' => 'textfield',
-      '#title' => t('Placeholder'),
+      '#title' => $this->t('Placeholder'),
       '#default_value' => $this->getSetting('placeholder'),
-      '#description' => t('Text that will be shown inside the field until a value is entered. This hint is usually a sample value or a brief description of the expected format.'),
+      '#description' => $this->t('Text that will be shown inside the field until a value is entered. This hint is usually a sample value or a brief description of the expected format.'),
     ];
     return $element;
   }
@@ -53,10 +53,10 @@ class TallyDefaultWidget extends OptionsWidgetBase {
     // Copied from NumberWidget::settingsSummary but allows for a placeholder
     // of "0".
     if (isset($placeholder) && $placeholder != "") {
-      $summary[] = t('Placeholder: @placeholder', ['@placeholder' => $placeholder]);
+      $summary[] = $this->t('Placeholder: @placeholder', ['@placeholder' => $placeholder]);
     }
     else {
-      $summary[] = t('No placeholder');
+      $summary[] = $this->t('No placeholder');
     }
 
     return $summary;
@@ -124,13 +124,13 @@ class TallyDefaultWidget extends OptionsWidgetBase {
     // Remove the 'drag-n-drop reordering' element.
     // @see template_preprocess_field_multiple_value_form()
     $elements['#cardinality_multiple'] = FALSE;
-    $total_attendance = 0;
+    $total = 0;
     $number_rows = 0;
     foreach (Element::children($elements) as $id) {
       // Remove the little 'Weight for row n' box.
       $elements[$id]['_weight']['#access'] = FALSE;
-      // Track total attendance
-      $total_attendance = $total_attendance + $elements[$id]['count']['#default_value'];
+      // Track total.
+      $total = $total + $elements[$id]['count']['#default_value'];
       $number_rows++;
     }
 
@@ -138,18 +138,24 @@ class TallyDefaultWidget extends OptionsWidgetBase {
     $elements['#header'] = [];
     $elements['#caption'] = $elements['#title'];
     $elements['#theme_wrappers'][] = 'table';
+    $elements['#attributes']['class'] = [
+      'js-tally-container',
+    ];
+    $elements['#attached'] = [
+      'library' => ['tally/widget'],
+    ];
     $elements[$number_rows + 1] = [
       'count' => [
-        '#default_value' => $total_attendance,
+        '#default_value' => $total,
         '#type' => 'number',
         '#attributes' => [
-          'disabled' => 'disabled'
-        ]
+          'disabled' => 'disabled',
+        ],
       ],
       'label' => [
         '#type' => 'item',
-        '#markup' => 'Total'
-      ]
+        '#markup' => 'Total',
+      ],
     ];
     return $elements;
   }
@@ -157,9 +163,14 @@ class TallyDefaultWidget extends OptionsWidgetBase {
   /**
    * Helper function to gather data for a form row.
    *
-   * @param FieldItemListInterface $items
-   * @param $delta
+   * @param \Drupal\Core\Field\FieldItemListInterface $items
+   *   An array of the field values.
+   * @param int $delta
+   *   The order of this item in the array of sub-elements (0, 1, 2, etc.).
+   *
    * @return object
+   *   An object of item values.
+   *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   protected function getItemValues(FieldItemListInterface $items, $delta) {
@@ -179,15 +190,20 @@ class TallyDefaultWidget extends OptionsWidgetBase {
   /**
    * Fetch a count based on the target id, not delta.
    *
-   * @param FieldItemListInterface $items
-   * @param $target_id
-   * @return bool|\Drupal\Core\TypedData\TypedDataInterface|null
+   * @param \Drupal\Core\Field\FieldItemListInterface $items
+   *   An array of the field values.
+   * @param int $target_id
+   *   The entity target ID.
+   *
+   * @return \Drupal\Core\TypedData\TypedDataInterface|null
+   *   The item at the specified position in this list, or NULL.
+   *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   protected function getItemCount(FieldItemListInterface $items, $target_id) {
     $ids = array_column($items->getValue(), 'target_id');
     if (($id = array_search($target_id, $ids)) === FALSE) {
-      return FALSE;
+      return NULL;
     }
     return $items->get($id);
   }
@@ -207,7 +223,7 @@ class TallyDefaultWidget extends OptionsWidgetBase {
    */
   public static function validateElement(array $element, FormStateInterface $form_state) {
     if ($element['#required'] && $element['#value'] == '_none') {
-      $form_state->setError($element, t('@name field is required.', ['@name' => $element['#title']]));
+      $form_state->setError($element, new TranslatableMarkup('@name field is required.', ['@name' => $element['#title']]));
     }
     $items = [
       'target_id' => $element['target_id']['#value'],

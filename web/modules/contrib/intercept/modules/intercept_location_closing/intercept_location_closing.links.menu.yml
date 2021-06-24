@@ -5,7 +5,6 @@ entity.intercept_location_closing.collection:
   route_name: entity.intercept_location_closing.collection
   description: 'List Location closings'
   parent: system.admin_content
-  weight: 100
 
 intercept_location_closing.admin.structure.settings:
   title: 'Location closings'

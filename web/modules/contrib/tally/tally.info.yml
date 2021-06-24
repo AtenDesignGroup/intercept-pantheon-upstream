@@ -2,3 +2,4 @@ name: Tally
 type: module
 description: Adds a field to calculate a simple count per referenced entity
 core: 8.x
+core_version_requirement: ^8 || ^9

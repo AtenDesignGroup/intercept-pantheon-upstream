@@ -28,7 +28,7 @@ class DateTimeFromStringEnhancer extends DateTimeEnhancerBase {
       $storage_timezone = new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE);
       $date = new \DateTime($input, $storage_timezone);
 
-      $output_timezone = new \DateTimezone(drupal_get_user_timezone());
+      $output_timezone = new \DateTimezone(date_default_timezone_get());
       $date->setTimezone($output_timezone);
       $output = $date->format($configuration['dateTimeFormat']);
 

@@ -112,8 +112,12 @@
   }
 }
 
-[id="views-exposed-form-intercept-events-embed"] .filters__inputs-inner {
+[id='views-exposed-form-intercept-events-embed'] .filters__inputs-inner {
   margin-top: 0;
+}
+
+.intercept-event-list .radios legend {
+  display: none;
 }
 
 #views-exposed-form-research-learn-page-2 .filters__inputs-inner {
@@ -148,7 +152,7 @@
 .filters__heading {
   @include fs(x-small);
   @include spacing(margin-bottom, narrow);
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -272,9 +276,8 @@
 }
 
 .input--incrementer {
-
   button:focus {
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
   }
   /* disable up/down arrows on number inputs */
   /* Chrome, Safari, Edge, Opera */
@@ -285,7 +288,7 @@
   }
 
   /* Firefox */
-  input[type=number] {
+  input[type='number'] {
     -moz-appearance: textfield;
   }
 
@@ -356,8 +359,6 @@
   > .input--select {
     @include spacing(margin-bottom, narrow);
   }
-
-
 }
 
 .input--textarea {

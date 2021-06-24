@@ -7,6 +7,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Defines lots of helpful functions for use in massaging dates.
+ *
  * For formatting options, see http://www.php.net/manual/en/function.date.php.
  */
 class OfficeHoursDateHelper extends DateHelper {
@@ -62,7 +63,6 @@ class OfficeHoursDateHelper extends DateHelper {
    *
    * Helper function for a task that is often required when working with dates.
    * Copied from DateTimePlus::datePad($value, $size) method.
-   * @deprecated , replaced with OfficeHoursDatetime::get($value, $format)
    *
    * @param int $value
    *   The value to pad.
@@ -71,6 +71,10 @@ class OfficeHoursDateHelper extends DateHelper {
    *
    * @return string
    *   The padded value.
+   *
+   * @deprecated replaced with OfficeHoursDatetime::get($value, $format)
+   *
+   * @see OfficeHoursDatetime::get($value, $format)
    */
   public static function datePad($value, $size = 2) {
     return sprintf("%0" . $size . "d", $value);
@@ -79,8 +83,9 @@ class OfficeHoursDateHelper extends DateHelper {
   /**
    * Helper function to convert a time to a given format.
    *
-   * For formatting options,
-   *   @see https://www.php.net/manual/en/function.date.php.
+   * For formatting options:
+   *
+   *   @see https://www.php.net/manual/en/function.date.php
    *   @see https://www.php.net/manual/en/datetime.formats.time.php
    *
    * @param string $time
@@ -140,10 +145,12 @@ class OfficeHoursDateHelper extends DateHelper {
   public static function formatTimeSlot($start, $end, $format = 'G:i', $separator = ' - ') {
     $start_time = OfficeHoursDateHelper::format($start, $format, FALSE);
     $end_time = OfficeHoursDateHelper::format($end, $format, TRUE);
+
     if (!mb_strlen($start_time) && !mb_strlen($end_time)) {
       // Empty time fields.
       return '';
     }
+
     return $start_time . $separator . $end_time;
   }
 
@@ -194,48 +201,52 @@ class OfficeHoursDateHelper extends DateHelper {
     $none = ['' => ''];
     $hours = !$required ? $none + $hours : $hours;
     // End modified copy from date_hours().
+
     return $hours;
   }
 
   /**
    * Initializes day names, using date_api as key: 0=Sun - 6=Sat.
-   * Be careful: date_api uses PHP:
-   * 0=Sunday and DateObject uses ISO: 1=Sunday.
+   *
+   * Be careful: date_api uses PHP: 0=Sunday and DateObject uses ISO: 1=Sunday.
    *
    * @param string $format
    *   The requested format.
+   *
    * @return array
    *   A list of weekdays in the requested format.
    */
   public static function weekDaysByFormat($format) {
+    $days = [];
     switch ($format) {
       case 'number':
-        return range(1, 7);
+        $days = range(1, 7);
         break;
 
       case 'none':
-        return array_fill(0, 7, '');
+        $days = array_fill(0, 7, '');
         break;
 
       case 'long':
-        return self::weekDays(TRUE);
+        $days = self::weekDays(TRUE);
         break;
 
       case 'two_letter':
         // @todo Avoid translation from English to XX, in case of 'Microdata'.
-        return self::weekDaysAbbr2(TRUE);
+        $days = self::weekDaysAbbr2(TRUE);
         break;
 
       case 'short':
         // three-letter.
       default:
-        return self::weekDaysAbbr(TRUE);
+        $days = self::weekDaysAbbr(TRUE);
         break;
     }
+    return $days;
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public static function weekDaysOrdered($office_hours, $first_day = '') {
     $first_day = ($first_day == '') ? OfficeHoursDateHelper::getFirstDay() : $first_day;
@@ -249,38 +260,37 @@ class OfficeHoursDateHelper extends DateHelper {
   }
 
   /**
+   * Creates a date object from an array of date parts.
+   *
    * Wrapper function to centralize all Date/Time functions
-   * into DateHelper class. Creates a date object from an
-   * array of date parts.
+   * into DateHelper class.
    *
    * @param array $date_parts
    *   Date parts for datetime.
-   * @param int $timezone
+   * @param int|null $timezone
    *   Timezone for datetime.
    * @param array $settings
    *   Optional settings.
    *
-   * @return static
+   * @return \Drupal\Core\Datetime\DrupalDateTime
+   *   A new DateTimePlus object.
    */
-  public static function createFromArray(array $date_parts, $timezone = NULL, $settings = []) {
+  public static function createFromArray(array $date_parts, $timezone = NULL, array $settings = []) {
     return DrupalDateTime::createFromArray($date_parts, $timezone, $settings);
   }
 
   /**
-   * Wrapper function to centralize all Date/Time
-   * functions into DateHelper class.
    * Creates a date object from an input format.
+   *
+   * Wrapper function to centralize all Date/Timefunctions into DateHelper class.
    *
    * @param string $format
    *   PHP date() type format for parsing the input. This is recommended
    *   to use things like negative years, which php's parser fails on, or
    *   any other specialized input with a known format. If provided the
    *   date will be created using the createFromFormat() method.
-   *   @see http://php.net/manual/datetime.createfromformat.php
    * @param mixed $time
-   *   @see __construct()
    * @param mixed $timezone
-   *   @see __construct()
    * @param array $settings
    *   - validate_format: (optional) Boolean choice to validate the
    *     created date using the input format. The format used in
@@ -289,17 +299,14 @@ class OfficeHoursDateHelper extends DateHelper {
    *     possible to a validation step to confirm that the date created
    *     from a format string exactly matches the input. This option
    *     indicates the format can be used for validation. Defaults to TRUE.
-   *   @see __construct()
    *
-   * @return static
+   * @return \Drupal\Core\Datetime\DrupalDateTime
    *   A new DateTimePlus object.
    *
-   * @throws \InvalidArgumentException
-   *   If the a date cannot be created from the given format.
-   * @throws \UnexpectedValueException
-   *   If the created date does not match the input value.
+   * @see http://php.net/manual/datetime.createfromformat.php
+   * @see __construct()
    */
-  public static function createFromFormat($format, $time, $timezone = NULL, $settings = []) {
+  public static function createFromFormat($format, $time, $timezone = NULL, array $settings = []) {
     return DrupalDateTime::createFromFormat($format, $time, $timezone, $settings);
   }
 

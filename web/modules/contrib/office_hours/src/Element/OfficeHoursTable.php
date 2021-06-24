@@ -13,16 +13,9 @@ use Drupal\Core\Render\Element\Table;
 class OfficeHoursTable extends Table {
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
-    // if ($input) {
-    //    // Let child elements set start_hours and end_hours via their valueCallback.
-    //   foreach($input as $key => $value) {
-    //      unset($input[$key]['start_hours']);
-    //      unset($input[$key]['end_hours']);
-    //   }
-    // }
     $input = parent::valueCallback($element, $input, $form_state);
 
     return $input;

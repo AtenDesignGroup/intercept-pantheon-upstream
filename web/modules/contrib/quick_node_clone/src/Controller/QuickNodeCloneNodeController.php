@@ -5,6 +5,7 @@ namespace Drupal\quick_node_clone\Controller;
 use Drupal\node\Entity\Node;
 use Drupal\quick_node_clone\Entity\QuickNodeCloneEntityFormBuilder;
 use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\node\Controller\NodeController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -29,11 +30,13 @@ class QuickNodeCloneNodeController extends NodeController {
    *   The date formatter service.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer service.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository.
    * @param \Drupal\quick_node_clone\Entity\QuickNodeCloneEntityFormBuilder $entity_form_builder
    *   The entity form builder.
    */
-  public function __construct(DateFormatterInterface $date_formatter, RendererInterface $renderer, QuickNodeCloneEntityFormBuilder $entity_form_builder) {
-    parent::__construct($date_formatter, $renderer);
+  public function __construct(DateFormatterInterface $date_formatter, RendererInterface $renderer, EntityRepositoryInterface $entity_repository, QuickNodeCloneEntityFormBuilder $entity_form_builder) {
+    parent::__construct($date_formatter, $renderer, $entity_repository);
     $this->qncEntityFormBuilder = $entity_form_builder;
   }
 
@@ -44,6 +47,7 @@ class QuickNodeCloneNodeController extends NodeController {
     return new static(
       $container->get('date.formatter'),
       $container->get('renderer'),
+      $container->get('entity.repository'),
       $container->get('quick_node_clone.entity.form_builder')
     );
   }

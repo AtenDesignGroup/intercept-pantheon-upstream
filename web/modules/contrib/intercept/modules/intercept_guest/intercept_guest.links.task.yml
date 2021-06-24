@@ -20,7 +20,7 @@ entity.intercept_guest.delete_form:
   weight: 10
 
 entity.intercept_guest.collection:
-  title: 'Room Reservations'
+  title: 'Room Reservation Guest List'
   route_name: entity.intercept_guest.collection
   base_route: system.admin_content
-  weight: 15
+  weight: 16

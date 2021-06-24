@@ -9,6 +9,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\flag\FlagType\FlagTypeBase;
 use Drupal\flag\FlagInterface;
 use Drupal\user\EntityOwnerInterface;
@@ -30,7 +31,7 @@ class EntityFlagType extends FlagTypeBase {
   use StringTranslationTrait;
 
   /**
-   * The entity manager.
+   * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
@@ -46,10 +47,10 @@ class EntityFlagType extends FlagTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation) {
     $this->entityType = $plugin_definition['entity_type'];
     $this->entityTypeManager = $entity_type_manager;
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler, $string_translation);
   }
 
   /**
@@ -61,7 +62,8 @@ class EntityFlagType extends FlagTypeBase {
       $plugin_id,
       $plugin_definition,
       $container->get('module_handler'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('string_translation')
     );
   }
 
@@ -345,7 +347,7 @@ class EntityFlagType extends FlagTypeBase {
     $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
 
     // Only if the flaggable entities can be owned.
-    if ($entity_type->isSubclassOf(EntityOwnerInterface::class)) {
+    if ($entity_type->entityClassImplements(EntityOwnerInterface::class)) {
       return TRUE;
     }
 

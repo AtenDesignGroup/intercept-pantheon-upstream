@@ -175,6 +175,14 @@ label[for='account-trigger'].account-trigger--is-staff {
   }
 }
 
+label[for='search-trigger'],
+label[for='nav-trigger'] {
+  visibility: hidden; // hide the label text
+  svg {
+    visibility: visible; // make the svg search and hamburger menu icons (inside the hidden label tag) visible
+  }
+}
+
 label[for='account-trigger'],
 .account-trigger--logged-out {
   @include fs(small);

@@ -12,6 +12,11 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 class FlagBookmarkUITest extends WebDriverTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Modules to enable.
    *
    * @var array

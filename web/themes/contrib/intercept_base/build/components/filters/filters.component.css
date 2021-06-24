@@ -126,8 +126,11 @@
       -ms-flex-preferred-size: 100%;
           flex-basis: 100%; } }
 
-[id="views-exposed-form-intercept-events-embed"] .filters__inputs-inner {
+[id='views-exposed-form-intercept-events-embed'] .filters__inputs-inner {
   margin-top: 0; }
+
+.intercept-event-list .radios legend {
+  display: none; }
 
 #views-exposed-form-research-learn-page-2 .filters__inputs-inner {
   display: -webkit-box;
@@ -172,7 +175,7 @@
 .filters__heading {
   font-size: 0.65278rem;
   margin-bottom: 0.25rem;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase; }
   @media (min-width: 48em) {
     .filters__heading {
@@ -256,7 +259,7 @@
   .input--incrementer input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0; }
-  .input--incrementer input[type=number] {
+  .input--incrementer input[type='number'] {
     -moz-appearance: textfield; }
   @media (min-width: 48em) {
     .input--incrementer {

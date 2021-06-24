@@ -66,7 +66,6 @@ class FlagServiceTest extends FlagKernelTestBase {
     $flag->save();
 
     // Test flagging.
-
     // Try flagging an entity that's not a node: a user account.
     try {
       $this->flagService->flag($flag, $account, $account, $session_id);
@@ -117,7 +116,6 @@ class FlagServiceTest extends FlagKernelTestBase {
     }
 
     // Test unflagging.
-
     // Try unflagging an entity that's not a node: a user account.
     try {
       $this->flagService->unflag($flag, $account, $account, $session_id);
@@ -165,7 +163,7 @@ class FlagServiceTest extends FlagKernelTestBase {
       $this->flagService->unflag($flag, $flaggable_node, $account, $session_id);
       $this->pass('The unflag() method throws no exception when the flaggable entity and user is correct');
     }
-    catch (\LogicException $e){
+    catch (\LogicException $e) {
       $this->fail('The unfag() method threw an exception where processing a valid unflag request.');
     }
   }

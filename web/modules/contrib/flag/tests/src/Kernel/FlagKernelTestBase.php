@@ -3,9 +3,9 @@
 namespace Drupal\Tests\flag\Kernel;
 
 use Drupal\flag\FlagInterface;
-use Drupal\flag\Tests\FlagCreateTrait;
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\simpletest\UserCreationTrait;
+use Drupal\Tests\user\Traits\UserCreationTrait;
+use Drupal\Tests\flag\Traits\FlagCreateTrait;
 
 /**
  * Basic setup for kernel tests based around flaggings articles.

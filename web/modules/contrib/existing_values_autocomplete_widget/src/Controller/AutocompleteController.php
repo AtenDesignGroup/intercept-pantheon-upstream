@@ -24,7 +24,8 @@ class AutocompleteController extends ControllerBase {
 
     if ($input = $request->query->get('q')) {
       $typed_string = Tags::explode($input);
-      $typed_string = Unicode::strtolower(array_pop($typed_string));
+      // $typed_string = Unicode::strtolower(array_pop($typed_string)); -- depricated code
+      $typed_string = mb_strtolower(array_pop($typed_string)); 
 
       $entity_type_manager = \Drupal::entityTypeManager();
       $table_mapping = $entity_type_manager->getStorage($entity_type_id)->getTableMapping();

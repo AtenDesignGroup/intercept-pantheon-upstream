@@ -4,11 +4,12 @@
 * https://www.drupal.org/node/2815083
 * @preserve
 **/
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 (function (Drupal) {
   Drupal.behaviors.flagAttach = {
     attach: function attach(context) {
-      var links = context.querySelectorAll('.flag a');
+      var links = [].concat(_toConsumableArray(context.querySelectorAll('.flag a')));
       links.forEach(function (link) {
         return link.addEventListener('click', function (event) {
           return event.target.parentNode.classList.add('flag-waiting');
@@ -30,7 +31,7 @@
 
       document.querySelector(response.selector).appendChild(para);
     } else {
-      var links = document.querySelectAll('.flag-waiting');
+      var links = [].concat(_toConsumableArray(document.querySelectAll('.flag-waiting')));
       links.forEach(function (link) {
         return link.classList.remove('flag-waiting');
       });

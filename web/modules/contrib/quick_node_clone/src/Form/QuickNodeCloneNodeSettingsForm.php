@@ -12,7 +12,7 @@ class QuickNodeCloneNodeSettingsForm extends QuickNodeCloneEntitySettingsForm {
   /**
    * The machine name of the entity type.
    *
-   * @var $entityTypeId
+   * @var string
    *   The entity type id i.e. node
    */
   protected $entityTypeId = 'node';

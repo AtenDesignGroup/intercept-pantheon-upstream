@@ -5,7 +5,7 @@ core_version_requirement: ^8.7.7 || ^9
 dependencies:
   - profile
 
-# Information added by Drupal.org packaging script on 2020-02-18
-version: '8.x-1.1'
+# Information added by Drupal.org packaging script on 2020-11-03
+version: '8.x-1.2'
 project: 'profile'
-datestamp: 1582048363
+datestamp: 1604422703

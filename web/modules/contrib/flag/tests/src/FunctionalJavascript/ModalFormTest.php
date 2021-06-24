@@ -3,8 +3,8 @@
 namespace Drupal\Tests\flag\FunctionalJavascript;
 
 use Drupal\Core\Url;
-use Drupal\flag\Tests\FlagCreateTrait;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\Tests\flag\Traits\FlagCreateTrait;
 
 /**
  * Tests modal form options for action link plugins.
@@ -14,6 +14,11 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 class ModalFormTest extends WebDriverTestBase {
 
   use FlagCreateTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'classy';
 
   /**
    * {@inheritdoc}

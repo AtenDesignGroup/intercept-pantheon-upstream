@@ -1,6 +1,6 @@
 name: Flag Count
 description: Provides an example on how to display flag counts
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 type: module
 dependencies:
   - flag:flag
@@ -8,7 +8,7 @@ dependencies:
   - drupal:node
 package: Flags
 
-# Information added by Drupal.org packaging script on 2019-10-30
-version: '8.x-4.0-beta1'
+# Information added by Drupal.org packaging script on 2020-07-20
+version: '8.x-4.0-beta2'
 project: 'flag'
-datestamp: 1572442088
+datestamp: 1595273817

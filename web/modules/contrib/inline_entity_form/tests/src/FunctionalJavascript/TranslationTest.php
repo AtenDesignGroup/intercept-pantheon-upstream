@@ -16,7 +16,7 @@ class TranslationTest extends InlineEntityFormTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'content_translation',
     'inline_entity_form_translation_test',
     'language',
@@ -25,7 +25,7 @@ class TranslationTest extends InlineEntityFormTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->user = $this->createUser([
@@ -104,7 +104,7 @@ class TranslationTest extends InlineEntityFormTestBase {
     $first_inline_node = $this->drupalGetNodeByTitle('Kann ein KÃ¤nguru hÃ¶her als ein Haus springen?');
     $second_inline_node = $this->drupalGetNodeByTitle('Can a kangaroo jump higher than a house?');
     $this->assertSame('en', $first_inline_node->get('langcode')->value, 'The first inline entity has the correct langcode.');
-    $this->assertEqual('en', $second_inline_node->get('langcode')->value, 'The second inline entity has the correct langcode.');
+    $this->assertEquals('en', $second_inline_node->get('langcode')->value, 'The second inline entity has the correct langcode.');
 
     // Edit the parent node and change the source language to German.
     $node = $this->drupalGetNodeByTitle('A node');

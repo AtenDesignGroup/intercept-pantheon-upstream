@@ -30,9 +30,9 @@ class FlagViewsFilter extends BooleanOperator {
     parent::buildOptionsForm($form, $form_state);
 
     $form['value']['#type'] = 'radios';
-    $form['value']['#title'] = t('Status');
+    $form['value']['#title'] = $this->t('Status');
     $form['value']['#options'] = [
-      'All' => t('All'),
+      'All' => $this->t('All'),
       1 => $this->t('Flagged'),
       0 => $this->t('Not flagged'),
     ];

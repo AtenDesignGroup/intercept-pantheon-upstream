@@ -6,10 +6,13 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\node\Entity\Node;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\inline_entity_form\ElementSubmit;
 use Drupal\intercept_core\DateRangeFormatterTrait;
+use Drupal\intercept_core\ReservationManagerInterface;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\RecurringEventManager;
 use Drupal\intercept_event\Entity\EventRecurrenceInterface;
@@ -46,14 +49,30 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
+  
+  /**
+   * The reservation manager.
+   *
+   * @var \Drupal\intercept_core\ReservationManagerInterface
+   */
+  protected $reservationManager;
+
+  /**
+   * The messenger service for setting messages.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, RecurringEventManager $recurring_event_manager, Dates $date_utility) {
+  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, RecurringEventManager $recurring_event_manager, Dates $date_utility, ReservationManagerInterface $reservation_manager, MessengerInterface $messenger) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->recurringEventManager = $recurring_event_manager;
     $this->dateUtility = $date_utility;
+    $this->reservationManager = $reservation_manager;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -65,7 +84,9 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time'),
       $container->get('intercept_event.recurring_manager'),
-      $container->get('intercept_core.utility.dates')
+      $container->get('intercept_core.utility.dates'),
+      $container->get('intercept_core.reservation.manager'),
+      $container->get('messenger')
     );
   }
 
@@ -131,7 +152,41 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       // If the first computed recurrence date is the same as the base event
       // then label it as such. If not, then we add in the base event date
       // to make sure that is clear that that is an occurrence as well.
+      $rooms = $this->entity->get('field_room')->getValue();
+      $room = Node::load($rooms[0]['target_id']);
+      $room_name = $room->label();
+      $rooms = [$rooms[0]['target_id']];
       foreach ($dates as $index => $date) {
+        // Don't worry about checking for conflicts on the base event
+        // (index = 0 is the base event) that's already scheduled.
+        if ($index != 0) {
+          $start_date = $date->getStart();
+          $start = $this->dateUtility->convertTimezone($start_date)->format($this->reservationManager::FORMAT);
+          $end_date = $date->getEnd();
+          $end = $this->dateUtility->convertTimezone($end_date)->format($this->reservationManager::FORMAT);
+          // Checking to see if each date range is in conflict.
+          $availability = $this->reservationManager->availability([
+            'start' => $start,
+            'end' => $end,
+            'rooms' => $rooms,
+          ]);
+          foreach ($availability as $room_availability) {
+            if ($room_availability['user_exceeded_limit']
+              || $room_availability['has_reservation_conflict']
+              || $room_availability['has_conflict']
+              || $room_availability['has_open_hours_conflict']
+              || $room_availability['has_max_duration_conflict']
+              || $room_availability['is_closed']) {
+              // On the Recurrences tab you should see a warning message about the
+              // conflict that will be created by generating the recurrences.
+              $this->messenger->addWarning($this->t("There is a conflict in :room on :start.", [
+                ':room' => $room_name,
+                ':start' => $date->getStart()->format($this->startDateFormat),
+              ]));
+            }
+          }
+        }
+
         $column = [
           $index == 0 ? $this->t('Base event') : $this->t('Date preview, not created yet'),
           $this->formatDateRange([

@@ -3,21 +3,18 @@ entity.event_recurrence.collection:
   route_name: entity.event_recurrence.collection
   description: 'List Event recurrence entities'
   parent: system.admin_content
-  weight: 20
 
 entity.event_attendance.collection:
   title: 'Event attendance'
   route_name: entity.event_attendance.collection
   description: 'List Event Attendance entities'
   parent: system.admin_content
-  weight: 25
 
 entity.event_registration.collection:
   title: 'Event registration'
   route_name: entity.event_registration.collection
   description: 'List Event Registration entities'
   parent: system.admin_content
-  weight: 30
 
 event_recurrence.admin.structure.settings:
   title: 'Event recurrence'

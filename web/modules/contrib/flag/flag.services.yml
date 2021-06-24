@@ -25,7 +25,7 @@ services:
       - { name: event_subscriber }
   flag.link_builder:
     class: Drupal\flag\FlagLinkBuilder
-    arguments: ['@entity.manager', '@flag']
+    arguments: ['@entity_type.manager', '@flag']
   flag.twig.count:
     arguments: ['@renderer', '@url_generator', '@theme.manager', '@date.formatter', '@flag.count']
     class: Drupal\flag\TwigExtension\FlagCount

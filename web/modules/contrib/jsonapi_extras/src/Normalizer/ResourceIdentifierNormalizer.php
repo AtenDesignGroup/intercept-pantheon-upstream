@@ -45,10 +45,10 @@ class ResourceIdentifierNormalizer extends JsonApiNormalizerDecoratorBase {
     assert($field instanceof ResourceIdentifier);
     $normalized_output = parent::normalize($field, $format, $context);
     assert($normalized_output instanceof CacheableNormalization);
-    $resource_object = $context['resource_object'];
-    if (empty($resource_object)) {
+    if (!isset($context['resource_object'])) {
       return $normalized_output;
     }
+    $resource_object = $context['resource_object'];
     // Find the name of the field being normalized. This is unreasonably more
     // contrived than one could expect for ResourceIdentifiers.
     $resource_type = $resource_object->getResourceType();
@@ -73,7 +73,7 @@ class ResourceIdentifierNormalizer extends JsonApiNormalizerDecoratorBase {
   /**
    * Guesses the field name of a resource identifier pointing to a UUID.
    *
-   * @param $uuid
+   * @param string $uuid
    *   The uuid being referenced.
    * @param \Drupal\jsonapi\JsonApiResource\ResourceObject $resource_object
    *   The object being normalized.

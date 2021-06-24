@@ -12,7 +12,7 @@ use Drupal\Core\Url;
  * @ActionLinkType(
  *  id = "confirm",
  * label = @Translation("Confirm Form"),
- * description = "Redirects the user to a confirmation form."
+ * description = @Translation("Redirects the user to a confirmation form.")
  * )
  */
 class ConfirmForm extends FormEntryTypeBase {

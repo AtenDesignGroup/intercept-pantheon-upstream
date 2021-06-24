@@ -4,7 +4,6 @@ entity.room_reservation.collection:
   route_name: entity.room_reservation.collection
   description: 'List Room reservation entities'
   parent: system.admin_content
-  weight: 50
 
 room_reservation.admin.structure.settings:
   title: 'Room reservations'

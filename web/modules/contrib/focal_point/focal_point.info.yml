@@ -1,8 +1,7 @@
 name: Focal Point
 type: module
 description: Allows users to specify the focal point of an image for use during cropping.
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8.8 || ^9
 package: Media
 test_dependencies:
   - crop:crop
@@ -10,7 +9,7 @@ dependencies:
   - drupal:image
   - crop:crop
 
-# Information added by Drupal.org packaging script on 2020-04-09
-version: '8.x-1.4'
+# Information added by Drupal.org packaging script on 2020-08-29
+version: '8.x-1.5'
 project: 'focal_point'
-datestamp: 1586396579
+datestamp: 1598663906

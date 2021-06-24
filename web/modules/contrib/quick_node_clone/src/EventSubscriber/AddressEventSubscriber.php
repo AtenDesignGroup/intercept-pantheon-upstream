@@ -2,8 +2,11 @@
 
 namespace Drupal\quick_node_clone\EventSubscriber;
 
-use Drupal\address\Event\InitialValuesEvent;
 use Drupal\address\Event\AddressEvents;
+use Drupal\address\Event\InitialValuesEvent;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\quick_node_clone\QuickNodeCloneNodeFinder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -11,10 +14,47 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * Provides an event subscriber to add initial values to address fields when
  * cloning. This method is needed because of the way address handles its fields,
- * otherwise we would be doing this* sort of thing inside the form builder when
+ * otherwise we would be doing this sort of thing inside the form builder when
  * cloning.
  */
 class AddressEventSubscriber implements EventSubscriberInterface {
+
+  /**
+   * The Private Temp Store.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
+  protected $privateTempStoreFactory;
+
+  /**
+   * Quick Node Clone Node Finder.
+   *
+   * @var \Drupal\quick_node_clone\QuickNodeCloneNodeFinder
+   */
+  protected $quickNodeCloneNodeFinder;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('tempstore.private'),
+      $container->get('quick_node_clone.node_finder')
+    );
+  }
+
+  /**
+   * AddressEventSubscriber constructor.
+   *
+   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $privateTempStoreFactory
+   *   Private temp store factory.
+   * @param \Drupal\quick_node_clone\QuickNodeCloneNodeFinder $quickNodeCloneNodeFinder
+   *   Quick Node Clone Node Finder.
+   */
+  public function __construct(PrivateTempStoreFactory $privateTempStoreFactory, QuickNodeCloneNodeFinder $quickNodeCloneNodeFinder) {
+    $this->privateTempStoreFactory = $privateTempStoreFactory;
+    $this->quickNodeCloneNodeFinder = $quickNodeCloneNodeFinder;
+  }
 
   /**
    * {@inheritdoc}
@@ -37,13 +77,13 @@ class AddressEventSubscriber implements EventSubscriberInterface {
    *   The initial values.
    */
   public function getInitialValues($event) {
-    $tempstore = \Drupal::service('user.private_tempstore')->get('quick_node_clone');
+    $tempstore = $this->privateTempStoreFactory->get('quick_node_clone');
 
     if ($tempstore->get('address_initial_value_delta') == NULL) {
       $tempstore->set('address_initial_value_delta', 0);
     }
 
-    $node = \Drupal::service('quick_node_clone.node_finder')->findNodeFromCurrentPath();
+    $node = $this->quickNodeCloneNodeFinder->findNodeFromCurrentPath();
 
     if ($node == NULL) {
       return [];
@@ -55,7 +95,6 @@ class AddressEventSubscriber implements EventSubscriberInterface {
 
     foreach ($node->getFieldDefinitions() as $field_definition) {
       $field_storage_definition = $field_definition->getFieldStorageDefinition();
-      $field_settings = $field_storage_definition->getSettings();
       $field_name = $field_storage_definition->getName();
 
       if ($field_storage_definition->getType() == "address") {

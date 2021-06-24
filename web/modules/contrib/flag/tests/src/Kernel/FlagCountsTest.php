@@ -200,7 +200,7 @@ class FlagCountsTest extends FlagKernelTestBase {
     $this->flagService->flag($this->flag, $this->node, $this->anonymousUser, $anon1_session_id);
     $this->flagService->flag($this->flag, $this->node, $this->anonymousUser, $anon2_session_id);
 
-    // For non-global flags anonymous users can uniquely identifed by
+    // For non-global flags anonymous users can uniquely identified by
     // session_id.
     $anon1_count = $this->flagCountService->getUserFlagFlaggingCount($this->flag, $this->anonymousUser, $anon1_session_id);
     $this->assertEqual($anon1_count, 1, "getUserFlagFlaggingCount() counts only the first user.");

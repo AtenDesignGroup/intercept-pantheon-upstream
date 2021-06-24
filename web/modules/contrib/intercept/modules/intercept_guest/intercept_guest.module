@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -87,10 +88,14 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
     'invisible' => [
       'select[name="reservation_member_guest"]' => ['value' => 'guest'],
     ],
+  ];
+
+  $form['field_user']['widget'][0]['target_id']['#states'] = [
     'required' => [
-      'select[name="reservation_member_guest"]' => ['value' => 'member'],
+      '#' . $form['#id'] . ' select[name="reservation_member_guest"]' => ['value' => 'member'],
     ],
   ];
+
   $form['field_guest']['#states'] = [
     'invisible' => [
       'select[name="reservation_member_guest"]' => ['value' => 'member'],
@@ -125,25 +130,36 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
   // Add a validate callback.
   $form['#validate'][] = 'intercept_guest_reservation_form_validate';
 
-  // Add a submit callback to be run before any others.
-  $submit_callbacks = $form['actions']['submit']['#submit'];
-  $form['actions']['submit']['#submit'] = ['intercept_guest_reservation_form_submit'];
-  $form['actions']['submit']['#submit'] += $submit_callbacks;
-
 }
 
-
+/**
+ * Validation function for the room reservation form.
+ *
+ * @param array $form
+ * @param FormStateInterface $form_state
+ * @return void
+ */
 function intercept_guest_reservation_form_validate($form, FormStateInterface &$form_state) {
   $input = $form_state->getUserInput();
-  if ($input['reservation_member_guest'] == 'member') {
-    return;
+  switch ($input['reservation_member_guest']) {
+    case 'member':
+      // If we're here because of ajax and we haven't submitted the form, return.
+      if (!$form_state->isSubmitted()) {
+        return;
+      }
+      // The form has been submitted. Make it fail validation if field_user is not
+      // set.
+      if (empty($input['field_user'][0]['target_id'])) {
+        $form_state->setErrorByName('field_user', t('User field is required for member reservations'));
+      }
+      break;
+
+    case 'guest':
+      // Update the reservation entity's user to be the guest user.
+      $config = \Drupal::config('intercept_guest.settings');
+      $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '101';
+      $form_state->setValue('field_user', [0 => ['target_id' => $guest_uid]]);
   }
-
-  // Update the reservation entity's user to be the guest user.
-  $config = \Drupal::config('intercept_guest.settings');
-  $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '101';
-  $form_state->setValue('field_user', [0 => ['target_id' => $guest_uid]]);
-
 }
 
 /**
@@ -167,6 +183,24 @@ function intercept_guest_inline_entity_form_entity_form_alter(array &$entity_for
   $entity_form['user_id']['#type'] = 'hidden';
   $entity_form['user_id']['#default_value'] = \Drupal::currentUser()->id();
 
-  // Add custom validation function.
-  $entity_form['#element_validate'][] = 'intercept_guest_reservation_ief_validate';
+}
+
+/**
+* Implements hook_ENTITY_TYPE_presave().
+*
+* @param Drupal\Core\Entity\EntityInterface $reservation
+*   The room_reservation entity.
+*/
+function intercept_guest_room_reservation_presave(EntityInterface $reservation) {
+  if (empty($reservation->field_user->entity)) {
+    // This is a guest room reservation; set field_user as the site's official
+    // guest account.
+    $guestUserId = 0;
+    $config = \Drupal::config('intercept_guest.settings');
+    if (!empty($config->get('guest_user'))) {
+      $guestUserId = $config->get('guest_user');
+    }
+
+    $reservation->set('field_user', $guestUserId);
+  }
 }

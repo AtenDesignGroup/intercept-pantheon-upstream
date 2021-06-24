@@ -23,21 +23,21 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
 
   /**
    * Special handling to create form elements for multiple values.
-   * N.B. This is never called with Annotation: multiple_values = "FALSE",
    *
    * Removed the added generic features for multiple fields:
-   * - number of widgets
-   * - AHAH 'add more' button
-   * - table display and drag-n-drop value reordering
+   * - Number of widgets;
+   * - AHAH 'add more' button;
+   * - Table display and drag-n-drop value reordering.
+   * N.B. This is never called with Annotation: multiple_values = "FALSE".
    *
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected function formMultipleElements(FieldItemListInterface $items, array &$form, FormStateInterface $form_state) {
     $field_cardinality = $this->fieldDefinition->getFieldStorageDefinition()
       ->getCardinality();
     if ($field_cardinality == FieldStorageDefinitionInterface  ::CARDINALITY_UNLIMITED) {
       $this->fieldDefinition->getFieldStorageDefinition()
-        ->setCardinality(7 * $this->getFieldSetting('cardinality_per_day')); // @todo D9 test
+        ->setCardinality(7 * $this->getFieldSetting('cardinality_per_day'));
     }
 
     $elements = parent::formMultipleElements($items, $form, $form_state);
@@ -64,7 +64,8 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
     }
 
     // Create an indexed two level array of time slots.
-    // First level are day numbers. Second level contains field values arranged by daydelta.
+    // - First level are day numbers.
+    // - Second level contains field values arranged by $day_delta.
     $indexed_items = array_fill_keys(range(0, 6), []);
     foreach ($items as $index => $item) {
       $value_of_item = $item->getValue();
@@ -76,19 +77,19 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
     // Build elements, sorted by first_day_of_week.
     $elements = [];
     $days = OfficeHoursDateHelper::weekDaysOrdered(range(0, 6));
-    $daynames = OfficeHoursDateHelper::weekDays(FALSE);
+    $day_names = OfficeHoursDateHelper::weekDays(FALSE);
     $cardinality = $this->getFieldSetting('cardinality_per_day');
     $id = -1;
     foreach ($days as $index => $day) {
       // @todo The theme_function clears values above cardinality. Move it here.
-      for ($daydelta = 0; $daydelta < $cardinality; $daydelta++) {
+      for ($day_delta = 0; $day_delta < $cardinality; $day_delta++) {
         $id++;
         $elements[$id]['#day'] = $day;
-        $elements[$id]['#daydelta'] = $daydelta;
-        $elements[$id]['#dayname'] = $daynames[$day];
+        $elements[$id]['#daydelta'] = $day_delta;
+        $elements[$id]['#dayname'] = $day_names[$day];
 
         $elements[$id]['#type'] = 'office_hours_slot';
-        $elements[$id]['#default_value'] = isset($indexed_items[$day][$daydelta]) ? $indexed_items[$day][$daydelta]->getValue() : NULL; // @todo D9 test
+        $elements[$id]['#default_value'] = isset($indexed_items[$day][$day_delta]) ? $indexed_items[$day][$day_delta]->getValue() : NULL;
         $elements[$id]['#field_settings'] = $element['#field_settings'];
         $elements[$id]['#date_element_type'] = $this->getSetting('date_element_type');
       }
@@ -105,19 +106,21 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
     }
     $header['operations'] = $this->t('Operations');
     $element['value'] = [
-        '#type' => 'office_hours_table',
-        '#header' => $header,
-        '#tableselect' => FALSE,
-        '#tabledrag' => FALSE,
-      ] + $element['value'] + $elements;
+      '#type' => 'office_hours_table',
+      '#header' => $header,
+      '#tableselect' => FALSE,
+      '#tabledrag' => FALSE,
+    ] + $element['value'] + $elements;
 
     // Wrap the table in a collapsible fieldset, which is th only way(?)
     // to show the 'required' asterisk and the help text.
     // The help text is now shown above the table, as requested by some users.
     // N.B. For some reason, the title is shown in Capitals.
     $element['#type'] = 'details';
-    $element['#open'] = TRUE; // Controls the HTML5 'open' attribute. Defaults to FALSE.
-    $element['value']['#header']['title'] = NULL; // Remove field_name from first column.
+    // Controls the HTML5 'open' attribute. Defaults to FALSE.
+    $element['#open'] = TRUE;
+    // Remove field_name from first column.
+    $element['value']['#header']['title'] = NULL;
 
     return $element;
   }
@@ -130,16 +133,12 @@ class OfficeHoursDefaultWidget extends OfficeHoursWidgetBase {
     // Reformat the $values, before passing to database.
     $multiple_values = $this->getPluginDefinition()['multiple_values'];
     if ($multiple_values == 'FALSE') {
-      // Below line works fine with Annotation: multiple_values = "FALSE",
+      // Below line works fine with Annotation: multiple_values = "FALSE".
       $values = $values['value'];
     }
     elseif ($multiple_values == 'TRUE') {
-      // Below lines should work fine with Annotation: multiple_values = "TRUE",
+      // Below lines should work fine with Annotation: multiple_values = "TRUE".
       $values = reset($values)['value'];
-    }
-    else {
-      // Below line will never work.
-      // return parent::massageFormValues($values, $form, $form_state);
     }
 
     $values = parent::massageFormValues($values, $form, $form_state);

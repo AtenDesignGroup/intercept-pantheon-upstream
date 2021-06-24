@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @ActionLinkType(
  *   id = "ajax_link",
  *   label = @Translation("AJAX link"),
- *   description = "An AJAX JavaScript request will be made without reloading the page."
+ *   description = @Translation("An AJAX JavaScript request will be made without reloading the page.")
  * )
  */
 class AJAXactionLink extends Reload {

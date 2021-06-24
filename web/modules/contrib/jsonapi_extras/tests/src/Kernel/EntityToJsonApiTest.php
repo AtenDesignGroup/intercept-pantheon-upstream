@@ -53,6 +53,21 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   ];
 
   /**
+   * @var NodeType
+   */
+  private $nodeType;
+
+  /**
+   * @var Vocabulary
+   */
+  private $vocabulary;
+
+  /**
+   * @var Node
+   */
+  private $node;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
@@ -195,6 +210,21 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   }
 
   /**
+   * Test if the request by jsonapi_extras.entity.to_jsonapi doesn't linger on
+   * the request stack.
+   *
+   * @see https://www.drupal.org/project/jsonapi_extras/issues/3135950
+   * @see https://www.drupal.org/project/jsonapi_extras/issues/3124805
+   */
+  public function testRequestStack() {
+    /** @var \Symfony\Component\HttpFoundation\RequestStack $request_stack */
+    $request_stack = $this->container->get('request_stack');
+    $this->sut->serialize($this->node);
+    $request = $request_stack->pop();
+    $this->assertNotEqual($request->getPathInfo(), '/jsonapi/node/' . $this->nodeType->id() .'/' . $this->node->uuid(), 'The request from jsonapi_extras.entity.to_jsonapi should not linger in the request stack.');
+  }
+
+  /**
    * Checks entity's serialization/normalization.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
@@ -211,12 +241,12 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   ) {
     $output = $this->sut->serialize($entity, $include_fields);
 
-    static::assertInternalType('string', $output);
+    $this->assertTrue(is_string($output));
     $this->assertJsonApi(Json::decode($output));
 
     $output = $this->sut->normalize($entity, $include_fields);
 
-    static::assertInternalType('array', $output);
+    $this->assertTrue(is_array($output));
     $this->assertJsonApi($output);
 
     // Check the includes if they were passed.
@@ -235,10 +265,7 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
     static::assertNotEmpty($structured['data']['type']);
     static::assertNotEmpty($structured['data']['id']);
     static::assertNotEmpty($structured['data']['attributes']);
-    static::assertInternalType(
-      'string',
-      $structured['data']['links']['self']['href']
-    );
+    $this->assertTrue(is_string($structured['data']['links']['self']['href']));
   }
 
   /**

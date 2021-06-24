@@ -265,10 +265,9 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
+
     if ($this->isNew()) {
       $this->setDefaultStatus();
-    }
-    if ($this->isNew()) {
       // If they've signed the agreement, remove it from their session.
       if (\Drupal::service('current_user')->isAnonymous()) {
         return;
@@ -281,6 +280,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
         }
       }
     }
+
   }
 
   /**

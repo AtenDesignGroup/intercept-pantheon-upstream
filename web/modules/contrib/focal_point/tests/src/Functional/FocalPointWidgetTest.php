@@ -42,9 +42,11 @@ class FocalPointWidgetTest extends BrowserTestBase {
     $type->save();
     $this->container->get('router.builder')->rebuild();
 
-
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function testResave() {
 
     $field_name = strtolower($this->randomMachineName());

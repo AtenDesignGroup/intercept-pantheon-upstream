@@ -47,8 +47,8 @@ class UserFlagType extends EntityFlagType {
     ];
     $form['display']['show_on_profile'] = [
       '#type' => 'checkbox',
-      '#title' => t('Display link on user profile page'),
-      '#description' => t('Show the link formatted as a user profile element.'),
+      '#title' => $this->t('Display link on user profile page'),
+      '#description' => $this->t('Show the link formatted as a user profile element.'),
       '#default_value' => $this->showOnProfile(),
       // Put this above 'show on entity'.
       '#weight' => -1,

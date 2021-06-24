@@ -2,6 +2,7 @@
 
 use Drupal\Core\Config\ExtensionInstallStorage;
 use Drupal\Core\Config\InstallStorage;
+use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\profile\Entity\ProfileType;
 use Drupal\system\Entity\Action;
@@ -99,7 +100,7 @@ function profile_post_update_replace_view() {
     return;
   }
   $config_storage = \Drupal::service('config.storage');
-  $extension_config_storage = new ExtensionInstallStorage($config_storage, InstallStorage::CONFIG_INSTALL_DIRECTORY);
+  $extension_config_storage = new ExtensionInstallStorage($config_storage, InstallStorage::CONFIG_INSTALL_DIRECTORY, StorageInterface::DEFAULT_COLLECTION, TRUE, NULL);
   $config_data = $extension_config_storage->read('views.view.profiles');
 
   $view->setSyncing(TRUE);

@@ -37,7 +37,7 @@ class JsonapiResourceConfigDeleteForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
-    drupal_set_message($this->t('Resource %id has been reverted to default.', [
+    $this->messenger()->addStatus($this->t('Resource %id has been reverted to default.', [
       '%id' => $this->entity->id(),
     ]));
 

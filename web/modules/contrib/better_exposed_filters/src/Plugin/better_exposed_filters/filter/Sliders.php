@@ -68,14 +68,19 @@ class Sliders extends FilterWidgetBase {
 
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    $form['min'] = [
+    $form['wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['']],
+    ];
+
+    $form['wrapper']['min'] = [
       '#type' => 'number',
       '#title' => $this->t('Range minimum'),
       '#default_value' => $this->configuration['min'],
       '#description' => $this->t('The minimum allowed value for the jQuery range slider. It can be positive, negative, or zero and have up to 11 decimal places.'),
     ];
 
-    $form['max'] = [
+    $form['wrapper']['max'] = [
       '#type' => 'number',
       '#title' => $this->t('Range maximum'),
       '#default_value' => $this->configuration['max'],

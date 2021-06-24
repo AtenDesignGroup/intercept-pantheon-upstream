@@ -53,7 +53,7 @@ services:
   jsonapi_extras.entity.to_jsonapi:
     class: Drupal\jsonapi_extras\EntityToJsonApi
     arguments:
-      - '@http_kernel'
+      - '@http_kernel.basic'
       - '@jsonapi.resource_type.repository'
       - '@session'
       - '@request_stack'

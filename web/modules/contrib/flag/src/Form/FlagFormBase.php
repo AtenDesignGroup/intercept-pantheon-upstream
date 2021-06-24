@@ -5,6 +5,7 @@ namespace Drupal\flag\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Utility\LinkGeneratorInterface;
 use Drupal\flag\ActionLink\ActionLinkPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -32,14 +33,26 @@ abstract class FlagFormBase extends EntityForm {
   protected $bundleInfoService;
 
   /**
+   * The link generator.
+   *
+   * @var \Drupal\Core\Utility\LinkGeneratorInterface
+   */
+  protected $linkGenerator;
+
+  /**
    * Constructs a new form.
    *
    * @param \Drupal\flag\ActionLink\ActionLinkPluginManager $action_link_manager
    *   The link type plugin manager.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info_service
+   *   The bundle info service.
+   * @param \Drupal\Core\Utility\LinkGeneratorInterface $link_generator
+   *   The link generator service.
    */
-  public function __construct(ActionLinkPluginManager $action_link_manager, EntityTypeBundleInfoInterface $bundle_info_service) {
+  public function __construct(ActionLinkPluginManager $action_link_manager, EntityTypeBundleInfoInterface $bundle_info_service, LinkGeneratorInterface $link_generator) {
     $this->actionLinkManager = $action_link_manager;
     $this->bundleInfoService = $bundle_info_service;
+    $this->linkGenerator = $link_generator;
   }
 
   /**
@@ -48,7 +61,8 @@ abstract class FlagFormBase extends EntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.flag.linktype'),
-      $container->get('entity_type.bundle.info')
+      $container->get('entity_type.bundle.info'),
+      $container->get('link_generator')
     );
   }
 
@@ -302,11 +316,15 @@ abstract class FlagFormBase extends EntityForm {
     $flag->getLinkTypePlugin()->submitConfigurationForm($form, $form_state);
 
     $status = $flag->save();
-    $message_params = ['%label' => $flag->label()];
+
+    $message_params = [
+      '%label' => $flag->label(),
+    ];
     $logger_params = [
       '%label' => $flag->label(),
       'link' => $flag->toLink($this->t('Edit'), 'edit-form')->toString(),
     ];
+
     if ($status == SAVED_UPDATED) {
       $this->messenger()->addMessage($this->t('Flag %label has been updated.', $message_params));
       $this->logger('flag')->notice('Flag %label has been updated.', $logger_params);

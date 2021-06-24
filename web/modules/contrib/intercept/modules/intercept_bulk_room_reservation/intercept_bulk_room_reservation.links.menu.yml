@@ -1,10 +1,10 @@
 entity.bulk_room_reservation.settings:
-  title: Bulk Room Reservation
+  title: Bulk room reservation
   description: Configure a Bulk Room Reservation entity type
   route_name:  entity.bulk_room_reservation.settings
-  parent: system.admin_structure
+  parent: room_reservation.admin.structure.settings
 entity.bulk_room_reservation.collection:
-  title: Bulk Room Reservations
+  title: Bulk room reservations
   description: List of bulk room reservations
   route_name: entity.bulk_room_reservation.collection
   parent: entity.room_reservation.collection

@@ -1,0 +1,6 @@
+widget:
+  js:
+    js/tally.widget.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

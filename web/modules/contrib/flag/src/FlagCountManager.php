@@ -146,7 +146,7 @@ class FlagCountManager implements FlagCountManagerInterface, EventSubscriberInte
     // Return the flag count if it is already in the cache.
     if ($get_by_session_id) {
       if (is_null($session_id)) {
-        throw new \LogicException('Anonymous users must be identifed by session_id');
+        throw new \LogicException('Anonymous users must be identified by session_id');
       }
 
       // Return the flag count if it is already in the cache.

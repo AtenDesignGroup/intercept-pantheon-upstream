@@ -18,12 +18,15 @@ class QuickNodeCloneNodeAccess {
    *   The account object.
    * @param int $node
    *   The node id.
+   *
+   * @return \Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden
+   *   If allowed, AccessResultAllowed isAllowed() will be TRUE. If forbidden,
+   *   isForbidden() will be TRUE.
    */
   public function cloneNode(AccountInterface $account, $node) {
     $node = Node::load($node);
-    $node_type = $node->bundle();
 
-    if (_quick_node_clone_has_clone_permission($node_type)) {
+    if (_quick_node_clone_has_clone_permission($node)) {
       $result = AccessResult::allowed();
     }
     else {

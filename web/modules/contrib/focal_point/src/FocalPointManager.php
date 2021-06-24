@@ -60,8 +60,8 @@ class FocalPointManager implements FocalPointManagerInterface {
    */
   public function absoluteToRelative($x, $y, $width, $height) {
     return [
-      'x' => (int) round($x / $width * 100),
-      'y' => (int) round($y / $height * 100),
+      'x' => $width ? (int) round($x / $width * 100) : 0,
+      'y' => $height ? (int) round($y / $height * 100) : 0,
     ];
   }
 

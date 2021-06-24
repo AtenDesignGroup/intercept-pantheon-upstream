@@ -4,17 +4,19 @@ namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\office_hours\OfficeHoursDateHelper;
+use Drupal\office_hours\OfficeHoursFormatterTrait;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
  * Abstract plugin implementation of the formatter.
  */
 abstract class OfficeHoursFormatterBase extends FormatterBase {
+
+  use OfficeHoursFormatterTrait;
 
   /**
    * {@inheritdoc}
@@ -35,7 +37,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
         'more_hours' => ', ',
       ],
       'current_status' => [
-        'position' => '', // Hidden
+        'position' => '', // Hidden.
         'open_text' => 'Currently open!',
         'closed_text' => 'Currently closed',
       ],
@@ -112,10 +114,10 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
       '#type' => 'select',
       '#title' => $this->t('Time notation'),
       '#options' => [
-        'G' => $this->t('24 hour time') . ' (9:00)', // D7: key = 0
-        'H' => $this->t('24 hour time') . ' (09:00)', // D7: key = 2
-        'g' => $this->t('12 hour time') . ' (9:00 am)', // D7: key = 1
-        'h' => $this->t('12 hour time') . ' (09:00 am)', // D7: key = 1
+        'G' => $this->t('24 hour time') . ' (9:00)', // D7: key = 0.
+        'H' => $this->t('24 hour time') . ' (09:00)', // D7: key = 2.
+        'g' => $this->t('12 hour time') . ' (9:00 am)', // D7: key = 1.
+        'h' => $this->t('12 hour time') . ' (09:00 am)', // D7: key = 1.
       ],
       '#default_value' => $settings['time_format'],
       '#required' => FALSE,
@@ -265,7 +267,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
    */
   public function settingsSummary() {
     $summary = parent::settingsSummary();
-    // @todo: Return more info, like the Date module does.
+    // @todo Return more info, like Date module does.
     $summary[] = $this->t('Display Office hours in different formats.');
     return $summary;
   }
@@ -273,13 +275,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
   /**
    * Add an 'openingHours' formatter from https://schema.org/openingHours.
    *
-   * @param FieldItemListInterface $items
+   * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
    * @param $langcode
    * @param array $elements
    *
    * @return array
    */
-  protected function addSchemaFormatter(FieldItemListInterface $items, $langcode, array $elements) {
+  protected function addSchemaFormatter(OfficeHoursItemListInterface $items, $langcode, array $elements) {
 
     $formatter = new OfficeHoursFormatterSchema(
       $this->pluginId, $this->pluginDefinition, $this->fieldDefinition,
@@ -312,18 +314,18 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
   /**
    * Add a 'status' formatter before or after the hours, if necessary.
    *
-   * @param FieldItemListInterface $items
+   * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
    * @param $langcode
    * @param array $elements
    *
    * @return array
    */
-  protected function addStatusFormatter(FieldItemListInterface $items, $langcode, array $elements) {
+  protected function addStatusFormatter(OfficeHoursItemListInterface $items, $langcode, array $elements) {
 
     if (!empty($this->settings['current_status']['position'])) {
       $formatter = new OfficeHoursFormatterStatus(
         $this->pluginId, $this->pluginDefinition, $this->fieldDefinition,
-        $this->settings, $this->viewMode, $this->label, $this->thirdPartySettings );
+        $this->settings, $this->viewMode, $this->label, $this->thirdPartySettings);
 
       $new_element = $formatter->viewElements($items, $langcode);
 
@@ -331,9 +333,11 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
         case 'before':
           array_unshift($elements, $new_element);
           break;
+
         case'after':
           array_push($elements, $new_element);
           break;
+
         default:
           break;
       }
@@ -345,12 +349,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
   /**
    * {@inheritdoc}
    */
-  public function getStatusTimeLeft(FieldItemListInterface $items, $langcode) {
-
-    $date = new DrupalDateTime('now');
-    $today = $date->format('w');
-    $now = $date->format('Hi');
-    $seconds = $date->format('s');
+  public function getStatusTimeLeft(OfficeHoursItemListInterface $items, $langcode) {
 
     // @see https://www.drupal.org/docs/8/api/cache-api/cache-max-age
     // If there are no open days, cache forever.
@@ -358,10 +357,15 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
       return Cache::PERMANENT;
     }
 
-    // Get some settings from field. Do not overwrite defaults.
-    // Make sure we only receive 1 day, only to calculate the cache.
-    $settings = $this->getSettings();
+    $date = new DrupalDateTime('now');
+    $today = $date->format('w');
+    $now = $date->format('Hi');
+    $seconds = $date->format('s');
 
+    $next_time = '0000';
+    $add_days = 0;
+    // Get some settings from field. Do not overwrite defaults.
+    $settings = $this->getSettings();
     // Return the filtered days/slots/items/rows.
     switch ($settings['show_closed']) {
       case 'all':
@@ -371,32 +375,54 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
         return Cache::PERMANENT;
 
       case 'current':
-//        dpm($items, __CLASS__.'/'.__FUNCTION__.'/'.__LINE__);
         // Cache expires at midnight.
         $next_time = '0000';
         $add_days = 1;
         break;
 
       case 'next':
-//        dpm($items, __CLASS__.'/'.__FUNCTION__.'/'.__LINE__);
-        /** @var OfficeHoursItemListInterface $items */
-        $office_hours = $items->getRows($settings, $this->getFieldSettings());
-
         // Get the first (and only) day of the list.
+        // Make sure we only receive 1 day, only to calculate the cache.
+        $office_hours = $this->getRows($items->getValue(), $this->getSettings(), $this->getFieldSettings());
         $next = array_shift($office_hours);
+
         // Get the difference in hours/minutes between 'now' and next open/closing time.
         $first_time = NULL;
         foreach ($next['slots'] as $slot) {
-          $first_time = !isset($first_time) ? $slot['start'] : $first_time;
-          if (!isset($next_time) && $slot['start'] > $now) {
-            $next_time = $slot['start'];
+          $start = $slot['start'];
+          $end = $slot['end'];
+
+          if ($next['startday'] != $today) {
+            // We will open tomorrow or later.
+            $next_time = $start;
+            $add_days = ($next['startday'] - $today + 7) % 7;
+            break;
           }
-          elseif (!isset($next_time) && $slot['end'] > $now) {
-            $next_time = $slot['end'];
+          elseif ($start > $now) {
+            // We will open later today.
+            $next_time = $start;
+            $add_days = 0;
+            break;
+          }
+          elseif (($start > $end) // We are open until after midnight.
+            || ($start == $end) // We are open 24hrs per day.
+            || (($start < $end) && ($end > $now)) // We are open, normal time slot.
+          ) {
+            $next_time = $end;
+            $add_days = ($start < $end) ? 0 : 1; // Add 1 day if open until after midnight.
+            break;
+          }
+          else {
+            // We were open today. Take the first slot of the day.
+            if (!isset($first_time_slot_found)) {
+              $first_time_slot_found = TRUE;
+
+              $next_time = $start;
+              $add_days = 7;
+            }
+            continue; // A new slot might come along.
           }
         }
-        $next_time = !isset($next_time) ? $first_time : $next_time;
-        $add_days = ( ($next['startday'] - $today + 7)% 7);
         break;
 
       default:
@@ -404,11 +430,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
         return Cache::PERMANENT;
     }
 
+    // Set to 0 to avoid php error if time field is not set.
+    $next_time = is_numeric($next_time) ? $next_time : '0000';
     // Calculate the remaining cache time.
     $time_left = (integer) $add_days * 24 * 3600;
-    $time_left += (integer) ( substr($next_time, 0, 2) - substr($now, 0, 2) ) * 3600;
-    $time_left += (integer) ( substr($next_time, 2, 2) - substr($now, 2, 2) ) * 60;
-    $time_left -= $seconds; // correct for the current minute.
+    $time_left += (integer) (substr($next_time, 0, 2) - substr($now, 0, 2)) * 3600;
+    $time_left += (integer) (substr($next_time, 2, 2) - substr($now, 2, 2)) * 60;
+    $time_left -= $seconds; // Correct for the current minute.
 
     return $time_left;
   }

@@ -38,7 +38,7 @@ function intercept_base_preprocess_node(&$variables) {
 
   $node = $variables['node'];
   // Will create a link variable visible on the event registratio page that points to the event detail page
-  if ($variables['view_mode'] == 'header' && $node->getType() == 'event') { 
+  if ($variables['view_mode'] == 'header' && $node->getType() == 'event') {
     if (\Drupal::routeMatch()->getRouteName() === 'entity.node.register') {
       $variables['event_details_url'] = $variables['url'];
     }
@@ -362,7 +362,7 @@ function intercept_base_preprocess_views_view_row_rss(&$variables) {
         $host = \Drupal::request()->getSchemeAndHttpHost();
         $variables['enclosure'] = ['#markup' => $host . $explosion[1]];
 
-        $file = file_load($explosion[2]);
+        $file = \Drupal::service('entity_type.manager')->getStorage('file')->load($explosion[2]);
         $variables['enclosure_size'] = ['#markup' => $file->filesize->value];
         $variables['enclosure_mime'] = ['#markup' => $file->filemime->value];
       }

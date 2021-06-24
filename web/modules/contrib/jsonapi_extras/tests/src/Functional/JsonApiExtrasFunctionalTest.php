@@ -77,6 +77,44 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     ]);
     $field_config->save();
 
+    FieldStorageConfig::create([
+      'field_name' => 'field_text_moved',
+      'entity_type' => 'node',
+      'type' => 'text',
+      'settings' => [],
+      'cardinality' => 1,
+    ])->save();
+
+    $field_config = FieldConfig::create([
+      'field_name' => 'field_text_moved',
+      'label' => 'Text field',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'required' => FALSE,
+      'settings' => [],
+      'description' => '',
+    ]);
+    $field_config->save();
+
+    FieldStorageConfig::create([
+      'field_name' => 'field_text_moved_new',
+      'entity_type' => 'node',
+      'type' => 'text',
+      'settings' => [],
+      'cardinality' => 1,
+    ])->save();
+
+    $field_config = FieldConfig::create([
+      'field_name' => 'field_text_moved_new',
+      'label' => 'Text field new',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'required' => FALSE,
+      'settings' => [],
+      'description' => '',
+    ]);
+    $field_config->save();
+
     $config = \Drupal::configFactory()->getEditable('jsonapi_extras.settings');
     $config->set('path_prefix', 'api');
     $config->set('include_count', TRUE);
@@ -98,6 +136,47 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
       $headers['Accept'] = 'application/vnd.api+json';
     }
     return parent::drupalGet($path, $options, $headers);
+  }
+
+  public function testOverwriteFieldWithOtherField(){
+    $this->createDefaultContent(1, 1, FALSE, TRUE, static::IS_NOT_MULTILINGUAL);
+
+    // 1. Test if moving a field over another doesn't break
+    $this->nodes[0]->field_text_moved->setValue('field_text_moved_value');
+    $this->nodes[0]->field_text_moved_new->setValue('field_text_moved_new_value');
+    $this->nodes[0]->save();
+
+    $stringResponse = $this->drupalGet('/api/articles');
+    $output = Json::decode($stringResponse);
+
+    $this->assertEquals($this->nodes[0]->field_text_moved_new->value, $output['data'][0]['attributes']['field_text_moved']['value']);
+  }
+
+  public function testSortOverwrittenField(){
+    $this->createDefaultContent(2, 1, FALSE, TRUE, static::IS_NOT_MULTILINGUAL);
+
+    $this->nodes[0]->field_text_moved->setValue('c');
+    $this->nodes[0]->field_text_moved_new->setValue('b');
+    $this->nodes[0]->save();
+
+    $this->nodes[1]->field_text_moved->setValue('d');
+    $this->nodes[1]->field_text_moved_new->setValue('a');
+    $this->nodes[1]->save();
+
+    $stringResponse = $this->drupalGet('/api/articles', ['query' => ['sort' => 'field_text_moved.value']]);
+    $output = Json::decode($stringResponse);
+
+    // Check if order changed as expected
+    $this->assertEquals('a', $output['data'][0]['attributes']['field_text_moved']['value']);
+    $this->assertEquals('b', $output['data'][1]['attributes']['field_text_moved']['value']);
+
+    $stringResponse = $this->drupalGet('/api/articles', ['query' => ['sort' => '-field_text_moved.value']]);
+    $output = Json::decode($stringResponse);
+
+    // Check if order changed as expected
+    $this->assertEquals('b', $output['data'][0]['attributes']['field_text_moved']['value']);
+    $this->assertEquals('a', $output['data'][1]['attributes']['field_text_moved']['value']);
+
   }
 
   /**
@@ -158,7 +237,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
 
     // 8. Test the field enhancers: SingleNestedEnhancer.
     $output = Json::decode($this->drupalGet('/api/articles/' . $this->nodes[3]->uuid()));
-    $this->assertInternalType('string', $output['data']['attributes']['body']);
+    $this->assertIsString($output['data']['attributes']['body']);
 
     // 9. Test the related endpoint.
     // This tests the overridden resource name, the overridden field names and
@@ -302,6 +381,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $this->assertCount(3, $created_response['data']);
   }
 
+
   /**
    * Creates the JSON:API Resource Config entities to override the resources.
    */
@@ -321,6 +401,30 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
       'path' => 'articles',
       'resourceType' => 'articles',
       'resourceFields' => [
+        'field_text_moved' => [
+          'fieldName' => 'field_text_moved',
+          'publicName' => 'field_text_moved',
+          'enhancer' => ['id' => ''],
+          'disabled' => TRUE,
+        ],
+        'field_text_moved_new' => [
+          'fieldName' => 'field_text_moved_new',
+          'publicName' => 'field_text_moved',
+          'enhancer' => ['id' => ''],
+          'disabled' => FALSE,
+        ],
+        'field_date_sort' => [
+          'fieldName' => 'field_date_sort',
+          'publicName' => 'field_date_sort',
+          'enhancer' => ['id' => ''],
+          'disabled' => TRUE,
+        ],
+        'field_date_sort_new' => [
+          'fieldName' => 'field_date_sort_new',
+          'publicName' => 'field_date_sort',
+          'enhancer' => ['id' => ''],
+          'disabled' => FALSE,
+        ],
         'nid' => [
           'fieldName' => 'nid',
           'publicName' => 'internalId',
@@ -515,6 +619,8 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
         ],
       ],
     ])->save();
+
+
   }
 
   /**
@@ -530,7 +636,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $this->drupalLogin($admin_user);
 
     $this->drupalGet('/admin/config/services/jsonapi/resource_types');
-    // print_r($this->getSession()->getPage()->getContent());
+
     $this->assertSession()
       ->elementContains('css', '#jsonapi-enabled-resources-list', 'taxonomy_term--' . $vocabulary->id());
     $this->drupalGet('/admin/config/services/jsonapi/add/resource_types/taxonomy_term/' . $vocabulary->id());

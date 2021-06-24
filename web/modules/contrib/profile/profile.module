@@ -259,17 +259,32 @@ function profile_theme_suggestions_profile(array $variables) {
  * Implements hook_entity_base_field_info().
  */
 function profile_entity_base_field_info(EntityTypeInterface $entity_type) {
-  if ($entity_type->id() == 'user') {
-    $profile_types = ProfileType::loadMultiple();
+  if ($entity_type->id() === 'user') {
+    $entity_type_manager = \Drupal::entityTypeManager();
     $fields = [];
+
+    // In random cases, this hook is invoked before the profile_type entity
+    // definition is registered.
+    if (!$entity_type_manager->hasDefinition('profile_type')) {
+      return $fields;
+    }
+
+    $profile_types = $entity_type_manager->getStorage('profile_type')->loadMultiple();
     foreach ($profile_types as $profile_type) {
-      $fields[$profile_type->id() . '_profiles'] = BaseFieldDefinition::create('entity_reference')
+      $profile_type_id = $profile_type->id();
+      $fields[$profile_type_id . '_profiles'] = BaseFieldDefinition::create('entity_reference')
         ->setName(sprintf('%s profiles', $profile_type->label()))
         ->setLabel(t('@label profiles', ['@label' => $profile_type->label()]))
         ->setDescription(t('User profiles.'))
         ->setClass(ProfileEntityFieldItemList::class)
         ->setSetting('target_type', 'profile')
-        ->setSetting('profile_type', $profile_type->id())
+        ->setSetting('target_type', 'profile')
+        ->setSetting('handler_settings', [
+          'target_bundles' => [
+            $profile_type_id => $profile_type_id
+          ],
+        ])
+        ->setSetting('profile_type', $profile_type_id)
         ->setDisplayConfigurable('view', TRUE)
         ->setDisplayConfigurable('form', TRUE)
         ->setComputed(TRUE);

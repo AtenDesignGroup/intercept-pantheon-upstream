@@ -3,14 +3,14 @@
  * Javascript functionality for the focal point preview page.
  */
 
-(function($, Drupal) {
+(function ($, Drupal) {
   'use strict';
 
   /**
    * Focal Point preview.
    */
   Drupal.behaviors.focalPointPreview = {
-    attach: function(context, settings) {
+    attach: function (context, settings) {
       var $focalPointDerivativePreviews = $(".focal-point-derivative-preview");
 
       var $focalPointImagePreview = $("#focal-point-preview-image");
@@ -21,7 +21,7 @@
 
       // Add a click event to each derivative preview.
       $focalPointDerivativePreviews.each(function () {
-        $(this).click(function(event) {
+        $(this).click(function (event) {
           // Remove any image style classes added by active previews.
           $(".focal-point-derivative-preview.active").each(function () {
             $focalPointImagePreview.removeClass($(this).data('image-style'))
@@ -48,10 +48,10 @@
       });
 
       // Add some window events for reverting to the original image.
-      $(window).click(function(event) {
+      $(window).click(function (event) {
         resetPreview();
       });
-      $(window).keyup(function(event) {
+      $(window).keyup(function (event) {
         // Check if the esc key was pressed.
         if (event.keyCode === 27) {
           resetPreview();

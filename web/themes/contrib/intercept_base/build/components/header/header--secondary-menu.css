@@ -162,6 +162,13 @@
   label[for='account-trigger'].account-trigger--is-staff:hover {
     background-color: #b0025d; } }
 
+label[for='search-trigger'],
+label[for='nav-trigger'] {
+  visibility: hidden; }
+  label[for='search-trigger'] svg,
+  label[for='nav-trigger'] svg {
+    visibility: visible; }
+
 label[for='account-trigger'],
 .account-trigger--logged-out {
   font-size: 0.72917rem;

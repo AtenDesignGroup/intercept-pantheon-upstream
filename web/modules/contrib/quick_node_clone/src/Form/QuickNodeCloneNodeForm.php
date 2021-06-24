@@ -59,6 +59,13 @@ class QuickNodeCloneNodeForm extends NodeForm {
     if ($node->id()) {
       $form_state->setValue('nid', $node->id());
       $form_state->set('nid', $node->id());
+      $storage = $form_state->getStorage();
+      foreach ($storage['quick_node_clone_groups_storage'] as $group) {
+        // Add node to all the groups the original was in
+        // (if group and gnode modules aren't installed then nothing should ever
+        // be set in this array anyway)
+        $group->addContent($node, "group_node:" . $node->bundle());
+      }
       if ($node->access('view')) {
         $form_state->setRedirect(
           'entity.node.canonical',

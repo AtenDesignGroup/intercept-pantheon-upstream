@@ -25,8 +25,10 @@ const { constants } = interceptClient;
 const c = constants;
 
 const DESIGNATION = 'designation';
-const DESIGNATION_OPTIONS = map(get(drupalSettings, 'intercept.events.field_event_designation.options', {}), (value, key) => ({ key, value }));
-
+const DESIGNATION_OPTIONS = map(
+  get(drupalSettings, 'intercept.events.field_event_designation.options', {}),
+  (value, key) => ({ key, value })
+);
 
 const labels = {
   [c.TYPE_EVENT_TYPE]: 'Event Type',
@@ -38,7 +40,7 @@ const labels = {
   [DESIGNATION]: 'Event Designation',
 };
 
-const currentFiltersConfig = filters =>
+const currentFiltersConfig = (filters) =>
   map(filters, (value, key) => ({
     key,
     value,
@@ -81,7 +83,7 @@ class EventFilters extends PureComponent {
     let currentFilters = currentFiltersConfig(filters);
 
     if (!showDate) {
-      currentFilters = currentFilters.filter(f => [c.DATE_START, c.DATE_END].indexOf(f.key) < 0);
+      currentFilters = currentFilters.filter((f) => [c.DATE_START, c.DATE_END].indexOf(f.key) < 0);
     }
 
     return (
@@ -143,8 +145,11 @@ class EventFilters extends PureComponent {
             )}
             <RadioGroup
               ariaLabel="Event Designation"
+              label="Type of Event"
               checked={filters[DESIGNATION]}
-              onChange={(value) => {this.onFilterChange(DESIGNATION, value);}}
+              onChange={(value) => {
+                this.onFilterChange(DESIGNATION, value);
+              }}
               value={filters[DESIGNATION]}
               name={DESIGNATION}
               options={DESIGNATION_OPTIONS}
@@ -153,7 +158,7 @@ class EventFilters extends PureComponent {
         </Formsy>
         <div className="filters__current">
           <CurrentFilters
-            filters={currentFilters.filter(f => [DESIGNATION].indexOf(f.key) < 0)}
+            filters={currentFilters.filter((f) => [DESIGNATION].indexOf(f.key) < 0)}
             onChange={this.onFilterChange}
           />
         </div>

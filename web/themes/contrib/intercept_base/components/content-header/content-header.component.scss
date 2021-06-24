@@ -1,4 +1,4 @@
-@import "_partials";
+@import '_partials';
 
 .content-header {
   align-items: stretch;
@@ -7,7 +7,7 @@
   position: relative;
 
   @include bp(smallish) {
-    @include box--gutters(percentage(.5/7), 0);
+    @include box--gutters(percentage(0.5/7), 0);
     flex-direction: row-reverse;
   }
 
@@ -22,7 +22,7 @@
 }
 
 .content-header__text {
-  @include box--gutters(percentage(.5/7));
+  @include box--gutters(percentage(0.5/7));
   @include spacing(padding-top, loose);
   @include spacing(padding-bottom, loose);
   color: $white;
@@ -90,7 +90,6 @@
   @include lh(0);
   display: block;
 
-
   &:not(:last-child) {
     @include spacing(margin-bottom, compact);
   }
@@ -109,22 +108,19 @@
       padding: 0.75rem 0.5rem 0.75rem 0;
     }
   }
+  // social media icons on Event and Blog detail pages
   .menu--social-media-menu {
     justify-content: left;
+    padding: 0.75rem 0.5rem 0.75rem 0.5rem;
 
     a {
       filter: brightness(100);
       mask-repeat: no-repeat;
       -webkit-mask-position-y: center;
 
-      &:first-of-type {
-        margin-left: 2rem;
+      &:hover {
+        background-color: #c9c9c9c9; // 4 or 8 digit hex color, or named color (like "red") required to make this work. Not sure why
       }
-
-    }
-    a[href*='linkedin.com'] {
-      filter: none;
-      color: #fff;
     }
   }
 }

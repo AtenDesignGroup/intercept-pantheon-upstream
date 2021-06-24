@@ -12,11 +12,11 @@ entity_type: room_reservation
 bundle: room_reservation
 label: Status
 description: ''
-required: false
+required: true
 translatable: false
 default_value:
   -
-    value: NULL
+    value: requested
 default_value_callback: ''
 settings: {  }
 field_type: list_string

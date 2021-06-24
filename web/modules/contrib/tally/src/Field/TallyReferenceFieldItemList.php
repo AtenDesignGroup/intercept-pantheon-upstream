@@ -5,10 +5,11 @@ namespace Drupal\tally\Field;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemList;
 use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\TypedData\TraversableTypedDataInterface;
 
+/**
+ * Defines a item list class for tally reference fields.
+ */
 class TallyReferenceFieldItemList extends EntityReferenceFieldItemList {
 
   /**
@@ -31,13 +32,15 @@ class TallyReferenceFieldItemList extends EntityReferenceFieldItemList {
    * Count all deltas and return total.
    *
    * @return int
+   *   The total.
    */
   public function getTotal() {
     $value = $this->getValue();
     $counts = array_column($value, 'count');
-    return array_reduce($counts, function($carry, $item) {
+    return array_reduce($counts, function ($carry, $item) {
       $carry += (int) $item;
       return $carry;
     });
   }
+
 }

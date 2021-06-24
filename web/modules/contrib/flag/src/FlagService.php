@@ -21,19 +21,19 @@ class FlagService implements FlagServiceInterface {
    *
    * @var \Drupal\Core\Session\AccountInterface
    */
-  private $currentUser;
+  protected $currentUser;
 
   /*
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  private $entityTypeManager;
+  protected $entityTypeManager;
 
   /*
    * The session manager.
    *
    * @var \Drupal\Core\Session\SessionManagerInterface
    */
-  private $sessionManager;
+  protected $sessionManager;
 
   /**
    * Constructor.
@@ -43,7 +43,7 @@ class FlagService implements FlagServiceInterface {
    * @param AccountInterface $current_user
    *   The current user.
    * @param EntityTypeManagerInterface $entity_type_manager
-   *   The entity manager.
+   *   The entity type manager.
    * @param Drupal\Core\Session\SessionManagerInterface $session_manager
    *   The session manager.
    */
@@ -142,7 +142,7 @@ class FlagService implements FlagServiceInterface {
         // (and require the $session_id parameter in this case).
         if ($account->isAnonymous()) {
           if (empty($session_id)) {
-            throw new \LogicException('An anonymous user must be identifed by session ID.');
+            throw new \LogicException('An anonymous user must be identified by session ID.');
           }
 
           $query->condition('session_id', $session_id);
@@ -173,7 +173,7 @@ class FlagService implements FlagServiceInterface {
       $query->condition($global_or_user);
       if ($account->isAnonymous()) {
         if (empty($session_id)) {
-          throw new \LogicException('An anonymous user must be identifed by session ID.');
+          throw new \LogicException('An anonymous user must be identified by session ID.');
         }
 
         $query->condition('session_id', $session_id);
@@ -336,7 +336,7 @@ class FlagService implements FlagServiceInterface {
 
     if ($account->isAnonymous()) {
       if (empty($session_id)) {
-        throw new \LogicException('An anonymous user must be identifed by session ID.');
+        throw new \LogicException('An anonymous user must be identified by session ID.');
       }
 
       $query->condition('session_id', $session_id);

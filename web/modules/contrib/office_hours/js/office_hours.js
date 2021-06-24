@@ -114,7 +114,7 @@
       /**
        * Shows the Add-link, conditionally.
        */
-      function show_add_link () {
+      function show_add_link() {
         var next_tr = $(this).closest('tr').next();
         $(this).hide();
         if (next_tr.is(':hidden')) {

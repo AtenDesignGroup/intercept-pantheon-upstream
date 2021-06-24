@@ -14,6 +14,11 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 class FlagCountExtensionTest extends WebDriverTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Modules to enable.
    *
    * @var array

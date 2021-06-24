@@ -161,7 +161,7 @@ class JsonapiResourceConfigForm extends EntityForm {
       $existing_entity = $this->entityTypeManager
         ->getStorage('jsonapi_resource_config')->load($resource_config_id);
       if ($existing_entity && $entity->isNew()) {
-        drupal_set_message($this->t('This override already exists, please edit it instead.'));
+        $this->messenger()->addStatus($this->t('This override already exists, please edit it instead.'));
         return $form;
       }
       try {
@@ -206,17 +206,17 @@ class JsonapiResourceConfigForm extends EntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label JSON:API Resource overwrites.', [
+        $this->messenger()->addStatus($this->t('Created the %label JSON:API Resource overwrites.', [
           '%label' => $resource_config->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label JSON:API Resource overwrites.', [
+        $this->messenger()->addStatus($this->t('Saved the %label JSON:API Resource overwrites.', [
           '%label' => $resource_config->label(),
         ]));
     }
-    $form_state->setRedirectUrl($resource_config->urlInfo('collection'));
+    $form_state->setRedirectUrl($resource_config->toUrl('collection'));
   }
 
   /**
@@ -393,7 +393,7 @@ class JsonapiResourceConfigForm extends EntityForm {
       '#type' => 'checkbox',
       '#title' => $this->t('Disabled'),
       '#title_display' => 'invisible',
-      '#default_value' => $resource_field['disabled'],
+      '#default_value' => empty($resource_field['disabled']) ? NULL : $resource_field['disabled'],
     ];
     $overrides_form['fieldName'] = [
       '#type' => 'hidden',

@@ -35,8 +35,6 @@ function intercept_room_reservation_help($route_name, RouteMatchInterface $route
       $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
       $output .= '<p>' . new TranslatableMarkup('Room reservation functionality for the Intercept library') . '</p>';
       return $output;
-
-    default:
   }
 }
 
@@ -196,6 +194,25 @@ function intercept_room_reservation_form_room_reservation_update_status_form_alt
     $form['actions']['cancel']['#weight'] = 4;
     $form['actions']['submit']['#value'] = 'Yes';
     $form['actions']['submit']['#weight'] = 5;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  switch ($form_id) {
+    case 'room_reservation_add_form':
+      // The default value on the field needs to be requested,
+      // but if someone is using the reservation add form
+      // let's default to "no value" and just make the field be required.
+      $status = $form_state->getValue('field_status');
+      if (!$form_state->getValue('field_status')) {
+        $options = ['_none' => '- Select -'] + $form['field_status']['widget']['#options'];
+        $form['field_status']['widget']['#options'] = $options;
+        $form['field_status']['widget']['#default_value'][0] = '_none';
+      }
+      break;
   }
 }
 

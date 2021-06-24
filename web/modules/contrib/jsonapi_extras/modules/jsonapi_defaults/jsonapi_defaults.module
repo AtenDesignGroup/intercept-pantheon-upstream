@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\jsonapi\Query\OffsetPage;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 
 /**
@@ -40,11 +41,14 @@ function _jsonapi_defaults_form_alter(array &$form, FormStateInterface $form_sta
     'jsonapi_defaults',
     'default_include'
   );
+  $sorting = _jsonapi_defaults_convert_value(
+    $config_resource->getThirdPartySetting('jsonapi_defaults', 'default_sorting')
+  );
 
   $form['bundle_wrapper']['fields_wrapper']['defaults'] = [
     '#type' => 'details',
     '#title' => t('Collection'),
-    '#open' => $includes || $filters,
+    '#open' => $includes || $filters || $sorting,
     '#description' => t('Sets resource default parameters.'),
     '#states' => [
       'visible' => [
@@ -70,6 +74,28 @@ function _jsonapi_defaults_form_alter(array &$form, FormStateInterface $form_sta
         If a request contains an "filter" query string parameter those filters will be added to the defaults.'),
   ];
 
+  $form['bundle_wrapper']['fields_wrapper']['defaults']['default_sorting'] = [
+    '#type' => 'textarea',
+    '#title' => 'Default sorting list',
+    '#default_value' => $sorting,
+    '#description' => t('Enter one sort per line, in the format key=value. For example:<br />
+        sort[titleSort][path]=created<br />
+        sort[titleSort][direction]=DESC<br />
+        If a request contains an "sort" query string parameter those sorting will be added to the defaults.'),
+  ];
+
+  $form['bundle_wrapper']['fields_wrapper']['defaults']['page_limit'] = [
+    '#type' => 'number',
+    '#title' => 'Page limit',
+    '#default_value' => $config_resource->getThirdPartySetting(
+      'jsonapi_defaults',
+      'page_limit'
+    ) ?: OffsetPage::SIZE_MAX,
+    '#min' => OffsetPage::SIZE_MAX,
+    '#description' => t('Enter the limit of records fetched per page. <strong>Please note that changing this can have an impact on performance and does have security implications.</strong><br />
+      Read more in the JSON:API documentation at <a href="https://www.drupal.org/docs/8/core/modules/jsonapi-module/pagination#s--cant-i-set-a-page-limit-higher-than-50" target="_blank">drupal.org</a> and consider using the <a href="https://www.drupal.org/project/jsonapi_boost" target="_blank">JSON:API Boost module</a> for better performance.'),
+  ];
+
   $form['#entity_builders'][] = 'jsonapi_defaults_form_jsonapi_resource_config_form_builder';
 }
 
@@ -85,6 +111,14 @@ function jsonapi_defaults_form_jsonapi_resource_config_form_builder($entity_type
     $config_resource->unsetThirdPartySetting('jsonapi_defaults', 'default_filter');
   }
 
+  if ($raw_value = $form_state->getValue('default_sorting')) {
+    $value = _jsonapi_defaults_convert_rawvalue($raw_value);
+    $config_resource->setThirdPartySetting('jsonapi_defaults', 'default_sorting', $value);
+  }
+  else {
+    $config_resource->unsetThirdPartySetting('jsonapi_defaults', 'default_sorting');
+  }
+
   if ($raw_value = $form_state->getValue('default_include')) {
     $include = array_map('trim', preg_split('/\r\n?|\n/', $raw_value));
     $include = array_filter($include);
@@ -94,6 +128,12 @@ function jsonapi_defaults_form_jsonapi_resource_config_form_builder($entity_type
     $config_resource->unsetThirdPartySetting('jsonapi_defaults', 'default_include');
   }
 
+  if ($page_limit = $form_state->getValue('page_limit')) {
+    $config_resource->setThirdPartySetting('jsonapi_defaults', 'page_limit', $page_limit);
+  }
+  else {
+    $config_resource->unsetThirdPartySetting('jsonapi_defaults', 'page_limit');
+  }
 }
 
 /**
@@ -121,6 +161,11 @@ function _jsonapi_defaults_convert_rawvalue($raw_value) {
         $key = explode('][', $key);
         $value['filter:' . trim(implode('#', $key), '[]')] = $val;
       }
+      elseif (preg_match('/^sort.+/', $key)){
+        $key = str_replace('sort[', '', $key);
+        $key = explode('][', $key);
+        $value['sort:' . trim(implode('#', $key), '[]')] = $val;
+      }
 
     }
   }
@@ -146,6 +191,10 @@ function _jsonapi_defaults_convert_value($value) {
       elseif (preg_match('/^filter.+/', $key)) {
         $key = implode('][', explode('#', preg_replace('/^filter:/', '', $key)));
         $raw_value .= "filter[$key]=$val\n";
+      }
+      elseif (preg_match('/^sort.+/', $key)) {
+        $key = implode('][', explode('#', preg_replace('/^sort:/', '', $key)));
+        $raw_value .= "sort[$key]=$val\n";
       }
     }
   }

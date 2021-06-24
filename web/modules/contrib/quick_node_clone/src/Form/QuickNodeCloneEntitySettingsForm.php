@@ -12,7 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Abstract class to configure how entities are cloned.
- * //@todo write the interface.
+ *
+ * @todo write the interface.
  */
 abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implements QuickNodeCloneEntitySettingsFormInterface {
 
@@ -40,7 +41,7 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
   /**
    * The machine name of the entity type.
    *
-   * @var $entityType
+   * @var string
    *   The entity type i.e. node
    */
   protected $entityTypeId = '';
@@ -81,8 +82,11 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
    * QuickNodeCloneEntitySettingsForm constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface
+   *   The entity field manager service.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entityTypeBundleInfo
+   *   The entity type bundle info provider.
    */
   public function __construct(ConfigFactoryInterface $configFactory, EntityFieldManagerInterface $entityFieldManager, EntityTypeBundleInfoInterface $entityTypeBundleInfo) {
     parent::__construct($configFactory);
@@ -120,7 +124,7 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
       '#type' => 'checkboxes',
       '#title' => $this->t('Entity Types'),
       '#options' => $bundle_names,
-      '#default_value' => array_keys($form_state->getValue('bundle_names')),
+      '#default_value' => array_keys($form_state->getValue('bundle_names') ?: []),
       '#description' => $this->t('Select entity types above and you will see a list of fields that can be excluded.'),
       '#ajax' => [
         'callback' => 'Drupal\quick_node_clone\Form\QuickNodeCloneEntitySettingsForm::fieldsCallback',
@@ -144,7 +148,7 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
         if (!empty($selected_bundles[$bundle_name])) {
           $options = [];
           $field_definitions = $this->entityFieldManager->getFieldDefinitions($this->getEntityTypeId(), $bundle_name);
-          foreach ($field_definitions as $key => $field) {
+          foreach ($field_definitions as $field) {
             if ($field instanceof FieldConfig) {
               $options[$field->getName()] = $field->getLabel();
             }
@@ -176,7 +180,7 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
 
     // Build an array of excluded fields for each bundle.
     $bundle_names = [];
-    foreach (array_filter($form_values['bundle_names']) as $key => $type) {
+    foreach (array_filter($form_values['bundle_names']) as $type) {
       if (!empty(array_filter($form_values[$type]))) {
         $bundle_names[$type] = array_values(array_filter($form_values[$type]));
       }
@@ -186,14 +190,23 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
     $this->config('quick_node_clone.settings')->set('exclude.' . $this->getEntityTypeId(), $bundle_names)->save();
   }
 
+  /**
+   * AJAX callback function to return the excluded fields part of the form.
+   *
+   * @param array $form
+   *   The form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current form state.
+   *
+   * @return array
+   *   The excluded fields form array.
+   */
   public static function fieldsCallback(array $form, FormStateInterface $form_state) {
     return $form['exclude']['fields'];
   }
 
   /**
-   * Get a list of bundles.
-   *
-   * @return array
+   * {@inheritdoc}
    */
   public function getEntityBundles() {
     static $bundles;
@@ -205,11 +218,7 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
   }
 
   /**
-   * Get the selected content types if there are any.
-   *
-   * @param $form_state
-   *
-   * @return array|mixed|null
+   * {@inheritdoc}
    */
   public function getSelectedBundles(FormStateInterface $form_state) {
     $selected_types = NULL;
@@ -225,18 +234,15 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
   }
 
   /**
-   * Get the correct description for the fields form.
-   *
-   * @param $form_state
-   *
-   * @return string
+   * {@inheritdoc}
    */
   public function getDescription(FormStateInterface $form_state) {
     $desc = $this->t('No content types selected');
     $config_name = 'exclude.' . $this->getEntityTypeId();
     if (!empty($form_state->getValue('bundle_names')) && array_filter($form_state->getValue('bundle_names'))) {
       $desc = '';
-    } elseif (!empty($this->getSettings($config_name)) && array_filter($this->getSettings($config_name))) {
+    }
+    elseif (!empty($this->getSettings($config_name)) && array_filter($this->getSettings($config_name))) {
       $desc = '';
     }
 
@@ -244,11 +250,7 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
   }
 
   /**
-   * Get default fields.
-   *
-   * @param $value
-   *
-   * @return array|mixed|null|string
+   * {@inheritdoc}
    */
   public function getDefaultFields($value) {
     $default_fields = [];
@@ -261,15 +263,12 @@ abstract class QuickNodeCloneEntitySettingsForm extends ConfigFormBase implement
   }
 
   /**
-   * Get the settings.
-   *
-   * @param $value
-   *
-   * @return array|mixed|null
+   * {@inheritdoc}
    */
   public function getSettings($value) {
     $settings = $this->configFactory->get('quick_node_clone.settings')->get($value);
 
     return $settings;
   }
+
 }

@@ -4,9 +4,9 @@ namespace Drupal\focal_point\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\focal_point\Plugin\Field\FieldWidget\FocalPointImageWidget;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\file\Entity\File;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\image\ImageStyleInterface;
 use Symfony\Component\Validator\Exception\InvalidArgumentException;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -16,7 +16,6 @@ use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Image\ImageFactory;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\Core\Render\RendererInterface;
 
 /**
  * Class FocalPointPreviewController.
@@ -47,13 +46,6 @@ class FocalPointPreviewController extends ControllerBase {
   protected $fileStorage;
 
   /**
-   * The renderer service.
-   *
-   * @var Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
-
-  /**
    * {@inheritdoc}
    *
    * @param \Drupal\Core\Image\ImageFactory $image_factory
@@ -61,11 +53,10 @@ class FocalPointPreviewController extends ControllerBase {
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request parameter.
    */
-  public function __construct(ImageFactory $image_factory, RequestStack $request_stack, RendererInterface $renderer) {
+  public function __construct(ImageFactory $image_factory, RequestStack $request_stack) {
     $this->imageFactory = $image_factory;
     $this->request = $request_stack->getCurrentRequest();
     $this->fileStorage = $this->entityTypeManager()->getStorage('file');
-    $this->renderer = $renderer;
   }
 
   /**
@@ -74,8 +65,7 @@ class FocalPointPreviewController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('image.factory'),
-      $container->get('request_stack'),
-      $container->get('renderer')
+      $container->get('request_stack')
     );
   }
 
@@ -151,15 +141,13 @@ class FocalPointPreviewController extends ControllerBase {
       '#derivative_image_note' => $derivative_image_note,
     ];
 
-    $html = $this->renderer->renderPlain($output);
-
     $options = [
       'dialogClass' => 'popup-dialog-class',
       'width' => '80%',
     ];
     $response = new AjaxResponse();
     $response->addCommand(
-      new OpenModalDialogCommand($this->t('Images preview'), $html, $options)
+      new OpenModalDialogCommand($this->t('Images preview'), $output, $options)
     );
 
     return $response;
@@ -244,7 +232,7 @@ class FocalPointPreviewController extends ControllerBase {
   /**
    * Create the URL for a preview image including a query parameter.
    *
-   * @param \Drupal\image\Entity\ImageStyle $style
+   * @param \Drupal\image\ImageStyleInterface $style
    *   The image style being previewed.
    * @param \Drupal\file\Entity\File $image
    *   The image being previewed.
@@ -255,7 +243,7 @@ class FocalPointPreviewController extends ControllerBase {
    * @return \Drupal\Core\GeneratedUrl|string
    *   The URL of the preview image.
    */
-  protected function buildUrl(ImageStyle $style, File $image, $focal_point_value) {
+  protected function buildUrl(ImageStyleInterface $style, File $image, $focal_point_value) {
     $url = $style->buildUrl($image->getFileUri());
     $url .= (strpos($url, '?') !== FALSE ? '&' : '?') . 'focal_point_preview_value=' . $focal_point_value;
 

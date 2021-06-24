@@ -331,10 +331,8 @@ input[type='submit'],
   text-transform: uppercase;
   transition: all $duration $easing;
 
-  &:hover,
-  &:focus {
-    background-color: $clr-primary-light !important;
-    color: $white !important;
+  &:hover {
+    background-color: $clr-primary-light;
   }
 
   &:active {
@@ -507,4 +505,13 @@ tbody + tbody {
 
 :active {
   outline: 0;
+}
+
+.ajax-progress {
+  display: inline;
+  padding: 0;
+
+  .throbber {
+    padding: 1px 7px 2px 7px;
+  }
 }

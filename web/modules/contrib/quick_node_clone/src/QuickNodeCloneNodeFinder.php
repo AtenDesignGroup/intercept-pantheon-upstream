@@ -2,10 +2,62 @@
 
 namespace Drupal\quick_node_clone;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\path_alias\AliasManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+
 /**
  * Helper class.
  */
 class QuickNodeCloneNodeFinder {
+
+  /**
+   * Request Stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * Path Alias Manager.
+   *
+   * @var \Drupal\Core\Path\AliasManager
+   */
+  protected $aliasManager;
+  /**
+   * The Entity Type Manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('request_stack'),
+      $container->get('path_alias.manager'),
+      $container->get('entity_type.manager')
+    );
+  }
+
+  /**
+   * QuickNodeCloneNodeFinder constructor.
+   *
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
+   *   Request stack.
+   * @param \Drupal\Core\Path\AliasManager $aliasManager
+   *   Alias manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   */
+  public function __construct(RequestStack $requestStack, AliasManager $aliasManager, EntityTypeManagerInterface $entityTypeManager) {
+    $this->requestStack = $requestStack;
+    $this->aliasManager = $aliasManager;
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * Derive node data from the current path.
@@ -14,7 +66,7 @@ class QuickNodeCloneNodeFinder {
    *   Either returns an entity, or null if none found.
    */
   public function findNodeFromCurrentPath() {
-    $path = \Drupal::request()->getRequestUri();
+    $path = $this->requestStack->getCurrentRequest()->getRequestUri();
     $path_data = explode('/', $path);
 
     if ($this->currentPathIsValidClonePath()) {
@@ -53,16 +105,16 @@ class QuickNodeCloneNodeFinder {
     }
     $i++;
     // Get entity path if alias.
-    $entity_path = \Drupal::service('path.alias_manager')->getPathByAlias($path);
+    $entity_path = $this->aliasManager->getPathByAlias($path);
 
     // Look! We're using arg() in Drupal 8 because we have to.
     $args = explode('/', $entity_path);
 
     if (isset($args[$i])) {
-      $entity = \Drupal::entityTypeManager()->getStorage($type)->load($args[$i]);
+      $entity = $this->entityTypeManager->getStorage($type)->load($args[$i]);
     }
     if (isset($args[$i - 1]) && $args[$i - 1] != 'node') {
-      $entity = \Drupal::entityTypeManager()->getStorage($type)->load($args[$i - 1]);
+      $entity = $this->entityTypeManager->getStorage($type)->load($args[$i - 1]);
     }
     return $entity;
   }
@@ -77,8 +129,7 @@ class QuickNodeCloneNodeFinder {
    *   An array of link templates, or null.
    */
   public function getLinksByType($type) {
-    $entity_manager = \Drupal::entityTypeManager();
-    $entity_type = $entity_manager->getDefinition($type);
+    $entity_type = $this->entityTypeManager->getDefinition($type);
     return $entity_type->getLinkTemplates();
   }
 
@@ -89,7 +140,7 @@ class QuickNodeCloneNodeFinder {
    *   TRUE if valid, FALSE if invalid.
    */
   public function currentPathIsValidClonePath() {
-    $path = \Drupal::request()->getRequestUri();
+    $path = $this->requestStack->getCurrentRequest()->getRequestUri();
     $path_data = explode('/', $path);
 
     if (!isset($path_data[1]) || $path_data[1] != 'clone') {

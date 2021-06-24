@@ -121,8 +121,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
     $field_view = $view_builder->viewField($profile->get('profile_fullname'));
 
     // Add the pre_render method to match the rendered output of a field token.
-    module_load_include('inc', 'token', 'tokens.inc');
-    $field_view['#pre_render'][] = 'token_pre_render_field_token';
+    $field_output['#pre_render'][] = '\Drupal\token\TokenFieldRender::preRender';
 
     /** @var RendererInterface $renderer */
     $renderer = \Drupal::service('renderer');
@@ -130,8 +129,8 @@ class ProfileTokenTest extends EntityKernelTestBase {
     $rendered_entity = $renderer->renderRoot($entity_view);
 
     // Verify the tokens matches the rendered values.
-    $this->assertEquals($field_token_output, $rendered_field);
-    $this->assertEquals($entity_token_output, $rendered_entity);
+    $this->assertStringContainsString($field_token_output, $rendered_field);
+    $this->assertStringContainsString($entity_token_output, $rendered_entity);
   }
 
 }

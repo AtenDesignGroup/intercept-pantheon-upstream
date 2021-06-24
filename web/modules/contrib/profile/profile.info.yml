@@ -1,7 +1,7 @@
 name: Profile
 type: module
 description: 'Provides configurable user profiles.'
-core_version_requirement: ^8.7.7 || ^9
+core_version_requirement: ^8.8 || ^9
 configure: entity.profile_type.collection
 dependencies:
   - drupal:field
@@ -9,7 +9,7 @@ dependencies:
   - drupal:views
   - entity:entity
 
-# Information added by Drupal.org packaging script on 2020-02-18
-version: '8.x-1.1'
+# Information added by Drupal.org packaging script on 2020-11-03
+version: '8.x-1.2'
 project: 'profile'
-datestamp: 1582048363
+datestamp: 1604422703

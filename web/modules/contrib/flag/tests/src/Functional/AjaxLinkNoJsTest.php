@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\flag\Functional;
 
-use Drupal\flag\Tests\FlagCreateTrait;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\flag\Traits\FlagCreateTrait;
 use Drupal\Tests\flag\Traits\FlagPermissionsTrait;
 use Drupal\Core\Url;
 
@@ -18,6 +18,11 @@ class AjaxLinkNoJsTest extends BrowserTestBase {
 
   use FlagCreateTrait;
   use FlagPermissionsTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}

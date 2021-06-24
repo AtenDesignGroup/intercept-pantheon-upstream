@@ -2,21 +2,33 @@
 
 namespace Drupal\quick_node_clone\Entity;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormBuilderInterface;
-use Drupal\Core\Entity\EntityFormBuilder;
-use Drupal\Core\Form\FormState;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\node\Entity\Node;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityFormBuilder;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Form\FormState;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupContent;
+use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslationInterface;
 
 /**
  * Builds entity forms.
  */
 class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
+  use StringTranslationTrait;
+
+  /**
+   * The Form Builder.
+   *
+   * @var \Drupal\Core\Form\FormBuilderInterface
+   */
   protected $formBuilder;
   /**
    * The Entity Bundle Type Info.
@@ -42,6 +54,25 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+  /**
+   * The current user account.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+  /**
+   * The Private Temp Store.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
+  protected $privateTempStoreFactory;
+
+  /**
+   * The Translation Interface.
+   *
+   * @var \Drupal\Core\StringTranslation\TranslationInterface
+   */
+  protected $stringTranslation;
 
   /**
    * {@inheritdoc}
@@ -51,25 +82,41 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
       $container->get('entity_type.bundle.info'),
       $container->get('config.factory'),
       $container->get('module_handler'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('current_user'),
+      $container->get('tempstore.private')
     );
   }
 
   /**
    * QuickNodeCloneEntityFormBuilder constructor.
    *
-   * @param \Drupal\Core\Form\FormBuilderInterface            $formBuilder
+   * @param \Drupal\Core\Form\FormBuilderInterface $formBuilder
+   *   The form builder.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entityTypeBundleInfo
-   * @param \Drupal\Core\Config\ConfigFactoryInterface        $configFactory
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface     $moduleHandler
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface    $entityTypeManager
+   *   The entity type bundle info provider.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The configuration factory.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
+   *   The module handler.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   * @param \Drupal\Core\Session\AccountInterface $currentUser
+   *   Current user.
+   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $privateTempStoreFactory
+   *   Private temp store factory.
+   * @param \Drupal\Core\StringTranslation\TranslationInterface $stringTranslation
+   *   The string translation service.
    */
-  public function __construct(FormBuilderInterface $formBuilder, EntityTypeBundleInfoInterface $entityTypeBundleInfo, ConfigFactoryInterface $configFactory, ModuleHandlerInterface $moduleHandler, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(FormBuilderInterface $formBuilder, EntityTypeBundleInfoInterface $entityTypeBundleInfo, ConfigFactoryInterface $configFactory, ModuleHandlerInterface $moduleHandler, EntityTypeManagerInterface $entityTypeManager, AccountInterface $currentUser, PrivateTempStoreFactory $privateTempStoreFactory, TranslationInterface $stringTranslation) {
     $this->formBuilder = $formBuilder;
     $this->entityTypeBundleInfo = $entityTypeBundleInfo;
     $this->configFactory = $configFactory;
     $this->moduleHandler = $moduleHandler;
     $this->entityTypeManager = $entityTypeManager;
+    $this->currentUser = $currentUser;
+    $this->privateTempStoreFactory = $privateTempStoreFactory;
+    $this->stringTranslation = $stringTranslation;
   }
 
   /**
@@ -80,25 +127,36 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
     // Clone the node using the awesome createDuplicate() core function.
     /** @var \Drupal\node\Entity\Node $new_node */
     $new_node = $original_entity->createDuplicate();
-    $new_node->set('uid', \Drupal::currentUser()->id());
+    $new_node->set('uid', $this->currentUser->id());
     $new_node->set('created', time());
     $new_node->set('changed', time());
     $new_node->set('revision_timestamp', time());
 
+    // Get and store groups of original entity, if any.
+    $groups = [];
+    if (\Drupal::moduleHandler()->moduleExists('gnode')) {
+      /** @var \Drupal\Core\Entity\ContentEntityInterface $original_entity */
+      $group_contents = GroupContent::loadByEntity($original_entity);
+      foreach ($group_contents as $group_content) {
+        $groups[] = $group_content->getGroup();
+      }
+    }
+    $form_state_additions['quick_node_clone_groups_storage'] = $groups;
+
     // Get default status value of node bundle.
-    $default_bundle_status = \Drupal::entityManager()->getStorage('node')->create(['type' => $new_node->bundle()])->status->value;
+    $default_bundle_status = $this->entityTypeManager->getStorage('node')->create(['type' => $new_node->bundle()])->status->value;
 
     // Clone all translations of a node.
     foreach ($new_node->getTranslationLanguages() as $langcode => $language) {
       /** @var \Drupal\node\Entity\Node $translated_node */
       $translated_node = $new_node->getTranslation($langcode);
       $translated_node = $this->cloneParagraphs($translated_node);
-      $this->moduleHandler->alter('cloned_node', $translated_node);
+      $this->moduleHandler->alter('cloned_node', $translated_node, $original_entity);
 
       // Unset excluded fields.
       $config_name = 'exclude.node.' . $translated_node->getType();
       if ($exclude_fields = $this->getConfigSettings($config_name)) {
-        foreach ($exclude_fields as $key => $field) {
+        foreach ($exclude_fields as $field) {
           unset($translated_node->{$field});
         }
       }
@@ -113,10 +171,19 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
         $translated_node->setPublished($default_bundle_status);
       }
 
-      $translated_node->setTitle(t($prepend_text . '@title', ['@title' => $translated_node->getTitle()], ['langcode' => $langcode]));
+      $translated_node->setTitle($this->t('@prepend_text@title',
+        [
+          '@prepend_text' => $prepend_text,
+          '@title' => $translated_node->getTitle(),
+        ],
+        [
+          'langcode' => $langcode,
+        ]
+      )
+      );
     }
 
-    // Get the form object for the entity defined in entity definition
+    // Get the form object for the entity defined in entity definition.
     $form_object = $this->entityTypeManager->getFormObject($translated_node->getEntityTypeId(), $operation);
 
     // Assign the form's entity to our duplicate!
@@ -127,8 +194,8 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
 
     // If we are cloning addresses, we need to reset our delta counter
     // once the form is built.
-    $tempstore = \Drupal::service('user.private_tempstore')->get('quick_node_clone');
-    if ($tempstore->get('address_initial_value_delta') != NULL) {
+    $tempstore = $this->privateTempStoreFactory->get('quick_node_clone');
+    if ($tempstore->get('address_initial_value_delta') !== NULL) {
       $tempstore->set('address_initial_value_delta', NULL);
     }
 
@@ -181,10 +248,13 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
   /**
    * Check whether to exclude the paragraph field.
    *
-   * @param $field_name
-   * @param $bundle_name
+   * @param string $field_name
+   *   The field name.
+   * @param string $bundle_name
+   *   The bundle name.
    *
-   * @return bool|NULL
+   * @return bool|null
+   *   TRUE or FALSE depending on config setting, or NULL if config not found.
    */
   public function excludeParagraphField($field_name, $bundle_name) {
     $config_name = 'exclude.paragraph.' . $bundle_name;
@@ -196,9 +266,11 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
   /**
    * Get the settings.
    *
-   * @param $value
+   * @param string $value
+   *   The setting name.
    *
    * @return array|mixed|null
+   *   Returns the setting value if it exists, or NULL.
    */
   public function getConfigSettings($value) {
     $settings = $this->configFactory->get('quick_node_clone.settings')
@@ -206,4 +278,5 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
 
     return $settings;
   }
+
 }

@@ -10,6 +10,7 @@ use Drupal\flag\Event\UnflaggingEvent;
 use Drupal\flag\FlaggingInterface;
 use Drupal\flag\Event\FlagEvents;
 use Drupal\flag\Event\FlaggingEvent;
+use Drupal\flag\Plugin\Field\FlaggedEntityFieldItemList;
 use Drupal\user\UserInterface;
 
 /**
@@ -126,7 +127,8 @@ class Flagging extends ContentEntityBase implements FlaggingInterface {
     $fields['flagged_entity'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Entity'))
       ->setDescription(t('The flagged entity.'))
-      ->setComputed(TRUE);
+      ->setComputed(TRUE)
+      ->setClass(FlaggedEntityFieldItemList::class);
 
     // Also duplicates data on flag entity for querying purposes.
     $fields['global'] = BaseFieldDefinition::create('boolean')

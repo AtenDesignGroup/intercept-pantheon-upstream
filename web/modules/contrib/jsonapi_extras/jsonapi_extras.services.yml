@@ -57,3 +57,10 @@ services:
       - '@jsonapi.resource_type.repository'
       - '@session'
       - '@request_stack'
+
+  jsonapi_extras.jsonapi_build_subscriber:
+    class: Drupal\jsonapi_extras\EventSubscriber\JsonApiBuildSubscriber
+    arguments:
+      - '@jsonapi_extras.resource_type.repository'
+    tags:
+      - { name: event_subscriber }

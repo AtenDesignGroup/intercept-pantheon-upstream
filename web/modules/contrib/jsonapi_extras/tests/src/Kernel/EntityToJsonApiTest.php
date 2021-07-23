@@ -53,17 +53,17 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   ];
 
   /**
-   * @var NodeType
+   * @var \Drupal\node\Entity\NodeType
    */
   private $nodeType;
 
   /**
-   * @var Vocabulary
+   * @var \Drupal\taxonomy\Entity\Vocabulary
    */
   private $vocabulary;
 
   /**
-   * @var Node
+   * @var \Drupal\node\Entity\Node
    */
   private $node;
 
@@ -221,7 +221,7 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
     $request_stack = $this->container->get('request_stack');
     $this->sut->serialize($this->node);
     $request = $request_stack->pop();
-    $this->assertNotEqual($request->getPathInfo(), '/jsonapi/node/' . $this->nodeType->id() .'/' . $this->node->uuid(), 'The request from jsonapi_extras.entity.to_jsonapi should not linger in the request stack.');
+    $this->assertNotEqual($request->getPathInfo(), '/jsonapi/node/' . $this->nodeType->id() . '/' . $this->node->uuid(), 'The request from jsonapi_extras.entity.to_jsonapi should not linger in the request stack.');
   }
 
   /**

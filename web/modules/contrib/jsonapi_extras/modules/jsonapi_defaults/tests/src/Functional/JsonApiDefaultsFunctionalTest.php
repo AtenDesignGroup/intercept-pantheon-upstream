@@ -241,7 +241,7 @@ class JsonApiDefaultsFunctionalTest extends JsonApiExtrasFunctionalTestBase {
             'sort:title#path' => 'title',
             'sort:title#direction' => 'DESC',
           ],
-          // TODO: Change this to 'tags.vid'.
+          // @todo Change this to 'tags.vid'.
           'default_include' => ['tags'],
         ],
       ],

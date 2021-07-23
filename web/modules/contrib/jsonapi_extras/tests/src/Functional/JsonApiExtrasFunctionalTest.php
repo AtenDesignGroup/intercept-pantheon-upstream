@@ -3,6 +3,7 @@
 namespace Drupal\Tests\jsonapi_extras\Functional;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
@@ -29,6 +30,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
   public static $modules = [
     'jsonapi_extras',
     'basic_auth',
+    'jsonapi_test_resource_type_building',
   ];
 
   /**
@@ -41,6 +43,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     }
 
     parent::setUp();
+
     // Add vocabs field to the tags.
     $this->createEntityReferenceField(
       'taxonomy_term',
@@ -138,7 +141,10 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     return parent::drupalGet($path, $options, $headers);
   }
 
-  public function testOverwriteFieldWithOtherField(){
+  /**
+   *
+   */
+  public function testOverwriteFieldWithOtherField() {
     $this->createDefaultContent(1, 1, FALSE, TRUE, static::IS_NOT_MULTILINGUAL);
 
     // 1. Test if moving a field over another doesn't break
@@ -152,7 +158,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $this->assertEquals($this->nodes[0]->field_text_moved_new->value, $output['data'][0]['attributes']['field_text_moved']['value']);
   }
 
-  public function testSortOverwrittenField(){
+  public function testSortOverwrittenField() {
     $this->createDefaultContent(2, 1, FALSE, TRUE, static::IS_NOT_MULTILINGUAL);
 
     $this->nodes[0]->field_text_moved->setValue('c');
@@ -166,23 +172,50 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $stringResponse = $this->drupalGet('/api/articles', ['query' => ['sort' => 'field_text_moved.value']]);
     $output = Json::decode($stringResponse);
 
-    // Check if order changed as expected
+    // Check if order changed as expected.
     $this->assertEquals('a', $output['data'][0]['attributes']['field_text_moved']['value']);
     $this->assertEquals('b', $output['data'][1]['attributes']['field_text_moved']['value']);
 
     $stringResponse = $this->drupalGet('/api/articles', ['query' => ['sort' => '-field_text_moved.value']]);
     $output = Json::decode($stringResponse);
 
-    // Check if order changed as expected
+    // Check if order changed as expected.
     $this->assertEquals('b', $output['data'][0]['attributes']['field_text_moved']['value']);
     $this->assertEquals('a', $output['data'][1]['attributes']['field_text_moved']['value']);
 
   }
 
   /**
+   * Tests that resource type fields can be aliased per resource type.
+   *
+   * @see Core jsonapi module how the state code below works:
+   * Drupal\jsonapi_test_resource_type_building\EventSubscriber\ResourceTypeBuildEventSubscriber
+   *
+   * @todo Create a test similar to this
+   */
+  public function testResourceTypeFieldAliasing() {
+    /** @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceTypeRepository $resourceTypeRepository */
+    $resourceTypeRepository = $this->container->get('jsonapi.resource_type.repository');
+
+    $nodeArticleType = $resourceTypeRepository->getByTypeName('node--article');
+    $this->assertSame('owner', $nodeArticleType->getPublicName('uid'));
+
+    $resource_type_field_aliases = [
+      'node--article' => [
+        'uid' => 'author',
+      ],
+    ];
+    \Drupal::state()->set('jsonapi_test_resource_type_builder.resource_type_field_aliases', $resource_type_field_aliases);
+    Cache::invalidateTags(['jsonapi_resource_types']);
+
+    $this->assertSame('author', $resourceTypeRepository->getByTypeName('node--article')->getPublicName('uid'));
+  }
+
+  /**
    * Test the GET method.
    */
   public function testRead() {
+
     $num_articles = 61;
     $this->createDefaultContent($num_articles, 5, TRUE, TRUE, static::IS_NOT_MULTILINGUAL);
     // Make the link for node/3 to point to an entity.
@@ -380,7 +413,6 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $created_response = Json::decode((string) $response->getBody());
     $this->assertCount(3, $created_response['data']);
   }
-
 
   /**
    * Creates the JSON:API Resource Config entities to override the resources.
@@ -619,7 +651,6 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
         ],
       ],
     ])->save();
-
 
   }
 

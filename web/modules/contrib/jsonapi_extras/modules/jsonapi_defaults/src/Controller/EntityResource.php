@@ -58,7 +58,7 @@ class EntityResource extends JsonApiEntityResourse {
     foreach ($default_filter_input as $key => $value) {
       if (substr($key, 0, 6) === 'filter') {
         $key = str_replace('filter:', '', $key);
-        // TODO: Replace this with use of the NestedArray utility.
+        // @todo Replace this with use of the NestedArray utility.
         $this->setFilterValue($default_filter, $key, $value);
       }
     }
@@ -66,7 +66,7 @@ class EntityResource extends JsonApiEntityResourse {
     foreach ($default_sorting_input as $key => $value) {
       if (substr($key, 0, 4) === 'sort') {
         $key = str_replace('sort:', '', $key);
-        // TODO: Replace this with use of the NestedArray utility.
+        // @todo Replace this with use of the NestedArray utility.
         $this->setFilterValue($default_sorting, $key, $value);
       }
     }

@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
-use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
@@ -132,32 +131,32 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
    * 2. Field mapping not based on logic, but on configuration.
    */
   protected function createResourceType(EntityTypeInterface $entity_type, $bundle) {
-    $resource_config_id = static::buildResourceConfigId(
-      $entity_type->id(),
-      $bundle
-    );
-    $resource_config = $this->getResourceConfig($resource_config_id);
+    $resource_type = parent::createResourceType($entity_type, $bundle);
 
-    // Create subclassed ResourceType object with the same parameters as the
-    // parent implementation.
-    $resource_type = new ConfigurableResourceType(
-      $entity_type->id(),
-      $bundle,
-      $entity_type->getClass(),
-      $entity_type->isInternal() || (bool) $resource_config->get('disabled'),
-      static::isLocatableResourceType($entity_type, $bundle),
-      TRUE,
-      static::isVersionableResourceType($entity_type),
-      $this->overrideFields($resource_config)
+    $configurable_resource_type = new ConfigurableResourceType(
+      $resource_type->getEntityTypeId(),
+      $resource_type->getBundle(),
+      $resource_type->getDeserializationTargetClass(),
+      $resource_type->isInternal(),
+      $resource_type->isLocatable(),
+      $resource_type->isMutable(),
+      $resource_type->isVersionable(),
+      $resource_type->getFields()
     );
+
+    $resource_config_id = static::buildResourceConfigId(
+          $entity_type->id(),
+          $bundle
+      );
+    $resource_config = $this->getResourceConfig($resource_config_id);
 
     // Inject additional services through setters. By using setter injection
     // rather that constructor injection, we prevent most future BC breaks.
-    $resource_type->setJsonapiResourceConfig($resource_config);
-    $resource_type->setEnhancerManager($this->enhancerManager);
-    $resource_type->setConfigFactory($this->configFactory);
+    $configurable_resource_type->setJsonapiResourceConfig($resource_config);
+    $configurable_resource_type->setEnhancerManager($this->enhancerManager);
+    $configurable_resource_type->setConfigFactory($this->configFactory);
 
-    return $resource_type;
+    return $configurable_resource_type;
   }
 
   /**
@@ -239,53 +238,11 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
   }
 
   /**
-   * Gets the fields for the given field names and entity type + bundle.
-   *
-   * @param \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config
-   *   The associated resource config.
-   *
-   * @return \Drupal\jsonapi\ResourceType\ResourceTypeField[]
-   *   An array of JSON:API resource type fields keyed by internal field names.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   */
-  protected function overrideFields(JsonapiResourceConfig $resource_config) {
-    // This is not ideal, but we cannot load the resource type to get the entity
-    // type object. That is because this is used during the creation of the
-    // ResourceType.
-    list($entity_type_id, $bundle) = explode('--', $resource_config->getOriginalId());
-    $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
-    $field_names = $this->getAllFieldNames($entity_type, $bundle);
-    // Use the base class to fetch the non-configurable field mappings.
-    $mappings = $resource_config->getFieldMapping();
-    // Ignore all the fields that don't have aliases.
-    $mappings = array_filter($mappings, function ($field_info) {
-      return $field_info !== TRUE;
-    });
-
-    // Make sure to respect the overrides coming from JSON:API if there is no
-    // input in JSON:API Extras.
-    $fields = $this->getFields($field_names, $entity_type, $bundle);
-    foreach ($mappings as $internal_name => $mapping) {
-      if (!isset($fields[$internal_name])) {
-        continue;
-      }
-      if (is_string($mapping)) {
-        $fields[$internal_name] = $fields[$internal_name]->withPublicName($mapping);
-      }
-      if ($mapping === FALSE) {
-        $fields[$internal_name] = $fields[$internal_name]->disabled();
-      }
-    }
-
-    return $fields;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getByTypeName($type_name) {
     $resource_types = $this->all();
+
     if (isset($resource_types[$type_name])) {
       return $resource_types[$type_name];
     }
@@ -300,6 +257,8 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo Remove this code when Drupal 8 support is dropped
    */
   protected function getRelatableResourceTypesFromFieldDefinition(FieldDefinitionInterface $field_definition, array $resource_types) {
     $item_definition = $field_definition->getItemDefinition();
@@ -338,6 +297,8 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo Remove this code when Drupal 8 support is dropped
    */
   protected function getAllBundlesForEntityType($entity_type_id) {
     // Ensure all keys are strings, because numeric values are allowed
@@ -357,6 +318,8 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
    *
    * @return \Drupal\jsonapi\ResourceType\ResourceType|null
    *   The resource type or NULL if it cannot be found.
+   *
+   * @todo Remove this code when Drupal 8 support is dropped
    */
   protected static function lookupResourceType(array $resource_types, $entity_type_id, $bundle) {
     if (isset($resource_types["$entity_type_id--$bundle"])) {

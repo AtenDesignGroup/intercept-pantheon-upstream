@@ -161,7 +161,7 @@ function _jsonapi_defaults_convert_rawvalue($raw_value) {
         $key = explode('][', $key);
         $value['filter:' . trim(implode('#', $key), '[]')] = $val;
       }
-      elseif (preg_match('/^sort.+/', $key)){
+      elseif (preg_match('/^sort.+/', $key)) {
         $key = str_replace('sort[', '', $key);
         $key = explode('][', $key);
         $value['sort:' . trim(implode('#', $key), '[]')] = $val;

@@ -43,7 +43,7 @@ abstract class ResourceFieldEnhancerBase extends PluginBase implements ResourceF
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    // TODO: This should have a dependency on the resource_config entity.
+    // @todo This should have a dependency on the resource_config entity.
     return [];
   }
 
@@ -82,7 +82,7 @@ abstract class ResourceFieldEnhancerBase extends PluginBase implements ResourceF
    * {@inheritdoc}
    */
   public function getInputValidator() {
-    // @TODO: Implement a getInputJsonSchema method.
+    // @todo Implement a getInputJsonSchema method.
     return new AcceptValidator();
   }
 

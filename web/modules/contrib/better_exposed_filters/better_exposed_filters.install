@@ -152,17 +152,19 @@ function better_exposed_filters_update_8002() {
 
     // Go through each display on each view.
     $displays = $config->get('display');
+    $needs_update = FALSE;
     foreach ($displays as $display_name => $display) {
       if (!empty($display['display_options']['exposed_form'])) {
         $exposed_form = $display['display_options']['exposed_form'];
         // Find BEF exposed forms.
         if (isset($exposed_form['type']) && $exposed_form['type'] === 'bef') {
-          $bef_settings = [];
+          $bef_settings = $exposed_form['options']['bef'];
           foreach ($exposed_form['options']['bef'] as $type => $option) {
             if ($type === 'filter') {
               $field_name = $type;
               // Sliders.
-              if ($option['bef_format'] === 'bef_slider') {
+              if (($option['bef_format'] ?? '') === 'bef_slider') {
+                $needs_update = TRUE;
                 // Update plugin name to 'bef_sliders'.
                 $bef_settings['filter'][$field_name] = [
                   'plugin_id' => 'bef_sliders',
@@ -192,11 +194,14 @@ function better_exposed_filters_update_8002() {
           }
 
           // Update BEF settings.
-          $config->set("display.$display_name.display_options.exposed_form.options.bef", $bef_settings);
+          if ($needs_update) {
+            $config->set("display.$display_name.display_options.exposed_form.options.bef", $bef_settings);
+          }
         }
       }
     }
-
-    $config->save(TRUE);
+    if ($needs_update) {
+      $config->save(TRUE);
+    }
   }
 }

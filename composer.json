@@ -21,6 +21,7 @@
     "drupal/adminimal_admin_toolbar": "^1.10",
     "drupal/adminimal_theme": "^1.0",
     "drupal/better_normalizers": "^1.0@beta",
+    "drupal/date_recur_modular": "2.0",
     "drupal/default_content": "^1.0",
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept": "1.x-dev",
@@ -108,6 +109,9 @@
       },
       "drupal/csv_serialization": {
         "Unable to Override Headers/Labels with hook_views_pre_render(). Used in export by age group": "https://www.drupal.org/files/issues/2019-10-10/3087166-csv_serialization-8.x-2.x-dev-views-pre-render-alter-headers.patch"
+      },
+      "drupal/date_recur_modular": {
+        "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2020-04-01/3124197.patch"
       },
       "drupal/field_group": {
         "Resolves PHP notices on My Account Settings form": "https://www.drupal.org/files/issues/2021-02-26/3059614-field_group-8.x-dev-fix-undefined-property-48.patch"

@@ -52,7 +52,7 @@ display:
         type: views_query
         options:
           disable_sql_rewrite: false
-          distinct: true
+          distinct: false
           replica: false
           query_comment: ''
           query_tags: {  }
@@ -1716,7 +1716,6 @@ display:
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
-        - extensions
   page:
     display_plugin: page
     id: page
@@ -1792,7 +1791,6 @@ display:
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
-        - extensions
   rest_export:
     display_plugin: rest_export
     id: rest_export
@@ -1841,4 +1839,3 @@ display:
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
-        - extensions

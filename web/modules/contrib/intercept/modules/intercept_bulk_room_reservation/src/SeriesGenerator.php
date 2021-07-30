@@ -89,13 +89,26 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     }
 
     $dates = $logistics['dates'];
-    $timezone = new \DateTimeZone('America/New_York');
+    $nyTimeZone = new \DateTimeZone('America/New_York');
+    $utcTimeZone = new \DateTimeZone('UTC');
+
     foreach ($rooms as $room) {
       foreach ($dates as $date) {
-        foreach (array_keys($logistics['times']) as $point) {
-          $timestamp = strtotime($date . ' ' . $logistics['times'][$point]);
-          $range[$point] = new \DateTime('@' . $timestamp);
-          $range[$point]->setTimezone($timezone);
+        $points = array_keys($logistics['times']);
+        foreach ($points as $point) {
+          // Take the date into account to accommodate standard time vs.
+          // daylight saving time. Our $logistics['times'] values are in
+          // UTC time zone for $dates[0], so first we'll convert it back to
+          // America/New_York time, then recalculate for our $date in the loop.
+          $originalTime = strtotime($dates[0] . ' ' . $logistics['times'][$point] . '+0000');
+          $originalDateTime = new \DateTime();
+          $originalDateTime->setTimestamp($originalTime);
+          $formattedPoint = $originalDateTime->format('H:i:s');
+
+          $timestamp = strtotime($date . ' ' . $formattedPoint);
+          $range[$point] = new \DateTime();
+          $range[$point]->setTimestamp($timestamp);
+          $range[$point]->setTimezone($utcTimeZone);
         }
         $roomOptions[$room->id()] = $room->label();
 
@@ -171,7 +184,14 @@ class SeriesGenerator implements SeriesGeneratorInterface {
 
       case 'date':
         $startDate = strtotime($dateField['start']['date'] . ' ' . $dateField['start']['time']);
-        $endDate = strtotime($dateField['ends_date']['date'] . ' ' . $dateField['ends_date']['time']);
+        switch ($dateField['ends_date'] instanceof \Drupal\Core\Datetime\DrupalDateTime) {
+          case TRUE;
+            $endDate = $dateField['ends_date']->getTimestamp();
+            break;
+
+          default:
+            $endDate = strtotime($dateField['ends_date']['date'] . ' ' . $dateField['ends_date']['time']);
+        }
         $daysToCheck = round(($endDate - $startDate) / (60 * 60 * 24));
     }
 
@@ -205,8 +225,30 @@ class SeriesGenerator implements SeriesGeneratorInterface {
   public function weekOfMonth($date) {
     // Get the first day of the month.
     $firstOfMonth = strtotime(date("Y-m-01", $date));
-    // Apply above formula.
-    return $this->weekOfYear($date) - $this->weekOfYear($firstOfMonth) + 1;
+
+    return $this->weekOfYear($date) - $this->weekOfYear($firstOfMonth);
+
+  }
+
+  /**
+   * Determines whether we're using ordinals.
+   *
+   * @param array $dateField
+   *   The dateField array.
+   *
+   * @return bool
+   *   Whether or not we are using ordinals.
+   */
+  public function usingOrdinals(array $dateField) {
+    if (array_key_exists('ordinals', $dateField)) {
+      foreach ($dateField['ordinals'] as $key => $value) {
+        // Unused ordinals have value 0.
+        if ($value) {
+          return TRUE;
+        }
+      }
+    }
+    return FALSE;
   }
 
   /**
@@ -333,11 +375,21 @@ class SeriesGenerator implements SeriesGeneratorInterface {
 
     switch ($entity->getEntityTypeId()) {
       case 'bulk_room_reservation':
-        $logistics['times']['start'] = new \DateTime('@' . strtotime($dateField['start']['time']));
-        $logistics['times']['start'] = $logistics['times']['start']->format('H:i:s');
+        // Define our time zones. We have some machinations to wrangle for each
+        // date, as time zone differences change at different times on the
+        // calendar (i.e. standard time vs. daylight saving time.)
+        $nyTimeZone = new \DateTimeZone('America/New_York');
+        $utcTimeZone = new \DateTimeZone('UTC');
 
-        $logistics['times']['end'] = new \DateTime('@' . strtotime($dateField['end']['time']));
-        $logistics['times']['end'] = $logistics['times']['end']->format('H:i:s');
+        $dateTimeString = $dateField['start']['date'] . ' ' . $dateField['start']['time'];
+        $startTime = new \DateTime($dateTimeString, $nyTimeZone);
+        $startTime->setTimeZone($utcTimeZone);
+        $logistics['times']['start'] = $startTime->format('H:i:s');
+
+        $dateTimeString = $dateField['end']['date'] . ' ' . $dateField['end']['time'];
+        $endTime = new \DateTime($dateTimeString, $nyTimeZone);
+        $endTime->setTimeZone($utcTimeZone);
+        $logistics['times']['end'] = $endTime->format('H:i:s');
         break;
 
       default:
@@ -389,6 +441,17 @@ class SeriesGenerator implements SeriesGeneratorInterface {
         for ($day = 0; $day <= $daysToCheck; $day++) {
           $increment = (string) ($day * 7) . ' days';
           $dateToCheck = date('Y-m-d', strtotime($dateField['start']['date'] . $increment));
+          // Stop if this date is beyond our end date.
+          if ($input['field_date_time'][0]['ends_mode'] == 'date') {
+            // Calculate end date.
+            $ends_date = $input['field_date_time'][0]['ends_date'];
+            $end_date_string = $ends_date['date'] . $ends_date['time'];
+            $end_date_timestamp = strtotime($end_date_string);
+            if (strtotime($dateField['start']['date'] . $increment) > $end_date_timestamp) {
+              // Stop adding to the $logistics array.
+              break;
+            }
+          }
           $dayOfWeek = $this->getDayOfWeek($dateToCheck);
           if (in_array($dayOfWeek, $days, TRUE)) {
             $logistics['dates'][] = $dateToCheck;
@@ -417,22 +480,63 @@ class SeriesGenerator implements SeriesGeneratorInterface {
         break;
 
       case 'monthly':
-        $daysToCheck = $this->getDaysToCheck($dateField);
+        // Loop through the days between $dateField['start']['date']
+        // and however many months later that the user indicates.
+        $endsDate = '';
+        switch (!empty($dateField['ends_date']['date'])) {
+          case TRUE:
+            $endsDate = $dateField['ends_date']['date'];
+            break;
+
+          default:
+            // Here, $incidences is 1 fewer than you might expect, as the first
+            // incidence has key of zero.
+            $incidences = $this->getDaysToCheck($dateField) - 1;
+            $endsDate = date('Y-m-d', strtotime($dateField['start']['date'] . ' + ' . $incidences . ' months'));
+        }
+        // Calculate the number of days in the interval.
+        $intervalStart = date_create($dateField['start']['date']);
+        $intervalEnd = date_create($endsDate);
+        $dateInterval = date_diff($intervalEnd, $intervalStart);
+        $daysToCheck = $dateInterval->format('%a');
+
         $days = $dateField['weekdays'];
+        // Get the day of the month for the series.
+        $timestamp = strtotime($dateField['start']['date']);
+        $dayOfMonth = date('d', $timestamp);
+
         for ($day = 0; $day <= $daysToCheck; $day++) {
           $increment = (string) $day . ' days';
           $dateToCheck = date('Y-m-d', strtotime($dateField['start']['date'] . $increment));
           $dayOfWeek = $this->getDayOfWeek($dateToCheck);
-          if (in_array($dayOfWeek, $days)) {
-            // Include if this day of the week matches any of the ordinals.
-            $startOfMonth = $this->getStartOfMonth($dateField);
-            $weekOfMonth = $this->weekOfMonth(strtotime($dateField['start']['date'] . $increment));
-            if (in_array($weekOfMonth, $dateField['ordinals'])) {
-              $logistics['dates'][] = $dateToCheck;
-            }
+
+          // 'Ordinals' examples: first, second, third, fourth, last,
+          // second to last. See if the user has indicated any ordinal
+          // values.
+          $usingOrdinals = $this->usingOrdinals($dateField);
+          switch ($usingOrdinals) {
+            case TRUE:
+              if (in_array($dayOfWeek, $days)) {
+                // Include if this day of the week matches any of the ordinals.
+                $startOfMonth = $this->getStartOfMonth($dateField);
+                $additionalSeconds = ($day > 0) ? $day * 24 * 60 * 60 : (integer) 0;
+                $weekOfMonth = $this->weekOfMonth(strtotime($dateField['start']['date']) + $additionalSeconds);
+                if (in_array($weekOfMonth, $dateField['ordinals'])) {
+                  $logistics['dates'][] = $dateToCheck;
+                }
+              }
+              break;
+
+            default:
+              // Is this date the same day of the month as the original?
+              $iteratorDayTimestamp = strtotime($dateToCheck);
+              $iteratorDayOfMonth = date('d', $iteratorDayTimestamp);
+
+              if ($iteratorDayOfMonth == $dayOfMonth) {
+                $logistics['dates'][] = $dateToCheck;
+              }
           }
         }
-
     }
 
     return $logistics;

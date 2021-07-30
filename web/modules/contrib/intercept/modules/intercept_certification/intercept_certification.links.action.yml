@@ -1,0 +1,5 @@
+entity.certification.add_form:
+  route_name: entity.certification.add_form
+  title: 'Add Certification'
+  appears_on:
+    - entity.certification.collection

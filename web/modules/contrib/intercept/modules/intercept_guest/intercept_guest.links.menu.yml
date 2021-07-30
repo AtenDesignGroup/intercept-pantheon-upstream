@@ -1,13 +1,13 @@
 entity.intercept_guest.collection:
-  title: 'Intercept guest'
+  title: 'Guests'
   route_name: entity.intercept_guest.collection
   description: 'List Intercept Guest entities'
   parent: entity.room_reservation.collection
 
 intercept_guest.settings:
-  title: Intercept Guest
+  title: Guests
   description: Configure Intercept Guest entities
-  parent: intercept_core.admin_structure
+  parent: room_reservation.admin.structure.settings
   route_name: intercept_guest.settings
 
 intercept_guest.guest_user_settings:

@@ -1,0 +1,21 @@
+
+# Certification menu items definition
+entity.certification.collection:
+  title: 'Certifications'
+  route_name: entity.certification.collection
+  description: 'List Certification entities'
+  parent: system.admin_content
+
+certification.admin.structure.settings:
+  title: 'Certifications'
+  description: 'Configure Certification entities'
+  route_name: certification.settings
+  parent: intercept_core.admin_structure
+
+intercept_certification.all:
+  parent: intercept_room_reservation.room_parent
+  title: 'Certifications'
+  weight: 4
+  route_name: view.intercept_certifications.page
+  menu_name: intercept-manage
+  class: Drupal\intercept_core\Plugin\Menu\StaffOnlyMenuLink

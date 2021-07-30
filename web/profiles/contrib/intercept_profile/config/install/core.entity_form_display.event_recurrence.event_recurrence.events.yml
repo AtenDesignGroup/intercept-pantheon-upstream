@@ -5,12 +5,21 @@ dependencies:
     - core.entity_form_mode.event_recurrence.events
     - field.field.event_recurrence.event_recurrence.field_event_rrule
   module:
+    - date_recur_modular
     - intercept_event
+_core:
+  default_config_hash: SSQGIgUjHGbxuynKdLBPN050_wbxXz-7qJ_HifyHUNU
 id: event_recurrence.event_recurrence.events
 targetEntityType: event_recurrence
 bundle: event_recurrence
 mode: events
 content:
+  field_event_rrule:
+    type: date_recur_modular_alpha
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   name:
     type: string_textfield
     weight: -4
@@ -32,4 +41,3 @@ content:
 hidden:
   author: true
   event: true
-  field_event_rrule: true

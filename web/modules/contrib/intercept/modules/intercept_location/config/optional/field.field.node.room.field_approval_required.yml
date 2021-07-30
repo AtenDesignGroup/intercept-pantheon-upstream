@@ -1,3 +1,4 @@
+uuid: f30869cc-1341-476d-a772-96bbb2f128cb
 langcode: en
 status: true
 dependencies:
@@ -8,7 +9,7 @@ id: node.room.field_approval_required
 field_name: field_approval_required
 entity_type: node
 bundle: room
-label: 'Approval required'
+label: 'Approval Required'
 description: ''
 required: false
 translatable: false

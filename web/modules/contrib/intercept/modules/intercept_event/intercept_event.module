@@ -894,11 +894,14 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
     ];
     $view->setHandler('page', 'header', 'area_text_custom', $options);
 
-    // Default to showing data in the last 6 months.
+    // Default to showing data in the last few months.
     $exposed_input = $view->getExposedInput();
     if (!isset($exposed_input['field_date_time_value']['min'])) {
-      $date = new DateTime('first day of -6 months');
-      $exposed_date['field_date_time_value']['min'] = $date->format('m/d/Y');
+      $date_min = new DateTime('first day of -1 month');
+      $date_max = new DateTime('today');
+      $debug = true;
+      $exposed_date['field_date_time_value']['min'] = $date_min->format('m/d/Y');
+      $exposed_date['field_date_time_value']['max'] = $date_max->format('m/d/Y');
       $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
   }

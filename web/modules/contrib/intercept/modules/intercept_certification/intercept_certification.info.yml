@@ -1,0 +1,7 @@
+name: 'Intercept Certification'
+type: module
+description: 'Allows staff to certify that customers are allowed to use different rooms that require special training (such as makerspaces).'
+core: 8.x
+package: 'Intercept'
+dependencies:
+  - intercept_location

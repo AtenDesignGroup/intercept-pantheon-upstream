@@ -2631,7 +2631,7 @@
                 "patches_applied": {
                     "JSON:API returns a CacheableResponseInterface instance for non-cacheable methods; causes unnecessary exceptions.": "https://www.drupal.org/files/issues/2020-03-11/jsonapi-3072076-60.patch",
                     "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",
-                    "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch"
+                    "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-02-11/2996114-124.patch"
                 }
             },
             "installation-source": "dist",
@@ -3908,7 +3908,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept.git",
-                "reference": "02b6860fc51ff0b205133711e9985f7954e83fe2"
+                "reference": "cf5d94905a9883b59f6eca578a838716ecac52d0"
             },
             "require": {
                 "drupal/address": "^1.3",
@@ -3971,8 +3971,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha34+0-dev",
-                    "datestamp": "1624559631",
+                    "version": "8.x-1.0-alpha34+1-dev",
+                    "datestamp": "1624576643",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -4024,12 +4024,12 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept_base.git",
-                "reference": "80ac4aa20dcb0b6acaef19e8c2f92ceaafd09730"
+                "reference": "c0f031b557317356ebdc1380384786785f9738db"
             },
             "require": {
                 "drupal/components": "^2.4",
                 "drupal/core": "^8 || ^9",
-                "drupal/twig_field_value": "^1.1",
+                "drupal/twig_field_value": "^2.0",
                 "drupal/twig_tweak": "^2.1"
             },
             "type": "drupal-theme",
@@ -4038,8 +4038,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha30+0-dev",
-                    "datestamp": "1624558226",
+                    "version": "8.x-1.x-dev",
+                    "datestamp": "1627332540",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
@@ -4087,7 +4087,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept_profile.git",
-                "reference": "721df8f0b513195151562c7715c68d25ce94b106"
+                "reference": "951e79723d2f244f7358564b115be5aa5462301c"
             },
             "require": {
                 "drupal/core": "~8.0"
@@ -5001,30 +5001,27 @@
         },
         {
             "name": "drupal/twig_field_value",
-            "version": "1.2.0",
-            "version_normalized": "1.2.0.0",
+            "version": "2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/twig_field_value.git",
-                "reference": "8.x-1.2"
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/twig_field_value-8.x-1.2.zip",
-                "reference": "8.x-1.2",
-                "shasum": "dd5bfb64bc455ca262b3bdc6b489fdb08b2b8538"
+                "url": "https://ftp.drupal.org/files/projects/twig_field_value-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "d2d0db6249493542bf9d568970f67d10ce143f90"
             },
             "require": {
-                "drupal/core": "~8.0"
+                "drupal/core": "^8 || ^9"
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-1.x": "1.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-1.2",
-                    "datestamp": "1549817580",
+                    "version": "2.0.0",
+                    "datestamp": "1587069998",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7778,23 +7775,24 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v4.4.25",
-            "version_normalized": "4.4.25.0",
+            "version": "v4.4.27",
+            "version_normalized": "4.4.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "ed33314396d968a8936c95f5bd1b88bd3b3e94a3"
+                "reference": "42414d7ac96fc2880a783b872185789dea0d4262"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/ed33314396d968a8936c95f5bd1b88bd3b3e94a3",
-                "reference": "ed33314396d968a8936c95f5bd1b88bd3b3e94a3",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/42414d7ac96fc2880a783b872185789dea0d4262",
+                "reference": "42414d7ac96fc2880a783b872185789dea0d4262",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1.3"
+                "php": ">=7.1.3",
+                "symfony/polyfill-php80": "^1.16"
             },
-            "time": "2021-05-26T11:20:16+00:00",
+            "time": "2021-07-23T15:41:52+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -7822,7 +7820,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v4.4.25"
+                "source": "https://github.com/symfony/finder/tree/v4.4.27"
             },
             "funding": [
                 {
@@ -8435,23 +8433,23 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.23.0",
-            "version_normalized": "1.23.0.0",
+            "version": "v1.23.1",
+            "version_normalized": "1.23.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "eca0bf41ed421bed1b57c4958bab16aa86b757d0"
+                "reference": "1100343ed1a92e3a38f9ae122fc0eb21602547be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/eca0bf41ed421bed1b57c4958bab16aa86b757d0",
-                "reference": "eca0bf41ed421bed1b57c4958bab16aa86b757d0",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/1100343ed1a92e3a38f9ae122fc0eb21602547be",
+                "reference": "1100343ed1a92e3a38f9ae122fc0eb21602547be",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1"
             },
-            "time": "2021-02-19T12:13:01+00:00",
+            "time": "2021-07-28T13:41:28+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -8501,7 +8499,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.23.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.23.1"
             },
             "funding": [
                 {
@@ -9017,24 +9015,24 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v4.4.26",
-            "version_normalized": "4.4.26.0",
+            "version": "v4.4.27",
+            "version_normalized": "4.4.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "a586efdf2aa832d05b9249e9115d24f6a2691160"
+                "reference": "391d6d0e7a06ab54eb7c38fab29b8d174471b3ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/a586efdf2aa832d05b9249e9115d24f6a2691160",
-                "reference": "a586efdf2aa832d05b9249e9115d24f6a2691160",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/391d6d0e7a06ab54eb7c38fab29b8d174471b3ba",
+                "reference": "391d6d0e7a06ab54eb7c38fab29b8d174471b3ba",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.3",
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php72": "~1.5",
-                "symfony/polyfill-php80": "^1.15"
+                "symfony/polyfill-php80": "^1.16"
             },
             "conflict": {
                 "phpunit/phpunit": "<4.8.35|<5.4.3,>=5.0",
@@ -9051,7 +9049,7 @@
                 "ext-intl": "To show region name in time zone dump",
                 "symfony/console": "To use the ServerDumpCommand and/or the bin/var-dump-server script"
             },
-            "time": "2021-06-17T06:35:48+00:00",
+            "time": "2021-07-23T15:41:52+00:00",
             "bin": [
                 "Resources/bin/var-dump-server"
             ],
@@ -9089,7 +9087,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v4.4.26"
+                "source": "https://github.com/symfony/var-dumper/tree/v4.4.27"
             },
             "funding": [
                 {

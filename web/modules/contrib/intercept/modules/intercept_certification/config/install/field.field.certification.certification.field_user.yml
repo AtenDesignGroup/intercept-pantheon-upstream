@@ -1,0 +1,46 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.certification.field_user
+  module:
+    - intercept_certification
+id: certification.certification.field_user
+field_name: field_user
+entity_type: certification
+bundle: certification
+label: User
+description: 'The customer who is receiving the certification for the room.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    include_anonymous: false
+    filter:
+      type: role
+      role:
+        intercept_registered_customer: intercept_registered_customer
+        blog_author: '0'
+        blog_editor: '0'
+        booklist_author: '0'
+        booklist_editor: '0'
+        finance: '0'
+        job_creator: '0'
+        page_editor: '0'
+        schema_viewer: '0'
+        administrator: '0'
+        intercept_kiosk: '0'
+        intercept_equipment_reservation_manager: '0'
+        intercept_event_manager: '0'
+        intercept_event_organizer: '0'
+        intercept_staff: '0'
+        intercept_system_admin: '0'
+    target_bundles: null
+    sort:
+      field: name
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

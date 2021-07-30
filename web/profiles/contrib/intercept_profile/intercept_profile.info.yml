@@ -17,6 +17,8 @@ dependencies:
   - drupal:config
   - drupal:contextual
   - drupal:datetime
+  - drupal:date_recur
+  - drupal:date_recur_modular
   - drupal:dblog
   - drupal:editor
   - drupal:field_ui

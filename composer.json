@@ -25,6 +25,7 @@
     "drupal/default_content": "^1.0",
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept": "1.x-dev",
+    "drupal/jsonapi_extras": "^3.19",
     "drupal/quick_node_clone": "^1.14",
     "drupal/smsframework": "^2",
     "drupal/view_user_email": "^1.0.1",
@@ -105,7 +106,7 @@
       "drupal/core": {
         "JSON:API returns a CacheableResponseInterface instance for non-cacheable methods; causes unnecessary exceptions.": "https://www.drupal.org/files/issues/2020-03-11/jsonapi-3072076-60.patch",
         "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",
-        "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-11-17/2996114-190.patch"
+        "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-02-11/2996114-124.patch"
       },
       "drupal/csv_serialization": {
         "Unable to Override Headers/Labels with hook_views_pre_render(). Used in export by age group": "https://www.drupal.org/files/issues/2019-10-10/3087166-csv_serialization-8.x-2.x-dev-views-pre-render-alter-headers.patch"

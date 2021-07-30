@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.bulk_room_reservation.field_related_room_reservations
+  module:
+    - intercept_bulk_room_reservation
+id: bulk_room_reservation.bulk_room_reservation.field_related_room_reservations
+field_name: field_related_room_reservations
+entity_type: bulk_room_reservation
+bundle: bulk_room_reservation
+label: 'Related room reservations'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:room_reservation'
+  handler_settings:
+    target_bundles: null
+    sort:
+      field: field_dates.value
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

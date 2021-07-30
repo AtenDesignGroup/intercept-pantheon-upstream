@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'b7862e305ccb8b079ea8f8260c0ae6b72d47b073',
+        'reference' => '11cce1bac5220fcc4d9afed19d64e4ab554dd223',
         'name' => 'atendesigngroup/intercept-pantheon-upstream',
         'dev' => true,
     ),
@@ -25,7 +25,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'b7862e305ccb8b079ea8f8260c0ae6b72d47b073',
+            'reference' => '11cce1bac5220fcc4d9afed19d64e4ab554dd223',
             'dev_requirement' => false,
         ),
         'chi-teck/drupal-code-generator' => array(
@@ -915,7 +915,7 @@
             'aliases' => array(
                 0 => '1.x-dev',
             ),
-            'reference' => '02b6860fc51ff0b205133711e9985f7954e83fe2',
+            'reference' => 'cf5d94905a9883b59f6eca578a838716ecac52d0',
             'dev_requirement' => false,
         ),
         'drupal/intercept_base' => array(
@@ -926,7 +926,7 @@
             'aliases' => array(
                 0 => '1.x-dev',
             ),
-            'reference' => '80ac4aa20dcb0b6acaef19e8c2f92ceaafd09730',
+            'reference' => 'c0f031b557317356ebdc1380384786785f9738db',
             'dev_requirement' => false,
         ),
         'drupal/intercept_profile' => array(
@@ -937,7 +937,7 @@
             'aliases' => array(
                 0 => '1.x-dev',
             ),
-            'reference' => '721df8f0b513195151562c7715c68d25ce94b106',
+            'reference' => '951e79723d2f244f7358564b115be5aa5462301c',
             'dev_requirement' => false,
         ),
         'drupal/jquery_ui' => array(
@@ -1306,12 +1306,12 @@
             ),
         ),
         'drupal/twig_field_value' => array(
-            'pretty_version' => '1.2.0',
-            'version' => '1.2.0.0',
+            'pretty_version' => '2.0.0',
+            'version' => '2.0.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/twig_field_value',
             'aliases' => array(),
-            'reference' => '8.x-1.2',
+            'reference' => '2.0.0',
             'dev_requirement' => false,
         ),
         'drupal/twig_tweak' => array(
@@ -1790,12 +1790,12 @@
             'dev_requirement' => false,
         ),
         'symfony/finder' => array(
-            'pretty_version' => 'v4.4.25',
-            'version' => '4.4.25.0',
+            'pretty_version' => 'v4.4.27',
+            'version' => '4.4.27.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/finder',
             'aliases' => array(),
-            'reference' => 'ed33314396d968a8936c95f5bd1b88bd3b3e94a3',
+            'reference' => '42414d7ac96fc2880a783b872185789dea0d4262',
             'dev_requirement' => false,
         ),
         'symfony/http-foundation' => array(
@@ -1880,12 +1880,12 @@
             'dev_requirement' => false,
         ),
         'symfony/polyfill-php80' => array(
-            'pretty_version' => 'v1.23.0',
-            'version' => '1.23.0.0',
+            'pretty_version' => 'v1.23.1',
+            'version' => '1.23.1.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-php80',
             'aliases' => array(),
-            'reference' => 'eca0bf41ed421bed1b57c4958bab16aa86b757d0',
+            'reference' => '1100343ed1a92e3a38f9ae122fc0eb21602547be',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-util' => array(
@@ -1952,12 +1952,12 @@
             'dev_requirement' => false,
         ),
         'symfony/var-dumper' => array(
-            'pretty_version' => 'v4.4.26',
-            'version' => '4.4.26.0',
+            'pretty_version' => 'v4.4.27',
+            'version' => '4.4.27.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/var-dumper',
             'aliases' => array(),
-            'reference' => 'a586efdf2aa832d05b9249e9115d24f6a2691160',
+            'reference' => '391d6d0e7a06ab54eb7c38fab29b8d174471b3ba',
             'dev_requirement' => false,
         ),
         'symfony/yaml' => array(

@@ -16,6 +16,7 @@ class InputNumber extends React.PureComponent {
       int,
       required,
       value,
+      name,
     } = this.props;
 
     const handleChange = (event) => {
@@ -27,6 +28,7 @@ class InputNumber extends React.PureComponent {
 
     return (
       <TextField
+        id={name}
         label={label}
         required={required}
         type="number"

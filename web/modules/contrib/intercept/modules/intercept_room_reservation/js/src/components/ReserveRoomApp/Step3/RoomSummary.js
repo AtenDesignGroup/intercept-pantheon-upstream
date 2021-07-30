@@ -20,7 +20,7 @@ class RoomSummary extends React.PureComponent {
     if (hasValue) {
       return (
         <div className="value-summary">
-          <h4 className="value-summary__label">
+          <h2 className="value-summary__label">
             Room
             <IconButton
               className="value-summary__icon-button"
@@ -30,14 +30,14 @@ class RoomSummary extends React.PureComponent {
             >
               <EditIcon />
             </IconButton>
-          </h4>
+          </h2>
           <p className="value-summary__value">{label}</p>
         </div>
       );
     }
     return (
       <div className="value-summary">
-        <h4 className="value-summary__label">Room</h4>
+        <h2 className="value-summary__label">Room</h2>
         <Button
           className="value-summary__button"
           variant="contained"

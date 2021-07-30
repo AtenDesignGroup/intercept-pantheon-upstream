@@ -393,15 +393,16 @@ class ResourceType {
    * @return array
    *   The relatable resource types, keyed by relationship field names.
    *
-   * @see self::setRelatableResourceTypes()
+   * @see setRelatableResourceTypes()
    */
   public function getRelatableResourceTypes() {
     if (!isset($this->relatableResourceTypesByField)) {
-      $this->relatableResourceTypesByField = array_reduce(array_map(function (ResourceTypeRelationship $field) {
-        return [$field->getPublicName() => $field->getRelatableResourceTypes()];
-      }, array_filter($this->fields, function (ResourceTypeField $field) {
-        return $field instanceof ResourceTypeRelationship;
-      })), 'array_merge', []);
+      $this->relatableResourceTypesByField = [];
+      foreach ($this->fields as $field) {
+        if ($field instanceof ResourceTypeRelationship) {
+          $this->relatableResourceTypesByField[$field->getPublicName()] = $field->getRelatableResourceTypes();
+        }
+      }
     }
     return $this->relatableResourceTypesByField;
   }
@@ -415,7 +416,7 @@ class ResourceType {
    * @return \Drupal\jsonapi\ResourceType\ResourceType[]
    *   The relatable JSON:API resource types.
    *
-   * @see self::getRelatableResourceTypes()
+   * @see getRelatableResourceTypes()
    */
   public function getRelatableResourceTypesByField($field_name) {
     return ($field = $this->getFieldByPublicName($field_name)) && $field instanceof ResourceTypeRelationship

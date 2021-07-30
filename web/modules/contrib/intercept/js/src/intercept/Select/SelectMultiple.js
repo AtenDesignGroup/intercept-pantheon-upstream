@@ -3,10 +3,20 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 
-import { Input, InputLabel, MenuItem, FormControl, ListItemText, Select, Checkbox, Collapse } from '@material-ui/core';
+import {
+  Input,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  ListItemText,
+  Select,
+  Checkbox,
+  Collapse,
+} from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { forEach } from 'lodash';
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -49,33 +59,38 @@ const MenuProps = {
 class SelectMultiple extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {open: false};
+    this.state = { open: false };
   }
 
   handleChange = (event) => {
     this.props.handleChange(event);
   };
 
-  // handleClick = () => {
-  //   console.log('fired');
-  //   if (this.state.open === false) {
-  //     this.setState({
-  //       open: true
-  //     });
-  //   } else {
-  //     this.setState({
-  //       open: false
-  //     });
-  //   }
-  // };
-
   render() {
-    const { chips, labels, isValid, renderValue, options, label, multiple, name, required, value } = this.props;
-    const checkboxId = id => `select-filter--${id}`;
+    const {
+      chips,
+      labels,
+      isValid,
+      renderValue,
+      options,
+      label,
+      multiple,
+      name,
+      required,
+      value,
+    } = this.props;
+
+    const checkboxId = (id) => `select-filter--${id}`;
     const checkboxLabel = (text, id) => (
       <label className="select-filter__checkbox-label">{text}</label>
     );
-    // const [open, setOpen] = React.useState(true);
+
+    // Remove "Richland Library" prefix from locations on the Location SelectMultiple dropdown (such as on /events)
+    if (name === 'node--location') {
+      options.forEach((option) => {
+        option.value = option.value.replace('Richland Library ', '');
+      });
+    }
 
     const toOptionItems = (depth = 0) => (all, option) => {
       let indeterminate = false;
@@ -83,8 +98,8 @@ class SelectMultiple extends React.Component {
       if (option.children.length > 0) {
         option.children.forEach((child) => {
           selected.push(value.indexOf(child.key) > -1);
-        })
-        const all = selected.every( v => v === true );
+        });
+        const all = selected.every((v) => v === true);
         const some = selected.indexOf(true) > -1;
         if (some && !all) {
           indeterminate = true;
@@ -93,12 +108,13 @@ class SelectMultiple extends React.Component {
       if (option.children.length > 0) {
         return [].concat(
           all,
-          (<MenuItem
+          <MenuItem
             onClick={this.handleClick}
             key={option.key}
             value={option.key}
             className="select-filter__menu-item"
-            data-depth={depth}>
+            data-depth={depth}
+          >
             <Checkbox
               checked={multiple ? value.indexOf(option.key) > -1 : value === option.key}
               id={checkboxId(option.key)}
@@ -109,28 +125,31 @@ class SelectMultiple extends React.Component {
               disableTypography
               primary={checkboxLabel(option.value, checkboxId(option.key))}
             />
-          </MenuItem>),
-          option.children && option.children.reduce(toOptionItems(depth + 1), []))
+          </MenuItem>,
+          option.children && option.children.reduce(toOptionItems(depth + 1), [])
+        );
       } else {
         return [].concat(
-        all,
-        (<MenuItem
-          key={option.key}
-          value={option.key}
-          className="select-filter__menu-item"
-          data-depth={depth}>
-          <Checkbox
-            checked={multiple ? value.indexOf(option.key) > -1 : value === option.key}
-            id={checkboxId(option.key)}
-            className="select-filter__checkbox"
-            indeterminate={indeterminate}
-          />
-          <ListItemText
-            disableTypography
-            primary={checkboxLabel(option.value, checkboxId(option.key))}
-          />
-        </MenuItem>),
-        option.children && option.children.reduce(toOptionItems(depth + 1), []))
+          all,
+          <MenuItem
+            key={option.key}
+            value={option.key}
+            className="select-filter__menu-item"
+            data-depth={depth}
+          >
+            <Checkbox
+              checked={multiple ? value.indexOf(option.key) > -1 : value === option.key}
+              id={checkboxId(option.key)}
+              className="select-filter__checkbox"
+              indeterminate={indeterminate}
+            />
+            <ListItemText
+              disableTypography
+              primary={checkboxLabel(option.value, checkboxId(option.key))}
+            />
+          </MenuItem>,
+          option.children && option.children.reduce(toOptionItems(depth + 1), [])
+        );
       }
     };
 

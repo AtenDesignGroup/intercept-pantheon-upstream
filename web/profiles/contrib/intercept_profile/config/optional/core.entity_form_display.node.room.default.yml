@@ -7,7 +7,7 @@ dependencies:
     - field.field.node.room.field_capacity_max
     - field.field.node.room.field_capacity_min
     - field.field.node.room.field_location
-    - field.field.node.room.field_online_registration
+    - field.field.node.room.field_requires_certification
     - field.field.node.room.field_reservable_online
     - field.field.node.room.field_reservation_phone_number
     - field.field.node.room.field_reservation_time_max
@@ -21,11 +21,15 @@ dependencies:
     - field.field.node.room.image_primary
     - node.type.room
   module:
+    - duration_field
     - entity_browser_entity_form
     - inline_entity_form
     - path
+    - scheduler
     - telephone
     - text
+_core:
+  default_config_hash: fC4f479qYDVJGbyY0m-mujctfI1J8_z4Ud1a7qjCqDQ
 id: node.room.default
 targetEntityType: node
 bundle: room
@@ -33,12 +37,12 @@ mode: default
 content:
   created:
     type: datetime_timestamp
-    weight: 13
+    weight: 14
     region: content
     settings: {  }
     third_party_settings: {  }
   field_approval_required:
-    weight: 26
+    weight: 22
     settings:
       display_label: true
     third_party_settings: {  }
@@ -64,15 +68,35 @@ content:
     third_party_settings: {  }
     type: options_select
     region: content
+  field_requires_certification:
+    weight: 26
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_reservable_online:
+    weight: 20
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_reservation_phone_number:
     type: telephone_default
-    weight: 20
+    weight: 21
     region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
+  field_reservation_time_max:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    type: duration_widget
+    region: content
   field_room_fees:
-    weight: 11
+    weight: 12
     settings:
       rows: 5
       placeholder: ''
@@ -80,7 +104,7 @@ content:
     type: text_textarea
     region: content
   field_room_standard_equipment:
-    weight: 10
+    weight: 11
     settings:
       size: 60
       placeholder: ''
@@ -141,13 +165,13 @@ content:
     region: content
   path:
     type: path
-    weight: 14
+    weight: 15
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 16
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -155,7 +179,7 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 15
+    weight: 16
     region: content
     third_party_settings: {  }
   title:
@@ -168,7 +192,7 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 12
+    weight: 13
     settings:
       match_operator: CONTAINS
       size: 60
@@ -178,18 +202,15 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 17
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  url_redirects:
     weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
+  url_redirects:
+    weight: 19
+    region: content
+    settings: {  }
+    third_party_settings: {  }
 hidden:
-  field_online_registration: true
-  field_reservable_online: true
-  field_reservation_time_max: true
   promote: true
   sticky: true

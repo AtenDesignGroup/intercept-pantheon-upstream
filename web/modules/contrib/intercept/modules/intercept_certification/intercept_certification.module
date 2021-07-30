@@ -1,0 +1,199 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\node\Entity\Node;
+use Drupal\intercept_certification\Controller\CertificationController;
+use Drupal\intercept_certification\Entity\Certification;
+use Drupal\views\ViewExecutable;
+
+/**
+ * @file
+ * Contains intercept_certification.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function intercept_certification_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the intercept_certification module.
+    case 'help.page.intercept_certification':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Allows staff to certify that customers are allowed to use different rooms that require special training (such as makerspaces).') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function intercept_certification_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  switch ($form_id) {
+    case 'certification_add_form':
+    case 'certification_edit_form':
+      // Get list of room node ids that have field_certification_required.
+      // Filter out the others.
+      $options = CertificationController::getCertificationRooms();
+      foreach ($form['field_room']['widget']['#options'] as $key => $option) {
+        if (!in_array($key, $options) && $key != '_none') {
+          unset($form['field_room']['widget']['#options'][$key]);
+        }
+      }
+      // Hide revision log message & new revision fields.
+      $form['revision_log_message']['#access'] = FALSE;
+      $form['new_revision'] = FALSE;
+      break;
+    case 'user_customer_form':
+      $form['actions']['submit']['#submit'][] = 'intercept_certification_update_certifications_submit';
+      break;
+  }
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ * 
+ * Perform alterations before an entity form is included in the IEF widget.
+ *
+ * @param $entity_form
+ *   Nested array of form elements that comprise the entity form.
+ * @param $form_state
+ *   The form state of the parent form.
+ */
+function intercept_certification_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  if ($entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
+    // Only staff are allowed to edit the Customer Information fields. 
+    $current_user = \Drupal::currentUser();
+    $roles = $current_user->getRoles();
+    $is_staff = in_array('intercept_staff', $roles) ? TRUE : FALSE;
+    if (!$is_staff) {
+      $entity_form['group_customer_information']['#access'] = FALSE;
+    }
+    else {
+      // Get a list of rooms that have certification required.
+      $certification_room_ids = CertificationController::getCertificationRooms();
+      $certification_rooms = Node::loadMultiple($certification_room_ids);
+      // Build the form options based off of that list.
+      $options = [];
+      foreach($certification_rooms as $key => $room) {
+        $options[$key] = $room->getTitle();
+      }
+      asort($options);
+
+      // Get certifications that exist for the user whose profile is being edited.
+      $uid = $entity_form['#entity']->getOwnerId();
+      $certification_ids = CertificationController::getUserCertifications($uid);
+      $certifications = Certification::loadMultiple($certification_ids);
+      $default_values = [];
+      if (!empty($certifications)) {
+        // Fill in the default values.
+        foreach($certifications as $key => $certification) {
+          $default_values[] = $certification->get('field_room')->getString();
+        }
+      }
+
+      // Add a new field to the customer profile that allows creating, updating,
+      // and deleting certification entities.
+      if (!empty($options)) {
+        $entity_form['group_customer_information']['certifications'] = [
+          '#type' => 'checkboxes',
+          '#title' => t('Certifications'),
+          '#options' => $options,
+          '#default_value' => $default_values,
+          '#suffix' => '<p>&nbsp;</p>',
+        ];
+      }
+
+    }
+  }
+}
+
+/**
+ * Submit handler for certifications.
+ */
+function intercept_certification_update_certifications_submit(&$form, FormStateInterface $form_state) {
+  // Make sure when form submission happens that we create/update/delete entities.
+  $submitted_certifications = $form_state->getValue('certifications');
+
+  // Get certifications that exist for the user whose profile is being edited.
+  $uid = $form['customer_profile']['#entity']->getOwnerId();
+  $certification_ids = CertificationController::getUserCertifications($uid);
+  $current_certifications = Certification::loadMultiple($certification_ids);
+  $current_certification_room_ids = [];
+  foreach($current_certifications as $certification) {
+    $current_certification_room_ids[] = $certification->get('field_room')->getString();
+  }
+
+  // Let's compare what's stored.
+  foreach($submitted_certifications as $key => $value) {
+    // If the value = 0 that means it's unchecked.
+    // If the value is not 0 then that means it's checked. (It's equal to the room id.)
+    // The key of each certification here will also be the room id.
+    if ($value != 0 && in_array($key, $current_certification_room_ids)) {
+      // Certification is unchanged.
+    }
+    elseif ($value == 0 && in_array($key, $current_certification_room_ids)) {
+      // Certification is being removed.
+      CertificationController::deleteCertification($uid, $key);
+    }
+    elseif ($value != 0 && !in_array($key, $current_certification_room_ids)) {
+      // Certification is being added.
+      CertificationController::addCertification($uid, $key);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_certification_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $view = $form_state->get('view');
+  $id = $view->id();
+  $current = $view->current_display;
+  if ($view->id() == 'intercept_certifications' && $view->current_display == 'page') {
+    // Limit the list of rooms to only rooms that allow certifications.
+    $room_field = $form['field_room_target_id'];
+    // Get a list of rooms that have certification required.
+    $certification_room_ids = CertificationController::getCertificationRooms();
+    $certification_rooms = Node::loadMultiple($certification_room_ids);
+    // Build the form options based off of that list.
+    $options = [];
+    foreach($certification_rooms as $key => $room) {
+      $options[$key] = $room->getTitle();
+    }
+    asort($options);
+    $form['field_room_target_id']['#options'] = $options;
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function intercept_certification_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'intercept_certifications' && $display_id == 'page') {
+    // Build the link to download the CSV.
+    $request = \Drupal::request();
+    $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_certifications.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable['#attributes'] = ['class' => ['button', 'create-content-button']];
+    $link = \Drupal::service('renderer')->renderPlain($link_renderable);
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => '<h1 class="title">Certifications</h1>' .
+      $link,
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('page', 'header', 'area_text_custom', $options);
+  }
+}

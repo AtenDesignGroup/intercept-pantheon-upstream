@@ -1,0 +1,26 @@
+# Certification routing definition
+certification.settings_tab:
+  route_name: certification.settings
+  title: 'Settings'
+  base_route: certification.settings
+
+entity.certification.canonical:
+  route_name: entity.certification.canonical
+  base_route: entity.certification.canonical
+  title: 'View'
+
+entity.certification.edit_form:
+  route_name: entity.certification.edit_form
+  base_route: entity.certification.canonical
+  title: 'Edit'
+
+entity.certification.version_history:
+  route_name: entity.certification.version_history
+  base_route: entity.certification.canonical
+  title: 'Revisions'
+
+entity.certification.delete_form:
+  route_name:  entity.certification.delete_form
+  base_route:  entity.certification.canonical
+  title: Delete
+  weight: 10

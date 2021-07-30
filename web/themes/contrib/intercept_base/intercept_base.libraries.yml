@@ -413,12 +413,12 @@ section-title:
 
 # Slick JS
 slick:
-  version: 1.6.0
+  version: 1.8.1
   css:
     component:
-      vendor/slick/slick.css: {}
+      https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css: { type: external, minified: true }
   js:
-    vendor/slick/slick.min.js: { minified: true }
+    https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js: { type: external, minified: true }
   dependencies:
     - core/jquery
 

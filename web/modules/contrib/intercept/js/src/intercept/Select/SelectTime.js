@@ -19,7 +19,7 @@ import {
 
 const { utils } = interceptClient;
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -70,7 +70,7 @@ class SelectTime extends React.Component {
     const disabledOptions = this.constructor.getDisabledOptions(
       disabledSpans,
       step,
-      disabledExclude,
+      disabledExclude
     );
 
     if (!min || !max) {
@@ -94,8 +94,7 @@ class SelectTime extends React.Component {
           value: 'Midnight',
           disabled: disabledOptions.indexOf('2400') >= 0,
         });
-      }
-      else {
+      } else {
         options.push({
           key,
           value,
@@ -163,8 +162,7 @@ class SelectTime extends React.Component {
 
         if (key === '0000' && i > minDate) {
           spans.push('2400');
-        }
-        else {
+        } else {
           spans.push(key);
         }
 
@@ -186,9 +184,7 @@ class SelectTime extends React.Component {
 
   handleChange = (event, value) => {
     // When clearing an input, the value is null, otherwise it is an object.
-    const normalizedValue = value === null
-      ? value
-      : value.key;
+    const normalizedValue = value === null ? value : value.key;
     this.props.setValue(normalizedValue);
     this.props.onChange(normalizedValue);
   };
@@ -205,10 +201,12 @@ class SelectTime extends React.Component {
       disabledSpans,
       disabledExclude,
       value,
+      name,
     } = this.props;
     const { autocompleteIsOpen } = this.state;
     const options = this.options(min, max, step, disabledSpans, disabledExclude);
-    const checkboxId = id => `select-filter--${id}`;
+    const checkboxId = (id) => `select-filter--${id}`;
+    const inputId = `select-filter__menu--${name}`;
     const checkboxLabel = (text, id) => (
       <label className="select-filter__checkbox-label" htmlFor={id}>
         {text}
@@ -220,7 +218,7 @@ class SelectTime extends React.Component {
         <FormControl className="select-filter__control">
           <InputLabel
             className="select-filter__label"
-            htmlFor="select-filter__menu"
+            htmlFor={inputId}
             required={this.props.required}
             shrink={autocompleteIsOpen || !!value}
           >
@@ -229,14 +227,19 @@ class SelectTime extends React.Component {
 
           <Autocomplete
             className="select-filter__menu"
-            defaultValue={value === null || !value ? '' : options.filter(option => option.key === value).shift()}
-            getOptionLabel={option => option.value || ''}
+            id={inputId}
+            defaultValue={
+              value === null || !value
+                ? ''
+                : options.filter((option) => option.key === value).shift()
+            }
+            getOptionLabel={(option) => option.value || ''}
             options={options}
             onChange={this.handleChange}
             onClose={() => this.setState({ autocompleteIsOpen: false })}
             onOpen={() => this.setState({ autocompleteIsOpen: true })}
             getOptionSelected={(option, val) => option.key === val}
-            renderOption={option => (
+            renderOption={(option) => (
               <MenuItem
                 component="div"
                 key={option.key}
@@ -250,7 +253,7 @@ class SelectTime extends React.Component {
                 />
               </MenuItem>
             )}
-            renderInput={params => (
+            renderInput={(params) => (
               <TextField
                 {...params}
                 aria-describedby="select-time-helper-text"

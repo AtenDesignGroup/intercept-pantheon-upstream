@@ -17,7 +17,18 @@ import drupalSettings from 'drupalSettings';
 import { v4 as uuidv4 } from 'uuid';
 
 import CloseIcon from '@material-ui/icons/Close';
-import { AppBar, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Toolbar, IconButton, Typography, Slide } from '@material-ui/core';
+import {
+  AppBar,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Toolbar,
+  IconButton,
+  Typography,
+  Slide,
+} from '@material-ui/core';
 
 // Intercept Components
 import SelectResource from 'intercept/SelectResource';
@@ -37,7 +48,8 @@ import ReservationTeaser from './../../../ReservationTeaser';
 const { actions, constants, select, utils } = interceptClient;
 const c = constants;
 
-const FIELD_REFRESHMENTS_DESC = 'I would like to serve refreshments and agree to the $25 charge that will be added to my library card. (Note: Some spaces may not allow refreshments. We will contact you if we are unable to fulfill this request.)';
+const FIELD_REFRESHMENTS_DESC =
+  'I would like to serve refreshments and agree to the $25 charge that will be added to my library card. (Note: Some spaces may not allow refreshments. We will contact you if we are unable to fulfill this request.)';
 const FIELD_REFRESHMENTS_OPTIONS = [
   {
     key: '1',
@@ -49,7 +61,11 @@ const FIELD_REFRESHMENTS_OPTIONS = [
   },
 ];
 
-const FIELD_PUBLICIZE_DESC = get(drupalSettings, 'intercept.room_reservations.field_publicize.description', 'I would like to publicize this meeting');
+const FIELD_PUBLICIZE_DESC = get(
+  drupalSettings,
+  'intercept.room_reservations.field_publicize.description',
+  'I would like to publicize this meeting'
+);
 const FIELD_PUBLICIZE_OPTIONS = [
   {
     key: '1',
@@ -61,15 +77,12 @@ const FIELD_PUBLICIZE_OPTIONS = [
   },
 ];
 
-const purposeRequiresExplanation = meetingPurpose =>
+const purposeRequiresExplanation = (meetingPurpose) =>
   meetingPurpose && meetingPurpose.data.attributes.field_requires_explanation;
 
 addValidationRule('isRequired', (values, value) => value !== '');
 addValidationRule('isPositive', (values, value) => value > 0);
-addValidationRule(
-  'isRequiredIfServingRefreshments',
-  (values, value) => true,
-);
+addValidationRule('isRequiredIfServingRefreshments', (values, value) => true);
 addValidationRule('isRequiredIfMeeting', (values, value) => !values.meeting || value !== '');
 addValidationRule('isGreaterOrEqualTo', (values, value, min) => min === null || value >= min);
 addValidationRule('isLesserOrEqualTo', (values, value, max) => max === null || value <= max);
@@ -83,9 +96,11 @@ const buildRoomReservation = (values) => {
       uuid,
       field_attendee_count: values.attendees,
       field_dates: {
-        value: moment.tz(utils.getDateFromTime(values.start, values.date), utils.getUserTimezone())
+        value: moment
+          .tz(utils.getDateFromTime(values.start, values.date), utils.getUserTimezone())
           .format(),
-        end_value: moment.tz(utils.getDateFromTime(values.end, values.date), utils.getUserTimezone())
+        end_value: moment
+          .tz(utils.getDateFromTime(values.end, values.date), utils.getUserTimezone())
           .format(),
       },
       field_group_name: values.groupName,
@@ -102,9 +117,9 @@ const buildRoomReservation = (values) => {
       field_event: {
         data: values[c.TYPE_EVENT]
           ? {
-            type: c.TYPE_EVENT,
-            id: values[c.TYPE_EVENT],
-          }
+              type: c.TYPE_EVENT,
+              id: values[c.TYPE_EVENT],
+            }
           : null,
       },
       field_room: {
@@ -116,9 +131,9 @@ const buildRoomReservation = (values) => {
       field_meeting_purpose: {
         data: values[c.TYPE_MEETING_PURPOSE]
           ? {
-            type: c.TYPE_MEETING_PURPOSE,
-            id: values[c.TYPE_MEETING_PURPOSE],
-          }
+              type: c.TYPE_MEETING_PURPOSE,
+              id: values[c.TYPE_MEETING_PURPOSE],
+            }
           : null,
       },
       field_user: {
@@ -271,29 +286,28 @@ class ReserveRoomForm extends PureComponent {
   }
 
   agreementLabel() {
-    return (<React.Fragment>
-      I agree to the <a
-        onClick={this.onOpenAgreementDialog}
-        role="link"
-        tabIndex="0"
-      >terms of service</a>.
-      <Dialog
-        open={this.state.openAgreementDialog}
-        onCancel={this.onCloseAgreementDialog}
-        onClose={this.onCloseAgreementDialog}
-        TransitionComponent={Transition}
-        className="dialog dialog--fullscreen"
-      >
-        <DialogTitle id="responsive-dialog-title">Terms of service</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            <span
-              dangerouslySetInnerHTML={{ __html: agreementText }}
-            />
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
-    </React.Fragment>
+    return (
+      <React.Fragment>
+        I agree to the{' '}
+        <a onClick={this.onOpenAgreementDialog} role="link" tabIndex="0">
+          terms of service
+        </a>
+        .
+        <Dialog
+          open={this.state.openAgreementDialog}
+          onCancel={this.onCloseAgreementDialog}
+          onClose={this.onCloseAgreementDialog}
+          TransitionComponent={Transition}
+          className="dialog dialog--fullscreen"
+        >
+          <DialogTitle id="responsive-dialog-title">Terms of service</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              <span dangerouslySetInnerHTML={{ __html: agreementText }} />
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
+      </React.Fragment>
     );
   }
 
@@ -308,9 +322,7 @@ class ReserveRoomForm extends PureComponent {
       roomCapacity,
       values,
     } = this.props;
-    const {
-      uuid,
-    } = this.state;
+    const { uuid } = this.state;
     const showMeetingPurposeExplanation = !!purposeRequiresExplanation(meetingPurpose);
 
     let content = null;
@@ -321,17 +333,23 @@ class ReserveRoomForm extends PureComponent {
     // Show the reservation teaser if it has successfully saved.
     if (uuid && get(this.props.getRoomReservation(uuid), `${uuid}.state.saved`) === true) {
       content = <ReservationTeaser id={uuid} />;
-    }
-    else {
+    } else {
       // Contact Information display for customers
       if (drupalSettings.intercept.user.telephone && drupalSettings.intercept.user.email) {
         contact = (
           <div className="l--subsection">
-            <h4 className="section-title section-title--secondary">Your Current Contact Information</h4>
+            <h3 className="section-title section-title--secondary">
+              Your Current Contact Information
+            </h3>
             <small>
-              Telephone: {drupalSettings.intercept.user.telephone}<br />
-              Email: {drupalSettings.intercept.user.email}<br />
-              <em>Need to update your info? After finishing your reservation visit My Account &gt; Profile.</em>
+              Telephone: {drupalSettings.intercept.user.telephone}
+              <br />
+              Email: {drupalSettings.intercept.user.email}
+              <br />
+              <em>
+                Need to update your info? After finishing your reservation visit My Account &gt;
+                Profile.
+              </em>
             </small>
           </div>
         );
@@ -348,7 +366,7 @@ class ReserveRoomForm extends PureComponent {
             <div className="l__main">
               <div className="l__primary">
                 <div className="l--subsection">
-                  <h4 className="section-title section-title--secondary">Reservation Details</h4>
+                  <h3 className="section-title section-title--secondary">Reservation Details</h3>
                   <div className="form-item">
                     <InputNumber
                       label="Number of Attendees"
@@ -370,9 +388,7 @@ class ReserveRoomForm extends PureComponent {
                       validationErrors={{
                         isPositive: 'Attendees must be a positive number',
                         isLesserOrEqualTo: `The maximum capacity of this room is ${roomCapacity.max}`,
-                        isGreaterOrEqualTo: `The minimum capacity of this room is ${
-                          roomCapacity.min
-                        }`,
+                        isGreaterOrEqualTo: `The minimum capacity of this room is ${roomCapacity.min}`,
                       }}
                       helperText={
                         roomCapacity.max &&
@@ -414,16 +430,16 @@ class ReserveRoomForm extends PureComponent {
               </div>
               <div className="l__secondary">
                 <div className="l--subsection">
-                  <h4 className="section-title section-title--secondary">Account</h4>
+                  <h3 className="section-title section-title--secondary">Account</h3>
                   <SelectUser
                     label="Reserved For"
                     value={values.user}
-                    onChange={value => this.onValueChange('user')(value.uuid)}
+                    onChange={(value) => this.onValueChange('user')(value.uuid)}
                     name={'user'}
                   />
                 </div>
                 <div className="l--subsection">
-                  <h4 className="section-title section-title--secondary">Refreshments</h4>
+                  <h3 className="section-title section-title--secondary">Refreshments</h3>
                   <RadioGroup
                     label={FIELD_REFRESHMENTS_DESC}
                     value={values.refreshments}
@@ -441,10 +457,10 @@ class ReserveRoomForm extends PureComponent {
                       required={values.refreshments === '1'}
                       disabled={values.refreshments !== '1'}
                     />
-                    </div>
+                  </div>
                 </div>
                 <div className="l--subsection">
-                  <h4 className="section-title section-title--secondary">Publicize</h4>
+                  <h3 className="section-title section-title--secondary">Publicize</h3>
                   <RadioGroup
                     label={FIELD_PUBLICIZE_DESC}
                     value={values.publicize}
@@ -454,9 +470,9 @@ class ReserveRoomForm extends PureComponent {
                     options={FIELD_PUBLICIZE_OPTIONS}
                   />
                 </div>
-                {agreementText &&
+                {agreementText && (
                   <div className="l--subsection">
-                    <h4 className="section-title section-title--secondary">Terms of Service</h4>
+                    <h2 className="section-title section-title--secondary">Terms of Service</h2>
                     <InputCheckbox
                       label={this.agreementLabel()}
                       checked={values.agreement}
@@ -466,7 +482,7 @@ class ReserveRoomForm extends PureComponent {
                       name="agreement"
                     />
                   </div>
-                }
+                )}
                 <Button
                   variant="contained"
                   size="large"
@@ -474,7 +490,9 @@ class ReserveRoomForm extends PureComponent {
                   type="submit"
                   className="button button--primary"
                   disabled={!this.state.canSubmit || hasConflict || !room || !values.agreement}
-                >Next</Button>
+                >
+                  Next
+                </Button>
               </div>
             </div>
           </div>
@@ -574,25 +592,22 @@ ReserveRoomForm.defaultProps = {
 const mapStateToProps = (state, ownProps) => ({
   meetingPurpose: ownProps.values[c.TYPE_MEETING_PURPOSE]
     ? select.record(
-      select.getIdentifier(c.TYPE_MEETING_PURPOSE, ownProps.values[c.TYPE_MEETING_PURPOSE]),
-    )(state)
+        select.getIdentifier(c.TYPE_MEETING_PURPOSE, ownProps.values[c.TYPE_MEETING_PURPOSE])
+      )(state)
     : null,
   roomCapacity: ownProps.room
     ? select.roomCapacity(ownProps.room)(state)
     : {
-      min: 0,
-      max: null,
-    },
-  getRoomReservation: uuid => select.roomReservation(uuid)(state),
+        min: 0,
+        max: null,
+      },
+  getRoomReservation: (uuid) => select.roomReservation(uuid)(state),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   save: (data) => {
     dispatch(actions.add(data, c.TYPE_ROOM_RESERVATION, data.id));
   },
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ReserveRoomForm);
+export default connect(mapStateToProps, mapDispatchToProps)(ReserveRoomForm);

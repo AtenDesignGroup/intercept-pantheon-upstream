@@ -77,21 +77,3 @@ function intercept_guest_schema() {
 
   return $schema;
 }
-
-/**
- * Implements hook_requirements().
- */
-function intercept_guest_requirements($phase) {
-  $requirements = [];
-
-  if ($phase == 'runtime') {
-    $value = mt_rand(0, 100);
-    $requirements['intercept_guest_status'] = [
-      'title' => t('Intercept Guest status'),
-      'value' => t('Intercept Guest value: @value', ['@value' => $value]),
-      'severity' => $value > 50 ? REQUIREMENT_INFO : REQUIREMENT_WARNING,
-    ];
-  }
-
-  return $requirements;
-}

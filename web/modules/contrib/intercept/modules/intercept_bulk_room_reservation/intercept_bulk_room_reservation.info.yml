@@ -1,7 +1,7 @@
 name: Intercept Bulk Room Reservation
 type: module
 description: 'Provides a bulk room reservation entity.'
-package: Custom
+package: 'Intercept'
 core: 8.x
 core_version_requirement: ^8 || ^9
 configure: entity.bulk_room_reservation.settings

@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_room_reservation
+    - intercept_bulk_room_reservation
+id: bulk_room_reservation.field_overridden
+field_name: field_overridden
+entity_type: bulk_room_reservation
+type: entity_reference
+settings:
+  target_type: room_reservation
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

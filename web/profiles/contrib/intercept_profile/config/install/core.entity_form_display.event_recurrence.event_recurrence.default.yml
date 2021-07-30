@@ -4,8 +4,10 @@ dependencies:
   config:
     - field.field.event_recurrence.event_recurrence.field_event_rrule
   module:
-    - date_recur
+    - date_recur_modular
     - intercept_event
+_core:
+  default_config_hash: TIcXyDwf9eGORE5LTXzC0vx0bxX2z_XBoR0UOCzhxoA
 id: event_recurrence.event_recurrence.default
 targetEntityType: event_recurrence
 bundle: event_recurrence
@@ -33,10 +35,9 @@ content:
     third_party_settings: {  }
   field_event_rrule:
     weight: 0
-    settings:
-      timezone_override: ''
+    settings: {  }
     third_party_settings: {  }
-    type: date_recur_basic_widget
+    type: date_recur_modular_alpha
     region: content
   name:
     type: string_textfield

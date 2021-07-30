@@ -7,7 +7,7 @@ dependencies:
     - field.field.node.room.field_capacity_max
     - field.field.node.room.field_capacity_min
     - field.field.node.room.field_location
-    - field.field.node.room.field_online_registration
+    - field.field.node.room.field_requires_certification
     - field.field.node.room.field_reservable_online
     - field.field.node.room.field_reservation_phone_number
     - field.field.node.room.field_reservation_time_max
@@ -23,6 +23,8 @@ dependencies:
   module:
     - text
     - user
+_core:
+  default_config_hash: zLoq20P5dd_3fKQwXDOg-pDBN1_DETl94pRh1FZJo_c
 id: node.room.teaser
 targetEntityType: node
 bundle: room
@@ -36,6 +38,16 @@ content:
     settings:
       thousand_separator: ''
       prefix_suffix: true
+    third_party_settings: {  }
+  field_reservable_online:
+    type: boolean
+    weight: 4
+    region: content
+    label: hidden
+    settings:
+      format: boolean
+      format_custom_true: ''
+      format_custom_false: ''
     third_party_settings: {  }
   field_reservation_phone_number:
     type: string
@@ -78,11 +90,11 @@ hidden:
   field_approval_required: true
   field_capacity_min: true
   field_location: true
-  field_online_registration: true
-  field_reservable_online: true
+  field_requires_certification: true
   field_reservation_time_max: true
   field_room_fees: true
   field_room_standard_equipment: true
   field_staff_use_only: true
   field_text_content: true
   field_text_intro: true
+  search_api_excerpt: true

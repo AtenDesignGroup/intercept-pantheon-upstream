@@ -21,7 +21,7 @@ class DateSummary extends React.PureComponent {
 
       return (
         <div className="value-summary">
-          <h4 className="value-summary__label">
+          <h2 className="value-summary__label">
             Date &amp; Time
             <IconButton
               className="value-summary__icon-button"
@@ -31,14 +31,14 @@ class DateSummary extends React.PureComponent {
             >
               <EditIcon />
             </IconButton>
-          </h4>
+          </h2>
           <p className="value-summary__value">{label}</p>
         </div>
       );
     }
     return (
       <div className="value-summary">
-        <h4 className="value-summary__label">Date &amp; Time</h4>
+        <h2 className="value-summary__label">Date &amp; Time</h2>
         <Button
           className="value-summary__button"
           variant="contained"

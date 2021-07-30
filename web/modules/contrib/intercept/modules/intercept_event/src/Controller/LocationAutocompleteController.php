@@ -69,9 +69,12 @@ class LocationAutocompleteController extends ControllerBase {
 
     $nodes = $nodeIds ? $this->nodeStorage->loadMultiple($nodeIds) : [];
 
+    $config = \Drupal::config('system.site');
+    $site_name = $config->get('name');
+
     foreach ($nodes as $node) {
       // Remove the words "Richland Library" from the autocomplete suggestions.
-      $label = str_replace('Richland Library ', "", $node->label());
+      $label = str_replace($site_name . ' ', '', $node->label());
 
       // Set the value to the abbreviation.
       $results[] = [

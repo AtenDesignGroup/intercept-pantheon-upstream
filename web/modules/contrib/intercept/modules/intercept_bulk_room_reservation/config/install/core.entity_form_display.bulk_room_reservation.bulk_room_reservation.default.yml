@@ -1,0 +1,67 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.bulk_room_reservation.bulk_room_reservation.field_date_time
+    - field.field.bulk_room_reservation.bulk_room_reservation.field_location
+    - field.field.bulk_room_reservation.bulk_room_reservation.field_overridden
+    - field.field.bulk_room_reservation.bulk_room_reservation.field_related_room_reservations
+    - field.field.bulk_room_reservation.bulk_room_reservation.field_room
+  module:
+    - date_recur_modular
+    - intercept_bulk_room_reservation
+id: bulk_room_reservation.bulk_room_reservation.default
+targetEntityType: bulk_room_reservation
+bundle: bulk_room_reservation
+mode: default
+content:
+  field_date_time:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: date_recur_modular_alpha
+    region: content
+  field_location:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_room:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  name:
+    type: string_textfield
+    weight: -4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  user_id:
+    type: entity_reference_autocomplete
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    region: content
+    third_party_settings: {  }
+hidden:
+  created: true
+  field_overridden: true
+  field_related_room_reservations: true
+  status: true
+  uid: true

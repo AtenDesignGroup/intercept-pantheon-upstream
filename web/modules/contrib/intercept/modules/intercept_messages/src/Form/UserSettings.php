@@ -63,7 +63,7 @@ class UserSettings implements ContainerInjectionInterface {
     }
     $form['notifications'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Notification settings'),
+      '#title' => $this->t('Notification Settings'),
       '#weight' => 5,
     ];
     if ($this->moduleHandler->moduleExists('intercept_event')) {

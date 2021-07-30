@@ -5,7 +5,7 @@ dependencies:
     - field.field.profile.customer.field_address
     - field.field.profile.customer.field_audiences
     - field.field.profile.customer.field_barcode
-    - field.field.profile.customer.field_room_reservation_barred
+    - field.field.profile.customer.field_certification_notes
     - field.field.profile.customer.field_email_address
     - field.field.profile.customer.field_event_types
     - field.field.profile.customer.field_first_name
@@ -14,15 +14,22 @@ dependencies:
     - field.field.profile.customer.field_last_name
     - field.field.profile.customer.field_phone
     - field.field.profile.customer.field_preferred_location
+    - field.field.profile.customer.field_room_reservation_barred
     - profile.type.customer
   module:
     - address
-    - telephone
+    - sms
 id: profile.customer.default
 targetEntityType: profile
 bundle: customer
 mode: default
 content:
+  '':
+    type: sms_telephone
+    weight: 27
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   field_address:
     weight: 9
     settings:
@@ -42,6 +49,14 @@ content:
     region: content
   field_barcode:
     weight: 8
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_certification_notes:
+    weight: 28
     settings:
       size: 60
       placeholder: ''
@@ -101,7 +116,7 @@ content:
     settings:
       placeholder: ''
     third_party_settings: {  }
-    type: telephone_default
+    type: sms_telephone
     region: content
   field_preferred_location:
     weight: 5

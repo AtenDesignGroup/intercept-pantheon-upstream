@@ -358,7 +358,6 @@ class ReservationManager implements ReservationManagerInterface {
         $debug_data['timezone_info'] = $timezone_info;
       }
     }
-    $debug = 'da';
     return $return;
   }
 

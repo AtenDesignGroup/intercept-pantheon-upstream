@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.bulk_room_reservation.field_room
+    - node.type.room
+  module:
+    - intercept_bulk_room_reservation
+id: bulk_room_reservation.bulk_room_reservation.field_room
+field_name: field_room
+entity_type: bulk_room_reservation
+bundle: bulk_room_reservation
+label: Room(s)
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      room: room
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

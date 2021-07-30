@@ -6,7 +6,7 @@ dependencies:
     - field.field.profile.customer.field_address
     - field.field.profile.customer.field_audiences
     - field.field.profile.customer.field_barcode
-    - field.field.profile.customer.field_room_reservation_barred
+    - field.field.profile.customer.field_certification_notes
     - field.field.profile.customer.field_email_address
     - field.field.profile.customer.field_event_types
     - field.field.profile.customer.field_first_name
@@ -15,6 +15,7 @@ dependencies:
     - field.field.profile.customer.field_last_name
     - field.field.profile.customer.field_phone
     - field.field.profile.customer.field_preferred_location
+    - field.field.profile.customer.field_room_reservation_barred
     - profile.type.customer
   module:
     - address
@@ -26,7 +27,6 @@ third_party_settings:
       children:
         - field_first_name
         - field_last_name
-        - pin
         - field_phone
         - field_email_address
         - field_barcode
@@ -41,6 +41,7 @@ third_party_settings:
         description: ''
         required_fields: false
       label: 'Account Info'
+      region: content
     group_preferences:
       children:
         - field_hold_pickup_location
@@ -56,6 +57,22 @@ third_party_settings:
         description: ''
         required_fields: false
       label: Preferences
+      region: content
+    group_customer_information:
+      children:
+        - field_certification_notes
+      parent_name: ''
+      weight: 2
+      format_type: fieldset
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: false
+      label: 'Customer Information'
+_core:
+  default_config_hash: AihpJ157T8LWNvOE8bmWW4UHUO1w1UaG0mKHr-cMwDU
 id: profile.customer.customer
 targetEntityType: profile
 bundle: customer
@@ -65,18 +82,25 @@ content:
     type: address_default
     weight: 8
     region: content
-    settings:
-      default_country: US
+    settings: {  }
     third_party_settings: {  }
   field_audiences:
-    weight: 3
+    weight: 5
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_barcode:
     type: string_textfield
-    weight: 6
+    weight: 5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_certification_notes:
+    type: string_textfield
+    weight: 3
     region: content
     settings:
       size: 60
@@ -84,14 +108,14 @@ content:
     third_party_settings: {  }
   field_email_address:
     type: email_default
-    weight: 5
+    weight: 4
     region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
   field_event_types:
-    weight: 2
+    weight: 4
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -106,13 +130,13 @@ content:
     region: content
   field_hold_pickup_location:
     type: options_select
-    weight: 0
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
   field_ils_username:
     type: string_textfield
-    weight: 7
+    weight: 6
     region: content
     settings:
       size: 60
@@ -127,23 +151,18 @@ content:
     type: string_textfield
     region: content
   field_phone:
-    weight: 4
+    weight: 3
     settings:
       placeholder: 'Phone number'
     third_party_settings: {  }
     type: telephone_default
     region: content
   field_preferred_location:
-    weight: 1
+    weight: 3
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
-  pin:
-    weight: 3
-    region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   card_number: true
   field_room_reservation_barred: true

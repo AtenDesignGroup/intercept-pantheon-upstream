@@ -5,7 +5,7 @@ import { withFormsy, propTypes, defaultProps } from 'formsy-react';
 
 import { Input, InputLabel, MenuItem, FormControl, ListItemText, Select } from '@material-ui/core';
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -51,8 +51,9 @@ class SelectSingle extends React.Component {
   };
 
   render() {
-    const { options, label, disabled, isValid, value } = this.props;
-    const checkboxId = id => `select-filter--${id}`;
+    const { options, label, disabled, isValid, value, name } = this.props;
+    const checkboxId = (id) => `select-filter--${id}`;
+    const inputId = `select-multiple-chip--${name}`;
     const checkboxLabel = (text, id) => (
       <label className="select-filter__checkbox-label" htmlFor={id}>
         {text}
@@ -64,7 +65,7 @@ class SelectSingle extends React.Component {
         <FormControl className="select-filter__control" disabled={disabled}>
           <InputLabel
             className="select-filter__label"
-            htmlFor="select-multiple-chip"
+            htmlFor={inputId}
             required={this.props.required}
             shrink={!!value}
           >
@@ -74,13 +75,13 @@ class SelectSingle extends React.Component {
           <Select
             value={value === null || !value ? '' : value}
             onChange={this.handleChange}
-            input={<Input id="select-multiple-chip" />}
+            input={<Input id={inputId} />}
             // renderValue={(value) => value}
             MenuProps={MenuProps}
             error={!isValid}
             required={this.props.required}
           >
-            {options.map(option => (
+            {options.map((option) => (
               <MenuItem key={option.key} value={option.key} className="select-filter__menu-item">
                 <ListItemText
                   disableTypography
@@ -103,6 +104,7 @@ SelectSingle.propTypes = {
   handleChange: PropTypes.func.isRequired,
   multiple: PropTypes.bool,
   disabled: PropTypes.bool,
+  name: PropTypes.string,
 };
 
 SelectSingle.defaultProps = {

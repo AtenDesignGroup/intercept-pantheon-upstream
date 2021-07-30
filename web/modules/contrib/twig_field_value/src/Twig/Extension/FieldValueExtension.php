@@ -23,13 +23,6 @@ class FieldValueExtension extends \Twig_Extension {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getName() {
-    return 'twig_field_value';
-  }
-
-  /**
    * Twig filter callback: Only return a field's label.
    *
    * @param array|null $build

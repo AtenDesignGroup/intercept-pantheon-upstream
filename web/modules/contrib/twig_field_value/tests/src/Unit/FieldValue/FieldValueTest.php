@@ -26,16 +26,6 @@ class FieldValueTest extends UnitTestCase {
   }
 
   /**
-   * Asserts the twig extension machine name.
-   *
-   * @covers ::getName
-   */
-  public function testExtensionName() {
-    $name = $this->extension->getName();
-    $this->assertEquals('twig_field_value', $name);
-  }
-
-  /**
    * Asserts the twig field_label filter.
    *
    * @dataProvider providerTestFieldLabel

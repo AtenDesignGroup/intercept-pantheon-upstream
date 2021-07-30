@@ -13,6 +13,7 @@ class InputText extends React.PureComponent {
       isRequired,
       disabled,
       value,
+      name,
     } = this.props;
 
     const handleChange = (event) => {
@@ -29,6 +30,7 @@ class InputText extends React.PureComponent {
     return (
       <TextField
         label={label}
+        id={name}
         type="text"
         disabled={disabled}
         onChange={handleChange}
@@ -53,6 +55,7 @@ InputText.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
   label: PropTypes.string,
+  name: PropTypes.string,
   validators: PropTypes.arrayOf(String),
   disabled: PropTypes.bool,
 };

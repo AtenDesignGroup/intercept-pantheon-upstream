@@ -26,6 +26,7 @@
       <p class="content-header__supertitle">{{ supertitle }}</p>
     {% endif %}
 
+    {% if title %}
     <div class="content-header__title">
       {% include '@intercept-base-components/page-title/page-title.twig' with {
         text: title,
@@ -33,6 +34,7 @@
         url: url
       } only %}
     </div>
+    {% endif %}
 
     {% if description %}
     <div class="content-header__description">

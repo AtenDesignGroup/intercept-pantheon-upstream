@@ -204,13 +204,11 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
   switch ($form_id) {
     case 'room_reservation_add_form':
       // The default value on the field needs to be requested,
-      // but if someone is using the reservation add form
-      // let's default to "no value" and just make the field be required.
+      // but if a staff member is using the reservation add form
+      // let's default to "approved" and just make the field be required.
       $status = $form_state->getValue('field_status');
       if (!$form_state->getValue('field_status')) {
-        $options = ['_none' => '- Select -'] + $form['field_status']['widget']['#options'];
-        $form['field_status']['widget']['#options'] = $options;
-        $form['field_status']['widget']['#default_value'][0] = '_none';
+        $form['field_status']['widget']['#default_value'][0] = 'approved';
       }
       break;
   }

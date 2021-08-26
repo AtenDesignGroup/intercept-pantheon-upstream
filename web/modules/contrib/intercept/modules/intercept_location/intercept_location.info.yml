@@ -1,7 +1,8 @@
 name: Intercept Location
 description: 'Provides Location content type and related configuration. Buildings or Branches'
 type: module
-core: 8.x
+core_version_requirement: ^8.9 || ^9
+package: 'Intercept'
 dependencies:
   - drupal:block
   - drupal:link
@@ -13,4 +14,3 @@ dependencies:
   - intercept:intercept_core
   - office_hours:office_hours
   - pathauto:pathauto
-package: 'Intercept'

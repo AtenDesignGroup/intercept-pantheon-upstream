@@ -1105,7 +1105,6 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              schema_viewer: '0'
               administrator: '0'
               intercept_registered_customer: '0'
               intercept_kiosk: '0'

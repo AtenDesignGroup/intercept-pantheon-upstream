@@ -1,7 +1,7 @@
 name: Intercept Profile
 type: profile
-description: 'The Intercept profile helps setup Drupal with the Intercept module and theme.'
-core: 8.x
+description: 'The Intercept profile helps setup Drupal with the Intercept modules and theme.'
+core_version_requirement: ^8.9 || ^9
 distribution:
   name: Intercept Profile
 dependencies:
@@ -37,12 +37,12 @@ dependencies:
   - drupal:views
   - drupal:views_ui
   - intercept:intercept
-  - intercept_event:intercept_event
-  - intercept_room_reservation:intercept_room_reservation
-  - intercept_equipment:intercept_equipment
-  - intercept_location:intercept_location
-  - intercept_location_closing:intercept_location_closing
-  - intercept_profile_copyright:intercept_profile_copyright
+  - intercept:intercept_event
+  - intercept:intercept_room_reservation
+  - intercept:intercept_equipment
+  - intercept:intercept_location
+  - intercept:intercept_location_closing
+  - intercept_profile:intercept_profile_copyright
   - jquery_ui:jquery_ui
   - jquery_ui_datepicker:jquery_ui_datepicker
   - jquery_ui_slider:jquery_ui_slider

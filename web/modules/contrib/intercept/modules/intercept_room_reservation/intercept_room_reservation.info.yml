@@ -1,7 +1,7 @@
 name: 'Intercept Room Reservation'
 type: module
-description: 'Room reservation functionality for the Intercept library'
-core: 8.x
+description: 'Provides room reservation functionality for Intercept.'
+core_version_requirement: ^8.9 || ^9
 package: 'Intercept'
 dependencies:
   - better_exposed_filters:better_exposed_filters

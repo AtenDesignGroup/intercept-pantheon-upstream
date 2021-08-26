@@ -19,7 +19,7 @@ function intercept_ils_help($route_name, RouteMatchInterface $route_match) {
     case 'help.page.intercept_ils':
       $output = '';
       $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
-      $output .= '<p>' . new TranslatableMarkup('ILS integration for the Intercept library') . '</p>';
+      $output .= '<p>' . new TranslatableMarkup('Provides ILS integration for Intercept.') . '</p>';
       return $output;
 
     default:

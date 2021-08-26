@@ -9,7 +9,7 @@ dependencies:
   - drupal:views
   - entity:entity
 
-# Information added by Drupal.org packaging script on 2020-11-03
-version: '8.x-1.2'
+# Information added by Drupal.org packaging script on 2021-08-04
+version: '8.x-1.3'
 project: 'profile'
-datestamp: 1604422703
+datestamp: 1628099896

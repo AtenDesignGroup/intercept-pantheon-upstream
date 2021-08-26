@@ -30,7 +30,6 @@ settings:
         finance: '0'
         job_creator: '0'
         page_editor: '0'
-        schema_viewer: '0'
         administrator: '0'
         intercept_kiosk: '0'
         intercept_equipment_reservation_manager: '0'

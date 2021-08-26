@@ -195,7 +195,7 @@ export const getDayDisplay = (date) => {
   if (d === getDayTimeStamp(today)) {
     return 'Today';
   }
-  // Tommorrow
+  // Tomorrow
   if (d === getDayTimeStamp(tomorrow)) {
     return 'Tomorrow';
   }

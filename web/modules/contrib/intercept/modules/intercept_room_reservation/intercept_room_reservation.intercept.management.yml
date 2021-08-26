@@ -2,16 +2,26 @@ intercept_room_reservation:
   controller: 'Drupal\intercept_room_reservation\Controller\ManagementController::view'
   pages:
     room_reservations:
-      title: 'All Reservations' # Room Reservations
+      title: 'List View' # Room Reservations (List View)
       menu_weight: 0
       parent: intercept_room_reservation.room_parent
       user_context_redirect: FALSE
       route_name: 'view.intercept_room_reservations.page'
+    room_reservations_scheduler:
+      title: 'Calendar View' # Room Reservations (Calendar View)
+      menu_weight: 1
+      parent: intercept_room_reservation.room_parent
+      route_name: 'intercept_room_reservation.scheduler'
+    # Create Reservation (weight 2) comes from intercept_room_reservation.links.menu.yml
+    # My Reservations (weight 3) comes from intercept_room_reservation.links.menu.yml
+    # Bulk Reservation (weight 4) comes from intercept_bulk_room_reservations.links.menu.yml
     customer_lookup:
       title: 'Customer Lookup'
-      menu_weight: 3
+      menu_weight: 5
       parent: intercept_room_reservation.room_parent
       route_name: view.intercept_customers.manage
+    # Certifications (weight 6) comes from intercept_certifications.links.menu.yml
     room_reservation_configuration:
       title: 'Room Reservations'
-      menu_link: FALSE
+      menu_link: FALSE # not displayed on the menu
+

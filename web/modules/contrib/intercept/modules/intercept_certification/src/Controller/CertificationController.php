@@ -2,6 +2,7 @@
 
 namespace Drupal\intercept_certification\Controller;
 
+use Drupal\Core\Link;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -119,13 +120,13 @@ class CertificationController extends ControllerBase implements ContainerInjecti
         // Use revision link to link to revisions that are not active.
         $date = $this->dateFormatter->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $certification->getRevisionId()) {
-          $link = $this->l($date, new Url('entity.certification.revision', [
+          $link = Link::fromTextAndUrl($date, new Url('entity.certification.revision', [
             'certification' => $certification->id(),
             'certification_revision' => $vid,
           ]));
         }
         else {
-          $link = $certification->link($date);
+          $link = $certification->toLink($date)->toString();
         }
 
         $row = [];

@@ -231,9 +231,8 @@ class EventManager implements EventManagerInterface {
     $event_template->field_event_is_template->setValue(1);
     $event_template->event_recurrence->setValue(NULL);
     $event_template->save();
-    // TODO: Use the message service.
     \Drupal::messenger()->addMessage(new TranslatableMarkup('Event template @link has been created.', [
-      '@link' => $event_template->link(),
+      '@link' => $event_template->toLink()->toString(),
     ]));
     // TODO: Fix this so that this overrides the admin/content destination.
     $form_state->setRedirect('entity.node.edit_form', [

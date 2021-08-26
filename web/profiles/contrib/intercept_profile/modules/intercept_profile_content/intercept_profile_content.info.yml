@@ -1,7 +1,8 @@
 name: Intercept Demo Content
 description: Imports content for the Intercept demo.
 type: module
-core: 8.x
+core_version_requirement: ^8.9 || ^9
+package: Intercept Profile
 dependencies:
   - better_normalizers:better_normalizers
   - default_content:default_content

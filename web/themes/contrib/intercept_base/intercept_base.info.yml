@@ -1,7 +1,7 @@
 name: Intercept Base
 type: theme
 description: Base theme for Intercept sites
-package: intercept_base
+package: Intercept
 base theme: stable
 core_version_requirement: ^8 || ^9
 

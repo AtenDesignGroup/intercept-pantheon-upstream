@@ -29,7 +29,7 @@ function profile_token_info_alter(&$info) {
 /**
  * Implements hook_tokens().
  */
-function profile_tokens($type, array $tokens, array $data = [], array $options = [], BubbleableMetadata $bubbleable_metadata) {
+function profile_tokens($type, array $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
   // Entity tokens on the Drupal user object.
   if ($type == 'entity' && !empty($data['entity_type']) && !empty($data['entity']) && !empty($data['token_type'])) {

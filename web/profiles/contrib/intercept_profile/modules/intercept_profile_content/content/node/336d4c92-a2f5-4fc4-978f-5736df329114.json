@@ -213,7 +213,7 @@
     ],
     "field_approval_required": [
         {
-            "value": false
+            "value": true
         }
     ],
     "field_capacity_max": [
@@ -234,6 +234,12 @@
     "field_reservable_online": [
         {
             "value": true
+        }
+    ],
+    "field_reservation_time_max": [
+        {
+            "seconds": [7200],
+            "duration": "P0Y0M0DT2H0M0S"
         }
     ],
     "field_staff_use_only": [

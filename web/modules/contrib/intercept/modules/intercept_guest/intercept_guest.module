@@ -18,11 +18,11 @@ use Drupal\Core\Form\FormStateInterface;
  * Placeholder implementation of hook_theme().
  */
 function intercept_guest_theme() {
-  return [
-    'intercept_guest' => [
-      'variables' => ['foo' => NULL],
-    ],
-  ];
+  // return [
+  //   'intercept_guest' => [
+  //     'variables' => ['foo' => NULL],
+  //   ],
+  // ];
 }
 
 /**
@@ -37,7 +37,7 @@ function intercept_guest_theme() {
  *   - foo: Foo variable description.
  */
 function template_preprocess_intercept_guest(array &$variables) {
-  $variables['foo'] = 'bar';
+  // $variables['foo'] = 'bar';
 }
 
 /**
@@ -57,12 +57,13 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
     'guest' => t('Guest'),
   ];
 
-  $default = (!empty($form_state->getUserInput()['reservation_member_guest']))
-    ? [$form_state->getUserInput()['reservation_member_guest']]
-    : ['member'];
+  $default = ['member'];
   $entity = $form_state->getformObject()->getEntity();
-  if (!$entity->get('field_guest')->isEmpty()) {
-    $default = ['guest'];
+  if (isset($entity->get('field_guest')->target_id)) {
+    $guest_entity = \Drupal::entityTypeManager()->getStorage('intercept_guest')->load($entity->get('field_guest')->target_id);
+    if (!$guest_entity->get('field_first_name')->isEmpty()) {
+      $default = ['guest'];
+    }
   }
 
   $form['type'] = [
@@ -113,11 +114,6 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
     '#states' => [
       'visible' => [
         'select[name="reservation_member_guest"]' => ['value' => 'guest'],
-      ],
-    ],
-    '#attached' => [
-      'library' => [
-        'richland/intercept-guest',
       ],
     ],
   ];

@@ -135,14 +135,14 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
         $end_date = $this->dateUtility->convertTimezone($date_item->end_date, 'default');
         $reservation = \Drupal::service('intercept_core.reservation.manager')->getEventReservation($node);
         $column = [
-          $node->id() == $this->entity->id() ? $this->t('Base event') : $node->link(),
+          $node->id() == $this->entity->id() ? $this->t('Base event') : $node->toLink()->toString(),
           $this->formatDateRange([
             '@date' => $start_date->format($this->startDateFormat),
             '@time_start' => $start_date->format($this->startTimeFormat),
             '@time_end' => $end_date->format($this->endTimeFormat),
           ]),
-          $node->link('edit event', 'edit-form'),
-          $reservation ? $reservation->link('edit reservation', 'edit-form') : '',
+          $node->toLink('edit event', 'edit-form')->toString(),
+          $reservation ? $reservation->toLink('edit reservation', 'edit-form')->toString() : '',
         ];
         $form['event_list']['table']['#rows'][] = $column;
       }

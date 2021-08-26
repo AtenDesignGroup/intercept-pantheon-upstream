@@ -169,7 +169,11 @@ class MappingManager {
       $user = reset($users);
     }
     // Then try the ILS directly.
-    if (!$user && ($patron = $this->client->patron->validate($barcode))) {
+    if (!$user &&
+      (!\is_null($this->client)) &&
+      (!\is_null($this->client->patron)) &&
+      ($patron = $this->client->patron->validate($barcode))
+      ) {
       // Try again with the 'actual' barcode, because the original value
       // could have been a username.
       $user = $this->client->patron->getUserByBarcode($patron->barcode);

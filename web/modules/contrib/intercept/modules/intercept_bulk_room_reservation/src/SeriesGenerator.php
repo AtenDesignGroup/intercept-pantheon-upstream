@@ -2,6 +2,7 @@
 
 namespace Drupal\intercept_bulk_room_reservation;
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use RRule\RRule;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -184,7 +185,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
 
       case 'date':
         $startDate = strtotime($dateField['start']['date'] . ' ' . $dateField['start']['time']);
-        switch ($dateField['ends_date'] instanceof \Drupal\Core\Datetime\DrupalDateTime) {
+        switch ($dateField['ends_date'] instanceof DrupalDateTime) {
           case TRUE;
             $endDate = $dateField['ends_date']->getTimestamp();
             break;
@@ -452,10 +453,16 @@ class SeriesGenerator implements SeriesGeneratorInterface {
               break;
             }
           }
-          $dayOfWeek = $this->getDayOfWeek($dateToCheck);
-          if (in_array($dayOfWeek, $days, TRUE)) {
-            $logistics['dates'][] = $dateToCheck;
+          if (is_array($days)) {
+            $dayOfWeek = $this->getDayOfWeek($dateToCheck);
+            if (in_array($dayOfWeek, $days, TRUE)) {
+              $logistics['dates'][] = $dateToCheck;
+              continue;
+            }
           }
+          // User didn't select a day of the week. Simply add $dateToCheck to
+          // $logistics['dates'].
+          $logistics['dates'][] = $dateToCheck;
         }
         break;
 

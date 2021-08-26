@@ -13,16 +13,24 @@
               {{ edit_link }}
             </div>
           {% endif %}
-          {{ content|without('field_status', 'field_user') }}
+          {{ content|without('field_status', 'field_user', 'field_guest') }}
         </div>
       {% endif %}
 
-      {% if content.field_user %}
+      {% if content.field_user|render|striptags|trim %}
         <div class="l--subsection">
           <h2>{{'Customer'|t}}</h2>
           {{ content.field_user }}
         </div>
       {% endif %}
+
+      {% if content.field_guest|render|striptags|trim %}
+        <div class="l--subsection">
+          <h2>{{'Guest Reservation'|t}}</h2>
+          {{ content.field_guest }}
+        </div>
+      {% endif %}
+
     </div>
   </div>
 </article>

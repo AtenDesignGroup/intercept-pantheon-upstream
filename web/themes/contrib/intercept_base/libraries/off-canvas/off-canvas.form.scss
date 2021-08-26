@@ -5,17 +5,17 @@
  * Visual styling for forms in the off-canvas dialog.
  */
 #drupal-off-canvas {
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     -webkit-appearance: checkbox;
   }
 
-  input[type="radio"] {
+  input[type='radio'] {
     -webkit-appearance: radio;
   }
 
-  input[type="checkbox"] + span,
-  input[type="radio"] + span {
-    margin-left: .5em;
+  input[type='checkbox'] + span,
+  input[type='radio'] + span {
+    margin-left: 0.5em;
   }
 
   .js-form-type-checkbox,
@@ -40,7 +40,7 @@
     span::before,
     span::after {
       background-color: #eee;
-      content: "";
+      content: '';
       height: 1.25em;
       left: 0;
       position: absolute;
@@ -49,7 +49,7 @@
     }
 
     span:before {
-      box-shadow: 0 0 1px 1px rgba(#000, .2) inset;
+      box-shadow: 0 0 1px 1px rgba(#000, 0.2) inset;
     }
 
     span:after {
@@ -81,7 +81,7 @@
     span:after {
       background: transparent;
       color: white;
-      content: "✓";
+      content: '✓';
       text-align: center;
       transform: scale(1);
       transform-origin: center;
@@ -103,7 +103,7 @@
     span:after {
       background: white;
       border-radius: 50%;
-      transform: scale(.333);
+      transform: scale(0.333);
       transform-origin: center;
     }
   }
@@ -116,16 +116,16 @@
     appearance: none;
     background-color: #fff;
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%237A7D81%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-    background-position: right .7em top 50%;
+    background-position: right 0.7em top 50%;
     background-repeat: no-repeat;
-    background-size: .65em auto;
+    background-size: 0.65em auto;
     border-radius: 0;
     box-sizing: border-box;
     color: #444;
     display: block;
     line-height: 1.7;
     max-width: 100%;
-    padding: .5em 1.4em .5em .8em;
+    padding: 0.5em 1.4em 0.5em 0.8em;
   }
 
   select:not([multiple])::-ms-expand {
@@ -138,14 +138,14 @@
 
   select:not([multiple]):focus {
     border-color: #aaa;
-    box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+    box-shadow: 0 0 1px 3px rgba(59, 153, 252, 0.7);
     box-shadow: 0 0 0 3px -moz-mac-focusring;
     color: #222;
     outline: none;
   }
 
   select:not([multiple]) option {
-    font-weight:normal;
+    font-weight: normal;
   }
 
   .visually-hidden + select:not([multiple]) {
@@ -173,7 +173,7 @@
     &.form-required {
       &:after {
         color: $clr-error;
-        content: "*";
+        content: '*';
       }
     }
   }
@@ -188,7 +188,7 @@
   .description,
   .form-item .description,
   .details-description {
-    margin-top: .5em;
+    margin-top: 0.5em;
     font-family: inherit;
     font-size: rem(12px);
     font-style: normal;
@@ -210,8 +210,8 @@
     display: block;
     box-sizing: border-box;
     max-width: 100%;
-    margin: .5em 0 0 0;
-    padding: .5em;
+    margin: 0.5em 0 0 0;
+    padding: 0.5em;
     color: #333;
     border-width: 1px;
     border-radius: 0;
@@ -264,7 +264,7 @@
   }
   .form-file {
     width: 100%;
-    margin-bottom: .5em;
+    margin-bottom: 0.5em;
   }
 
   .ui-autocomplete {
@@ -345,10 +345,10 @@
     // Match input labels.
     h4 {
       font-family: inherit;
-      font-size: .75rem;
+      font-size: 0.75rem;
       font-weight: bold;
       line-height: normal;
-      margin-bottom: .5em;
+      margin-bottom: 0.5em;
 
       &:not(:first-child) {
         margin-top: rem(15px);
@@ -369,7 +369,7 @@
     }
 
     .description {
-      margin-bottom: .5em;
+      margin-bottom: 0.5em;
     }
   }
 
@@ -390,4 +390,33 @@
     margin: unset;
     border: unset;
   }
+
+  .field--name-field-guest {
+    .ief-form {
+      .fieldset-wrapper {
+        width: 300px;
+      }
+    }
+    fieldset {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+
+  .messages {
+    top: 0;
+    left: 0;
+    margin: 0 -1.875rem;
+    position: sticky;
+    right: 0;
+    z-index: 10;
+  }
+}
+
+#room-reservation-form__messages {
+  z-index: 10;
+  top: 0;
+  left: 0;
+  position: sticky;
+  right: 0;
 }

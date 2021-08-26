@@ -78,7 +78,6 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           $display_name = $user ? $user->getDisplayName() : '';
           $replacements[$original] = $user && $user->first_name ? $user->first_name : $display_name;
           break;
-
         case 'full-name':
           $user = $event_registration->getRegistrant();
           $display_name = $user ? $user->getDisplayName() : '';
@@ -98,7 +97,6 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           $user = $event_attendance->getAttendee();
           $replacements[$original] = $user && $user->first_name ? $user->first_name : 'User';
           break;
-
         case 'full-name':
           $user = $event_attendance->getAttendee();
           $replacements[$original] = $user && $user->full_name ? $user->full_name : 'User';

@@ -33,7 +33,7 @@ function intercept_room_reservation_help($route_name, RouteMatchInterface $route
     case 'help.page.intercept_room_reservation':
       $output = '';
       $output .= '<h3>' . new TranslatableMarkup('About') . '</h3>';
-      $output .= '<p>' . new TranslatableMarkup('Room reservation functionality for the Intercept library') . '</p>';
+      $output .= '<p>' . new TranslatableMarkup('Provides room reservation functionality for Intercept.') . '</p>';
       return $output;
   }
 }

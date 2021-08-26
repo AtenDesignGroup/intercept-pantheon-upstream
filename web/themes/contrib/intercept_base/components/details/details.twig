@@ -6,7 +6,7 @@
 {% for detail in details %}
   <div class="detail">
     <header class="detail__header">
-      <h4 class="detail__heading">{{ detail.heading|default('Contact Us') }}</h4>
+      <h2 class="detail__heading">{{ detail.heading|default('Contact Us') }}</h2>
     </header>
     {% if detail.content %}
     <div class="detail__content">

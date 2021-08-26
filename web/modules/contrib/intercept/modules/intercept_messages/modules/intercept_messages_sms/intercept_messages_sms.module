@@ -189,16 +189,21 @@ function intercept_messages_sms_schedule_message($message, $token_replacements, 
     ->setAutomated(TRUE)
     ->setDirection(Direction::OUTGOING)
     ->setSendTime($send_timestamp);
-  try {
-    $sms_service->queue($sms);
-  }
-  catch (RecipientRouteException $e) {
-    // Thrown if no gateway could be determined for the message.
-    \Drupal::logger('RecipientRouteException')->warning($e->getMessage());
-  }
-  catch (\Exception $e) {
-    // Other exceptions can be thrown.
-    \Drupal::logger('Exception')->warning($e->getMessage());
+  $sms_send = TRUE;
+  // Allow other modules to block the sending process (e.g. for local dev environments)
+  \Drupal::moduleHandler()->invokeAll('intercept_messages_sms_send_alter', [&$sms_send]);
+  if ($sms_send) {  
+    try {
+      $sms_service->queue($sms);
+    }
+    catch (RecipientRouteException $e) {
+      // Thrown if no gateway could be determined for the message.
+      \Drupal::logger('RecipientRouteException')->warning($e->getMessage());
+    }
+    catch (\Exception $e) {
+      // Other exceptions can be thrown.
+      \Drupal::logger('Exception')->warning($e->getMessage());
+    }
   }
 }
 

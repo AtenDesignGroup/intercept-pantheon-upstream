@@ -138,16 +138,21 @@ class RegistrationStatusChangeEventSubscriber implements EventSubscriberInterfac
           ->setMessage($message)
           ->addRecipient($phone_number)
           ->setDirection(Direction::OUTGOING);
-        try {
-          $this->smsProvider->queue($sms);
-        }
-        catch (RecipientRouteException $e) {
-          // Thrown if no gateway could be determined for the message.
-          \Drupal::logger('RecipientRouteException')->warning($e->getMessage());
-        }
-        catch (\Exception $e) {
-          // Other exceptions can be thrown.
-          \Drupal::logger('Exception')->warning($e->getMessage());
+        $sms_send = TRUE;
+        // Allow other modules to block the sending process (e.g. for local dev environments)
+        \Drupal::moduleHandler()->invokeAll('intercept_messages_sms_send_alter', [&$sms_send]);
+        if ($sms_send) {
+          try {
+            $this->smsProvider->queue($sms);
+          }
+          catch (RecipientRouteException $e) {
+            // Thrown if no gateway could be determined for the message.
+            \Drupal::logger('RecipientRouteException')->warning($e->getMessage());
+          }
+          catch (\Exception $e) {
+            // Other exceptions can be thrown.
+            \Drupal::logger('Exception')->warning($e->getMessage());
+          }
         }
       }
     }

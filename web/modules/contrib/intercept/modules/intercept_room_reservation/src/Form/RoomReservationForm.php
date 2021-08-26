@@ -2,7 +2,6 @@
 
 namespace Drupal\intercept_room_reservation\Form;
 
-use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Component\Utility\Html;
@@ -315,13 +314,13 @@ class RoomReservationForm extends ContentEntityForm {
           if ($room_availability['has_reservation_conflict']) {
             $message = [
               '#type' => 'intercept_field_error_message',
-              '#message' => 'WARNING: It looks like the time that you\'re picking already has a room reservation. Are you sure you want to proceed?',
+              '#message' => 'WARNING: It looks like the time that you\'re picking already has a room reservation. You will not be allowed to proceed until you update it to an available date and time.',
             ];
           }
           if ($room_availability['has_open_hours_conflict']) {
             $message = [
               '#type' => 'intercept_field_error_message',
-              '#message' => 'WARNING: You are reserving a closed space. Are you sure you want to proceed?',
+              '#message' => 'WARNING: You are reserving a closed space. You will not be allowed to proceed until you update it to an available date and time.',
             ];
           }
         }
@@ -345,8 +344,9 @@ class RoomReservationForm extends ContentEntityForm {
    *   The form structure.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current form state.
+   *   2.
    *
-   * @return Drupal\Core\Ajax\AjaxResponse
+   * @return \Drupal\Core\Ajax\AjaxResponse
    *   An array of Ajax commands.
    */
   public function availabilityCallback(array &$form, FormStateInterface $form_state) {

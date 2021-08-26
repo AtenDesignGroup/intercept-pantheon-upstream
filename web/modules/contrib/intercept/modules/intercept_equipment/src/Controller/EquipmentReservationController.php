@@ -106,7 +106,7 @@ class EquipmentReservationController extends ControllerBase implements Container
           $link = Link::fromTextAndUrl($date, new Url('entity.equipment_reservation.revision', ['equipment_reservation' => $equipment_reservation->id(), 'equipment_reservation_revision' => $vid]));
         }
         else {
-          $link = $equipment_reservation->link($date);
+          $link = $equipment_reservation->toLink($date)->toString();
         }
 
         $row = [];

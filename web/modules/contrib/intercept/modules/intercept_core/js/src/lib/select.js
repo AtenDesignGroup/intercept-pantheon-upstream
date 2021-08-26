@@ -442,7 +442,7 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
 
   switch (statusEvent) {
     case 'open_pending':
-      return `Registration opens ${getRegistrationOpenDate(eventResource)}`;
+      return `Registration opens ${getRegistrationOpenDate(eventResource)}.`;
     case 'waitlist':
       switch (availableWaitlist) {
         case 1:

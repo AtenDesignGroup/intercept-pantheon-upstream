@@ -213,7 +213,7 @@
     ],
     "field_approval_required": [
         {
-            "value": false
+            "value": true
         }
     ],
     "field_capacity_max": [
@@ -239,6 +239,12 @@
     "field_reservation_phone_number": [
         {
             "value": "555-555-1234"
+        }
+    ],
+    "field_reservation_time_max": [
+        {
+            "seconds": [7200],
+            "duration": "P0Y0M0DT2H0M0S"
         }
     ],
     "field_room_fees": [

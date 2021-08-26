@@ -219,6 +219,12 @@
             "value": "555-555-5555"
         }
     ],
+    "field_reservation_time_max": [
+        {
+            "seconds": [7200],
+            "duration": "P0Y0M0DT2H0M0S"
+        }
+    ],
     "field_room_standard_equipment": [
         {
             "value": "20 Chairs"

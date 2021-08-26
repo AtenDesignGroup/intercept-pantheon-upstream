@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Entity\ContentEntityInterface;
+
 /**
  * @file
  * Provides a bulk room reservation entity type.
@@ -155,12 +157,27 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
   ];
   $reservationManager = \Drupal::service('intercept_core.reservation.manager');
 
+  // Allow privileged users to make reservations with open hours conflicts.
+  $user_is_privileged = FALSE;
+  $privileged_roles = [
+    'administrator',
+    'intercept_system_admin'
+  ];
+  $current_user = \Drupal::currentUser();
+  $roles = $current_user->getRoles();
+  foreach ($privileged_roles as $privileged_role) {
+    if (in_array($privileged_role, $roles) || $current_user->id() == 1) {
+      $user_is_privileged = TRUE;
+      break;
+    }
+  }
+
   if ($availability = $reservationManager->availability($params)) {
     foreach ($availability as $room_availability) {
       if (! ($room_availability['user_exceeded_limit']
         || $room_availability['has_reservation_conflict']
-        || $room_availability['has_conflict']
-        || $room_availability['has_open_hours_conflict']
+        || ($room_availability['has_conflict'] && !$user_is_privileged)
+        || ($room_availability['has_open_hours_conflict'] && !$user_is_privileged)
         || $room_availability['has_max_duration_conflict']
         || $room_availability['is_closed'])) {
         $available = TRUE;
@@ -171,7 +188,6 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
   // Intercept can check if availability conflicts exist because of the current
   // event node. Here we'll check availability conflicts with the current bulk
   // room reservation.
-
   if (!$available) {
     $route_match = \Drupal::routeMatch();
     // Entity will be found in the route parameters.
@@ -180,7 +196,7 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
       foreach ($parameters as $name => $options) {
         if (isset($options['type']) && strpos($options['type'], 'entity:') === 0) {
           $entity = $route_match->getParameter($name);
-          if ($entity instanceof \Drupal\Core\Entity\ContentEntityInterface && $entity->hasLinkTemplate('canonical')) {
+          if ($entity instanceof ContentEntityInterface && $entity->hasLinkTemplate('canonical')) {
             break;
           }
         }
@@ -350,41 +366,14 @@ function intercept_bulk_room_reservation_delete_ids(array $entities) {
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter().
- *
- * @param array $form
- *   Nested array of form elements that comprise the form.
- * @param Drupal\Core\Form\FormStateInterface $form_state
- *   The current state of the form.
- * @param string $form_id
- *   String representing the name of the form itself. Typically this is the
- *   name of the function that generated the form.
+ * Implements hook_preprocess().
  */
-// function intercept_bulk_room_reservation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-//   $node = $form_state->getFormObject()->getEntity();
-//   if ($node->getType() !== 'event') {
-//     return;
-//   }
-
-//   $input = $form_state->getUserInput();
-//   if (!$location = $form_state->getValue('field_location')) {
-//     $location = $form['field_location']['widget']['#default_value'];
-//   }
-//   if (empty($location) && !array_key_exists('field_location', $input)) {
-//     $form['field_room']['widget']['#options'] = ['_none' => '- Select a location -'];
-//   }
-//   else {
-//     $room_data = \Drupal::service('intercept_bulk_room_reservation.series_generator')->generateSeries($form_state, 'room_data');
-//     $options = ['_none' => '- Select -'];
-//     if (!empty($room_data['room_options'])) {
-//       $form['field_room']['widget']['#default_value'] = '_none';
-//       $options = ['_none' => '- Select -'] + $room_data['room_options'];
-//       $roomAttributes = ['_none' => []] + $room_data['room_attributes'];
-//       $form['field_room']['widget']['#options_attributes'] = $roomAttributes;
-//     }
-//   }
-// }
-
-function intercept_bulk_room_reservation_theme_suggestions_date_recur_modular_alpha_widget_alter(array &$suggestions, array $variables) {
-  $suggestions[] = 'date_recur_modular_alpha_widget__bulk_room_reservation';
+function intercept_bulk_room_reservation_preprocess(&$variables, $hook, &$info) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($hook == 'date_recur_modular_alpha_widget' && $route_name == 'entity.bulk_room_reservation.add_form') {
+    $module_path = drupal_get_path('module', 'intercept_bulk_room_reservation');
+    $info['theme path'] = $module_path;
+    $info['template'] = 'date-recur-modular-alpha-widget--bulk-room-reservation';
+    $info['path'] = $module_path . '/templates/form';
+  }
 }

@@ -2,6 +2,7 @@
 
 namespace Drupal\intercept_event\Controller;
 
+use Drupal\intercept_core\EntityUuidConverterTrait;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EventEvaluationController extends ControllerBase {
 
-  use \Drupal\intercept_core\EntityUuidConverterTrait;
+  use EntityUuidConverterTrait;
 
   /**
    * The entity type manager.

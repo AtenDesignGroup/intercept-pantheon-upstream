@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+
 /**
  * Add status of "scheduled" to future published events and templates.
  */
@@ -13,7 +15,7 @@ function intercept_event_post_update_8001_add_status(&$sandbox) {
       ->condition('type', 'event')
       ->condition('status', 1);
     $orGroup = $query->orConditionGroup()
-      ->condition('field_date_time.end_value', date(DATETIME_DATETIME_STORAGE_FORMAT, strtotime('now')), '>=')
+      ->condition('field_date_time.end_value', date(DateTimeItemInterface::DATETIME_STORAGE_FORMAT, strtotime('now')), '>=')
       ->condition('field_event_is_template', 1);
     $query->condition($orGroup);
     $nids = $query->execute();

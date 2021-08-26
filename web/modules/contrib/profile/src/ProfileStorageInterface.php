@@ -39,7 +39,7 @@ interface ProfileStorageInterface extends EntityStorageInterface {
    * @param string $profile_type_id
    *   The profile type ID.
    *
-   * @return \Drupal\profile\Entity\ProfileInterface
+   * @return \Drupal\profile\Entity\ProfileInterface|null
    *   The profile. NULL if no matching entity was found.
    */
   public function loadByUser(AccountInterface $account, $profile_type_id);
@@ -52,7 +52,7 @@ interface ProfileStorageInterface extends EntityStorageInterface {
    * @param string $profile_type_id
    *   The profile type ID.
    *
-   * @return \Drupal\profile\Entity\ProfileInterface
+   * @return \Drupal\profile\Entity\ProfileInterface|null
    *   The profile. NULL if no matching entity was found.
    *
    * @deprecated in Profile 1.0. Use loadByUser() instead.

@@ -1,7 +1,8 @@
 name: Intercept Event
 description: 'Provides Event content type and related configuration. '
 type: module
-core: 8.x
+core_version_requirement: ^8.9 || ^9
+package: 'Intercept'
 dependencies:
   - addtocalendar:addtocalendar
   - better_exposed_filters:better_exposed_filters
@@ -15,4 +16,3 @@ dependencies:
   - intercept:intercept_location
   - tally:tally
   - votingapi:votingapi
-package: 'Intercept'

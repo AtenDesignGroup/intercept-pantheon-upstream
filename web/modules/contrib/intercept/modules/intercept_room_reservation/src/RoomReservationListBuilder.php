@@ -104,7 +104,7 @@ class RoomReservationListBuilder extends EntityListBuilder {
     /** @var \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $entity */
     $row['name'] = $entity->toLink($entity->getDateRange('UTC'))->toString();
     $row['room'] = $this->getEntityLabel($entity->field_room->entity, $this->t('No room'));
-    $row['location'] = $entity->getLocation() ? $entity->getLocation()->link() : '';
+    $row['location'] = $entity->getLocation() ? $entity->getLocation()->toLink()->toString() : '';
     $row['user'] = $this->getEntityLabel($entity->field_user->entity, $this->t('No user'));
     $row['status'] = $entity->field_status->getString();
     $row = array_merge($row, parent::buildRow($entity));

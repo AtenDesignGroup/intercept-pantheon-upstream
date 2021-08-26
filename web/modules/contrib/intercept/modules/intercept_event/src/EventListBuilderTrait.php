@@ -94,7 +94,7 @@ trait EventListBuilderTrait {
    */
   protected function addEventRow(array &$row, EntityInterface $entity) {
     if (empty($this->getEvent())) {
-      $row['event'] = !empty($entity->field_event->entity) ? $entity->field_event->entity->link() : '';
+      $row['event'] = !empty($entity->field_event->entity) ? $entity->field_event->entity->toLink()->toString() : '';
     }
   }
 

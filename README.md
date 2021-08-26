@@ -44,6 +44,11 @@ Click these if you want to pre-populate the site with generic events, locations,
 
 Updates can be applied either directly on Pantheon, by using Terminus, or on your local machine.
 
+### Update on Pantheon
+
+When an update has been released for the upstream, you should have the ability to apply the update directly on the Pantheon dashboard. It will look like this:
+![Upstream update on Pantheon](assets/upstream-update-available.png)
+
 ### Update With Terminus
 
 Install [Terminus 2](https://pantheon.io/docs/terminus/) and the [Terminus Composer plugin](https://github.com/pantheon-systems/terminus-composer-plugin).  Then, to update your site, ensure it is in SFTP mode, and then run:

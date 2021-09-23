@@ -17,11 +17,12 @@ use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\node\NodeInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Class ReservationManager.
  *
- * @TODO: Move partially over to an EntityReservationManager/RoomReservationManager.
+ * @todo Move partially over to an EntityReservationManager/RoomReservationManager.
  */
 class ReservationManager implements ReservationManagerInterface {
 
@@ -300,7 +301,7 @@ class ReservationManager implements ReservationManagerInterface {
     $user_exceeded_limit = $this->userExceededReservationLimit($this->currentUser);
     $room_reservations = $this->roomReservationsByNode($params);
 
-    $rooms = $this->nodes('room', isset($params['rooms']) ? $params['rooms'] : []);
+    $rooms = $this->nodes('room', $params['rooms'] ?? []);
     $return = [];
 
     $timezone_info = [
@@ -321,13 +322,14 @@ class ReservationManager implements ReservationManagerInterface {
         $return[$uuid]['debug'] = [];
         $debug_data = &$return[$uuid]['debug'];
       }
+      $duration_conflict = $this->hasMaxDurationConflict($params, $room);
       $return[$uuid]['user_exceeded_limit'] = $user_exceeded_limit;
       $reservations = !empty($room_reservations[$uuid]) ? $room_reservations[$uuid] : [];
       $blocked_dates = $this->getBlockedDates($reservations, $params, $room);
       $return[$uuid]['has_reservation_conflict'] = $this->hasReservationConflict($blocked_dates, $params);
       $return[$uuid]['has_conflict'] = $this->aggressiveOpeningHoursConflict($blocked_dates, $params, $room);
       $return[$uuid]['has_open_hours_conflict'] = $this->hasOpeningHoursConflict($blocked_dates, $params, $room);
-      $return[$uuid]['has_max_duration_conflict'] = $this->hasMaxDurationConflict($params, $room);
+      $return[$uuid]['has_max_duration_conflict'] = $duration_conflict;
       $return[$uuid]['is_closed'] = $this->isClosed($params, $room);
       $return[$uuid]['closed_message'] = $this->closedMessage($params, $room);
       $return[$uuid]['has_location'] = !empty($this->getLocation($room));
@@ -379,11 +381,29 @@ class ReservationManager implements ReservationManagerInterface {
     foreach ($reservations as $reservation) {
       /** @var \Drupal\intercept_core\Entity\ReservationInterface $reservation */
       $message = $this->t('Booked');
-      if ($reservation->hasField('field_event') && !empty($reservation->field_event->getValue())) {
-        $message = $reservation->field_event->entity->title->value;
+      if ($reservation->hasField('field_user') && $reservation->field_user->entity && $this->currentUser->hasPermission('update any room_reservation')) {
+        $user = User::load($reservation->field_user->entity->id());
+        if ($user) {
+          $full_name = $user->full_name;
+          if (!empty($full_name)) {
+            $guest = $full_name;
+          }
+          else {
+            $guest = $user->name->value;
+          }
+        }
       }
       if ($reservation->hasField('field_group_name') && $reservation->field_group_name->value && $this->currentUser->hasPermission('update any room_reservation')) {
-        $message = $reservation->field_group_name->value;
+        $group = $reservation->field_group_name->value;
+      }
+      if (!empty($guest) && empty($group)) {
+        $message = $guest;
+      }
+      if (!empty($group)) {
+        $message = $group;
+      }
+      if ($reservation->hasField('field_event') && !empty($reservation->field_event->getValue())) {
+        $message = $reservation->field_event->entity->title->value;
       }
       $dates[$reservation->uuid()] = [
         'uuid' => $reservation->uuid(),
@@ -804,7 +824,7 @@ class ReservationManager implements ReservationManagerInterface {
       $selected_date = $this->dateUtility->getDrupalDate($params[$type]);
       // Hardcode get start date here because the end date might span
       // into another day.
-      // @TODO: Make this less error prone by defining a way to specify the current searched "day".
+      // @todo Make this less error prone by defining a way to specify the current searched "day".
       $date = $hours[$type . '_datetime'];
       $converted_date = $this->dateUtility->convertTimezone($date);
       if ($type == 'start' && ($converted_date > $selected_date)) {
@@ -1013,7 +1033,6 @@ class ReservationManager implements ReservationManagerInterface {
     $properties = [
       'type' => $type,
       'status' => 1,
-      'field_reservable_online' => 1,
     ];
     if (!empty($ids)) {
       return $this->entityTypeManager->getStorage('node')->loadMultiple($ids);

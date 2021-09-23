@@ -258,7 +258,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       'requested',
       'approved',
       'selected',
-      'event'
+      'event',
     ];
 
     $build['#content']['status_legend'] = [
@@ -296,7 +296,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       if (!empty($values['room'])) {
         $room_reservation->field_room->target_id = $room_reservation['room'];
       }
-      // @TODO: Populate the date values.
+      // @todo Populate the date values.
       // Currently the values get updated when the dialog loads
     }
 

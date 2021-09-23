@@ -254,7 +254,9 @@ class ReserveRoomStep1 extends React.Component {
       if (!isManager && !get(room, 'data.attributes.field_reservable_online')) {
         return false;
       }
-
+      if (rooms[id]['has_max_duration_conflict']) {
+        return false;
+      }
       // If the room is not returned from the availabilty request, lets assume it's available;
       if (!rooms[id]) {
         return true;

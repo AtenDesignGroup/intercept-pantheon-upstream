@@ -29,7 +29,7 @@ class RegistrationLookup extends React.Component {
       currentFetch: null,
     };
 
-    this.handleChange = debounce(this.handleChange, 300);
+    this.handleChange = debounce(this.handleChange, 3000);
   }
 
   /**

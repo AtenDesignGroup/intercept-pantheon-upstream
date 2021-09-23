@@ -2,10 +2,10 @@
 
 namespace Drupal\admin_toolbar_search;
 
-use Drupal\admin_toolbar_tools\Plugin\Derivative\ExtraLinks;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\Context\CacheContextsManager;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -57,6 +57,13 @@ class SearchLinks {
   protected $toolbarCache;
 
   /**
+   * The admin toolbar tools configuration.
+   *
+   * @var \Drupal\Core\Config\Config
+   */
+  protected $config;
+
+  /**
    * Constructs a SearchLinks object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -69,13 +76,16 @@ class SearchLinks {
    *   The cache contexts manager.
    * @param \Drupal\Core\Cache\CacheBackendInterface $toolbar_cache
    *   Cache backend instance to use.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Config factory mservice.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, RouteProviderInterface $route_provider, CacheContextsManager $cache_context_manager, CacheBackendInterface $toolbar_cache) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, RouteProviderInterface $route_provider, CacheContextsManager $cache_context_manager, CacheBackendInterface $toolbar_cache, ConfigFactoryInterface $config_factory) {
     $this->entityTypeManager = $entity_type_manager;
     $this->moduleHandler = $module_handler;
     $this->routeProvider = $route_provider;
     $this->cacheContextManager = $cache_context_manager;
     $this->toolbarCache = $toolbar_cache;
+    $this->config = $config_factory->get('admin_toolbar_tools.settings');
   }
 
   /**
@@ -88,6 +98,7 @@ class SearchLinks {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function getLinks() {
+    $max_bundle_number = $this->config->get('max_bundle_number');
     $additional_keys = $this->cacheContextManager->convertTokensToKeys([
       'languages:' . LanguageInterface::TYPE_INTERFACE,
       'user.permissions',
@@ -107,9 +118,9 @@ class SearchLinks {
     foreach ($content_entities as $entities) {
       $content_entity_bundle = $entities['content_entity_bundle'];
       $content_entity = $entities['content_entity'];
-      // Start at offset 10, since the toolbar has already loaded the first 10.
+      // Load the remaining items that were not loaded by the toolbar.
       $content_entity_bundle_storage = $this->entityTypeManager->getStorage($content_entity_bundle);
-      $bundles_ids = $content_entity_bundle_storage->getQuery()->range(ExtraLinks::MAX_BUNDLE_NUMBER)->execute();
+      $bundles_ids = $content_entity_bundle_storage->getQuery()->range($max_bundle_number)->execute();
       if (!empty($bundles_ids)) {
         $bundles = $this->entityTypeManager
           ->getStorage($content_entity_bundle)
@@ -126,62 +137,75 @@ class SearchLinks {
             // Some bundles have an overview/list form that make a better root
             // link.
             $url = Url::fromRoute('entity.' . $content_entity_bundle . '.overview_form', $params);
-            $url_string = $url->toString();
-            $links[] = [
-              'labelRaw' => $label_base,
-              'value' => $url_string,
-            ];
+            if ($url->access()) {
+              $url_string = $url->toString();
+              $links[] = [
+                'labelRaw' => $label_base,
+                'value' => $url_string,
+              ];
+            }
           }
           if ($this->routeExists('entity.' . $content_entity_bundle . '.edit_form')) {
             $url = Url::fromRoute('entity.' . $content_entity_bundle . '.edit_form', $params);
-            $url_string = $url->toString();
-            $links[] = [
-              'labelRaw' => $label_base . ' > ' . $this->t('Edit'),
-              'value' => $url_string,
-            ];
+            if ($url->access()) {
+              $url_string = $url->toString();
+              $links[] = [
+                'labelRaw' => $label_base . ' > ' . $this->t('Edit'),
+                'value' => $url_string,
+              ];
+            }
           }
           if ($this->moduleHandler->moduleExists('field_ui')) {
             if ($this->routeExists('entity.' . $content_entity . '.field_ui_fields')) {
               $url = Url::fromRoute('entity.' . $content_entity . '.field_ui_fields', $params);
-              $url_string = $url->toString();
-              $links[] = [
-                'labelRaw' => $label_base . ' > ' . $this->t('Manage fields'),
-                'value' => $url_string,
-              ];
+              if ($url->access()) {
+                $url_string = $url->toString();
+                $links[] = [
+                  'labelRaw' => $label_base . ' > ' . $this->t('Manage fields'),
+                  'value' => $url_string,
+                ];
+              }
             }
 
             if ($this->routeExists('entity.entity_form_display.' . $content_entity . '.default')) {
               $url = Url::fromRoute('entity.entity_form_display.' . $content_entity . '.default', $params);
-              $url_string = $url->toString();
-              $links[] = [
-                'labelRaw' => $label_base . ' > ' . $this->t('Manage form display'),
-                'value' => $url_string,
-              ];
-
+              if ($url->access()) {
+                $url_string = $url->toString();
+                $links[] = [
+                  'labelRaw' => $label_base . ' > ' . $this->t('Manage form display'),
+                  'value' => $url_string,
+                ];
+              }
             }
             if ($this->routeExists('entity.entity_view_display.' . $content_entity . '.default')) {
               $url = Url::fromRoute('entity.entity_view_display.' . $content_entity . '.default', $params);
-              $url_string = $url->toString();
-              $links[] = [
-                'labelRaw' => $label_base . ' > ' . $this->t('Manage display'),
-                'value' => $url_string,
-              ];
+              if ($url->access()) {
+                $url_string = $url->toString();
+                $links[] = [
+                  'labelRaw' => $label_base . ' > ' . $this->t('Manage display'),
+                  'value' => $url_string,
+                ];
+              }
             }
             if ($this->moduleHandler->moduleExists('devel') && $this->routeExists('entity.' . $content_entity_bundle . '.devel_load')) {
               $url = Url::fromRoute($route_name = 'entity.' . $content_entity_bundle . '.devel_load', $params);
-              $url_string = $url->toString();
-              $links[] = [
-                'labelRaw' => $label_base . ' > ' . $this->t('Devel'),
-                'value' => $url_string,
-              ];
+              if ($url->access()) {
+                $url_string = $url->toString();
+                $links[] = [
+                  'labelRaw' => $label_base . ' > ' . $this->t('Devel'),
+                  'value' => $url_string,
+                ];
+              }
             }
             if ($this->routeExists('entity.' . $content_entity_bundle . '.delete_form')) {
               $url = Url::fromRoute('entity.' . $content_entity_bundle . '.delete_form', $params);
-              $url_string = $url->toString();
-              $links[] = [
-                'labelRaw' => $label_base . ' > ' . $this->t('Delete'),
-                'value' => $url_string,
-              ];
+              if ($url->access()) {
+                $url_string = $url->toString();
+                $links[] = [
+                  'labelRaw' => $label_base . ' > ' . $this->t('Delete'),
+                  'value' => $url_string,
+                ];
+              }
             }
           }
         }
@@ -193,29 +217,33 @@ class SearchLinks {
 
       $menus = $this->entityTypeManager->getStorage('menu')->loadMultiple();
       uasort($menus, [Menu::class, 'sort']);
-      $menus = array_slice($menus, ExtraLinks::MAX_BUNDLE_NUMBER);
+      $menus = array_slice($menus, $max_bundle_number);
 
       $cache_tags = Cache::mergeTags($cache_tags, ['config:menu_list']);
       foreach ($menus as $menu_id => $menu) {
         $route_name = 'entity.menu.edit_form';
         $params = ['menu' => $menu_id];
         $url = Url::fromRoute($route_name, $params);
-        $url_string = $url->toString();
+        if ($url->access()) {
+          $url_string = $url->toString();
 
-        $links[] = [
-          'labelRaw' => $this->t('Menus') . ' > ' . $menu->label(),
-          'value' => $url_string,
-        ];
+          $links[] = [
+            'labelRaw' => $this->t('Menus > @menu_label', ['@menu_label' => $menu->label()]),
+            'value' => $url_string,
+          ];
+        }
 
         $route_name = 'entity.menu.add_link_form';
         $params = ['menu' => $menu_id];
         $url = Url::fromRoute($route_name, $params);
-        $url_string = $url->toString();
+        if ($url->access()) {
+          $url_string = $url->toString();
 
-        $links[] = [
-          'labelRaw' => $this->t('Menus') . ' > ' . $menu->label() . ' > ' . $this->t('Add link'),
-          'value' => $url_string,
-        ];
+          $links[] = [
+            'labelRaw' => $this->t('Menus > @menu_label > ', ['@menu_label' => $menu->label()]) . $this->t('Add link'),
+            'value' => $url_string,
+          ];
+        }
 
         $menus = ['admin', 'devel', 'footer', 'main', 'tools', 'account'];
         if (!in_array($menu_id, $menus)) {
@@ -223,23 +251,27 @@ class SearchLinks {
           $route_name = 'entity.menu.delete_form';
           $params = ['menu' => $menu_id];
           $url = Url::fromRoute($route_name, $params);
-          $url_string = $url->toString();
+          if ($url->access()) {
+            $url_string = $url->toString();
 
-          $links[] = [
-            'labelRaw' => $this->t('Menus') . ' > ' . $menu->label() . ' > ' . $this->t('Delete'),
-            'value' => $url_string,
-          ];
+            $links[] = [
+              'labelRaw' => $this->t('Menus > @menu_label > ', ['@menu_label' => $menu->label()]) . $this->t('Delete'),
+              'value' => $url_string,
+            ];
+          }
         }
         if ($this->moduleHandler->moduleExists('devel') && $this->routeExists('entity.menu.devel_load')) {
           $route_name = 'entity.menu.devel_load';
           $params = ['menu' => $menu_id];
           $url = Url::fromRoute($route_name, $params);
-          $url_string = $url->toString();
+          if ($url->access()) {
+            $url_string = $url->toString();
 
-          $links[] = [
-            'labelRaw' => $this->t('Menus') . ' > ' . $menu->label() . ' > ' . $this->t('Devel'),
-            'value' => $url_string,
-          ];
+            $links[] = [
+              'labelRaw' => $this->t('Menus > @menu_label > ', ['@menu_label' => $menu->label()]) . $this->t('Devel'),
+              'value' => $url_string,
+            ];
+          }
         }
       }
     }

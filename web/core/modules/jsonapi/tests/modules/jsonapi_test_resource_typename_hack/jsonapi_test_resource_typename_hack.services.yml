@@ -1,5 +1,0 @@
-services:
-  Drupal\jsonapi_test_resource_typename_hack\ResourceType\ResourceTypeRepository:
-    decorates: jsonapi.resource_type.repository
-    parent: jsonapi.resource_type.repository
-    public: false

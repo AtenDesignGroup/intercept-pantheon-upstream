@@ -5,30 +5,31 @@
  * Defines common functionality for intercept_event.
  */
 
-use Drupal\Component\Datetime\DateTimePlus;
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Render\Markup;
-use Drupal\Core\Routing\LocalRedirectResponse;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
-use Drupal\intercept_core\EntityImageThumbnailUriField;
-use Drupal\intercept_event\EventRegistrationField;
-use Drupal\node\NodeInterface;
-use Drupal\pathauto\AliasUniquifier;
+use Drupal\Core\Link;
+use Drupal\Core\Cache\Cache;
 use Drupal\user\Entity\User;
+use Drupal\Core\Render\Markup;
+use Drupal\node\NodeInterface;
 use Drupal\views\ViewExecutable;
+use Drupal\Core\Access\AccessResult;
+use Drupal\pathauto\AliasUniquifier;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Component\Datetime\DateTimePlus;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Routing\LocalRedirectResponse;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\intercept_event\EventRegistrationField;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\intercept_core\EntityImageThumbnailUriField;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 
 /**
  * Implements hook_help().
@@ -636,6 +637,20 @@ function intercept_event_node_view(array &$build, EntityInterface $entity, Entit
         'library' => ['intercept_event/eventRegisterButton'],
       ],
     ];
+  }
+  if ($entity->bundle() === 'event' && $entity->hasField('field_event_register_period')) {
+    // Invalidate this $entity's cache based on field_event_register_period.
+    // Start and end points are standardized to UTC.
+    $start = new DateTime($entity->field_event_register_period->value);
+    $end = new DateTime($entity->field_event_register_period->end_value);
+    $now = new DateTime();
+    $time_zone = new DateTimeZone('UTC');
+    $now->setTimeZone($time_zone);
+    // Invalidate tags if we passed either endpoint in the last hour.
+    if (($start->getTimestamp() >= $now->getTimestamp() - 60 * 60)
+      || ($end->getTimestamp() >= $now->getTimestamp() - 60 * 60)) {
+      Cache::invalidateTags($entity->getCacheTags());
+    }
   }
 }
 

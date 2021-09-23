@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_room_reservation
+    - system
+  theme:
+    - intercept_base
+id: interceptjsonapiviewsexposedfilterblock
+theme: intercept_base
+region: content
+weight: 0
+provider: null
+plugin: intercept_room_reservation_jsonapi_views_filter_block
+settings:
+  id: intercept_room_reservation_jsonapi_views_filter_block
+  label: 'Room Reservation Schedule Filters'
+  provider: intercept_room_reservation
+  label_display: '0'
+  view_display: 'intercept_rooms:default'
+visibility:
+  request_path:
+    id: request_path
+    pages: /manage/room-reservations/calendar
+    negate: false
+    context_mapping: {  }

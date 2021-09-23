@@ -26,7 +26,7 @@ This project must be enabled in the top-level composer.json file, or it will be 
 {
     ...
     "require": {
-        "pantheon-systems/drupal-integrations"
+        "pantheon-systems/drupal-integrations": "^8"
     },
     ...
     "extra": {
@@ -39,18 +39,6 @@ This project must be enabled in the top-level composer.json file, or it will be 
 }
 ```
 
-## Special instructions for upstreams
+## Versions
 
-If including this project from a Composer-enabled upstream, you must disable `pantheon.upstream.yml` from this project if that file is included as part of the upstream.
-```
-{
-    ...
-    "extra": {
-        "drupal-scaffold": {
-            "file-mapping": {
-                "[project-root]/pantheon.upstream.yml": false
-            }
-        }
-    }
-}
-```
+Use version "^8" for Drupal 8, and version "^9" for Drupal 9.

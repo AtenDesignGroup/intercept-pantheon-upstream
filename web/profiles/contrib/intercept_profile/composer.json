@@ -14,7 +14,7 @@
     }
   },
   "require": {
-    "drupal/adminimal_admin_toolbar": "^1.0",
+    "drupal/adminimal_admin_toolbar": "^1.11",
     "drupal/adminimal_theme": "^1.0",
     "drupal/better_normalizers": "^1.0",
     "drupal/default_content": "^1.0",

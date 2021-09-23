@@ -19,12 +19,11 @@ class RoomList extends React.PureComponent {
       ) : (
         !loading && <div key={0}>
           <p>No rooms were found.</p>
-          <p>Try:
-            <ul>
-              <li>Confirming the spelling of your search words.</li>
-              <li>Using other words for the subject of your searches.</li>
-            </ul>
-          </p>
+          <p>Try:</p>
+          <ul>
+            <li>Confirming the spelling of your search words.</li>
+            <li>Using other words for the subject of your searches.</li>
+          </ul>
         </div>
       );
 

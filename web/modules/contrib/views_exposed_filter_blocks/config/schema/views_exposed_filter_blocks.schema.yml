@@ -1,0 +1,7 @@
+block.settings.views_exposed_filter_blocks_block:
+  type: block_settings
+  label: 'Views exposed filter block'
+  mapping:
+    view_display:
+      type: string
+      label: 'View & Display'

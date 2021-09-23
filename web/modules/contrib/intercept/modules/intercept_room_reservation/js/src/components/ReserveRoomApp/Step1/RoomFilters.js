@@ -44,6 +44,7 @@ const durationOptions = [
   { key: '30', value: '30 min.' },
   { key: '60', value: '1 hr.' },
   { key: '120', value: '2 hrs.' },
+  { key: '180', value: '3 hrs. '},
   { key: '240', value: '4 hrs.' },
 ];
 

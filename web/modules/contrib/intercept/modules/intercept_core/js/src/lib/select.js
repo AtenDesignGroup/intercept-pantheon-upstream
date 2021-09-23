@@ -446,7 +446,7 @@ function getRegisterStatusText(mustRegister, statusEvent, statusUser, eventResou
     case 'waitlist':
       switch (availableWaitlist) {
         case 1:
-          return `There is ${availableWaitlist} of ${totalWaitlist} waitlist seat available.`;
+          return `There is ${availableWaitlist} of ${totalWaitlist} waitlist seats available.`;
         default:
           return `There are ${availableWaitlist} of ${totalWaitlist} waitlist seats available.`;
       }

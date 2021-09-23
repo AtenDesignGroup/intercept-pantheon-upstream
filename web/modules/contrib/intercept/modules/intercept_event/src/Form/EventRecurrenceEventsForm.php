@@ -153,13 +153,15 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       // then label it as such. If not, then we add in the base event date
       // to make sure that is clear that that is an occurrence as well.
       $rooms = $this->entity->get('field_room')->getValue();
-      $room = Node::load($rooms[0]['target_id']);
-      $room_name = $room->label();
-      $rooms = [$rooms[0]['target_id']];
+      if (count($rooms) >= 1) {
+        $room = Node::load($rooms[0]['target_id']);
+        $room_name = $room->label();
+        $rooms = [$rooms[0]['target_id']];
+      }
       foreach ($dates as $index => $date) {
         // Don't worry about checking for conflicts on the base event
         // (index = 0 is the base event) that's already scheduled.
-        if ($index != 0) {
+        if ($index != 0 && count($rooms) >= 1) {
           $start_date = $date->getStart();
           $start = $this->dateUtility->convertTimezone($start_date)->format($this->reservationManager::FORMAT);
           $end_date = $date->getEnd();

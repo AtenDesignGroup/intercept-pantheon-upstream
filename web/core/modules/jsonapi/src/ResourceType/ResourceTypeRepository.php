@@ -429,8 +429,8 @@ class ResourceTypeRepository implements ResourceTypeRepositoryInterface {
 
       foreach (array_filter($field_definitions, ['static', 'isReferenceFieldDefinition']) as $field_name => $field_definition) {
         $relatable_public[$resource_type->getPublicName($field_name)] = $this->getRelatableResourceTypesFromFieldDefinition(
-          $field_definition,
-          $resource_types
+        $field_definition,
+        $resource_types
         );
       }
     }
@@ -464,7 +464,7 @@ class ResourceTypeRepository implements ResourceTypeRepositoryInterface {
       else {
         trigger_error(
           \sprintf(
-            'The "%s" at "%s:%s" references the "%s:%s" entity type that does not exist. Please take action.',
+          'The "%s" at "%s:%s" references the "%s:%s" entity type that does not exist. Please take action.',
             $field_definition->getName(),
             $field_definition->getTargetEntityTypeId(),
             $field_definition->getTargetBundle(),
@@ -520,18 +520,18 @@ class ResourceTypeRepository implements ResourceTypeRepositoryInterface {
   }
 
   /**
-   * Lookups resource type by the internal and public identifiers.
-   *
-   * @param \Drupal\jsonapi\ResourceType\ResourceType[] $resource_types
-   *   The list of resource types to do a lookup.
-   * @param string $entity_type_id
-   *   The entity type of a seekable resource.
-   * @param string $bundle
-   *   The entity bundle of a seekable resource.
-   *
-   * @return \Drupal\jsonapi\ResourceType\ResourceType|null
-   *   The resource type or NULL if it cannot be found.
-   */
+  * Lookups resource type by the internal and public identifiers.
+  *
+  * @param \Drupal\jsonapi\ResourceType\ResourceType[] $resource_types
+  *   The list of resource types to do a lookup.
+  * @param string $entity_type_id
+  *   The entity type of a seekable resource.
+  * @param string $bundle
+  *   The entity bundle of a seekable resource.
+  *
+  * @return \Drupal\jsonapi\ResourceType\ResourceType|null
+  *   The resource type or NULL if it cannot be found.
+  */
   protected static function lookupResourceType(array $resource_types, $entity_type_id, $bundle) {
     if (isset($resource_types["$entity_type_id--$bundle"])) {
       return $resource_types["$entity_type_id--$bundle"];

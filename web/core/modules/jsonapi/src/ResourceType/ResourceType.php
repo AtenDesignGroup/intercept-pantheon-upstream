@@ -399,7 +399,7 @@ class ResourceType {
     if (!isset($this->relatableResourceTypesByField)) {
       $this->relatableResourceTypesByField = [];
       foreach ($this->fields as $field) {
-        if ($field instanceof ResourceTypeRelationship) {
+        if ($field instanceof ResourceTypeRelationship && $field->isFieldEnabled()) {
           $this->relatableResourceTypesByField[$field->getPublicName()] = $field->getRelatableResourceTypes();
         }
       }
@@ -419,7 +419,7 @@ class ResourceType {
    * @see getRelatableResourceTypes()
    */
   public function getRelatableResourceTypesByField($field_name) {
-    return ($field = $this->getFieldByPublicName($field_name)) && $field instanceof ResourceTypeRelationship
+    return ($field = $this->getFieldByPublicName($field_name)) && $field instanceof ResourceTypeRelationship && $field->isFieldEnabled()
       ? $field->getRelatableResourceTypes()
       : [];
   }

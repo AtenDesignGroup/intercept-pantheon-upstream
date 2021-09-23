@@ -1,0 +1,12 @@
+diff --git a/web/modules/contrib/better_exposed_filters/src/Plugin/better_exposed_filters/filter/DatePickers.php b/web/modules/contrib/better_exposed_filters/src/Plugin/better_exposed_filters/filter/DatePickers.php
+index ccd8f41f6..801b95b92 100644
+--- a/src/Plugin/better_exposed_filters/filter/DatePickers.php
++++ b/src/Plugin/better_exposed_filters/filter/DatePickers.php
+@@ -84,7 +84,6 @@ public function exposedFormAlter(array &$form, FormStateInterface $form_state) {
+        */
+       $fields = ['min', 'max', 'value'];
+       if (count(array_intersect($fields, array_keys($form[$field_id])))) {
+-        $form[$field_id]['#type'] = 'container';
+         foreach ($fields as $field) {
+           if (isset($form[$field_id][$field])) {
+             $form[$field_id][$field]['#attributes']['class'][] = 'bef-datepicker';

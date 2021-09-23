@@ -81,3 +81,11 @@ room-reservations:
   css:
     theme:
       css/intercept_room_reservation.css: {}
+
+jsonApiViewsFilterBlock:
+  version: 1.0.x
+  js:
+    js/jsonapi_views_filter_block.js:
+      preprocess: true
+  dependencies:
+    - core/drupal

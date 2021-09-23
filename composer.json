@@ -18,7 +18,7 @@
     "pantheon-systems/drupal-integrations": "^8",
     "pantheon-systems/quicksilver-pushback": "^2",
     "drush/drush": "^10",
-    "drupal/adminimal_admin_toolbar": "^1.10",
+    "drupal/adminimal_admin_toolbar": "^1.11",
     "drupal/adminimal_theme": "^1.0",
     "drupal/better_normalizers": "^1.0@beta",
     "drupal/date_recur_modular": "2.0",
@@ -103,10 +103,13 @@
       "drupal/addtocalendar": {
         "Fix configuration": "https://www.drupal.org/files/issues/2020-05-06/schema-add-to-calender-config-3092765-6.patch"
       },
+      "drupal/better_exposed_filters": {
+        "Removes unneeded container div.": "patches/3163486-better_exposed_filters-8.x-removes-container.patch"
+      },
       "drupal/core": {
         "JSON:API returns a CacheableResponseInterface instance for non-cacheable methods; causes unnecessary exceptions.": "https://www.drupal.org/files/issues/2020-03-11/jsonapi-3072076-60.patch",
         "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",
-        "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2020-02-11/2996114-124.patch"
+        "Pinpoint source of JSONAPI Errors during installation": "https://www.drupal.org/files/issues/2021-09-17/2996114-199.patch"
       },
       "drupal/csv_serialization": {
         "Unable to Override Headers/Labels with hook_views_pre_render(). Used in export by age group": "https://www.drupal.org/files/issues/2019-10-10/3087166-csv_serialization-8.x-2.x-dev-views-pre-render-alter-headers.patch"

@@ -1,0 +1,11 @@
+name: 'JSON:API Views'
+type: module
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - drupal:views
+  - jsonapi_resources:jsonapi_resources
+
+# Information added by Drupal.org packaging script on 2021-06-17
+version: '8.x-1.0-beta3'
+project: 'jsonapi_views'
+datestamp: 1623905517

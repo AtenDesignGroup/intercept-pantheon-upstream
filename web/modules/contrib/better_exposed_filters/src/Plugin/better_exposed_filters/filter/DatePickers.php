@@ -84,7 +84,6 @@ class DatePickers extends FilterWidgetBase {
        */
       $fields = ['min', 'max', 'value'];
       if (count(array_intersect($fields, array_keys($form[$field_id])))) {
-        $form[$field_id]['#type'] = 'container';
         foreach ($fields as $field) {
           if (isset($form[$field_id][$field])) {
             $form[$field_id][$field]['#attributes']['class'][] = 'bef-datepicker';

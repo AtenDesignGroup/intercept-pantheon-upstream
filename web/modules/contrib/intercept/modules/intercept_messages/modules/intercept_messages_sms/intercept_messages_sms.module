@@ -236,14 +236,14 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
   if (!$entity->isPublished() || ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled')) {
     $event_registration_provider = \Drupal::service('intercept_event.event_registration_provider');
     /** @var \Drupal\intercept_event\EventRegistrationProviderInterface $event_registration_provider */
-    foreach ($event_registration_provider->getEventRegistrationsByEvent($entity) as $registration) {
+    foreach ($event_registration_provider->getEventRegistrationIdsByEvent($entity) as $registration_id) {
       // Delete existing event registration reminder messages
       $messages = \Drupal::service('database')
         ->select('sms', 'm')
         ->fields('m', [
           'id',
         ])
-        ->condition('sender_entity__target_id', $registration->id)
+        ->condition('sender_entity__target_id', $registration_id)
         ->execute()
         ->fetchAll();
       foreach ($messages as $message) {

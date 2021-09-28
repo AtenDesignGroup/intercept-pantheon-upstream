@@ -11,24 +11,24 @@ This upstream requires that you have a Pantheon account and the ability to creat
 
 1. Visit https://dashboard.pantheon.io/sites/create?upstream_id=57c6a03c-45ff-4249-b708-0cef6470c599
 2. Enter your site name and region and click "Continue".
-![Create website from Pantheon upstream](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/S37f5XUg.jpg)<br>
+![Create website from Pantheon upstream](assets/S37f5XUg.jpeg)<br>
 You will see this notification:<br>
-![Deploying Intercept](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/LtG8pSu.png)
+![Deploying Intercept](assets/LtG8pSu.png)
 3. This may take a few minutes. When it is complete, click on "Visit your Pantheon Site Dashboard".
-![Visit your Pantheon Site Dashboard](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/4ZGnYMu.jpg)<br>
+![Visit your Pantheon Site Dashboard](assets/4ZGnYMu.png)<br>
 Now you have deployed your site.
 4. In the Pantheon dashboard, navigate to your new site by clicking "Visit Development Site."
-![Navigate to the development website](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/WzYx8dE.jpg)
+![Navigate to the development website](assets/WzYx8dE.jpeg)
 
 
 ### Install your site
 Before the next step, you should have a generic email address set up to use. This email address is the one that will send out registrations, room reservations, and reminders from the site. It should not be someone's personal or library email address.
 
 1. Proceed through the Intercept Profile installation process.
-![Proceed through the installation process](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/7DeU32W.jpg)<br>
+![Proceed through the installation process](assets/7DeU32W.jpeg)<br>
 This may take a few minutes.
 2. Configure the site.<br>
-![Configure site](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/K6EcjvB.jpg)
+![Configure site](assets/K6EcjvB.png)
 3. There are two checkboxes at the bottom of this page under "Generate Demo Content":
   *	Events, Room Reservations, Locations, and Rooms
   *	Equipment
@@ -36,7 +36,7 @@ This may take a few minutes.
 Click these if you want to pre-populate the site with generic events, locations, etc. You can always delete these later, or create a new site and delete this one.
 
 4. We also recommend that you clear the Pantheon caches after first installing the site<br>
-![Clear caches](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/jjrcuk6.png)
+![Clear caches](assets/jjrcuk6.png)
 
 **Now your site is installed and it’s time to [configure the site to your individual library specifications](https://www.drupal.org/docs/8/modules/intercept/installation-guide#s-intercept-initial-configuration).**
 
@@ -47,7 +47,7 @@ Updates can be applied either directly on Pantheon, by using Terminus, or on you
 ### Update on Pantheon
 
 When an update has been released for the upstream, you should have the ability to apply the update directly on the Pantheon dashboard. It will look like this:
-![Upstream update on Pantheon](https://github.com/AtenDesignGroup/intercept-pantheon-upstream/blob/master/assets/upstream-update-available.png)
+![Upstream update on Pantheon](assets/upstream-update-available.png)
 
 ### Update With Terminus
 

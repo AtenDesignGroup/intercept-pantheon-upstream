@@ -5,7 +5,6 @@ namespace Drupal\intercept_ils;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\intercept_ils\ILSManager;
 
 /**
@@ -28,13 +27,6 @@ class MappingManager {
   private $client;
 
   /**
-   * The query factory.
-   *
-   * @var \Drupal\Core\Entity\Query\QueryFactory
-   */
-  private $queryFactory;
-
-  /**
    * The Intercept ILS configuration.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -44,7 +36,7 @@ class MappingManager {
   /**
    * Mapping constructor.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, QueryFactory $query_factory, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
     $this->entityTypeManager = $entity_type_manager;
     $settings = $config_factory->get('intercept_ils.settings');
     $intercept_ils_plugin = $settings->get('intercept_ils_plugin', '');
@@ -52,7 +44,6 @@ class MappingManager {
       $this->interceptILSPlugin = $ils_manager->createInstance($intercept_ils_plugin);
       $this->client = $this->interceptILSPlugin->getClient();
     }
-    $this->queryFactory = $query_factory;
   }
 
   /**
@@ -204,8 +195,8 @@ class MappingManager {
     foreach ($this->getNewOrganizations() as $id) {
       $org = $this->client->organization->getById($id);
       // Match by name if possible.
-      $query = $this->queryFactory->get('node')
-        ->condition('type', 'location')
+      $query = $this->entityTypeManager->getStorage('node')->getQuery();
+      $query->condition('type', 'location')
         ->condition('title', $org->Name, '=')
         ->execute();
       if ($query) {
@@ -229,8 +220,8 @@ class MappingManager {
       return $org->OrganizationID;
     }, $this->client->organization->getAll());
 
-    $query = $this->queryFactory->get('node')
-      ->condition('type', 'location')
+    $query = $this->entityTypeManager->getStorage('node')->getQuery();
+    $query->condition('type', 'location')
       ->condition('field_ils_id', $ids, 'IN')
       ->execute();
     $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple(array_values($query));

@@ -29,6 +29,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *     "form" = {
  *       "default" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "add" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
+ *       "copy" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "edit" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "delete" = "Drupal\intercept_room_reservation\Form\RoomReservationDeleteForm",
  *       "cancel" = "Drupal\intercept_room_reservation\Form\RoomReservationCancelForm",
@@ -71,22 +72,23 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *     "revision_log_message" = "revision_log_message"
  *   },
  *   links = {
- *     "approve-form" = "/room-reservation/{room_reservation}/approve",
  *     "add-form" = "/room-reservation/add",
+ *     "approve-form" = "/room-reservation/{room_reservation}/approve",
  *     "archive-form" = "/room-reservation/{room_reservation}/archive",
- *     "collection" = "/admin/content/room-reservations",
  *     "cancel-form" = "/room-reservation/{room_reservation}/cancel",
  *     "canonical" = "/room-reservation/{room_reservation}",
- *     "edit-form" = "/room-reservation/{room_reservation}/edit",
- *     "request-form" = "/room-reservation/{room_reservation}/request",
- *     "deny-form" = "/room-reservation/{room_reservation}/deny",
+ *     "collection" = "/admin/content/room-reservations",
+ *     "copy-form" = "/room-reservation/{room_reservation}/copy",
  *     "delete-form" = "/room-reservation/{room_reservation}/delete",
  *     "delete-multiple-form" = "/room-reservation/delete",
- *     "version-history" = "/room-reservation/{room_reservation}/revisions",
- *     "revision" = "/room-reservation/{room_reservation}/revisions/{room_reservation_revision}/view",
- *     "revision-revert-form" = "/room-reservation/{room_reservation}/revisions/{room_reservation_revision}/revert",
+ *     "deny-form" = "/room-reservation/{room_reservation}/deny",
+ *     "edit-form" = "/room-reservation/{room_reservation}/edit",
+ *     "request-form" = "/room-reservation/{room_reservation}/request",
  *     "revision-delete-form" = "/room-reservation/{room_reservation}/revisions/{room_reservation_revision}/delete",
+ *     "revision-revert-form" = "/room-reservation/{room_reservation}/revisions/{room_reservation_revision}/revert",
+ *     "revision" = "/room-reservation/{room_reservation}/revisions/{room_reservation_revision}/view",
  *     "translation_revert" = "/admin/structure/room_reservation/{room_reservation}/revisions/{room_reservation_revision}/revert/{langcode}",
+ *     "version-history" = "/room-reservation/{room_reservation}/revisions",
  *   },
  *   field_ui_base_route = "room_reservation.settings"
  * )
@@ -272,7 +274,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
       if (\Drupal::service('current_user')->isAnonymous()) {
         return;
       }
-      $temp_store = \Drupal::service('user.private_tempstore')->get('reservation_agreement');
+      $temp_store = \Drupal::service('tempstore.private')->get('reservation_agreement');
       if ($temp_store->get('room')) {
         $temp_store->delete('room');
         if ($this->hasField('field_agreement')) {

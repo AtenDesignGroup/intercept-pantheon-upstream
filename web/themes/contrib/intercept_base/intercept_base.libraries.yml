@@ -6,9 +6,25 @@ global:
       build/libraries/global/global.print.css:
         preprocess: true
         media: print
-      https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css: { type: external, minified: true }
+      https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css: { type: external, minified: true }
   js:
     build/libraries/global/global.js: { preprocess: true }
+  dependencies:
+    - core/jquery
+    - intercept_base/materialize
+
+# Materialize
+materialize:
+  css:
+    theme:
+      build/libraries/materialize-src/sass/materialize.css: { }
+  js:
+    # Use the src materialize because it has already been processed.
+    # If we were to bundle it, browserify would try to encapsulate
+    # all the global variables it declares which causes the overrides
+    # in select.js to fail.
+    libraries/materialize-src/js/bin/materialize.js: { }
+    build/libraries/materialize-src/js/select.js: { }
   dependencies:
     - core/jquery
 

@@ -12,14 +12,6 @@ use Drupal\intercept_core\Entity\ReservationInterface;
 interface RoomReservationInterface extends ReservationInterface {
 
   /**
-   * Sets the Room reservation status to canceled.
-   *
-   * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface
-   *   The RoomReservation entity.
-   */
-  public function cancel();
-
-  /**
    * Sets the Room reservation status to approved.
    *
    * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface
@@ -28,12 +20,20 @@ interface RoomReservationInterface extends ReservationInterface {
   public function approve();
 
   /**
-   * Sets the Room reservation status to requested.
+   * Sets the Room reservation status to archived.
    *
    * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface
    *   The RoomReservation entity.
    */
-  public function request();
+  public function archive();
+
+  /**
+   * Sets the Room reservation status to canceled.
+   *
+   * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface
+   *   The RoomReservation entity.
+   */
+  public function cancel();
 
   /**
    * Sets the Room reservation status to denied.
@@ -52,12 +52,28 @@ interface RoomReservationInterface extends ReservationInterface {
   public function deny();
 
   /**
-   * Sets the Room reservation status to archived.
+   * Gets notes associated with this reservation.
+   *
+   * @return string
+   *   The reservation notes.
+   */
+  public function getNotes();
+
+  /**
+   * Sets the Room reservation status to requested.
    *
    * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface
    *   The RoomReservation entity.
    */
-  public function archive();
+  public function request();
+
+  /**
+   * Sets notes associated with this reservation.
+   *
+   * @param string $notes
+   *   The reservation notes.
+   */
+  public function setNotes($notes);
 
   /**
    * Gets validation constraint violations.
@@ -67,21 +83,5 @@ interface RoomReservationInterface extends ReservationInterface {
    *   succeeded.
    */
   public function validationWarnings();
-
-  /**
-   * Gets notes associated with this reservation.
-   *
-   * @return string
-   *   The reservation notes.
-   */
-  public function getNotes();
-
-  /**
-   * Sets notes associated with this reservation.
-   *
-   * @param string $notes
-   *   The reservation notes.
-   */
-  public function setNotes($notes);
 
 }

@@ -39,7 +39,7 @@ class JsonApiRegressionTest extends JsonApiFunctionalTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'basic_auth',
   ];
 
@@ -921,7 +921,7 @@ class JsonApiRegressionTest extends JsonApiFunctionalTestBase {
   /**
    * Ensure filtering for entities with empty entity reference fields works.
    *
-   * @see https://www.drupal.org/project/drupal/issues/3025372
+   * @see https://www.drupal.org/project/jsonapi/issues/3025372
    */
   public function testEmptyRelationshipFilteringFromIssue3025372() {
     // Set up data model.

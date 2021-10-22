@@ -36,6 +36,11 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * @var \Drupal\user\Entity\User
    */
   protected $user;
@@ -72,7 +77,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->contentType = $this->createContentType();
     $this->imageFieldName = $this->getRandomGenerator()->word(8);
@@ -153,10 +158,10 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
     });
     $this->assertNotEmpty($derivatives);
-    $this->assertContains('/files/styles/foo/public/', $derivatives['foo']['href']);
-    $this->assertContains('/files/styles/bar/public/', $derivatives['bar']['href']);
-    $this->assertContains('itok=', $derivatives['foo']['href']);
-    $this->assertContains('itok=', $derivatives['bar']['href']);
+    $this->assertStringContainsString('/files/styles/foo/public/', $derivatives['foo']['href']);
+    $this->assertStringContainsString('/files/styles/bar/public/', $derivatives['bar']['href']);
+    $this->assertStringContainsString('itok=', $derivatives['foo']['href']);
+    $this->assertStringContainsString('itok=', $derivatives['bar']['href']);
 
     // 2. Check the request via the node.
     $url = Url::fromRoute(
@@ -175,10 +180,10 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
       return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
     });
-    $this->assertContains(file_create_url('public://styles/foo/public/'), $derivatives['foo']['href']);
-    $this->assertContains(file_create_url('public://styles/bar/public/'), $derivatives['bar']['href']);
-    $this->assertContains('itok=', $derivatives['foo']['href']);
-    $this->assertContains('itok=', $derivatives['bar']['href']);
+    $this->assertStringContainsString(file_create_url('public://styles/foo/public/'), $derivatives['foo']['href']);
+    $this->assertStringContainsString(file_create_url('public://styles/bar/public/'), $derivatives['bar']['href']);
+    $this->assertStringContainsString('itok=', $derivatives['foo']['href']);
+    $this->assertStringContainsString('itok=', $derivatives['bar']['href']);
 
     // 3. Check the request for the image directly without consumer.
     $url = Url::fromRoute('jsonapi.file--file.individual', ['entity' => $this->files[0]->uuid()]);
@@ -213,19 +218,18 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       'links',
     ]);
     $derivatives = array_filter($links, function ($link) {
-      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
-      return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
+      return ImageStylesProvider::DERIVATIVE_LINK_REL === ($link['meta']['rel'] ?? '');
     });
-    $this->assertContains(
+    $this->assertStringContainsString(
       file_create_url('public://styles/foo/public/'),
       $derivatives['foo']['href']
     );
-    $this->assertContains(
+    $this->assertStringContainsString(
       ImageStylesProvider::DERIVATIVE_LINK_REL,
       $derivatives['foo']['meta']['rel']
     );
     $this->assertTrue(empty($derivatives['bar']));
-    $this->assertContains('itok=', $derivatives['foo']['href']);
+    $this->assertStringContainsString('itok=', $derivatives['foo']['href']);
   }
 
   /**

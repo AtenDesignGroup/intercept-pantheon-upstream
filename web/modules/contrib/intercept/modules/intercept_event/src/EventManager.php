@@ -7,6 +7,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\Language;
 use Drupal\Core\Link;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -52,12 +53,16 @@ class EventManager implements EventManagerInterface {
    * {@inheritdoc}
    */
   public function deleteRegisterAlias(NodeInterface $node) {
-    $storage = \Drupal::service('path.alias_storage');
-    $conditions = [
-      'source' => '/event/' . $node->id() . '/register',
-    ];
-    if ($storage->load($conditions)) {
-      $storage->delete($conditions);
+    $path_alias = '/event/' . $node->id() . '/register';
+    $storage = $this->entityTypeManager->getStorage('path_alias');
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('alias', $path_alias, '=');
+
+    if ($result = $query->range(0, 1)->execute()) {
+      $existing_alias_id = reset($result);
+      $existing_alias = $storage->load($existing_alias_id);
+      $storage_load->delete([$existing_alias]);
     }
   }
 
@@ -70,16 +75,12 @@ class EventManager implements EventManagerInterface {
       return;
     }
     $alias .= '/register';
-    $storage = \Drupal::service('path.alias_storage');
-    $conditions = [
-      'source' => '/event/' . $node->id() . '/register',
-    ];
-    if ($path = $storage->load($conditions)) {
-      $storage->save($conditions['source'], $alias, $path['langcode'], $path['pid']);
-    }
-    else {
-      $storage->save($conditions['source'], $alias);
-    }
+    $path_alias = $this->entityTypeManager->getStorage('path_alias')->create([
+      'path' => '/event/' . $node->id() . '/register',
+      'alias' => $alias,
+      'langcode' => Language::LANGCODE_NOT_SPECIFIED,
+    ]);
+    $path_alias->save();
   }
 
   /**

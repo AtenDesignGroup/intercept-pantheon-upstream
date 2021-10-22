@@ -56,7 +56,8 @@
   .current-filter .option-chip > span {
     padding: 0; }
   .current-filter .option-chip > svg {
-    margin-left: .5em; }
+    margin-left: .5em;
+    padding: 7px; }
 
 .current-filter .option-label {
   font-size: 0.5rem;

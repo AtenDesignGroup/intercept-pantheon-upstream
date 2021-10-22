@@ -2,11 +2,11 @@ name: Date Recur Base Field Entity
 type: module
 description: 'Provides an entity type based on entity_test entity type which has a date recur base field.'
 package: Testing
-core: 8.x
+core_version_requirement: ^9
 dependencies:
  - drupal:entity_test
 
-# Information added by Drupal.org packaging script on 2020-05-15
-version: '8.x-2.2'
+# Information added by Drupal.org packaging script on 2021-01-19
+version: '3.0.0'
 project: 'date_recur'
-datestamp: 1589541428
+datestamp: 1611028255

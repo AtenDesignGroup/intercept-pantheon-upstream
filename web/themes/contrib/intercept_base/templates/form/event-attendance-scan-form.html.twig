@@ -1,4 +1,3 @@
-{% import '@intercept-base-components/more-link/more-link.twig' as more_link %}
 <div class="l--sidebar-after clearfix">
   <div class="l__main">
     <div class="l__secondary">
@@ -36,7 +35,7 @@
       </div>
       {% if form.guest %}
       <div class="l--subsection">
-        {% include more_link with {
+        {% include '@intercept-base-components/more-link/more-link.twig' with {
           text: form.guest['#title'],
           url: form.guest['#url']|render
         } %}
@@ -44,7 +43,7 @@
       {% endif %}
       {% if form.lookup %}
       <div class="l--subsection">
-        {% include more_link with {
+        {% include '@intercept-base-components/more-link/more-link.twig' with {
           text: form.lookup['#title'],
           url: form.lookup['#url']|render
         } %}
@@ -52,7 +51,7 @@
       {% endif %}
       {% if form.retry %}
       <div class="l--subsection">
-        {% include more_link with {
+        {% include '@intercept-base-components/more-link/more-link.twig' with {
           text: form.retry['#title'],
           url: form.retry['#url']|render,
           back: TRUE
@@ -61,7 +60,7 @@
       {% endif %}
       {% if form.cancel %}
       <div class="l--subsection">
-        {% include more_link with {
+        {% include '@intercept-base-components/more-link/more-link.twig' with {
           text: form.cancel['#title'],
           url: form.cancel['#url']|render,
           back: TRUE

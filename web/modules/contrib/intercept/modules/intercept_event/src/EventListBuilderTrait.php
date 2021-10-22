@@ -113,7 +113,7 @@ trait EventListBuilderTrait {
     if (empty($entity->{$user_field}->entity)) {
       return '';
     }
-    return $this->getLink($entity->{$user_field}->entity, $entity->{$user_field}->entity->getUsername());
+    return $this->getLink($entity->{$user_field}->entity, $entity->{$user_field}->entity->getDisplayName());
   }
 
   /**

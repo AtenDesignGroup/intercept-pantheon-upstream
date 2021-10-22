@@ -3,6 +3,11 @@ administer room reservation entities:
   description: 'Allow to access the administration form to configure Room reservation entities.'
   restrict access: true
 
+copy room reservations:
+  title: 'Copy Room Reservations'
+  description: 'Allow users to copy existing room reservations'
+  restrict access: true
+
 view staff use room reservation:
   title: "View a 'staff use only' room"
   description: "Grants permission to reserve rooms with field_staff_use_only set to TRUE"

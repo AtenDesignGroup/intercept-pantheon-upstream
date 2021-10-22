@@ -24,6 +24,11 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'classy';
+
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = [
     'date_recur_basic_widget_test',
     'date_recur_entity_test',
@@ -42,7 +47,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $display = entity_get_form_display('dr_entity_test', 'dr_entity_test', 'default');
+    $display = \Drupal::service('entity_display.repository')->getFormDisplay('dr_entity_test', 'dr_entity_test', 'default');
     $component = $display->getComponent('dr');
     $component['region'] = 'content';
     $component['type'] = 'date_recur_basic_widget';
@@ -257,7 +262,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
     ];
     FieldConfig::create($field)->save();
 
-    $display = entity_get_form_display('entity_test', 'entity_test', 'default');
+    $display = \Drupal::service('entity_display.repository')->getFormDisplay('entity_test', 'entity_test', 'default');
     $component = $display->getComponent('foo');
     $component['region'] = 'content';
     $component['type'] = 'date_recur_basic_widget';
@@ -332,7 +337,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
     ];
     FieldConfig::create($field)->save();
 
-    $display = entity_get_form_display('entity_test', 'entity_test', 'default');
+    $display = \Drupal::service('entity_display.repository')->getFormDisplay('entity_test', 'entity_test', 'default');
     $component = $display->getComponent('foo');
     $component['region'] = 'content';
     $component['type'] = 'date_recur_basic_widget';

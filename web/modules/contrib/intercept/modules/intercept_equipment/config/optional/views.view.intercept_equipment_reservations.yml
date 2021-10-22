@@ -375,7 +375,7 @@ display:
             alter_text: false
             text: ''
             make_link: true
-            path: '/equipment-reservation/{{ id }}/edit?destination=/account/manage/equipment-reservations'
+            path: '/equipment-reservation/{{ id }}/edit?destination=/manage/equipment-reservations'
             absolute: false
             external: false
             replace_spaces: false
@@ -1101,7 +1101,6 @@ display:
         - 'config:field.storage.equipment_reservation.field_location'
         - 'config:field.storage.equipment_reservation.field_room'
         - 'config:field.storage.node.field_equipment_type'
-        - extensions
   embed:
     display_plugin: embed
     id: embed
@@ -1124,4 +1123,3 @@ display:
         - 'config:field.storage.equipment_reservation.field_location'
         - 'config:field.storage.equipment_reservation.field_room'
         - 'config:field.storage.node.field_equipment_type'
-        - extensions

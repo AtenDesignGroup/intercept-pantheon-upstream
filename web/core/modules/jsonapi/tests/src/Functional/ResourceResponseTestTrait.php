@@ -123,7 +123,7 @@ trait ResourceResponseTestTrait {
     $resource_type = $this->resourceType;
     $resource_data = array_reduce($include_paths, function ($data, $path) use ($request_options, $resource_type) {
       $field_names = explode('.', $path);
-      /* @var \Drupal\Core\Entity\EntityInterface $entity */
+      /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = $this->entity;
       $collected_responses = [];
       foreach ($field_names as $public_field_name) {
@@ -203,7 +203,7 @@ trait ResourceResponseTestTrait {
     $basic_cacheability = (new CacheableMetadata())
       ->addCacheTags($this->getExpectedCacheTags())
       ->addCacheContexts($this->getExpectedCacheContexts());
-    return static::decorateExpectedResponseForIncludedFields(CacheableResourceResponse::create($individual_document), $resource_data['responses'])
+    return static::decorateExpectedResponseForIncludedFields(new CacheableResourceResponse($individual_document), $resource_data['responses'])
       ->addCacheableDependency($basic_cacheability);
   }
 

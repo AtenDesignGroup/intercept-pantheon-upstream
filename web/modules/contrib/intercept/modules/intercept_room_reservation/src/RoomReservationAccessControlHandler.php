@@ -23,6 +23,7 @@ class RoomReservationAccessControlHandler extends EntityAccessControlHandler {
     $result = parent::checkAccess($entity, $operation, $account);
 
     switch ($operation) {
+      case 'copy':
       case 'view':
       case 'update':
         if ($result->isNeutral() && $this->hasReferencedUser($entity)) {

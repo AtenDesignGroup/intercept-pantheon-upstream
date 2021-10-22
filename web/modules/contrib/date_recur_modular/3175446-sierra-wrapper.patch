@@ -1,0 +1,12 @@
+diff --git a/src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php b/src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+index 1c57329..0b7dff8 100644
+--- a/src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
++++ b/src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+@@ -350,6 +350,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
+     $elementParents = [$this->fieldDefinition->getName(), $delta];
+     $element['#element_validate'][] = [static::class, 'validateModularWidget'];
+     $element['#theme'] = 'date_recur_modular_sierra_widget';
++    $element['#theme_wrappers'][] = 'form_element';
+     $element['#attached']['library'][] = 'core/drupal.dialog.ajax';
+ 
+     $item = $items[$delta];

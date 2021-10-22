@@ -36,6 +36,12 @@ use Drupal\date_recur\Plugin\DateRecurInterpreterPluginInterface;
  *     "delete-form" = "/admin/config/regional/recurring-date-interpreters/manage/{date_recur_interpreter}/delete",
  *     "collection" = "/admin/config/regional/recurring-date-interpreters",
  *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "plugin",
+ *     "settings",
+ *   },
  * )
  */
 class DateRecurInterpreter extends ConfigEntityBase implements DateRecurInterpreterInterface {

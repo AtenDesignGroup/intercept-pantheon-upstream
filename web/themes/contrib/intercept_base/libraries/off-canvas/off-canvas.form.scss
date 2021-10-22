@@ -307,6 +307,7 @@
 
   .form-actions:not(.form-actions--operations) {
     background: $white;
+    display: flex;
     border-top: $clr-border 2px solid;
     bottom: 0;
     left: 0;

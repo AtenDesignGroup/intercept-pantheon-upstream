@@ -4,13 +4,14 @@ declare(strict_types = 1);
 
 namespace Drupal\date_recur\Plugin;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Plugin\PluginWithFormsInterface;
 
 /**
  * Interface for date recur interpreter plugins.
  */
-interface DateRecurInterpreterPluginInterface extends ConfigurablePluginInterface, PluginWithFormsInterface {
+interface DateRecurInterpreterPluginInterface extends ConfigurableInterface, DependentPluginInterface, PluginWithFormsInterface {
 
   /**
    * Interpret a set of rules in a language.

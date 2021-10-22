@@ -55,7 +55,7 @@ module.exports = {
     theme: {
       inputs: [
         themeDir + '/components/**/*.js',
-        themeDir + '/libraries/*/*.js'
+        themeDir + '/libraries/**/*.js'
       ],
       output: buildDir,
       base: themeDir,

@@ -2,15 +2,21 @@
 
 namespace Drupal\intercept_core\Form;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Ajax\AjaxHelperTrait;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\Core\Form\FormBase;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Ajax\AjaxHelperTrait;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\language\Element\LanguageConfiguration;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * A form to update the status of a reservation.
@@ -18,6 +24,11 @@ use Drupal\Core\Render\Element;
 class ReservationStatusChangeForm extends FormBase {
 
   use AjaxHelperTrait;
+
+  /**
+   * @var AccountProxy
+   */
+  protected $currentUser;
 
   /**
    * The status field name.
@@ -32,6 +43,24 @@ class ReservationStatusChangeForm extends FormBase {
    * @var array
    */
   protected $options;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(AccountProxyInterface $currentUser) {
+    $this->currentUser = $currentUser;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    // Instantiates this form class.
+    return new static(
+      // Load the service required to construct this class.
+      $container->get('current_user')
+    );
+  }
 
   /**
    * Sets the URL options.
@@ -155,6 +184,31 @@ class ReservationStatusChangeForm extends FormBase {
     ];
 
     if (!$this->entity->isNew() && $this->entity->hasLinkTemplate('delete-form')) {
+      // Add copy link if user has permission to copy room reservations.
+      $user = $this->currentUser;
+      if ($user->hasPermission('copy room reservations')) {
+        $copyLink = Link::createFromRoute(t('Copy'), 'intercept_room_reservation.reservation.copy', [
+          'room_reservation' => $this->entity->id(),
+          'destination' => Url::fromRoute('<current>')->toString(),
+        ]);
+
+      }
+
+      $actions['copy'] = [
+        '#type' => 'link',
+        '#title' => $this->t('Copy'),
+        '#weight' => 10,
+        '#access' => $this->entity->access('copy'),
+        '#attributes' => [
+          'class' => ['button', 'use-ajax'],
+          'data-dialog-type' => 'dialog',
+          'data-dialog-options' => '{"width": "400"}',
+          'data-dialog-renderer' => 'off_canvas',
+        ],
+      ];
+      $actions['copy']['#url'] = $copyLink->toRenderable()['#url'];
+
+      // Add a delete button.
       $route_info = $this->entity->toUrl('delete-form');
       if ($this->getRequest()->query->has('destination')) {
         $query = $route_info->getOption('query');
@@ -181,13 +235,36 @@ class ReservationStatusChangeForm extends FormBase {
   protected function actionsElement(array $form, FormStateInterface $form_state) {
     $element = $this->actions($form, $form_state);
 
-    if (isset($element['delete'])) {
-      // Move the delete action as last one, unless weights are explicitly
-      // provided.
-      $delete = $element['delete'];
-      unset($element['delete']);
-      $element['delete'] = $delete;
-      $element['delete']['#button_type'] = 'danger';
+    // Order the 'delete' and 'copy' buttons to be last, and in that order.
+    $buttons = ['copy', 'delete'];
+
+    foreach ($buttons as $button) {
+      if (isset($element[$button])) {
+        // Move the delete action as last one, unless weights are explicitly
+        // provided.
+        $tmp = $element[$button];
+        unset($element[$button]);
+        $element[$button] = $tmp;
+        switch ($button) {
+          case 'delete':
+            $element[$button]['#button_type'] = 'danger';
+            $element[$button]['#attributes']['class'][] = 'button--right';
+            break;
+
+          case 'copy':
+            $element[$button]['#attributes'] = [
+              'class' => [
+                'use-ajax',
+                'button',
+              ],
+              'data-dialog-type' => 'dialog',
+              'data-dialog-options' => '{"width": "400"}',
+              'data-dialog-renderer' => 'off_canvas',
+            ];
+            $user = $this->currentUser;
+            $element[$button]['#access'] = $user->hasPermission('copy room reservations');
+        }
+      }
     }
 
     if (isset($element['submit'])) {

@@ -92,7 +92,8 @@ class DateRecurRlHelperUnitTest extends UnitTestCase {
       new \DateTime('4am 14 April 2014')
     );
 
-    $this->setExpectedException(\InvalidArgumentException::class, 'Invalid count limit.');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('Invalid count limit.');
     $helper->getOccurrences(
       new \DateTime('1am 14 April 2014'),
       new \DateTime('3am 14 April 2014'),
@@ -273,7 +274,8 @@ RDATE:20121006T120000Z,20121013T120000Z';
 EXDATE:19960402T010000Z
 foobar';
 
-    $this->setExpectedException(DateRecurHelperArgumentException::class, 'Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line 3');
+    $this->expectException(DateRecurHelperArgumentException::class);
+    $this->expectExceptionMessage('Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line 3');
     $this->createHelper($rrule, new \DateTime());
   }
 

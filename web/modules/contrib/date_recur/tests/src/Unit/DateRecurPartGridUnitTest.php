@@ -135,7 +135,7 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
     $partGrid = $this->createPartGrid();
     $partGrid->allowParts('DAILY', ['*']);
     // BYWEEKNO is incompatible with daily.
-    $this->setExpectedException(DateRecurRulePartIncompatible::class);
+    $this->expectException(DateRecurRulePartIncompatible::class);
     $partGrid->isPartAllowed('DAILY', 'BYWEEKNO');
   }
 

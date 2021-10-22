@@ -700,6 +700,9 @@
     "field_room_standard_equipment": {
       "type": "array"
     },
+    "field_requires_certification": {
+      "type": "boolean"
+    },
     "field_reservation_phone_number": {
       "type": "string"
     },

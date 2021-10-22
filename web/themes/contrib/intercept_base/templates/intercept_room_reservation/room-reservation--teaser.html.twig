@@ -1,6 +1,5 @@
 {% extends '@intercept-base-components/teaser/teaser--reservation.twig' %}
 
-{% import '@intercept-base-components/metadata/metadata.twig' as metadata %}
 {% set room = room_reservation.field_room.entity %}
 {% set location = room_reservation.field_room.entity.field_location.entity %}
 
@@ -23,28 +22,28 @@
 
 {% block tags %}
   {% if content.field_attendee_count|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Attendees"|t(),
       data: content.field_attendee_count|field_value,
       modifiers: ['inline', 'small']
     } %}
   {% endif %}
   {% if content.field_group_name|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Group"|t(),
       data: content.field_group_name|field_value,
       modifiers: ['inline', 'small']
     } %}
   {% endif %}
   {% if content.field_meeting_purpose|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Purpose"|t(),
       data: content.field_meeting_purpose|field_value,
       modifiers: ['inline', 'small']
     } %}
   {% endif %}
   {% if content.field_event|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Event"|t(),
       data: content.field_event|field_value,
       modifiers: ['inline', 'small']
@@ -52,7 +51,7 @@
   {% endif %}
   {% if content.field_refreshments|field_value %}
     {% set refreshments_data = room_reservation.field_refreshments.value == '1' ? content.field_refreshments_description|field_value : content.field_refreshments|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Refreshments"|t(),
       data: refreshments_data,
       modifiers: ['inline', 'small']
@@ -62,7 +61,7 @@
     {{ drupal_field('field_room_fees', 'node', room.id) }}
   {% endif %}
   {% if content.field_publicize|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Publicize"|t(),
       data: content.field_publicize|field_value,
       modifiers: ['inline', 'small']

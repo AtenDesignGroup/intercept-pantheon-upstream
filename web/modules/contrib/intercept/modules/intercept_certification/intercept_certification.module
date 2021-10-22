@@ -13,6 +13,7 @@ use Drupal\views\ViewExecutable;
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_help().
@@ -57,7 +58,7 @@ function intercept_certification_form_alter(&$form, FormStateInterface $form_sta
 
 /**
  * Implements hook_inline_entity_form_entity_form_alter().
- * 
+ *
  * Perform alterations before an entity form is included in the IEF widget.
  *
  * @param $entity_form
@@ -67,7 +68,7 @@ function intercept_certification_form_alter(&$form, FormStateInterface $form_sta
  */
 function intercept_certification_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
   if ($entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
-    // Only staff are allowed to edit the Customer Information fields. 
+    // Only staff are allowed to edit the Customer Information fields.
     $current_user = \Drupal::currentUser();
     $roles = $current_user->getRoles();
     $is_staff = in_array('intercept_staff', $roles) ? TRUE : FALSE;
@@ -172,6 +173,21 @@ function intercept_certification_form_views_exposed_form_alter(&$form, FormState
 }
 
 /**
+ * Implements hook_page_attachments().
+ */
+function intercept_certification_page_attachments(array &$attachments) {
+  // Add user info to drupalSettings.
+  $current_user = \Drupal::currentUser();
+  $user = User::load($current_user->id());
+  $attachments['#attached']['drupalSettings']['intercept']['certifications'] = [
+    'rooms' => intercept_certification_user_certifications($user),
+  ];
+
+  $attachments['#cache']['contexts'][] = 'user';
+  $attachments['#cache']['tags'][] = 'user:' . $current_user->id();
+}
+
+/**
  * Implements hook_views_pre_view().
  */
 function intercept_certification_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
@@ -196,4 +212,27 @@ function intercept_certification_views_pre_view(ViewExecutable $view, $display_i
     ];
     $view->setHandler('page', 'header', 'area_text_custom', $options);
   }
+}
+
+/**
+ * Returns uuids of all certification entities for a user.
+ *
+ * @param \Drupal\user\Entity\User $user
+ *   The user for which we are returning certification uuids.
+ */
+function intercept_certification_user_certifications(User $user) {
+  $uid = $user->Id();
+  $query = \Drupal::entityQuery('certification')
+    ->condition('field_user', $uid);
+  $entity_ids = $query->execute();
+  $storage = \Drupal::entityTypeManager()->getStorage('certification');
+  $certifications = $storage->loadMultiple($entity_ids);
+
+  $results = [];
+  foreach ($certifications as $certification) {
+    if (!$certification->field_room->isEmpty()) {
+      $results[] = $certification->field_room->entity->uuid();
+    }
+  }
+  return $results;
 }

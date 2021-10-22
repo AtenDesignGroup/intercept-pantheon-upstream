@@ -13,16 +13,15 @@
   "repositories": [
       {
           "type": "composer",
-          "url": "https://packages.drupal.org/8"
+          "url": "https://packages.drupal.org/9"
       }
   ],
   "require": {
-    "php": "^7.1",
-    "drupal/core": "^8.6",
+    "php": ">=7.3",
+    "drupal/core": "^9",
     "rlanvin/php-rrule": "1.*"
   },
   "require-dev": {
-    "drupal/coder": "~8.2",
     "drupal/token": "^1.5",
     "phpstan/phpstan": "^0.11.19",
     "mglaman/phpstan-drupal": "^0.11.12",

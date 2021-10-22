@@ -15,6 +15,11 @@ class DateRecurInterpreterTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'classy';
+
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = [
     'date_recur_interpreter_test',
     'date_recur',

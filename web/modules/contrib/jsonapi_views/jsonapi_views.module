@@ -14,20 +14,26 @@ use Drupal\Core\Url;
 function jsonapi_views_views_preview_info_alter(&$rows, $executable) {
   // Build JSON:API View path for the current display.
   $jsonapi_base_path = \Drupal::getContainer()->getParameter('jsonapi.base_path');
-  $path = implode([
+  $path = implode('/', [
     $jsonapi_base_path,
     'views',
     $executable->id(),
     $executable->current_display,
-  ], '/');
+  ]);
+
+  // Only show preview if view is allowed to be exposed via JSON:API.
+  $extenders = $executable->getDisplay($executable->current_display)->getExtenders();
+  if (!empty($extenders['jsonapi_views']) && !$extenders['jsonapi_views']->isExposed()) {
+    return;
+  }
 
   // Build Exposed sort queries.
   $query = [];
   $input = $executable->getExposedInput();
-  if ($input['sort_by']) {
+  if (isset($input['sort_by']) && $input['sort_by']) {
     $query['views-sort[sort_by]'] = $input['sort_by'];
   }
-  if ($input['sort_order']) {
+  if (isset($input['sort_order']) && $input['sort_order']) {
     $query['views-sort[sort_order]'] = $input['sort_order'];
   }
 
@@ -37,6 +43,11 @@ function jsonapi_views_views_preview_info_alter(&$rows, $executable) {
     if ($filter->isExposed() && $input[$filter->field]) {
       $query["views-filter[{$filter->field}]"] = $input[$filter->field];
     }
+  }
+
+  // Build Contextual filter queries.
+  foreach ($executable->args as $index => $arg) {
+    $query["views-argument[{$index}]"] = $arg;
   }
 
   // Build JSON:API View URL.
@@ -54,7 +65,7 @@ function jsonapi_views_views_preview_info_alter(&$rows, $executable) {
     ],
     [
       'data' => [
-        '#markup' => Link::fromTextAndUrl($url->toString(), $url)->toString(),
+        '#markup' => Link::fromTextAndUrl(urldecode($url->toString()), $url)->toString(),
       ],
     ],
   ];

@@ -171,6 +171,14 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     $this->assertEqual(1, $response_document['meta']['count']);
     $this->assertSame($location->uuid(), $response_document['data'][0]['id']);
     $this->assertCacheContext($headers, 'url.query_args:page');
+
+    // Un-exposed display.
+    $request_options = [];
+    $request_options[RequestOptions::HEADERS]['Accept'] = 'application/vnd.api+json';
+    $request_options = NestedArray::mergeDeep($request_options, $this->getAuthenticationRequestOptions());
+
+    $response = $this->request('GET', $this->getJsonApiViewUrl('jsonapi_views_test_node_view', 'feed_1'), $request_options);
+    $this->assertSame(403, $response->getStatusCode(), var_export(Json::decode((string) $response->getBody()), TRUE));
   }
 
   /**
@@ -290,6 +298,85 @@ class JsonapiViewsResourceTest extends ViewTestBase {
       return $data['id'];
     }, $response_document['data']));
     $this->assertCacheContext($headers, 'url.query_args:views-sort');
+  }
+
+  /**
+   * Tests the JSON:API Views resource View Arguments feature.
+   */
+  public function testJsonApiViewsResourceViewArguments() {
+    $this->drupalLogin($this->drupalCreateUser([
+      'access content',
+      'bypass node access',
+    ]));
+
+    $nodes = [];
+    $created_dates = [
+      '2021-02-24',
+      '2021-01-25',
+      '2021-01-22',
+      '2021-01-20',
+      '2021-01-15',
+      '2021-01-10',
+      '2020-12-24',
+      '2020-12-23',
+      '2020-12-22',
+    ];
+
+    for ($i = 0; $i < 9; $i++) {
+      $created_date_parts = explode('-', $created_dates[$i]);
+      $node = $this->drupalCreateNode([
+        'type' => 'room',
+        'status' => 1,
+        'created' => strtotime($created_dates[$i]),
+      ]);
+      $node->save();
+
+      $nodes[$created_date_parts[0]][$node->uuid()] = $node;
+      $nodes[$created_date_parts[0] . '-' . $created_date_parts[1]][$node->uuid()] = $node;
+      $nodes['all'][$node->uuid()] = $node;
+    }
+
+    // Get nodes from 2020.
+    $query = ['views-argument[]' => '2020'];
+    [$response_document, $headers] = $this->getJsonApiViewResponse(
+      $this->getJsonApiViewUrl('jsonapi_views_test_node_view', 'page_1', $query)
+    );
+
+    $this->assertCount(3, $response_document['data']);
+    $this->assertEquals(3, $response_document['meta']['count']);
+    $this->assertArrayNotHasKey('next', $response_document['links']);
+    $this->assertSame(array_keys($nodes['2020']), array_map(static function (array $data) {
+      return $data['id'];
+    }, $response_document['data']));
+    $this->assertCacheContext($headers, 'url.query_args:views-argument');
+
+    // Get nodes from 2021-01.
+    $query = ['views-argument[0]' => '2021', 'views-argument[1]' => '01'];
+    [$response_document, $headers] = $this->getJsonApiViewResponse(
+      $this->getJsonApiViewUrl('jsonapi_views_test_node_view', 'page_1', $query)
+    );
+
+    $this->assertCount(5, $response_document['data']);
+    $this->assertEquals(5, $response_document['meta']['count']);
+    $this->assertArrayNotHasKey('next', $response_document['links']);
+    $this->assertSame(array_keys($nodes['2021-01']), array_map(static function (array $data) {
+      return $data['id'];
+    }, $response_document['data']));
+    $this->assertCacheContext($headers, 'url.query_args:views-argument');
+
+    // Get all nodes.
+    $query = [];
+    [$response_document, $headers] = $this->getJsonApiViewResponse(
+      $this->getJsonApiViewUrl('jsonapi_views_test_node_view', 'page_1', $query)
+    );
+
+    $this->assertCount(5, $response_document['data']);
+    $this->assertEqual(9, $response_document['meta']['count']);
+    $this->assertArrayHasKey('next', $response_document['links']);
+    $this->assertSame(array_slice(array_keys($nodes['all']), 0, 5), array_map(static function (array $data) {
+      return $data['id'];
+    }, $response_document['data']));
+    $this->assertCacheContext($headers, 'url.query_args:views-argument');
   }
 
   /**

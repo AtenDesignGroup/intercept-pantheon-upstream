@@ -2,6 +2,7 @@
 
 namespace Drupal\media_entity_slideshow\Plugin\media\Source;
 
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\media\MediaInterface;
 use Drupal\media\MediaSourceBase;
 use Drupal\media\MediaSourceEntityConstraintsInterface;
@@ -46,7 +47,7 @@ class Slideshow extends MediaSourceBase implements MediaSourceEntityConstraintsI
             '@count slides, created on @date',
             [
               '@date' => \Drupal::service('date.formatter')
-                ->format($media->getCreatedTime(), 'custom', DATETIME_DATETIME_STORAGE_FORMAT),
+                ->format($media->getCreatedTime(), 'custom', DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
             ]);
         }
         return parent::getMetadata($media, 'default_name');
@@ -56,6 +57,10 @@ class Slideshow extends MediaSourceBase implements MediaSourceEntityConstraintsI
 
       case 'thumbnail_uri':
         $source_field = $this->configuration['source_field'];
+
+        if (empty($media->{$source_field}->target_id)) {
+          return parent::getMetadata($media, 'thumbnail_uri');
+        }
 
         /** @var \Drupal\media\MediaInterface $slideshow_item */
         $slideshow_item = $this->entityTypeManager->getStorage('media')->load($media->{$source_field}->target_id);

@@ -260,6 +260,9 @@
             justify-content: flex-start; }
   #drupal-off-canvas .form-actions:not(.form-actions--operations) {
     background: #fff;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
     border-top: #d3d8df 2px solid;
     bottom: 0;
     left: 0;

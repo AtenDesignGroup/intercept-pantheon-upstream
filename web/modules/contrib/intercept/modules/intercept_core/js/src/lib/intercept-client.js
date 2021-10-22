@@ -8310,6 +8310,7 @@ let schema = {
     path: { type: 'object' },
     field_capacity_max: { type: 'integer' },
     field_capacity_min: { type: 'integer' },
+    field_requires_certification: { type: 'boolean' },
     field_reservable_online: { type: 'boolean' },
     field_room_fees: { type: 'object' },
     field_room_standard_equipment: { type: 'array' }, field_reservation_phone_number: { type: 'string' }, field_staff_use_only: { type: 'boolean' }, field_text_content: { type: 'object' }, field_text_intro: { type: 'object' }, field_text_teaser: { type: 'string' }, type: { type: 'relationship', model: 'node_type--node_type', multiple: false }, uid: { type: 'relationship', model: 'user--user', multiple: false }, image_primary: { type: 'relationship', model: 'media--image', multiple: false }, field_location: { type: 'relationship', model: 'node--location', multiple: false }, field_room_type: { type: 'relationship', model: 'taxonomy_term--room_type', multiple: false }

@@ -7,7 +7,7 @@ services:
     arguments: ['@entity_type.manager', '@password', '@intercept_ils.auth.user_auth', '@externalauth.externalauth', '@externalauth.authmap', '@config.factory', '@plugin.manager.intercept_ils']
   intercept_ils.mapping_manager:
     class: Drupal\intercept_ils\MappingManager
-    arguments: ['@entity_type.manager', '@entity.query', '@config.factory', '@plugin.manager.intercept_ils']
+    arguments: ['@entity_type.manager', '@config.factory', '@plugin.manager.intercept_ils']
   intercept_ils.settings:
     class: \Drupal\intercept_ils\Form\SettingsForm
     arguments: ['@plugin.manager.intercept_ils']

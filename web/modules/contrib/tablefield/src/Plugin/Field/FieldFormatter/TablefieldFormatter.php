@@ -33,7 +33,12 @@ class TablefieldFormatter extends FormatterBase implements ContainerFactoryPlugi
    */
   protected $currentUser;
 
-  protected $ModuleHandler;
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
 
   /**
    * {@inheritdoc}

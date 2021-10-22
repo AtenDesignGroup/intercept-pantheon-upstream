@@ -7,6 +7,7 @@ use Drupal\consumers\Entity\Consumer;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Image\ImageFactory;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\image\ImageStyleInterface;
 
@@ -15,7 +16,9 @@ use Drupal\image\ImageStyleInterface;
  *
  * @package Drupal\consumer_image_styles
  */
-class ImageStylesProvider {
+class ImageStylesProvider implements ImageStylesProviderInterface {
+
+  use StringTranslationTrait;
 
   const DERIVATIVE_LINK_REL = 'drupal://jsonapi/extensions/consumer_image_styles/links/relation-types/#derivative';
 
@@ -39,13 +42,7 @@ class ImageStylesProvider {
   }
 
   /**
-   * Load the image styles for a given consumer.
-   *
-   * @param \Drupal\consumers\Entity\Consumer $consumer
-   *   Consumer entity to load image styles for.
-   *
-   * @return \Drupal\image\Entity\ImageStyle[]
-   *   List of image styles keyed by image style id.
+   * {@inheritdoc}
    */
   public function loadStyles(Consumer $consumer) {
     $consumer_config = $consumer->get('image_styles')->getValue();
@@ -67,43 +64,37 @@ class ImageStylesProvider {
   }
 
   /**
-   * Builds a derivative link based on the image URI and the image style.
-   *
-   * @param string $uri
-   *   The file URI.
-   * @param \Drupal\image\ImageStyleInterface $image_style
-   *   The image style to apply.
-   *
-   * @return array
-   *   A structured array that complies with the JSON:API spec for links.
-   *
-   * @see https://jsonapi.org/format/#document-links
+   * {@inheritdoc}
    */
   public function buildDerivativeLink($uri, ImageStyleInterface $image_style) {
+    $image = $this->imageFactory->get($uri);
+    $dimensions = [
+      'width' => $image->getWidth(),
+      'height' => $image->getHeight(),
+    ];
+    $image_style->transformDimensions($dimensions, $uri);
     return [
       'href' => file_create_url($image_style->buildUrl($uri)),
+      'title' => $this->t('Image Style: @name', ['@name' => $image_style->label()]),
+      'type' => $image->getMimeType(),
       'meta' => [
-        'rel' => [static::DERIVATIVE_LINK_REL],
-      ],
+        'rel' => static::DERIVATIVE_LINK_REL,
+      ] + $dimensions,
     ];
   }
 
   /**
-   * Checks if an entity is an image.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity.
-   *
-   * @return bool
-   *   TRUE if the entity is an image.
+   * {inheritdoc}
    */
   public function entityIsImage(EntityInterface $entity) {
     if (!$entity instanceof File) {
       return FALSE;
     }
-    return $this->imageFactory
-      ->get($entity->getFileUri())
-      ->isValid();
+
+    return in_array(
+      mb_strtolower(pathinfo($entity->getFileUri(), PATHINFO_EXTENSION)),
+      $this->imageFactory->getSupportedExtensions()
+    );
   }
 
 }

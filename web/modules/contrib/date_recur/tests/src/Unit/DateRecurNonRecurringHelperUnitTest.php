@@ -85,7 +85,8 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
       new \DateTime('4am 14 April 2014')
     );
 
-    $this->setExpectedException(\InvalidArgumentException::class, 'Invalid count limit.');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('Invalid count limit.');
     $helper->getOccurrences(
       new \DateTime('1am 14 April 2014'),
       new \DateTime('3am 14 April 2014'),

@@ -79,6 +79,9 @@ class RoomReservationListBuilder extends EntityListBuilder {
       'url' => $this->ensureDestination($entity->toUrl()),
       'weight' => 11,
     ] + $this->getOffCanvasAttributes();
+    if (array_key_exists('copy', $operations)) {
+      $operations['copy'] += $this->getOffCanvasAttributes();
+    }
     $operations['edit'] += $this->getOffCanvasAttributes();
 
     return $operations;
@@ -179,6 +182,7 @@ class RoomReservationListBuilder extends EntityListBuilder {
           break;
       }
     }
+
     return $operations;
   }
 

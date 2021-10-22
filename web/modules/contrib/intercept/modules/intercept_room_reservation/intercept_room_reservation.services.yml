@@ -3,3 +3,7 @@ services:
     class: Drupal\intercept_room_reservation\Routing\RouteSubscriber
     tags:
       - { name: event_subscriber }
+
+  intercept_room_reservation.manager:
+    class: Drupal\intercept_room_reservation\RoomReservationManager
+    arguments: ['@current_user', '@entity_type.manager']

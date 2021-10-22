@@ -7,6 +7,7 @@ use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\RemoveCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\intercept_core\Utility\Dates;
@@ -246,6 +247,10 @@ class RoomReservationForm extends ContentEntityForm {
       'intercept:saveRoomReservationSuccess',
     ]);
     $response->addCommand($command);
+
+    // Remove any validation errors from previous submission.
+    $selector = '.messages--error';
+    $response->addCommand(new RemoveCommand($selector));
 
     return $response;
   }

@@ -3,7 +3,7 @@
 namespace Drupal\consumer_image_styles\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\consumer_image_styles\ImageStylesProvider;
+use Drupal\consumer_image_styles\ImageStylesProviderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ImageStyles extends ResourceFieldEnhancerBase implements ContainerFactoryPluginInterface {
 
   /**
-   * @var \Drupal\consumer_image_styles\ImageStylesProvider
+   * @var \Drupal\consumer_image_styles\ImageStylesProviderInterface
    */
   protected $imageStylesProvider;
 
@@ -42,7 +42,7 @@ class ImageStyles extends ResourceFieldEnhancerBase implements ContainerFactoryP
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    ImageStylesProvider $image_styles_provider,
+    ImageStylesProviderInterface $image_styles_provider,
     EntityTypeManagerInterface $entity_type_manager
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);

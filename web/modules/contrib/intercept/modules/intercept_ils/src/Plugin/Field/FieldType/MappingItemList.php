@@ -48,11 +48,17 @@ class MappingItemList extends FieldItemList {
   public function delete() {
     // Delete all aliases associated with this entity in the current language.
     $entity = $this->getEntity();
-    $conditions = [
-      'source' => '/' . $entity->toUrl()->getInternalPath(),
-      'langcode' => $entity->language()->getId(),
-    ];
-    \Drupal::service('path.alias_storage')->delete($conditions);
+    $path_alias = '/event/' . $entity->id() . '/register';
+    $storage = \Drupal::entityTypeManager()->getStorage('path_alias');
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('alias', $path_alias, '=');
+
+    if ($result = $query->range(0, 1)->execute()) {
+      $existing_alias_id = reset($result);
+      $existing_alias = $storage->load($existing_alias_id);
+      $storage_load->delete([$existing_alias]);
+    }
   }
 
 }

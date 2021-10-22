@@ -18,6 +18,11 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'classy';
+
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = [
     'entity_test',
     'datetime',

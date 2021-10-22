@@ -1,6 +1,5 @@
 {% extends '@intercept-base-components/teaser/teaser--reservation.twig' %}
 
-{% import '@intercept-base-components/metadata/metadata.twig' as metadata %}
 {% set equipment = equipment_reservation.field_equipment.entity %}
 {% set room = equipment_reservation.field_room.entity %}
 {% set location = equipment_reservation.field_location.entity %}
@@ -23,21 +22,21 @@
 
 {% block tags %}
   {% if content.field_location|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Location"|t(),
       data: content.field_location|field_value,
       modifiers: ['inline', 'small']
     } %}
   {% endif %}
   {% if content.field_room|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Room"|t(),
       data: content.field_room|field_value,
       modifiers: ['inline', 'small']
     } %}
   {% endif %}
   {% if content.field_event|field_value %}
-    {% include metadata with {
+    {% include '@intercept-base-components/metadata/metadata.twig' with {
       title: "Event"|t(),
       data: content.field_event|field_value,
       modifiers: ['inline', 'small']

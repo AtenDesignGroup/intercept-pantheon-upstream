@@ -1,7 +1,7 @@
 name: Intercept Profile
 type: profile
 description: 'The Intercept profile helps setup Drupal with the Intercept modules and theme.'
-core_version_requirement: ^8.9 || ^9
+core_version_requirement: ^8.9 || ^9.0
 distribution:
   name: Intercept Profile
 dependencies:
@@ -9,6 +9,8 @@ dependencies:
   - adminimal_admin_toolbar:adminimal_admin_toolbar
   - components:components
   - better_exposed_filters:better_exposed_filters
+  - date_recur:date_recur
+  - date_recur_modular:date_recur_modular
   - default_content:default_content
   - drupal:automated_cron
   - drupal:block
@@ -17,8 +19,6 @@ dependencies:
   - drupal:config
   - drupal:contextual
   - drupal:datetime
-  - drupal:date_recur
-  - drupal:date_recur_modular
   - drupal:dblog
   - drupal:editor
   - drupal:field_ui
@@ -49,7 +49,7 @@ dependencies:
   - jquery_ui_touch_punch:jquery_ui_touch_punch
   - quick_node_clone:quick_node_clone
   - stories:stories_media
-  - twig_tweak:twig_tweak
+  - twig_tweak:twig_tweak (>=8.x-2.9)
   - twig_field_value:twig_field_value
   - view_user_email:view_user_email
 themes:

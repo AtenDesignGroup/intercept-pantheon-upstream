@@ -67,7 +67,9 @@ class TablefieldController {
       $handle = fopen('php://output', 'w+');
       if (!empty($table) && $handle) {
         foreach ($table as $row) {
-          fputcsv($handle, $row, $separator);
+          if (is_array($row) && !is_null($row)) {
+            fputcsv($handle, $row, $separator);
+          }
         }
       }
       fclose($handle);

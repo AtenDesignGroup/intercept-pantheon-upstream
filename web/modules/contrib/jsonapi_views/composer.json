@@ -4,7 +4,7 @@
   "description": "This module creates custom JSON:API resources from Views.",
   "keywords": [
     "Drupal",
-    "JSON API"
+    "JSON:API"
   ],
   "license": "GPL-2.0-or-later",
   "homepage": "https://www.drupal.org/project/jsonapi_views",

@@ -14,6 +14,8 @@ export const getUserName = () => get(drupalSettings, 'intercept.user.name');
 export const getUserUid = () => get(drupalSettings, 'intercept.user.id');
 export const getUserUuid = () => get(drupalSettings, 'intercept.user.uuid');
 export const getUserRoles = () => get(drupalSettings, 'intercept.user.roles');
+export const getUserCertifications = () =>
+  get(drupalSettings, 'intercept.certifications.rooms', []);
 
 /**
  * Returns a Date object set to the start of
@@ -340,3 +342,16 @@ export const userIsManager = () =>
     'intercept_system_admin',
     'intercept_room_reservation_approver',
   ]);
+
+/**
+ * Check if the current user is certified for the given room.
+ *
+ * @param {string} uuid
+ *   The uuid of the room to check for certification.
+ * @return {Boolean}
+ *   True if the user is certified for the given room,
+ *   otherwise False.
+ */
+export const userIsCertifiedForRoom = (uuid) => {
+  return getUserCertifications().includes(uuid);
+}

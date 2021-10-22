@@ -1,0 +1,369 @@
+// Google Color Palette defined: http://www.google.com/design/spec/style/color.html
+
+$richland-red: #C91B76;
+$richland-purple: #9478A8;
+$richland-blue: #00AFD0;
+$richland-green: #99C221;
+$richland-yellow: #FFC700;
+$richland-orange: #FF7548;
+
+$materialize-red: (
+  "base":       $richland-red,
+  "lighten-5":  $richland-red,
+  "lighten-4":  $richland-red,
+  "lighten-3":  $richland-red,
+  "lighten-2":  $richland-red,
+  "lighten-1":  $richland-red,
+  "darken-1":   $richland-red,
+  "darken-2":   $richland-red,
+  "darken-3":   $richland-red,
+  "darken-4":   $richland-red,
+);
+
+$red: (
+  "base":       $richland-red,
+  "lighten-5":  $richland-red,
+  "lighten-4":  $richland-red,
+  "lighten-3":  $richland-red,
+  "lighten-2":  $richland-red,
+  "lighten-1":  $richland-red,
+  "darken-1":   $richland-red,
+  "darken-2":   $richland-red,
+  "darken-3":   $richland-red,
+  "darken-4":   $richland-red,
+);
+
+$pink: (
+  "base":       $richland-red,
+  "lighten-5":  $richland-red,
+  "lighten-4":  $richland-red,
+  "lighten-3":  $richland-red,
+  "lighten-2":  $richland-red,
+  "lighten-1":  $richland-red,
+  "darken-1":   $richland-red,
+  "darken-2":   $richland-red,
+  "darken-3":   $richland-red,
+  "darken-4":   $richland-red,
+);
+
+$purple: (
+  "base":       $richland-purple,
+  "lighten-5":  $richland-purple,
+  "lighten-4":  $richland-purple,
+  "lighten-3":  $richland-purple,
+  "lighten-2":  $richland-purple,
+  "lighten-1":  $richland-purple,
+  "darken-1":   $richland-purple,
+  "darken-2":   $richland-purple,
+  "darken-3":   $richland-purple,
+  "darken-4":   $richland-purple,
+  "accent-1":   $richland-purple,
+  "accent-2":   $richland-purple,
+  "accent-3":   $richland-purple,
+  "accent-4":   $richland-purple
+);
+
+$deep-purple: (
+  "base":       $richland-purple,
+  "lighten-5":  $richland-purple,
+  "lighten-4":  $richland-purple,
+  "lighten-3":  $richland-purple,
+  "lighten-2":  $richland-purple,
+  "lighten-1":  $richland-purple,
+  "darken-1":   $richland-purple,
+  "darken-2":   $richland-purple,
+  "darken-3":   $richland-purple,
+  "darken-4":   $richland-purple,
+  "accent-1":   $richland-purple,
+  "accent-2":   $richland-purple,
+  "accent-3":   $richland-purple,
+  "accent-4":   $richland-purple
+);
+
+$indigo: (
+  "base":       $richland-blue,
+  "lighten-5":  $richland-blue,
+  "lighten-4":  $richland-blue,
+  "lighten-3":  $richland-blue,
+  "lighten-2":  $richland-blue,
+  "lighten-1":  $richland-blue,
+  "darken-1":   $richland-blue,
+  "darken-2":   $richland-blue,
+  "darken-3":   $richland-blue,
+  "darken-4":   $richland-blue,
+  "accent-1":   $richland-blue,
+  "accent-2":   $richland-blue,
+  "accent-3":   $richland-blue,
+  "accent-4":   $richland-blue
+);
+
+$blue: (
+  "base":       $richland-blue,
+  "lighten-5":  $richland-blue,
+  "lighten-4":  $richland-blue,
+  "lighten-3":  $richland-blue,
+  "lighten-2":  $richland-blue,
+  "lighten-1":  $richland-blue,
+  "darken-1":   $richland-blue,
+  "darken-2":   $richland-blue,
+  "darken-3":   $richland-blue,
+  "darken-4":   $richland-blue,
+  "accent-1":   $richland-blue,
+  "accent-2":   $richland-blue,
+  "accent-3":   $richland-blue,
+  "accent-4":   $richland-blue
+);
+
+$light-blue: (
+  "base":       $richland-blue,
+  "lighten-5":  $richland-blue,
+  "lighten-4":  $richland-blue,
+  "lighten-3":  $richland-blue,
+  "lighten-2":  $richland-blue,
+  "lighten-1":  $richland-blue,
+  "darken-1":   $richland-blue,
+  "darken-2":   $richland-blue,
+  "darken-3":   $richland-blue,
+  "darken-4":   $richland-blue,
+  "accent-1":   $richland-blue,
+  "accent-2":   $richland-blue,
+  "accent-3":   $richland-blue,
+  "accent-4":   $richland-blue
+);
+
+$cyan: (
+  "base":       $richland-blue,
+  "lighten-5":  $richland-blue,
+  "lighten-4":  $richland-blue,
+  "lighten-3":  $richland-blue,
+  "lighten-2":  $richland-blue,
+  "lighten-1":  $richland-blue,
+  "darken-1":   $richland-blue,
+  "darken-2":   $richland-blue,
+  "darken-3":   $richland-blue,
+  "darken-4":   $richland-blue,
+  "accent-1":   $richland-blue,
+  "accent-2":   $richland-blue,
+  "accent-3":   $richland-blue,
+  "accent-4":   $richland-blue
+);
+
+$teal: (
+  "base":       $richland-blue,
+  "lighten-5":  $richland-blue,
+  "lighten-4":  $richland-blue,
+  "lighten-3":  $richland-blue,
+  "lighten-2":  $richland-blue,
+  "lighten-1":  $richland-blue,
+  "darken-1":   $richland-blue,
+  "darken-2":   $richland-blue,
+  "darken-3":   $richland-blue,
+  "darken-4":   $richland-blue,
+  "accent-1":   $richland-blue,
+  "accent-2":   $richland-blue,
+  "accent-3":   $richland-blue,
+  "accent-4":   $richland-blue
+);
+
+$green: (
+  "base":       $richland-green,
+  "lighten-5":  $richland-green,
+  "lighten-4":  $richland-green,
+  "lighten-3":  $richland-green,
+  "lighten-2":  $richland-green,
+  "lighten-1":  $richland-green,
+  "darken-1":   $richland-green,
+  "darken-2":   $richland-green,
+  "darken-3":   $richland-green,
+  "darken-4":   $richland-green,
+  "accent-1":   $richland-green,
+  "accent-2":   $richland-green,
+  "accent-3":   $richland-green,
+  "accent-4":   $richland-green
+);
+
+$light-green: (
+  "base":       $richland-green,
+  "lighten-5":  $richland-green,
+  "lighten-4":  $richland-green,
+  "lighten-3":  $richland-green,
+  "lighten-2":  $richland-green,
+  "lighten-1":  $richland-green,
+  "darken-1":   $richland-green,
+  "darken-2":   $richland-green,
+  "darken-3":   $richland-green,
+  "darken-4":   $richland-green,
+  "accent-1":   $richland-green,
+  "accent-2":   $richland-green,
+  "accent-3":   $richland-green,
+  "accent-4":   $richland-green
+);
+
+$lime: (
+  "base":       $richland-green,
+  "lighten-5":  $richland-green,
+  "lighten-4":  $richland-green,
+  "lighten-3":  $richland-green,
+  "lighten-2":  $richland-green,
+  "lighten-1":  $richland-green,
+  "darken-1":   $richland-green,
+  "darken-2":   $richland-green,
+  "darken-3":   $richland-green,
+  "darken-4":   $richland-green,
+  "accent-1":   $richland-green,
+  "accent-2":   $richland-green,
+  "accent-3":   $richland-green,
+  "accent-4":   $richland-green
+);
+
+$yellow: (
+  "base":       $richland-yellow,
+  "lighten-5":  $richland-yellow,
+  "lighten-4":  $richland-yellow,
+  "lighten-3":  $richland-yellow,
+  "lighten-2":  $richland-yellow,
+  "lighten-1":  $richland-yellow,
+  "darken-1":   $richland-yellow,
+  "darken-2":   $richland-yellow,
+  "darken-3":   $richland-yellow,
+  "darken-4":   $richland-yellow,
+  "accent-1":   $richland-yellow,
+  "accent-2":   $richland-yellow,
+  "accent-3":   $richland-yellow,
+  "accent-4":   $richland-yellow
+);
+
+$amber: (
+  "base":       $richland-orange,
+  "lighten-5":  $richland-orange,
+  "lighten-4":  $richland-orange,
+  "lighten-3":  $richland-orange,
+  "lighten-2":  $richland-orange,
+  "lighten-1":  $richland-orange,
+  "darken-1":   $richland-orange,
+  "darken-2":   $richland-orange,
+  "darken-3":   $richland-orange,
+  "darken-4":   $richland-orange,
+  "accent-1":   $richland-orange,
+  "accent-2":   $richland-orange,
+  "accent-3":   $richland-orange,
+  "accent-4":   $richland-orange
+);
+
+$orange: (
+  "base":       $richland-orange,
+  "lighten-5":  $richland-orange,
+  "lighten-4":  $richland-orange,
+  "lighten-3":  $richland-orange,
+  "lighten-2":  $richland-orange,
+  "lighten-1":  $richland-orange,
+  "darken-1":   $richland-orange,
+  "darken-2":   $richland-orange,
+  "darken-3":   $richland-orange,
+  "darken-4":   $richland-orange,
+  "accent-1":   $richland-orange,
+  "accent-2":   $richland-orange,
+  "accent-3":   $richland-orange,
+  "accent-4":   $richland-orange
+);
+
+$deep-orange: (
+  "base":       $richland-orange,
+  "lighten-5":  $richland-orange,
+  "lighten-4":  $richland-orange,
+  "lighten-3":  $richland-orange,
+  "lighten-2":  $richland-orange,
+  "lighten-1":  $richland-orange,
+  "darken-1":   $richland-orange,
+  "darken-2":   $richland-orange,
+  "darken-3":   $richland-orange,
+  "darken-4":   $richland-orange,
+  "accent-1":   $richland-orange,
+  "accent-2":   $richland-orange,
+  "accent-3":   $richland-orange,
+  "accent-4":   $richland-orange
+);
+
+$brown: (
+  "base":       #795548,
+  "lighten-5":  #efebe9,
+  "lighten-4":  #d7ccc8,
+  "lighten-3":  #bcaaa4,
+  "lighten-2":  #a1887f,
+  "lighten-1":  #8d6e63,
+  "darken-1":   #6d4c41,
+  "darken-2":   #5d4037,
+  "darken-3":   #4e342e,
+  "darken-4":   #3e2723
+);
+
+$blue-grey: (
+  "base":       #607d8b,
+  "lighten-5":  #eceff1,
+  "lighten-4":  #cfd8dc,
+  "lighten-3":  #b0bec5,
+  "lighten-2":  #90a4ae,
+  "lighten-1":  #78909c,
+  "darken-1":   #546e7a,
+  "darken-2":   #455a64,
+  "darken-3":   #37474f,
+  "darken-4":   #263238
+);
+
+$grey: (
+  "base":       #9e9e9e,
+  "lighten-5":  #fafafa,
+  "lighten-4":  #f5f5f5,
+  "lighten-3":  #eeeeee,
+  "lighten-2":  #e0e0e0,
+  "lighten-1":  #bdbdbd,
+  "darken-1":   #757575,
+  "darken-2":   #616161,
+  "darken-3":   #424242,
+  "darken-4":   #212121
+);
+
+$shades: (
+  "black":        #000000,
+  "white":        #FFFFFF,
+  "transparent":  transparent
+);
+
+$colors: (
+  "materialize-red": $materialize-red,
+  "red": $red,
+  "pink": $pink,
+  "purple": $purple,
+  "deep-purple": $deep-purple,
+  "indigo": $indigo,
+  "blue": $blue,
+  "light-blue": $light-blue,
+  "cyan": $cyan,
+  "teal": $teal,
+  "green": $green,
+  "light-green": $light-green,
+  "lime": $lime,
+  "yellow": $yellow,
+  "amber": $amber,
+  "orange": $orange,
+  "deep-orange": $deep-orange,
+  "brown": $brown,
+  "blue-grey": $blue-grey,
+  "grey": $grey,
+  "shades": $shades
+) !default;
+
+
+// usage: color("name_of_color", "type_of_color")
+// to avoid to repeating map-get($colors, ...)
+
+@function color($color, $type) {
+  @if map-has-key($colors, $color) {
+    $curr_color: map-get($colors, $color);
+    @if map-has-key($curr_color, $type) {
+      @return map-get($curr_color, $type);
+    }
+  }
+  @warn "Unknown `#{$color}` - `#{$type}` in $colors.";
+  @return null;
+}

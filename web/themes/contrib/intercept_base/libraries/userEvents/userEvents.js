@@ -8,6 +8,7 @@
       if (p.length == 1) b[p[0]] = "";
       else b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
     }
+    console.log( b );
     return b;
   }
 
@@ -32,7 +33,7 @@
       "click",
       ".js-user-events-switcher .view-switcher__button",
       function(e) {
-        e.preventDefault();
+        // e.preventDefault();
         var current = getDateValue($(e.currentTarget).attr("href"));
         $(`input[value="${current}"][name="field_date_time_value"]`)
           .prop("checked", true)

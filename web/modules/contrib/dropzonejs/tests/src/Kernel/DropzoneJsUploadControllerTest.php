@@ -11,9 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\language\Entity\ConfigurableLanguage;
 
 /**
- * Tests dropzoneJs upload controller.
+ * Tests DropzoneJS upload controller.
  *
- * @group DropzoneJs
+ * @group dropzonejs
  */
 class DropzoneJsUploadControllerTest extends KernelTestBase {
 
@@ -43,7 +43,7 @@ class DropzoneJsUploadControllerTest extends KernelTestBase {
    *
    * @var string
    */
-  protected $testfileData = 'DropzoneJs test file data';
+  protected $testfileData = 'DropzoneJS test file data';
 
   /**
    * Modules to enable.
@@ -57,22 +57,18 @@ class DropzoneJsUploadControllerTest extends KernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->installSchema('system', 'router');
     $this->installConfig('dropzonejs');
     $this->installEntitySchema('user');
 
     $this->filesDir = $this->siteDirectory . '/files';
-    $config = $this->container->get('config.factory');
-    $config->getEditable('system.file')
-      ->set('path.temporary', $this->filesDir)
-      ->save();
+    $this->setSetting('file_temp_path', $this->filesDir);
 
     $this->tmpFile = tempnam('', $this->testfilePrefix);
     file_put_contents($this->tmpFile, $this->testfileData);
   }
 
   /**
-   * Test that dropzoneJs correctly handles uploads.
+   * Test that DropzoneJS correctly handles uploads.
    */
   public function testDropzoneJsUploadController() {
     $this->container->get('router.builder')->rebuild();
@@ -93,13 +89,45 @@ class DropzoneJsUploadControllerTest extends KernelTestBase {
     $upload_handler = $this->container->get('dropzonejs.upload_handler');
     $controller = new UploadController($upload_handler, $request);
     $controller_result = $controller->handleUploads();
-    $this->assertTrue($controller_result instanceof JsonResponse);
+    $this->assertInstanceOf(JsonResponse::class, $controller_result);
 
     $result = json_decode($controller_result->getContent());
     $result_file = $this->filesDir . '/' . $result->result;
     $this->assertStringEndsWith('-kaplya_aa1.jpg.txt', $result_file);
-    $this->assertTrue(file_exists($result_file));
+    $this->assertFileExists($result_file);
     $this->assertEquals(file_get_contents($result_file), $this->testfileData);
+  }
+
+  /**
+   * Tests that DropzoneJS ignores filename transliteration.
+   */
+  public function testIgnoreTransliteration() {
+    $this->container->get('router.builder')->rebuild();
+
+    $language = ConfigurableLanguage::createFromLangcode('zh-hans');
+    $language->save();
+    $this->config('system.site')->set('default_langcode', $language->getId())->save();
+    $this->config('dropzonejs.settings')->set('filename_transliteration', FALSE)->save();
+
+    // The filename should be expected as it is.
+    $chinese_with_emoji_fileanme_without_extension = '中文😁';
+    $uploaded_file = new UploadedFile($this->tmpFile, "{$this->testfilePrefix}${chinese_with_emoji_fileanme_without_extension}.jpg");
+    $file_bag = new FileBag();
+    $file_bag->set('file', $uploaded_file);
+
+    $request = new Request();
+    $request->files = $file_bag;
+
+    $upload_handler = $this->container->get('dropzonejs.upload_handler');
+    $controller = new UploadController($upload_handler, $request);
+    $controller_result = $controller->handleUploads();
+    $this->assertInstanceOf(JsonResponse::class, $controller_result);
+
+    $result = json_decode($controller_result->getContent());
+    $result_file = $this->filesDir . '/' . $result->result;
+    $this->assertStringEndsWith($chinese_with_emoji_fileanme_without_extension . '.jpg.txt', $result_file);
+    $this->assertFileExists($result_file);
+    $this->assertStringEqualsFile($result_file, $this->testfileData);
   }
 
 }

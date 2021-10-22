@@ -17,7 +17,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    * Test arguments required.
    */
   public function testRequiredConstructorArguments() {
-    $this->setExpectedException(\ArgumentCountError::class);
+    $this->expectException(\ArgumentCountError::class);
     $this->createDateRange();
   }
 
@@ -114,7 +114,8 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
     $start = new \DateTime('Monday 12:00:01');
     $end = new \DateTime('Monday 12:00:00');
 
-    $this->setExpectedException(\InvalidArgumentException::class, 'End date must not occur before start date.');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('End date must not occur before start date.');
     $this->createDateRange($start, $end);
   }
 
@@ -128,7 +129,8 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
   public function testTimezoneValidation() {
     $start = new \DateTime('Monday 12:00:00', new \DateTimeZone('Australia/Melbourne'));
     $end = new \DateTime('Monday 12:00:00', new \DateTimeZone('Australia/Sydney'));
-    $this->setExpectedException(\InvalidArgumentException::class, 'Provided dates must be the same timezone.');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('Provided dates must be the same timezone.');
     $this->createDateRange($start, $end);
   }
 

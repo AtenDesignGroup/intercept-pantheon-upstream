@@ -21,6 +21,10 @@ function tablefield_cellspan_preprocess_table(&$variables) {
 
       foreach ($row['cells'] as $col_key => $cell) {
 
+        if (is_array($cell['content']) || is_object($cell['content'])) {
+          break;
+        }
+
         if (!isset($spancol[$col_key])) {
           $spancol[$col_key]['rowspan'] = 2;
           $spancol[$col_key]['spancol'] = FALSE;

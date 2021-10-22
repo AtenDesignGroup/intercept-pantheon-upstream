@@ -23,12 +23,20 @@ intercept_room_reservation.reservation.add:
   path: '/room-reservation/add'
   defaults:
     # _form: '\Drupal\intercept_room_reservation\Form\RoomReservationForm'
-#    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::add'
+    # _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::add'
     _title: 'Create Reservation'
   requirements:
     # _entity_access: 'room_reservation.update'
     # _entity_bundle: 'room_reservation'
     _access: 'TRUE'
+
+intercept_room_reservation.reservation.copy:
+  path: '/manage/room-reservations/{room_reservation}/duplicate'
+  defaults:
+    _title: 'Copy a room reservation'
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationCopyController::build'
+  requirements:
+    _permission: 'copy room reservations'
 
 intercept_room_reservation.reservation.edit:
   path: '/manage/room-reservations/{room_reservation}/edit'

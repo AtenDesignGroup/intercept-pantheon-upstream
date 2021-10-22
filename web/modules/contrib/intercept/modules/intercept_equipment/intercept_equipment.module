@@ -209,12 +209,10 @@ function intercept_equipment_equipment_reservation_insert(EntityInterface $entit
 function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->get('view');
   if ($view->id() == 'intercept_equipment_reservations' && $view->current_display == 'embed') {
-    // Show future equipment reservations by default.
-    if (array_key_exists('field_dates_value_1', $form)) {
-      $form['field_dates_value_1']['min']['#default_value'] = date('m/d/Y');
-      $end_date = new \DateTime('+3 months');
-      $form['field_dates_value_1']['max']['#default_value'] = date_format($end_date, 'm/d/Y');
-    }
+
+    // Change the labels on the min and max date fields.
+    $form['field_dates_value_1_wrapper']['field_dates_value_1']['min']['#title'] = new TranslatableMarkup('Dates between');
+    $form['field_dates_value_1_wrapper']['field_dates_value_1']['max']['#title'] = new TranslatableMarkup('And');
 
     // Change the locations field to be a dropdown.
     // See: https://atendesigngroup.com/blog/drupal-8-views-entity-reference-exposed-filter-select-list
@@ -254,6 +252,23 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInte
     // Add the $options from above to our select list.
     $form[$location_field]['#options'] = $options;
     unset($form[$location_field]['#size']);
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function intercept_equipment_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'intercept_equipment_reservations' && $display_id == 'embed') {
+    // Show future equipment reservations by default.
+    $exposed_input = $view->getExposedInput();
+    if (!isset($exposed_input['field_dates_value_1'])) {
+      $date = new DateTime('now');
+      $date_future = new DateTime('+3 months');
+      $exposed_date['field_dates_value_1']['min'] = $date->format('m/d/Y');
+      $exposed_date['field_dates_value_1']['max'] = $date_future->format('m/d/Y');
+      $view->setExposedInput(array_merge($exposed_input, $exposed_date));
+    }
   }
 }
 

@@ -223,7 +223,8 @@ class DateRecurFieldItemTest extends KernelTestBase {
         'timezone' => '',
       ],
     ];
-    $this->setExpectedException(DateRecurHelperArgumentException::class, 'Invalid time zone');
+    $this->expectException(DateRecurHelperArgumentException::class);
+    $this->expectExceptionMessage('Invalid time zone');
     $entity->dr[0]->getHelper();
   }
 
@@ -240,7 +241,8 @@ class DateRecurFieldItemTest extends KernelTestBase {
         'timezone' => 'Mars/Mariner',
       ],
     ];
-    $this->setExpectedException(DateRecurHelperArgumentException::class, 'Invalid time zone');
+    $this->expectException(DateRecurHelperArgumentException::class);
+    $this->expectExceptionMessage('Invalid time zone');
     $entity->dr[0]->getHelper();
   }
 

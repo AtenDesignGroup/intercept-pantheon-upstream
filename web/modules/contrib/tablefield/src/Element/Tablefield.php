@@ -152,16 +152,18 @@ class Tablefield extends FormElement {
       ];
       $element['tablefield']['rebuild']['cols'] = [
         '#title' => t('How many Columns'),
-        '#type' => 'textfield',
+        '#type' => 'number',
         '#size' => 5,
         '#default_value' => $cols,
+        '#min' => 1,
       ];
 
       $element['tablefield']['rebuild']['rows'] = [
         '#title' => t('How many Rows'),
-        '#type' => 'textfield',
+        '#type' => 'number',
         '#size' => 5,
         '#default_value' => $rows,
+        '#min' => 1,
       ];
       $element['tablefield']['rebuild']['rebuild'] = [
         '#type' => 'submit',
@@ -246,7 +248,12 @@ class Tablefield extends FormElement {
     // We don't want to re-send the format/_weight options.
     unset($rebuild['format']);
     unset($rebuild['_weight']);
-    $rebuild['rebuild']['rows']['#value'] = $rebuild['rebuild']['rows']['#default_value'];
+
+    // Set row value to default only if there is Add Row button clicked.
+    $op = (string) $triggering_element['#value'];
+    if ($op === 'Add Row') {
+      $rebuild['rebuild']['rows']['#value'] = $rebuild['rebuild']['rows']['#default_value'];
+    }
 
     return $rebuild;
   }
@@ -307,6 +314,11 @@ class Tablefield extends FormElement {
   private static function importCsv($form_field_name) {
     $files = \Drupal::request()->files->get('files');
     $file_upload = $files[$form_field_name];
+
+    if (empty($file_upload)) {
+      \Drupal::messenger()->addError(t('Select a CSV file to upload.'));
+      return FALSE;
+    }
 
     if ($file_upload->getClientOriginalExtension() != 'csv') {
       \Drupal::messenger()->addError(t('Only files with the following extensions are allowed: %files-allowed.', ['%files-allowed' => 'csv']));

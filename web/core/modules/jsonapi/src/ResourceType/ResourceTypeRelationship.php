@@ -2,8 +2,6 @@
 
 namespace Drupal\jsonapi\ResourceType;
 
-use Drupal\Component\Assertion\Inspector;
-
 /**
  * Specialization of a ResourceTypeField to represent a resource relationship.
  *
@@ -27,14 +25,13 @@ class ResourceTypeRelationship extends ResourceTypeField {
   /**
    * Establishes the relatable resource types of this field.
    *
-   * @param \Drupal\jsonapi\ResourceType\ResourceType[] $resource_types
+   * @param array $resource_types
    *   The array of relatable resource types.
    *
    * @return static
    *   A new instance of the field with the given relatable resource types.
    */
   public function withRelatableResourceTypes(array $resource_types) {
-    assert(Inspector::assertAllObjects($resource_types, ResourceType::class));
     $relationship = new static($this->internalName, $this->publicName, $this->enabled, $this->hasOne);
     $relationship->relatableResourceTypes = $resource_types;
     return $relationship;

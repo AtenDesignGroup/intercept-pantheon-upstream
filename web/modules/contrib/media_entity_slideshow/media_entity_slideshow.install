@@ -5,15 +5,19 @@
  * Install, uninstall and update hooks for Media entity slideshow module.
  */
 
+use Drupal\Core\File\FileSystemInterface;
+
 /**
  * Implements hook_install().
  */
 function media_entity_slideshow_install() {
   $source = drupal_get_path('module', 'media_entity_slideshow') . '/images/icons';
   $destination = \Drupal::config('media.settings')->get('icon_base_uri');
-  file_prepare_directory($destination, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+  /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+  $file_system = \Drupal::service('file_system');
+  $file_system->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
-  $files = file_scan_directory($source, '/.*\.(svg|png|jpg|jpeg|gif)$/');
+  $files = $file_system->scanDirectory($source, '/.*\.(svg|png|jpg|jpeg|gif)$/');
   foreach ($files as $file) {
     // When reinstalling the media module we don't want to copy the icons when
     // they already exist. The icons could be replaced (by a contrib module or
@@ -22,7 +26,7 @@ function media_entity_slideshow_install() {
     // referenced somewhere else. Since showing an error that it was not
     // possible to copy the files is also confusing, we silently do nothing.
     if (!file_exists($destination . DIRECTORY_SEPARATOR . $file->filename)) {
-      file_unmanaged_copy($file->uri, $destination, FILE_EXISTS_ERROR);
+      $file_system->copy($file->uri, $destination, FileSystemInterface::EXISTS_ERROR);
     }
   }
 }
@@ -33,8 +37,9 @@ function media_entity_slideshow_install() {
 function media_entity_slideshow_requirements($phase) {
   $requirements = [];
   if ($phase == 'install') {
+    $file_system = \Drupal::service('file_system');
     $destination = 'public://media-icons/generic';
-    file_prepare_directory($destination, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+    $file_system->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
     $is_writable = is_writable($destination);
     $is_directory = is_dir($destination);
     if (!$is_writable || !$is_directory) {

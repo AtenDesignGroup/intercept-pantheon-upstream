@@ -3,6 +3,7 @@
 namespace Drupal\consumer_image_styles\Normalizer;
 
 use Drupal\consumer_image_styles\ImageStylesProvider;
+use Drupal\consumer_image_styles\ImageStylesProviderInterface;
 use Drupal\consumers\Entity\Consumer;
 use Drupal\consumers\MissingConsumer;
 use Drupal\consumers\Negotiator;
@@ -28,7 +29,7 @@ class LinkCollectionNormalizer implements NormalizerInterface {
   protected $consumerNegotiator;
 
   /**
-   * @var \Drupal\consumer_image_styles\ImageStylesProvider
+   * @var \Drupal\consumer_image_styles\ImageStylesProviderInterface
    */
   protected $imageStylesProvider;
 
@@ -56,14 +57,14 @@ class LinkCollectionNormalizer implements NormalizerInterface {
    *   The decorated service.
    * @param \Drupal\consumers\Negotiator $consumer_negotiator
    *   The consumer negotiator.
-   * @param \Drupal\consumer_image_styles\ImageStylesProvider
+   * @param \Drupal\consumer_image_styles\ImageStylesProviderInterface
    *   Image styles utility.
    * @param \Drupal\Core\Image\ImageFactory $image_factory
    *   The image factory.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
    */
-  public function __construct(NormalizerInterface $inner, Negotiator $consumer_negotiator, ImageStylesProvider $imageStylesProvider, ImageFactory $image_factory, RequestStack $request_stack) {
+  public function __construct(NormalizerInterface $inner, Negotiator $consumer_negotiator, ImageStylesProviderInterface $imageStylesProvider, ImageFactory $image_factory, RequestStack $request_stack) {
     $this->inner = $inner;
     $this->consumerNegotiator = $consumer_negotiator;
     $this->imageStylesProvider = $imageStylesProvider;
@@ -85,8 +86,13 @@ class LinkCollectionNormalizer implements NormalizerInterface {
     assert($link_collection instanceof LinkCollection);
     if ($this->decorationApplies($link_collection) && ($consumer = $this->getConsumer())) {
       $variant_links = $this->buildVariantLinks($link_collection->getContext(), $consumer);
-      $normalization = $this->inner->normalize(LinkCollection::merge($link_collection, $variant_links), $format, $context);
-      return static::addLinkRels($normalization, $variant_links);
+      $normalization = $this->inner->normalize(
+        LinkCollection::merge($link_collection, $variant_links),
+        $format,
+        $context
+      );
+      return static::addLinkRels($normalization, $variant_links)
+        ->withCacheableDependency($consumer);
     }
     return $this->inner->normalize($link_collection, $format, $context);
   }
@@ -104,7 +110,21 @@ class LinkCollectionNormalizer implements NormalizerInterface {
     // Generate derivatives only for the found ones.
     $image_styles = $this->imageStylesProvider->loadStyles($consumer);
     return array_reduce($image_styles, function (LinkCollection $decorated, ImageStyleInterface $image_style) use ($uri) {
-      $variant_link = new Link(CacheableMetadata::createFromObject($image_style), Url::fromUri(file_create_url($image_style->buildUrl($uri))), [ImageStylesProvider::DERIVATIVE_LINK_REL]);
+      $image = $this->imageFactory->get($uri);
+      $dimensions = [
+        'width' => $image->getWidth(),
+        'height' => $image->getHeight(),
+      ];
+      $image_style->transformDimensions($dimensions, $uri);
+      $variant_link = new Link(
+        CacheableMetadata::createFromObject($image_style),
+        Url::fromUri(file_create_url($image_style->buildUrl($uri))),
+        ImageStylesProvider::DERIVATIVE_LINK_REL,
+        // Target attributes can only be strings, but dimensions are links.
+        array_map(function (int $dimension): string {
+          return sprintf('%d', $dimension);
+        }, $dimensions)
+      );
       return $decorated->withLink($image_style->id(), $variant_link);
     }, (new LinkCollection([]))->withContext($resource_object));
   }
@@ -128,7 +148,10 @@ class LinkCollectionNormalizer implements NormalizerInterface {
     if ($resource_type->getEntityTypeId() !== 'file') {
       return FALSE;
     }
-    return $this->imageFactory->get($link_context->getField($resource_type->getPublicName('uri'))->value)->isValid();
+    return in_array(
+      mb_strtolower(pathinfo($link_context->getField($resource_type->getPublicName('uri'))->value, PATHINFO_EXTENSION)),
+      $this->imageFactory->getSupportedExtensions()
+    );
   }
 
   /**
@@ -163,7 +186,8 @@ class LinkCollectionNormalizer implements NormalizerInterface {
       $links = iterator_to_array($link_collection);
       if (isset($links[$key])) {
         $normalized_link['meta']['rel'] = array_reduce($links[$key], function (array $relations, Link $link) {
-          return array_unique(array_merge($relations, $link->getLinkRelationTypes()));
+          $relations[] = $link->getLinkRelationType();
+          return array_unique($relations);
         }, []);
       }
     }

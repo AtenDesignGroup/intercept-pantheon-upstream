@@ -62,14 +62,37 @@ function getRoomsWithLocationsFilters() {
   };
 }
 
+/**
+ * Get a set of JSON:API compliant search query parameters that will
+ * filter the list of rooms returned based on the user's role.
+ *
+ * Note: This is simply to reduce the amount of rooms returned from the API for performance
+ * reasons and is not a suitable substitute for permissions based filtering which should
+ * always be enforced on the server side.
+ *
+ * @returns object
+ *   An object which can be parsed into JSON:API compliant URL search query parameters.
+ */
+
 function getRoleBasedFilters() {
   let filter = {
+    roomUsage: {
+      type: 'group',
+      conjunction: 'OR',
+    },
     staffOnly: {
       path: 'field_staff_use_only',
-      value: false,
+      value: '0',
+      memberOf: 'roomUsage',
+    },
+    requiresCert: {
+      path: 'field_requires_certification',
+      value: '1',
+      memberOf: 'roomUsage',
     },
   };
 
+  // Omit filters if user is staff.
   if (utils.userIsStaff()) {
     filter = {};
   }
@@ -395,6 +418,41 @@ class ReserveRoomStep1 extends React.Component {
     );
   };
 
+  /**
+   * Determines whether or not a user should be able to submit a room reservation.
+   * This method only limits the options available to the user and does not
+   * replace the need for proper server-side validation.
+   *
+   * @param {object} roomProps
+   *   The props passed to the room teaser, including the JSON:API room resource object.
+   * @returns {boolean}
+   */
+  userCanReserveRoom = (roomProps) => {
+    const reservable = get(roomProps, 'room.attributes.field_reservable_online');
+    const mustCertify = get(roomProps, 'room.attributes.field_requires_certification');
+    const userIsCertifiedForRoom = utils.userIsCertifiedForRoom(get(roomProps, 'room.id'));
+
+    // A user can reserve this room if...
+    // they are a manager OR...
+    if (utils.userIsManager()) {
+      return true;
+    }
+    // the room is reservable and they are staff OR...
+    if (reservable && utils.userIsStaff()) {
+      return true;
+    }
+    // ...the room is reservable, requires certification and they are certified OR...
+    if (reservable && mustCertify && userIsCertifiedForRoom) {
+      return true;
+    }
+    // ...the room is reservable and does not require certification.
+    if (reservable && !mustCertify) {
+      return true;
+    }
+
+    return false;
+  };
+
   render() {
     const { handleFilterChange, handleRoomSelect } = this;
     const {
@@ -405,33 +463,21 @@ class ReserveRoomStep1 extends React.Component {
     } = this.props;
 
     const roomToShow = this.state.room[this.state.room.exiting ? 'previous' : 'current'];
+
     const roomFooter = (roomProps) => {
-      const reservable = get(roomProps, 'room.attributes.field_reservable_online');
-      // const staffOnly = get(roomProps, 'room.attributes.field_staff_use_only');
-      const phoneNumber = get(roomProps, 'room.attributes.field_reservation_phone_number');
-      let status = null;
+      if (!this.userCanReserveRoom(roomProps)) {
+        const phoneNumber = get(roomProps, 'room.attributes.field_reservation_phone_number');
+        const phoneLink = phoneNumber ? (
+          <a href={`tel:${phoneNumber}`} className="call-prompt__link">
+            {phoneNumber}
+          </a>
+        ) : null;
 
-      if (!reservable) {
-        // const statusText = staffOnly
-        //   ? 'Only event organizers can reserve staff only rooms'
-        //   : 'Only event organizers can reserve online';
-        if (!utils.userIsManager()) {
-          const phoneLink = phoneNumber ? (
-            <a href={`tel:${phoneNumber}`} className="call-prompt__link">
-              {phoneNumber}
-            </a>
-          ) : null;
-
-          return (
-            <p className="call-prompt">
-              <span className="call-prompt__text">Call for information</span> {phoneLink}
-            </p>
-          );
-        }
-
-        // Currently not showing the status message.
-        // status = <p className="action-button__message">{statusText}</p>;
-        status = null;
+        return (
+          <p className="call-prompt">
+            <span className="call-prompt__text">Call for information</span> {phoneLink}
+          </p>
+        );
       }
 
       return (
@@ -446,7 +492,6 @@ class ReserveRoomStep1 extends React.Component {
             {'Reserve'}
           </Button>
           {this.renderDetailButton(roomProps)}
-          {status}
         </div>
       );
     };

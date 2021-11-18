@@ -105,8 +105,8 @@ function intercept_room_reservation_form_node_form_alter(&$form, FormStateInterf
   $node = $form_state->getFormObject()->getEntity();
   if ($node->bundle() == 'event') {
     \Drupal::service('class_resolver')
-    ->getInstanceFromDefinition(EventNodeFormHelper::class)
-    ->nodeFormAlter($form, $form_state);
+      ->getInstanceFromDefinition(EventNodeFormHelper::class)
+      ->nodeFormAlter($form, $form_state);
   }
 }
 
@@ -162,8 +162,8 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $form['date']['max']['#attributes']['autocomplete'] = 'off';
   }
 
-  // Room Reserve Staff Calendar View
-  if ($form['#id'] == 'views-exposed-form-intercept-rooms-default') {
+  // Room Reserve Staff Calendar View.
+  if ($form['#id'] === 'views-exposed-form-intercept-rooms-default') {
     if (isset($form['min-capacity']) && isset($form['max-capacity'])) {
       // Hide min-capacity as we will set the value to match max capacity
       // to mimic an IS_BETWEEN query. See: intercept_room_reservation_views_pre_view().
@@ -313,7 +313,7 @@ function intercept_room_reservation_entity_extra_field_info() {
 function intercept_room_reservation_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
   $fields = [];
   if ($entity_type->id() == 'node' && $bundle == 'room') {
-    // @TODO: Make this configurable by privileged user accounts.
+    // @todo Make this configurable by privileged user accounts.
     $fields['room_thumbnail'] = BaseFieldDefinition::create('intercept_computed')
       ->setLabel(new TranslatableMarkup('Image Thumbnail'))
       ->setComputed(TRUE)
@@ -382,7 +382,7 @@ function intercept_room_reservation_views_pre_view(ViewExecutable $view, $displa
       $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
 
-    // Attach JS
+    // Attach JS.
     $view->element['#attached']['library'][] = 'intercept_room_reservation/roomReservationList';
   }
   elseif ($view->id() === 'intercept_rooms' && $display_id === 'default') {

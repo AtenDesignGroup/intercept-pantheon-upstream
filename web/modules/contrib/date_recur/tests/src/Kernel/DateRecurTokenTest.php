@@ -34,7 +34,7 @@ class DateRecurTokenTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Install core date formats.

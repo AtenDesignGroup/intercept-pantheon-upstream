@@ -121,9 +121,9 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
         $timeZoneFieldPath = array_slice($element['#array_parents'], 0, -1);
         $timeZoneFieldPath[] = 'timezone';
         $timeZoneField = NestedArray::getValue($form_state->getCompleteForm(), $timeZoneFieldPath);
-        $submittedTimeZone = isset($timeZoneField["#value"])
-          ? $timeZoneField["#value"]
-          : ($timeZoneField["#default_value"] ?? NULL);
+        $submittedTimeZone = isset($timeZoneField['#value'])
+          ? $timeZoneField['#value']
+          : ($timeZoneField['#default_value'] ?? NULL);
       }
 
       $allTimeZones = \DateTimeZone::listIdentifiers();

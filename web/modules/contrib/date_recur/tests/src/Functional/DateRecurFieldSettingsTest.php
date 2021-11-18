@@ -44,7 +44,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $fieldStorage = FieldStorageConfig::create([

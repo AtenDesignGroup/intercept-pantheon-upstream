@@ -109,6 +109,7 @@ class Twilio extends SmsGatewayPluginBase {
 
     $recipient = $sms_message->getRecipients()[0];
     $entity_id = $sms_message->getOption('sender_entity__target_id');
+    $entity_type = $sms_message->getOption('sender_entity__target_type');
     $previously_scheduled = $sms_message->getOption('recipient');
     if (method_exists($sms_message, 'getSendTime')) {
       $time = $sms_message->getSendTime();
@@ -129,6 +130,7 @@ class Twilio extends SmsGatewayPluginBase {
           'direction' => $sms_message->getDirection(),
           'sender_phone_number' => $this->configuration['from'],
           'sender_entity__target_id' => $entity_id,
+          'sender_entity__target_type' => $entity_type,
           'options' => serialize($options),
           'queued' => 0,
           'send_on' => $time,

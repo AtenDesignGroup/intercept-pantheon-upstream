@@ -35,7 +35,7 @@ class DateRecurOccurrenceTableSchemaTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // This is the name of the base field.
     $this->fieldName = 'dr';

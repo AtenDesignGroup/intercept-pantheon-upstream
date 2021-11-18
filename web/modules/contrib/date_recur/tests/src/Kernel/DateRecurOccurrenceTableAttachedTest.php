@@ -19,7 +19,7 @@ class DateRecurOccurrenceTableAttachedTest extends DateRecurOccurrenceTableTest 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->testEntityType = 'entity_test_rev';

@@ -33,7 +33,7 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $dateFormat = $this->createMock(DateFormatInterface::class);

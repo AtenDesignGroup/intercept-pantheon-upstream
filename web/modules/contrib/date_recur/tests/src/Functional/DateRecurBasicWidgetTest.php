@@ -44,7 +44,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $display = \Drupal::service('entity_display.repository')->getFormDisplay('dr_entity_test', 'dr_entity_test', 'default');
@@ -108,7 +108,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
 
     $url = Url::fromRoute('entity.dr_entity_test.add_form');
     $this->drupalGet($url);
-    $this->drupalPostForm(NULL, $edit, 'Save');
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('has been created.');
 
     $entity = $this->getLastSavedDrEntityTest();
@@ -141,7 +141,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
 
     $this->drupalGet($entity->toUrl('edit-form'));
     // Submit the values as is.
-    $this->drupalPostForm(NULL, NULL, 'Save');
+    $this->submitForm([], 'Save');
     $this->assertSession()->pageTextContains('has been updated.');
 
     // Reload the entity from storage.
@@ -164,8 +164,9 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'dr[0][timezone]' => 'America/Chicago',
       'dr[0][rrule]' => 'FREQ=DAILY',
     ];
-    $url = Url::fromRoute('entity.dr_entity_test.add_form');
-    $this->drupalPostForm($url, $edit, 'Save');
+
+    $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form'));
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('end date cannot be before the start date');
   }
 
@@ -181,8 +182,9 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'dr[0][timezone]' => 'America/Chicago',
       'dr[0][rrule]' => 'FREQ=DAILY',
     ];
-    $url = Url::fromRoute('entity.dr_entity_test.add_form');
-    $this->drupalPostForm($url, $edit, 'Save');
+
+    $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form'));
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('Start date must be set if end date is set.');
   }
 
@@ -232,8 +234,9 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'dr[0][timezone]' => 'America/Chicago',
       'dr[0][rrule]' => $this->randomMachineName(),
     ];
-    $url = Url::fromRoute('entity.dr_entity_test.add_form');
-    $this->drupalPostForm($url, $edit, 'Save');
+
+    $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form'));
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('Repeat rule is formatted incorrectly.');
   }
 
@@ -270,7 +273,6 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
     $display->setComponent('foo', $component);
     $display->save();
 
-    $url = Url::fromRoute('entity.entity_test.add_form');
     $edit = [
       'foo[0][value][date]' => '',
       'foo[0][value][time]' => '',
@@ -279,7 +281,9 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'foo[0][timezone]' => 'America/Chicago',
       'foo[0][rrule]' => 'FREQ=DAILY',
     ];
-    $this->drupalPostForm($url, $edit, 'Save');
+
+    $this->drupalGet(Url::fromRoute('entity.entity_test.add_form'));
+    $this->submitForm($edit, 'Save');
 
     $this->assertSession()->pageTextContains('The Start date is required.');
     $this->assertSession()->pageTextNotContains('The End date is required.');
@@ -308,7 +312,8 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'dr[0][end_value][time]' => '12:00:00',
       'dr[0][rrule]' => 'FREQ=DAILY;COUNT=10',
     ];
-    $this->drupalPostForm(NULL, $edit, 'Save');
+
+    $this->submitForm($edit, 'Save');
 
     // The form would previously would not submit, an error was displayed.
     $this->assertSession()->pageTextContains('dr_entity_test 1 has been created.');
@@ -345,7 +350,6 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
     $display->setComponent('foo', $component);
     $display->save();
 
-    $url = Url::fromRoute('entity.entity_test.add_form');
     $edit = [
       'foo[0][value][date]' => '2008-06-17',
       'foo[0][value][time]' => '12:00:00',
@@ -354,7 +358,8 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'foo[0][timezone]' => 'America/Chicago',
       'foo[0][rrule]' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=3',
     ];
-    $this->drupalPostForm($url, $edit, 'Save');
+    $this->drupalGet(Url::fromRoute('entity.entity_test.add_form'));
+    $this->submitForm($edit, 'Save');
 
     $this->assertSession()->pageTextContains('This value is too long. It should have 20 characters or less.');
   }

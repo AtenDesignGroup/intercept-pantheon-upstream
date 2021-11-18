@@ -29,7 +29,7 @@ class DateRecurBaseFieldTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('dr_entity_test');
     $this->installEntitySchema('dr_entity_test_rev');

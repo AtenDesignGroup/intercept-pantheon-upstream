@@ -53,7 +53,7 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    *   Throws various exceptions if string is invalid.
    */
   public static function create(string $string, \DateTimeInterface $dtStart, \DateTimeInterface $dtStartEnd = NULL) {
-    // @todo: get the helper preference from Drupal module config.
+    // @todo Get the helper preference from Drupal module config.
     /** @var \Drupal\date_recur\DateRecurHelperInterface $dateRecurHelper */
     $dateRecurHelper = RlHelper::createInstance($string, $dtStart, $dtStartEnd);
     return new static($dateRecurHelper);

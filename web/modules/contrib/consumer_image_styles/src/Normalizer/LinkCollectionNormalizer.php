@@ -121,7 +121,7 @@ class LinkCollectionNormalizer implements NormalizerInterface {
         Url::fromUri(file_create_url($image_style->buildUrl($uri))),
         ImageStylesProvider::DERIVATIVE_LINK_REL,
         // Target attributes can only be strings, but dimensions are links.
-        array_map(function (int $dimension): string {
+        array_map(function (?int $dimension): string {
           return sprintf('%d', $dimension);
         }, $dimensions)
       );

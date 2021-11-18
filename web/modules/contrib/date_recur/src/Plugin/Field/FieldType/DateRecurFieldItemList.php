@@ -210,8 +210,8 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
       $defaultValue[0]['timezone'] = $timeZone;
     }
 
-    unset($defaultValue[0]["default_time_zone"]);
-    unset($defaultValue[0]["default_rrule"]);
+    unset($defaultValue[0]['default_time_zone']);
+    unset($defaultValue[0]['default_rrule']);
     return $defaultValue;
   }
 

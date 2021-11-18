@@ -116,3 +116,83 @@
   position: static !important;
   display: block;
 }
+
+
+/*
+* START: Overrides for multi-select dropdown, like the one on manage/room-reservations/list (reservation status).
+*/
+
+.intecept-base .form-wrapper .select-dropdown.dropdown-content li.selected, .views-exposed-form .select-dropdown.dropdown-content li.selected, .webform-submission-form .select-dropdown.dropdown-content li.selected, .header__site-search .select-dropdown.dropdown-content li.selected {
+  background-color: #fff;
+}
+
+.intecept-base .form-wrapper .select-dropdown.dropdown-content li:hover, .views-exposed-form .select-dropdown.dropdown-content li:hover, .webform-submission-form .select-dropdown.dropdown-content li:hover, .header__site-search .select-dropdown.dropdown-content li:hover {
+  background-color: #eef1f4;
+}
+
+
+.intecept-base .form-wrapper .dropdown-content, .views-exposed-form .dropdown-content, .webform-submission-form .dropdown-content, .header__site-search .dropdown-content {
+  list-style: none;
+  padding-left: 0;
+  box-shadow: 0 0 rem(8px) 0 rgba(0, 0, 0, 0.12), 0 rem(8px) rem(8px) 0 rgba(0, 0, 0, 0.24);
+
+  list-style: focus;
+  outline: 0 !important;
+}
+
+.intecept-base .form-wrapper [type="checkbox"]:checked + span:not(.lever):before, .views-exposed-form [type="checkbox"]:checked + span:not(.lever):before, .webform-submission-form [type="checkbox"]:checked + span:not(.lever):before {
+  background-color: #007E9E;
+  border: 0;
+  height: 1rem;
+  left: 0;
+  top: 0;
+  width: 1rem;
+  -webkit-transform: none;
+  transform: none;
+}
+
+
+.intecept-base .form-wrapper [type="checkbox"]:not(.filled-in) + span:not(.lever):after, .views-exposed-form [type="checkbox"]:not(.filled-in) + span:not(.lever):after, .webform-submission-form [type="checkbox"]:not(.filled-in) + span:not(.lever):after {
+  border: 0;
+  border-bottom: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  height: 0.75rem;
+  left: 0.3125rem;
+  top: 0.0625rem;
+  -webkit-transform: rotate(
+40deg);
+  transform: rotate(
+40deg);
+  width: 0.375rem;
+}
+
+.intecept-base .form-wrapper [type="checkbox"] + span:not(.lever):before, .intecept-base .form-wrapper [type="checkbox"]:not(.filled-in) + span:not(.lever):after, .views-exposed-form [type="checkbox"] + span:not(.lever):before, .views-exposed-form [type="checkbox"]:not(.filled-in) + span:not(.lever):after, .webform-submission-form [type="checkbox"] + span:not(.lever):before, .webform-submission-form [type="checkbox"]:not(.filled-in) + span:not(.lever):after {
+  border: 0.0625rem solid #4c4d4f;
+  border-radius: 2px;
+  content: '';
+  height: 0.9375rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 3px;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+  width: 0.9375rem;
+  z-index: 0;
+}
+
+.intecept-base .form-wrapper [type="checkbox"]:not(.filled-in) + span:not(.lever):after, .views-exposed-form [type="checkbox"]:not(.filled-in) + span:not(.lever):after, .webform-submission-form [type="checkbox"]:not(.filled-in) + span:not(.lever):after {
+  border: 0;
+  border-bottom: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  height: 0.75rem;
+  left: 0.3125rem;
+  top: 0.0625rem;
+  -webkit-transform: rotate(40deg);
+  transform: rotate(40deg);
+  width: 0.375rem;
+}
+
+/*
+* End: Overrides for multi-select dropdown, like the one on manage/room-reservations/list (reservation status).
+*/

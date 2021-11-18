@@ -186,13 +186,14 @@ function intercept_messages_sms_schedule_message($message, $token_replacements, 
     ->setMessage($message_final)
     ->addRecipient($telephone)
     ->setOption('sender_entity__target_id', $entity->id())
+    ->setOption('sender_entity__target_type', $entity->getEntityTypeId())
     ->setAutomated(TRUE)
     ->setDirection(Direction::OUTGOING)
     ->setSendTime($send_timestamp);
   $sms_send = TRUE;
   // Allow other modules to block the sending process (e.g. for local dev environments)
   \Drupal::moduleHandler()->invokeAll('intercept_messages_sms_send_alter', [&$sms_send]);
-  if ($sms_send) {  
+  if ($sms_send) {
     try {
       $sms_service->queue($sms);
     }

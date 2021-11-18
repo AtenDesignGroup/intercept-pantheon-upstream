@@ -40,7 +40,7 @@ final class DateRecurGranularityMap {
     'year' => '/^\d{4}$/',
     'month' => '/^\d{4}\-\d{2}$/',
     'day' => '/^\d{4}\-\d{2}-\d{2}$/',
-    'second' => '/^\d{4}\-\d{2}\-\d{2}\T\d{2}:\d{2}:\d{2}$/',
+    'second' => '/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/',
   ];
 
   /**

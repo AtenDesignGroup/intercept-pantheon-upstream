@@ -221,14 +221,14 @@ class DateRecurFilter extends FilterPluginBase {
     $this->options['value_granularity'] = $form_state->getValue(['options', 'value_granularity']);
 
     $utc = new \DateTimeZone('UTC');
-    /* @var \Drupal\Core\Datetime\DrupalDateTime $min|null */
+    /** @var \Drupal\Core\Datetime\DrupalDateTime $min|null */
     $min = $form_state->getValue(['options', 'value_minimum']);
     if ($min) {
       $min->setTimezone($utc);
     }
     $this->options['value_min'] = $min ? $min->format(\DATE_ISO8601) : NULL;
 
-    /* @var \Drupal\Core\Datetime\DrupalDateTime $max|null */
+    /** @var \Drupal\Core\Datetime\DrupalDateTime $max|null */
     $max = $form_state->getValue(['options', 'value_maximum']);
     if ($max) {
       $max->setTimezone($utc);
@@ -250,17 +250,17 @@ class DateRecurFilter extends FilterPluginBase {
       return;
     }
 
-    /* @var $pluginOptions array */
+    /** @var array $pluginOptions */
     $pluginOptions = $element['#filter_plugin_options'];
     $granularity = $pluginOptions['value_granularity'];
     if (empty($granularity)) {
       throw new \LogicException('Granularity not set.');
     }
 
-    /* @var string|null $optionValueMin */
+    /** @var string|null $optionValueMin */
     $optionValueMin = $pluginOptions['value_min'];
     $valueMin = isset($optionValueMin) ? \DateTime::createFromFormat(\DATE_ISO8601, $optionValueMin) : NULL;
-    /* @var string|null $optionValueMax */
+    /** @var string|null $optionValueMax */
     $optionValueMax = $pluginOptions['value_max'];
     $valueMax = isset($optionValueMax) ? \DateTime::createFromFormat(\DATE_ISO8601, $optionValueMax) : NULL;
 

@@ -205,6 +205,7 @@ class SelectTime extends React.Component {
     } = this.props;
     const { autocompleteIsOpen } = this.state;
     const options = this.options(min, max, step, disabledSpans, disabledExclude);
+    console.log({ options });
     const checkboxId = (id) => `select-filter--${id}`;
     const inputId = `select-filter__menu--${name}`;
     const checkboxLabel = (text, id) => (
@@ -231,15 +232,16 @@ class SelectTime extends React.Component {
             defaultValue={
               value === null || !value
                 ? ''
-                : options.filter((option) => option.key === value).shift()
+                : options.filter(option => option.key === value).shift()
             }
-            getOptionLabel={(option) => option.value || ''}
+            getOptionLabel={option => option.value || ''}
             options={options}
             onChange={this.handleChange}
             onClose={() => this.setState({ autocompleteIsOpen: false })}
             onOpen={() => this.setState({ autocompleteIsOpen: true })}
             getOptionSelected={(option, val) => option.key === val}
-            renderOption={(option) => (
+            getOptionDisabled={option => option.disabled}
+            renderOption={option => (
               <MenuItem
                 component="div"
                 key={option.key}

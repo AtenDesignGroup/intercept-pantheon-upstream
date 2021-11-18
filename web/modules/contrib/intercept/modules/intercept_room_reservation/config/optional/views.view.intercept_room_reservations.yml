@@ -249,7 +249,7 @@ display:
           group_type: group
           admin_label: ''
           label: User
-          exclude: false
+          exclude: true
           alter:
             alter_text: false
             text: ''
@@ -612,72 +612,7 @@ display:
           type: daterange_custom
           settings:
             timezone_override: ''
-            date_format: Y-m-d
-            separator: '-'
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          plugin_id: field
-        field_dates:
-          id: field_dates
-          table: room_reservation__field_dates
-          field: field_dates
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: Time
-          exclude: false
-          alter:
-            alter_text: true
-            text: '{{ field_dates | split('' - '')[1] | striptags }}'
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: false
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: daterange_custom
-          settings:
-            timezone_override: ''
-            date_format: Y-m-d
+            date_format: n/j/y
             separator: '-'
           group_column: value
           group_columns: {  }
@@ -825,7 +760,7 @@ display:
           group_type: group
           admin_label: ''
           label: 'Reservation conflicts'
-          exclude: false
+          exclude: true
           alter:
             alter_text: false
             text: ''
@@ -1344,7 +1279,6 @@ display:
         - 'config:field.storage.room_reservation.field_group_name'
         - 'config:field.storage.room_reservation.field_status'
         - 'config:field.storage.room_reservation.field_user'
-        - extensions
   page:
     display_plugin: page
     id: page
@@ -1487,14 +1421,15 @@ display:
         - 'config:field.storage.room_reservation.field_group_name'
         - 'config:field.storage.room_reservation.field_status'
         - 'config:field.storage.room_reservation.field_user'
-        - extensions
   upcoming:
     display_plugin: embed
     id: upcoming
     display_title: Upcoming
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        ajax_history:
+          history: 0
       style:
         type: html_list
         options:
@@ -2033,4 +1968,3 @@ display:
         - 'config:field.storage.room_reservation.field_dates'
         - 'config:field.storage.room_reservation.field_status'
         - 'config:field.storage.room_reservation.field_user'
-        - extensions

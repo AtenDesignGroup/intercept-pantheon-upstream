@@ -112,17 +112,17 @@
         },
         {
             "name": "commerceguys/addressing",
-            "version": "v1.2.1",
-            "version_normalized": "1.2.1.0",
+            "version": "v1.2.2",
+            "version_normalized": "1.2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/commerceguys/addressing.git",
-                "reference": "311040bd78ea2ea82105dd1f17205c449ac8de47"
+                "reference": "fb98dfc72f8a3d12fac55f69ab2477a0fbfa9860"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/commerceguys/addressing/zipball/311040bd78ea2ea82105dd1f17205c449ac8de47",
-                "reference": "311040bd78ea2ea82105dd1f17205c449ac8de47",
+                "url": "https://api.github.com/repos/commerceguys/addressing/zipball/fb98dfc72f8a3d12fac55f69ab2477a0fbfa9860",
+                "reference": "fb98dfc72f8a3d12fac55f69ab2477a0fbfa9860",
                 "shasum": ""
             },
             "require": {
@@ -138,7 +138,7 @@
             "suggest": {
                 "symfony/validator": "to validate addresses"
             },
-            "time": "2021-05-17T08:05:21+00:00",
+            "time": "2021-10-30T12:33:41+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -172,7 +172,7 @@
             ],
             "support": {
                 "issues": "https://github.com/commerceguys/addressing/issues",
-                "source": "https://github.com/commerceguys/addressing/tree/v1.2.1"
+                "source": "https://github.com/commerceguys/addressing/tree/v1.2.2"
             },
             "install-path": "../commerceguys/addressing"
         },
@@ -1793,18 +1793,18 @@
         },
         {
             "name": "drupal/better_exposed_filters",
-            "version": "5.0.0-beta3",
-            "version_normalized": "5.0.0.0-beta3",
+            "version": "5.0.0",
+            "version_normalized": "5.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/better_exposed_filters.git",
-                "reference": "8.x-5.0-beta3"
+                "reference": "8.x-5.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/better_exposed_filters-8.x-5.0-beta3.zip",
-                "reference": "8.x-5.0-beta3",
-                "shasum": "23f00fe898cd9e4f2278ef790bc9f1d197312ac3"
+                "url": "https://ftp.drupal.org/files/projects/better_exposed_filters-8.x-5.0.zip",
+                "reference": "8.x-5.0",
+                "shasum": "ef575591af202b5c6867841ce58e1f447455e502"
             },
             "require": {
                 "drupal/core": "^8.8 || ^9",
@@ -1816,15 +1816,12 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-5.0-beta3",
-                    "datestamp": "1625665853",
+                    "version": "8.x-5.0",
+                    "datestamp": "1634748760",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
-                },
-                "patches_applied": {
-                    "Removes unneeded container div.": "patches/3163486-better_exposed_filters-8.x-removes-container.patch"
                 }
             },
             "installation-source": "dist",
@@ -2101,18 +2098,18 @@
         },
         {
             "name": "drupal/consumer_image_styles",
-            "version": "4.0.3",
-            "version_normalized": "4.0.3.0",
+            "version": "4.0.4",
+            "version_normalized": "4.0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/consumer_image_styles.git",
-                "reference": "4.0.3"
+                "reference": "4.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/consumer_image_styles-4.0.3.zip",
-                "reference": "4.0.3",
-                "shasum": "a524bb33f6dce272eff200e47e892e8224a8ee37"
+                "url": "https://ftp.drupal.org/files/projects/consumer_image_styles-4.0.4.zip",
+                "reference": "4.0.4",
+                "shasum": "b94106be6d89806a26b873004d38e24eb37ed61b"
             },
             "require": {
                 "drupal/consumers": "^1.11",
@@ -2122,8 +2119,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "4.0.3",
-                    "datestamp": "1632643213",
+                    "version": "4.0.4",
+                    "datestamp": "1635611394",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2205,17 +2202,17 @@
         },
         {
             "name": "drupal/core",
-            "version": "9.2.7",
-            "version_normalized": "9.2.7.0",
+            "version": "9.2.9",
+            "version_normalized": "9.2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core.git",
-                "reference": "ce3220458c7a744bb00e9436e48d8e644e134576"
+                "reference": "2e2f015e881abccc32efcd264128e8a8444b2ec1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal/core/zipball/ce3220458c7a744bb00e9436e48d8e644e134576",
-                "reference": "ce3220458c7a744bb00e9436e48d8e644e134576",
+                "url": "https://api.github.com/repos/drupal/core/zipball/2e2f015e881abccc32efcd264128e8a8444b2ec1",
+                "reference": "2e2f015e881abccc32efcd264128e8a8444b2ec1",
                 "shasum": ""
             },
             "require": {
@@ -2380,7 +2377,7 @@
                 "drupal/workflows": "self.version",
                 "drupal/workspaces": "self.version"
             },
-            "time": "2021-10-06T10:34:39+00:00",
+            "time": "2021-11-17T21:05:58+00:00",
             "type": "drupal-core",
             "extra": {
                 "drupal-scaffold": {
@@ -2459,14 +2456,14 @@
             ],
             "description": "Drupal is an open source content management platform powering millions of websites and applications.",
             "support": {
-                "source": "https://github.com/drupal/core/tree/9.2.7"
+                "source": "https://github.com/drupal/core/tree/9.2.9"
             },
             "install-path": "../../web/core"
         },
         {
             "name": "drupal/core-composer-scaffold",
-            "version": "9.2.7",
-            "version_normalized": "9.2.7.0",
+            "version": "9.2.9",
+            "version_normalized": "9.2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-composer-scaffold.git",
@@ -2512,23 +2509,23 @@
                 "drupal"
             ],
             "support": {
-                "source": "https://github.com/drupal/core-composer-scaffold/tree/9.2.7"
+                "source": "https://github.com/drupal/core-composer-scaffold/tree/9.2.9"
             },
             "install-path": "../drupal/core-composer-scaffold"
         },
         {
             "name": "drupal/core-recommended",
-            "version": "9.2.7",
-            "version_normalized": "9.2.7.0",
+            "version": "9.2.9",
+            "version_normalized": "9.2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-recommended.git",
-                "reference": "87c998e8d60d6b2452b21827fb7b16f77d02a38a"
+                "reference": "a052e6f47864bb6597e6f449b9cfdb1aa4eea400"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal/core-recommended/zipball/87c998e8d60d6b2452b21827fb7b16f77d02a38a",
-                "reference": "87c998e8d60d6b2452b21827fb7b16f77d02a38a",
+                "url": "https://api.github.com/repos/drupal/core-recommended/zipball/a052e6f47864bb6597e6f449b9cfdb1aa4eea400",
+                "reference": "a052e6f47864bb6597e6f449b9cfdb1aa4eea400",
                 "shasum": ""
             },
             "require": {
@@ -2537,7 +2534,7 @@
                 "doctrine/annotations": "1.13.1",
                 "doctrine/lexer": "1.2.1",
                 "doctrine/reflection": "1.2.2",
-                "drupal/core": "9.2.7",
+                "drupal/core": "9.2.9",
                 "egulias/email-validator": "2.1.25",
                 "guzzlehttp/guzzle": "6.5.5",
                 "guzzlehttp/promises": "1.4.1",
@@ -2593,7 +2590,7 @@
             "conflict": {
                 "webflo/drupal-core-strict": "*"
             },
-            "time": "2021-10-06T10:34:39+00:00",
+            "time": "2021-11-17T21:05:58+00:00",
             "type": "metapackage",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -2601,7 +2598,7 @@
             ],
             "description": "Locked core dependencies; require this project INSTEAD OF drupal/core.",
             "support": {
-                "source": "https://github.com/drupal/core-recommended/tree/9.2.7"
+                "source": "https://github.com/drupal/core-recommended/tree/9.2.9"
             },
             "install-path": null
         },
@@ -2822,18 +2819,18 @@
         },
         {
             "name": "drupal/date_recur",
-            "version": "3.0.0",
-            "version_normalized": "3.0.0.0",
+            "version": "3.0.1",
+            "version_normalized": "3.0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/date_recur.git",
-                "reference": "3.0.0"
+                "reference": "3.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/date_recur-3.0.0.zip",
-                "reference": "3.0.0",
-                "shasum": "1dd83b5ca26e718fa9d3828b8abf227149d9d1c5"
+                "url": "https://ftp.drupal.org/files/projects/date_recur-3.0.1.zip",
+                "reference": "3.0.1",
+                "shasum": "ca000eabbb0995d629cc5734a9dc6cef72f04d7e"
             },
             "require": {
                 "drupal/core": "^9",
@@ -2842,10 +2839,11 @@
             },
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "dev-master",
+                "drupal/coder": "^8.3",
                 "drupal/token": "^1.5",
-                "mglaman/phpstan-drupal": "^0.11.12",
-                "phpstan/phpstan": "^0.11.19",
-                "phpstan/phpstan-deprecation-rules": "^0.11.2"
+                "mglaman/phpstan-drupal": "^0.12",
+                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan-deprecation-rules": "*"
             },
             "suggest": {
                 "drupal/date_recur_interactive": "Provides an interactive recurring date widget."
@@ -2853,8 +2851,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.0.0",
-                    "datestamp": "1611028253",
+                    "version": "3.0.1",
+                    "datestamp": "1636969596",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -3804,7 +3802,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept.git",
-                "reference": "e96a9f4122161e6eccfd4c93a3159ab0f27ca62e"
+                "reference": "cf5ac9e98e72f4b8af1d18883efee203f0dfca8f"
             },
             "require": {
                 "drupal/address": "^1.3",
@@ -3872,8 +3870,8 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0-alpha37+3-dev",
-                    "datestamp": "1633617989",
+                    "version": "8.x-1.0-alpha37+4-dev",
+                    "datestamp": "1634832348",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3925,7 +3923,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/intercept_base.git",
-                "reference": "d2d5452fa9d3dff9e3bf765f0dce817266dae271"
+                "reference": "23e3856234d5dc3f3fe5b2fd45d4451320e4008d"
             },
             "require": {
                 "drupal/components": "^2.4",
@@ -3940,7 +3938,7 @@
                 },
                 "drupal": {
                     "version": "8.x-1.x-dev",
-                    "datestamp": "1632415327",
+                    "datestamp": "1634832799",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"

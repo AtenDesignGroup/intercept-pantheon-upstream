@@ -20,7 +20,7 @@ class DateRecurRruleUnitTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // DrupalDateTime wants to access the language manager.
     $languageManager = $this->getMockForAbstractClass(LanguageManagerInterface::class);

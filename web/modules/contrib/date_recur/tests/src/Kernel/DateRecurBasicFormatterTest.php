@@ -48,7 +48,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('dr_entity_test');
 
@@ -427,7 +427,10 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     ]);
     $this->container->get('current_user')->setAccount($user);
 
-    $dateFormatSameDate = DateFormat::create(['id' => $this->randomMachineName(), 'pattern' => '\s\a\m\e \d\a\t\e']);
+    $dateFormatSameDate = DateFormat::create([
+      'id' => $this->randomMachineName(),
+      'pattern' => '\s\a\m\e \d\a\t\e',
+    ]);
     $dateFormatSameDate->save();
     $settings = [
       'format_type' => $this->dateFormat->id(),

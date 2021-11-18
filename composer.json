@@ -14,7 +14,7 @@
     "cweagans/composer-patches": "^1.7",
     "drupal/adminimal_admin_toolbar": "^1.11",
     "drupal/adminimal_theme": "^1.0",
-    "drupal/better_exposed_filters": "5.0-beta3",
+    "drupal/better_exposed_filters": "^5.0",
     "drupal/better_normalizers": "^1.0@beta",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
@@ -110,9 +110,6 @@
     "patches": {
       "drupal/addtocalendar": {
         "Fix configuration": "https://www.drupal.org/files/issues/2020-05-06/schema-add-to-calender-config-3092765-6.patch"
-      },
-      "drupal/better_exposed_filters": {
-        "Removes unneeded container div.": "patches/3163486-better_exposed_filters-8.x-removes-container.patch"
       },
       "drupal/core": {
         "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch"

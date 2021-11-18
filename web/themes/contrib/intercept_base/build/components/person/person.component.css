@@ -7,7 +7,8 @@
       -ms-flex-direction: column;
           flex-direction: column;
   position: relative;
-  width: 100%; }
+  width: 100%;
+  margin-bottom: 1rem; }
   @media (min-width: 37.5em) {
     .person {
       -webkit-box-orient: horizontal;

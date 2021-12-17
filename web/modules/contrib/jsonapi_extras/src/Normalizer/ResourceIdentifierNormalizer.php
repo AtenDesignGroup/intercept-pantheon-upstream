@@ -2,6 +2,7 @@
 
 namespace Drupal\jsonapi_extras\Normalizer;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\jsonapi\JsonApiResource\ResourceIdentifier;
@@ -9,6 +10,7 @@ use Drupal\jsonapi\JsonApiResource\ResourceObject;
 use Drupal\jsonapi\Normalizer\Value\CacheableNormalization;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType;
+use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Shaper\Util\Context;
 
 /**
@@ -60,12 +62,21 @@ class ResourceIdentifierNormalizer extends JsonApiNormalizerDecoratorBase {
     if (!$enhancer) {
       return $normalized_output;
     }
+    $cacheability = CacheableMetadata::createFromObject($normalized_output)
+      ->addCacheTags(['config:jsonapi_resource_config_list']);
     // Apply any enhancements necessary.
-    $context['field_resource_identifier'] = $field;
-    $transformed = $enhancer->undoTransform($normalized_output->getNormalization(), new Context($context));
-    // @todo Enhancers should utilize CacheableNormalization to infer additional cacheability from the enhancer.
+    $context = new Context([
+      'field_resource_identifier' => $field,
+      CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cacheability,
+    ]);
+    $transformed = $enhancer->undoTransform(
+      $normalized_output->getNormalization(),
+      $context
+    );
+
     return new CacheableNormalization(
-      $normalized_output,
+      // This was passed by reference but often, merging creates a new object.
+      $context->offsetGet(CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY),
       array_intersect_key($transformed, array_flip(['id', 'type', 'meta']))
     );
   }

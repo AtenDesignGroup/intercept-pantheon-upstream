@@ -23,7 +23,8 @@ class UserFlagTypeTest extends FlagTestBase {
     // Login as the admin user.
     $this->drupalLogin($this->adminUser);
 
-    $this->drupalPostForm('admin/structure/flags/add', [
+    $this->drupalGet('admin/structure/flags/add');
+    $this->submitForm([
       'flag_entity_type' => 'entity:user',
     ], $this->t('Continue'));
 
@@ -74,7 +75,8 @@ class UserFlagTypeTest extends FlagTestBase {
     $edit = [
       'extra_permissions[owner]' => FALSE,
     ];
-    $this->drupalPostForm('admin/structure/flags/manage/' . $flag->id(), $edit, $this->t('Save Flag'));
+    $this->drupalGet('admin/structure/flags/manage/' . $flag->id());
+    $this->submitForm($edit, 'Save Flag');
 
     // Confirm extra permissions is unchecked.
     $this->drupalGet('admin/structure/flags/manage/' . $flag->id());

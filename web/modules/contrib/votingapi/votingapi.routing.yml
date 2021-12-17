@@ -36,3 +36,11 @@ entity.vote_type.delete_form:
     _title: 'Delete'
   requirements:
     _entity_access: 'vote_type.delete'
+
+entity.vote.delete_form:
+  path: '/admin/vote/{vote}/delete'
+  defaults:
+    _entity_form: 'vote.delete'
+    _title: 'Delete'
+  requirements:
+    _entity_access: 'vote.delete'

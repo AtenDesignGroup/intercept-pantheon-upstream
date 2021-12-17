@@ -78,7 +78,7 @@ function votingapi_cron() {
   ) {
     $vote_storage = \Drupal::entityTypeManager()->getStorage('vote');
     $results = $vote_storage->getVotesSinceMoment();
-    $manager = Drupal::service('plugin.manager.votingapi.resultfunction');
+    $manager = \Drupal::service('plugin.manager.votingapi.resultfunction');
     foreach ($results as $entity) {
       $manager->recalculateResults(
         $entity['entity_type'],
@@ -86,7 +86,7 @@ function votingapi_cron() {
         $entity['type']
       );
     }
-    Drupal::state()->set('votingapi.last_cron', \Drupal::time()
+    \Drupal::state()->set('votingapi.last_cron', \Drupal::time()
       ->getRequestTime());
   }
 }

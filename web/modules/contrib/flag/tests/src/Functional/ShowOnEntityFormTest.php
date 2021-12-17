@@ -105,7 +105,8 @@ class ShowOnEntityFormTest extends BrowserTestBase {
     $edit = [
       'flag[' . $flag->id() . ']' => TRUE,
     ];
-    $this->drupalPostForm($node_edit_path, $edit, 'Save');
+    $this->drupalGet($node_edit_path);
+    $this->submitForm($edit, 'Save');
 
     // Check to see if the checkbox reflects the state correctly.
     $this->drupalGet($node_edit_path);
@@ -115,7 +116,8 @@ class ShowOnEntityFormTest extends BrowserTestBase {
     $edit = [
       'flag[' . $flag->id() . ']' => FALSE,
     ];
-    $this->drupalPostForm($node_edit_path, $edit, 'Save');
+    $this->drupalGet($node_edit_path);
+    $this->submitForm($edit, 'Save');
 
     // Go back to the node edit page and check if the flag checkbox is updated.
     $this->drupalGet($node_edit_path);
@@ -130,7 +132,8 @@ class ShowOnEntityFormTest extends BrowserTestBase {
       'title[0][value]' => $this->randomString(),
       'flag[' . $flag->id() . ']' => TRUE,
     ];
-    $this->drupalPostForm('node/add/' . $this->nodeType, $edit, 'Save');
+    $this->drupalGet('node/add/' . $this->nodeType);
+    $this->submitForm($edit, 'Save');
     $node = $this->getNodeByTitle($edit['title[0][value]']);
     $this->assertTrue($flag->isFlagged($node, $this->adminUser));
 
@@ -139,7 +142,8 @@ class ShowOnEntityFormTest extends BrowserTestBase {
       'title[0][value]' => $this->randomString(),
       'flag[' . $flag->id() . ']' => FALSE,
     ];
-    $this->drupalPostForm('node/add/' . $this->nodeType, $edit, 'Save');
+    $this->drupalGet('node/add/' . $this->nodeType);
+    $this->submitForm($edit, 'Save');
     $node = $this->getNodeByTitle($edit['title[0][value]']);
     $this->assertFalse($flag->isFlagged($node, $this->adminUser));
 

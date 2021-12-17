@@ -41,6 +41,7 @@ permissions:
   - 'add event registration entities'
   - 'add location closing entities'
   - 'add room reservation entities'
+  - 'administer bulk room reservation'
   - 'administer location closing entities'
   - 'administer permissions'
   - 'administer taxonomy'

@@ -88,7 +88,7 @@ class FlagActionTest extends FlagKernelTestBase {
   public function testFlagActions() {
     /** @var \Drupal\flag\FlagInterface $entity_flag */
     $entity_flag = Flag::create([
-      'id' => mb_strtolower($this->randomMachineName()),
+      'id' => strtolower($this->randomMachineName()),
       'label' => $this->randomString(),
       'entity_type' => 'entity_test',
       'flag_type' => 'entity:entity_test',
@@ -140,7 +140,7 @@ class FlagActionTest extends FlagKernelTestBase {
 
     /** @var \Drupal\flag\FlagInterface $entity_flag */
     $entity_flag = Flag::create([
-      'id' => mb_strtolower($this->randomMachineName()),
+      'id' => strtolower($this->randomMachineName()),
       'label' => $this->randomString(),
       'entity_type' => 'entity_test',
       'flag_type' => 'entity:entity_test',

@@ -36,6 +36,7 @@ dependencies:
   - drupal:toolbar
   - drupal:views
   - drupal:views_ui
+  - entity_reference_revisions:entity_reference_revisions
   - intercept:intercept
   - intercept:intercept_event
   - intercept:intercept_room_reservation
@@ -47,8 +48,9 @@ dependencies:
   - jquery_ui_datepicker:jquery_ui_datepicker
   - jquery_ui_slider:jquery_ui_slider
   - jquery_ui_touch_punch:jquery_ui_touch_punch
+  - media_entity_slideshow:media_entity_slideshow
+  - paragraphs:paragraphs
   - quick_node_clone:quick_node_clone
-  - stories:stories_media
   - twig_tweak:twig_tweak (>=8.x-2.9)
   - twig_field_value:twig_field_value
   - view_user_email:view_user_email

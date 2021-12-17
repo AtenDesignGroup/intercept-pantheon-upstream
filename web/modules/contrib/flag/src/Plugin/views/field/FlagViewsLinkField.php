@@ -130,6 +130,9 @@ class FlagViewsLinkField extends FieldPluginBase implements ContainerFactoryPlug
     else {
       $entity = $this->getParentRelationshipEntity($values);
     }
+    if (empty($entity)) {
+      return '';
+    }
     return $this->renderLink($entity, $values);
   }
 

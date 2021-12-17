@@ -668,12 +668,34 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
 
     $this->drupalGet('/admin/config/services/jsonapi/resource_types');
 
-    $this->assertSession()
-      ->elementContains('css', '#jsonapi-enabled-resources-list', 'taxonomy_term--' . $vocabulary->id());
+    $row = $this->assertSession()->elementExists('css', sprintf('#jsonapi-enabled-resources-list table tr:contains("%s")', 'taxonomy_term--' . $vocabulary->id()));
+    $this->assertSession()->elementExists('named', ['link', 'Overwrite'], $row);
     $this->drupalGet('/admin/config/services/jsonapi/add/resource_types/taxonomy_term/' . $vocabulary->id());
     $this->getSession()->getPage()->checkField('edit-disabled');
     $this->getSession()->getPage()->pressButton('edit-submit');
-    $this->assertSession()->elementContains('css', '#jsonapi-disabled-resources-list', 'taxonomy_term--' . $vocabulary->id());
+    $row = $this->assertSession()->elementExists('css', sprintf('#jsonapi-disabled-resources-list table tr:contains("%s")', 'taxonomy_term--' . $vocabulary->id()));
+    $this->assertSession()->elementExists('named', ['link', 'Revert'], $row);
+
+    // Add another vocabulary
+    $vocabulary2 = Vocabulary::create([
+      'name' => $this->randomMachineName(),
+      'vid' => mb_strtolower($this->randomMachineName()),
+    ]);
+    $vocabulary2->save();
+    // Set the default to disabled.
+    \Drupal::configFactory()->getEditable('jsonapi_extras.settings')->set('default_disabled', TRUE)->save();
+    Cache::invalidateTags(['jsonapi_resource_types']);
+    $this->drupalGet('/admin/config/services/jsonapi/resource_types');
+    $row = $this->assertSession()->elementExists('css', sprintf('#jsonapi-disabled-resources-list table tr:contains("%s")', 'taxonomy_term--' . $vocabulary2->id()));
+    $this->assertSession()->elementExists('named', ['link', 'Enable'], $row);
+
+    // Test that internal entity-types can't be enabled.
+    \Drupal::service('module_installer')->install(['entity_test']);
+    $bundle_info = \Drupal::service('entity_type.bundle.info')->getBundleInfo('entity_test_no_label');
+    $this->drupalGet('/admin/config/services/jsonapi/resource_types');
+    foreach (array_keys($bundle_info) as $bundle) {
+      $this->assertSession()->elementNotContains('css', '#jsonapi-disabled-resources-list', 'entity_test_no_label--' . $bundle);
+    }
   }
 
 }

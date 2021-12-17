@@ -31,7 +31,7 @@ class VoteTypeFormTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->entityTypeManager = $this->container->get('entity_type.manager');
   }
@@ -42,13 +42,13 @@ class VoteTypeFormTest extends BrowserTestBase {
   public function testVoteTypeCreation() {
     // First verify that a user can't access the Vote Type form without having
     // the proper permissions.
-    $this->drupalGet('/admin/structure/vote-types/add');
+    $this->drupalGet('admin/structure/vote-types/add');
     $this->assertSession()->statusCodeEquals(403);
 
     // Log in as a user with proper permissions.
     $this->drupalLogin($this->drupalCreateUser(['administer vote types']));
 
-    $this->drupalGet('/admin/structure/vote-types/add');
+    $this->drupalGet('admin/structure/vote-types/add');
     $this->assertSession()->statusCodeEquals(200);
 
     // Now create a new Vote Type.

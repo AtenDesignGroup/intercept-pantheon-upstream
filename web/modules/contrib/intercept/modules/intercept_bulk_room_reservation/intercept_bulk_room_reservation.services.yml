@@ -1,4 +1,4 @@
 services:
   intercept_bulk_room_reservation.series_generator:
     class: Drupal\intercept_bulk_room_reservation\SeriesGenerator
-    arguments: ['@entity_type.manager']
+    arguments: ['@entity_type.manager', '@config.factory']

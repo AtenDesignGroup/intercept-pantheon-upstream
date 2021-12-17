@@ -123,12 +123,12 @@ included as part of Intercept. Although all of the endpoints are documented
 below, only a few are publicly accessible. The rest are currently only available
 for use within the application itself.
 
-Since Drupal core now includes JSON API for queries related to content, queries
+Since Drupal core now includes JSON:API for queries related to content, queries
 for information about events, rooms, and locations (all of which are standard 
-Drupal content "nodes") can all be built using the JSON API standard syntax.
+Drupal content "nodes") can all be built using the JSON:API standard syntax.
 Example queries and responses are included below. Also included below are
 instructions on how to get a full list of Intercept fields that can be used in
-your own JSON API queries and instructions on how to find the UUID values of
+your own JSON:API queries and instructions on how to find the UUID values of
 your rooms and locations for use in queries.
 
 * Intercept Core
@@ -172,24 +172,42 @@ your rooms and locations for use in queries.
     * Example request body:
 
 ```
-{"rooms":["cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8"],"duration":30,"start":"2019-08-13T04:00:00","end":"2019-08-14T03:59:59"}
+{
+  "rooms":[
+    "aa3340be-fd44-41f6-ba08-e48f2c76d58b"
+  ],
+  "duration":15,
+  "start":"2021-11-08T14:00:00",
+  "end":"2021-11-09T01:00:00"
+}
 ```
 
   * Example response:
 
-```{
-    "cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8": {
+```
+{
+    "aa3340be-fd44-41f6-ba08-e48f2c76d58b": {
+        "user_exceeded_limit": false,
         "has_reservation_conflict": false,
+        "has_conflict": false,
         "has_open_hours_conflict": false,
+        "has_max_duration_conflict": false,
         "is_closed": false,
         "closed_message": "Location Closed",
         "has_location": true,
-        "dates": {
-            "c7073ac9-0ad9-4514-9ec9-1dd31c819323": {
-                "start": "2019-08-13T13:00:00",
-                "end": "2019-08-13T16:30:00"
+        "dates": [
+            {
+                "uuid": "4802d205-901a-47ed-bb04-a27af7b9196b",
+                "id": "66915",
+                "resource": "aa3340be-fd44-41f6-ba08-e48f2c76d58b",
+                "start": "2021-11-08T19:00:00+00:00",
+                "end": "2021-11-08T22:00:00+00:00",
+                "status": "approved",
+                "message": "Booked",
+                "hasEvent": false,
+                "isReservedByStaff": true
             }
-        }
+        ]
     }
 }
 ```
@@ -199,242 +217,4580 @@ your rooms and locations for use in queries.
     * Example GET request:
 
 ```
-https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter[status][value]=1&filter[capacity][condition][path]=field_capacity_max&filter[capacity][condition][value]=20&filter[capacity][condition][operator]=>=&filter[field_staff_use_only][value]=false&filter[locations][group][conjunction]=AND&filter[withLocation][condition][path]=field_location&filter[withLocation][condition][value]=&filter[withLocation][condition][operator]=<>&filter[withLocation][condition][memberOf]=locations&filter[onlyBranchLocation][condition][path]=field_location.field_branch_location&filter[onlyBranchLocation][condition][value]=1&filter[onlyBranchLocation][condition][memberOf]=locations&filter[taxonomy_term--room_type][condition][path]=field_room_type.uuid&filter[taxonomy_term--room_type][condition][value][]=92d752af-275f-4c9e-9215-ddf09bcaaab8&filter[taxonomy_term--room_type][condition][operator]=IN&filter[node--location][condition][path]=field_location.uuid&filter[node--location][condition][value][]=ce465283-9203-49da-a342-5ff62af65c31&filter[node--location][condition][value][]=2f900166-5d6e-4f46-a87a-916b4eacff16&filter[node--location][condition][operator]=IN&fields[node--room]=nid,uuid,status,title,created,changed,promote,sticky,path,field_capacity_max,field_capacity_min,field_reservable_online,field_room_fees,field_room_standard_equipment,field_reservation_phone_number,field_staff_use_only,field_text_content,field_text_intro,field_text_teaser,type,uid,image_primary,field_location,field_room_type&include=image_primary,image_primary.field_media_image&sort=title
+https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5Bvalue%5D=1&filter%5BroomUsage%5D%5Bgroup%5D%5Bconjunction%5D=OR&filter%5BstaffOnly%5D%5Bcondition%5D%5Bpath%5D=field_staff_use_only&filter%5BstaffOnly%5D%5Bcondition%5D%5Bvalue%5D=0&filter%5BstaffOnly%5D%5Bcondition%5D%5BmemberOf%5D=roomUsage&filter%5BrequiresCert%5D%5Bcondition%5D%5Bpath%5D=field_requires_certification&filter%5BrequiresCert%5D%5Bcondition%5D%5Bvalue%5D=1&filter%5BrequiresCert%5D%5Bcondition%5D%5BmemberOf%5D=roomUsage&filter%5Blocations%5D%5Bgroup%5D%5Bconjunction%5D=AND&filter%5BwithLocation%5D%5Bcondition%5D%5Bpath%5D=field_location.id&filter%5BwithLocation%5D%5Bcondition%5D%5Bvalue%5D=&filter%5BwithLocation%5D%5Bcondition%5D%5Boperator%5D=%3C%3E&filter%5BwithLocation%5D%5Bcondition%5D%5BmemberOf%5D=locations&filter%5BonlyBranchLocation%5D%5Bcondition%5D%5Bpath%5D=field_location.field_branch_location&filter%5BonlyBranchLocation%5D%5Bcondition%5D%5Bvalue%5D=1&filter%5BonlyBranchLocation%5D%5Bcondition%5D%5BmemberOf%5D=locations&fields%5Bnode--room%5D=drupal_internal__nid%2Cuuid%2Cstatus%2Ctitle%2Ccreated%2Cchanged%2Croom_thumbnail%2Cpromote%2Csticky%2Cpath%2Cfield_capacity_max%2Cfield_capacity_min%2Cfield_reservable_online%2Cfield_requires_certification%2Cfield_room_fees%2Cfield_room_standard_equipment%2Cfield_reservation_phone_number%2Cfield_staff_use_only%2Cfield_text_content%2Cfield_text_intro%2Cfield_text_teaser%2Ctype%2Cuid%2Cimage_primary%2Cfield_location%2Cfield_room_type&include=image_primary%2Cimage_primary.field_media_image&sort=title
 ```
 
   * Example response:
 
 ```
 {
-    "data": [
-        {
-            "type": "node--room",
-            "id": "cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8",
-            "attributes": {
-                "nid": 2805,
-                "uuid": "cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8",
-                "status": true,
-                "title": "Blythewood Meeting Room",
-                "created": 1533239342,
-                "changed": 1545058309,
-                "promote": false,
-                "sticky": false,
-                "path": {
-                    "alias": "/location/richland-library-blythewood/blythewood-meeting-room",
-                    "pid": 4582,
-                    "langcode": "en"
-                },
-                "field_capacity_max": 25,
-                "field_capacity_min": 2,
-                "field_reservable_online": true,
-                "field_reservation_phone_number": "803-691-9806",
-                "field_room_fees": null,
-                "field_room_standard_equipment": [
-                    "25 Chairs",
-                    "2 Tables",
-                    "Projector and Screen for Presentation",
-                    "HDMI cable not provided"
-                ],
-                "field_staff_use_only": false,
-                "field_text_content": null,
-                "field_text_intro": null,
-                "field_text_teaser": {
-                    "value": "<p>Good for large meetings, group activities and small presentations.&nbsp;<strong>This room does have a 3-hour time limit.</strong></p>\r\n",
-                    "format": "basic_html",
-                    "processed": "<p>Good for large meetings, group activities and small presentations. <strong>This room does have a 3-hour time limit.</strong></p>"
-                }
-            },
-            "relationships": {
-                "type": {
-                    "data": {
-                        "type": "node_type--node_type",
-                        "id": "62eb8212-484f-4cd0-a206-1b36127ea0cf"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/relationships/type",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/type"
-                    }
-                },
-                "uid": {
-                    "data": {
-                        "type": "user--user",
-                        "id": "35891e18-91c6-42fe-a76f-e4177bd506f1"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/relationships/uid",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/uid"
-                    }
-                },
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "ce465283-9203-49da-a342-5ff62af65c31"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/field_location"
-                    }
-                },
-                "field_room_type": {
-                    "data": {
-                        "type": "taxonomy_term--room_type",
-                        "id": "92d752af-275f-4c9e-9215-ddf09bcaaab8"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/relationships/field_room_type",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/field_room_type"
-                    }
-                },
-                "image_primary": {
-                    "data": {
-                        "type": "media--image",
-                        "id": "6cc97710-e0a5-43a8-ae70-639dabd9c233"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/relationships/image_primary",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/image_primary"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8"
-            }
+  "jsonapi":{
+    "version":"1.0",
+    "meta":{
+      "links":{
+        "self":{
+          "href":"http:\/\/jsonapi.org\/format\/1.0\/"
         }
-    ],
-    "jsonapi": {
-        "version": "1.0",
-        "meta": {
-            "links": {
-                "self": "http://jsonapi.org/format/1.0/"
-            }
+      }
+    }
+  },
+  "data":[
+    {
+      "type":"node--room",
+      "id":"dea040de-f76f-4a6b-8e57-c75dfa435163",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163?resourceVersion=id%3A51557"
         }
-    },
-    "links": {
-        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room?fields%5Bnode--room%5D=nid%2Cuuid%2Cstatus%2Ctitle%2Ccreated%2Cchanged%2Cpromote%2Csticky%2Cpath%2Cfield_capacity_max%2Cfield_capacity_min%2Cfield_reservable_online%2Cfield_room_fees%2Cfield_room_standard_equipment%2Cfield_reservation_phone_number%2Cfield_staff_use_only%2Cfield_text_content%2Cfield_text_intro%2Cfield_text_teaser%2Ctype%2Cuid%2Cimage_primary%2Cfield_location%2Cfield_room_type&filter%5Bcapacity%5D%5Bcondition%5D%5Boperator%5D=%3E%3D&filter%5Bcapacity%5D%5Bcondition%5D%5Bpath%5D=field_capacity_max&filter%5Bcapacity%5D%5Bcondition%5D%5Bvalue%5D=20&filter%5Bfield_staff_use_only%5D%5Bvalue%5D=false&filter%5Blocations%5D%5Bgroup%5D%5Bconjunction%5D=AND&filter%5Bnode--location%5D%5Bcondition%5D%5Boperator%5D=IN&filter%5Bnode--location%5D%5Bcondition%5D%5Bpath%5D=field_location.uuid&filter%5Bnode--location%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=2f900166-5d6e-4f46-a87a-916b4eacff16&filter%5Bnode--location%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=ce465283-9203-49da-a342-5ff62af65c31&filter%5BonlyBranchLocation%5D%5Bcondition%5D%5BmemberOf%5D=locations&filter%5BonlyBranchLocation%5D%5Bcondition%5D%5Bpath%5D=field_location.field_branch_location&filter%5BonlyBranchLocation%5D%5Bcondition%5D%5Bvalue%5D=1&filter%5Bstatus%5D%5Bvalue%5D=1&filter%5Btaxonomy_term--room_type%5D%5Bcondition%5D%5Boperator%5D=IN&filter%5Btaxonomy_term--room_type%5D%5Bcondition%5D%5Bpath%5D=field_room_type.uuid&filter%5Btaxonomy_term--room_type%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=92d752af-275f-4c9e-9215-ddf09bcaaab8&filter%5BwithLocation%5D%5Bcondition%5D%5BmemberOf%5D=locations&filter%5BwithLocation%5D%5Bcondition%5D%5Boperator%5D=%3C%3E&filter%5BwithLocation%5D%5Bcondition%5D%5Bpath%5D=field_location&filter%5BwithLocation%5D%5Bcondition%5D%5Bvalue%5D=&include=image_primary%2Cimage_primary.field_media_image&sort=title"
-    },
-    "included": [
-        {
-            "type": "media--image",
-            "id": "6cc97710-e0a5-43a8-ae70-639dabd9c233",
-            "attributes": {
-                "mid": 498,
-                "uuid": "6cc97710-e0a5-43a8-ae70-639dabd9c233",
-                "vid": 598,
-                "langcode": "en",
-                "revision_created": 1534001752,
-                "revision_log_message": null,
-                "status": true,
-                "name": "Blythewood Meeting Room",
-                "created": 1534001707,
-                "changed": 1534001707,
-                "default_langcode": true,
-                "revision_translation_affected": true,
-                "metatag": null,
-                "path": null,
-                "field_media_caption": null,
-                "field_media_credit": null
-            },
-            "relationships": {
-                "bundle": {
-                    "data": {
-                        "type": "media_type--media_type",
-                        "id": "7708b33e-75ed-4e5f-bdee-f1181355d035"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/relationships/bundle",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/bundle"
-                    }
-                },
-                "revision_user": {
-                    "data": null,
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/relationships/revision_user",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/revision_user"
-                    }
-                },
-                "thumbnail": {
-                    "data": {
-                        "type": "file--file",
-                        "id": "c17f72f5-9197-4c5a-90da-32a2e593a11f",
-                        "meta": {
-                            "alt": "Thumbnail",
-                            "title": "Blythewood Meeting Room",
-                            "width": 5137,
-                            "height": 3425
-                        }
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/relationships/thumbnail",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/thumbnail"
-                    }
-                },
-                "uid": {
-                    "data": {
-                        "type": "user--user",
-                        "id": "03944915-a878-4a25-a223-81bb7ae4031b"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/relationships/uid",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/uid"
-                    }
-                },
-                "field_media_image": {
-                    "data": {
-                        "type": "file--file",
-                        "id": "c17f72f5-9197-4c5a-90da-32a2e593a11f",
-                        "meta": {
-                            "alt": "Large meeting room with 25 chairs and 2 tables",
-                            "title": "",
-                            "width": 5137,
-                            "height": 3425
-                        }
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/relationships/field_media_image",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233/field_media_image"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/6cc97710-e0a5-43a8-ae70-639dabd9c233"
-            }
+      },
+      "attributes":{
+        "drupal_internal__nid":2802,
+        "status":true,
+        "title":"Ballentine Makerspace",
+        "created":"2018-08-02T19:47:43+00:00",
+        "changed":"2021-07-30T00:26:13+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-ballentine\/ballentine-makerspace",
+          "pid":4585,
+          "langcode":"en"
         },
-        {
-            "type": "file--file",
-            "id": "c17f72f5-9197-4c5a-90da-32a2e593a11f",
-            "attributes": {
-                "fid": 612,
-                "uuid": "c17f72f5-9197-4c5a-90da-32a2e593a11f",
-                "langcode": "en",
-                "filename": "richland-library-blythewood-photographer-eric-blake-columbiapics--10-of-20_42023545264_o.jpg",
-                "uri": {
-                    "value": "public://2018-08/richland-library-blythewood-photographer-eric-blake-columbiapics--10-of-20_42023545264_o.jpg",
-                    "url": "/sites/default/files/2018-08/richland-library-blythewood-photographer-eric-blake-columbiapics--10-of-20_42023545264_o.jpg"
-                },
-                "filemime": "image/jpeg",
-                "filesize": 8768215,
-                "status": true,
-                "created": 1534001681,
-                "changed": 1534001752,
-                "url": "/sites/default/files/2018-08/richland-library-blythewood-photographer-eric-blake-columbiapics--10-of-20_42023545264_o.jpg"
+        "field_capacity_max":15,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":null,
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E***\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E***\u003C\/p\u003E"
+        },
+        "room_thumbnail":null
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/uid?resourceVersion=id%3A51557"
             },
-            "relationships": {
-                "uid": {
-                    "data": {
-                        "type": "user--user",
-                        "id": "03944915-a878-4a25-a223-81bb7ae4031b"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/c17f72f5-9197-4c5a-90da-32a2e593a11f/relationships/uid",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/c17f72f5-9197-4c5a-90da-32a2e593a11f/uid"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/c17f72f5-9197-4c5a-90da-32a2e593a11f"
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/relationships\/uid?resourceVersion=id%3A51557"
             }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"1c28abaa-f088-404f-925f-263838332601"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/field_location?resourceVersion=id%3A51557"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/relationships\/field_location?resourceVersion=id%3A51557"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/field_room_type?resourceVersion=id%3A51557"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/relationships\/field_room_type?resourceVersion=id%3A51557"
+            }
+          }
+        },
+        "image_primary":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/image_primary?resourceVersion=id%3A51557"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dea040de-f76f-4a6b-8e57-c75dfa435163\/relationships\/image_primary?resourceVersion=id%3A51557"
+            }
+          }
         }
-    ]
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"cb927791-9554-4942-95c3-2e2468c91726",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726?resourceVersion=id%3A51558"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2804,
+        "status":true,
+        "title":"Blythewood Makerspace",
+        "created":"2018-08-02T19:49:01+00:00",
+        "changed":"2021-07-30T00:26:28+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-blythewood\/blythewood-makerspace",
+          "pid":4583,
+          "langcode":"en"
+        },
+        "field_capacity_max":50,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":null,
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E***\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E***\u003C\/p\u003E"
+        },
+        "room_thumbnail":null
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/uid?resourceVersion=id%3A51558"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/relationships\/uid?resourceVersion=id%3A51558"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"ce465283-9203-49da-a342-5ff62af65c31"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/field_location?resourceVersion=id%3A51558"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/relationships\/field_location?resourceVersion=id%3A51558"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/field_room_type?resourceVersion=id%3A51558"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/relationships\/field_room_type?resourceVersion=id%3A51558"
+            }
+          }
+        },
+        "image_primary":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/image_primary?resourceVersion=id%3A51558"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/cb927791-9554-4942-95c3-2e2468c91726\/relationships\/image_primary?resourceVersion=id%3A51558"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"0f70712a-b53d-47c4-932f-23f4ca2869c1",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1?resourceVersion=id%3A51559"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2811,
+        "status":true,
+        "title":"Cooper Adult\/Teen Makerspace",
+        "created":"2018-08-02T19:49:10+00:00",
+        "changed":"2021-07-30T00:26:43+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-cooper\/cooper-adultteen-makerspace",
+          "pid":4576,
+          "langcode":"en"
+        },
+        "field_capacity_max":25,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":null,
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E***\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E***\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-07\/17_07_1690_edit_1.jpg"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/uid?resourceVersion=id%3A51559"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/relationships\/uid?resourceVersion=id%3A51559"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"2f900166-5d6e-4f46-a87a-916b4eacff16"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/field_location?resourceVersion=id%3A51559"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/relationships\/field_location?resourceVersion=id%3A51559"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/field_room_type?resourceVersion=id%3A51559"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/relationships\/field_room_type?resourceVersion=id%3A51559"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"cdf7ed47-4cba-441c-8388-0fc63b224b04"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/image_primary?resourceVersion=id%3A51559"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/0f70712a-b53d-47c4-932f-23f4ca2869c1\/relationships\/image_primary?resourceVersion=id%3A51559"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"dd935306-9ffe-444f-9a6d-01095fbfc963",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963?resourceVersion=id%3A51554"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":9344,
+        "status":true,
+        "title":"Edgewood Makerspace",
+        "created":"2019-02-18T21:19:55+00:00",
+        "changed":"2021-07-30T00:25:22+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-edgewood\/edgewood-makerspace",
+          "pid":14956,
+          "langcode":"en"
+        },
+        "field_capacity_max":20,
+        "field_capacity_min":5,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-509-8355",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "4 Tables",
+          "16 Chairs"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E***\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E***\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-04\/Richland%20Library%20Edgewood%20Columbia%20SC%20Eric%20Blake%20ColumbiaPics%20Google%20Trusted%20Photographer%20%289%29.jpg?h=0775493e"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"03944915-a878-4a25-a223-81bb7ae4031b"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/uid?resourceVersion=id%3A51554"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/relationships\/uid?resourceVersion=id%3A51554"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"c21fdca8-952c-4bf0-967d-7277c70bbf9e"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/field_location?resourceVersion=id%3A51554"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/relationships\/field_location?resourceVersion=id%3A51554"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"9f6c1ea1-e944-479c-b955-e62bbe372189"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/field_room_type?resourceVersion=id%3A51554"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/relationships\/field_room_type?resourceVersion=id%3A51554"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"22749e9d-255c-4149-b9ab-e641acb8263a"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/image_primary?resourceVersion=id%3A51554"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dd935306-9ffe-444f-9a6d-01095fbfc963\/relationships\/image_primary?resourceVersion=id%3A51554"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"aa3340be-fd44-41f6-ba08-e48f2c76d58b",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b?resourceVersion=id%3A51551"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":8219,
+        "status":true,
+        "title":"Fiberworks Slot 1",
+        "created":"2019-01-16T21:55:48+00:00",
+        "changed":"2021-10-18T18:47:49+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/art-studiofiberworks-slot-1",
+          "pid":12762,
+          "langcode":"en"
+        },
+        "field_capacity_max":2,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Blocking board and pins",
+          "Cutting mats\/rotary cutters\/rulers\/shears",
+          "Drop Spindles",
+          "Irons and ironing mats",
+          "knitting and crochet notion and needles",
+          "Needle Felting Supplies",
+          "Sewing Machine",
+          "Serger",
+          "Thread",
+          "Drafting Paper",
+          "Kromski Loom",
+          "Sewing notions"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/FW1.JPG?h=8d8ecc4f"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"03944915-a878-4a25-a223-81bb7ae4031b"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/uid?resourceVersion=id%3A51551"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/relationships\/uid?resourceVersion=id%3A51551"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/field_location?resourceVersion=id%3A51551"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/relationships\/field_location?resourceVersion=id%3A51551"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/field_room_type?resourceVersion=id%3A51551"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/relationships\/field_room_type?resourceVersion=id%3A51551"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"794bcd09-5d3d-4e51-be7c-9ee7b9262c14"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/image_primary?resourceVersion=id%3A51551"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/aa3340be-fd44-41f6-ba08-e48f2c76d58b\/relationships\/image_primary?resourceVersion=id%3A51551"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"9d8e94ca-e17b-4afc-9cbe-2f09360c7b63",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63?resourceVersion=id%3A51550"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":8220,
+        "status":true,
+        "title":"Fiberworks Slot 2",
+        "created":"2019-01-16T21:55:48+00:00",
+        "changed":"2021-10-19T13:34:25+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/art-studiofiberworks-slot-2",
+          "pid":12763,
+          "langcode":"en"
+        },
+        "field_capacity_max":2,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Blocking board and pins",
+          "Cutting mats\/rotary cutters\/rulers\/shears",
+          "Drop Spindles",
+          "Irons and ironing mats",
+          "knitting and crochet notion and needles",
+          "Needle Felting Supplies",
+          "Sewing Machine",
+          "Serger",
+          "Thread",
+          "Drafting Paper",
+          "Kromski Loom",
+          "Sewing notions"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/FW%202.JPG?h=b1a62989"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"03944915-a878-4a25-a223-81bb7ae4031b"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/uid?resourceVersion=id%3A51550"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/relationships\/uid?resourceVersion=id%3A51550"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/field_location?resourceVersion=id%3A51550"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/relationships\/field_location?resourceVersion=id%3A51550"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/field_room_type?resourceVersion=id%3A51550"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/relationships\/field_room_type?resourceVersion=id%3A51550"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"8e1158a7-82a2-4c62-b3a2-db762c9ee0ca"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/image_primary?resourceVersion=id%3A51550"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/9d8e94ca-e17b-4afc-9cbe-2f09360c7b63\/relationships\/image_primary?resourceVersion=id%3A51550"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"1d2ab6d7-894d-431c-b94d-0546e718eb61",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61?resourceVersion=id%3A51562"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2818,
+        "status":true,
+        "title":"Maker Studio",
+        "created":"2018-08-02T19:49:20+00:00",
+        "changed":"2021-10-19T13:58:32+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/woodworking-studio",
+          "pid":4570,
+          "langcode":"en"
+        },
+        "field_capacity_max":10,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Orbital Sanders",
+          "Mitre Saws",
+          "Jigsaw",
+          "Drills",
+          "Dremel",
+          "Clamps",
+          "Belt\/Spindle Sander",
+          "Band Saw",
+          "Air Compressor",
+          "Router and Router Table",
+          "Sawstop Table Saw",
+          "Various Hand Tools",
+          "Glowforge"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003ETinker, experiment and create with a variety of woodworking and maker tools\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E.\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003E\u003Cspan\u003ETinker, experiment and create with a variety of woodworking and maker tools\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E.\u003C\/span\u003E\u003C\/span\u003E\u003C\/span\u003E\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/Maker.JPG?h=8d8ecc4f"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/uid?resourceVersion=id%3A51562"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/relationships\/uid?resourceVersion=id%3A51562"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/field_location?resourceVersion=id%3A51562"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/relationships\/field_location?resourceVersion=id%3A51562"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/field_room_type?resourceVersion=id%3A51562"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/relationships\/field_room_type?resourceVersion=id%3A51562"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"aab1773d-15eb-4215-b24d-10da6b07df70"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/image_primary?resourceVersion=id%3A51562"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d2ab6d7-894d-431c-b94d-0546e718eb61\/relationships\/image_primary?resourceVersion=id%3A51562"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"260b2fc9-21a4-42d5-89d6-59579fdc3f5c",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c?resourceVersion=id%3A51937"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":32775,
+        "status":true,
+        "title":"PPL Mac 1",
+        "created":"2021-06-29T16:47:25+00:00",
+        "changed":"2021-10-19T15:59:13+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/ppl-mac-1",
+          "pid":49621,
+          "langcode":"en"
+        },
+        "field_capacity_max":1,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Adobe Creative Cloud (Photoshop, Illustrator, Premiere, etc.",
+          "Unity Game Engine",
+          "Ableton Live"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003EMac #1 in the Post-Production Lab\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003EMac #1 in the Post-Production Lab\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/MAC_0.JPG?h=3daa6d94"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fe8f60a7-1745-4271-b4be-a96cdfc096ad"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/uid?resourceVersion=id%3A51937"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/relationships\/uid?resourceVersion=id%3A51937"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/field_location?resourceVersion=id%3A51937"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/relationships\/field_location?resourceVersion=id%3A51937"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/field_room_type?resourceVersion=id%3A51937"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/relationships\/field_room_type?resourceVersion=id%3A51937"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"0295a8e9-f730-4eb4-ae51-2ca043a7a658"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/image_primary?resourceVersion=id%3A51937"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/260b2fc9-21a4-42d5-89d6-59579fdc3f5c\/relationships\/image_primary?resourceVersion=id%3A51937"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"fd9f4ea0-2b10-4361-9e75-ff0930ce54b5",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5?resourceVersion=id%3A51938"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":32776,
+        "status":true,
+        "title":"PPL Mac 2",
+        "created":"2021-06-29T16:47:36+00:00",
+        "changed":"2021-10-19T16:00:13+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/ppl-mac-2",
+          "pid":49622,
+          "langcode":"en"
+        },
+        "field_capacity_max":1,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Adobe Creative Cloud (Photoshop, Illustrator, Premiere, etc.",
+          "Ableton Live",
+          "Unity Game Engine"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003EMac # 2 in the Post-Production Lab.\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003EMac # 2 in the Post-Production Lab.\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/MAC_1.JPG?h=3daa6d94"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fe8f60a7-1745-4271-b4be-a96cdfc096ad"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/uid?resourceVersion=id%3A51938"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/relationships\/uid?resourceVersion=id%3A51938"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/field_location?resourceVersion=id%3A51938"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/relationships\/field_location?resourceVersion=id%3A51938"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/field_room_type?resourceVersion=id%3A51938"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/relationships\/field_room_type?resourceVersion=id%3A51938"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"a8729fc5-3257-41f6-9629-8f0362b3d5a0"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/image_primary?resourceVersion=id%3A51938"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/fd9f4ea0-2b10-4361-9e75-ff0930ce54b5\/relationships\/image_primary?resourceVersion=id%3A51938"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"dbdb6975-984c-40d2-bc78-ca444b8f4d21",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21?resourceVersion=id%3A51939"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":32777,
+        "status":true,
+        "title":"PPL Mac 3",
+        "created":"2021-06-29T16:47:43+00:00",
+        "changed":"2021-10-19T13:51:31+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/ppl-mac-3",
+          "pid":49623,
+          "langcode":"en"
+        },
+        "field_capacity_max":1,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Adobe Creative Cloud (Photoshop, Illustrator, Premiere, etc.",
+          "Ableton Live",
+          "Unity Game Engine"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003EMac # 3 in the Post-Production Lab.\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003EMac # 3 in the Post-Production Lab.\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/MAC.JPG?h=3daa6d94"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fe8f60a7-1745-4271-b4be-a96cdfc096ad"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/uid?resourceVersion=id%3A51939"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/relationships\/uid?resourceVersion=id%3A51939"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/field_location?resourceVersion=id%3A51939"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/relationships\/field_location?resourceVersion=id%3A51939"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/field_room_type?resourceVersion=id%3A51939"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/relationships\/field_room_type?resourceVersion=id%3A51939"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"f15c715c-e9bb-4c4b-a7ec-ea868134b6c7"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/image_primary?resourceVersion=id%3A51939"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/dbdb6975-984c-40d2-bc78-ca444b8f4d21\/relationships\/image_primary?resourceVersion=id%3A51939"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"7ecec820-9b88-42e1-b223-1d8a2863f867",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867?resourceVersion=id%3A51940"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2829,
+        "status":true,
+        "title":"PPL PC 1",
+        "created":"2018-08-02T19:49:33+00:00",
+        "changed":"2021-10-19T13:42:11+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/post-production-lab",
+          "pid":4559,
+          "langcode":"en"
+        },
+        "field_capacity_max":1,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Adobe Creative Cloud (Photoshop, Illustrator, Premiere, etc.",
+          "Ableton Live",
+          "Unity Game Engine"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003EPC # 1 in the Post-Production Lab\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003EPC # 1 in the Post-Production Lab\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/LAB%20PC.JPG?h=568f7af3"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/uid?resourceVersion=id%3A51940"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/relationships\/uid?resourceVersion=id%3A51940"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/field_location?resourceVersion=id%3A51940"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/relationships\/field_location?resourceVersion=id%3A51940"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/field_room_type?resourceVersion=id%3A51940"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/relationships\/field_room_type?resourceVersion=id%3A51940"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"2f088896-f8d9-4cde-99a3-9f1afa91a8d7"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/image_primary?resourceVersion=id%3A51940"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/7ecec820-9b88-42e1-b223-1d8a2863f867\/relationships\/image_primary?resourceVersion=id%3A51940"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"e88c9756-60d1-4577-aadb-5faafcd2172f",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f?resourceVersion=id%3A51941"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":32773,
+        "status":true,
+        "title":"PPL PC 2",
+        "created":"2021-06-29T16:46:29+00:00",
+        "changed":"2021-10-19T13:42:48+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/ppl-pc-2",
+          "pid":49619,
+          "langcode":"en"
+        },
+        "field_capacity_max":1,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Adobe Creative Cloud (Photoshop, Illustrator, Premiere, etc.",
+          "Ableton Live",
+          "Unity Game Engine"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003EPC # 2 in the Post-Production Lab\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003EPC # 2 in the Post-Production Lab\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/LAB%20PC_0.JPG?h=3549b9a0"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fe8f60a7-1745-4271-b4be-a96cdfc096ad"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/uid?resourceVersion=id%3A51941"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/relationships\/uid?resourceVersion=id%3A51941"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/field_location?resourceVersion=id%3A51941"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/relationships\/field_location?resourceVersion=id%3A51941"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/field_room_type?resourceVersion=id%3A51941"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/relationships\/field_room_type?resourceVersion=id%3A51941"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"3e705abd-b79c-4cc7-8172-d68437bedc70"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/image_primary?resourceVersion=id%3A51941"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/e88c9756-60d1-4577-aadb-5faafcd2172f\/relationships\/image_primary?resourceVersion=id%3A51941"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"288b2932-e2f2-4625-be5e-0321b7f5ca12",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12?resourceVersion=id%3A51942"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":32774,
+        "status":true,
+        "title":"PPL PC 3",
+        "created":"2021-06-29T16:47:16+00:00",
+        "changed":"2021-10-19T13:50:00+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/ppl-pc-3",
+          "pid":49620,
+          "langcode":"en"
+        },
+        "field_capacity_max":1,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Adobe Creative Cloud (Photoshop, Illustrator, Premiere, etc.",
+          "Unity Game Engine",
+          "Ableton Live"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003EPC # 3 in the Post-Production Lab\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003EPC # 3 in the Post-Production Lab\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/LAB%20PC_1.JPG?h=db8d90cf"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fe8f60a7-1745-4271-b4be-a96cdfc096ad"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/uid?resourceVersion=id%3A51942"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/relationships\/uid?resourceVersion=id%3A51942"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/field_location?resourceVersion=id%3A51942"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/relationships\/field_location?resourceVersion=id%3A51942"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/field_room_type?resourceVersion=id%3A51942"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/relationships\/field_room_type?resourceVersion=id%3A51942"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"a311dcc0-b0d9-4f23-b59b-b3d5896654a7"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/image_primary?resourceVersion=id%3A51942"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/288b2932-e2f2-4625-be5e-0321b7f5ca12\/relationships\/image_primary?resourceVersion=id%3A51942"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"4ea3ee5d-bdfd-4beb-b694-9184ce990300",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300?resourceVersion=id%3A51552"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2830,
+        "status":true,
+        "title":"Production Stage",
+        "created":"2018-08-02T19:49:34+00:00",
+        "changed":"2021-10-19T13:37:36+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/production-stage",
+          "pid":4558,
+          "langcode":"en"
+        },
+        "field_capacity_max":4,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3445",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          "Canon T5i DSLR Cameras",
+          "Canon XF100 Camcorder",
+          "Green screen wall",
+          "Microphones (Dynamic \u0026 Condenser)",
+          "Photo backdrops (green, white, orange, black)",
+          "Photo\/Video Lighting equipment (right lights, soft boxes, reflectors, etc.)",
+          "Product photography table",
+          "Sound Isolation Booth"
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":{
+          "value":"\u003Cp\u003EProduce, record, and film or create and edit media projects from audio to mobile apps, video games and more in our two dedicated media arts studios.\u0026nbsp;\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003EProduce, record, and film or create and edit media projects from audio to mobile apps, video games and more in our two dedicated media arts studios.\u00a0\u003C\/p\u003E"
+        },
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003E\u003Cem\u003EComplete an orientation to work independently in this space.\u003C\/em\u003E\u003C\/strong\u003E\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-11\/Production%20Stage.JPG"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/uid?resourceVersion=id%3A51552"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/relationships\/uid?resourceVersion=id%3A51552"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/field_location?resourceVersion=id%3A51552"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/relationships\/field_location?resourceVersion=id%3A51552"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"ccc5ad70-556e-46e1-8ddf-a69a10544841"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/field_room_type?resourceVersion=id%3A51552"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/relationships\/field_room_type?resourceVersion=id%3A51552"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"915bb5ee-a767-4da0-bfce-032eb90fe78c"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/image_primary?resourceVersion=id%3A51552"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/4ea3ee5d-bdfd-4beb-b694-9184ce990300\/relationships\/image_primary?resourceVersion=id%3A51552"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"c495d323-0d52-44b2-b66f-4443acde55aa",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa?resourceVersion=id%3A51560"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2832,
+        "status":true,
+        "title":"Sandhills Children\u0027s Maker",
+        "created":"2018-08-02T19:49:36+00:00",
+        "changed":"2021-07-30T00:27:00+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-sandhills\/sandhills-childrens-maker",
+          "pid":4556,
+          "langcode":"en"
+        },
+        "field_capacity_max":18,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":null,
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003ELocated on first level\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003ELocated on first level\u003C\/p\u003E"
+        },
+        "room_thumbnail":null
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/uid?resourceVersion=id%3A51560"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/relationships\/uid?resourceVersion=id%3A51560"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/field_location?resourceVersion=id%3A51560"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/relationships\/field_location?resourceVersion=id%3A51560"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/field_room_type?resourceVersion=id%3A51560"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/relationships\/field_room_type?resourceVersion=id%3A51560"
+            }
+          }
+        },
+        "image_primary":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/image_primary?resourceVersion=id%3A51560"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/c495d323-0d52-44b2-b66f-4443acde55aa\/relationships\/image_primary?resourceVersion=id%3A51560"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"95b957ff-9edf-463b-b087-0d04cc8bf025",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025?resourceVersion=id%3A51561"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2834,
+        "status":true,
+        "title":"Sandhills Entry Maker",
+        "created":"2018-08-02T19:49:39+00:00",
+        "changed":"2021-07-30T00:27:14+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-sandhills\/sandhills-entry-maker",
+          "pid":4554,
+          "langcode":"en"
+        },
+        "field_capacity_max":18,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":null,
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003ELocated on the first level\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003ELocated on the first level\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-08\/locations_slideshow_sandhills_3.jpg"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/uid?resourceVersion=id%3A51561"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/relationships\/uid?resourceVersion=id%3A51561"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/field_location?resourceVersion=id%3A51561"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/relationships\/field_location?resourceVersion=id%3A51561"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/field_room_type?resourceVersion=id%3A51561"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/relationships\/field_room_type?resourceVersion=id%3A51561"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"72446988-7e98-449a-a63d-93653de9bae2"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/image_primary?resourceVersion=id%3A51561"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/95b957ff-9edf-463b-b087-0d04cc8bf025\/relationships\/image_primary?resourceVersion=id%3A51561"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"32ec76da-fba7-45c9-bf0e-7f6716bf2026",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026?resourceVersion=id%3A51553"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":8489,
+        "status":true,
+        "title":"Southeast Makerspace",
+        "created":"2019-01-30T16:28:41+00:00",
+        "changed":"2021-07-30T00:24:55+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-southeast\/southeast-tinker-lab",
+          "pid":13281,
+          "langcode":"en"
+        },
+        "field_capacity_max":20,
+        "field_capacity_min":5,
+        "field_requires_certification":true,
+        "field_reservable_online":false,
+        "field_reservation_phone_number":"803-776-0855",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E***\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E***\u003C\/p\u003E"
+        },
+        "room_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-04\/makerspace.jpg?h=ee5b0d7f"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"03944915-a878-4a25-a223-81bb7ae4031b"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/uid?resourceVersion=id%3A51553"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/relationships\/uid?resourceVersion=id%3A51553"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"e030befe-e49a-4d78-8792-764a2fb5c287"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/field_location?resourceVersion=id%3A51553"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/relationships\/field_location?resourceVersion=id%3A51553"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"9f6c1ea1-e944-479c-b955-e62bbe372189"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/field_room_type?resourceVersion=id%3A51553"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/relationships\/field_room_type?resourceVersion=id%3A51553"
+            }
+          }
+        },
+        "image_primary":{
+          "data":{
+            "type":"media--image",
+            "id":"50d0dd96-6a44-443b-aa4a-62979395d0fb"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/image_primary?resourceVersion=id%3A51553"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/32ec76da-fba7-45c9-bf0e-7f6716bf2026\/relationships\/image_primary?resourceVersion=id%3A51553"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"ddcba8ae-a48b-4675-8a8a-ecf280e7b636",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636?resourceVersion=id%3A51556"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2841,
+        "status":true,
+        "title":"St. Andrews Makerspace",
+        "created":"2018-08-02T19:49:46+00:00",
+        "changed":"2021-07-30T00:25:56+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-st-andrews\/st-andrews-makerspace",
+          "pid":4548,
+          "langcode":"en"
+        },
+        "field_capacity_max":1,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-772-6675",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E***\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E***\u003C\/p\u003E"
+        },
+        "room_thumbnail":null
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/uid?resourceVersion=id%3A51556"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/relationships\/uid?resourceVersion=id%3A51556"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"5d1ad188-917e-4ce2-936f-083044ba6e6f"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/field_location?resourceVersion=id%3A51556"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/relationships\/field_location?resourceVersion=id%3A51556"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/field_room_type?resourceVersion=id%3A51556"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/relationships\/field_room_type?resourceVersion=id%3A51556"
+            }
+          }
+        },
+        "image_primary":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/image_primary?resourceVersion=id%3A51556"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/ddcba8ae-a48b-4675-8a8a-ecf280e7b636\/relationships\/image_primary?resourceVersion=id%3A51556"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--room",
+      "id":"a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01?resourceVersion=id%3A51555"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":2849,
+        "status":true,
+        "title":"Teen Makerspace",
+        "created":"2018-08-02T19:49:55+00:00",
+        "changed":"2021-07-30T00:25:40+00:00",
+        "promote":false,
+        "sticky":false,
+        "path":{
+          "alias":"\/location\/richland-library-main\/teen-makerspace",
+          "pid":4537,
+          "langcode":"en"
+        },
+        "field_capacity_max":30,
+        "field_capacity_min":1,
+        "field_requires_certification":true,
+        "field_reservable_online":true,
+        "field_reservation_phone_number":"803-929-3470",
+        "field_room_fees":null,
+        "field_room_standard_equipment":[
+          
+        ],
+        "field_staff_use_only":true,
+        "field_text_content":null,
+        "field_text_intro":null,
+        "field_text_teaser":{
+          "value":"\u003Cp\u003E\u003Cstrong\u003EPlease contact the\u0026nbsp;Teen\u0026nbsp;Center before reserving this space.\u0026nbsp;\u003C\/strong\u003ELocated on the garden level.\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003E\u003Cstrong\u003EPlease contact the\u00a0Teen\u00a0Center before reserving this space.\u00a0\u003C\/strong\u003ELocated on the garden level.\u003C\/p\u003E"
+        },
+        "room_thumbnail":null
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"35891e18-91c6-42fe-a76f-e4177bd506f1"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/uid?resourceVersion=id%3A51555"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/relationships\/uid?resourceVersion=id%3A51555"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"65e02a9d-6d64-4ffb-be34-e2b715ab160b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/field_location?resourceVersion=id%3A51555"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/relationships\/field_location?resourceVersion=id%3A51555"
+            }
+          }
+        },
+        "field_room_type":{
+          "data":{
+            "type":"taxonomy_term--room_type",
+            "id":"92d752af-275f-4c9e-9215-ddf09bcaaab8"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/field_room_type?resourceVersion=id%3A51555"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/relationships\/field_room_type?resourceVersion=id%3A51555"
+            }
+          }
+        },
+        "image_primary":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/image_primary?resourceVersion=id%3A51555"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/a3b6d9bb-b10d-4e66-bc45-afe0b03bfa01\/relationships\/image_primary?resourceVersion=id%3A51555"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "included":[
+    {
+      "type":"media--image",
+      "id":"cdf7ed47-4cba-441c-8388-0fc63b224b04",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04?resourceVersion=id%3A134"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":133,
+        "drupal_internal__vid":134,
+        "langcode":"en",
+        "revision_created":"2018-07-27T19:54:01+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Locations_Cooper_Makerspace",
+        "created":"2018-07-27T19:48:10+00:00",
+        "changed":"2018-07-27T19:48:10+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":{
+          "value":"\u003Cp\u003ETeens and adults can tinker, experiment and create with tools in both guided and open lab sessions.\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Cp\u003ETeens and adults can tinker, experiment and create with tools in both guided and open lab sessions.\u003C\/p\u003E"
+        },
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/bundle?resourceVersion=id%3A134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/relationships\/bundle?resourceVersion=id%3A134"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/revision_user?resourceVersion=id%3A134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/relationships\/revision_user?resourceVersion=id%3A134"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"75bae81c-7d9a-4cb7-9e35-1151b98ac510"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/uid?resourceVersion=id%3A134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/relationships\/uid?resourceVersion=id%3A134"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"6bfe472a-0bde-484e-95e8-be77e62a6620",
+            "meta":{
+              "alt":"Thumbnail",
+              "title":"Locations_Cooper_Makerspace",
+              "width":1800,
+              "height":1200
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/thumbnail?resourceVersion=id%3A134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/relationships\/thumbnail?resourceVersion=id%3A134"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"6bfe472a-0bde-484e-95e8-be77e62a6620",
+            "meta":{
+              "alt":"Cooper Makerspace",
+              "title":"",
+              "width":1800,
+              "height":1200
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/field_media_image?resourceVersion=id%3A134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/relationships\/field_media_image?resourceVersion=id%3A134"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/field_tags?resourceVersion=id%3A134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/relationships\/field_tags?resourceVersion=id%3A134"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"22749e9d-255c-4149-b9ab-e641acb8263a",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a?resourceVersion=id%3A1979"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":1418,
+        "drupal_internal__vid":1979,
+        "langcode":"en",
+        "revision_created":"2019-04-05T16:45:44+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Locations_Edgewood_Makerspace",
+        "created":"2019-04-05T16:45:22+00:00",
+        "changed":"2019-04-05T16:45:44+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/bundle?resourceVersion=id%3A1979"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/relationships\/bundle?resourceVersion=id%3A1979"
+            }
+          }
+        },
+        "revision_user":{
+          "data":{
+            "type":"user--user",
+            "id":"fba07d0e-58cf-4a96-841a-3bf722989161"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/revision_user?resourceVersion=id%3A1979"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/relationships\/revision_user?resourceVersion=id%3A1979"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fba07d0e-58cf-4a96-841a-3bf722989161"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/uid?resourceVersion=id%3A1979"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/relationships\/uid?resourceVersion=id%3A1979"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"bc3b1b57-0cab-4819-9edc-e400779b1d3e",
+            "meta":{
+              "alt":"Edgewood Makerspace",
+              "title":null,
+              "width":6240,
+              "height":4160
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/thumbnail?resourceVersion=id%3A1979"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/relationships\/thumbnail?resourceVersion=id%3A1979"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"bc3b1b57-0cab-4819-9edc-e400779b1d3e",
+            "meta":{
+              "alt":"Edgewood Makerspace",
+              "title":"",
+              "width":6240,
+              "height":4160
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/field_media_image?resourceVersion=id%3A1979"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/relationships\/field_media_image?resourceVersion=id%3A1979"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/field_tags?resourceVersion=id%3A1979"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/relationships\/field_tags?resourceVersion=id%3A1979"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"794bcd09-5d3d-4e51-be7c-9ee7b9262c14",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14?resourceVersion=id%3A6130"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4587,
+        "drupal_internal__vid":6130,
+        "langcode":"en",
+        "revision_created":"2021-10-18T14:07:28+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Fiberworks Studio",
+        "created":"2021-10-18T14:07:24+00:00",
+        "changed":"2021-10-18T14:07:24+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/bundle?resourceVersion=id%3A6130"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/relationships\/bundle?resourceVersion=id%3A6130"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/revision_user?resourceVersion=id%3A6130"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/relationships\/revision_user?resourceVersion=id%3A6130"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/uid?resourceVersion=id%3A6130"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/relationships\/uid?resourceVersion=id%3A6130"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"aff39e44-d006-4064-bbf5-a68d45db32b9",
+            "meta":{
+              "alt":"Image of Fiberworks Studio",
+              "title":null,
+              "width":6000,
+              "height":3368
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/thumbnail?resourceVersion=id%3A6130"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/relationships\/thumbnail?resourceVersion=id%3A6130"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"aff39e44-d006-4064-bbf5-a68d45db32b9",
+            "meta":{
+              "alt":"Image of Fiberworks Studio",
+              "title":"",
+              "width":6000,
+              "height":3368
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/field_media_image?resourceVersion=id%3A6130"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/relationships\/field_media_image?resourceVersion=id%3A6130"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/field_tags?resourceVersion=id%3A6130"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/relationships\/field_tags?resourceVersion=id%3A6130"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"8e1158a7-82a2-4c62-b3a2-db762c9ee0ca",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca?resourceVersion=id%3A6131"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4588,
+        "drupal_internal__vid":6131,
+        "langcode":"en",
+        "revision_created":"2021-10-18T14:21:46+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Fiberworks 2",
+        "created":"2021-10-18T14:21:42+00:00",
+        "changed":"2021-10-18T14:21:42+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/bundle?resourceVersion=id%3A6131"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/relationships\/bundle?resourceVersion=id%3A6131"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/revision_user?resourceVersion=id%3A6131"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/relationships\/revision_user?resourceVersion=id%3A6131"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/uid?resourceVersion=id%3A6131"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/relationships\/uid?resourceVersion=id%3A6131"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"0bf51b99-af14-48d0-9e54-b1bf03b64c2e",
+            "meta":{
+              "alt":"Image of Fiberworks Studio",
+              "title":null,
+              "width":3359,
+              "height":2035
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/thumbnail?resourceVersion=id%3A6131"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/relationships\/thumbnail?resourceVersion=id%3A6131"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"0bf51b99-af14-48d0-9e54-b1bf03b64c2e",
+            "meta":{
+              "alt":"Image of Fiberworks Studio",
+              "title":"",
+              "width":3359,
+              "height":2035
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/field_media_image?resourceVersion=id%3A6131"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/relationships\/field_media_image?resourceVersion=id%3A6131"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/field_tags?resourceVersion=id%3A6131"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/relationships\/field_tags?resourceVersion=id%3A6131"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"aab1773d-15eb-4215-b24d-10da6b07df70",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70?resourceVersion=id%3A6149"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4592,
+        "drupal_internal__vid":6149,
+        "langcode":"en",
+        "revision_created":"2021-10-19T19:45:28+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Makerspace",
+        "created":"2021-10-18T15:38:29+00:00",
+        "changed":"2021-10-19T19:45:28+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/bundle?resourceVersion=id%3A6149"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/relationships\/bundle?resourceVersion=id%3A6149"
+            }
+          }
+        },
+        "revision_user":{
+          "data":{
+            "type":"user--user",
+            "id":"75bae81c-7d9a-4cb7-9e35-1151b98ac510"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/revision_user?resourceVersion=id%3A6149"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/relationships\/revision_user?resourceVersion=id%3A6149"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/uid?resourceVersion=id%3A6149"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/relationships\/uid?resourceVersion=id%3A6149"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"39e3cac7-1a1f-4609-8fba-10e7c885f0d3",
+            "meta":{
+              "alt":"Image of Makerspace at Richland Library Main",
+              "title":null,
+              "width":6000,
+              "height":3368
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/thumbnail?resourceVersion=id%3A6149"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/relationships\/thumbnail?resourceVersion=id%3A6149"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"39e3cac7-1a1f-4609-8fba-10e7c885f0d3",
+            "meta":{
+              "alt":"Image of Makerspace at Richland Library Main",
+              "title":"",
+              "width":6000,
+              "height":3368
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/field_media_image?resourceVersion=id%3A6149"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/relationships\/field_media_image?resourceVersion=id%3A6149"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/field_tags?resourceVersion=id%3A6149"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/relationships\/field_tags?resourceVersion=id%3A6149"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"0295a8e9-f730-4eb4-ae51-2ca043a7a658",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658?resourceVersion=id%3A6137"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4594,
+        "drupal_internal__vid":6137,
+        "langcode":"en",
+        "revision_created":"2021-10-18T15:41:25+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"PPL Mac",
+        "created":"2021-10-18T15:41:22+00:00",
+        "changed":"2021-10-18T15:41:22+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/bundle?resourceVersion=id%3A6137"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/relationships\/bundle?resourceVersion=id%3A6137"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/revision_user?resourceVersion=id%3A6137"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/relationships\/revision_user?resourceVersion=id%3A6137"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/uid?resourceVersion=id%3A6137"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/relationships\/uid?resourceVersion=id%3A6137"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"6047aef0-c1d8-47e9-9f96-9c3319451e32",
+            "meta":{
+              "alt":"Image of Mac Computer",
+              "title":null,
+              "width":3904,
+              "height":3091
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/thumbnail?resourceVersion=id%3A6137"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/relationships\/thumbnail?resourceVersion=id%3A6137"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"6047aef0-c1d8-47e9-9f96-9c3319451e32",
+            "meta":{
+              "alt":"Image of Mac Computer",
+              "title":"",
+              "width":3904,
+              "height":3091
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/field_media_image?resourceVersion=id%3A6137"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/relationships\/field_media_image?resourceVersion=id%3A6137"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/field_tags?resourceVersion=id%3A6137"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/relationships\/field_tags?resourceVersion=id%3A6137"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"a8729fc5-3257-41f6-9629-8f0362b3d5a0",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0?resourceVersion=id%3A6138"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4595,
+        "drupal_internal__vid":6138,
+        "langcode":"en",
+        "revision_created":"2021-10-18T15:42:46+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"PPL Mac",
+        "created":"2021-10-18T15:42:40+00:00",
+        "changed":"2021-10-18T15:42:40+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/bundle?resourceVersion=id%3A6138"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/relationships\/bundle?resourceVersion=id%3A6138"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/revision_user?resourceVersion=id%3A6138"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/relationships\/revision_user?resourceVersion=id%3A6138"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/uid?resourceVersion=id%3A6138"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/relationships\/uid?resourceVersion=id%3A6138"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"e7b43bda-6759-4455-acbf-bef94213b818",
+            "meta":{
+              "alt":"Image of Mac Computer",
+              "title":null,
+              "width":3904,
+              "height":3091
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/thumbnail?resourceVersion=id%3A6138"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/relationships\/thumbnail?resourceVersion=id%3A6138"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"e7b43bda-6759-4455-acbf-bef94213b818",
+            "meta":{
+              "alt":"Image of Mac Computer",
+              "title":"",
+              "width":3904,
+              "height":3091
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/field_media_image?resourceVersion=id%3A6138"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/relationships\/field_media_image?resourceVersion=id%3A6138"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/field_tags?resourceVersion=id%3A6138"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/relationships\/field_tags?resourceVersion=id%3A6138"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"f15c715c-e9bb-4c4b-a7ec-ea868134b6c7",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7?resourceVersion=id%3A6136"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4593,
+        "drupal_internal__vid":6136,
+        "langcode":"en",
+        "revision_created":"2021-10-18T15:40:20+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"PPL MAC",
+        "created":"2021-10-18T15:40:12+00:00",
+        "changed":"2021-10-18T15:40:12+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/bundle?resourceVersion=id%3A6136"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/relationships\/bundle?resourceVersion=id%3A6136"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/revision_user?resourceVersion=id%3A6136"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/relationships\/revision_user?resourceVersion=id%3A6136"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/uid?resourceVersion=id%3A6136"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/relationships\/uid?resourceVersion=id%3A6136"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"410124ff-c46a-4830-bdcd-a86262da68d1",
+            "meta":{
+              "alt":"Image of Mac Computer",
+              "title":null,
+              "width":3904,
+              "height":3091
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/thumbnail?resourceVersion=id%3A6136"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/relationships\/thumbnail?resourceVersion=id%3A6136"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"410124ff-c46a-4830-bdcd-a86262da68d1",
+            "meta":{
+              "alt":"Image of Mac Computer",
+              "title":"",
+              "width":3904,
+              "height":3091
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/field_media_image?resourceVersion=id%3A6136"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/relationships\/field_media_image?resourceVersion=id%3A6136"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/field_tags?resourceVersion=id%3A6136"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/relationships\/field_tags?resourceVersion=id%3A6136"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"2f088896-f8d9-4cde-99a3-9f1afa91a8d7",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7?resourceVersion=id%3A6132"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4589,
+        "drupal_internal__vid":6132,
+        "langcode":"en",
+        "revision_created":"2021-10-18T14:26:45+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"PPL PC",
+        "created":"2021-10-18T14:26:41+00:00",
+        "changed":"2021-10-18T14:27:14+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/bundle?resourceVersion=id%3A6132"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/relationships\/bundle?resourceVersion=id%3A6132"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/revision_user?resourceVersion=id%3A6132"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/relationships\/revision_user?resourceVersion=id%3A6132"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/uid?resourceVersion=id%3A6132"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/relationships\/uid?resourceVersion=id%3A6132"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"31abcf6f-71e8-46b4-b34b-e77b8feb1420",
+            "meta":{
+              "alt":"Image of PC computer",
+              "title":null,
+              "width":3362,
+              "height":2962
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/thumbnail?resourceVersion=id%3A6132"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/relationships\/thumbnail?resourceVersion=id%3A6132"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"31abcf6f-71e8-46b4-b34b-e77b8feb1420",
+            "meta":{
+              "alt":"Image of PC computer",
+              "title":"",
+              "width":3362,
+              "height":2962
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/field_media_image?resourceVersion=id%3A6132"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/relationships\/field_media_image?resourceVersion=id%3A6132"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/field_tags?resourceVersion=id%3A6132"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/relationships\/field_tags?resourceVersion=id%3A6132"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"3e705abd-b79c-4cc7-8172-d68437bedc70",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70?resourceVersion=id%3A6133"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4590,
+        "drupal_internal__vid":6133,
+        "langcode":"en",
+        "revision_created":"2021-10-18T15:32:51+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"PPL PC",
+        "created":"2021-10-18T15:32:49+00:00",
+        "changed":"2021-10-18T15:32:49+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/bundle?resourceVersion=id%3A6133"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/relationships\/bundle?resourceVersion=id%3A6133"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/revision_user?resourceVersion=id%3A6133"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/relationships\/revision_user?resourceVersion=id%3A6133"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/uid?resourceVersion=id%3A6133"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/relationships\/uid?resourceVersion=id%3A6133"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"c121c273-7b5d-44a5-9985-77a37fd32ccd",
+            "meta":{
+              "alt":"Image of PC Computer",
+              "title":null,
+              "width":3362,
+              "height":2962
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/thumbnail?resourceVersion=id%3A6133"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/relationships\/thumbnail?resourceVersion=id%3A6133"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"c121c273-7b5d-44a5-9985-77a37fd32ccd",
+            "meta":{
+              "alt":"Image of PC Computer",
+              "title":"",
+              "width":3362,
+              "height":2962
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/field_media_image?resourceVersion=id%3A6133"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/relationships\/field_media_image?resourceVersion=id%3A6133"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/field_tags?resourceVersion=id%3A6133"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/relationships\/field_tags?resourceVersion=id%3A6133"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"a311dcc0-b0d9-4f23-b59b-b3d5896654a7",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7?resourceVersion=id%3A6134"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":4591,
+        "drupal_internal__vid":6134,
+        "langcode":"en",
+        "revision_created":"2021-10-18T15:34:11+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"PPL PC",
+        "created":"2021-10-18T15:34:06+00:00",
+        "changed":"2021-10-18T15:34:06+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/bundle?resourceVersion=id%3A6134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/relationships\/bundle?resourceVersion=id%3A6134"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/revision_user?resourceVersion=id%3A6134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/relationships\/revision_user?resourceVersion=id%3A6134"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/uid?resourceVersion=id%3A6134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/relationships\/uid?resourceVersion=id%3A6134"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"5cbcff3b-bf6b-49f4-9130-0ed5b16fc83e",
+            "meta":{
+              "alt":"Image of PC Computer",
+              "title":null,
+              "width":3362,
+              "height":2962
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/thumbnail?resourceVersion=id%3A6134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/relationships\/thumbnail?resourceVersion=id%3A6134"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"5cbcff3b-bf6b-49f4-9130-0ed5b16fc83e",
+            "meta":{
+              "alt":"Image of PC Computer",
+              "title":"",
+              "width":3362,
+              "height":2962
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/field_media_image?resourceVersion=id%3A6134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/relationships\/field_media_image?resourceVersion=id%3A6134"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/field_tags?resourceVersion=id%3A6134"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/relationships\/field_tags?resourceVersion=id%3A6134"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"915bb5ee-a767-4da0-bfce-032eb90fe78c",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c?resourceVersion=id%3A1429"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":1042,
+        "drupal_internal__vid":1429,
+        "langcode":"en",
+        "revision_created":"2018-11-27T20:37:54+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Production Stage",
+        "created":"2018-11-27T20:37:52+00:00",
+        "changed":"2018-11-27T20:37:52+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/bundle?resourceVersion=id%3A1429"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/relationships\/bundle?resourceVersion=id%3A1429"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/revision_user?resourceVersion=id%3A1429"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/relationships\/revision_user?resourceVersion=id%3A1429"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"03944915-a878-4a25-a223-81bb7ae4031b"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/uid?resourceVersion=id%3A1429"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/relationships\/uid?resourceVersion=id%3A1429"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"79dbc063-2bcf-4e27-95ec-5e41a92b4e8f",
+            "meta":{
+              "alt":"Thumbnail",
+              "title":"Production Stage",
+              "width":1685,
+              "height":752
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/thumbnail?resourceVersion=id%3A1429"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/relationships\/thumbnail?resourceVersion=id%3A1429"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"79dbc063-2bcf-4e27-95ec-5e41a92b4e8f",
+            "meta":{
+              "alt":"Production Stage",
+              "title":"",
+              "width":1685,
+              "height":752
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/field_media_image?resourceVersion=id%3A1429"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/relationships\/field_media_image?resourceVersion=id%3A1429"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/field_tags?resourceVersion=id%3A1429"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/relationships\/field_tags?resourceVersion=id%3A1429"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"72446988-7e98-449a-a63d-93653de9bae2",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2?resourceVersion=id%3A390"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":293,
+        "drupal_internal__vid":390,
+        "langcode":"en",
+        "revision_created":"2018-08-07T19:29:27+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Locations_Slideshow_Sandhills Makerspace",
+        "created":"2018-08-07T19:23:42+00:00",
+        "changed":"2018-09-10T21:14:57+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":null,
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/bundle?resourceVersion=id%3A390"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/relationships\/bundle?resourceVersion=id%3A390"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/revision_user?resourceVersion=id%3A390"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/relationships\/revision_user?resourceVersion=id%3A390"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"75bae81c-7d9a-4cb7-9e35-1151b98ac510"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/uid?resourceVersion=id%3A390"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/relationships\/uid?resourceVersion=id%3A390"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"e5902d1d-ae89-49e4-9a99-28558b96521c",
+            "meta":{
+              "alt":"Thumbnail",
+              "title":"Locations_Slideshow_Sandhills Makerspace",
+              "width":5472,
+              "height":3648
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/thumbnail?resourceVersion=id%3A390"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/relationships\/thumbnail?resourceVersion=id%3A390"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"e5902d1d-ae89-49e4-9a99-28558b96521c",
+            "meta":{
+              "alt":"Sandhills Makerspaces",
+              "title":"",
+              "width":5472,
+              "height":3648
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/field_media_image?resourceVersion=id%3A390"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/relationships\/field_media_image?resourceVersion=id%3A390"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/field_tags?resourceVersion=id%3A390"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/relationships\/field_tags?resourceVersion=id%3A390"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"media--image",
+      "id":"50d0dd96-6a44-443b-aa4a-62979395d0fb",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb?resourceVersion=id%3A2011"
+        }
+      },
+      "attributes":{
+        "drupal_internal__mid":1443,
+        "drupal_internal__vid":2011,
+        "langcode":"en",
+        "revision_created":"2019-04-15T19:13:57+00:00",
+        "revision_log_message":null,
+        "status":true,
+        "name":"Location_Southeast_Makerspace",
+        "created":"2019-04-15T19:07:00+00:00",
+        "changed":"2019-04-15T19:07:00+00:00",
+        "default_langcode":true,
+        "revision_translation_affected":true,
+        "metatag":null,
+        "path":{
+          "alias":null,
+          "pid":null,
+          "langcode":"en"
+        },
+        "field_media_caption":{
+          "value":"\u003Ch3\u003EMakerspace:\u003C\/h3\u003E\r\n\r\n\u003Cp\u003ETinker, experiment and create with tools in both guided and open lab sessions. We can\u2019t wait to show you our new high-resolution photo scanning station, sewing machines, DIY STEAM projects and more.\u003C\/p\u003E\r\n",
+          "format":"basic_html",
+          "processed":"\u003Ch3\u003EMakerspace:\u003C\/h3\u003E\n\n\u003Cp\u003ETinker, experiment and create with tools in both guided and open lab sessions. We can\u2019t wait to show you our new high-resolution photo scanning station, sewing machines, DIY STEAM projects and more.\u003C\/p\u003E"
+        },
+        "field_media_credit":null
+      },
+      "relationships":{
+        "bundle":{
+          "data":{
+            "type":"media_type--media_type",
+            "id":"7708b33e-75ed-4e5f-bdee-f1181355d035"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/bundle?resourceVersion=id%3A2011"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/relationships\/bundle?resourceVersion=id%3A2011"
+            }
+          }
+        },
+        "revision_user":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/revision_user?resourceVersion=id%3A2011"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/relationships\/revision_user?resourceVersion=id%3A2011"
+            }
+          }
+        },
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"75bae81c-7d9a-4cb7-9e35-1151b98ac510"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/uid?resourceVersion=id%3A2011"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/relationships\/uid?resourceVersion=id%3A2011"
+            }
+          }
+        },
+        "thumbnail":{
+          "data":{
+            "type":"file--file",
+            "id":"80f64677-9c93-4867-8864-1e6fc7950249",
+            "meta":{
+              "alt":"Makerspace tables and chairs",
+              "title":null,
+              "width":4871,
+              "height":3479
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/thumbnail?resourceVersion=id%3A2011"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/relationships\/thumbnail?resourceVersion=id%3A2011"
+            }
+          }
+        },
+        "field_media_image":{
+          "data":{
+            "type":"file--file",
+            "id":"80f64677-9c93-4867-8864-1e6fc7950249",
+            "meta":{
+              "alt":"Makerspace tables and chairs",
+              "title":"",
+              "width":4871,
+              "height":3479
+            }
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/field_media_image?resourceVersion=id%3A2011"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/relationships\/field_media_image?resourceVersion=id%3A2011"
+            }
+          }
+        },
+        "field_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/field_tags?resourceVersion=id%3A2011"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/relationships\/field_tags?resourceVersion=id%3A2011"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"6bfe472a-0bde-484e-95e8-be77e62a6620",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2018-07\/17_07_1690_edit_1.jpg?itok=i60OZ99p",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-07\/17_07_1690_edit_1.jpg?itok=rXuF97y_",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/6bfe472a-0bde-484e-95e8-be77e62a6620"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":187,
+        "langcode":"en",
+        "filename":"17_07_1690_edit_1.jpg",
+        "uri":{
+          "value":"public:\/\/2018-07\/17_07_1690_edit_1.jpg",
+          "url":"\/sites\/default\/files\/2018-07\/17_07_1690_edit_1.jpg"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":659746,
+        "status":true,
+        "created":"2018-07-27T19:48:10+00:00",
+        "changed":"2018-07-27T19:54:01+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"75bae81c-7d9a-4cb7-9e35-1151b98ac510"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/6bfe472a-0bde-484e-95e8-be77e62a6620\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/6bfe472a-0bde-484e-95e8-be77e62a6620\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"bc3b1b57-0cab-4819-9edc-e400779b1d3e",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2019-04\/Richland%20Library%20Edgewood%20Columbia%20SC%20Eric%20Blake%20ColumbiaPics%20Google%20Trusted%20Photographer%20%289%29.jpg?h=0775493e\u0026itok=F1NVsrSL",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-04\/Richland%20Library%20Edgewood%20Columbia%20SC%20Eric%20Blake%20ColumbiaPics%20Google%20Trusted%20Photographer%20%289%29.jpg?h=0775493e\u0026itok=dQkjZeDa",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/bc3b1b57-0cab-4819-9edc-e400779b1d3e"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":2481,
+        "langcode":"en",
+        "filename":"Richland Library Edgewood Columbia SC Eric Blake ColumbiaPics Google Trusted Photographer (9).jpg",
+        "uri":{
+          "value":"public:\/\/2019-04\/Richland Library Edgewood Columbia SC Eric Blake ColumbiaPics Google Trusted Photographer (9).jpg",
+          "url":"\/sites\/default\/files\/2019-04\/Richland%20Library%20Edgewood%20Columbia%20SC%20Eric%20Blake%20ColumbiaPics%20Google%20Trusted%20Photographer%20%289%29.jpg"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":13724394,
+        "status":true,
+        "created":"2019-04-05T16:45:22+00:00",
+        "changed":"2019-04-05T16:45:44+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fba07d0e-58cf-4a96-841a-3bf722989161"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/bc3b1b57-0cab-4819-9edc-e400779b1d3e\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/bc3b1b57-0cab-4819-9edc-e400779b1d3e\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"aff39e44-d006-4064-bbf5-a68d45db32b9",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/FW1.JPG?h=8d8ecc4f\u0026itok=nVEw86eP",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/FW1.JPG?h=8d8ecc4f\u0026itok=_DXQk6LH",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/aff39e44-d006-4064-bbf5-a68d45db32b9"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12530,
+        "langcode":"en",
+        "filename":"FW1.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/FW1.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/FW1.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":1835263,
+        "status":true,
+        "created":"2021-10-18T14:06:42+00:00",
+        "changed":"2021-10-18T14:07:28+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/aff39e44-d006-4064-bbf5-a68d45db32b9\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/aff39e44-d006-4064-bbf5-a68d45db32b9\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"0bf51b99-af14-48d0-9e54-b1bf03b64c2e",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/FW%202.JPG?h=b1a62989\u0026itok=OiCXYgEF",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/FW%202.JPG?h=b1a62989\u0026itok=33yFLhLg",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/0bf51b99-af14-48d0-9e54-b1bf03b64c2e"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12531,
+        "langcode":"en",
+        "filename":"FW 2.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/FW 2.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/FW%202.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":817604,
+        "status":true,
+        "created":"2021-10-18T14:21:32+00:00",
+        "changed":"2021-10-18T14:21:46+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/0bf51b99-af14-48d0-9e54-b1bf03b64c2e\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/0bf51b99-af14-48d0-9e54-b1bf03b64c2e\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"39e3cac7-1a1f-4609-8fba-10e7c885f0d3",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/Maker.JPG?h=8d8ecc4f\u0026itok=WS3xjgqx",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/Maker.JPG?h=8d8ecc4f\u0026itok=I5VIdJ4Q",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/39e3cac7-1a1f-4609-8fba-10e7c885f0d3"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12535,
+        "langcode":"en",
+        "filename":"Maker.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/Maker.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/Maker.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":1849260,
+        "status":true,
+        "created":"2021-10-18T15:38:19+00:00",
+        "changed":"2021-10-18T15:39:10+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/39e3cac7-1a1f-4609-8fba-10e7c885f0d3\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/39e3cac7-1a1f-4609-8fba-10e7c885f0d3\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"6047aef0-c1d8-47e9-9f96-9c3319451e32",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/MAC_0.JPG?h=3daa6d94\u0026itok=ofNi9UL8",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/MAC_0.JPG?h=3daa6d94\u0026itok=6-58RDXq",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/6047aef0-c1d8-47e9-9f96-9c3319451e32"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12538,
+        "langcode":"en",
+        "filename":"MAC_0.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/MAC_0.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/MAC_0.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":816418,
+        "status":true,
+        "created":"2021-10-18T15:41:09+00:00",
+        "changed":"2021-10-18T15:41:25+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/6047aef0-c1d8-47e9-9f96-9c3319451e32\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/6047aef0-c1d8-47e9-9f96-9c3319451e32\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"e7b43bda-6759-4455-acbf-bef94213b818",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/MAC_1.JPG?h=3daa6d94\u0026itok=m8761Ohs",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/MAC_1.JPG?h=3daa6d94\u0026itok=ezGuo8Jn",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/e7b43bda-6759-4455-acbf-bef94213b818"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12539,
+        "langcode":"en",
+        "filename":"MAC_1.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/MAC_1.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/MAC_1.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":816418,
+        "status":true,
+        "created":"2021-10-18T15:42:28+00:00",
+        "changed":"2021-10-18T15:42:46+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/e7b43bda-6759-4455-acbf-bef94213b818\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/e7b43bda-6759-4455-acbf-bef94213b818\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"410124ff-c46a-4830-bdcd-a86262da68d1",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/MAC.JPG?h=3daa6d94\u0026itok=2CNQERvA",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/MAC.JPG?h=3daa6d94\u0026itok=fERVUxST",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/410124ff-c46a-4830-bdcd-a86262da68d1"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12537,
+        "langcode":"en",
+        "filename":"MAC.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/MAC.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/MAC.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":816418,
+        "status":true,
+        "created":"2021-10-18T15:40:04+00:00",
+        "changed":"2021-10-18T15:40:20+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/410124ff-c46a-4830-bdcd-a86262da68d1\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/410124ff-c46a-4830-bdcd-a86262da68d1\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"31abcf6f-71e8-46b4-b34b-e77b8feb1420",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/LAB%20PC.JPG?h=568f7af3\u0026itok=-HE0eq3N",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/LAB%20PC.JPG?h=568f7af3\u0026itok=ZPekHejo",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/31abcf6f-71e8-46b4-b34b-e77b8feb1420"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12532,
+        "langcode":"en",
+        "filename":"LAB PC.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/LAB PC.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/LAB%20PC.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":1005258,
+        "status":true,
+        "created":"2021-10-18T14:26:27+00:00",
+        "changed":"2021-10-18T14:26:45+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/31abcf6f-71e8-46b4-b34b-e77b8feb1420\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/31abcf6f-71e8-46b4-b34b-e77b8feb1420\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"c121c273-7b5d-44a5-9985-77a37fd32ccd",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/LAB%20PC_0.JPG?h=3549b9a0\u0026itok=AwE7d2-7",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/LAB%20PC_0.JPG?h=3549b9a0\u0026itok=hJZKs8Ch",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/c121c273-7b5d-44a5-9985-77a37fd32ccd"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12533,
+        "langcode":"en",
+        "filename":"LAB PC_0.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/LAB PC_0.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/LAB%20PC_0.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":1005258,
+        "status":true,
+        "created":"2021-10-18T15:32:28+00:00",
+        "changed":"2021-10-18T15:32:51+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/c121c273-7b5d-44a5-9985-77a37fd32ccd\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/c121c273-7b5d-44a5-9985-77a37fd32ccd\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"5cbcff3b-bf6b-49f4-9130-0ed5b16fc83e",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2021-10\/LAB%20PC_1.JPG?h=db8d90cf\u0026itok=0MWjuyoc",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-10\/LAB%20PC_1.JPG?h=db8d90cf\u0026itok=-u7anmXx",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/5cbcff3b-bf6b-49f4-9130-0ed5b16fc83e"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":12534,
+        "langcode":"en",
+        "filename":"LAB PC_1.JPG",
+        "uri":{
+          "value":"public:\/\/2021-10\/LAB PC_1.JPG",
+          "url":"\/sites\/default\/files\/2021-10\/LAB%20PC_1.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":1005258,
+        "status":true,
+        "created":"2021-10-18T15:33:37+00:00",
+        "changed":"2021-10-18T15:34:11+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"fa8285f5-319a-4b2d-9c6c-7d541f9a9a29"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/5cbcff3b-bf6b-49f4-9130-0ed5b16fc83e\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/5cbcff3b-bf6b-49f4-9130-0ed5b16fc83e\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"79dbc063-2bcf-4e27-95ec-5e41a92b4e8f",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2018-11\/Production%20Stage.JPG?itok=OtksMWOs",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-11\/Production%20Stage.JPG?itok=-T6RW6rZ",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/79dbc063-2bcf-4e27-95ec-5e41a92b4e8f"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":1430,
+        "langcode":"en",
+        "filename":"Production Stage.JPG",
+        "uri":{
+          "value":"public:\/\/2018-11\/Production Stage.JPG",
+          "url":"\/sites\/default\/files\/2018-11\/Production%20Stage.JPG"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":145925,
+        "status":true,
+        "created":"2018-11-27T20:37:46+00:00",
+        "changed":"2018-11-27T20:37:54+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"03944915-a878-4a25-a223-81bb7ae4031b"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/79dbc063-2bcf-4e27-95ec-5e41a92b4e8f\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/79dbc063-2bcf-4e27-95ec-5e41a92b4e8f\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"e5902d1d-ae89-49e4-9a99-28558b96521c",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2018-08\/locations_slideshow_sandhills_3.jpg?itok=Qz8ABSvN",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-08\/locations_slideshow_sandhills_3.jpg?itok=pmQ35HvM",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/e5902d1d-ae89-49e4-9a99-28558b96521c"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":374,
+        "langcode":"en",
+        "filename":"locations_slideshow_sandhills_3.jpg",
+        "uri":{
+          "value":"public:\/\/2018-08\/locations_slideshow_sandhills_3.jpg",
+          "url":"\/sites\/default\/files\/2018-08\/locations_slideshow_sandhills_3.jpg"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":14375121,
+        "status":true,
+        "created":"2018-08-07T19:23:42+00:00",
+        "changed":"2018-08-07T19:29:27+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"75bae81c-7d9a-4cb7-9e35-1151b98ac510"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/e5902d1d-ae89-49e4-9a99-28558b96521c\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/e5902d1d-ae89-49e4-9a99-28558b96521c\/relationships\/uid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"file--file",
+      "id":"80f64677-9c93-4867-8864-1e6fc7950249",
+      "links":{
+        "3to2_540x360":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/3to2_540x360\/public\/2019-04\/makerspace.jpg?h=ee5b0d7f\u0026itok=W328Ky4_",
+          "meta":{
+            "width":"540",
+            "height":"360",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "4to3_740x556":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-04\/makerspace.jpg?h=ee5b0d7f\u0026itok=A0NW9wnV",
+          "meta":{
+            "width":"740",
+            "height":"556",
+            "rel":[
+              "drupal:\/\/jsonapi\/extensions\/consumer_image_styles\/links\/relation-types\/#derivative"
+            ]
+          }
+        },
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/80f64677-9c93-4867-8864-1e6fc7950249"
+        }
+      },
+      "attributes":{
+        "drupal_internal__fid":2571,
+        "langcode":"en",
+        "filename":"makerspace.jpg",
+        "uri":{
+          "value":"public:\/\/2019-04\/makerspace.jpg",
+          "url":"\/sites\/default\/files\/2019-04\/makerspace.jpg"
+        },
+        "filemime":"image\/jpeg",
+        "filesize":982267,
+        "status":true,
+        "created":"2019-04-15T19:07:00+00:00",
+        "changed":"2019-04-15T19:13:57+00:00"
+      },
+      "relationships":{
+        "uid":{
+          "data":{
+            "type":"user--user",
+            "id":"75bae81c-7d9a-4cb7-9e35-1151b98ac510"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/80f64677-9c93-4867-8864-1e6fc7950249\/uid"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/file\/file\/80f64677-9c93-4867-8864-1e6fc7950249\/relationships\/uid"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "links":{
+    "self":{
+      "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room?fields%5Bnode--room%5D=drupal_internal__nid%2Cuuid%2Cstatus%2Ctitle%2Ccreated%2Cchanged%2Croom_thumbnail%2Cpromote%2Csticky%2Cpath%2Cfield_capacity_max%2Cfield_capacity_min%2Cfield_reservable_online%2Cfield_requires_certification%2Cfield_room_fees%2Cfield_room_standard_equipment%2Cfield_reservation_phone_number%2Cfield_staff_use_only%2Cfield_text_content%2Cfield_text_intro%2Cfield_text_teaser%2Ctype%2Cuid%2Cimage_primary%2Cfield_location%2Cfield_room_type\u0026filter%5Bstatus%5D%5Bvalue%5D=1\u0026filter%5BroomUsage%5D%5Bgroup%5D%5Bconjunction%5D=OR\u0026filter%5BstaffOnly%5D%5Bcondition%5D%5Bpath%5D=field_staff_use_only\u0026filter%5BstaffOnly%5D%5Bcondition%5D%5Bvalue%5D=0\u0026filter%5BstaffOnly%5D%5Bcondition%5D%5BmemberOf%5D=roomUsage\u0026filter%5BrequiresCert%5D%5Bcondition%5D%5Bpath%5D=field_requires_certification\u0026filter%5BrequiresCert%5D%5Bcondition%5D%5Bvalue%5D=1\u0026filter%5BrequiresCert%5D%5Bcondition%5D%5BmemberOf%5D=roomUsage\u0026filter%5Blocations%5D%5Bgroup%5D%5Bconjunction%5D=AND\u0026filter%5BwithLocation%5D%5Bcondition%5D%5Bpath%5D=field_location.id\u0026filter%5BwithLocation%5D%5Bcondition%5D%5Bvalue%5D=\u0026filter%5BwithLocation%5D%5Bcondition%5D%5Boperator%5D=%3C%3E\u0026filter%5BwithLocation%5D%5Bcondition%5D%5BmemberOf%5D=locations\u0026filter%5BonlyBranchLocation%5D%5Bcondition%5D%5Bpath%5D=field_location.field_branch_location\u0026filter%5BonlyBranchLocation%5D%5Bcondition%5D%5Bvalue%5D=1\u0026filter%5BonlyBranchLocation%5D%5Bcondition%5D%5BmemberOf%5D=locations\u0026include=image_primary%2Cimage_primary.field_media_image\u0026sort=title"
+    }
+  }
 }
 ```
                 
@@ -442,870 +4798,1348 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter[status][value
     * Example GET request:
 
 ```
-https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter[status][value]=1&filter[field_event_designation][value]=events&filter[data][condition][path]=field_date_time.value&filter[data][condition][value][]=2019-08-12T04:00:00.000Z&filter[data][condition][value][]=2019-08-18T03:59:59.999Z&filter[data][condition][operator]=BETWEEN&filter[keyword][condition][path]=field_keywords&filter[keyword][condition][value]=Computer&filter[keyword][condition][operator]=CONTAINS&filter[taxonomy_term--event_type][condition][path]=field_event_type.uuid&filter[taxonomy_term--event_type][condition][value][]=6a96b828-c299-4af4-a14b-743b9f377aa4&filter[taxonomy_term--event_type][condition][value][]=ad4a46da-4752-4f58-a44c-fb628c13aa75&filter[taxonomy_term--event_type][condition][value][]=c5dd42d9-7132-40e6-82cb-2f3ddeb428d3&filter[taxonomy_term--event_type][condition][value][]=a8a2e0b8-0732-419d-9503-d56fbd188763&filter[taxonomy_term--event_type][condition][value][]=680d49e1-4a24-4805-9ac3-0a681c303827&filter[taxonomy_term--event_type][condition][value][]=48bcde14-e4c4-41cd-a294-fe0a9df02267&filter[taxonomy_term--event_type][condition][operator]=IN&filter[node--location][condition][path]=field_location.uuid&filter[node--location][condition][value][]=ce465283-9203-49da-a342-5ff62af65c31&filter[node--location][condition][value][]=2f900166-5d6e-4f46-a87a-916b4eacff16&filter[node--location][condition][value][]=65e02a9d-6d64-4ffb-be34-e2b715ab160b&filter[node--location][condition][operator]=IN&filter[taxonomy_term--audience][condition][path]=field_event_audience.uuid&filter[taxonomy_term--audience][condition][value][]=96887d69-800d-4e91-b434-d3d5167985d3&filter[taxonomy_term--audience][condition][value][]=002a9b40-2c35-4c47-b0bc-f75c9b873cd4&filter[taxonomy_term--audience][condition][value][]=354e80c8-6902-4d0f-99f4-dbca85205b25&filter[taxonomy_term--audience][condition][operator]=IN&fields[node--event]=nid,uuid,status,title,path,field_date_time,field_must_register,field_text_teaser,registration,field_event_audience,field_event_register_period,field_event_type,field_event_tags,field_location,field_event_designation,field_room,image_primary&fields[media--image]=mid,uuid,field_media_caption,field_media_credit,field_media_image&fields[file--file]=fid,uuid,uri,url&fields[node--room]=nid,uuid,title,field_location&page[limit]=10&include=image_primary,image_primary.field_media_image,field_room&sort=field_date_time.value
+https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter%5Bstatus%5D%5Bvalue%5D=1&filter%5Bfield_event_designation%5D%5Bvalue%5D=events&filter%5Bdata%5D%5Bcondition%5D%5Bpath%5D=field_date_time.value&filter%5Bdata%5D%5Bcondition%5D%5Bvalue%5D=2021-11-08T00%3A00%3A00-05%3A00&filter%5Bdata%5D%5Bcondition%5D%5Boperator%5D=%3E%3D&fields%5Bnode--event%5D=drupal_internal__nid%2Cstatus%2Ctitle%2Cpath%2Cfield_capacity_max%2Cfield_waitlist_max%2Cfield_date_time%2Cfield_must_register%2Cfield_text_teaser%2Cregistration%2Cfield_event_audience%2Cfield_event_register_period%2Cfield_event_type%2Cfield_event_tags%2Cfield_location%2Cfield_event_designation%2Cfield_room%2Cevent_thumbnail&fields%5Bfile--file%5D=drupal_internal__fid%2Curi%2Curl&fields%5Bnode--room%5D=drupal_internal__nid%2Ctitle%2Cfield_location&page%5Blimit%5D=10&include=field_room&sort=field_date_time.value%2Ctitle%2Cdrupal_internal__nid
 ```
 
   * Example response:
 
 ```
 {
-    "data": [
-        {
-            "type": "node--event",
-            "id": "922a824d-b605-41b6-8652-b44d4e5fb61c",
-            "attributes": {
-                "nid": 10034,
-                "uuid": "922a824d-b605-41b6-8652-b44d4e5fb61c",
-                "status": true,
-                "title": "Microsoft Word (2016)",
-                "path": {
-                    "alias": "/event/2019-08-12/microsoft-word-2013",
-                    "pid": 16278,
-                    "langcode": "en"
-                },
-                "field_date_time": {
-                    "value": "2019-08-12T22:00:00",
-                    "end_value": "2019-08-13T00:00:00"
-                },
-                "field_event_designation": "events",
-                "field_event_register_period": {
-                    "value": "2019-06-01T16:00:00",
-                    "end_value": "2019-08-11T16:00:00"
-                },
-                "field_must_register": true,
-                "field_text_teaser": {
-                    "value": "Learn the basics of creating documents using Microsoft Word (2016). Prerequisite: Solid mouse and keyboarding skills.",
-                    "format": null,
-                    "processed": "<p>Learn the basics of creating documents using Microsoft Word (2016). Prerequisite: Solid mouse and keyboarding skills.</p>\n"
-                },
-                "registration": {
-                    "total": 4,
-                    "total_waitlist": 0,
-                    "status": "expired",
-                    "status_user": null
-                }
-            },
-            "relationships": {
-                "field_event_audience": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "96887d69-800d-4e91-b434-d3d5167985d3"
-                        },
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "354e80c8-6902-4d0f-99f4-dbca85205b25"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/relationships/field_event_audience",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/field_event_audience"
-                    }
-                },
-                "field_event_tags": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--tag",
-                            "id": "8f0a11a7-234e-4c95-83ef-18f2fc242cf0"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/relationships/field_event_tags",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/field_event_tags"
-                    }
-                },
-                "field_event_type": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--event_type",
-                            "id": "c5dd42d9-7132-40e6-82cb-2f3ddeb428d3"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/relationships/field_event_type",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/field_event_type"
-                    }
-                },
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "65e02a9d-6d64-4ffb-be34-e2b715ab160b"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/field_location"
-                    }
-                },
-                "field_room": {
-                    "data": {
-                        "type": "node--room",
-                        "id": "34dc7f02-0e4f-4616-b68f-53d5d3300d85"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/relationships/field_room",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/field_room"
-                    }
-                },
-                "image_primary": {
-                    "data": {
-                        "type": "media--image",
-                        "id": "a229dee0-fd63-48f8-b844-8140686310d8"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/relationships/image_primary",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c/image_primary"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/922a824d-b605-41b6-8652-b44d4e5fb61c"
-            }
-        },
-        {
-            "type": "node--event",
-            "id": "e6ae64a4-0c01-4135-a20c-f02b51fa72d3",
-            "attributes": {
-                "nid": 10058,
-                "uuid": "e6ae64a4-0c01-4135-a20c-f02b51fa72d3",
-                "status": true,
-                "title": "Computer and eReady Basics Learning Lab",
-                "path": {
-                    "alias": "/event/2019-08-14/computer-and-eready-basics-learning-lab",
-                    "pid": 16325,
-                    "langcode": "en"
-                },
-                "field_date_time": {
-                    "value": "2019-08-14T22:00:00",
-                    "end_value": "2019-08-14T23:00:00"
-                },
-                "field_event_designation": "events",
-                "field_event_register_period": {
-                    "value": "2019-05-01T16:00:00",
-                    "end_value": "2019-05-16T03:00:00"
-                },
-                "field_must_register": false,
-                "field_text_teaser": {
-                    "value": "Do you have a specific question about how to use computers or access Richland Library's electronic resources? Drop-in to our Computer and eReady Basics Learning Lab for personalized assistance. ",
-                    "format": null,
-                    "processed": "<p>Do you have a specific question about how to use computers or access Richland Library&#039;s electronic resources? Drop-in to our Computer and eReady Basics Learning Lab for personalized assistance.</p>\n"
-                },
-                "registration": {
-                    "total": 0,
-                    "total_waitlist": 0,
-                    "status": "open",
-                    "status_user": null
-                }
-            },
-            "relationships": {
-                "field_event_audience": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "96887d69-800d-4e91-b434-d3d5167985d3"
-                        },
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "354e80c8-6902-4d0f-99f4-dbca85205b25"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/relationships/field_event_audience",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/field_event_audience"
-                    }
-                },
-                "field_event_tags": {
-                    "data": [],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/relationships/field_event_tags",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/field_event_tags"
-                    }
-                },
-                "field_event_type": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--event_type",
-                            "id": "c5dd42d9-7132-40e6-82cb-2f3ddeb428d3"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/relationships/field_event_type",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/field_event_type"
-                    }
-                },
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "65e02a9d-6d64-4ffb-be34-e2b715ab160b"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/field_location"
-                    }
-                },
-                "field_room": {
-                    "data": {
-                        "type": "node--room",
-                        "id": "34dc7f02-0e4f-4616-b68f-53d5d3300d85"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/relationships/field_room",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/field_room"
-                    }
-                },
-                "image_primary": {
-                    "data": {
-                        "type": "media--image",
-                        "id": "08e05585-f1a9-41be-a8b4-a5ddb204b0cd"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/relationships/image_primary",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3/image_primary"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/e6ae64a4-0c01-4135-a20c-f02b51fa72d3"
-            }
-        },
-        {
-            "type": "node--event",
-            "id": "84e1e1fa-1ffc-4e61-8479-bef0cba2c990",
-            "attributes": {
-                "nid": 11232,
-                "uuid": "84e1e1fa-1ffc-4e61-8479-bef0cba2c990",
-                "status": true,
-                "title": "Production Stage Orientation",
-                "path": {
-                    "alias": "/event/2019-08-15/production-stage-orientation",
-                    "pid": 18545,
-                    "langcode": "en"
-                },
-                "field_date_time": {
-                    "value": "2019-08-15T22:00:00",
-                    "end_value": "2019-08-15T23:00:00"
-                },
-                "field_event_designation": "events",
-                "field_event_register_period": null,
-                "field_must_register": false,
-                "field_text_teaser": {
-                    "value": "Get certified to use the Main Library's Production Stage. ",
-                    "format": null,
-                    "processed": "<p>Get certified to use the Main Library&#039;s Production Stage.</p>\n"
-                },
-                "registration": {
-                    "total": 0,
-                    "total_waitlist": 0,
-                    "status": "open",
-                    "status_user": null
-                }
-            },
-            "relationships": {
-                "field_event_audience": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "96887d69-800d-4e91-b434-d3d5167985d3"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/relationships/field_event_audience",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/field_event_audience"
-                    }
-                },
-                "field_event_tags": {
-                    "data": [],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/relationships/field_event_tags",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/field_event_tags"
-                    }
-                },
-                "field_event_type": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--event_type",
-                            "id": "ad4a46da-4752-4f58-a44c-fb628c13aa75"
-                        },
-                        {
-                            "type": "taxonomy_term--event_type",
-                            "id": "c5dd42d9-7132-40e6-82cb-2f3ddeb428d3"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/relationships/field_event_type",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/field_event_type"
-                    }
-                },
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "65e02a9d-6d64-4ffb-be34-e2b715ab160b"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/field_location"
-                    }
-                },
-                "field_room": {
-                    "data": {
-                        "type": "node--room",
-                        "id": "4ea3ee5d-bdfd-4beb-b694-9184ce990300"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/relationships/field_room",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/field_room"
-                    }
-                },
-                "image_primary": {
-                    "data": {
-                        "type": "media--image",
-                        "id": "915bb5ee-a767-4da0-bfce-032eb90fe78c"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/relationships/image_primary",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990/image_primary"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/84e1e1fa-1ffc-4e61-8479-bef0cba2c990"
-            }
-        },
-        {
-            "type": "node--event",
-            "id": "507c332e-9940-4d2b-9826-74a00eac8e81",
-            "attributes": {
-                "nid": 10048,
-                "uuid": "507c332e-9940-4d2b-9826-74a00eac8e81",
-                "status": true,
-                "title": "Microsoft Publisher (2016)",
-                "path": {
-                    "alias": "/event/2019-08-15/microsoft-publisher-2013",
-                    "pid": 16306,
-                    "langcode": "en"
-                },
-                "field_date_time": {
-                    "value": "2019-08-15T22:00:00",
-                    "end_value": "2019-08-16T00:00:00"
-                },
-                "field_event_designation": "events",
-                "field_event_register_period": {
-                    "value": "2019-06-01T16:00:00",
-                    "end_value": "2019-08-15T03:00:00"
-                },
-                "field_must_register": true,
-                "field_text_teaser": {
-                    "value": "Learn how to use Microsoft Publisher (2016) to create newsletters, flyers, and brochures. ",
-                    "format": null,
-                    "processed": "<p>Learn how to use Microsoft Publisher (2016) to create newsletters, flyers, and brochures.</p>\n"
-                },
-                "registration": {
-                    "total": 6,
-                    "total_waitlist": 0,
-                    "status": "open",
-                    "status_user": null
-                }
-            },
-            "relationships": {
-                "field_event_audience": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "96887d69-800d-4e91-b434-d3d5167985d3"
-                        },
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "354e80c8-6902-4d0f-99f4-dbca85205b25"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/relationships/field_event_audience",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/field_event_audience"
-                    }
-                },
-                "field_event_tags": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--tag",
-                            "id": "8f0a11a7-234e-4c95-83ef-18f2fc242cf0"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/relationships/field_event_tags",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/field_event_tags"
-                    }
-                },
-                "field_event_type": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--event_type",
-                            "id": "c5dd42d9-7132-40e6-82cb-2f3ddeb428d3"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/relationships/field_event_type",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/field_event_type"
-                    }
-                },
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "65e02a9d-6d64-4ffb-be34-e2b715ab160b"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/field_location"
-                    }
-                },
-                "field_room": {
-                    "data": {
-                        "type": "node--room",
-                        "id": "34dc7f02-0e4f-4616-b68f-53d5d3300d85"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/relationships/field_room",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/field_room"
-                    }
-                },
-                "image_primary": {
-                    "data": {
-                        "type": "media--image",
-                        "id": "33b1b020-a8d6-4c88-8186-d6ccf750bc41"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/relationships/image_primary",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81/image_primary"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/507c332e-9940-4d2b-9826-74a00eac8e81"
-            }
-        },
-        {
-            "type": "node--event",
-            "id": "b051139e-ab40-4542-a31b-9a7f466ad70c",
-            "attributes": {
-                "nid": 10083,
-                "uuid": "b051139e-ab40-4542-a31b-9a7f466ad70c",
-                "status": true,
-                "title": "Circuit Building with IT-oLogy",
-                "path": {
-                    "alias": "/event/2019-08-15/circuit-building-it-ology",
-                    "pid": 16374,
-                    "langcode": "en"
-                },
-                "field_date_time": {
-                    "value": "2019-08-15T22:00:00",
-                    "end_value": "2019-08-15T23:30:00"
-                },
-                "field_event_designation": "events",
-                "field_event_register_period": {
-                    "value": "2019-06-15T04:00:00",
-                    "end_value": "2019-08-15T20:00:00"
-                },
-                "field_must_register": true,
-                "field_text_teaser": {
-                    "value": "Students will learn the fundamental components of a circuit and a practical understanding of electronics to build a circuit.",
-                    "format": null,
-                    "processed": "<p>Students will learn the fundamental components of a circuit and a practical understanding of electronics to build a circuit.</p>\n"
-                },
-                "registration": {
-                    "total": 10,
-                    "total_waitlist": 2,
-                    "status": "waitlist",
-                    "status_user": null
-                }
-            },
-            "relationships": {
-                "field_event_audience": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "96887d69-800d-4e91-b434-d3d5167985d3"
-                        },
-                        {
-                            "type": "taxonomy_term--audience",
-                            "id": "d703c9f3-2e30-4df0-86c2-adecd137f14b"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/relationships/field_event_audience",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/field_event_audience"
-                    }
-                },
-                "field_event_tags": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--tag",
-                            "id": "8f0a11a7-234e-4c95-83ef-18f2fc242cf0"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/relationships/field_event_tags",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/field_event_tags"
-                    }
-                },
-                "field_event_type": {
-                    "data": [
-                        {
-                            "type": "taxonomy_term--event_type",
-                            "id": "c5dd42d9-7132-40e6-82cb-2f3ddeb428d3"
-                        }
-                    ],
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/relationships/field_event_type",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/field_event_type"
-                    }
-                },
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "ce465283-9203-49da-a342-5ff62af65c31"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/field_location"
-                    }
-                },
-                "field_room": {
-                    "data": {
-                        "type": "node--room",
-                        "id": "cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/relationships/field_room",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/field_room"
-                    }
-                },
-                "image_primary": {
-                    "data": {
-                        "type": "media--image",
-                        "id": "4715ef24-c9ba-4676-988e-c6908f278fdd"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/relationships/image_primary",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c/image_primary"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event/b051139e-ab40-4542-a31b-9a7f466ad70c"
-            }
+  "jsonapi":{
+    "version":"1.0",
+    "meta":{
+      "links":{
+        "self":{
+          "href":"http:\/\/jsonapi.org\/format\/1.0\/"
         }
-    ],
-    "jsonapi": {
-        "version": "1.0",
-        "meta": {
-            "links": {
-                "self": "http://jsonapi.org/format/1.0/"
-            }
-        }
-    },
-    "links": {
-        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/event?fields%5Bfile--file%5D=fid%2Cuuid%2Curi%2Curl&fields%5Bmedia--image%5D=mid%2Cuuid%2Cfield_media_caption%2Cfield_media_credit%2Cfield_media_image&fields%5Bnode--event%5D=nid%2Cuuid%2Cstatus%2Ctitle%2Cpath%2Cfield_date_time%2Cfield_must_register%2Cfield_text_teaser%2Cregistration%2Cfield_event_audience%2Cfield_event_register_period%2Cfield_event_type%2Cfield_event_tags%2Cfield_location%2Cfield_event_designation%2Cfield_room%2Cimage_primary&fields%5Bnode--room%5D=nid%2Cuuid%2Ctitle%2Cfield_location&filter%5Bdata%5D%5Bcondition%5D%5Boperator%5D=BETWEEN&filter%5Bdata%5D%5Bcondition%5D%5Bpath%5D=field_date_time.value&filter%5Bdata%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=2019-08-12T04%3A00%3A00.000Z&filter%5Bdata%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=2019-08-18T03%3A59%3A59.999Z&filter%5Bfield_event_designation%5D%5Bvalue%5D=events&filter%5Bkeyword%5D%5Bcondition%5D%5Boperator%5D=CONTAINS&filter%5Bkeyword%5D%5Bcondition%5D%5Bpath%5D=field_keywords&filter%5Bkeyword%5D%5Bcondition%5D%5Bvalue%5D=Computer&filter%5Bnode--location%5D%5Bcondition%5D%5Boperator%5D=IN&filter%5Bnode--location%5D%5Bcondition%5D%5Bpath%5D=field_location.uuid&filter%5Bnode--location%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=2f900166-5d6e-4f46-a87a-916b4eacff16&filter%5Bnode--location%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=65e02a9d-6d64-4ffb-be34-e2b715ab160b&filter%5Bnode--location%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=ce465283-9203-49da-a342-5ff62af65c31&filter%5Bstatus%5D%5Bvalue%5D=1&filter%5Btaxonomy_term--audience%5D%5Bcondition%5D%5Boperator%5D=IN&filter%5Btaxonomy_term--audience%5D%5Bcondition%5D%5Bpath%5D=field_event_audience.uuid&filter%5Btaxonomy_term--audience%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=002a9b40-2c35-4c47-b0bc-f75c9b873cd4&filter%5Btaxonomy_term--audience%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=354e80c8-6902-4d0f-99f4-dbca85205b25&filter%5Btaxonomy_term--audience%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=96887d69-800d-4e91-b434-d3d5167985d3&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Boperator%5D=IN&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Bpath%5D=field_event_type.uuid&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=48bcde14-e4c4-41cd-a294-fe0a9df02267&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=680d49e1-4a24-4805-9ac3-0a681c303827&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=6a96b828-c299-4af4-a14b-743b9f377aa4&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=a8a2e0b8-0732-419d-9503-d56fbd188763&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=ad4a46da-4752-4f58-a44c-fb628c13aa75&filter%5Btaxonomy_term--event_type%5D%5Bcondition%5D%5Bvalue%5D%5B%5D=c5dd42d9-7132-40e6-82cb-2f3ddeb428d3&include=image_primary%2Cimage_primary.field_media_image%2Cfield_room&page%5Blimit%5D=10&sort=field_date_time.value"
-    },
-    "included": [
-        {
-            "type": "node--room",
-            "id": "34dc7f02-0e4f-4616-b68f-53d5d3300d85",
-            "attributes": {
-                "nid": 2800,
-                "uuid": "34dc7f02-0e4f-4616-b68f-53d5d3300d85",
-                "title": "Business, Careers and Research Classroom"
-            },
-            "relationships": {
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "65e02a9d-6d64-4ffb-be34-e2b715ab160b"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/34dc7f02-0e4f-4616-b68f-53d5d3300d85/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/34dc7f02-0e4f-4616-b68f-53d5d3300d85/field_location"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/34dc7f02-0e4f-4616-b68f-53d5d3300d85"
-            }
-        },
-        {
-            "type": "media--image",
-            "id": "a229dee0-fd63-48f8-b844-8140686310d8",
-            "attributes": {
-                "mid": 216,
-                "uuid": "a229dee0-fd63-48f8-b844-8140686310d8",
-                "field_media_caption": null,
-                "field_media_credit": null
-            },
-            "relationships": {
-                "field_media_image": {
-                    "data": {
-                        "type": "file--file",
-                        "id": "6ed7d68f-a816-4bcd-987d-1a991fb17cb8",
-                        "meta": {
-                            "alt": "Customers sitting at computer.",
-                            "title": "",
-                            "width": 2000,
-                            "height": 1333
-                        }
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/a229dee0-fd63-48f8-b844-8140686310d8/relationships/field_media_image",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/a229dee0-fd63-48f8-b844-8140686310d8/field_media_image"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/a229dee0-fd63-48f8-b844-8140686310d8"
-            }
-        },
-        {
-            "type": "file--file",
-            "id": "6ed7d68f-a816-4bcd-987d-1a991fb17cb8",
-            "attributes": {
-                "fid": 272,
-                "uuid": "6ed7d68f-a816-4bcd-987d-1a991fb17cb8",
-                "uri": {
-                    "value": "public://2018-08/events_computerbasics_adults_5.jpg",
-                    "url": "/sites/default/files/2018-08/events_computerbasics_adults_5.jpg"
-                },
-                "url": "/sites/default/files/2018-08/events_computerbasics_adults_5.jpg"
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/6ed7d68f-a816-4bcd-987d-1a991fb17cb8"
-            }
-        },
-        {
-            "type": "media--image",
-            "id": "08e05585-f1a9-41be-a8b4-a5ddb204b0cd",
-            "attributes": {
-                "mid": 221,
-                "uuid": "08e05585-f1a9-41be-a8b4-a5ddb204b0cd",
-                "field_media_caption": null,
-                "field_media_credit": null
-            },
-            "relationships": {
-                "field_media_image": {
-                    "data": {
-                        "type": "file--file",
-                        "id": "d5009552-5b85-4d55-9951-932831c8ed27",
-                        "meta": {
-                            "alt": "Two staff assist a customer on a computer",
-                            "title": "",
-                            "width": 900,
-                            "height": 600
-                        }
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/08e05585-f1a9-41be-a8b4-a5ddb204b0cd/relationships/field_media_image",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/08e05585-f1a9-41be-a8b4-a5ddb204b0cd/field_media_image"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/08e05585-f1a9-41be-a8b4-a5ddb204b0cd"
-            }
-        },
-        {
-            "type": "file--file",
-            "id": "d5009552-5b85-4d55-9951-932831c8ed27",
-            "attributes": {
-                "fid": 277,
-                "uuid": "d5009552-5b85-4d55-9951-932831c8ed27",
-                "uri": {
-                    "value": "public://2018-08/Resume Help 01_small.png",
-                    "url": "/sites/default/files/2018-08/Resume%20Help%2001_small.png"
-                },
-                "url": "/sites/default/files/2018-08/Resume%20Help%2001_small.png"
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/d5009552-5b85-4d55-9951-932831c8ed27"
-            }
-        },
-        {
-            "type": "media--image",
-            "id": "915bb5ee-a767-4da0-bfce-032eb90fe78c",
-            "attributes": {
-                "mid": 1042,
-                "uuid": "915bb5ee-a767-4da0-bfce-032eb90fe78c",
-                "field_media_caption": null,
-                "field_media_credit": null
-            },
-            "relationships": {
-                "field_media_image": {
-                    "data": {
-                        "type": "file--file",
-                        "id": "79dbc063-2bcf-4e27-95ec-5e41a92b4e8f",
-                        "meta": {
-                            "alt": "Production Stage",
-                            "title": "",
-                            "width": 1685,
-                            "height": 752
-                        }
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/915bb5ee-a767-4da0-bfce-032eb90fe78c/relationships/field_media_image",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/915bb5ee-a767-4da0-bfce-032eb90fe78c/field_media_image"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/915bb5ee-a767-4da0-bfce-032eb90fe78c"
-            }
-        },
-        {
-            "type": "file--file",
-            "id": "79dbc063-2bcf-4e27-95ec-5e41a92b4e8f",
-            "attributes": {
-                "fid": 1430,
-                "uuid": "79dbc063-2bcf-4e27-95ec-5e41a92b4e8f",
-                "uri": {
-                    "value": "public://2018-11/Production Stage.JPG",
-                    "url": "/sites/default/files/2018-11/Production%20Stage.JPG"
-                },
-                "url": "/sites/default/files/2018-11/Production%20Stage.JPG"
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/79dbc063-2bcf-4e27-95ec-5e41a92b4e8f"
-            }
-        },
-        {
-            "type": "media--image",
-            "id": "33b1b020-a8d6-4c88-8186-d6ccf750bc41",
-            "attributes": {
-                "mid": 217,
-                "uuid": "33b1b020-a8d6-4c88-8186-d6ccf750bc41",
-                "field_media_caption": null,
-                "field_media_credit": null
-            },
-            "relationships": {
-                "field_media_image": {
-                    "data": {
-                        "type": "file--file",
-                        "id": "d4dd53e0-f917-4131-8ec9-f477c014d54c",
-                        "meta": {
-                            "alt": "Woman at desktop computer.",
-                            "title": "",
-                            "width": 2000,
-                            "height": 1324
-                        }
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/33b1b020-a8d6-4c88-8186-d6ccf750bc41/relationships/field_media_image",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/33b1b020-a8d6-4c88-8186-d6ccf750bc41/field_media_image"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/33b1b020-a8d6-4c88-8186-d6ccf750bc41"
-            }
-        },
-        {
-            "type": "file--file",
-            "id": "d4dd53e0-f917-4131-8ec9-f477c014d54c",
-            "attributes": {
-                "fid": 273,
-                "uuid": "d4dd53e0-f917-4131-8ec9-f477c014d54c",
-                "uri": {
-                    "value": "public://2018-08/events_computerbasics_adults_1.jpg",
-                    "url": "/sites/default/files/2018-08/events_computerbasics_adults_1.jpg"
-                },
-                "url": "/sites/default/files/2018-08/events_computerbasics_adults_1.jpg"
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/d4dd53e0-f917-4131-8ec9-f477c014d54c"
-            }
-        },
-        {
-            "type": "node--room",
-            "id": "cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8",
-            "attributes": {
-                "nid": 2805,
-                "uuid": "cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8",
-                "title": "Blythewood Meeting Room"
-            },
-            "relationships": {
-                "field_location": {
-                    "data": {
-                        "type": "node--location",
-                        "id": "ce465283-9203-49da-a342-5ff62af65c31"
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/relationships/field_location",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8/field_location"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/node/room/cc68f4c2-cc66-408c-9fbb-6ce8aa44ffb8"
-            }
-        },
-        {
-            "type": "media--image",
-            "id": "4715ef24-c9ba-4676-988e-c6908f278fdd",
-            "attributes": {
-                "mid": 629,
-                "uuid": "4715ef24-c9ba-4676-988e-c6908f278fdd",
-                "field_media_caption": null,
-                "field_media_credit": null
-            },
-            "relationships": {
-                "field_media_image": {
-                    "data": {
-                        "type": "file--file",
-                        "id": "0e6b1677-cb13-48c7-80d3-dc5dbc05b53a",
-                        "meta": {
-                            "alt": "Studio Services",
-                            "title": "",
-                            "width": 5184,
-                            "height": 3456
-                        }
-                    },
-                    "links": {
-                        "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/4715ef24-c9ba-4676-988e-c6908f278fdd/relationships/field_media_image",
-                        "related": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/4715ef24-c9ba-4676-988e-c6908f278fdd/field_media_image"
-                    }
-                }
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/media/image/4715ef24-c9ba-4676-988e-c6908f278fdd"
-            }
-        },
-        {
-            "type": "file--file",
-            "id": "0e6b1677-cb13-48c7-80d3-dc5dbc05b53a",
-            "attributes": {
-                "fid": 812,
-                "uuid": "0e6b1677-cb13-48c7-80d3-dc5dbc05b53a",
-                "uri": {
-                    "value": "public://2018-08/studio_services.jpg",
-                    "url": "/sites/default/files/2018-08/studio_services.jpg"
-                },
-                "url": "/sites/default/files/2018-08/studio_services.jpg"
-            },
-            "links": {
-                "self": "https://dev-richland-site.pantheonsite.io/jsonapi/file/file/0e6b1677-cb13-48c7-80d3-dc5dbc05b53a"
-            }
-        }
-    ],
-    "meta": {
-        "errors": [
-            {
-                "title": "Forbidden",
-                "status": 403,
-                "detail": "The current user is not allowed to GET the selected resource.",
-                "links": {
-                    "info": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4"
-                },
-                "code": 0,
-                "id": "/node--room/4ea3ee5d-bdfd-4beb-b694-9184ce990300",
-                "source": {
-                    "pointer": "/data"
-                }
-            }
-        ]
+      }
     }
+  },
+  "data":[
+    {
+      "type":"node--event",
+      "id":"4610c77c-2afa-41e8-b880-7e25bbae383a",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a?resourceVersion=id%3A52785"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33750,
+        "status":true,
+        "title":"COVID-19 Testing",
+        "path":{
+          "alias":"\/event\/2021-11-08\/covid-19-testing",
+          "pid":50596,
+          "langcode":"en"
+        },
+        "field_capacity_max":null,
+        "field_date_time":{
+          "value":"2021-11-08T10:00:00-05:00",
+          "end_value":"2021-11-08T16:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":null,
+        "field_must_register":false,
+        "field_text_teaser":{
+          "value":"Richland Library is proud to host free COVID-19 testing in partnership with the South Carolina Department of Health and Environmental Control.",
+          "format":null,
+          "processed":"\u003Cp\u003ERichland Library is proud to host free COVID-19 testing in partnership with the South Carolina Department of Health and Environmental Control.\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":0,
+        "registration":{
+          "total":0,
+          "total_waitlist":0,
+          "remaining_registration":0,
+          "remaining_waitlist":0,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2020-11\/Covid%20Testing.jpg?h=def3cf70"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"96887d69-800d-4e91-b434-d3d5167985d3"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"002a9b40-2c35-4c47-b0bc-f75c9b873cd4"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"9422db2a-0071-4d3e-8b33-f3762c26fc19"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/field_event_audience?resourceVersion=id%3A52785"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/relationships\/field_event_audience?resourceVersion=id%3A52785"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/field_event_tags?resourceVersion=id%3A52785"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/relationships\/field_event_tags?resourceVersion=id%3A52785"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"91856eae-8a23-4a70-a1c9-8ecb5206d3ec"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/field_event_type?resourceVersion=id%3A52785"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/relationships\/field_event_type?resourceVersion=id%3A52785"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/field_location?resourceVersion=id%3A52785"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/relationships\/field_location?resourceVersion=id%3A52785"
+            }
+          }
+        },
+        "field_room":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/field_room?resourceVersion=id%3A52785"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/relationships\/field_room?resourceVersion=id%3A52785"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"40fd2da6-89cd-4f43-8993-bb64b50bb45a",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a?resourceVersion=id%3A52786"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33751,
+        "status":true,
+        "title":"COVID-19 Testing",
+        "path":{
+          "alias":"\/event\/2021-11-09\/covid-19-testing",
+          "pid":50597,
+          "langcode":"en"
+        },
+        "field_capacity_max":null,
+        "field_date_time":{
+          "value":"2021-11-09T10:00:00-05:00",
+          "end_value":"2021-11-09T16:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":null,
+        "field_must_register":false,
+        "field_text_teaser":{
+          "value":"Richland Library is proud to host free COVID-19 testing in partnership with the South Carolina Department of Health and Environmental Control.",
+          "format":null,
+          "processed":"\u003Cp\u003ERichland Library is proud to host free COVID-19 testing in partnership with the South Carolina Department of Health and Environmental Control.\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":0,
+        "registration":{
+          "total":0,
+          "total_waitlist":0,
+          "remaining_registration":0,
+          "remaining_waitlist":0,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2020-11\/Covid%20Testing.jpg?h=def3cf70"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"96887d69-800d-4e91-b434-d3d5167985d3"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"002a9b40-2c35-4c47-b0bc-f75c9b873cd4"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"9422db2a-0071-4d3e-8b33-f3762c26fc19"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/field_event_audience?resourceVersion=id%3A52786"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/relationships\/field_event_audience?resourceVersion=id%3A52786"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/field_event_tags?resourceVersion=id%3A52786"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/relationships\/field_event_tags?resourceVersion=id%3A52786"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"91856eae-8a23-4a70-a1c9-8ecb5206d3ec"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/field_event_type?resourceVersion=id%3A52786"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/relationships\/field_event_type?resourceVersion=id%3A52786"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/field_location?resourceVersion=id%3A52786"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/relationships\/field_location?resourceVersion=id%3A52786"
+            }
+          }
+        },
+        "field_room":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/field_room?resourceVersion=id%3A52786"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/relationships\/field_room?resourceVersion=id%3A52786"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"f0b93118-cbc9-4514-8a4a-e5f34d3a73c0",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0?resourceVersion=id%3A51330"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":32997,
+        "status":true,
+        "title":"Tuesday Morning Literary Discussion Group",
+        "path":{
+          "alias":"\/event\/2021-11-09\/tuesday-morning-literary-discussion-group-1",
+          "pid":49843,
+          "langcode":"en"
+        },
+        "field_capacity_max":20,
+        "field_date_time":{
+          "value":"2021-11-09T10:00:00-05:00",
+          "end_value":"2021-11-09T12:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":null,
+        "field_must_register":false,
+        "field_text_teaser":{
+          "value":"Join us for a book group discussion of this month\u2019s title, Pilgrim at Tinker Creek by Annie Dillard.",
+          "format":null,
+          "processed":"\u003Cp\u003EJoin us for a book group discussion of this month\u2019s title, Pilgrim at Tinker Creek by Annie Dillard.\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":null,
+        "registration":{
+          "total":0,
+          "total_waitlist":0,
+          "remaining_registration":20,
+          "remaining_waitlist":0,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2020-04\/091_web.jpg?h=a8e8ff5c"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"96887d69-800d-4e91-b434-d3d5167985d3"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"354e80c8-6902-4d0f-99f4-dbca85205b25"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/field_event_audience?resourceVersion=id%3A51330"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/relationships\/field_event_audience?resourceVersion=id%3A51330"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/field_event_tags?resourceVersion=id%3A51330"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/relationships\/field_event_tags?resourceVersion=id%3A51330"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"e2c7418d-ab46-4ad1-a5c1-0e08de4e369b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/field_event_type?resourceVersion=id%3A51330"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/relationships\/field_event_type?resourceVersion=id%3A51330"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"8330b4ae-07c4-4276-bf38-d821632e4aea"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/field_location?resourceVersion=id%3A51330"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/relationships\/field_location?resourceVersion=id%3A51330"
+            }
+          }
+        },
+        "field_room":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/field_room?resourceVersion=id%3A51330"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/relationships\/field_room?resourceVersion=id%3A51330"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"2cfbecea-c37e-4706-930a-980cf172be4b",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b?resourceVersion=id%3A52234"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33385,
+        "status":true,
+        "title":"Outdoor Family Storytime",
+        "path":{
+          "alias":"\/event\/2021-11-09\/outdoor-family-storytime",
+          "pid":50231,
+          "langcode":"en"
+        },
+        "field_capacity_max":5,
+        "field_date_time":{
+          "value":"2021-11-09T10:30:00-05:00",
+          "end_value":"2021-11-09T11:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":{
+          "value":"2021-08-29T14:22:00-04:00",
+          "end_value":"2021-11-08T17:00:00-05:00"
+        },
+        "field_must_register":true,
+        "field_text_teaser":{
+          "value":" Join us for a fresh air, socially distanced storytime!",
+          "format":null,
+          "processed":"\u003Cp\u003EJoin us for a fresh air, socially distanced storytime!\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":2,
+        "registration":{
+          "total":5,
+          "total_waitlist":0,
+          "remaining_registration":0,
+          "remaining_waitlist":2,
+          "status":"waitlist",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-08\/6_02_2018_storytime_10.jpg?h=b36f240e"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"9422db2a-0071-4d3e-8b33-f3762c26fc19"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"d6cbd673-97cd-4e42-90a5-7f1ce318efc5"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"b93cce96-c339-41c2-8063-2f2c9d45a00b"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"eeb05b8f-b296-4f17-a39e-63278052a69b"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"7b2ebbc0-fd6c-49ff-bc0e-b39d49ab9941"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"7334830d-b1cc-47a0-b21c-3ac916f3d09f"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/field_event_audience?resourceVersion=id%3A52234"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/relationships\/field_event_audience?resourceVersion=id%3A52234"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/field_event_tags?resourceVersion=id%3A52234"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/relationships\/field_event_tags?resourceVersion=id%3A52234"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"9ea6ffda-2d27-4a94-bc3f-d3db648413c8"
+            },
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"ebf11f27-aff5-4bd1-8d5c-47acd7506b87"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/field_event_type?resourceVersion=id%3A52234"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/relationships\/field_event_type?resourceVersion=id%3A52234"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/field_location?resourceVersion=id%3A52234"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/relationships\/field_location?resourceVersion=id%3A52234"
+            }
+          }
+        },
+        "field_room":{
+          "data":{
+            "type":"node--room",
+            "id":"1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/field_room?resourceVersion=id%3A52234"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/relationships\/field_room?resourceVersion=id%3A52234"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"f3ef6319-a3d9-4071-9bd5-7bca46df134c",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c?resourceVersion=id%3A52235"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33386,
+        "status":true,
+        "title":"Outdoor Family Storytime",
+        "path":{
+          "alias":"\/event\/2021-11-09\/outdoor-family-storytime-0",
+          "pid":50232,
+          "langcode":"en"
+        },
+        "field_capacity_max":5,
+        "field_date_time":{
+          "value":"2021-11-09T11:00:00-05:00",
+          "end_value":"2021-11-09T11:30:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":{
+          "value":"2021-08-29T14:22:00-04:00",
+          "end_value":"2021-11-08T17:00:00-05:00"
+        },
+        "field_must_register":true,
+        "field_text_teaser":{
+          "value":" Join us for a fresh air, socially distanced storytime!",
+          "format":null,
+          "processed":"\u003Cp\u003EJoin us for a fresh air, socially distanced storytime!\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":2,
+        "registration":{
+          "total":0,
+          "total_waitlist":0,
+          "remaining_registration":5,
+          "remaining_waitlist":2,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-08\/6_02_2018_storytime_10.jpg?h=b36f240e"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"9422db2a-0071-4d3e-8b33-f3762c26fc19"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"d6cbd673-97cd-4e42-90a5-7f1ce318efc5"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"b93cce96-c339-41c2-8063-2f2c9d45a00b"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"eeb05b8f-b296-4f17-a39e-63278052a69b"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"7b2ebbc0-fd6c-49ff-bc0e-b39d49ab9941"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"7334830d-b1cc-47a0-b21c-3ac916f3d09f"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/field_event_audience?resourceVersion=id%3A52235"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/relationships\/field_event_audience?resourceVersion=id%3A52235"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/field_event_tags?resourceVersion=id%3A52235"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/relationships\/field_event_tags?resourceVersion=id%3A52235"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"9ea6ffda-2d27-4a94-bc3f-d3db648413c8"
+            },
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"ebf11f27-aff5-4bd1-8d5c-47acd7506b87"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/field_event_type?resourceVersion=id%3A52235"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/relationships\/field_event_type?resourceVersion=id%3A52235"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/field_location?resourceVersion=id%3A52235"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/relationships\/field_location?resourceVersion=id%3A52235"
+            }
+          }
+        },
+        "field_room":{
+          "data":{
+            "type":"node--room",
+            "id":"1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/field_room?resourceVersion=id%3A52235"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/relationships\/field_room?resourceVersion=id%3A52235"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"162d4f7f-bb31-41e4-b768-95f54433c1a4",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4?resourceVersion=id%3A53264"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33937,
+        "status":true,
+        "title":"Sew Divine: A Gathering of Crafters",
+        "path":{
+          "alias":"\/event\/2021-11-09\/sew-divine-gathering-crafters-0",
+          "pid":50783,
+          "langcode":"en"
+        },
+        "field_capacity_max":null,
+        "field_date_time":{
+          "value":"2021-11-09T11:00:00-05:00",
+          "end_value":"2021-11-09T12:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":null,
+        "field_must_register":false,
+        "field_text_teaser":{
+          "value":"Bring your own portable craft project and share some fun with fellow crafters!",
+          "format":null,
+          "processed":"\u003Cp\u003EBring your own portable craft project and share some fun with fellow crafters!\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":0,
+        "registration":{
+          "total":0,
+          "total_waitlist":0,
+          "remaining_registration":0,
+          "remaining_waitlist":0,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2019-03\/Events_Sewing%20Machine_Adult.jpg?h=0d27ee61"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"96887d69-800d-4e91-b434-d3d5167985d3"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/field_event_audience?resourceVersion=id%3A53264"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/relationships\/field_event_audience?resourceVersion=id%3A53264"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            {
+              "type":"taxonomy_term--tag",
+              "id":"c2731c2f-5994-46f0-a6c7-47c1c0158f98"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/field_event_tags?resourceVersion=id%3A53264"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/relationships\/field_event_tags?resourceVersion=id%3A53264"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"ad4a46da-4752-4f58-a44c-fb628c13aa75"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/field_event_type?resourceVersion=id%3A53264"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/relationships\/field_event_type?resourceVersion=id%3A53264"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"8330b4ae-07c4-4276-bf38-d821632e4aea"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/field_location?resourceVersion=id%3A53264"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/relationships\/field_location?resourceVersion=id%3A53264"
+            }
+          }
+        },
+        "field_room":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/field_room?resourceVersion=id%3A53264"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/162d4f7f-bb31-41e4-b768-95f54433c1a4\/relationships\/field_room?resourceVersion=id%3A53264"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"dcc14def-0331-4e1e-ad40-e78e3f9e17ff",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff?resourceVersion=id%3A52386"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33467,
+        "status":true,
+        "title":"Sew Divine: A Gathering of Crafters",
+        "path":{
+          "alias":"\/event\/2021-11-09\/sew-divine-gathering-crafters",
+          "pid":50313,
+          "langcode":"en"
+        },
+        "field_capacity_max":null,
+        "field_date_time":{
+          "value":"2021-11-09T13:00:00-05:00",
+          "end_value":"2021-11-09T15:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":null,
+        "field_must_register":false,
+        "field_text_teaser":{
+          "value":"Bring your own portable craft project and share some fun with fellow crafters!",
+          "format":null,
+          "processed":"\u003Cp\u003EBring your own portable craft project and share some fun with fellow crafters!\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":0,
+        "registration":{
+          "total":0,
+          "total_waitlist":0,
+          "remaining_registration":0,
+          "remaining_waitlist":0,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-08\/Sew%20Divine%2003_small.jpg"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"96887d69-800d-4e91-b434-d3d5167985d3"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/field_event_audience?resourceVersion=id%3A52386"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/relationships\/field_event_audience?resourceVersion=id%3A52386"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            {
+              "type":"taxonomy_term--tag",
+              "id":"c2731c2f-5994-46f0-a6c7-47c1c0158f98"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/field_event_tags?resourceVersion=id%3A52386"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/relationships\/field_event_tags?resourceVersion=id%3A52386"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"ad4a46da-4752-4f58-a44c-fb628c13aa75"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/field_event_type?resourceVersion=id%3A52386"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/relationships\/field_event_type?resourceVersion=id%3A52386"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/field_location?resourceVersion=id%3A52386"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/relationships\/field_location?resourceVersion=id%3A52386"
+            }
+          }
+        },
+        "field_room":{
+          "data":{
+            "type":"node--room",
+            "id":"1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/field_room?resourceVersion=id%3A52386"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/dcc14def-0331-4e1e-ad40-e78e3f9e17ff\/relationships\/field_room?resourceVersion=id%3A52386"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45?resourceVersion=id%3A49742"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":32160,
+        "status":true,
+        "title":"All Booked Up",
+        "path":{
+          "alias":"\/event\/2021-11-09\/readers-morning-out",
+          "pid":49004,
+          "langcode":"en"
+        },
+        "field_capacity_max":10,
+        "field_date_time":{
+          "value":"2021-11-09T14:00:00-05:00",
+          "end_value":"2021-11-09T15:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":{
+          "value":"2021-10-01T09:00:00-04:00",
+          "end_value":"2021-11-08T09:00:00-05:00"
+        },
+        "field_must_register":true,
+        "field_text_teaser":{
+          "value":"Join us for a book group discussion of this month\u2019s title, When We Were Vikings, by Andrew MacDonald.",
+          "format":null,
+          "processed":"\u003Cp\u003EJoin us for a book group discussion of this month\u2019s title, When We Were Vikings, by Andrew MacDonald.\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":null,
+        "registration":{
+          "total":1,
+          "total_waitlist":0,
+          "remaining_registration":9,
+          "remaining_waitlist":0,
+          "status":"closed",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2020-04\/091_web.jpg?h=a8e8ff5c"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"96887d69-800d-4e91-b434-d3d5167985d3"
+            },
+            {
+              "type":"taxonomy_term--audience",
+              "id":"354e80c8-6902-4d0f-99f4-dbca85205b25"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/field_event_audience?resourceVersion=id%3A49742"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/relationships\/field_event_audience?resourceVersion=id%3A49742"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/field_event_tags?resourceVersion=id%3A49742"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/relationships\/field_event_tags?resourceVersion=id%3A49742"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"e2c7418d-ab46-4ad1-a5c1-0e08de4e369b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/field_event_type?resourceVersion=id%3A49742"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/relationships\/field_event_type?resourceVersion=id%3A49742"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"8330b4ae-07c4-4276-bf38-d821632e4aea"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/field_location?resourceVersion=id%3A49742"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/relationships\/field_location?resourceVersion=id%3A49742"
+            }
+          }
+        },
+        "field_room":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/field_room?resourceVersion=id%3A49742"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/relationships\/field_room?resourceVersion=id%3A49742"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"f3a8d6eb-539d-4ec8-bcc7-78da8771829c",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c?resourceVersion=id%3A52057"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33288,
+        "status":true,
+        "title":"Teen Poetry Prompt Party ",
+        "path":{
+          "alias":"\/event\/2021-11-09\/teen-poetry-prompt-party",
+          "pid":50134,
+          "langcode":"en"
+        },
+        "field_capacity_max":6,
+        "field_date_time":{
+          "value":"2021-11-09T17:00:00-05:00",
+          "end_value":"2021-11-09T18:00:00-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":{
+          "value":"2021-08-18T12:00:00-04:00",
+          "end_value":"2021-11-08T12:00:00-05:00"
+        },
+        "field_must_register":true,
+        "field_text_teaser":{
+          "value":"The perfect way to get your creative juices flowing!",
+          "format":null,
+          "processed":"\u003Cp\u003EThe perfect way to get your creative juices flowing!\u003C\/p\u003E\n"
+        },
+        "field_waitlist_max":4,
+        "registration":{
+          "total":1,
+          "total_waitlist":0,
+          "remaining_registration":5,
+          "remaining_waitlist":4,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2018-11\/Deckle%20Edge%20Poems%20Closeup_0.jpg"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"d703c9f3-2e30-4df0-86c2-adecd137f14b"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/field_event_audience?resourceVersion=id%3A52057"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/relationships\/field_event_audience?resourceVersion=id%3A52057"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            {
+              "type":"taxonomy_term--tag",
+              "id":"c7519129-7d31-4d3c-a69f-e8fac46f0958"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/field_event_tags?resourceVersion=id%3A52057"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/relationships\/field_event_tags?resourceVersion=id%3A52057"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"ad4a46da-4752-4f58-a44c-fb628c13aa75"
+            },
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"a09f2511-9a9f-487d-91cc-596e7e524837"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/field_event_type?resourceVersion=id%3A52057"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/relationships\/field_event_type?resourceVersion=id%3A52057"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/field_location?resourceVersion=id%3A52057"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/relationships\/field_location?resourceVersion=id%3A52057"
+            }
+          }
+        },
+        "field_room":{
+          "data":{
+            "type":"node--room",
+            "id":"1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730"
+          },
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/field_room?resourceVersion=id%3A52057"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3a8d6eb-539d-4ec8-bcc7-78da8771829c\/relationships\/field_room?resourceVersion=id%3A52057"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type":"node--event",
+      "id":"9144386c-65cb-4ac2-93ed-77ee605a2224",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224?resourceVersion=id%3A52184"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":33351,
+        "status":true,
+        "title":"Show Up and Deliver Series: Create a Project Plan with Google Sheets",
+        "path":{
+          "alias":"\/event\/2021-11-09\/show-and-deliver-series-create-project-plan-google-sheets",
+          "pid":50197,
+          "langcode":"en"
+        },
+        "field_capacity_max":null,
+        "field_date_time":{
+          "value":"2021-11-09T18:00:00-05:00",
+          "end_value":"2021-11-09T19:00:08-05:00"
+        },
+        "field_event_designation":"events",
+        "field_event_register_period":null,
+        "field_must_register":false,
+        "field_text_teaser":null,
+        "field_waitlist_max":0,
+        "registration":{
+          "total":0,
+          "total_waitlist":0,
+          "remaining_registration":0,
+          "remaining_waitlist":0,
+          "status":"open",
+          "status_user":null
+        },
+        "event_thumbnail":"https:\/\/dev-richland-site.pantheonsite.io\/sites\/default\/files\/styles\/4to3_740x556\/public\/2021-03\/Shennice%20Pic.jpeg?h=83ba3237"
+      },
+      "relationships":{
+        "field_event_audience":{
+          "data":[
+            {
+              "type":"taxonomy_term--audience",
+              "id":"96887d69-800d-4e91-b434-d3d5167985d3"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/field_event_audience?resourceVersion=id%3A52184"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/relationships\/field_event_audience?resourceVersion=id%3A52184"
+            }
+          }
+        },
+        "field_event_tags":{
+          "data":[
+            {
+              "type":"taxonomy_term--tag",
+              "id":"9b9a9b44-6f99-4af5-a843-1ecdc1376e2b"
+            },
+            {
+              "type":"taxonomy_term--tag",
+              "id":"0599bc06-c142-4d3f-bfca-84002d133b38"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/field_event_tags?resourceVersion=id%3A52184"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/relationships\/field_event_tags?resourceVersion=id%3A52184"
+            }
+          }
+        },
+        "field_event_type":{
+          "data":[
+            {
+              "type":"taxonomy_term--event_type",
+              "id":"9dd555d2-92a4-4165-96b7-d82d5c69ddaf"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/field_event_type?resourceVersion=id%3A52184"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/relationships\/field_event_type?resourceVersion=id%3A52184"
+            }
+          }
+        },
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"missing",
+              "meta":{
+                "links":{
+                  "help":{
+                    "href":"https:\/\/www.drupal.org\/docs\/8\/modules\/json-api\/core-concepts#missing",
+                    "meta":{
+                      "about":"Usage and meaning of the \u0027missing\u0027 resource identifier."
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/field_location?resourceVersion=id%3A52184"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/relationships\/field_location?resourceVersion=id%3A52184"
+            }
+          }
+        },
+        "field_room":{
+          "data":null,
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/field_room?resourceVersion=id%3A52184"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/9144386c-65cb-4ac2-93ed-77ee605a2224\/relationships\/field_room?resourceVersion=id%3A52184"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "included":[
+    {
+      "type":"node--room",
+      "id":"1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730",
+      "links":{
+        "self":{
+          "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730?resourceVersion=id%3A5049"
+        }
+      },
+      "attributes":{
+        "drupal_internal__nid":4324,
+        "title":"Sandhills Children\u0027s Courtyard"
+      },
+      "relationships":{
+        "field_location":{
+          "data":[
+            {
+              "type":"node--location",
+              "id":"9a9ee66b-7067-4547-8750-f50035b7e551"
+            }
+          ],
+          "links":{
+            "related":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730\/field_location?resourceVersion=id%3A5049"
+            },
+            "self":{
+              "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/room\/1d44dd87-4dd4-42ce-b7a9-5a02ea9ea730\/relationships\/field_location?resourceVersion=id%3A5049"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "links":{
+    "next":{
+      "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event?filter%5Bstatus%5D%5Bvalue%5D=1\u0026filter%5Bfield_event_designation%5D%5Bvalue%5D=events\u0026filter%5Bdata%5D%5Bcondition%5D%5Bpath%5D=field_date_time.value\u0026filter%5Bdata%5D%5Bcondition%5D%5Bvalue%5D=2021-11-08T00%3A00%3A00-05%3A00\u0026filter%5Bdata%5D%5Bcondition%5D%5Boperator%5D=%3E%3D\u0026fields%5Bnode--event%5D=drupal_internal__nid%2Cstatus%2Ctitle%2Cpath%2Cfield_capacity_max%2Cfield_waitlist_max%2Cfield_date_time%2Cfield_must_register%2Cfield_text_teaser%2Cregistration%2Cfield_event_audience%2Cfield_event_register_period%2Cfield_event_type%2Cfield_event_tags%2Cfield_location%2Cfield_event_designation%2Cfield_room%2Cevent_thumbnail\u0026fields%5Bfile--file%5D=drupal_internal__fid%2Curi%2Curl\u0026fields%5Bnode--room%5D=drupal_internal__nid%2Ctitle%2Cfield_location\u0026page%5Boffset%5D=10\u0026page%5Blimit%5D=10\u0026include=field_room\u0026sort=field_date_time.value%2Ctitle%2Cdrupal_internal__nid"
+    },
+    "self":{
+      "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event?fields%5Bnode--event%5D=drupal_internal__nid%2Cstatus%2Ctitle%2Cpath%2Cfield_capacity_max%2Cfield_waitlist_max%2Cfield_date_time%2Cfield_must_register%2Cfield_text_teaser%2Cregistration%2Cfield_event_audience%2Cfield_event_register_period%2Cfield_event_type%2Cfield_event_tags%2Cfield_location%2Cfield_event_designation%2Cfield_room%2Cevent_thumbnail\u0026fields%5Bfile--file%5D=drupal_internal__fid%2Curi%2Curl\u0026fields%5Bnode--room%5D=drupal_internal__nid%2Ctitle%2Cfield_location\u0026filter%5Bstatus%5D%5Bvalue%5D=1\u0026filter%5Bfield_event_designation%5D%5Bvalue%5D=events\u0026filter%5Bdata%5D%5Bcondition%5D%5Bpath%5D=field_date_time.value\u0026filter%5Bdata%5D%5Bcondition%5D%5Bvalue%5D=2021-11-08T00%3A00%3A00-05%3A00\u0026filter%5Bdata%5D%5Bcondition%5D%5Boperator%5D=%3E%3D\u0026include=field_room\u0026page%5Blimit%5D=10\u0026sort=field_date_time.value%2Ctitle%2Cdrupal_internal__nid"
+    }
+  }
 }
 ```
 
@@ -1314,7 +6148,7 @@ INTERCEPT EVENT AND ROOM FIELD NAMES
 ------------------------------------
 
 Since querying for Events and Rooms is a common practice with Intercept using
-JSON API-style query endpoints, a list of field names that can be used in your
+JSON:API-style query endpoints, a list of field names that can be used in your
 queries are included here. For latest list of fields, you can always check that
 at Manage > Structure > Content Types > Manage Fields.
 

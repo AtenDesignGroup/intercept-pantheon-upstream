@@ -3,13 +3,36 @@
 namespace Drupal\flag\TwigExtension;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Template\TwigExtension;
+use Drupal\flag\FlagCountManagerInterface;
 use Drupal\flag\FlagInterface;
 
 /**
  * Provides a Twig extension to get the flag count given a flag and flaggable.
  */
-class FlagCount extends TwigExtension {
+class FlagCount extends \Twig_Extension {
+
+  /**
+   * The flag count.
+   *
+   * @var \Drupal\flag\FlagCountManagerInterface
+   */
+  protected $flagCount;
+
+  /**
+   * Constructs \Drupal\flag\TwigExtension\FlagCount.
+   *
+   * @param \Drupal\flag\FlagCountManagerInterface $flag_count
+   *   The flag count service.
+   */
+  public function __construct($flag_count) {
+    if (func_num_args() == 5) {
+      $flag_count = func_get_arg(4);
+      if (!($flag_count instanceof FlagCountManagerInterface)) {
+        $flag_count = \Drupal::service('flag.count');
+      }
+    }
+    $this->flagCount = $flag_count;
+  }
 
   /**
    * Generates a list of all Twig functions that this extension defines.
@@ -38,8 +61,8 @@ class FlagCount extends TwigExtension {
    * @return string
    *   The number of times the flaggings for the given parameters.
    */
-  public static function count(FlagInterface $flag, EntityInterface $flaggable) {
-    $counts = \Drupal::service('flag.count')->getEntityFlagCounts($flaggable);
+  public function count(FlagInterface $flag, EntityInterface $flaggable) {
+    $counts = $this->flagCount->getEntityFlagCounts($flaggable);
     return empty($counts) || !isset($counts[$flag->id()]) ? '0' : $counts[$flag->id()];
   }
 

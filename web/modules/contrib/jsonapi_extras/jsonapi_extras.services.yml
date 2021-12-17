@@ -62,5 +62,6 @@ services:
     class: Drupal\jsonapi_extras\EventSubscriber\JsonApiBuildSubscriber
     arguments:
       - '@jsonapi_extras.resource_type.repository'
+      - '@config.factory'
     tags:
       - { name: event_subscriber }

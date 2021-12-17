@@ -6,3 +6,5 @@ package: 'Intercept'
 configure: entity.bulk_room_reservation.settings
 dependencies:
   - form_options_attributes:form_options_attributes
+  - intercept:intercept_room_reservation
+  - intercept:intercept_location

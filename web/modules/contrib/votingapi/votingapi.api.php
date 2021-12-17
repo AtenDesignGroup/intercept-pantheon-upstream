@@ -11,9 +11,9 @@
  */
 
 /**
- * Alter the information provided in \Drupal\votingapi\Annotation\VoteResult.
+ * Alters the information provided in \Drupal\votingapi\Annotation\VoteResult.
  *
- * @param $results
+ * @param array $results
  *   The array of vote results, keyed on the machine-readable name.
  */
 function hook_vote_result_info_alter(&$results) {
@@ -64,18 +64,18 @@ function hook_votingapi_results_alter(array &$vote_results, $entity_type, $entit
 }
 
 /**
- * Adds to or alters metadata describing Voting tags, value_types, and functions.
+ * Allows altering metadata describing Voting tags, value_types, and functions.
  *
- * If your module uses custom tags or value_types, or calculates custom aggregate
- * functions, please implement this hook so other modules can properly interperet
- * and display your data.
+ * If your module uses custom tags or value_types, or calculates custom
+ * aggregate functions, please implement this hook so other modules can properly
+ * interperet and display your data.
  *
  * Three major bins of data are stored: tags, value_types, and aggregate result
- * functions. Each entry in these bins is keyed by the value stored in the actual
- * VotingAPI tables, and contains an array with (minimally) 'name' and
+ * functions. Each entry in these bins is keyed by the value stored in the
+ * actual Voting API tables, and contains an array with (minimally) 'name' and
  * 'description' keys. Modules can add extra keys to their entries if desired.
  *
- * @param $data
+ * @param array $data
  *   An alterable array of aggregate vote results.
  *
  * @see votingapi_metadata()
@@ -108,18 +108,18 @@ function hook_votingapi_metadata_alter(&$data) {
 }
 
 /**
- * Returns callback functions and descriptions to format a VotingAPI Views field.
+ * Declares callback functions for formatting a Voting API Views field.
  *
  * Loads all votes for a given piece of content, then calculates and caches the
  * aggregate vote results. This is only intended for modules that have assumed
  * responsibility for the full voting cycle: the votingapi_set_vote() function
  * recalculates automatically.
  *
- * @param $field
+ * @param mixed $field
  *   A Views field object. This can be used to expose formatters only for tags,
  *   vote values, aggregate functions, etc.
  *
- * @return
+ * @return array
  *   An array of key-value pairs, in which each key is a callback function and
  *   each value is a human-readable description of the formatter.
  *
@@ -135,10 +135,11 @@ function hook_votingapi_views_formatters($field) {
 }
 
 /**
- * VotingApi's vote storage can be overriden by pointing setting the
- * 'votingapi_vote_storage' state to an alternative class.
+ * Voting API's vote storage can be overridden by setting the
+ * 'votingapi_vote_storage' state variable to an alternative class.
  */
 \Drupal::state()->set('votingapi_vote_storage', 'Mongodb_VoteStorage');
+
 /**
  *
  */
@@ -155,7 +156,7 @@ class Mongodb_VoteStorage {
   }
 
   /**
-   * Delete votes from the database.
+   * Deletes votes from the database.
    *
    * @param $votes
    *   An array of VotingApi_Vote instances to delete.

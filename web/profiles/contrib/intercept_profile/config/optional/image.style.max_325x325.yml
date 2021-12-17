@@ -1,18 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - responsive_image
 name: max_325x325
 label: 'Max 325x325'
 effects:
   cb842cc8-682f-42a6-bd05-5a1ac726f0d8:
+    uuid: cb842cc8-682f-42a6-bd05-5a1ac726f0d8
     id: image_scale
+    weight: 2
     data:
       width: 325
       height: 325
       upscale: false
+  8214b24d-58f8-4aaa-a207-560d020d82d2:
+    uuid: 8214b24d-58f8-4aaa-a207-560d020d82d2
+    id: image_convert
     weight: 1
-    uuid: cb842cc8-682f-42a6-bd05-5a1ac726f0d8
-langcode: en
-dependencies:
-  module:
-    - responsive_image
-  enforced:
-    module:
-      - responsive_image
+    data:
+      extension: webp

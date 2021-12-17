@@ -17,7 +17,7 @@ services:
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
   flag:
     class: Drupal\flag\FlagService
-    arguments: ['@current_user', '@entity_type.manager', '@session_manager']
+    arguments: ['@current_user', '@entity_type.manager', '@request_stack']
   flag.count:
     class: Drupal\flag\FlagCountManager
     arguments: ['@database', '@datetime.time']
@@ -27,7 +27,7 @@ services:
     class: Drupal\flag\FlagLinkBuilder
     arguments: ['@entity_type.manager', '@flag']
   flag.twig.count:
-    arguments: ['@renderer', '@url_generator', '@theme.manager', '@date.formatter', '@flag.count']
+    arguments: ['@flag.count']
     class: Drupal\flag\TwigExtension\FlagCount
     tags:
       - { name: twig.extension }

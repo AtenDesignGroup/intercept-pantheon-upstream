@@ -2,15 +2,23 @@
 
 namespace Drupal\intercept_bulk_room_reservation;
 
-use Drupal\Core\Datetime\DrupalDateTime;
 use RRule\RRule;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Generates a SeriesGenerator object.
  */
 class SeriesGenerator implements SeriesGeneratorInterface {
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
 
   /**
    * The entity type manager.
@@ -25,8 +33,9 @@ class SeriesGenerator implements SeriesGeneratorInterface {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface$entity_type_manager, ConfigFactoryInterface $config_factory) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -90,7 +99,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     }
 
     $dates = $logistics['dates'];
-    $nyTimeZone = new \DateTimeZone('America/New_York');
+
     $utcTimeZone = new \DateTimeZone('UTC');
 
     foreach ($rooms as $room) {
@@ -100,7 +109,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
           // Take the date into account to accommodate standard time vs.
           // daylight saving time. Our $logistics['times'] values are in
           // UTC time zone for $dates[0], so first we'll convert it back to
-          // America/New_York time, then recalculate for our $date in the loop.
+          // the site default time, then recalculate for our $date in the loop.
           $originalTime = strtotime($dates[0] . ' ' . $logistics['times'][$point] . '+0000');
           $originalDateTime = new \DateTime();
           $originalDateTime->setTimestamp($originalTime);
@@ -204,8 +213,10 @@ class SeriesGenerator implements SeriesGeneratorInterface {
    */
   public function getStartOfMonth($dateField) {
     $startDate = $dateField['start']['date'];
-    $timeZone = new \DateTimeZone('America/New_York');
-    return new \DateTime(substr($startDate, 0, 8) . '01', $timeZone);
+    $systemDate = $this->configFactory->get('system.date');
+    $siteTimeZone = $systemDate->get('timezone')['default'];
+    $siteTimeZone = new \DateTimeZone($siteTimeZone);
+    return new \DateTime(substr($startDate, 0, 8) . '01', $siteTimeZone);
   }
 
   /**
@@ -271,12 +282,15 @@ class SeriesGenerator implements SeriesGeneratorInterface {
         if (!empty($entity->get('event_recurrence')->referencedEntities())) {
           $rules = $entity->get('event_recurrence')->referencedEntities()[0]->field_event_rrule->rrule;
           $dtStartString = $entity->get('event_recurrence')->referencedEntities()[0]->field_event_rrule->value;
-          $timezone = new \DateTimeZone('America/New_York');
-          $rules = $rules . ';DTSTART=' . \DateTime::createFromFormat('Y-m-d\TH:i:s', $dtStartString, $timezone)->format('Y-m-d');
+
+          $systemDate = $this->configFactory->get('system.date');
+          $siteTimeZone = $systemDate->get('timezone')['default'];
+          $siteTimeZone = new \DateTimeZone($siteTimeZone);
+
+          $rules = $rules . ';DTSTART=' . \DateTime::createFromFormat('Y-m-d\TH:i:s', $dtStartString, $siteTimeZone)->format('Y-m-d');
           $rrule = new RRule($rules);
           foreach ($rrule as $occurrence) {
             // Skip past occurrences.
-            $timestamp = $occurrence->getTimestamp();
             if ($occurrence->getTimestamp() < time()) {
               continue;
             }
@@ -287,10 +301,10 @@ class SeriesGenerator implements SeriesGeneratorInterface {
 
       default:
         // If the $entity isn't a node, it's BulkRoomReservation.
-        $timezone = new \DateTimeZone('UTC');
+        $utcTimeZone = new \DateTimeZone('UTC');
         $logistics['times'] = [
-          'start' => \DateTime::createFromFormat('Y-m-d\TH:i:s', $entity->field_date_time->value, $timezone)->format('H:i:s'),
-          'end' => \DateTime::createFromFormat('Y-m-d\TH:i:s', $entity->field_date_time->end_value, $timezone)->format('H:i:s'),
+          'start' => \DateTime::createFromFormat('Y-m-d\TH:i:s', $entity->field_date_time->value, $utcTimeZone)->format('H:i:s'),
+          'end' => \DateTime::createFromFormat('Y-m-d\TH:i:s', $entity->field_date_time->end_value, $utcTimeZone)->format('H:i:s'),
         ];
         foreach ($entity->field_date_time->occurrences as $occurrence) {
           $logistics['dates'][] = $occurrence->getStart()->format('Y-m-d');
@@ -315,7 +329,10 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     // Begin with assumption that there are no $values yet; override if so.
     $dateField = $input['field_date_time'][0];
     if (!empty($values)) {
-      $timezone = new \DateTimeZone('America/New_York');
+      $systemDate = $this->configFactory->get('system.date');
+      $siteTimeZone = $systemDate->get('timezone')['default'];
+      $siteTimeZone = new \DateTimeZone($siteTimeZone);
+
       $dateField = $values['field_date_time'][0];
       // Massage this array: ajax caused field validation, so $values has
       // DateTime elements for 'start' and 'end', not arrays.
@@ -327,20 +344,18 @@ class SeriesGenerator implements SeriesGeneratorInterface {
       ];
       $keys = array_intersect(array_keys($dateField), $allowed_keys);
       $dateField['start'] = [
-        'date' => $dateField[$keys[0]]->setTimezone($timezone)->format('Y-m-d'),
-        'time' => $dateField[$keys[0]]->setTimezone($timezone)->format('H:i'),
+        'date' => $dateField[$keys[0]]->setTimezone($siteTimeZone)->format('Y-m-d'),
+        'time' => $dateField[$keys[0]]->setTimezone($siteTimeZone)->format('H:i'),
       ];
       $dateField['end'] = [
-        'date' => $dateField[$keys[1]]->setTimezone($timezone)->format('Y-m-d'),
-        'time' => $dateField[$keys[1]]->setTimezone($timezone)->format('H:i'),
+        'date' => $dateField[$keys[1]]->setTimezone($siteTimeZone)->format('Y-m-d'),
+        'time' => $dateField[$keys[1]]->setTimezone($siteTimeZone)->format('H:i'),
       ];
     }
 
-    // Calculate start and end times.
-    $timezone = new \DateTimeZone('America/New_York');
-
-    // Massage the $dateField array: ajax caused field validation, so $values
-    // has DateTime elements for 'start' and 'end', not arrays.
+    // Calculate start and end times. First, massage the $dateField array: ajax
+    // caused field validation, so $values has DateTime elements for 'start' and
+    // 'end', not arrays.
     $allowed_keys = [
       'start',
       'end',
@@ -379,16 +394,18 @@ class SeriesGenerator implements SeriesGeneratorInterface {
         // Define our time zones. We have some machinations to wrangle for each
         // date, as time zone differences change at different times on the
         // calendar (i.e. standard time vs. daylight saving time.)
-        $nyTimeZone = new \DateTimeZone('America/New_York');
+        $systemDate = $this->configFactory->get('system.date');
+        $siteTimeZone = $systemDate->get('timezone')['default'];
+        $siteTimeZone = new \DateTimeZone($siteTimeZone);
         $utcTimeZone = new \DateTimeZone('UTC');
 
         $dateTimeString = $dateField['start']['date'] . ' ' . $dateField['start']['time'];
-        $startTime = new \DateTime($dateTimeString, $nyTimeZone);
+        $startTime = new \DateTime($dateTimeString, $siteTimeZone);
         $startTime->setTimeZone($utcTimeZone);
         $logistics['times']['start'] = $startTime->format('H:i:s');
 
         $dateTimeString = $dateField['end']['date'] . ' ' . $dateField['end']['time'];
-        $endTime = new \DateTime($dateTimeString, $nyTimeZone);
+        $endTime = new \DateTime($dateTimeString, $siteTimeZone);
         $endTime->setTimeZone($utcTimeZone);
         $logistics['times']['end'] = $endTime->format('H:i:s');
         break;

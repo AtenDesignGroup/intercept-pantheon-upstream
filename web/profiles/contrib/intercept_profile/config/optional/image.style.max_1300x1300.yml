@@ -1,18 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - responsive_image
 name: max_1300x1300
 label: 'Max 1300x1300'
 effects:
   04caae9a-fa3e-4ea6-ae09-9c26aec7d308:
+    uuid: 04caae9a-fa3e-4ea6-ae09-9c26aec7d308
     id: image_scale
+    weight: 2
     data:
       width: 1300
       height: 1300
       upscale: false
+  79293ed8-b969-48f5-9257-84b3bc48bc39:
+    uuid: 79293ed8-b969-48f5-9257-84b3bc48bc39
+    id: image_convert
     weight: 1
-    uuid: 04caae9a-fa3e-4ea6-ae09-9c26aec7d308
-langcode: en
-dependencies:
-  module:
-    - responsive_image
-  enforced:
-    module:
-      - responsive_image
+    data:
+      extension: webp

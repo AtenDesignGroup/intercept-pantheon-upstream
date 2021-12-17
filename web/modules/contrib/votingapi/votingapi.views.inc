@@ -65,8 +65,8 @@ function votingapi_views_data_alter(&$data) {
 
       // Process each result function.
       foreach ($result_functions as $result_function_id => $result_function_definition) {
-        // Extracting label from definition, unless it is for a specific field then use
-        // the function ID so that you have context.
+        // Extracting label from definition, unless it is for a specific field
+        // then use the function ID so that you have context.
         $tokens['@result_function'] = (isset($result_function_definition['label']) && !strpos($result_function_id, '.')) ? $result_function_definition['label'] : $result_function_id;
 
         // Provide one to many relationship.

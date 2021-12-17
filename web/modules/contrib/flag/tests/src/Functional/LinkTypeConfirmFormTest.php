@@ -79,7 +79,8 @@ class LinkTypeConfirmFormTest extends FlagTestBase {
     $this->assertSession()->pageTextContains($this->flagConfirmMessage);
 
     // Submit the confirm form.
-    $this->drupalPostForm('flag/confirm/flag/' . $flag_id . '/' . $node_id, [], $this->createButtonText);
+    $this->drupalGet('flag/confirm/flag/' . $flag_id . '/' . $node_id);
+    $this->submitForm([], $this->createButtonText);
 
     // Check that the node is flagged.
     $this->drupalGet('node/' . $node_id);
@@ -101,7 +102,7 @@ class LinkTypeConfirmFormTest extends FlagTestBase {
     $this->assertSession()->pageTextContains($this->unflagConfirmMessage);
 
     // Submit the confirm form.
-    $this->drupalPostForm(NULL, [], $this->deleteButtonText);
+    $this->submitForm([], $this->deleteButtonText);
 
     // Check that the node is no longer flagged.
     $this->drupalGet('node/' . $node_id);

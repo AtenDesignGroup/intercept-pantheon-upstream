@@ -22,7 +22,9 @@ class VoteTypeForm extends EntityForm {
   protected $entityTypeManager;
 
   /**
-   * @var EntityFieldManagerInterface
+   * The entity field manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
   protected $entityFieldManager;
 
@@ -31,6 +33,8 @@ class VoteTypeForm extends EntityForm {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
    *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_manager, EntityFieldManagerInterface $entity_field_manager) {
     $this->entityTypeManager = $entity_manager;
@@ -145,7 +149,10 @@ class VoteTypeForm extends EntityForm {
     }
     elseif ($status == SAVED_NEW) {
       $this->messenger()->addMessage($this->t('The vote type %name has been added.', $t_args));
-      $context = array_merge($t_args, ['link' => $type->toLink($this->t('View'), 'collection')->toString()]);
+      $context = array_merge(
+        $t_args,
+        ['link' => $type->toLink($this->t('View'), 'collection')->toString()]
+      );
       $this->logger('vote')->notice('Added vote type %name.', $context);
     }
 

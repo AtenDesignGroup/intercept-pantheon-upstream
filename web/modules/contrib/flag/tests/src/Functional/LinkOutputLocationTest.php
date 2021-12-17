@@ -116,8 +116,8 @@ class LinkOutputLocationTest extends FlagTestBase {
     $edit = [
       'fields[flag_' . $this->flag->id() . '][region]' => 'hidden',
     ];
-    $this->drupalPostForm('admin/structure/types/manage/article/display/teaser', $edit, $this->t('Save'));
-
+    $this->drupalGet('admin/structure/types/manage/article/display/teaser');
+    $this->submitForm($edit, 'Save');
     // Check the form was saved successfully.
     $this->assertText('Your settings have been saved.');
 

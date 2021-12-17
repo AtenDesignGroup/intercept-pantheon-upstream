@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jsonapi\Normalizer\FieldItemNormalizer as JsonapiFieldItemNormalizer;
 use Drupal\jsonapi\Normalizer\Value\CacheableNormalization;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerManager;
+use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Shaper\Util\Context;
 
 /**
@@ -57,12 +58,22 @@ class FieldItemNormalizer extends JsonApiNormalizerDecoratorBase {
     if (!$enhancer) {
       return $normalized_output;
     }
-    // Apply any enhancements necessary.
-    $context['field_item_object'] = $object;
-    $processed = $enhancer->undoTransform($normalized_output->getNormalization(), new Context($context));
     $cacheability = CacheableMetadata::createFromObject($normalized_output)
       ->addCacheTags(['config:jsonapi_resource_config_list']);
-    $normalized_output = new CacheableNormalization($cacheability, $processed);
+    // Apply any enhancements necessary.
+    $context = new Context([
+      'field_item_object' => $object,
+      CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cacheability,
+    ]);
+    $processed = $enhancer->undoTransform(
+      $normalized_output->getNormalization(),
+      $context
+    );
+    $normalized_output = new CacheableNormalization(
+      // This was passed by reference but often, merging creates a new object.
+      $context->offsetGet(CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY),
+      $processed
+    );
 
     return $normalized_output;
   }

@@ -8,7 +8,7 @@ dependencies:
   - drupal:system (>=9.0.x)
   - date_recur:date_recur (>=3.x)
 
-# Information added by Drupal.org packaging script on 2021-02-04
-version: '3.0.0'
+# Information added by Drupal.org packaging script on 2021-12-03
+version: '3.0.1'
 project: 'date_recur_modular'
-datestamp: 1612420195
+datestamp: 1638549497

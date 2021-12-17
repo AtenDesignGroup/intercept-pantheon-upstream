@@ -2,12 +2,13 @@
 
 namespace Drupal\flag;
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Session\SessionManagerInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Flag service.
@@ -28,31 +29,39 @@ class FlagService implements FlagServiceInterface {
    */
   protected $entityTypeManager;
 
-  /*
-   * The session manager.
+  /**
+   * The request stack.
    *
-   * @var \Drupal\Core\Session\SessionManagerInterface
+   * @var \Symfony\Component\HttpFoundation\RequestStack
    */
-  protected $sessionManager;
+  protected $requestStack;
+
+  /**
+   * The anonymous session ID.
+   *
+   * @var string|NULL
+   */
+  protected $anonymousSessionId;
 
   /**
    * Constructor.
    *
-   * @param QueryFactory $entity_query
-   *   The entity query factory.
    * @param AccountInterface $current_user
    *   The current user.
    * @param EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param Drupal\Core\Session\SessionManagerInterface $session_manager
-   *   The session manager.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   Te request stack.
    */
   public function __construct(AccountInterface $current_user,
                               EntityTypeManagerInterface $entity_type_manager,
-                              SessionManagerInterface $session_manager) {
+                              $request_stack = NULL) {
     $this->currentUser = $current_user;
     $this->entityTypeManager = $entity_type_manager;
-    $this->sessionManager = $session_manager;
+    if (!$request_stack instanceof RequestStack) {
+      $request_stack = \Drupal::requestStack();
+    }
+    $this->requestStack = $request_stack;
   }
 
   /**
@@ -90,15 +99,53 @@ class FlagService implements FlagServiceInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getAnonymousSessionId() {
+    if (!$this->currentUser->isAnonymous()) {
+      return NULL;
+    }
+
+    if ($this->anonymousSessionId !== NULL) {
+      return $this->anonymousSessionId;
+    }
+
+    $request = $this->requestStack->getCurrentRequest();
+    $session_id = $request->hasSession()
+      ? $request->getSession()->get('flag.session_id')
+      : NULL;
+    if (empty($session_id)) {
+      $session_id = Crypt::randomBytesBase64();
+    }
+
+    $this->anonymousSessionId = $session_id;
+
+    return $this->anonymousSessionId;
+  }
+
+  /**
    * Makes sure session is started.
+   *
+   * @see \Drupal\Core\TempStore\PrivateTempStore::startSession()
    */
   protected function ensureSession() {
-    if ($this->currentUser->isAnonymous() && !$this->sessionManager->isStarted()) {
-      // Add something to $_SESSION so the session ID will persist.
-      // TODO: Replace this with something cleaner once core provides it.
-      // See https://www.drupal.org/node/2865991.
-      $_SESSION['flag'] = TRUE;
-      $this->sessionManager->start();
+    if (!$this->currentUser->isAnonymous()) {
+      return;
+    }
+
+    $request = $this->requestStack->getCurrentRequest();
+    // @todo when https://www.drupal.org/node/2865991 is resolved,
+    // use force start session API.
+    if (!$request->hasSession()) {
+      /** @var \Symfony\Component\HttpFoundation\Session\SessionInterface $session */
+      $session = \Drupal::service('session');
+      $request->setSession($session);
+      $session->start();
+    }
+
+    $session = $request->getSession();
+    if (!$session->has('flag.session_id')) {
+      $session->set('flag.session_id', $this->getAnonymousSessionId());
     }
   }
 
@@ -118,7 +165,7 @@ class FlagService implements FlagServiceInterface {
       // always mean that the session is started. Session is started explicitly
       // from FlagService->ensureSession() method.
       if (!isset($session_id) && $account->isAnonymous()) {
-        $session_id = $this->sessionManager->getId();
+        $session_id = $this->getAnonymousSessionId();
       }
     }
     elseif ($account->isAnonymous() && $session_id === NULL) {

@@ -204,7 +204,6 @@ function intercept_base_theme_suggestions_field_alter(array &$suggestions, array
   $suggestions[] = implode('__', ['field', $name, $bundle, $mode]);
 }
 
-
 /**
  * Implements hook_theme_suggestions_HOOK_alter() for fieldsets.
  */

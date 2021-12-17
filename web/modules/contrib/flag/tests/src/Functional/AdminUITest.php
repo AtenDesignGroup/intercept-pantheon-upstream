@@ -103,7 +103,8 @@ class AdminUITest extends FlagTestBase {
    */
   public function doFlagAdd() {
     // Test with minimal value requirement.
-    $this->drupalPostForm('admin/structure/flags/add', [], $this->t('Continue'));
+    $this->drupalGet('admin/structure/flags/add');
+    $this->submitForm([], 'Continue');
     // Check for fieldset titles.
     $this->assertText(t('Messages'));
     $this->assertText(t('Flag access'));
@@ -116,7 +117,7 @@ class AdminUITest extends FlagTestBase {
       'flag_short' => $this->flagShortText,
       'unflag_short' => $this->unflagShortText,
     ];
-    $this->drupalPostForm(NULL, $edit, $this->t('Create Flag'));
+    $this->submitForm($edit, 'Create Flag');
 
     $this->assertText(t('Flag @this_label has been added.', ['@this_label' => $this->label]));
 
@@ -143,7 +144,8 @@ class AdminUITest extends FlagTestBase {
     $this->drupalGet('admin/structure/flags');
     $this->assertText(t('Enabled'));
 
-    $this->drupalPostForm('admin/structure/flags/manage/' . $this->flagId . '/disable', [], $this->t('Disable'));
+    $this->drupalGet('admin/structure/flags/manage/' . $this->flagId . '/disable');
+    $this->submitForm([], 'Disable');
     $this->assertResponse(200);
 
     $this->drupalGet('admin/structure/flags');
@@ -160,7 +162,8 @@ class AdminUITest extends FlagTestBase {
     $this->drupalGet('admin/structure/flags');
     $this->assertText(t('Disabled'));
 
-    $this->drupalPostForm('admin/structure/flags/manage/' . $this->flagId . '/enable', [], $this->t('Enable'));
+    $this->drupalGet('admin/structure/flags/manage/' . $this->flagId . '/enable');
+    $this->submitForm([], 'Enable');
     $this->assertResponse(200);
 
     $this->drupalGet('admin/structure/flags');
@@ -190,7 +193,7 @@ class AdminUITest extends FlagTestBase {
 
     $this->assertText($this->t('Are you sure you want to reset the Flag'));
 
-    $this->drupalPostForm(NULL, [], $this->t('Reset'));
+    $this->submitForm([], 'Reset');
 
     $query_after = $this->entityTypeManager->getStorage('flagging')->getQuery();
     $query_after->condition('flag_id', $this->flag->id())
@@ -221,7 +224,8 @@ class AdminUITest extends FlagTestBase {
       $edit['flags[' . $id . '][weight]'] = $weight;
     }
     // Saving the new weights via the interface.
-    $this->drupalPostForm('admin/structure/flags', $edit, $this->t('Save'));
+    $this->drupalGet('admin/structure/flags');
+    $this->submitForm($edit, 'Save');
 
     // Load the all the flags.
     $all_flags = $this->container
@@ -247,7 +251,7 @@ class AdminUITest extends FlagTestBase {
 
     $this->assertText($this->t('Are you sure you want to delete the flag @this_label?', ['@this_label' => $this->label]));
 
-    $this->drupalPostForm(NULL, [], $this->t('Delete'));
+    $this->submitForm([], 'Delete');
 
     // Check the flag has been deleted.
     $result = $this->flagService->getFlagById($this->flagId);

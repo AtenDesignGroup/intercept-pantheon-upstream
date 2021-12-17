@@ -13,8 +13,8 @@ use \Drupal\views\ViewExecutable;
 function flag_views_query_substitutions(ViewExecutable $view) {
   // Allow replacement of current user's session id so we can cache these
   // queries.
-  $session_manager = \Drupal::service('session_manager');
+  $flag_service = \Drupal::service('flag');
   return [
-    '***FLAG_CURRENT_USER_SID***' => $session_manager->getId(),
+    '***FLAG_CURRENT_USER_SID***' => $flag_service->getAnonymousSessionId(),
   ];
 }

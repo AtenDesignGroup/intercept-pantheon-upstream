@@ -411,7 +411,13 @@ function intercept_event_entity_presave(EntityInterface $entity) {
  */
 function intercept_event_cloned_node_alter(&$node) {
   if ($node->bundle() == 'event') {
+    // Clear recurrence and registration info from cloned event.
     $node->set('event_recurrence', NULL);
+    $node->set('field_must_register', NULL);
+    $node->set('field_has_waitlist', NULL);
+    $node->set('field_capacity_max', NULL);
+    $node->set('field_event_register_period', NULL);
+    $node->set('field_waitlist_max', NULL);
   }
 }
 

@@ -13,17 +13,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class VoteTypeDeleteConfirm extends EntityDeleteForm {
 
   /**
-   * The entity type manager to create entity queries.
+   * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * Constructs a new VoteTypeDeleteConfirm object.
+   * Constructs a VoteTypeDeleteConfirm object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity query object.
+   *   The entity type manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
     $this->entityTypeManager = $entity_type_manager;
@@ -47,9 +47,14 @@ class VoteTypeDeleteConfirm extends EntityDeleteForm {
       ->count()
       ->execute();
     if ($num_nodes) {
-      $caption = '<p>' . $this->formatPlural($num_nodes, '%type is used by 1 piece of content on your site. You can not remove this vote type until you have removed that vote.', '%type is used by @count pieces of content on your site. You may not remove %type until you have removed all of the %type votes.', ['%type' => $this->entity->label()]) . '</p>';
+      $caption = $this->formatPlural($num_nodes, '%type is used by 1 piece of content on your site. You can not remove this vote type until you have removed that vote.', '%type is used by @count pieces of content on your site. You may not remove %type until you have removed all of the %type votes.', ['%type' => $this->entity->label()]);
       $form['#title'] = $this->getQuestion();
-      $form['description'] = ['#markup' => $caption];
+      $form['description'] = [
+        '#prefix' => '<p>',
+        '#markup' => $caption,
+        '#suffix' => '</p>',
+      ];
+
       return $form;
     }
 

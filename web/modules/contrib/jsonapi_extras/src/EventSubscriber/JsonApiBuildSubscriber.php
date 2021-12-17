@@ -3,6 +3,7 @@
 namespace Drupal\jsonapi_extras\EventSubscriber;
 
 use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeBuildEvent;
 use Drupal\jsonapi\ResourceType\ResourceTypeBuildEvents;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
@@ -22,13 +23,27 @@ class JsonApiBuildSubscriber implements EventSubscriberInterface {
   private $repository;
 
   /**
+   * Config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  private $configFactory;
+
+  /**
    * JsonApiBuildSubscriber constructor.
    *
    * @param \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceTypeRepository $repository
    *   Repository from jsonapi_extras is needed to apply configuration.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface|null $configFactory
+   *   Config factory.
    */
-  public function __construct(ConfigurableResourceTypeRepository $repository) {
+  public function __construct(ConfigurableResourceTypeRepository $repository, ConfigFactoryInterface $configFactory = NULL) {
     $this->repository = $repository;
+    if ($configFactory === NULL) {
+      @trigger_error('Calling ' . __METHOD__ . ' without the $configFactory argument is deprecated in jsonapi_extras:8.x-3.x and will be required in jsonapi_extras:8.x-4.x. See https://www.drupal.org/node/3242191', E_USER_DEPRECATED);
+      $configFactory = \Drupal::configFactory();
+    }
+    $this->configFactory = $configFactory;
   }
 
   /**
@@ -49,7 +64,8 @@ class JsonApiBuildSubscriber implements EventSubscriberInterface {
    */
   public function applyResourceConfig(ResourceTypeBuildEvent $event) {
     $resource_config = $this->getResourceConfig($event->getResourceTypeName());
-    if ($resource_config instanceof NullJsonapiResourceConfig) {
+    if ($resource_config instanceof NullJsonapiResourceConfig && $this->configFactory->get('jsonapi_extras.settings')->get('default_disabled')) {
+      $event->disableResourceType();
       return;
     }
 

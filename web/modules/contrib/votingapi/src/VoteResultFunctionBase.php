@@ -5,7 +5,7 @@ namespace Drupal\votingapi;
 use Drupal\Core\Plugin\PluginBase;
 
 /**
- *
+ * Base class for plugins which provide a function to compute the vote result.
  */
 abstract class VoteResultFunctionBase extends PluginBase implements VoteResultFunctionInterface {
 

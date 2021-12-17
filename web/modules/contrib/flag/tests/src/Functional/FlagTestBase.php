@@ -111,12 +111,13 @@ abstract class FlagTestBase extends BrowserTestBase {
    */
   protected function createFlagWithForm($entity_type = 'node', $edit = [], $link_type = 'reload') {
     // Submit the flag add page.
-    $this->drupalPostForm('admin/structure/flags/add', [
+    $this->drupalGet('admin/structure/flags/add');
+    $this->submitForm([
       'flag_entity_type' => $this->getFlagType($entity_type),
-    ], $this->t('Continue'));
+    ], 'Continue');
 
     // Set the link type.
-    $this->drupalPostForm(NULL, ['link_type' => $link_type], 'Create Flag');
+    $this->submitForm(['link_type' => $link_type], 'Create Flag');
 
     // Create an array of defaults.
     $default_edit = [
@@ -136,7 +137,7 @@ abstract class FlagTestBase extends BrowserTestBase {
     $final_edit = array_merge($default_edit, $edit);
 
     // Submit the flag details form.
-    $this->drupalPostForm(NULL, $final_edit, $this->t('Create Flag'));
+    $this->submitForm($final_edit, 'Create Flag');
 
     // Load the new flag we created.
     $flag = Flag::load($final_edit['id']);

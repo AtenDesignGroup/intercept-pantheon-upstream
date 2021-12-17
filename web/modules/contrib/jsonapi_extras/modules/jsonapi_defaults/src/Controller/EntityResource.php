@@ -5,6 +5,7 @@ namespace Drupal\jsonapi_defaults\Controller;
 use Drupal\Component\Serialization\Json;
 use Drupal\jsonapi\Controller\EntityResource as JsonApiEntityResourse;
 use Drupal\jsonapi\Query\OffsetPage;
+use Drupal\jsonapi\Query\Sort;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\Routing\Routes;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
@@ -76,10 +77,11 @@ class EntityResource extends JsonApiEntityResourse {
       $request->query->get('filter', [])
     );
 
-    $sorting = array_merge(
-      $default_sorting,
-      $request->query->get('sort', [])
-    );
+    $sort = [];
+    if ($request->query->has('sort')) {
+      $sort = Sort::createFromQueryParameter($request->query->get('sort'))->fields();
+    }
+    $sorting = array_merge($default_sorting, $sort);
 
     if (!empty($filters)) {
       $request->query->set('filter', $filters);

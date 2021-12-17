@@ -9,8 +9,14 @@ effects:
   89f2e0f8-bc2b-433f-b4d9-2fce322b519e:
     uuid: 89f2e0f8-bc2b-433f-b4d9-2fce322b519e
     id: focal_point_scale_and_crop
-    weight: 1
+    weight: 2
     data:
       width: 870
       height: 580
       crop_type: focal_point
+  833c7fdc-09e8-484e-ae6c-3c0a62677676:
+    uuid: 833c7fdc-09e8-484e-ae6c-3c0a62677676
+    id: image_convert
+    weight: 1
+    data:
+      extension: webp

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\flag\Functional;
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Url;
 use Drupal\flag\Entity\Flag;
 use Drupal\flag\Entity\Flagging;
@@ -83,11 +84,12 @@ class AnonymousFlagTest extends BrowserTestBase {
     $this->assertNotEmpty($flagging_id);
 
     $flagging = Flagging::load($flagging_id);
-    // Check that the session ID value in the flagging is the same as the user's
-    // cookie ID.
-    $session_id = $this->getSession()->getCookie($this->getSessionName());
+    // Check that the session of the user contains the generated flag session
+    // id and that matches the flagging.
+    $session_id = $this->getFlagSessionIdFromSession();
+
     $this->assertNotEmpty($session_id);
-    $this->assertEqual($flagging->get('session_id')->value, $session_id, "The flagging entity has the session ID set.");
+    $this->assertEquals($session_id, $flagging->get('session_id')->value, "The flagging entity has the session ID set.");
 
     // Try another anonymous user.
     $old_mink = $this->mink;
@@ -106,6 +108,30 @@ class AnonymousFlagTest extends BrowserTestBase {
 
     $flagging = Flagging::load($flagging_id);
     $this->assertEmpty($flagging, "The first user's flagging was deleted.");
+  }
+
+  /**
+   * Returns the flag session ID based on the current session cookie.
+   *
+   * @return string|null
+   *   The flag session ID.
+   */
+  public function getFlagSessionIdFromSession() {
+    $session_id = $this->getSession()->getCookie($this->getSessionName());
+    if (!$session_id) {
+      return NULL;
+    }
+
+    $session_data = \Drupal::database()
+      ->query('SELECT session FROM {sessions} WHERE sid = :sid', [':sid' => Crypt::hashBase64($session_id)])
+      ->fetchField();
+
+    // PHP uses a custom serialize function for session data, parse out the
+    // flag session id with a regular expression.
+    if (preg_match('/"flag\.session_id";s:\d+:"(.[^"]+)"/', $session_data, $match)) {
+      return $match[1];
+    }
+    return NULL;
   }
 
 }

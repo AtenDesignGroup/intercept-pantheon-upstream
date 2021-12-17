@@ -71,3 +71,7 @@ jsonapi_extras.settings:
       type: boolean
       label: 'Include count in collection responses'
       description: 'If activated, all collection responses will return a total record count for the provided query.'
+    default_disabled:
+      type: boolean
+      label: 'Disabled by default'
+      description: "If activated, all resource types that don't have a matching enabled resource config will be disabled."

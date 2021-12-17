@@ -125,7 +125,7 @@ class UserProfileForm extends ProfileForm {
       $entity_form['field_email_address']['widget'][0]['value']['#default_value'] = $patron->basicData()->EmailAddress ?? '';
       $entity_form['#element_validate'][] = [$this, 'validateInlineEntityForm'];
       $entity_form['#ief_element_submit'][] = [$this, 'saveInlineEntityForm'];
-      foreach (['field_first_name', 'field_last_name'] as $field) {
+      foreach (['field_first_name', 'field_middle_name', 'field_last_name'] as $field) {
         $entity_form[$field]['widget'][0]['#disabled'] = TRUE;
       }
       $this->populateAddress($patron, $entity_form['field_address']);
@@ -147,7 +147,10 @@ class UserProfileForm extends ProfileForm {
     if ($patron->getFirstName() != $profile->get('field_first_name')->getString()) {
       $form['field_first_name']['widget'][0]['value']['#default_value'] = $patron->getFirstName();
     }
-    if ($patron->getLastName() != $profile->get('field_first_name')->getString()) {
+    if ($patron->getMiddleName() != $profile->get('field_middle_name')->getString()) {
+      $form['field_middle_name']['widget'][0]['value']['#default_value'] = $patron->getMiddleName();
+    }
+    if ($patron->getLastName() != $profile->get('field_last_name')->getString()) {
       $form['field_last_name']['widget'][0]['value']['#default_value'] = $patron->getLastName();
     }
   }
@@ -168,6 +171,7 @@ class UserProfileForm extends ProfileForm {
       $address_field['#default_value']['country_code'] = 'US';
       $replacements = [
         'address_line1' => 'StreetOne',
+        'address_line2' => 'StreetTwo',
         'postal_code' => 'PostalCode',
         'locality' => 'City',
         'administrative_area' => 'State',

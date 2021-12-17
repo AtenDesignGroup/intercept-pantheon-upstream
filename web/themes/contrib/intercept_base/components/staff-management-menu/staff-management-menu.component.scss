@@ -35,6 +35,8 @@ $accent-color: #21ccfc;
   }
 }
 
+$left-menu-width: 240px;
+
 .slide-menu-btn {
   cursor: pointer;
   color: #fff;
@@ -43,7 +45,7 @@ $accent-color: #21ccfc;
   height: 60px;
   width: 30px;
   top: 28vh;
-  left: 208px;
+  left: calc(#{$left-menu-width} - 2px); // #{ $var } is called "interpolation" and is necessary when using sass vars inside calc()
   @include transition(left 0.4s);
   background: $toggle-background;
   border: 2px solid white;
@@ -187,10 +189,11 @@ nav .caret {
 body.toolbar-tray-open .left-menu {
   padding-top: 78px;
 }
+
 .left-menu {
   @include transition(all 0.4s);
   background: $toggle-background;
-  width: 210px;
+  width: $left-menu-width;
   position: fixed;
   top: 0;
   left: 0;

@@ -11,7 +11,6 @@ id: following
 label: Following
 bundles: {  }
 entity_type: user
-status: true
 global: false
 weight: 0
 flag_short: 'Follow this user'

@@ -24,7 +24,8 @@ body.adminimal-admin-toolbar {
   height: 60px;
   width: 30px;
   top: 28vh;
-  left: 208px;
+  left: -webkit-calc(240px - 2px);
+  left: calc(240px - 2px);
   -webkit-transition: left 0.4s;
   transition: left 0.4s;
   background: #222;
@@ -151,7 +152,7 @@ body.toolbar-tray-open .left-menu {
   -webkit-transition: all 0.4s;
   transition: all 0.4s;
   background: #222;
-  width: 210px;
+  width: 240px;
   position: fixed;
   top: 0;
   left: 0;

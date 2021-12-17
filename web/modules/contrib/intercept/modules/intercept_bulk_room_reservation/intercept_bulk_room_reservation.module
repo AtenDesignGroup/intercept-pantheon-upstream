@@ -216,7 +216,7 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
       // Load this room_reservation and see if it conflicts. Define conflict as
       // having any overlap; see https://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap#answer-325964.
       $room_reservation_entity = $storage->load($room_reservation->target_id);
-      $timezone = new \DateTimeZone('America/New_York');
+
       $room_res = [
         'start' => DateTime::createFromFormat('Y-m-d\TH:i:s', $room_reservation_entity->field_dates->value)->getTimestamp(),
         'end' => DateTime::createFromFormat('Y-m-d\TH:i:s', $room_reservation_entity->field_dates->end_value)->getTimestamp(),

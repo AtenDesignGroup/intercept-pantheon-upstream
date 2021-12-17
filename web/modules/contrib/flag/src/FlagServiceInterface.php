@@ -71,6 +71,14 @@ interface FlagServiceInterface {
   public function getFlagging(FlagInterface $flag, EntityInterface $entity, AccountInterface $account = NULL, $session_id = NULL);
 
   /**
+   * Returns the current anonymous flag session ID.
+   *
+   * @return string|null
+   *   The session ID or NULL not an anonymous user.
+   */
+  public function getAnonymousSessionId();
+
+  /**
    * Get flaggings for the given entity, flag, and optionally, user.
    *
    * This method works very much like FlagServiceInterface::getFlagging() only

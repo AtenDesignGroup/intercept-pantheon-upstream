@@ -63,7 +63,8 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
    * Test the flag field entry plugin UI.
    */
   public function doFlagUIfieldPlugin() {
-    $this->drupalPostForm('admin/structure/flags/add', [], t('Continue'));
+    $this->drupalGet('admin/structure/flags/add');
+    $this->submitForm([], 'Continue');
 
     // Update the flag.
     $edit = [
@@ -136,7 +137,7 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
     $edit = [
       'field_' . $this->flagFieldId . '[0][value]' => $this->flagFieldValue,
     ];
-    $this->drupalPostForm(NULL, $edit, $this->createButtonText);
+    $this->submitForm($edit, $this->createButtonText);
 
     // Check that the node is flagged.
     $this->assertLink($this->flag->getShortText('unflag'));
@@ -171,7 +172,7 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
     $edit = [
       'field_' . $this->flagFieldId . '[0][value]' => $this->flagFieldValue,
     ];
-    $this->drupalPostForm(NULL, $edit, $this->updateButtonText);
+    $this->submitForm($edit, $this->updateButtonText);
 
     // Get the details form.
     $this->drupalGet('flag/details/edit/' . $flag_id . '/' . $this->nodeId);
@@ -218,7 +219,7 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
     $this->assertText($this->unflagConfirmMessage);
 
     // Submit the confirm form.
-    $this->drupalPostForm(NULL, [], $this->deleteButtonText);
+    $this->submitForm([], $this->deleteButtonText);
     $this->assertResponse(200);
 
     // Check that the node is no longer flagged.

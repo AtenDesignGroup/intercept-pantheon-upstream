@@ -1,18 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - responsive_image
 name: max_650x650
 label: 'Max 650x650'
 effects:
   949c201a-77f5-48f6-ba00-be91eb1aad47:
+    uuid: 949c201a-77f5-48f6-ba00-be91eb1aad47
     id: image_scale
+    weight: 2
     data:
       width: 650
       height: 650
       upscale: false
+  53713f13-d45a-4dd1-9625-022868b11f3f:
+    uuid: 53713f13-d45a-4dd1-9625-022868b11f3f
+    id: image_convert
     weight: 1
-    uuid: 949c201a-77f5-48f6-ba00-be91eb1aad47
-langcode: en
-dependencies:
-  module:
-    - responsive_image
-  enforced:
-    module:
-      - responsive_image
+    data:
+      extension: webp

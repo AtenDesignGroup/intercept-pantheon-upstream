@@ -2,10 +2,12 @@
 
 namespace Drupal\jsonapi_extras\Form;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\ProxyClass\Routing\RouteBuilder;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,16 +21,26 @@ class JsonapiExtrasSettingsForm extends ConfigFormBase {
   protected $routerBuilder;
 
   /**
+   * Resource type repository.
+   *
+   * @var \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface
+   */
+  protected $jsonApiResourceRepository;
+
+  /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder $router_builder
    *   The router builder to rebuild menus after saving config entity.
+   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface $jsonApiResourceRepository
+   *   Resource type repository.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, RouteBuilder $router_builder) {
+  public function __construct(ConfigFactoryInterface $config_factory, RouteBuilder $router_builder, ResourceTypeRepositoryInterface $jsonApiResourceRepository) {
     parent::__construct($config_factory);
     $this->routerBuilder = $router_builder;
+    $this->jsonApiResourceRepository = $jsonApiResourceRepository;
   }
 
   /**
@@ -37,7 +49,8 @@ class JsonapiExtrasSettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('router.builder')
+      $container->get('router.builder'),
+      $container->get('jsonapi.resource_type.repository')
     );
   }
 
@@ -77,6 +90,13 @@ class JsonapiExtrasSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('include_count'),
     ];
 
+    $form['default_disabled'] = [
+      '#title' => $this->t('Disabled by default'),
+      '#type' => 'checkbox',
+      '#description' => $this->t("If activated, all resource types that don't have a matching enabled resource config will be disabled."),
+      '#default_value' => $config->get('default_disabled'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -92,10 +112,14 @@ class JsonapiExtrasSettingsForm extends ConfigFormBase {
 
     $this->config('jsonapi_extras.settings')
       ->set('include_count', $form_state->getValue('include_count'))
+      ->set('default_disabled', $form_state->getValue('default_disabled'))
       ->save();
 
     // Rebuild the router.
     $this->routerBuilder->setRebuildNeeded();
+    // And the resource-type repository.
+    $this->jsonApiResourceRepository->reset();
+    Cache::invalidateTags(['jsonapi_resource_types']);
 
     parent::submitForm($form, $form_state);
   }

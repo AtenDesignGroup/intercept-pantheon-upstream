@@ -56,3 +56,12 @@ function flag_post_update_flag_actions() {
     }
   }
 }
+
+/**
+ * Implements hook_post_update_NAME().
+ *
+ * Rebuild container for updated twig service.
+ */
+function flag_post_update_flag_count_twig() {
+  // No-operation.
+}

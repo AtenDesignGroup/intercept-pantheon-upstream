@@ -1,0 +1,12 @@
+langcode: en
+status: true
+dependencies: {  }
+id: intercept_room_manager
+label: 'Intercept Room Manager'
+weight: 4
+is_admin: null
+permissions:
+  - 'administer bulk room reservation'
+  - 'create bulk room reservation'
+  - 'edit bulk room reservation'
+  - 'view bulk room reservation'

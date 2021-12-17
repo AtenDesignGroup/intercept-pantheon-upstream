@@ -6,6 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceTypeRepository;
 use Drupal\jsonapi_extras\ResourceType\NullJsonapiResourceConfig;
@@ -31,6 +32,13 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
   protected $config;
 
   /**
+   * Entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs new JsonapiResourceConfigListBuilder.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -41,11 +49,18 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
    *   The JSON:API configurable resource type repository.
    * @param \Drupal\Core\Config\ImmutableConfig $config
    *   The config instance.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entityTypeManager
+   *   Entity type manager.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, ConfigurableResourceTypeRepository $resource_type_repository, ImmutableConfig $config) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, ConfigurableResourceTypeRepository $resource_type_repository, ImmutableConfig $config, EntityTypeManagerInterface $entityTypeManager = NULL) {
     parent::__construct($entity_type, $storage);
     $this->resourceTypeRepository = $resource_type_repository;
     $this->config = $config;
+    if ($entityTypeManager === NULL) {
+      $entityTypeManager = \Drupal::entityTypeManager();
+      @trigger_error('Calling ' . __METHOD__ . ' without the $entityTypeManager argument is deprecated in jsonapi_extras:8.x-3.x and will be required in jsonapi_extras:8.x-4.x. See https://www.drupal.org/node/3242791', E_USER_DEPRECATED);
+    }
+    $this->entityTypeManager = $entityTypeManager;
   }
 
   /**
@@ -56,7 +71,8 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
       $entity_type,
       $container->get('entity_type.manager')->getStorage($entity_type->id()),
       $container->get('jsonapi.resource_type.repository'),
-      $container->get('config.factory')->get('jsonapi_extras.settings')
+      $container->get('config.factory')->get('jsonapi_extras.settings'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -137,18 +153,36 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
     $prefix = $this->config->get('path_prefix');
     /** @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType[] $resource_types */
     $resource_types = $this->resourceTypeRepository->all();
+    $default_disabled = $this->config->get('default_disabled');
     foreach ($resource_types as $resource_type) {
       /** @var \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config */
       $resource_config = $resource_type->getJsonapiResourceConfig();
-
-      if ($resource_type->isInternal() && !$resource_config->get('disabled')) {
-        continue;
-      }
 
       /** @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType $resource_type */
       $entity_type_id = $resource_type->getEntityTypeId();
       $bundle = $resource_type->getBundle();
 
+      $default_group = 'enabled';
+      if ($resource_type->isInternal() && !$resource_config->get('disabled')) {
+        // Either this item is marked internal by the entity-type OR the default
+        // disabled setting is active.
+        if (!$default_disabled) {
+          // If default disabled is inactive, this entity-type is marked as
+          // internal.
+          continue;
+        }
+
+        // If default disabled is active, we need to make sure that the entity
+        // type isn't marked internal before we present the option to edit and
+        // therefore enable the resource type.
+        $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
+        if ($entity_type_definition->isInternal()) {
+          continue;
+        }
+        $default_group = 'disabled';
+      }
+
+      $group = $resource_config->get('disabled') ? 'disabled' : $default_group;
       $row = [
         'name' => ['#plain_text' => $resource_type->getTypeName()],
         'path' => [
@@ -170,7 +204,7 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
           '#type' => 'operations',
           '#links' => [
             'overwrite' => [
-              'title' => t('Overwrite'),
+              'title' => $group === 'disabled' ? $this->t('Enable') : $this->t('Overwrite'),
               'weight' => -10,
               'url' => Url::fromRoute('entity.jsonapi_resource_config.add_form', [
                 'entity_type_id' => $entity_type_id,
@@ -187,9 +221,9 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
         $row['operations']['#links'] = $this->getDefaultOperations($resource_config);
         $row['operations']['#links']['delete']['title'] = $this->t('Revert');
       }
-
-      $list[$resource_config->get('disabled') ? 'disabled' : 'enabled']['table'][] = $row;
+      $list[$group]['table'][] = $row;
     }
+    $list['#cache']['tags'][] = 'jsonapi_resource_types';
 
     return $list;
   }

@@ -52,7 +52,7 @@ intercept_room_reservation.reserve_room:
   path: '/reserve-room'
   defaults:
     _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::reserve'
-    _title: 'reserve'
+    _title: 'Reserve a Room'
   requirements:
     _access: 'TRUE'
 

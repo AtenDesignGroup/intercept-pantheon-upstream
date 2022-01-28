@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'zaporylie\\ComposerDrupalOptimizations\\' => array($vendorDir . '/zaporylie/composer-drupal-optimizations/src'),
+    'lordelph\\SIP2\\' => array($vendorDir . '/lordelph/php-sip2/src'),
     'cweagans\\Composer\\' => array($vendorDir . '/cweagans/composer-patches/src'),
     'Webmozart\\PathUtil\\' => array($vendorDir . '/webmozart/path-util/src'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
@@ -43,6 +44,7 @@ return array(
     'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
     'Symfony\\Cmf\\Component\\Routing\\' => array($vendorDir . '/symfony-cmf/routing/src'),
     'Symfony\\Bridge\\PsrHttpMessage\\' => array($vendorDir . '/symfony/psr-http-message-bridge'),
+    'Socket\\Raw\\' => array($vendorDir . '/clue/socket-raw/src'),
     'Shaper\\Tests\\' => array($vendorDir . '/e0ipso/shaper/tests/src'),
     'Shaper\\' => array($vendorDir . '/e0ipso/shaper/src'),
     'SelfUpdate\\' => array($vendorDir . '/consolidation/self-update/src'),

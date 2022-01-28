@@ -64,11 +64,16 @@ class SettingsForm extends ConfigFormBase {
 
     $form['intercept_ils_plugin'] = [
       '#type' => 'select',
-      '#title' => $this->t('Which ILS will you be using with Intercept?'),
-      '#description' => $this->t('Note: The plugin/module must be installed and enabled before the ILS integration will work. If you don\'t see any options here, you will need to install an ILS integration plugin/module like the <a href="https://drupal.org/project/polaris">Polaris module</a> and then return to this settings screen to complete the connection to the ILS.'),
+      '#title' => $this->t('Which ILS connection will you be using with Intercept?'),
+      '#description' => $this->t('Note: The plugin/module must be installed and enabled before the ILS integration will work. If you don\'t see any options here, you will need to install an ILS integration plugin/module like the <a href="https://drupal.org/project/polaris">Polaris module</a> or the Intercept ILS SIP2 module (included with Intercept) and then return to this settings screen to complete the connection to the ILS.'),
       '#default_value' => $config->get('intercept_ils_plugin', ''),
       '#required' => TRUE,
       '#options' => $ils_plugins,
+    ];
+    
+    $form['intercept_ils_reminder'] = [
+      '#type' => 'markup',
+      '#markup' => '<p>' . $this->t('Don\'t forget to create the necessary keys for your ILS at') . ' <a href="/admin/config/system/keys">/admin/config/system/keys</a>. ' . $this->t('Please see the README.md file included with the Intercept module for more information.') . '</p>',
     ];
 
     return parent::buildForm($form, $form_state);

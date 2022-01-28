@@ -20,7 +20,6 @@ Drupal.behaviors.reservationFormHelper = {
     return h + ':' + m;
   },
   attach: function (context, settings) {
-    var $root = this;
     $('.reservation-prepopulate-dates', context).once().change(function() {
       var fields = [{
         'source': '#edit-field-date-time-0-value-date',

@@ -2,6 +2,7 @@
 
 namespace Drupal\intercept_room_reservation\Form;
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -81,6 +82,14 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $node = $form_state->getFormObject()->getEntity();
     $reservation = $this->reservationManager->getEventReservation($node);
 
+    // Update event date fields to use 15 minute increments.
+    $increment = 15;
+    $form['field_date_time']['widget'][0]['value']['#date_increment'] = $increment * 60;
+    $form['field_date_time']['widget'][0]['end_value']['#date_increment'] = $increment * 60;
+    // Round to the nearest 15 minutes and 0 seconds for default values.
+    static::incrementRound($form['field_date_time']['widget'][0]['value']['#default_value'], $increment);
+    static::incrementRound($form['field_date_time']['widget'][0]['end_value']['#default_value'], $increment);
+
     $form['reservation'] = [
       '#title' => $this->t('Reservation'),
       '#type' => 'fieldset',
@@ -110,6 +119,9 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
         ->convertTimezone($reservation->field_dates->start_date, 'default');
       $end_date_object = $this->dateUtility
         ->convertTimezone($reservation->field_dates->end_date, 'default');
+      // Round to the nearest 15 minutes and 0 seconds for default values.
+      static::incrementRound($start_date_object, 15);
+      static::incrementRound($end_date_object, 15);
     }
 
     $params = [
@@ -139,6 +151,7 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $form['reservation']['dates']['start'] = [
       '#title' => $this->t('Reservation start time'),
       '#type' => 'datetime',
+      '#date_increment' => 900, // Use 15 minute increments.
       '#default_value' => $start_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
@@ -156,6 +169,7 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $form['reservation']['dates']['end'] = [
       '#title' => $this->t('Reservation end time'),
       '#type' => 'datetime',
+      '#date_increment' => 900, // Use 15 minute increments.
       '#default_value' => $end_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
@@ -379,6 +393,37 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
       'end_value' => $this->dateUtility->convertTimezone($dates['end'])->format($this->reservationManager::FORMAT),
     ]);
     return $this->reservationManager->updateEventReservation($reservation, $node_event);
+  }
+
+  /**
+   * Rounds minutes to nearest requested value.
+   *
+   * @param $date
+   * @param $increment
+   *
+   * @return
+   */
+  protected static function incrementRound(&$date, $increment) {
+    // Round minutes, if necessary.
+    if ($date instanceof DrupalDateTime && $increment > 1) {
+      $day = intval($date->format('j'));
+      $hour = intval($date->format('H'));
+      $second = 0;
+      $minute = intval($date->format('i'));
+      $minute = intval(round($minute / $increment) * $increment);
+      if ($minute == 60) {
+        $hour += 1;
+        $minute = 0;
+      }
+      $date->setTime($hour, $minute, $second);
+      if ($hour == 24) {
+        $day += 1;
+        $year = $date->format('Y');
+        $month = $date->format('n');
+        $date->setDate($year, $month, $day);
+      }
+    }
+    return $date;
   }
 
 }

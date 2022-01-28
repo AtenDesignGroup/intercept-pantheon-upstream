@@ -7,6 +7,10 @@
     {
       "type": "composer",
       "url": "https://packages.drupal.org/8"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/lordelph/php-sip2.git"
     }
   ],
   "require": {
@@ -28,6 +32,7 @@
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept_profile": "1.x-dev",
     "drupal/jsonapi_extras": "^3.19",
+    "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",
     "drupal/quick_node_clone": "^1.14",
     "drupal/smsframework": "^2",
@@ -36,6 +41,7 @@
     "drupal/view_unpublished": "^1.0",
     "drupal/view_user_email": "^1.0.1",
     "drush/drush": "^10",
+    "lordelph/php-sip2": "^2.0",
     "pantheon-systems/drupal-integrations": "^9",
     "pantheon-systems/quicksilver-pushback": "^2",
     "zaporylie/composer-drupal-optimizations": "^1.0"
@@ -125,6 +131,9 @@
       },
       "drupal/smsframework": {
         "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"
+      },
+      "lordelph/php-sip2": {
+        "Adds controller support for patrons and organizations": "https://www.drupal.org/files/issues/2021-12-10/3253888-php-sip2-module-integration.patch"
       }
     }
   }

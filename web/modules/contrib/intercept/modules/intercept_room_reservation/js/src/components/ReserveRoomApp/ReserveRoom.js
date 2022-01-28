@@ -361,8 +361,7 @@ class ReserveRoom extends React.Component {
 
     return (
       <div className="l--offset">
-        <header className="l__header l--section">
-          <h1 className="page-title">Reserve a Room</h1>
+        <div className="l__header l--section">
           <ReserveRoomStepper
             {...this.props}
             step={currentStep}
@@ -373,7 +372,7 @@ class ReserveRoom extends React.Component {
             values={this.state.formValues}
           />
           <RoomLimitWarning userStatus={userStatus} />
-        </header>
+        </div>
         <div className="l__main">
           <div className="l__primary">{steps[currentStep]}</div>
         </div>

@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '839b4fc8b6c11348044a9937a76b6d1249e3dede',
+        'reference' => '437a0fc12e96e149144b598104668991425a54dd',
         'name' => 'atendesigngroup/intercept-pantheon-upstream',
         'dev' => true,
     ),
@@ -25,7 +25,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '839b4fc8b6c11348044a9937a76b6d1249e3dede',
+            'reference' => '437a0fc12e96e149144b598104668991425a54dd',
             'dev_requirement' => false,
         ),
         'chi-teck/drupal-code-generator' => array(
@@ -35,6 +35,15 @@
             'install_path' => __DIR__ . '/../chi-teck/drupal-code-generator',
             'aliases' => array(),
             'reference' => '5f814e980b6f9cf1ca8c74cc9385c3d81090d388',
+            'dev_requirement' => false,
+        ),
+        'clue/socket-raw' => array(
+            'pretty_version' => 'v1.5.0',
+            'version' => '1.5.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../clue/socket-raw',
+            'aliases' => array(),
+            'reference' => '089ffa05fa75bdc4e919aac44bbc435b3ef640ef',
             'dev_requirement' => false,
         ),
         'commerceguys/addressing' => array(
@@ -473,8 +482,8 @@
             ),
         ),
         'drupal/core-composer-scaffold' => array(
-            'pretty_version' => '9.3.0',
-            'version' => '9.3.0.0',
+            'pretty_version' => '9.3.3',
+            'version' => '9.3.3.0',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../drupal/core-composer-scaffold',
             'aliases' => array(),
@@ -885,7 +894,7 @@
             'aliases' => array(
                 0 => '1.x-dev',
             ),
-            'reference' => 'df2c6962c340e59e5c5f357c6ebd5d4494edda5e',
+            'reference' => '3bcbbe688bb5e825a78ee1fffaab506d96e1926f',
             'dev_requirement' => false,
         ),
         'drupal/intercept_base' => array(
@@ -896,7 +905,7 @@
             'aliases' => array(
                 0 => '1.x-dev',
             ),
-            'reference' => '1ca6f2ad39b0852d02a74ff463cc4874d3dbcc4a',
+            'reference' => '38b87a67a4caa9585fe83360c1e1d1a3d0160599',
             'dev_requirement' => false,
         ),
         'drupal/intercept_profile' => array(
@@ -920,12 +929,12 @@
             'dev_requirement' => false,
         ),
         'drupal/jquery_ui_datepicker' => array(
-            'pretty_version' => '1.1.0',
-            'version' => '1.1.0.0',
+            'pretty_version' => '1.2.0',
+            'version' => '1.2.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/jquery_ui_datepicker',
             'aliases' => array(),
-            'reference' => '8.x-1.1',
+            'reference' => '8.x-1.2',
             'dev_requirement' => false,
         ),
         'drupal/jquery_ui_slider' => array(
@@ -977,6 +986,15 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/jsonapi_views',
             'aliases' => array(),
             'reference' => '8.x-1.0',
+            'dev_requirement' => false,
+        ),
+        'drupal/key' => array(
+            'pretty_version' => '1.15.0',
+            'version' => '1.15.0.0',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/key',
+            'aliases' => array(),
+            'reference' => '8.x-1.15',
             'dev_requirement' => false,
         ),
         'drupal/language' => array(
@@ -1573,12 +1591,21 @@
             'dev_requirement' => false,
         ),
         'league/csv' => array(
-            'pretty_version' => '9.7.4',
-            'version' => '9.7.4.0',
+            'pretty_version' => '9.8.0',
+            'version' => '9.8.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../league/csv',
             'aliases' => array(),
-            'reference' => '002f55f649e7511710dc7154ff44c7be32c8195c',
+            'reference' => '9d2e0265c5d90f5dd601bc65ff717e05cec19b47',
+            'dev_requirement' => false,
+        ),
+        'lordelph/php-sip2' => array(
+            'pretty_version' => '2.1.0',
+            'version' => '2.1.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../lordelph/php-sip2',
+            'aliases' => array(),
+            'reference' => '1bdbbd78ace4de7beeb8c26acdfdaba2a6be8809',
             'dev_requirement' => false,
         ),
         'masterminds/html5' => array(
@@ -1877,12 +1904,12 @@
             'dev_requirement' => false,
         ),
         'symfony/finder' => array(
-            'pretty_version' => 'v5.4.0',
-            'version' => '5.4.0.0',
+            'pretty_version' => 'v5.4.2',
+            'version' => '5.4.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/finder',
             'aliases' => array(),
-            'reference' => 'd2f29dac98e96a98be467627bd49c2efb1bc2590',
+            'reference' => 'e77046c252be48c48a40816187ed527703c8f76c',
             'dev_requirement' => false,
         ),
         'symfony/http-client-contracts' => array(
@@ -1967,8 +1994,8 @@
             'dev_requirement' => false,
         ),
         'symfony/polyfill-php72' => array(
-            'pretty_version' => 'v1.23.0',
-            'version' => '1.23.0.0',
+            'pretty_version' => 'v1.24.0',
+            'version' => '1.24.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-php72',
             'aliases' => array(),
@@ -1976,12 +2003,12 @@
             'dev_requirement' => false,
         ),
         'symfony/polyfill-php73' => array(
-            'pretty_version' => 'v1.23.0',
-            'version' => '1.23.0.0',
+            'pretty_version' => 'v1.24.0',
+            'version' => '1.24.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-php73',
             'aliases' => array(),
-            'reference' => 'fba8933c384d6476ab14fb7b8526e5287ca7e010',
+            'reference' => 'cc5db0e22b3cb4111010e48785a97f670b350ca5',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-php80' => array(

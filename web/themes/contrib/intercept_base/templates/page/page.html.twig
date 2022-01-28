@@ -5,44 +5,32 @@
 <div class="l--page-wrapper">
   <div class="l--page">
 
-    {%
-      include '@intercept-base-components/header/header.twig' with {
-        header: {
-          menu: page.primary_menu,
-          utilities: page.secondary_menu
+    {% block site_header %}
+      {% include '@intercept-base-components/header/header.twig' with {
+          header: {
+            menu: page.primary_menu,
+            utilities: page.secondary_menu
+          }
         }
-      }
-    %}
+      %}
+    {% endblock %}
 
-    {#%
-      include '@intercept-base-components/region/region--bare.twig' with {
-        content: page.primary_menu
-      } only
-    %}
+    {% block page_header %}
+      {% include '@intercept-base-components/region/region--bare.twig' with {
+          content: page.breadcrumb
+        } only
+      %}
 
-    {%
-      include '@intercept-base-components/region/region--bare.twig' with {
-        content: page.secondary_menu
-      } only
-    %#}
+      {% include '@intercept-base-components/region/region--offset.twig' with {
+          content: page.highlighted
+        } only
+      %}
 
-    {%
-      include '@intercept-base-components/region/region--bare.twig' with {
-        content: page.breadcrumb
-      } only
-    %}
-
-    {%
-      include '@intercept-base-components/region/region--offset.twig' with {
-        content: page.highlighted
-      } only
-    %}
-
-    {%
-      include '@intercept-base-components/region/region--bare.twig' with {
-        content: page.help
-      } only
-    %}
+      {% include '@intercept-base-components/region/region--bare.twig' with {
+          content: page.help
+        } only
+      %}
+    {% endblock %}
 
       {% block main %}
       <main role="main" {{ main_attributes.addClass('l--section') }}>

@@ -1,0 +1,25 @@
+{% extends 'page.html.twig' %}
+
+{% block page_header %}
+  <header class="l--offset">
+  {% include '@intercept-base-components/page-title/page-title.twig' with {
+      text: page['#title']
+    } only
+  %}
+  </header>
+
+  {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.breadcrumb
+    } only
+  %}
+
+  {% include '@intercept-base-components/region/region--offset.twig' with {
+      content: page.highlighted
+    } only
+  %}
+
+  {% include '@intercept-base-components/region/region--bare.twig' with {
+      content: page.help
+    } only
+  %}
+{% endblock %}

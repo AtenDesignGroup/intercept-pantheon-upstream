@@ -12,12 +12,16 @@
     "issues": "https://www.drupal.org/project/issues/intercept",
     "source": "http://cgit.drupalcode.org/intercept"
   },
-  "repositories": {
-    "asset-packagist": {
+  "repositories": [
+    {
       "type": "composer",
-      "url": "https://asset-packagist.org"
+      "url": "https://packages.drupal.org/8"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/lordelph/php-sip2.git"
     }
-  },
+  ],
   "require": {
     "drupal/addtocalendar": "^3.1",
     "drupal/address": "^1.3",
@@ -42,6 +46,14 @@
     "drupal/profile": "^1.0",
     "drupal/tally": "1.x-dev",
     "drupal/views_exposed_filter_blocks": "^1.1",
-    "drupal/votingapi": "^3.0@beta"
+    "drupal/votingapi": "^3.0@beta",
+    "lordelph/php-sip2": "^2.0"
+  },
+  "extra": {
+    "patches": {
+      "lordelph/php-sip2": {
+        "Adds controller support for patrons and organizations": "https://www.drupal.org/files/issues/2021-12-10/3253888-php-sip2-module-integration.patch"
+      }
+    }
   }
 }

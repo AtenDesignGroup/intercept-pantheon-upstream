@@ -819,7 +819,7 @@ class ReservationManager implements ReservationManagerInterface {
     }
     foreach (['start', 'end'] as $type) {
       // Get location start/end hours for location.
-      // Convert to date objects us ing the start date param as a base,
+      // Convert to date objects using the start date param as a base,
       // but default timezone.
       // Convert timezone to UTC.
       // Return dates.

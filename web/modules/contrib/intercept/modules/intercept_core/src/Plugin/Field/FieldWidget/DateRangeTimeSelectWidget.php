@@ -2,6 +2,7 @@
 
 namespace Drupal\intercept_core\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -105,8 +106,15 @@ class DateRangeTimeSelectWidget extends DateRangeWidgetBase implements Container
       '#date_time_callbacks' => [],
     ];
 
-    $element['value']['#type'] = 'datetime_select';
-    $element['end_value']['#type'] = 'datetime_select';
+    $element['value']['#type'] = 'datetime';
+    $element['end_value']['#type'] = 'datetime';
+    // Use 15 minute increments.
+    $increment = 15;
+    $element['value']['#date_increment'] = $increment * 60;
+    $element['end_value']['#date_increment'] = $increment * 60;
+    // Round to the nearest 15 minutes and 0 seconds for default values.
+    static::incrementRound($element['value']['#default_value'], $increment);
+    static::incrementRound($element['end_value']['#default_value'], $increment);
 
     return $element;
   }
@@ -136,6 +144,37 @@ class DateRangeTimeSelectWidget extends DateRangeWidgetBase implements Container
     $summary[] = $this->t('Time type: @time_type', ['@time_type' => $this->getSetting('time_type')]);
 
     return $summary;
+  }
+
+  /**
+   * Rounds minutes to nearest requested value.
+   *
+   * @param $date
+   * @param $increment
+   *
+   * @return
+   */
+  protected static function incrementRound(&$date, $increment) {
+    // Round minutes, if necessary.
+    if ($date instanceof DrupalDateTime && $increment > 1) {
+      $day = intval($date->format('j'));
+      $hour = intval($date->format('H'));
+      $second = 0;
+      $minute = intval($date->format('i'));
+      $minute = intval(round($minute / $increment) * $increment);
+      if ($minute == 60) {
+        $hour += 1;
+        $minute = 0;
+      }
+      $date->setTime($hour, $minute, $second);
+      if ($hour == 24) {
+        $day += 1;
+        $year = $date->format('Y');
+        $month = $date->format('n');
+        $date->setDate($year, $month, $day);
+      }
+    }
+    return $date;
   }
 
 }

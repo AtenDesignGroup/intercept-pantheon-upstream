@@ -11,13 +11,28 @@
 Drupal.behaviors.eventFormHelper = {
   attach: function (context, settings) {
 
-    var $root = this;
     $('#edit-field-date-time-0-value-date', context).once().change(function() {
       var endDate = $('#edit-field-date-time-0-end-value-date');
       if ($(this).val() > endDate.val()) {
         endDate.val($(this).val());
         $('[name="field_date_time[0][end_value][date]"]').val($(this).val());
       }
+    });
+
+    // Ensure 15 minute intervals on time fields.
+    var wto;
+    var fields = [
+      '#edit-field-date-time-0-value-time',
+      '#edit-field-date-time-0-end-value-time',
+    ];
+    $.each(fields, function(index, value) {
+      $(value, context).once().change(function() {
+        clearTimeout(wto);
+        wto = setTimeout(function() { // Check after 1 second of idleness.
+          var startTime = $(value);
+          roundMinutes(startTime);
+        }, 1000);
+      });
     });
 
     // Make dependent/conditional field (field_presenter) appear/disappear based
@@ -80,4 +95,15 @@ Drupal.behaviors.eventFormHelper = {
   },
 };
 
+  /**
+   * Rounds minutes to 15 minute intervals in a given time.
+   */
+  function roundMinutes(startTime) {
+    var startTimeVal = startTime.val();
+    let [startHours, startMinutes] = startTimeVal.split(':');
+    var roundedMinutes = (Math.round(startMinutes/15) * 15) % 60;
+    if (roundedMinutes == 0 || roundedMinutes == 60) roundedMinutes = '00';
+    // if (minutes == 60) { minutes = "00"; ++hours % 24; }
+    startTime.val(startHours + ':' + roundedMinutes);
+  }
 })(jQuery, Drupal);

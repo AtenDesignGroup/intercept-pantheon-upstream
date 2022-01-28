@@ -1,0 +1,7 @@
+services:
+  intercept_ils_sip2.client:
+    class: lordelph\SIP2\SIP2Client
+  intercept_ils_sip2.patron.event_subscriber:
+    class: Drupal\intercept_ils_sip2\EventSubscriber\PatronEventSubscriber
+    tags:
+      - { name: event_subscriber }

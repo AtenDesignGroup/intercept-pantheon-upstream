@@ -1,0 +1,9 @@
+name: 'Intercept ILS SIP2'
+type: module
+description: 'Intercept ILS SIP2 plugin for ILS authentication'
+core_version_requirement: ^8.9 || ^9
+dependencies:
+  - intercept:intercept_ils
+  - key:key
+  - externalauth:externalauth
+package: 'Intercept'

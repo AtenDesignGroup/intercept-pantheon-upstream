@@ -27,7 +27,7 @@
     "in-viewport": "3.6.0",
     "intercept-client": "^1.2.2",
     "jss": "^10.0.4",
-    "lodash": "4.17.19",
+    "lodash": "4.17.21",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.17",
     "prop-types": "^15.7.2",

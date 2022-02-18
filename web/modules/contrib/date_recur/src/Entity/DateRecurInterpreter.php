@@ -49,37 +49,37 @@ class DateRecurInterpreter extends ConfigEntityBase implements DateRecurInterpre
   /**
    * The machine name.
    *
-   * @var string
+   * @var string|null
    */
-  protected $id;
+  protected ?string $id = NULL;
 
   /**
    * The custom label.
    *
-   * @var string
+   * @var string|null
    */
-  protected $label;
+  protected ?string $label = NULL;
 
   /**
    * The plugin ID.
    *
    * @var string
    */
-  protected $plugin;
+  protected string $plugin;
 
   /**
    * Plugin settings.
    *
    * @var array
    */
-  protected $settings = [];
+  protected array $settings = [];
 
   /**
    * The plugin collection.
    *
    * @var \Drupal\date_recur\Plugin\DateRecurInterpreterPluginCollection|null
    */
-  protected $pluginCollection;
+  protected ?DateRecurInterpreterPluginCollection $pluginCollection;
 
   /**
    * Get the plugin collection.

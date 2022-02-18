@@ -21,20 +21,20 @@ class DateRecurRulePartConstraint extends Constraint {
    *
    * @var string
    */
-  public $disallowedPart = '%part is not a permitted part.';
+  public string $disallowedPart = '%part is not a permitted part.';
 
   /**
    * Violation message when a frequency is not permitted.
    *
    * @var string
    */
-  public $disallowedFrequency = '%frequency is not a permitted frequency.';
+  public string $disallowedFrequency = '%frequency is not a permitted frequency.';
 
   /**
    * Violation message when a part is incompatible with a frequency.
    *
    * @var string
    */
-  public $incompatiblePart = '%part is incompatible with %frequency.';
+  public string $incompatiblePart = '%part is incompatible with %frequency.';
 
 }

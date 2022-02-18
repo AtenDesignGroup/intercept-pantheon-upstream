@@ -21,6 +21,6 @@ class DateRecurRruleConstraint extends Constraint {
    *
    * @var string
    */
-  public $invalidRrule = 'Invalid RRULE.';
+  public string $invalidRrule = 'Invalid RRULE.';
 
 }

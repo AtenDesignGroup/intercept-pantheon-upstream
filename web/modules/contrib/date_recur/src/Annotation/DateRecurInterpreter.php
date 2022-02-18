@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\date_recur\Annotation;
 
 use Drupal\Component\Annotation\Plugin;
+use Drupal\Core\Annotation\Translation;
 
 /**
  * Defines a Date recur occurrence handler item annotation object.
@@ -20,7 +21,7 @@ class DateRecurInterpreter extends Plugin {
    *
    * @var string
    */
-  public $id;
+  public string $id;
 
   /**
    * The label of the plugin.
@@ -29,6 +30,6 @@ class DateRecurInterpreter extends Plugin {
    *
    * @ingroup plugin_translatable
    */
-  public $label;
+  public Translation $label;
 
 }

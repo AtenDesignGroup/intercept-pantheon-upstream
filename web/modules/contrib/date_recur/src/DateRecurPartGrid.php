@@ -18,7 +18,7 @@ class DateRecurPartGrid {
    * @var array
    *   Parts keyed by frequency.
    */
-  protected $allowedParts = [];
+  protected array $allowedParts = [];
 
   /**
    * Adds parts for a frequency to the allow list.
@@ -30,7 +30,7 @@ class DateRecurPartGrid {
    */
   public function allowParts(string $frequency, array $parts): void {
     $existingFrequencyParts = $this->allowedParts[$frequency] ?? [];
-    $this->allowedParts[$frequency] = array_merge($parts, $existingFrequencyParts);
+    $this->allowedParts[$frequency] = [...$parts, ...$existingFrequencyParts];
   }
 
   /**

@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\date_recur\Plugin\DateRecurInterpreter\RlInterpreter;
 use Drupal\date_recur\Rl\RlDateRecurRule;
 use Drupal\Tests\UnitTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Tests Rlanvin implementation of interpreter.
@@ -28,7 +29,7 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
    *
    * @var \Symfony\Component\DependencyInjection\ContainerInterface
    */
-  protected $testContainer;
+  protected ContainerInterface $testContainer;
 
   /**
    * {@inheritdoc}

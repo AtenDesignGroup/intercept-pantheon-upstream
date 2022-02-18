@@ -14,7 +14,7 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    *
    * @var \Drupal\date_recur\DateRange[]
    */
-  protected $occurrences = [];
+  protected array $occurrences = [];
 
   /**
    * Constructor for DateRecurNonRecurringHelper.
@@ -25,7 +25,7 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    *   The initial occurrence end date, or NULL to use start date.
    */
   public function __construct(\DateTimeInterface $dtStart, \DateTimeInterface $dtStartEnd = NULL) {
-    $dtStartEnd = $dtStartEnd ?? clone $dtStart;
+    $dtStartEnd ??= clone $dtStart;
     $this->occurrences = [new DateRange($dtStart, $dtStartEnd)];
   }
 
@@ -126,7 +126,7 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    * {@inheritdoc}
    */
   public function valid(): bool {
-    return TRUE;
+    return !is_null(key($this->occurrences));
   }
 
   /**

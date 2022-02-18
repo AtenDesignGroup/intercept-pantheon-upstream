@@ -224,7 +224,7 @@ class DateRecurFieldItemTest extends KernelTestBase {
       ],
     ];
     $this->expectException(DateRecurHelperArgumentException::class);
-    $this->expectExceptionMessage('Invalid time zone');
+    $this->expectExceptionMessage('Missing time zone');
     $entity->dr[0]->getHelper();
   }
 

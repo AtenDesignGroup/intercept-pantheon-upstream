@@ -3,6 +3,7 @@
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\date_recur\DateRecurOccurrences;
 use Drupal\date_recur_entity_test\Entity\DrEntityTestRev;
 use Drupal\field\Entity\FieldConfig;
@@ -20,23 +21,23 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
   /**
    * Test entity type.
    *
-   * @var string
+   * @var string|null
    */
-  protected $testEntityType;
+  protected ?string $testEntityType;
 
   /**
    * Name of field for testing.
    *
-   * @var string
+   * @var string|null
    */
-  protected $fieldName;
+  protected ?string $fieldName;
 
   /**
    * The field definition for testing.
    *
-   * @var \Drupal\Core\Field\FieldStorageDefinitionInterface
+   * @var \Drupal\Core\Field\FieldStorageDefinitionInterface|null
    */
-  protected $fieldDefinition;
+  protected ?FieldStorageDefinitionInterface $fieldDefinition;
 
   /**
    * {@inheritdoc}

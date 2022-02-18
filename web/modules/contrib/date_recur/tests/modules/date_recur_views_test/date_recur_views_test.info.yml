@@ -6,7 +6,7 @@ core_version_requirement: ^9
 dependencies:
  - drupal:views
 
-# Information added by Drupal.org packaging script on 2021-11-15
-version: '3.0.1'
+# Information added by Drupal.org packaging script on 2022-01-30
+version: '3.1.0'
 project: 'date_recur'
-datestamp: 1636969599
+datestamp: 1643545759

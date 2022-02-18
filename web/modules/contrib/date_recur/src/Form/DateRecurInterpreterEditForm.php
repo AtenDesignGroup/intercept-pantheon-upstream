@@ -23,14 +23,14 @@ class DateRecurInterpreterEditForm extends EntityForm {
    *
    * @var \Drupal\Core\Plugin\PluginFormFactoryInterface
    */
-  protected $pluginFormFactory;
+  protected PluginFormFactoryInterface $pluginFormFactory;
 
   /**
    * Date recur interpreter plugin manager.
    *
    * @var \Drupal\date_recur\Plugin\DateRecurInterpreterManagerInterface
    */
-  protected $dateRecurInterpreterPluginManager;
+  protected DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager;
 
   /**
    * Creates an instance of WorkflowStateEditForm.

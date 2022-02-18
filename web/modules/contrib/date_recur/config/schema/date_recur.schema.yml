@@ -109,3 +109,6 @@ views.filter.date_recur_occurrences_filter:
       type: string
     value_max:
       type: string
+
+views.field.date_recur_date:
+  type: views.field.date

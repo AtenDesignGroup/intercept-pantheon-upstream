@@ -18,7 +18,7 @@ final class RlDateRecurRule implements DateRecurRuleInterface {
    *
    * @var array
    */
-  protected $parts;
+  protected array $parts;
 
   /**
    * Creates a new RlDateRecurRule.

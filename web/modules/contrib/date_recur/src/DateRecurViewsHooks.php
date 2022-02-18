@@ -21,6 +21,7 @@ use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 
 /**
  * Defines Views hooks.
@@ -34,35 +35,35 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
    *
    * @var \Drupal\Core\Database\Connection
    */
-  protected $database;
+  protected Connection $database;
 
   /**
    * Module handler.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  protected $moduleHandler;
+  protected ModuleHandlerInterface $moduleHandler;
 
   /**
    * Entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * The entity field manager.
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $entityFieldManager;
+  protected EntityFieldManagerInterface $entityFieldManager;
 
   /**
    * The typed data manager.
    *
    * @var \Drupal\Core\TypedData\TypedDataManagerInterface
    */
-  protected $typedDataManager;
+  protected TypedDataManagerInterface $typedDataManager;
 
   /**
    * DateRecurViewsHooks constructor.
@@ -211,7 +212,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
       $tableMapping = $entityStorage->getTableMapping($fields);
 
       /** @var \Drupal\Core\Field\FieldStorageDefinitionInterface[] $fields */
-      foreach ($fields as $fieldId => $fieldStorage) {
+      foreach ($fields as $fieldStorage) {
         if (!$fieldStorage instanceof BaseFieldDefinition) {
           continue;
         }
@@ -354,18 +355,25 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
       // \Drupal\views\EntityViewsData class only allows entities with
       // \Drupal\Core\Entity\Sql\SqlEntityStorageInterface.
       // Only fieldable entities have base fields.
-      if (
-        $this->entityTypeManager->getStorage($entityType->id()) instanceof SqlEntityStorageInterface &&
-        $entityType->hasHandlerClass('views_data') &&
-        $entityType->entityClassImplements(FieldableEntityInterface::class)) {
-        $fields[$entityType->id()] = array_filter(
-          $this->entityFieldManager->getFieldStorageDefinitions($entityType->id()),
-          function (FieldStorageDefinitionInterface $field): bool {
-            $typeDefinition = $this->typedDataManager->getDefinition('field_item:' . $field->getType());
-            // @see \Drupal\date_recur\DateRecurCachedHooks::fieldInfoAlter
-            return isset($typeDefinition[DateRecurOccurrences::IS_DATE_RECUR]);
-          }
-        );
+      try {
+        if (
+          $this->entityTypeManager->getStorage($entityType->id()) instanceof SqlEntityStorageInterface &&
+          $entityType->hasHandlerClass('views_data') &&
+          $entityType->entityClassImplements(FieldableEntityInterface::class)) {
+          $fields[$entityType->id()] = array_filter(
+            $this->entityFieldManager->getFieldStorageDefinitions($entityType->id()),
+            function (FieldStorageDefinitionInterface $field): bool {
+              $typeDefinition = $this->typedDataManager->getDefinition('field_item:' . $field->getType());
+              // @see \Drupal\date_recur\DateRecurCachedHooks::fieldInfoAlter
+              return isset($typeDefinition[DateRecurOccurrences::IS_DATE_RECUR]);
+            }
+          );
+        }
+      }
+      catch (PluginNotFoundException $e) {
+        // This can occur when a content-entity is added during a config 
+        // import that enables a module.
+        continue;
       }
     }
 

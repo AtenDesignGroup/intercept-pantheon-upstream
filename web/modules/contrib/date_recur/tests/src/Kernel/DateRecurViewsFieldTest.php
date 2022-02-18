@@ -24,7 +24,7 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'date_recur_entity_test',
     'date_recur_views_test',
     'entity_test',
@@ -38,33 +38,35 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $testViews = ['dr_entity_test_list'];
+  public static $testViews = [
+    'dr_entity_test_list',
+  ];
 
   /**
    * Field mapping for testing.
    *
    * @var array
    */
-  protected $map;
+  private array $map;
 
   /**
    * The entity type for testing.
    *
    * @var string
    */
-  protected $entityType;
+  private string $entityType;
 
   /**
    * Name of field for testing.
    *
    * @var string
    */
-  protected $fieldName;
+  private string $fieldName;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp($import_test_views = TRUE) {
+  protected function setUp($import_test_views = TRUE): void {
     parent::setUp(FALSE);
     $this->installEntitySchema('dr_entity_test');
     ViewTestData::createTestViews(get_class($this), ['date_recur_views_test']);

@@ -36,14 +36,14 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
    *
    * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
-  protected $dateFormatter;
+  protected DateFormatterInterface $dateFormatter;
 
   /**
    * The date format entity storage.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $dateFormatStorage;
+  protected EntityStorageInterface $dateFormatStorage;
 
   /**
    * Constructs a new RlInterpreter.
@@ -153,12 +153,10 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
 
     $exampleDate = new DrupalDateTime();
     $dateFormatOptions = array_map(
-      function (DateFormatInterface $dateFormat) use ($exampleDate): TranslatableMarkup {
-        return $this->t('@name (@date)', [
-          '@name' => $dateFormat->label(),
-          '@date' => $this->dateFormatter->format($exampleDate->getTimestamp(), (string) $dateFormat->id()),
-        ]);
-      },
+      fn (DateFormatInterface $dateFormat): TranslatableMarkup => $this->t('@name (@date)', [
+        '@name' => $dateFormat->label(),
+        '@date' => $this->dateFormatter->format($exampleDate->getTimestamp(), (string) $dateFormat->id()),
+      ]),
       $this->dateFormatStorage->loadMultiple()
     );
     $form['date_format'] = [

@@ -34,9 +34,7 @@ class DateRecurInterpreterAddForm extends DateRecurInterpreterEditForm {
     ];
 
     $options = array_map(
-      function (array $definition): string {
-        return (string) $definition['label'];
-      },
+      fn (array $definition): string => (string) $definition['label'],
       $this->dateRecurInterpreterPluginManager->getDefinitions()
     );
     $form['plugin_type'] = [

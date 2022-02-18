@@ -22,6 +22,6 @@ class DateRecurTimeZoneConstraint extends Constraint {
    *
    * @var string
    */
-  public $invalidTimeZone = '%value is not a valid time zone.';
+  public string $invalidTimeZone = '%value is not a valid time zone.';
 
 }

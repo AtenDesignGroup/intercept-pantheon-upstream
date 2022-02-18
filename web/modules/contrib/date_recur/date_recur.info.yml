@@ -2,7 +2,7 @@ name: Recurring Dates Field
 type: module
 description: Provides a recurring/repeating dates field.
 core_version_requirement: ^9
-php: 7.3
+php: 7.4
 package: Field types
 dependencies:
   - drupal:system (>=9.0.x)
@@ -10,7 +10,7 @@ dependencies:
 test_dependencies:
   - token:token
 
-# Information added by Drupal.org packaging script on 2021-11-15
-version: '3.0.1'
+# Information added by Drupal.org packaging script on 2022-01-30
+version: '3.1.0'
 project: 'date_recur'
-datestamp: 1636969599
+datestamp: 1643545759

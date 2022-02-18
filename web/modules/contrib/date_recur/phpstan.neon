@@ -3,11 +3,12 @@ parameters:
   customRulesetUsed: true
   paths:
     - .
-  excludes_analyse:
-    - *Test.php
-    - *TestBase.php
-    - *ServiceProvider.php
-    - vendor/
+  excludePaths:
+    analyseAndScan:
+      - *Test.php
+      - *TestBase.php
+      - *ServiceProvider.php
+      - vendor
   fileExtensions:
     - module
     - theme

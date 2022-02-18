@@ -1,3 +1,4 @@
+uuid: cb85a8b6-561c-4bbb-b1ef-ddb8fb69d6ef
 langcode: en
 status: true
 dependencies:
@@ -5,22 +6,22 @@ dependencies:
     - intercept_room_reservation
     - system
   theme:
-    - intercept_base
+    - richland
 id: interceptjsonapiviewsexposedfilterblock
-theme: intercept_base
+theme: richland
 region: content
-weight: 0
+weight: -32
 provider: null
 plugin: intercept_room_reservation_jsonapi_views_filter_block
 settings:
   id: intercept_room_reservation_jsonapi_views_filter_block
   label: 'Room Reservation Schedule Filters'
-  provider: intercept_room_reservation
   label_display: '0'
+  provider: intercept_room_reservation
   view_display: 'intercept_rooms:default'
 visibility:
   request_path:
     id: request_path
-    pages: /manage/room-reservations/calendar
     negate: false
     context_mapping: {  }
+    pages: /manage/room-reservations/calendar

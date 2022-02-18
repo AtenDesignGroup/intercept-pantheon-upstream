@@ -36,35 +36,35 @@ class DateRecurFilter extends FilterPluginBase {
    *
    * @var \Drupal\Core\Database\Connection
    */
-  protected $database;
+  protected Connection $database;
 
   /**
    * The entity field manager.
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $entityFieldManager;
+  protected EntityFieldManagerInterface $entityFieldManager;
 
   /**
    * The smallest possible date given an input and granularity.
    *
    * @var \DateTime
    */
-  protected $smallestDate;
+  protected \DateTime $smallestDate;
 
   /**
    * The largest possible date given an input and granularity.
    *
    * @var \DateTime
    */
-  protected $largestDate;
+  protected \DateTime $largestDate;
 
   /**
    * The current user.
    *
    * @var \Drupal\Core\Session\AccountInterface
    */
-  protected $currentUser;
+  protected AccountInterface $currentUser;
 
   /**
    * Constructs a DateRecurFilter object.
@@ -218,6 +218,7 @@ class DateRecurFilter extends FilterPluginBase {
    */
   public function submitOptionsForm(&$form, FormStateInterface $form_state): void {
     parent::submitOptionsForm($form, $form_state);
+    // @codingStandardsIgnoreLine
     $this->options['value_granularity'] = $form_state->getValue(['options', 'value_granularity']);
 
     $utc = new \DateTimeZone('UTC');

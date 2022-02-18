@@ -23,14 +23,14 @@ class RlHelper implements DateRecurHelperInterface {
    *
    * @var \RRule\RSet
    */
-  protected $set;
+  protected RSet $set;
 
   /**
    * The time zone used to normalise other date objects.
    *
    * @var \DateTimeZone
    */
-  protected $timeZone;
+  protected \DateTimeZone $timeZone;
 
   /**
    * Difference between start date and start date end.
@@ -39,7 +39,7 @@ class RlHelper implements DateRecurHelperInterface {
    *
    * @var \DateInterval
    */
-  protected $recurDiff;
+  protected \DateInterval $recurDiff;
 
   /**
    * Constructor for DateRecurHelper.
@@ -52,7 +52,7 @@ class RlHelper implements DateRecurHelperInterface {
    *   The initial occurrence end date, or NULL to use start date.
    */
   public function __construct(string $string, \DateTimeInterface $dtStart, ?\DateTimeInterface $dtStartEnd = NULL) {
-    $dtStartEnd = $dtStartEnd ?? clone $dtStart;
+    $dtStartEnd ??= clone $dtStart;
     $this->recurDiff = $dtStart->diff($dtStartEnd);
     $this->timeZone = $dtStart->getTimezone();
 
@@ -206,9 +206,10 @@ class RlHelper implements DateRecurHelperInterface {
   public function getExcluded(): array {
     // Implementation normally returns the same time zone as the EXDATE from the
     // rule string, normalise it here.
-    return array_map(function (\DateTime $date): \DateTime {
-      return $date->setTimezone($this->timeZone);
-    }, $this->set->getExDates());
+    return array_map(
+      fn (\DateTime $date): \DateTime => $date->setTimezone($this->timeZone),
+      $this->set->getExDates()
+    );
   }
 
   /**

@@ -2,8 +2,10 @@
 
 namespace Drupal\Tests\date_recur\Kernel;
 
+use Drupal\Core\Datetime\DateFormatInterface;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\date_recur\Entity\DateRecurInterpreter;
+use Drupal\date_recur\Entity\DateRecurInterpreterInterface;
 use Drupal\date_recur_entity_test\Entity\DrEntityTest;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\user\Entity\User;
@@ -34,16 +36,16 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
   /**
    * A date format for testing.
    *
-   * @var \Drupal\Core\Datetime\Entity\DateFormat
+   * @var \Drupal\Core\Datetime\DateFormatInterface
    */
-  protected $dateFormat;
+  private DateFormatInterface $dateFormat;
 
   /**
    * An interpreter for testing.
    *
-   * @var \Drupal\date_recur\Entity\DateRecurInterpreter
+   * @var \Drupal\date_recur\Entity\DateRecurInterpreterInterface
    */
-  protected $interpreter;
+  private DateRecurInterpreterInterface $interpreter;
 
   /**
    * {@inheritdoc}

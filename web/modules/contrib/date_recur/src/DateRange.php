@@ -14,14 +14,14 @@ class DateRange {
    *
    * @var \DateTimeInterface
    */
-  protected $start;
+  protected \DateTimeInterface $start;
 
   /**
    * The end date.
    *
    * @var \DateTimeInterface
    */
-  protected $end;
+  protected \DateTimeInterface $end;
 
   /**
    * Creates a new DateRange.

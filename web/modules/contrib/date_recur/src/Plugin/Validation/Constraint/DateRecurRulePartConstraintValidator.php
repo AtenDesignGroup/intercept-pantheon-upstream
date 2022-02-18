@@ -21,14 +21,14 @@ class DateRecurRulePartConstraintValidator extends ConstraintValidator {
    *
    * @var array|null
    */
-  protected $frequencyLabels = NULL;
+  protected ?array $frequencyLabels = NULL;
 
   /**
    * Labels for parts.
    *
    * @var array|null
    */
-  protected $partLabels = NULL;
+  protected ?array $partLabels = NULL;
 
   /**
    * {@inheritdoc}

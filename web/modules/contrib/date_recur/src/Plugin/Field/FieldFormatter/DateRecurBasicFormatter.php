@@ -43,14 +43,14 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $dateRecurInterpreterStorage;
+  protected EntityStorageInterface $dateRecurInterpreterStorage;
 
   /**
    * Date format config ID.
    *
    * @var string|null
    */
-  protected $formatType;
+  protected ?string $formatType;
 
   /**
    * Constructs a new DateRecurBasicFormatter.
@@ -172,7 +172,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
     unset($form['separator']);
     $form['separator'] = $originalSeparator;
     // Change the width of the field if not already set. (Not set by default)
-    $form['separator']['#size'] = $form['separator']['#size'] ?? 5;
+    $form['separator']['#size'] ??= 5;
 
     // Redefine timezone to change the natural order of form fields.
     $originalTimezoneOverride = $form['timezone_override'];
@@ -181,9 +181,10 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
     $form['timezone_override']['#empty_option'] = $this->t('Use current user timezone');
     $form['timezone_override']['#description'] = $this->t('Change the timezone used for displaying dates (not recommended).');
 
-    $interpreterOptions = array_map(function (DateRecurInterpreterInterface $interpreter): string {
-      return $interpreter->label() ?? (string) $this->t('- Missing label -');
-    }, $this->dateRecurInterpreterStorage->loadMultiple());
+    $interpreterOptions = array_map(
+      fn (DateRecurInterpreterInterface $interpreter): string => $interpreter->label() ?? (string) $this->t('- Missing label -'),
+      $this->dateRecurInterpreterStorage->loadMultiple()
+    );
     $form['interpreter'] = [
       '#type' => 'select',
       '#title' => $this->t('Recurring date interpreter'),

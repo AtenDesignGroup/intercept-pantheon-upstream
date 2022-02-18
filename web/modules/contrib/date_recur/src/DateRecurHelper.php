@@ -24,7 +24,7 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    *
    * @var \Drupal\date_recur\DateRecurHelperInterface
    */
-  protected $dateRecurHelper;
+  protected DateRecurHelperInterface $dateRecurHelper;
 
   /**
    * DateRecurHelper constructor.

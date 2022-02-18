@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\date_recur\Functional;
 
+use Drupal\Core\Field\FieldConfigInterface;
 use Drupal\Core\Url;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\field\Entity\FieldConfig;
@@ -39,7 +40,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
    *
    * @var \Drupal\Core\Field\FieldConfigInterface
    */
-  protected $fieldConfig;
+  protected FieldConfigInterface $fieldConfig;
 
   /**
    * {@inheritdoc}

@@ -43,7 +43,7 @@ class DateRecurFieldItemListTest extends KernelTestBase {
    *
    * @var \Drupal\entity_test\Entity\EntityTest
    */
-  protected $entity;
+  private EntityTest $entity;
 
   /**
    * {@inheritdoc}

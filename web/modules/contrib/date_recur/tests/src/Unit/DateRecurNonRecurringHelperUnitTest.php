@@ -95,6 +95,32 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
   }
 
   /**
+   * Test the helper works as an iterator.
+   */
+  public function testIteration() {
+    $format = 'ga j F Y';
+    $start = '2am 14 April 2014';
+    $end = '4am 14 April 2014';
+    $helper = $this->createHelper(
+      new \DateTime($start),
+      new \DateTime($end)
+    );
+    $occurrences = [];
+
+    // Iterate the occurences.
+    foreach ($helper as $date_range) {
+      $occurrences[] = $date_range;
+    }
+    // There should be only one result.
+    /** @var \Drupal\date_recur\DateRange $occurrence */
+    $occurrence = reset($occurrences);
+
+    $this->assertCount(1, $occurrences);
+    $this->assertSame($occurrence->getStart()->format($format), $start);
+    $this->assertSame($occurrence->getEnd()->format($format), $end);
+  }
+
+  /**
    * Creates a new helper.
    *
    * @param \DateTimeInterface[]|null[] $args

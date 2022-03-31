@@ -8,113 +8,8 @@
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 
-/**
- * Implements hook_theme().
- */
-function office_hours_theme() {
-
-  $theme['office_hours'] = [
-    'variables' => [
-      'office_hours' => [],
-      'item_separator' => '<br />',
-      'slot_separator' => ', ',
-      'closed_text' => NULL,
-    ],
-  ];
-
-  $theme['office_hours_table'] = [
-    'variables' => [
-      'table' => NULL,
-      'schema' => NULL,
-    ],
-  ];
-
-  $theme['office_hours_status'] = [
-    'variables' => [
-      'is_open' => FALSE,
-      'open_text' => NULL,
-      'closed_text' => NULL,
-    ],
-  ];
-
-  return $theme;
-}
-
-/**
- * Prepares variables for office hours table templates.
- *
- * Default template: office-hours-table.html.twig.
- *
- * @param object $variables
- *   The variables array.
- */
-function template_preprocess_office_hours_table(&$variables) {
-}
-
-/**
- * Prepares variables for office hours templates.
- *
- * Default template: office-hours.html.twig.
- *
- * @param object $variables
- *   The variables array.
- */
-function template_preprocess_office_hours(&$variables) {
-  $office_hours = $variables['office_hours'];
-
-  // Minimum width for day labels. Adjusted when adding new labels.
-  $label_length = 3;
-  $items = [];
-
-  // Schema part.
-  // @todo Move to ..._preprocess_office_hours_schema, or use RDF module's twig.
-  if (isset($office_hours['schema'])) {
-    $schema_items = [];
-    foreach ($office_hours['schema'] as $schema) {
-      $schema_items[] = [
-        'label' => $schema['label'],
-        'slots' => [
-          '#type' => 'markup',
-          '#markup' => $schema['formatted_slots'],
-        ],
-      ];
-    }
-    $variables['schema'] = $schema_items;
-    unset($office_hours['schema']);
-  }
-
-  foreach ($office_hours as $info) {
-    $label = $info['label'];
-    $label_length = max($label_length, mb_strlen($label));
-
-    $items[] = [
-      'label' => $label,
-      'slots' => ['#type' => 'markup', '#markup' => $info['formatted_slots']],
-      'comments' => ['#type' => 'markup', '#markup' => $info['comments']],
-      'suffix' => $variables['item_separator'],
-      // @todo Use $variables['item_separator'] in office-hours.html.twig.
-    ];
-  }
-
-  $variables['items'] = $items;
-  $variables['label_length'] = $label_length;
-}
-
-/**
- * Prepares variables for office hours status templates.
- *
- * Default template: office-hours-status.html.twig.
- *
- * @param object $variables
- *   An associative array containing:
- *   - open: A boolean indicating whether there is an open time slot right now.
- *   - open_text: A string containing the text to display when there is an
- *       open time slot.
- *     - closed_text: A string containing the text to display when there is no
- *       open time slot.
- */
-function template_preprocess_office_hours_status(&$variables) {
-}
+// Add theme.api.php hooks.
+\Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme');
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -122,14 +17,14 @@ function template_preprocess_office_hours_status(&$variables) {
  * Changes the Field_storage settings form to assure unlimited cardinality.
  */
 function office_hours_form_field_storage_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $entity = $form_state->getFormObject()->getEntity();
-  if ($entity->getType() == 'office_hours') {
+  $entity_type = $form_state->getFormObject()->getEntity()->getType();
+  if ($entity_type == 'office_hours') {
     $form['cardinality_container']['cardinality'] = [
       '#options' => [FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED => t('Unlimited')],
       '#default_value' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
-      '#description' => '<p>' . t("This is unlimited by this field's nature. See
-      'Number of slots' for limiting the number of slots per day."),
+      '#description' => '<p>' . t("This is unlimited by this field's nature.
+        See 'Number of slots' for limiting the number of slots per day.")
     ]
-      + $form['cardinality_container']['cardinality'];
+    + $form['cardinality_container']['cardinality'];
   }
 }

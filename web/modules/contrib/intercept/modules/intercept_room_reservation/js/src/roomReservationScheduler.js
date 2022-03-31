@@ -12,4 +12,8 @@ import RoomReservationSchedulerApp from './components/RoomReservationSchedulerAp
 
 const App = withIntercept(RoomReservationSchedulerApp);
 
-render(<App />, document.getElementById('roomReservationSchedulerRoot'));
+const root = document.getElementById('roomReservationSchedulerRoot');
+const viewsId = root.getAttribute('data-jsonapi-views-view');
+const displayId = root.getAttribute('data-jsonapi-views-display');
+
+render(<App viewsId={viewsId} displayId={displayId} />, root);

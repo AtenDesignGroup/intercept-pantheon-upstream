@@ -32,6 +32,9 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
 
           var values = $form.serializeArray();
           var uri = buildUri(view, display, values);
+          var queryUrl = buildUrlQuery(values);
+          console.log({queryUrl})
+          window.history.pushState(null, '', queryUrl);
           window.dispatchEvent(getUriEvent(view, display, uri));
 
           // TODO: Add an option to fetch the data rather than just triggering an event change.
@@ -172,6 +175,25 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
     const search = getParams(formValues);
 
     return encodeURI(href + search);
+  }
+
+  /**
+   * Constucts a URL query string.
+   *
+   * @param {object} formValues
+   *   Exposed form input values.
+   *
+   * @return {string}
+   *   A fully formed uri.
+   */
+  function buildUrlQuery(formValues) {
+    const base = window.location.protocol + '//' + window.location.host;
+    const uri = window.location.pathname;
+    // const href = [base, uri].join('/');
+    const href = base + uri;
+    const search = decodeURIComponent($.param(formValues));
+
+    return [href,search].join('?');
   }
 
   /**

@@ -64,7 +64,7 @@ EvaluationWidget.propTypes = {
 };
 
 EvaluationWidget.defaultProps = {
-  label: 'How’d the Event Go?',
+  label: 'How’d the event go?',
 };
 
 export default EvaluationWidget;

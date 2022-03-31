@@ -3,59 +3,67 @@
 namespace Drupal\office_hours;
 
 use Drupal\Component\Utility\Html;
-use Drupal\office_hours\Element\OfficeHoursDatetime;
-use Drupal\office_hours\OfficeHoursDateHelper;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /**
  * Factors out OfficeHoursItemList->getItems()->getRows().
+ *
+ * Note: This is used in 3rd party code since #3219203.
  */
 trait OfficeHoursFormatterTrait {
 
   /**
    * Returns the items of a field.
    *
-   * @param array $items
+   * Note: This is used in 3rd party code since #3219203.
+   *
+   * @param array $values
    *   Result from FieldItemListInterface $items->getValue().
    * @param array $settings
+   *   The settings.
    * @param array $field_settings
+   *   The field settings.
+   * @param array $third_party_settings
+   *   The third party settings.
    * @param $time
+   *   A time stamp. Defaults to 'REQUEST_TIME'.
    *
    * @return array
    *   The formatted list of slots.
    */
-  public function getRows($items, array $settings, array $field_settings, $time = NULL) {
+  public function getRows(array $values, array $settings, array $field_settings, array $third_party_settings = [], $time = NULL) {
 
-    // Initialize days and times, using date_api as key (0=Sun, 6-Sat)
-    // Empty days are not yet present in $items, and are now added in $days.
+    $default_office_hours = [
+      'startday' => NULL,
+      'endday' => NULL,
+      'closed' => $this->t(Html::escape($settings['closed_format'])),
+      'current' => FALSE,
+      'next' => FALSE,
+      'slots' => [],
+      'formatted_slots' => [],
+      'comments' => [],
+    ];
+
+    // Initialize days and times, using date_api as key (0=Sun, 6=Sat).
+    // Empty days are not yet present in $values, and are now added in $days.
     $office_hours = [];
-    for ($day = 0; $day < 7; $day++) {
-      $office_hours[$day] = [
-        'startday' => $day,
-        'endday' => NULL,
-        'closed' => $this->t(Html::escape($settings['closed_format'])),
-        'current' => FALSE,
-        'next' => FALSE,
-        'slots' => [],
-        'formatted_slots' => [],
-        'comments' => [],
-      ];
+    for ($day = 0; $day < OfficeHoursDateHelper::DAYS_PER_WEEK; $day++) {
+      $office_hours[$day] = ['startday' => $day] + $default_office_hours;
     }
 
     // Loop through all lines.
     // Detect the current line and the open/closed status.
-    // Convert the day_number to (int) to get '0' for Sundays, not 'false'.
-    $time = ($time === NULL) ? \Drupal::time()->getRequestTime() : $time;
-    $today = (int) idate('w', $time); // Get day_number sun=0 - sat=6.
+    $time = ($time) ?? \Drupal::time()->getRequestTime();
+    $today = (int) idate('w', $time); // Get day_number: (0=Sun, 6=Sat).
     $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
-    foreach ($items as $key => $item) {
+    foreach ($values as $key => $value) {
       // Calculate start and end times.
-      $day = (int) $item['day'];
-      $office_hours[$day]['closed'] = NULL;
+      $day = $value['day'];
+      $office_hours[$day] = $office_hours[$day] ?? ['startday' => $day] + $default_office_hours;
       $office_hours[$day]['slots'][] = [
-        // Format to 'Hi' format, with leading zero (0900).
-        'start' => OfficeHoursDatetime::get($item['starthours'], 'Hi'),
-        'end' => OfficeHoursDatetime::get($item['endhours'], 'Hi'),
-        'comment' => $item['comment'],
+        'start' => $value['starthours'],
+        'end' => $value['endhours'],
+        'comment' => $value['comment'] ?? '',
       ];
     }
 
@@ -126,12 +134,16 @@ trait OfficeHoursFormatterTrait {
 
     // From here, no more adding/removing, only formatting.
     // Format the day names.
-    $office_hours = $this->formatLabels($office_hours, $settings);
+    $office_hours = $this->formatLabels($office_hours, $settings, $third_party_settings);
     // Format the start and end time into one slot.
     $office_hours = $this->formatSlots($office_hours, $settings, $field_settings);
 
     // Return the filtered days/slots/items/rows.
     switch ($settings['show_closed']) {
+      case 'all':
+        // Nothing to do. All closed days are already added above.
+        break;
+
       case 'open':
         $office_hours = $this->keepOpenDays($office_hours);
         break;
@@ -186,23 +198,25 @@ trait OfficeHoursFormatterTrait {
    *   Reformatted office hours array.
    */
   protected function groupDays(array $office_hours) {
-    $times = [];
-    for ($i = 0; $i < 7; $i++) {
-      if ($i == 0) {
-        $times = $office_hours[$i]['slots'];
+    // Keys 0-7 are for sorted Weekdays.
+    $previous_key = -100;
+    $previous_day = ['slots' => 'dummy'];
+
+    foreach ($office_hours as $key => &$day) {
+      // @todo Enable groupDays() for Exception days.
+      if (!OfficeHoursDateHelper::isExceptionDay($day)) {
+        if ($day['slots'] == $previous_day['slots']) {
+          $day['endday'] = $day['startday'];
+          $day['startday'] = $previous_day['startday'];
+          $day['current'] = $day['current'] || $previous_day['current'];
+          $day['next'] = $day['next'] || $previous_day['next'];
+          unset($office_hours[(int) $previous_key]);
+        }
       }
-      elseif ($times != $office_hours[$i]['slots']) {
-        $times = $office_hours[$i]['slots'];
-      }
-      else {
-        // N.B. for 0=Sundays, we need to (int) the indices.
-        $office_hours[$i]['endday'] = $office_hours[(int) $i]['startday'];
-        $office_hours[$i]['startday'] = $office_hours[(int) $i - 1]['startday'];
-        $office_hours[$i]['current'] = $office_hours[(int) $i]['current'] || $office_hours[(int) $i - 1]['current'];
-        $office_hours[$i]['next'] = $office_hours[(int) $i]['next'] || $office_hours[(int) $i - 1]['next'];
-        unset($office_hours[(int) $i - 1]);
-      }
+      $previous_key = (int) $key;
+      $previous_day = $day;
     }
+
     return $office_hours;
   }
 
@@ -216,13 +230,13 @@ trait OfficeHoursFormatterTrait {
    *   Reformatted office hours array.
    */
   protected function keepOpenDays(array $office_hours) {
-    $new_office_hours = [];
+    $result = [];
     foreach ($office_hours as $day => $info) {
       if (!empty($info['slots'])) {
-        $new_office_hours[] = $info;
+        $result[] = $info;
       }
     }
-    return $new_office_hours;
+    return $result;
   }
 
   /**
@@ -235,13 +249,13 @@ trait OfficeHoursFormatterTrait {
    *   Reformatted office hours array.
    */
   protected function keepNextDay(array $office_hours) {
-    $new_office_hours = [];
+    $result = [];
     foreach ($office_hours as $day => $info) {
       if ($info['current'] || $info['next']) {
-        $new_office_hours[$day] = $info;
+        $result[$day] = $info;
       }
     }
-    return $new_office_hours;
+    return $result;
   }
 
   /**
@@ -249,22 +263,78 @@ trait OfficeHoursFormatterTrait {
    *
    * @param array $office_hours
    *   Office hours array.
+   * @param int|mixed $time
+   *   A time stamp. Defaults to 'REQUEST_TIME'.
    *
    * @return array
    *   Reformatted office hours array.
    */
-  protected function keepCurrentDay(array $office_hours) {
-    $new_office_hours = [];
+  protected function keepCurrentDay(array $office_hours, $time = NULL) {
+    $result = [];
 
-    // Get day_number sun=0 - sat=6.
-    $today = (int) idate('w', $_SERVER['REQUEST_TIME']);
+    $time = $time ?? \Drupal::time()->getRequestTime();
+    $today = (int) idate('w', $time); // Get day_number (0=Sun, 6=Sat).
 
     foreach ($office_hours as $info) {
       if ($info['startday'] == $today) {
-        $new_office_hours[$today] = $info;
+        $result[$today] = $info;
       }
     }
-    return $new_office_hours;
+    return $result;
+  }
+
+  /**
+   * Formatter: remove all slots, except for current time.
+   *
+   * @param array $office_hours
+   *   Office hours array.
+   * @param int|mixed $time
+   *   A time stamp. Defaults to 'REQUEST_TIME'.
+   *
+   * @return array
+   *   Reformatted office hours array.
+   *
+   * @todo Enable isOpen()/keepCurrentSlot() for Exception days.
+   */
+  protected function keepCurrentSlot(array $office_hours, $time = NULL) {
+    $result = [];
+
+    // Loop through all lines.
+    // Detect the current line and the open/closed status.
+    // Convert day number to integer to get '0' for Sunday, not 'false'.
+    $time = $time ?? \Drupal::time()->getRequestTime();
+    $today = (int) idate('w', $time); // Get day_number (0=Sun, 6=Sat).
+    $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
+
+    foreach ($office_hours as $key => $info) {
+      // Calculate start and end times.
+      $day = (int) $info['day'];
+      // 'Hi' format, with leading zero (0900).
+      $start = OfficeHoursDateHelper::format($info['starthours'], 'Hi');
+      $end = OfficeHoursDateHelper::format($info['endhours'], 'Hi');
+
+      if ($day == $today - 1 ||
+          ($day == $today + 6) ||
+          ($day == strtotime('yesterday midnight'))) {
+        // We were open yesterday evening, check if we are still open.
+        if ($start >= $end && $end > $now) {
+          $result[$today] = $info;
+        }
+      }
+      elseif (($day == $today) ||
+          ($day == strtotime('today midnight'))) {
+        if ($start <= $now) {
+          // We were open today, check if we are still open.
+          if (($start > $end) // We are open until after midnight.
+            || ($start == $end && !is_null($start)) // We are open 24hrs per day.
+            || (($start < $end) && ($end > $now)) // We are open, normal time slot.
+          ) {
+            $result[$today] = $info;
+          }
+        }
+      }
+    }
+    return $result;
   }
 
   /**
@@ -274,30 +344,61 @@ trait OfficeHoursFormatterTrait {
    *   Office hours array.
    * @param array $settings
    *   User settings array.
+   * @param array $third_party_settings
+   *   Formatter third party settings array.
    *
    * @return array
    *   Reformatted office hours array.
    */
-  protected function formatLabels(array $office_hours, array $settings) {
+  protected function formatLabels(array $office_hours, array $settings, array $third_party_settings) {
     $day_format = $settings['day_format'];
-    $day_names = OfficeHoursDateHelper::weekDaysByFormat($settings['day_format']);
+    $exceptions_day_format = $third_party_settings['office_hours_exceptions']['date_format'] ?? NULL;
     $group_separator = $settings['separator']['grouped_days'];
     $days_suffix = $settings['separator']['day_hours'];
-
     foreach ($office_hours as $key => &$info) {
-      if ($day_format == 'none') {
-        $info['label'] = '';
-        continue;
-      }
+      $is_exception_day = OfficeHoursDateHelper::isExceptionDay($info);
+      $pattern = $is_exception_day && $exceptions_day_format ? $exceptions_day_format : $day_format;
+      $label = self::formatLabel($pattern, $info, $group_separator);
 
-      /** @var \Drupal\Core\StringTranslation\TranslatableMarkup $label */
-      $label = $day_names[$info['startday']];
-      if (isset($info['endday'])) {
-        $label .= $group_separator . $day_names[$info['endday']];
-      }
       $info['label'] = $label ? $label . $days_suffix : '';
     }
+
     return $office_hours;
+  }
+
+  /**
+   * Formats the labels of a Render element, like getLabel().
+   *
+   * @param string $pattern
+   *   The day/date formatting pattern.
+   * @param array $info
+   *   An Office hours value structure.
+   * @param string $group_separator
+   *   Used if 2 identical days are grouped on one line.
+   *
+   * @return string
+   *   The translated formatted day label.
+   */
+  public static function formatLabel(string $pattern, array $info, $group_separator) {
+    $label = '';
+
+    // Return fast if weekday is not to be display.
+    if ($pattern == 'none') {
+      return $label;
+    }
+
+    // Get the label.
+    $label = OfficeHoursDateHelper::getLabel($pattern, $info);
+    // Extend the label for Grouped days.
+    if (isset($info['endday'])) {
+      // Add a dummy 'day', emulating office_hours $value structure.
+      $value = ['startday' => $info['endday']] + $info;
+      $label
+        .= $group_separator
+        . OfficeHoursDateHelper::getLabel($pattern, $value);
+    }
+
+    return $label;
   }
 
   /**
@@ -320,7 +421,6 @@ trait OfficeHoursFormatterTrait {
     foreach ($office_hours as &$day_data) {
       $day_data['formatted_slots'] = [];
       $day_data['comments'] = [];
-      $has_comment = FALSE;
       foreach ($day_data['slots'] as $key => &$slot_data) {
         $formatted_slot = OfficeHoursDateHelper::formatTimeSlot(
           $slot_data['start'],
@@ -334,24 +434,57 @@ trait OfficeHoursFormatterTrait {
         $day_data['formatted_slots'][] = $formatted_slot;
         // Always add comment to keep aligned with time slot.
         $day_data['comments'][] = $slot_data['comment'];
-        // Check contents, to avoid unnecessary $slot_parameter.
-        $has_comment |= !empty($slot_data['comment']);
       }
 
       $day_data['formatted_slots'] = empty($day_data['formatted_slots'])
         ? $day_data['closed']
         : implode($slot_separator, $day_data['formatted_slots']);
 
-      if ($has_comment && ($field_settings['comment'] == 2)) {
-        // Escape and Translate the comments.
-        $day_data['comments'] = array_map('Drupal\Component\Utility\Html::escape', $day_data['comments']);
+      // Escape and Translate the comments.
+      $day_data['comments'] = array_map('Drupal\Component\Utility\Html::escape', $day_data['comments']);
+      if ($field_settings['comment'] == 2) {
         $day_data['comments'] = array_map('t', $day_data['comments']);
       }
-      $day_data['comments'] = ($has_comment && $field_settings['comment'])
-        ? implode($slot_separator, $day_data['comments'])
-        : '';
+      $day_data['comments'] = ($field_settings['comment'])
+          ? implode($slot_separator, $day_data['comments'])
+          : '';
     }
     return $office_hours;
+  }
+
+  /**
+   * A helper variable for keepExceptionDaysInHorizon.
+   *
+   * @var int
+   */
+  protected static $horizon;
+
+  /**
+   * Formatter: remove all Exception days behind horizon.
+   *
+   * @param int $horizon
+   *   The number of days in the future.
+   *
+   * @return \Drupal\Core\Field\FieldItemListInterface
+   *   Filtered Item list.
+   */
+  public function keepExceptionDaysInHorizon($horizon) {
+    self::$horizon = $horizon;
+
+    $this->filter(function (OfficeHoursItem $item) {
+      if (!$item->isExceptionDay()) {
+        return TRUE;
+      }
+      if (self::$horizon == NULL) {
+        // Exceptions settings are not set / submodule is disabled.
+        return FALSE;
+      }
+      if ($item->isExceptionDayInRange(self::$horizon)) {
+        return TRUE;
+      }
+      return FALSE;
+    });
+    return $this;
   }
 
 }

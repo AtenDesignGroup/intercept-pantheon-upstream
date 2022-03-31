@@ -26,21 +26,37 @@ function office_hours_tokens($type, $tokens, array $data, array $options, Bubble
       continue;
     }
 
+    // @todo Update patch once multiple values support added to Token module:
+    // @see https://www.drupal.org/project/token/issues/3115486
     $parts = explode(':', $token);
-    $field = $list->get($parts[0]);
-
-    $day = $field->get($parts[1])->getValue();
-    switch ($parts[1]) {
-      case 'day':
-        $daynames = OfficeHoursDateHelper::weekDaysByFormat('long');
-        $replacements[$original] = $daynames[$day];
-        break;
-
-      case 'starthours':
-      case 'endhours':
-        $replacements[$original] = OfficeHoursDateHelper::format($day, "H:i:s", FALSE);
-        break;
+    $resulting_items = [];
+    if (is_numeric($parts[0])) {
+      $list = [$list->get($parts[0])];
+      $property = $parts[1];
     }
+    else {
+      $property = $parts[0];
+    }
+    foreach ($list as $item) {
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+      switch ($property) {
+        case 'day':
+          $day_names = OfficeHoursDateHelper::weekDaysByFormat('long');
+          $resulting_items[] = $day_names[$item->{$property}];
+          break;
+
+        case 'day-untranslated':
+          $day_names = OfficeHoursDateHelper::weekDaysByFormat('long_untranslated');
+          $resulting_items[] = $day_names[$item->day];
+          break;
+
+        case 'starthours':
+        case 'endhours':
+          $resulting_items[] = OfficeHoursDateHelper::format($item->{$property}, "H:i:s", FALSE);
+          break;
+      }
+    }
+    $replacements[$original] = implode(',', $resulting_items);
   }
   return $replacements;
 }

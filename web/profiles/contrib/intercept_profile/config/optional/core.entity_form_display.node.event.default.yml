@@ -32,16 +32,19 @@ dependencies:
     - field.field.node.event.field_text_intro
     - field.field.node.event.field_text_teaser
     - field.field.node.event.field_waitlist_max
+    - field.field.node.event.field_whats_new_homepage_sched
     - field.field.node.event.image_primary
     - node.type.event
   module:
     - addtocalendar
     - datetime_range
     - entity_browser_entity_form
+    - eqsf
     - existing_values_autocomplete_widget
     - field_group
     - inline_entity_form
     - path
+    - scheduler
     - text
 third_party_settings:
   field_group:
@@ -53,31 +56,31 @@ third_party_settings:
         - field_event_register_period
         - field_has_waitlist
         - field_waitlist_max
-      parent_name: ''
-      weight: 13
-      format_type: fieldset
-      format_settings:
-        description: ''
-        id: ''
-        classes: ''
-        required_fields: false
       label: Registration
       region: content
+      parent_name: ''
+      weight: 15
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: false
     group_logistics:
       children:
         - field_location
         - field_room
         - reservation
-      parent_name: ''
-      weight: 10
-      format_type: fieldset
-      format_settings:
-        id: ''
-        classes: ''
-        description: ''
-        required_fields: true
       label: Logistics
       region: content
+      parent_name: ''
+      weight: 11
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
     group_metadata:
       children:
         - field_event_series
@@ -85,19 +88,18 @@ third_party_settings:
         - field_event_type_primary
         - field_event_audience
         - field_audience_primary
-        - field_presented_by_non_staff
         - field_presenter
         - field_event_tags
-      parent_name: ''
-      weight: 12
-      format_type: fieldset
-      format_settings:
-        id: ''
-        classes: ''
-        description: ''
-        required_fields: false
       label: Metadata
       region: content
+      parent_name: ''
+      weight: 13
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: false
 id: node.event.default
 targetEntityType: node
 bundle: event
@@ -105,13 +107,13 @@ mode: default
 content:
   created:
     type: datetime_timestamp
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   event_recurrence:
     type: inline_entity_form_simple
-    weight: 12
+    weight: 14
     region: content
     settings:
       form_mode: events
@@ -120,50 +122,51 @@ content:
       label_plural: recurrences
       collapsible: false
       collapsed: false
+      revision: false
     third_party_settings: {  }
   field_add_to_cal:
     type: add_to_calendar_widget_type
-    weight: 19
+    weight: 21
     region: content
     settings: {  }
     third_party_settings: {  }
   field_audience_primary:
+    type: options_select
     weight: 17
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_capacity_max:
+    type: number
     weight: 21
+    region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
-    type: number
-    region: content
   field_date_time:
-    weight: 9
+    type: daterange_default
+    weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: daterange_default
-    region: content
   field_event_audience:
-    weight: 16
-    settings: {  }
-    third_party_settings: {  }
     type: options_select
+    weight: 16
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_event_designation:
-    weight: 20
-    settings: {  }
-    third_party_settings: {  }
     type: options_buttons
+    weight: 22
     region: content
-  field_event_register_period:
-    weight: 23
     settings: {  }
     third_party_settings: {  }
+  field_event_register_period:
     type: daterange_default
+    weight: 23
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_event_series:
     type: options_select
     weight: 13
@@ -171,148 +174,149 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_event_status:
-    weight: 27
+    type: options_select
+    weight: 24
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_event_tags:
-    weight: 20
+    type: options_select
+    weight: 19
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_event_type:
+    type: options_select
     weight: 14
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_event_type_primary:
+    type: options_select
     weight: 15
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_event_user_reg_max:
+    type: number
     weight: 22
+    region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
-    type: number
-    region: content
   field_featured:
-    weight: 17
+    type: boolean_checkbox
+    weight: 19
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_has_waitlist:
+    type: boolean_checkbox
     weight: 24
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_location:
+    type: options_select
     weight: 12
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_must_register:
+    type: boolean_checkbox
     weight: 20
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
-  field_presented_by_non_staff:
-    weight: 18
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_presenter:
-    weight: 19
+    type: existing_autocomplete_field_widget
+    weight: 18
+    region: content
     settings:
       size: 60
       placeholder: ''
       suggestions_count: 15
     third_party_settings: {  }
-    type: existing_autocomplete_field_widget
-    region: content
   field_room:
+    type: options_select
     weight: 13
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_text_content:
-    weight: 8
+    type: text_textarea
+    weight: 9
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_text_intro:
-    weight: 7
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings: {  }
     type: text_textarea
+    weight: 8
     region: content
-  field_text_teaser:
-    weight: 5
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_text_teaser:
     type: string_textarea
+    weight: 6
     region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
   field_waitlist_max:
+    type: number
     weight: 25
+    region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
-    type: number
-    region: content
   image_primary:
-    weight: 6
+    type: inline_entity_form_complex
+    weight: 7
+    region: content
     settings:
       form_mode: simple
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_duplicate: false
+      revision: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: stories_image_uploader
-    type: inline_entity_form_complex
+  langcode:
+    type: language_select
+    weight: 2
     region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
   path:
     type: path
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 15
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
   recurring_event:
-    weight: 11
+    weight: 12
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -321,12 +325,17 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  scheduler_settings:
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   status:
     type: boolean_checkbox
+    weight: 5
+    region: content
     settings:
       display_label: true
-    weight: 4
-    region: content
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -339,21 +348,21 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 1
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 14
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 16
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -362,5 +371,6 @@ hidden:
   field_evanced_id: true
   field_event_is_template: true
   field_keywords: true
+  field_presented_by_non_staff: true
   promote: true
   sticky: true

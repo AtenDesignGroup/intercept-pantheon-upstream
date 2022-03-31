@@ -1,6 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Quicksand);
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css);
-body.adminimal-admin-toolbar {
+body.intercept-staff-management-menu {
   padding-left: 60px; }
 
 #slide-menu-toggle:checked ~ .left-menu {

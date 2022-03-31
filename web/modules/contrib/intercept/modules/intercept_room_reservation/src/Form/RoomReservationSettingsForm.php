@@ -186,16 +186,24 @@ class RoomReservationSettingsForm extends ConfigFormBase {
 
     $form['off_canvas']['off_canvas_view_mode'] = [
       '#type' => 'select',
-      '#title' => t('Off-canvas dialog view mode'),
+      '#title' => t('Off-canvas dialog Room Reservation view mode'),
       '#options' => $view_modes,
       '#default_value' => $config->get('off_canvas_view_mode'),
     ];
 
     $form['off_canvas']['off_canvas_form_mode'] = [
       '#type' => 'select',
-      '#title' => t('Off-canvas dialog form mode'),
+      '#title' => t('Off-canvas dialog Room Reservation form mode'),
       '#options' => $form_modes,
       '#default_value' => $config->get('off_canvas_form_mode'),
+    ];
+
+    $view_modes = $this->entityDisplayRepository->getViewModeOptions('node');
+    $form['off_canvas']['off_canvas_room_view_mode'] = [
+      '#type' => 'select',
+      '#title' => t('Off-canvas dialog Room view mode'),
+      '#options' => $view_modes,
+      '#default_value' => $config->get('off_canvas_room_view_mode'),
     ];
 
     $form['email'] = [

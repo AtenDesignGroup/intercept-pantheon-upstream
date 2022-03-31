@@ -29,9 +29,9 @@ Drupal.behaviors.eventRecurring = {
       return settings.intercept.events[nodeId]
         && settings.intercept.events[nodeId].hasRecurringEvents;
     }
-    $container.find('.intercept-event-recurring-enable').once().on('change', function(e) {
-      if (!$(this).is(':checked') && hasEvents()) {
-        if (alert(Drupal.t('Warning: Clicking disable will delete !count recurring events.', { '!count': eventCount() })) != true) {
+    $container.find('select.form-select.rrule-mode').on('change', function(e) {
+      if ($(this).val() == 'once' && hasEvents()) {
+        if (alert(Drupal.t('Warning: Changing recurrence pattern to \'Once\' will delete !count recurring events.', { '!count': eventCount() })) != true) {
           e.preventDefault();
           return;
         }

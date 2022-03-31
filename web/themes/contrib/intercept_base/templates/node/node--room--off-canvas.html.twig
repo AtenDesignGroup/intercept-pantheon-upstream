@@ -1,0 +1,10 @@
+{% include '@intercept-base-components/summary/summary.twig' with {
+  image: content.image_primary,
+  supertitle: content.field_location,
+  title: null,
+  content: content|without(['field_location', 'image_primary']),
+  date: null,
+  modifiers: ['off-canvas'],
+  certified: is_certified,
+  room: true
+} %}

@@ -74,6 +74,7 @@ roomReservationMediator:
   dependencies:
     - core/drupal
     - core/drupal.dialog.off_canvas
+    - core/drupalSettings
     - intercept_room_reservation/roomReservationScheduler
 
 # RoomReservationForm.php

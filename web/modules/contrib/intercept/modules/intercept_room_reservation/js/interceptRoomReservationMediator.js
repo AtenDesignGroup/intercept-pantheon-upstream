@@ -46,6 +46,7 @@ function debounce(func, wait, immediate) {
 /**
  * Event Types
  */
+const VIEW_ROOM = 'intercept:viewRoom';
 const ADD_ROOM_RESERVATION = 'intercept:addRoomReservation';
 const EDIT_ROOM_RESERVATION = 'intercept:editRoomReservation';
 const VIEW_ROOM_RESERVATION = 'intercept:viewRoomReservation';
@@ -55,6 +56,7 @@ const SAVE_ROOM_RESERVATION_ERROR = 'intercept:saveRoomReservationError';
 const CHANGE_ROOM_RESERVATION = 'intercept:changeRoomReservation';
 const REFRESH_ROOM_RESERVATION = 'intercept:updateRoomReservation';
 const CLOSE_ROOM_RESERVATION = 'intercept:closeRoomReservation';
+const VIEW_ROOM_DETAILS = 'intercept:viewRoomDetails';
 
 /**
  * Actions
@@ -68,7 +70,7 @@ const OFF_CANVAS_SELECTOR = '#drupal-off-canvas';
 const OFF_CANVAS_SPEED = 1000;
 const OFF_CANVAS_RESIZE_INTERVAL = 30;
 
-(function ($, Drupal) {
+(function ($, Drupal, drupalSettings) {
   let currentEvent;
   let currentAction;
   let currentValues;
@@ -106,6 +108,16 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
 
   function getRoomInputValue(room) {
     return `${room.title} (${room.drupal_internal__nid})`;
+  }
+
+  function getSelectResourceEvent(id) {
+    const event = new CustomEvent(VIEW_ROOM, {
+      detail: {
+        id,
+      },
+    });
+
+    return event;
   }
 
   function updateFormValues(context) {
@@ -155,12 +167,18 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
       $(window)
         .once('interceptRoomReservationMediatorEvents')
         .on({
+          [VIEW_ROOM]: this.onViewRoom,
           [ADD_ROOM_RESERVATION]: this.onAddRoomReservation,
           [VIEW_ROOM_RESERVATION]: this.onViewRoomReservation,
           [EDIT_ROOM_RESERVATION]: this.onEditRoomReservation,
           [CHANGE_ROOM_RESERVATION]: this.onChangeRoomReservation,
           'dialog:afterclose': this.onCloseDialog,
         });
+      $('#view-room-details').on('click', function(e) {
+        e.preventDefault();
+        const event = getSelectResourceEvent($(this).data('room-id'));
+        window.dispatchEvent(event);
+      });
     },
 
     onCloseDialog: function () {
@@ -172,20 +190,27 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
     },
 
     onAddRoomReservation: function (event) {
-      console.log({event});
       currentValues = event.detail;
       shouldUpdateFormValues = true;
 
       currentAction = EDIT_ACTION;
+      if (!drupalSettings.user || (drupalSettings.user && drupalSettings.user.uid === 0)) {
+        const path = window.location.pathname;
+        const search = window.location.search;
+        const destination = encodeURIComponent(path + search);
 
-      // Manually open the reservation edit dialog.
-      activateDialog('/room-reservation/add', {
-        room: currentValues.resource.drupal_internal__nid,
-        date: {
-          start: currentValues.start,
-          end: currentValues.end,
-        },
-      });
+        window.location.href = `/user/login?destination=${destination}`;
+      }
+      else {
+        // Manually open the reservation edit dialog.
+        activateDialog('/room-reservation/add', {
+          room: currentValues.resource.drupal_internal__nid,
+          date: {
+            start: currentValues.start,
+            end: currentValues.end,
+          },
+        });
+      }
     },
 
     onChangeRoomReservation: function (event) {
@@ -241,5 +266,19 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
       // Manually open the reservation view dialog.
       activateDialog(`/room-reservation/${event.detail.id}`);
     },
+
+    onViewRoom: function (event) {
+      const id = event.detail.id;
+      // console.log({event});
+      // Abort if we are already viewing or editing this event.
+      if (currentEvent === id && !!currentAction) {
+        return;
+      }
+      currentEvent = id;
+      currentAction = VIEW_ACTION;
+
+      // Manually open the reservation view dialog.
+      activateDialog(`/room/${event.detail.id}`);
+    },
   };
-})(jQuery, Drupal);
+})(jQuery, Drupal, drupalSettings);

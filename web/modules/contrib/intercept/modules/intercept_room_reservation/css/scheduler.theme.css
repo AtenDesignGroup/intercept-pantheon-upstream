@@ -31,3 +31,8 @@
 .rbc-event.rbc-selected:focus {
   background-color: #B0025D;
 }
+
+.scheduler__section--timeline td > span {
+  display: block;
+  cursor: pointer;
+}

@@ -1,5 +1,5 @@
 <article{{ attributes.addClass(['article']) }}>
-
+  
   <header class="article__header l--offset">
     {{ title_prefix }}
     {% include '@intercept-base-components/page-title/page-title.twig' with {
@@ -8,11 +8,22 @@
     {{ title_suffix }}
   </header>
 
-  <div class="l--1-col l--offset">
-    <div class="l__primary">
+  <div class="l--sidebar-after">
+  <div class="l__main l--offset">
+    {% if sidebar_first %}
+    <div class="l__primary l--section">
+    {% else %}
+    <div class="l--section">
+    {% endif %}
       {% if content %}
         {{ content }}
       {% endif %}
     </div>
+    {% if sidebar_first %}
+      <div class="l__secondary l--section">
+        {{ sidebar_first }}
+      </div>
+    {% endif %}
+  </div>
   </div>
 </article>

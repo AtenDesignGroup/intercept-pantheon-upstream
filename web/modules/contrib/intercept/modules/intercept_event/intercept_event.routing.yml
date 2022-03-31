@@ -9,9 +9,8 @@ intercept_event.events_controller_list:
 intercept_event.account.events:
   path: '/account/events'
   defaults:
-    _controller: '\Drupal\intercept_core\Controller\UserAccount::userRedirect'
+    _controller: '\Drupal\intercept_event\Controller\EventsController::myEvents'
     _title: 'My Events'
-    route_name: 'entity.user.events'
   requirements:
     _user_is_logged_in: 'TRUE'
 

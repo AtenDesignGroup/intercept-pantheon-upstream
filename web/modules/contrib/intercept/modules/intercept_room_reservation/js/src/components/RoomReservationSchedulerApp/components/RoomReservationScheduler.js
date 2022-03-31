@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import interceptClient from 'interceptClient';
-import { find, forEach, get, isEmpty, map } from 'lodash';
+import forEach from 'lodash/forEach';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import map from 'lodash/map';
 
 // Local Components
 import Calendar from './ReservationCalendar';
@@ -49,11 +52,12 @@ const getEventFromBlockedTime = (time, roomId) => ({
   id: get(time, 'uuid'),
   title: get(time, 'message', 'Booked'),
   resourceId: get(time, 'resource', roomId),
-  status: get(time, 'status', 'disabled'),
+  status: get(time, 'isEditable') ? get(time, 'status', 'disabled') : 'disabled',
   start: get(time, 'start'),
   end: get(time, 'end'),
   hasEvent: get(time, 'hasEvent'),
-  isReservedByStaff: get(time,'isReservedByStaff'),
+  isReservedByStaff: get(time, 'isReservedByStaff'),
+  isEditable: get(time, 'isEditable'),
   drupal_internal__id: get(time, 'id', roomId),
 });
 
@@ -202,13 +206,13 @@ const RoomReservationScheduler = ({
   const { setGroups } = useContext(GroupsContext);
 
   const doFetchBlockedTime = () => {
-    const roomIds = rooms.map(room => room.attributes.drupal_internal__nid);
+    const roomIds = rooms.map(room => room.id);
     const tz = utils.getUserTimezone();
     const day = moment.tz(date, tz);
     const start = day.clone().startOf('day');
     const end = day.clone().endOf('day');
     fetchAvailability({
-      roomIds,
+      rooms: roomIds,
       start,
       end,
     });
@@ -274,6 +278,7 @@ const RoomReservationScheduler = ({
       start: moment(event.start).tz(utils.getUserTimezone()).format(),
       end: moment(event.end).tz(utils.getUserTimezone()).format(),
       resourceId: event.resourceId,
+      isEditable: true,
     });
     window.dispatchEvent(getAddRoomReservationEvent(event, resources));
   };
@@ -297,6 +302,7 @@ const RoomReservationScheduler = ({
     const event = find(events, item => item.id === values.id) || {
       title: '',
     };
+
     // Apply the updated values to the stored event if found.
     setSelectedEvent({
       ...event,

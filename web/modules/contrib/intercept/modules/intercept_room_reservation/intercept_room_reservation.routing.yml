@@ -19,6 +19,14 @@ entity.node.reservations:
   options:
     _admin_route: TRUE
 
+intercept_room_reservation.reservation.terms:
+  path: '/room-reservation/terms'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationTermsController::view'
+    _title: 'Terms and Conditions'
+  requirements:
+    _access: 'TRUE'
+
 intercept_room_reservation.reservation.add:
   path: '/room-reservation/add'
   defaults:
@@ -49,9 +57,33 @@ intercept_room_reservation.reservation.edit:
     _entity_bundle: 'room_reservation'
 
 intercept_room_reservation.reserve_room:
-  path: '/reserve-room'
+  path: '/reserve-room/by-room'
   defaults:
     _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::reserve'
+    _title: 'Reserve a Room'
+  requirements:
+    _access: 'TRUE'
+
+intercept_room_reservation.select_type:
+  path: '/reserve-room'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::selector'
+    _title: 'Reserve a room'
+  requirements:
+    _access: 'TRUE'
+
+intercept_room_reservation.room.view:
+  path: '/room/{node}'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationRoomController::view'
+    _title: 'Room Details'
+  requirements:
+    _access: 'TRUE'
+
+intercept_room_reservation.reserve_room_calendar:
+  path: '/reserve-room/by-calendar'
+  defaults:
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::schedulerCustomer'
     _title: 'Reserve a Room'
   requirements:
     _access: 'TRUE'
@@ -59,7 +91,7 @@ intercept_room_reservation.reserve_room:
 intercept_room_reservation.scheduler:
   path: '/manage/room-reservations/calendar'
   defaults:
-    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::scheduler'
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::schedulerStaff'
     _title: 'Room Reservations'
   requirements:
     _permission: 'update any room_reservation'

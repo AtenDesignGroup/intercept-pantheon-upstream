@@ -21,6 +21,7 @@ dependencies:
     - image.style.3to2_870x580
     - node.type.location
   module:
+    - address
     - link
     - media
     - office_hours
@@ -31,33 +32,40 @@ targetEntityType: node
 bundle: location
 mode: listing
 content:
+  field_address:
+    type: address_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 5
+    region: content
   field_closed_for_renovations:
     type: boolean
-    weight: 0
-    region: content
     label: hidden
     settings:
       format: boolean
-      format_custom_true: ''
       format_custom_false: ''
+      format_custom_true: ''
     third_party_settings: {  }
+    weight: 0
+    region: content
   field_contact_number:
-    weight: 1
+    type: telephone_link
     label: hidden
     settings:
       title: ''
     third_party_settings: {  }
-    type: telephone_link
+    weight: 1
     region: content
   field_location_hours:
-    weight: 3
+    type: office_hours
     label: hidden
     settings:
-      show_closed: all
-      office_hours_first_day: ''
       day_format: short
       time_format: g
-      grouped: '1'
+      compress: false
+      grouped: true
+      show_closed: all
       closed_format: Closed
       separator:
         days: '<br />'
@@ -69,15 +77,15 @@ content:
         position: ''
         open_text: 'Currently open!'
         closed_text: 'Currently closed'
-      schema:
-        enabled: '1'
-      compress: 0
       timezone_field: ''
+      office_hours_first_day: ''
+      schema:
+        enabled: true
     third_party_settings: {  }
-    type: office_hours
+    weight: 3
     region: content
   field_map_link:
-    weight: 4
+    type: link_separate
     label: hidden
     settings:
       trim_length: 80
@@ -86,19 +94,18 @@ content:
       rel: '0'
       target: '0'
     third_party_settings: {  }
-    type: link_separate
+    weight: 4
     region: content
   image_primary:
-    weight: 2
+    type: media_thumbnail
     label: hidden
     settings:
-      image_style: 3to2_870x580
       image_link: ''
+      image_style: 3to2_870x580
     third_party_settings: {  }
-    type: media_thumbnail
+    weight: 2
     region: content
 hidden:
-  field_address: true
   field_affiliated: true
   field_branch_location: true
   field_features: true
@@ -108,4 +115,5 @@ hidden:
   field_text_content: true
   field_text_intro: true
   field_virtual_tour: true
+  langcode: true
   links: true

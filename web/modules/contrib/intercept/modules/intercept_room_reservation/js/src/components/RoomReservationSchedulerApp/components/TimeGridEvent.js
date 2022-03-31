@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
+import { accessor as get } from 'react-big-calendar/lib/utils/accessors';
 
 function stringifyPercent(v) {
   return typeof v === 'string' ? v : v + '%';
@@ -22,6 +23,7 @@ function TimeGridEvent(props) {
     onDoubleClick,
     components: { event: Event, eventWrapper: EventWrapper },
   } = props;
+  const isEditable = get(event, 'isEditable');
   let title = accessors.title(event);
   let tooltip = accessors.tooltip(event);
   let end = accessors.end(event);
@@ -42,8 +44,8 @@ function TimeGridEvent(props) {
   return (
     <EventWrapper type="time" {...props}>
       <div
-        onClick={onClick}
-        onDoubleClick={onDoubleClick}
+        onClick={isEditable ? onClick : null}
+        onDoubleClick={isEditable ? onDoubleClick : null}
         style={{
           ...userProps.style,
           top: stringifyPercent(top),

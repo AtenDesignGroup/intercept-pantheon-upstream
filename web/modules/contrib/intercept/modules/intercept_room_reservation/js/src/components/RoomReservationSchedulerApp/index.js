@@ -5,7 +5,7 @@ import { RoomsProvider } from './context/RoomsContext';
 import { GroupsProvider } from './context/GroupsContext';
 
 const App = props => (
-  <RoomsProvider view={'intercept_rooms'} display={'default'}>
+  <RoomsProvider view={props.viewsId} display={props.displayId}>
     <GroupsProvider>
       <RoomReservationScheduler {...props} />
     </GroupsProvider>

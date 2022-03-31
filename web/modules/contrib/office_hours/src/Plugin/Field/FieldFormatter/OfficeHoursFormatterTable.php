@@ -30,16 +30,26 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
     $elements = [];
 
     // If no data is filled for this entity, do not show the formatter.
-    // N.B. 'Show current day' may return nothing in getRows(), while other days are filled.
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
-    if (!$items->getValue()) {
+    if ($items->isEmpty()) {
       return $elements;
     }
 
     $settings = $this->getSettings();
+    $third_party_settings = $this->getThirdPartySettings();
+    $field_definition = $items->getFieldDefinition();
+    // N.B. 'Show current day' may return nothing in getRows(), while other days are filled.
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
+    $office_hours = $items->getRows($settings, $this->getFieldSettings(), $third_party_settings);
+
+    // If no data is filled for this entity, do not show the formatter.
+    if ($items->isEmpty()) {
+      return $elements;
+    }
+
     // For a11y screen readers, a header is introduced.
     // Superfluous comments are removed. @see #3110755 for examples and explanation.
     $isLabelEnabled = $settings['day_format'] != 'none';
@@ -48,7 +58,6 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
 
     // Build the Table part.
     $table_rows = [];
-    $office_hours = $this->getRows($items->getValue(), $this->getSettings(), $this->getFieldSettings());
     foreach ($office_hours as $delta => $item) {
       $table_rows[$delta] = [
         'data' => [],
@@ -77,17 +86,9 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
       }
     }
 
-    // @todo #2720335 Try to get the meta data into the <tr>.
-    /*
-    foreach ($table_rows as $delta => &$row) {
-      $row['#metadata']['itemprop'] = "openingHours";
-      $row['#metadata']['property'] = "openingHours";
-      $row['#metadata']['content'] = "todo";
-    }
-     */
-
     $table = [
       '#theme' => 'table',
+      '#parent' => $field_definition,
       '#attributes' => [
         'class' => ['office-hours__table'],
       ],
@@ -120,24 +121,17 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
     $elements[] = [
       '#theme' => 'office_hours_table',
       '#table' => $table,
+      // Pass office_hours to twig theming.
       '#office_hours' => $office_hours,
       '#cache' => [
-        'max-age' => $this->getStatusTimeLeft($items, $langcode),
+        'max-age' => $items->getStatusTimeLeft($settings, $this->getFieldSettings()),
         'tags' => ['office_hours:field.table'],
       ],
 
     ];
 
-    // Build the Schema part from https://schema.org/openingHours.
-    if ($settings['schema']['enabled']) {
-      $elements[0] = $this->addSchemaFormatter($items, $langcode, $elements[0]);
-    }
-
-    // Build the Status part. May reorder elements.
-    if ($settings['current_status']['position'] != "") {
-      $elements = $this->addStatusFormatter($items, $langcode, $elements);
-    }
-
+    $elements = $this->addSchemaFormatter($items, $langcode, $elements);
+    $elements = $this->addStatusFormatter($items, $langcode, $elements);
     return $elements;
   }
 

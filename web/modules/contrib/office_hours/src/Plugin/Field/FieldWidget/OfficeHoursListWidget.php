@@ -4,7 +4,6 @@ namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\office_hours\OfficeHoursDateHelper;
 
 /**
  * Plugin implementation of the 'office_hours_week' widget.
@@ -25,17 +24,20 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
 
-    $default_value = isset($items[$delta]) ? $items[$delta]->getValue() : NULL;
-    $day = isset($default_value['day']) ? $default_value['day'] : '';
-    $daynames = OfficeHoursDateHelper::weekDays(FALSE);
-
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+    $item = $items[$delta];
+    if ($item->isExceptionDay()) {
+      // @todo Enable List widget for Exception days.
+      return [];
+    }
+    $default_value = $item->getValue();
+    $day = $default_value['day'];
     $element['value'] = [
+      '#day' => $day,
+      // Make sure the value is shown in OfficeHoursSlot().
+      '#daydelta' => 0,
       '#type' => 'office_hours_list',
       '#default_value' => $default_value,
-      '#day' => $day,
-      // Make sure the value is shown in OfficeHoursSlot.
-      '#daydelta' => 0,
-      '#dayname' => $daynames[$day],
       // Wrap all of the select elements with a fieldset.
       '#theme_wrappers' => [
         'fieldset',
@@ -54,7 +56,9 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
   /**
    * This function repairs the anomaly we mentioned before.
    *
-   * @see formElement()
+   * Reformat the $values, before passing to database.
+   *
+   * @see formElement(), formMultipleElements().
    *
    * {@inheritdoc}
    */

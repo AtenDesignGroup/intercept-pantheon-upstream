@@ -121,12 +121,14 @@ class OfficeHoursItemTest extends FieldKernelTestBase {
         'day' => '2',
         'starthours' => '1330',
         'endhours' => '2000',
-        'comment' => ''],
+        'comment' => '',
+      ],
       [
         'day' => '3',
         'starthours' => '900',
         'endhours' => '2000',
-        'comment' => ''],
+        'comment' => '',
+      ],
     ];
     $entity->set($field_name, $value);
     $entity->setName($this->randomMachineName());
@@ -144,12 +146,14 @@ class OfficeHoursItemTest extends FieldKernelTestBase {
         'day' => '2',
         'starthours' => '1430',
         'endhours' => '2000',
-        'comment' => ''],
+        'comment' => '',
+      ],
       [
         'day' => '3',
         'starthours' => '1900',
         'endhours' => '2000',
-        'comment' => ''],
+        'comment' => '',
+      ],
     ];
     // $entity->$field_name->value = $new_value;
     $entity->$field_name->setValue($new_value);
@@ -159,7 +163,7 @@ class OfficeHoursItemTest extends FieldKernelTestBase {
     $this->entityValidateAndSave($entity);
     $entity = EntityTest::load($id);
     $test_value = $entity->$field_name->first()->getValue();
-    $this->assertEquals(implode('/',$new_value[0]), implode('/',$test_value));
+    $this->assertEquals(implode('/', $new_value[0]), implode('/', $test_value));
 
     // Test the generateSampleValue() method.
     $entity = EntityTest::create();

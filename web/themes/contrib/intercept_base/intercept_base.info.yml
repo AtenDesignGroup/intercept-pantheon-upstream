@@ -13,7 +13,6 @@ regions:
   help: Help
   content: Content
   sidebar_first: First Sidebar
-  sidebar_second: Second Sidebar
   footer: Footer
   breadcrumb: Breadcrumb
   staff_management_menu: Staff Management Menu

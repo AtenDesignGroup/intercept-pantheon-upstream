@@ -49,7 +49,7 @@ class EventEvaluationAttendeeForm extends EventEvaluationFormBase {
       ],
     ];
     $form['evaluation'] = [
-      '#title' => $this->t("How'd the Event Go?"),
+      '#title' => $this->t("How'd the event go?"),
       '#type' => 'radios',
       '#options' => [
         0 => $this->t('Dislike'),
@@ -65,7 +65,7 @@ class EventEvaluationAttendeeForm extends EventEvaluationFormBase {
         'wrapper' => $wrapper_id,
       ];
       $form['evaluation_criteria'] = [
-        '#title' => $this->t('Tell us Why'),
+        '#title' => $this->t('Tell us why'),
         '#type' => 'select',
         '#options' => $options,
         '#prefix' => '<div id="' . $wrapper_id . '">',

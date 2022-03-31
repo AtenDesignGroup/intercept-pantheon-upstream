@@ -14,6 +14,7 @@ use Drupal\views\ViewExecutable;
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\Entity\User;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
 
 /**
  * Implements hook_help().
@@ -131,22 +132,32 @@ function intercept_certification_update_certifications_submit(&$form, FormStateI
   }
 
   // Let's compare what's stored.
-  foreach($submitted_certifications as $key => $value) {
-    // If the value = 0 that means it's unchecked.
-    // If the value is not 0 then that means it's checked. (It's equal to the room id.)
-    // The key of each certification here will also be the room id.
-    if ($value != 0 && in_array($key, $current_certification_room_ids)) {
-      // Certification is unchanged.
-    }
-    elseif ($value == 0 && in_array($key, $current_certification_room_ids)) {
-      // Certification is being removed.
-      CertificationController::deleteCertification($uid, $key);
-    }
-    elseif ($value != 0 && !in_array($key, $current_certification_room_ids)) {
-      // Certification is being added.
-      CertificationController::addCertification($uid, $key);
+  if ($submitted_certifications) {
+    foreach($submitted_certifications as $key => $value) {
+      // If the value = 0 that means it's unchecked.
+      // If the value is not 0 then that means it's checked. (It's equal to the room id.)
+      // The key of each certification here will also be the room id.
+      if ($value != 0 && in_array($key, $current_certification_room_ids)) {
+        // Certification is unchanged.
+      }
+      elseif ($value == 0 && in_array($key, $current_certification_room_ids)) {
+        // Certification is being removed.
+        CertificationController::deleteCertification($uid, $key);
+      }
+      elseif ($value != 0 && !in_array($key, $current_certification_room_ids)) {
+        // Certification is being added.
+        CertificationController::addCertification($uid, $key);
+      }
     }
   }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function intercept_certification_entity_type_alter(array &$entity_types) {
+  // Add validation constraint to the room reservation entity
+  // $entity_types['room_reservation']->addConstraint('RoomCertification');
 }
 
 /**
@@ -215,6 +226,24 @@ function intercept_certification_views_pre_view(ViewExecutable $view, $display_i
 }
 
 /**
+ * Implements hook_views_query_alter().
+ */
+function intercept_certification_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'intercept_rooms' && in_array($view->current_display, ['entity_reference_1', 'rooms'])) {
+    $current_user = \Drupal::currentUser();
+
+    // Include rooms that have a certification process, even if they
+    // are staff use only rooms if the user can't reserve them.
+    // See: intercept_room_reservations_views_query_alter()
+    if (!$current_user->hasPermission('view staff use room reservation')) {
+      $query->addTable('node__field_requires_certification');
+      $query->addWhere('permissions', 'node__field_requires_certification.field_requires_certification_value', 1, '=');
+      $query->setWhereGroup('OR', 'permissions');
+    }
+  }
+}
+
+/**
  * Returns uuids of all certification entities for a user.
  *
  * @param \Drupal\user\Entity\User $user
@@ -235,4 +264,12 @@ function intercept_certification_user_certifications(User $user) {
     }
   }
   return $results;
+}
+
+/**
+ * Implements hook_validation_constraint_alter().
+ */
+function intercept_certification_validation_constraint_alter(array &$definitions) {
+  // Remove the StaffRoomPermisisons constraint so we can replace it with the RoomCertification constraint.
+  $definitions['StaffRoomPermissions']['class'] = 'Drupal\intercept_certification\Plugin\Validation\Constraint\RoomCertificationConstraint';
 }

@@ -86,9 +86,13 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $increment = 15;
     $form['field_date_time']['widget'][0]['value']['#date_increment'] = $increment * 60;
     $form['field_date_time']['widget'][0]['end_value']['#date_increment'] = $increment * 60;
+    $form['field_event_register_period']['widget'][0]['value']['#date_increment'] = $increment * 60;
+    $form['field_event_register_period']['widget'][0]['end_value']['#date_increment'] = $increment * 60;
     // Round to the nearest 15 minutes and 0 seconds for default values.
     static::incrementRound($form['field_date_time']['widget'][0]['value']['#default_value'], $increment);
     static::incrementRound($form['field_date_time']['widget'][0]['end_value']['#default_value'], $increment);
+    static::incrementRound($form['field_event_register_period']['widget'][0]['value']['#default_value'], $increment);
+    static::incrementRound($form['field_event_register_period']['widget'][0]['end_value']['#default_value'], $increment);
 
     $form['reservation'] = [
       '#title' => $this->t('Reservation'),

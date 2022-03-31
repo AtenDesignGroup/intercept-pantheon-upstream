@@ -28,6 +28,9 @@
 }
 
 .card--location {
+  border: 2px solid $gray-60;
+  background-color: $gray-80;
+
   display: flex;
   flex-direction: column;
 
@@ -36,6 +39,10 @@
   }
   @include bp(smallish) {
     flex-grow: 1;
+  }
+  a {
+    text-decoration: none;
+    color: $blue-20;
   }
 
   h3 {
@@ -53,6 +60,10 @@
     font-weight: 800;
   }
 
+  .card__image {
+    border-bottom: 2px solid $gray-60;
+  }
+
   .card__content {
     padding: rem(20px);
 
@@ -62,6 +73,7 @@
   }
 
   .card__footer {
+    margin-top: 1em;
     a:not([class]) {
       @include fs(x-small);
       letter-spacing: rem(1px);

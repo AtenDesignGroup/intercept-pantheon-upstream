@@ -233,7 +233,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   }
 
   /**
-   * Room Reservation Scheduler.
+   * Room Reservation Selector.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request object.
@@ -241,7 +241,114 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    * @return array
    *   Return room reservation scheduler page.
    */
-  public function scheduler(Request $request) {
+  public function selector(Request $request) {
+    $build = [
+      '#theme' => 'room_reservation_selector',
+      '#title' => 'Reserve a Room',
+    ];
+    $build['#content'][] = [
+      'intercept_room_reservation_selector' => [
+        '#markup' => '<div id="roomReservationSelectRoot">
+            <div>
+              <h3>Reserve Room by Calendar</h3>
+              <p>Browse by date to find available rooms.</p>
+              <a href="/reserve-room/by-calendar" class="menu__link">Choose by Calendar</a>
+            </div>
+            <div>
+              <h3>Reserve Room by Room</h3>
+              <p>Browse by room to find available dates.</p>
+              <a href="/reserve-room/by-room" class="menu__link">Choose by Room</a>
+            </div>
+        </div>',
+      ],
+    ];
+    return $build;
+  }
+
+  /**
+   * Room Reservation Scheduler.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request object.
+   * @param string $views_id
+   *   The id of the JSON:API Views view that contains the exposed filters.
+   * @param string $display_id
+   *   The id of the JSON:API Views display that contains the exposed filters.
+   *
+   * @return array
+   *   Return room reservation scheduler page.
+   */
+  public function schedulerBase(Request $request, string $views_id, string $display_id) {
+    $build = [
+      '#theme' => 'room_reservation_scheduler',
+    ];
+
+    $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationScheduler';
+    $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationMediator';
+    $build['#content'] = [
+      'intercept_room_reservation_scheduler' => [
+        '#markup' => '<div id="roomReservationSchedulerRoot" data-jsonapi-views-view="' . $views_id . '" data-jsonapi-views-display="' . $display_id . '"></div>',
+      ],
+    ];
+
+    $statuses = [
+      'requested',
+      'approved',
+      'selected',
+      'event',
+    ];
+
+    $build['#content']['status_legend'] = [
+      '#theme' => 'intercept_reservation_status_legend',
+      '#statuses' => [],
+    ];
+
+    foreach ($statuses as $status) {
+      $build['#content']['status_legend']['#statuses'][$status] = [
+        '#theme' => 'intercept_reservation_status',
+        '#status' => $status,
+      ];
+    }
+
+    return $build;
+  }
+
+  /**
+   * Customer Room Reservation Scheduler.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request object.
+   *
+   * @return array
+   *   Return room reservation scheduler page.
+   */
+  public function schedulerCustomer(Request $request) {
+    return $this->schedulerBase($request, 'intercept_rooms', 'rooms');
+  }
+
+  /**
+   * Staff Room Reservation Scheduler.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request object.
+   *
+   * @return array
+   *   Return room reservation scheduler page.
+   */
+  public function schedulerStaff(Request $request) {
+    return $this->schedulerBase($request, 'intercept_rooms', 'default');
+  }
+
+  /**
+   * Room Reservation Reserve Calendar.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request object.
+   *
+   * @return array
+   *   Return room reservation scheduler page.
+   */
+  public function reserveCalendar(Request $request) {
     $build = [
       '#theme' => 'room_reservation_scheduler',
     ];

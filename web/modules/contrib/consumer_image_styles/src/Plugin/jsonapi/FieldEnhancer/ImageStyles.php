@@ -157,38 +157,60 @@ class ImageStyles extends ResourceFieldEnhancerBase implements ContainerFactoryP
     return [
       'type' => 'object',
       'properties' => [
-        'type' => ['type' => 'string'],
-        'id' => ['type' => 'string'],
-        'meta' => [
+        'data' => [
           'type' => 'object',
           'properties' => [
-            'height' => ['type' => 'integer'],
-            'width' => ['type' => 'integer'],
-            'alt' => [
-              'anyOf' => [
-                ['type' => 'string'],
-                ['type' => 'null'],
-              ],
-            ],
-            'title' => [
-              'anyOf' => [
-                ['type' => 'string'],
-                ['type' => 'null'],
-              ],
-            ],
-            'links' => [
+            'type' => ['type' => 'string'],
+            'id' => ['type' => 'string'],
+            'meta' => [
               'type' => 'object',
-              'patternProperties' => [
-                '.*' => [
+              'properties' => [
+                'height' => [
+                  'anyOf' => [
+                    ['type' => 'integer'],
+                    ['type' => 'null'],
+                    ['type' => 'string'],
+                  ],
+                ],
+                'width' => [
+                  'anyOf' => [
+                    ['type' => 'integer'],
+                    ['type' => 'null'],
+                    ['type' => 'string'],
+                  ],
+                ],
+                'alt' => [
+                  'anyOf' => [
+                    ['type' => 'string'],
+                    ['type' => 'null'],
+                  ],
+                ],
+                'title' => [
+                  'anyOf' => [
+                    ['type' => 'string'],
+                    ['type' => 'null'],
+                  ],
+                ],
+                'imageDerivatives' => [
                   'type' => 'object',
                   'properties' => [
-                    'href' => ['type' => 'string', 'format' => 'uri'],
-                    'meta' => [
+                    'links' => [
                       'type' => 'object',
-                      'properties' => [
-                        'rel' => [
-                          'type' => 'array',
-                          'items' => ['type' => 'string', 'format' => 'uri'],
+                      'patternProperties' => [
+                        '.*' => [
+                          'type' => 'object',
+                          'properties' => [
+                            'href' => ['type' => 'string', 'format' => 'uri'],
+                            'rel' => [
+                              'type' => 'string',
+                            ],
+                            'title' => [
+                              'type' => 'string',
+                            ],
+                            'type' => [
+                              'type' => 'string',
+                            ],
+                          ],
                         ],
                       ],
                     ],

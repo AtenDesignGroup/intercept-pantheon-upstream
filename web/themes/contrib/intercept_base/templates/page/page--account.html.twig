@@ -32,8 +32,6 @@
       <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
 
       {% include '@intercept-base-components/content/content.twig' with { content: page.content
-      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_first, class: 'layout-sidebar-first'
-      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_second, class: 'layout-sidebar-second'
       } %}
     </main>
     {% endblock %}

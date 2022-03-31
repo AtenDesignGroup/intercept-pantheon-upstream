@@ -51,7 +51,7 @@ class EventEvaluationStaffForm extends EventEvaluationFormBase {
         '#access' => $user->hasPermission('create any event feedback'),
       ];
       $form['evaluation'] += [
-        '#title' => $this->t("How'd the Event Go?"),
+        '#title' => $this->t("How'd the event go?"),
         '#type' => 'textarea',
         '#attributes' => [
           'placeholder' => $this->t('Add thoughts about your event here to use in the future.'),

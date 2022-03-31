@@ -2,27 +2,58 @@
 {{ attach_library('intercept_base/summary') }}
 
 <article {{ component.attributes('summary', modifiers, attr) }}>
-    <p class="summary__supertitle">
-      {{supertitle}}
-    </p>
-    {% if title %}
-    <h4 class="summary__title">
-      {% if title_url %}
-        <a href="{{ title_url }}" class="summary__link" title="{{ text }}">
-      {% endif %}
-        {{ title }}
-      {% if title_url %}
-      </a>
-      {% endif %}
-    </h4>
-    {% if date %}
-      <p class="summary__dateline">
-        <span class="summary__dateline-date">{{date.date}}, </span>
-        <span class="summary__dateline-time">{{date.time}}</span>
-      </p>
-    {% endif %}
-    <p class="summary__subtitle">
-      {{subtitle}}
-    </p>
+  {% if image %}
+    <div class="summary__image">
+      {{image}}
+    </div>
   {% endif %}
+  <div class="summary__main">
+    <header class="summary__header">
+      {% if supertitle %}
+        <div class="summary__supertitle">
+          {{supertitle}}
+        </div>
+      {% endif %}
+      {% if title %}
+        <h4 class="summary__title">
+          {% if title_url %}
+            <a href="{{ title_url }}" class="summary__link" title="{{ text }}">
+          {% endif %}
+            {{ title }}
+          {% if title_url %}
+          </a>
+          {% endif %}
+        </h4>
+        {% if date %}
+          <p class="summary__dateline">
+            <span class="summary__dateline-date">{{date.date}}, </span>
+            <span class="summary__dateline-time">{{date.time}}</span>
+          </p>
+        {% endif %}
+        <p class="summary__subtitle">
+          {{subtitle}}
+        </p>
+      {% endif %}
+    </header>
+    {% if content %}
+      <div class="summary__content">
+        {% if room %}
+          {% if certified %}
+            <div class="user-is-certified">
+              <p>You are currently certified to work independently in this space.</p>
+            </div>
+          {% else %}
+            <div class="user-is-not-certified">
+              <p>{{ content.field_text_teaser }}</p>
+            </div>
+          {% endif %}
+        {% endif %}
+        {% if content.field_text_teaser %}
+          {{ content|without('field_text_teaser') }}
+        {% else %}
+          {{ content }}
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
 </article>

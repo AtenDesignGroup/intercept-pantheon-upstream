@@ -333,6 +333,7 @@ class ReservationManager implements ReservationManagerInterface {
       $return[$uuid]['is_closed'] = $this->isClosed($params, $room);
       $return[$uuid]['closed_message'] = $this->closedMessage($params, $room);
       $return[$uuid]['has_location'] = !empty($this->getLocation($room));
+      $return[$uuid]['is_reservable'] = TRUE;
       if ($debug) {
         $debug_data['schedule'] = $this->getSchedule($reservations, $params);
         $debug_data['schedule_by_open_hours'] = $this->getScheduleByOpenHours($reservations, $params, $room);
@@ -383,23 +384,40 @@ class ReservationManager implements ReservationManagerInterface {
       $message = $this->t('Booked');
       $group = '';
       $guest = '';
+
+      $isEditable = FALSE;
+      if ($this->currentUser->hasPermission('update any room_reservation')) {
+        $isEditable = TRUE;
+      }
+
       if ($reservation->hasField('field_user') && $reservation->field_user->entity && $this->currentUser->hasPermission('update any room_reservation')) {
         $user = User::load($reservation->field_user->entity->id());
         if ($user) {
           $full_name = $user->full_name;
           if (!empty($full_name)) {
-            $guest = $full_name;
+            $customer = $full_name;
           }
           else {
-            $guest = $user->name->value;
+            $customer = $user->name->value;
           }
         }
+      }
+
+      if ($reservation->hasField('field_guest') && $reservation->field_guest->getValue() && $this->currentUser->hasPermission('update any room_reservation')) {
+        $guest_id = $reservation->field_guest->entity->id();
+        $guest = $this->entityTypeManager->getStorage('intercept_guest')->load($guest_id);
+        $first_name = $guest->field_first_name->value;
+        $last_name = $guest->field_last_name->value;
+        $guest_name = $first_name . ' ' . $last_name;
       }
       if ($reservation->hasField('field_group_name') && $reservation->field_group_name->value && $this->currentUser->hasPermission('update any room_reservation')) {
         $group = $reservation->field_group_name->value;
       }
-      if (!empty($guest) && empty($group)) {
-        $message = $guest;
+      if (!empty($customer) && empty($group)) {
+        $message = $customer;
+      }
+      if (!empty($customer) && $customer === 'Guest Customer' && $guest_name) {
+        $message = $guest_name;
       }
       if (!empty($group)) {
         $message = $group;
@@ -416,6 +434,7 @@ class ReservationManager implements ReservationManagerInterface {
         'status' => $reservation->getStatus(),
         'message' => $message,
         'hasEvent' => $this->hasEvent($reservation),
+        'isEditable' => $isEditable,
         'isReservedByStaff' => $this->isStaff($reservation),
       ];
     }

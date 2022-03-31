@@ -1,0 +1,134 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.off_canvas
+    - field.field.node.room.field_approval_required
+    - field.field.node.room.field_capacity_max
+    - field.field.node.room.field_capacity_min
+    - field.field.node.room.field_location
+    - field.field.node.room.field_requires_certification
+    - field.field.node.room.field_reservable_online
+    - field.field.node.room.field_reservation_phone_number
+    - field.field.node.room.field_reservation_time_max
+    - field.field.node.room.field_room_fees
+    - field.field.node.room.field_room_standard_equipment
+    - field.field.node.room.field_room_type
+    - field.field.node.room.field_staff_use_only
+    - field.field.node.room.field_text_content
+    - field.field.node.room.field_text_intro
+    - field.field.node.room.field_text_teaser
+    - field.field.node.room.image_primary
+    - image.style.medium
+    - node.type.room
+  module:
+    - duration_field
+    - media
+    - telephone
+    - text
+    - user
+id: node.room.off_canvas
+targetEntityType: node
+bundle: room
+mode: off_canvas
+content:
+  field_capacity_max:
+    type: number_integer
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_capacity_min:
+    type: number_integer
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_location:
+    type: entity_reference_label
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_reservation_phone_number:
+    type: telephone_link
+    label: inline
+    settings:
+      title: ''
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  field_reservation_time_max:
+    type: duration_human_display
+    label: inline
+    settings:
+      text_length: full
+      separator: space
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_room_type:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_staff_use_only:
+    type: boolean
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 9
+    region: content
+  field_text_content:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_text_intro:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_text_teaser:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  image_primary:
+    type: media_thumbnail
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: medium
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  field_approval_required: true
+  field_requires_certification: true
+  field_reservable_online: true
+  field_room_fees: true
+  field_room_standard_equipment: true
+  langcode: true
+  links: true
+  search_api_excerpt: true

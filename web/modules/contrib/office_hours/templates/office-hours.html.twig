@@ -13,9 +13,4 @@
       <span>{{ item_separator | raw }}</span>
     </div>
   {% endfor %}
-  {% if schema %}
-    {% for meta in schema %}
-      <meta property="openingHours" content="{{ meta.label }}{{ meta.slots }}">
-    {% endfor %}
-  {% endif %}
 </div>

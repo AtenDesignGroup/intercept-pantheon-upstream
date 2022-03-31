@@ -71,16 +71,17 @@ class Negotiator {
         $consumer_uuid = $request->query->get('_consumer_id');
       }
     }
-    if (!$consumer_uuid) {
-      return $this->loadDefaultConsumer();
+    if ($consumer_uuid) {
+      try {
+        /** @var \Drupal\consumers\Entity\Consumer $consumer */
+        $consumer = $this->entityRepository->loadEntityByUuid('consumer', $consumer_uuid);
+      }
+      catch (EntityStorageException $exception) {
+        watchdog_exception('consumers', $exception);
+      }
     }
-    try {
-      /** @var \Drupal\consumers\Entity\Consumer $consumer */
-      $consumer = $this->entityRepository->loadEntityByUuid('consumer', $consumer_uuid);
-    }
-    catch (EntityStorageException $exception) {
-      watchdog_exception('consumers', $exception);
-      return $this->loadDefaultConsumer();
+    if (empty($consumer)) {
+      $consumer = $this->loadDefaultConsumer();
     }
     return $consumer;
   }

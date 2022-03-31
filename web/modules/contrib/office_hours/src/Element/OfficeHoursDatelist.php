@@ -17,19 +17,13 @@ class OfficeHoursDatelist extends Datelist {
    * {@inheritdoc}
    */
   public function getInfo() {
-    $class = get_class($this);
     $parent_info = parent::getInfo();
 
     $info = [
       '#input' => TRUE,
       '#tree' => TRUE,
-      '#process' => [
-        [$class, 'processOfficeHours'],
-      ],
-      '#element_validate' => [
-        [$class, 'validateOfficeHours'],
-      ],
-
+      '#process' => [[static::class, 'processOfficeHoursSlot']],
+      '#element_validate' => [[static::class, 'validateOfficeHoursSlot']],
       // @see Drupal\Core\Datetime\Element\Datelist.
       '#date_part_order' => ['year', 'month', 'day', 'hour', 'minute'],
       // @see Drupal\Core\Datetime\Element\Datetime.
@@ -64,10 +58,17 @@ class OfficeHoursDatelist extends Datelist {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *
    * @return array|mixed|null
+   *   An array containing 'hour' and 'minute'.
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
 
-    if ($input == FALSE) {
+    if ($input !== FALSE) {
+      // Set empty minutes field to '00' for better UX.
+      if ($input['hour'] !== '' && $input['minute'] === '') {
+        $input['minute'] = '00';
+      }
+    }
+    else {
       // Prepare the numeric value: use a DateTime value.
       $time = $element['#default_value'];
       $date = NULL;
@@ -78,7 +79,7 @@ class OfficeHoursDatelist extends Datelist {
         elseif (is_numeric($time)) {
           $timezone = $element['#date_timezone'];
           // The Date function needs a fixed format, so format $time to '0030'.
-          $time = OfficeHoursDatetime::get($time, 'Hi');
+          $time = OfficeHoursDateHelper::format($time, 'Hi');
           $date = OfficeHoursDateHelper::createFromFormat('Gi', $time, $timezone);
         }
       }
@@ -87,10 +88,7 @@ class OfficeHoursDatelist extends Datelist {
       }
       $element['#default_value'] = $date;
     }
-    // Set empty minutes field to '00' for better UX.
-    if (!empty($input['hour']) && isset($input['minute']) && empty($input['minute'])) {
-      $input['minute'] = '00';
-    }
+
     $input = parent::valueCallback($element, $input, $form_state);
     return $input;
   }
@@ -100,12 +98,12 @@ class OfficeHoursDatelist extends Datelist {
    *
    * @param $element
    * @param \Drupal\Core\Form\FormStateInterface $form_state
-   * @param $complete_form
+   * @param array $complete_form
    *
    * @return array
    *   The screen element.
    */
-  public static function processOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {
+  public static function processOfficeHoursSlot(&$element, FormStateInterface $form_state, &$complete_form) {
     $element['hour']['#options'] = $element['#hour_options'];
     return $element;
   }
@@ -117,13 +115,13 @@ class OfficeHoursDatelist extends Datelist {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    * @param $complete_form
    */
-  public static function validateOfficeHours(&$element, FormStateInterface $form_state, &$complete_form) {
+  public static function validateOfficeHoursSlot(&$element, FormStateInterface $form_state, &$complete_form) {
     $input = $element['#value'];
 
     $value = '';
     if (isset($input['object']) && $input['object']) {
       $value = (string) $input['object']->format('Gi');
-      // Set the value for usage in OfficeHoursList::validateOfficeHoursSlot().
+      // Set the value for usage in OfficeHoursBaseSlot::validateOfficeHoursSlot().
       $element['#value'] = $value;
     }
     $form_state->setValueForElement($element, $value);

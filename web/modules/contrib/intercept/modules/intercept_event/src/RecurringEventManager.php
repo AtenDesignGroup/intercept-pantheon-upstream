@@ -129,7 +129,7 @@ class RecurringEventManager {
       return TRUE;
     }
     return FALSE;
-}
+  }
 
   /**
    * Form submit handler for the event.
@@ -169,8 +169,7 @@ class RecurringEventManager {
     if ($event_recurrence && $event_recurrence->event->entity != $node) {
       // Hide inline entity form and add remove from recurrence.
       $this->eventRecurrenceForm($elements, $form_state);
-    }
-    else {
+    } else {
       // If this is the base event we let them add/edit their recurrence.
       $this->eventRecurrenceBaseForm($elements, $form_state);
     }
@@ -191,7 +190,7 @@ class RecurringEventManager {
     $node = $form_state->getFormObject()->getEntity();
 
     $elements['#attributes'] = [
-      'class' => 'intercept-event-recurring-container',
+      'class' => ['intercept-event-recurring-container'],
       'data-event-id' => $node->id(),
     ];
 
@@ -200,21 +199,13 @@ class RecurringEventManager {
       'recurringEventCount' => $event_recurrence ? count($event_recurrence->getEvents()) : 0,
     ];
 
-    $elements['enabled'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Enabled'),
-      '#weight' => -5,
-      '#default_value' => !empty($event_recurrence),
-      '#attributes' => [
-        'class' => [
-          'intercept-event-recurring-enable',
-        ],
-      ],
-    ];
+    if (empty($event_recurrence) || $event_recurrence->isNew()) {
+      $elements['description'] = [
+        '#type' => 'item',
+        '#markup' => $this->t('If this is a recurring event, change this recurrence rule from \'Once\' and add details accordingly.'),
+      ];
+    }
 
-    $elements['inline_entity_form']['#states']['visible'] = [
-      ':input[name="event_recurrence[0][enabled]"]' => ['checked' => TRUE],
-    ];
     $elements['#attached']['library'][] = 'intercept_event/event_recurring';
   }
 
@@ -286,8 +277,8 @@ class RecurringEventManager {
     $recurring_event_manager = $form_state->get('recurring_event_manager');
 
     $event_recurrence = $entity_form['#entity'];
-    $recurring = $form_state->getValue(['event_recurrence', 0]);
-    if (($recurring['enabled'] !== 0) && $event_recurrence->isNew()) {
+
+    if ($event_recurrence->isNew()) {
       $form_state->set('save_base_event', $event_recurrence);
     }
 
@@ -295,14 +286,18 @@ class RecurringEventManager {
 
     $complete_form = &$form_state->getCompleteForm();
     $inline_entity_form = &NestedArray::getValue($complete_form, $entity_form['#array_parents']);
+    $recurring = $form_state->getValue(['event_recurrence', 0]);
 
-    if ($recurring['enabled'] == 0) {
+    // Determine if this is a recurring event based on the rrule chosen in the IEF.
+    $rrule = $form_state->getValue(['event_recurrence', 0])['inline_entity_form']['field_event_rrule'][0]['mode'];
+
+    if ($rrule == 'once') {
       // Now set the parent entity to remove the field value.
       // $entity_form is by reference but will not change the value of the
       // field.
       $inline_entity_form['#entity'] = NULL;
 
-      // If the checkbox is disabled and this is a base event.
+      // If this is a base event.
       if ($recurring_event_manager->getBaseEventRecurrence($node)) {
         $existing_events = $event_recurrence->getEvents();
         if (!empty($existing_events)) {
@@ -417,5 +412,4 @@ class RecurringEventManager {
   private function getFrequencyOptions($type = 0) {
     return array_column($this->getFrequencies(), $type);
   }
-
 }

@@ -18,6 +18,7 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Session\AccountProxy;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
@@ -52,6 +53,13 @@ class RoomReservationForm extends ContentEntityForm {
   protected $savedStatus;
 
   /**
+   * Drupal\Core\Session\AccountProxy definition.
+   *
+   * @var \Drupal\Core\Session\AccountProxy
+   */
+  protected $currentUser;
+
+  /**
    * Constructs a RoomReservationForm object.
    *
    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
@@ -65,10 +73,11 @@ class RoomReservationForm extends ContentEntityForm {
    * @param \Drupal\intercept_core\Utility\Dates $date_utility
    *   The Intercept dates utility.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, EntityDisplayRepositoryInterface $entity_display_repository, Dates $date_utility) {
+  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, EntityDisplayRepositoryInterface $entity_display_repository, Dates $date_utility, AccountProxy $current_user) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->entityDisplayRepository = $entity_display_repository;
     $this->dateUtility = $date_utility;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -80,7 +89,8 @@ class RoomReservationForm extends ContentEntityForm {
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time'),
       $container->get('entity_display.repository'),
-      $container->get('intercept_core.utility.dates')
+      $container->get('intercept_core.utility.dates'),
+      $container->get('current_user')
     );
   }
 
@@ -91,10 +101,15 @@ class RoomReservationForm extends ContentEntityForm {
     parent::init($form_state);
     if ($this->getRequestWrapperFormat() == 'drupal_dialog.off_canvas') {
       $config = $this->config('intercept_room_reservation.settings');
-      if ($form_mode = $config->get('off_canvas_form_mode')) {
-        $form_display = $this->entityDisplayRepository->getFormDisplay('room_reservation', 'room_reservation', $form_mode);
-        $this->setFormDisplay($form_display, $form_state);
+      $current_user = \Drupal::currentUser();
+      $roles = $current_user->getRoles();
+      if (in_array('intercept_registered_customer', $roles)) {
+        $form_display = $this->entityDisplayRepository->getFormDisplay('room_reservation', 'room_reservation', 'customer_reserve');
       }
+      else {
+        $form_display = $this->entityDisplayRepository->getFormDisplay('room_reservation', 'room_reservation', 'default');
+      }
+      $this->setFormDisplay($form_display, $form_state);
     }
   }
 
@@ -106,6 +121,9 @@ class RoomReservationForm extends ContentEntityForm {
     $entity = $this->entity;
     if ($entity->isNew() && ($room = $this->getRequest()->query->get('room'))) {
       $entity->set('field_room', $room);
+    }
+    if ($entity->isNew()) {
+      $entity->set('field_user', \Drupal::currentUser()->id());
     }
     $form = parent::buildForm($form, $form_state);
 
@@ -133,8 +151,8 @@ class RoomReservationForm extends ContentEntityForm {
     // Add an ajax callback validating the room reservation availability.
     $form['field_dates']['widget'][0]['value']['#ajax'] = [
       'callback' => '::availabilityCallback',
-      // 'disable-refocus' => TRUE,
-      'event' => 'change',
+      'disable-refocus' => TRUE,
+      'event' => 'change delayed_keyup',
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
@@ -143,8 +161,8 @@ class RoomReservationForm extends ContentEntityForm {
     ];
     $form['field_dates']['widget'][0]['end_value']['#ajax'] = [
       'callback' => '::availabilityCallback',
-      // 'disable-refocus' => TRUE,
-      'event' => 'change',
+      'disable-refocus' => TRUE,
+      'event' => 'change delayed_keyup',
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
         'type' => 'throbber',
@@ -157,7 +175,6 @@ class RoomReservationForm extends ContentEntityForm {
     $form['field_dates']['widget'][0]['end_value']['#attributes']['class'] = [
       'delayed-keyup',
     ];
-
     // Add information about the current revision and a link to the room
     // reservation's revisions page.
     $createdTime = $form_state->getFormObject()->getEntity()->getCreatedTime();
@@ -272,7 +289,7 @@ class RoomReservationForm extends ContentEntityForm {
       $reservation_params['room'] = $field_room[0]['target_id'];
     }
 
-    $field_dates = $form_state->getValue('field_dates');
+    $field_dates = $form_state->getUserInput()['field_dates'];
     if (($start_date = $field_dates[0]['value']['date']) && ($start_time = $field_dates[0]['value']['time'])) {
       $reservation_params['start'] = $this->dateUtility->convertDate($start_date . 'T' . $start_time);
     }
@@ -302,7 +319,7 @@ class RoomReservationForm extends ContentEntityForm {
       return [];
     }
 
-    $message = [];
+    $message = NULL;
 
     if (isset($reservation_params['start']) && isset($reservation_params['end'])) {
       $reservation = $form_state->getFormObject()->getEntity();
@@ -317,28 +334,38 @@ class RoomReservationForm extends ContentEntityForm {
       if ($availability = $reservation_manager->availability($reservation_params)) {
         foreach ($availability as $room_availability) {
           if ($room_availability['has_reservation_conflict']) {
-            $message = [
-              '#type' => 'intercept_field_error_message',
-              '#message' => 'WARNING: It looks like the time that you\'re picking already has a room reservation. You will not be allowed to proceed until you update it to an available date and time.',
-            ];
+            $message = 'WARNING: It looks like the time that you\'re picking already has a room reservation. You will not be allowed to proceed until you update it to an available date and time.';
           }
-          if ($room_availability['has_open_hours_conflict']) {
-            $message = [
-              '#type' => 'intercept_field_error_message',
-              '#message' => 'WARNING: You are reserving a closed space. You will not be allowed to proceed until you update it to an available date and time.',
-            ];
+          if ($room_availability['has_open_hours_conflict'] && !$this->currentUser->hasPermission('bypass room reservation open hours constraints')) {
+            $message = 'WARNING: You are reserving a closed space. You will not be allowed to proceed until you update it to an available date and time.';
+          }
+          if ($room_availability['has_open_hours_conflict'] && $this->currentUser->hasPermission('bypass room reservation open hours constraints')) {
+            $message = 'WARNING: You are reserving a closed space. Please verify dates and times before saving.';
+          }
+          if (!$room_availability['has_open_hours_conflict'] && !$room_availability['has_reservation_conflict']) {
+            $message = '';
           }
         }
       }
     }
 
+    return $message;
+  }
+
+  /**
+   *
+   */
+  public function wrapAvailabilityValidationError($message) {
     return [
       '#type' => 'html_tag',
       '#attributes' => [
         'id' => 'edit-field-dates-0-message',
       ],
       '#tag' => 'div',
-      'child' => $message,
+      'child' => [
+        '#type' => 'intercept_field_error_message',
+        '#message' => $message,
+      ],
     ];
   }
 
@@ -358,10 +385,8 @@ class RoomReservationForm extends ContentEntityForm {
     $response = new AjaxResponse();
 
     $validationMessage = $this->checkAvailability($form, $form_state);
-    if (!empty($validationMessage)) {
-      $command = new ReplaceCommand('[id^="edit-field-dates-0-message"]', $validationMessage);
-      $response->addCommand($command);
-    }
+    $command = new ReplaceCommand('[id^="edit-field-dates-0-message"]', $this->wrapAvailabilityValidationError($validationMessage));
+    $response->addCommand($command);
 
     // Trigger the intercept:updateRoomReservation event.
     $reservation_params = $this->getReservationParams($form_state);
@@ -382,6 +407,19 @@ class RoomReservationForm extends ContentEntityForm {
     }
 
     return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+
+    $validationMessage = $this->checkAvailability($form, $form_state);
+    if ($validationMessage !== '' && $validationMessage !== 'WARNING: You are reserving a closed space. Please verify dates and times before saving.') {
+      // $command = new ReplaceCommand('[id^="edit-field-dates-0-message"]', $validationMessage);
+      $form_state->setErrorByName('field_dates', $validationMessage);
+    }
   }
 
 }

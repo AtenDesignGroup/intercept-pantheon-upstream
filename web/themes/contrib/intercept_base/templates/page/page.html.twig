@@ -50,19 +50,6 @@
           }
         %}
 
-        {%
-          include '@intercept-base-components/sidebar/sidebar.twig' with {
-            region: page.sidebar_first,
-            class: 'layout-sidebar-first'
-          }
-        %}
-
-        {%
-          include '@intercept-base-components/sidebar/sidebar.twig' with {
-            region: page.sidebar_second,
-            class: 'layout-sidebar-second'
-          }
-        %}
       </main>
       {% endblock %}
     </div>{# /.layout-container #}

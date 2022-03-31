@@ -12,4 +12,13 @@ office_hours_widget:
   js:
     js/office_hours.js: {}
   dependencies:
+    - core/drupal
     - core/jquery
+
+office_hours_webform:
+  version: VERSION
+  css:
+    theme:
+      css/office_hours.webform.css: {}
+  dependencies:
+    - office_hours/office_hours_widget

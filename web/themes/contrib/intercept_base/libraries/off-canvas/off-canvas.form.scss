@@ -412,6 +412,23 @@
     right: 0;
     z-index: 10;
   }
+
+  .user-is-not-certified {
+    color: #a51b00;
+    background-color: #fcf4f2;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+
+  .user-is-certified {
+    color: #4c4d4f;
+    background-color: #f3faef;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+
 }
 
 #room-reservation-form__messages {

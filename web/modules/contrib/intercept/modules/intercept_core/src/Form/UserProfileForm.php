@@ -212,13 +212,35 @@ class UserProfileForm extends ProfileForm {
       'field_ils_username',
     ]);
     $ils_username = $ils_username[0]['value'];
-    $response = $patron->updateUsername($ils_username);
-    if (isset($response->PAPIErrorCode)) {
-      if ($response->PAPIErrorCode == -3607) {
-        $form_state->setError($form['field_ils_username'], 'The username you entered is unavailable. Please try another username.');
-      }
-      elseif ($response->PAPIErrorCode == -3606) {
-        $form_state->setError($form['field_ils_username'], 'The username must be at least 4 characters but not longer than 50 characters.');
+    if (is_numeric($ils_username)) {
+      $form_state->setError($form['field_ils_username'], 'The username you entered is unavailable. Please try another username.');
+    }
+    elseif (!empty($form['field_ils_username']['widget'][0]['value']['#default_value']) && empty($ils_username)) {
+      // Customer has an existing username and is attempting to delete it.
+      // There's no method in PAPI to delete an existing username.
+      $form_state->setError($form['field_ils_username'], 'The username must be at least 4 characters but not longer than 50 characters.');
+    }
+    elseif ($form['field_ils_username']['widget'][0]['value']['#default_value'] == $ils_username) {
+      // No change to the username is necessary.
+    }
+    else {
+      $response = $patron->updateUsername($ils_username);
+      if (isset($response->PAPIErrorCode)) {
+        if ($response->PAPIErrorCode == -3607) {
+          $form_state->setError($form['field_ils_username'], 'The username you entered is unavailable. Please try another username.');
+        }
+        elseif ($response->PAPIErrorCode == -3606) {
+          $form_state->setError($form['field_ils_username'], 'The username must be at least 4 characters but not longer than 50 characters.');
+        }
+        elseif ($response->PAPIErrorCode == -3608) {
+          $form_state->setError($form['field_ils_username'], 'All usernames must begin with a letter. Usernames can contain letters, numbers, and special characters. Spaces are not allowed, and special characters cannot be contiguous.');
+        }
+        elseif ($response->PAPIErrorCode == -3609) {
+          $form_state->setError($form['field_ils_username'], 'Username and barcode may not be the same.');
+        }
+        elseif ($response->PAPIErrorCode == -3610) {
+          $form_state->setError($form['field_ils_username'], 'The username you entered is identical to your previous username.');
+        }
       }
     }
   }

@@ -9,6 +9,9 @@
       .summary--card .summary__content {
         padding: 1.875rem; } }
 
+* + .summary__main {
+  margin-top: 30px; }
+
 .summary__header:not(:last-child) {
   margin-bottom: 0.9375rem; }
   @media (min-width: 48em) {
@@ -134,3 +137,6 @@
     .summary__title:not(:last-child),
     .summary__label:not(:last-child) {
       margin-bottom: 0.5rem; } }
+
+#drupal-off-canvas > .summary--off-canvas {
+  margin-top: 1.875rem; }

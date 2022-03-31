@@ -148,10 +148,11 @@ class LinkCollectionNormalizer implements NormalizerInterface {
     if ($resource_type->getEntityTypeId() !== 'file') {
       return FALSE;
     }
-    return in_array(
-      mb_strtolower(pathinfo($link_context->getField($resource_type->getPublicName('uri'))->value, PATHINFO_EXTENSION)),
-      $this->imageFactory->getSupportedExtensions()
-    );
+    $uriField = $link_context->getField($resource_type->getPublicName('uri'));
+    return $uriField && in_array(
+        mb_strtolower(pathinfo($uriField->value, PATHINFO_EXTENSION)),
+        $this->imageFactory->getSupportedExtensions()
+      );
   }
 
   /**

@@ -24,6 +24,12 @@ use Drupal\Core\Form\FormStateInterface;
   */
 function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
+  // Abort if user does not have permissions to register guests.
+  $user = \Drupal::currentUser();
+  if (!$user->hasPermission('add intercept guest entity')) {
+    return;
+  };
+
   $options = [
     'member' => t('Member'),
     'guest' => t('Guest'),

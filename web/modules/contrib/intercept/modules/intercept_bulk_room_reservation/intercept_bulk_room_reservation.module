@@ -182,6 +182,54 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
         || $room_availability['is_closed'])) {
         $available = TRUE;
       }
+      else {
+        if ($room_availability['has_reservation_conflict'] ||
+          ($room_availability['has_conflict'] && !$user_is_privileged)) {
+          // Add a message with details about the conflict.
+          $storage = \Drupal::entityTypeManager()->getStorage('node');
+          $room_node = $storage->load(reset($params['rooms']));
+          $conflict_date_string = $room_availability['dates'][0]['start'];
+          $conflict_time = strtotime($conflict_date_string);
+          $conflict_date_time = new \DateTime();
+          $conflict_date_time->setTimestamp($conflict_time);
+          $siteTimeZone = \Drupal::config('system.date')->get('timezone')['default'];
+          $siteTimeZone = new \DateTimeZone($siteTimeZone);
+          $conflict_date_time->setTimezone($siteTimeZone);
+          $formatted_date = $conflict_date_time->format('m-d-Y');
+
+          $message = $room_node->label() . ' has a conflict with your series on ' . $formatted_date;
+          \Drupal::messenger()->addWarning($message);
+        }
+        else {
+          if ($room_availability['has_open_hours_conflict'] && !$user_is_privileged) {
+            // Add a message with details about the room having an open hours
+            // conflict.
+            $storage = \Drupal::entityTypeManager()->getStorage('node');
+            $room_node = $storage->load(reset($params['rooms']));
+            $message = $room_node->label() . ' has an \'open hours\' conflict with your series.';
+            \Drupal::messenger()->addWarning($message);
+          }
+          else {
+            if ($room_availability['is_closed']) {
+              // Add a message with details about the room being closed.
+              $storage = \Drupal::entityTypeManager()->getStorage('node');
+              $room_node = $storage->load(reset($params['rooms']));
+              $conflict_date_string = $room_availability['dates'][0]['start'];
+              $conflict_time = strtotime($conflict_date_string);
+              $conflict_date_time = new \DateTime();
+              $conflict_date_time->setTimestamp($conflict_time);
+              $siteTimeZone = \Drupal::config('system.date')->get('timezone')['default'];
+              $siteTimeZone = new \DateTimeZone($siteTimeZone);
+              $conflict_date_time->setTimezone($siteTimeZone);
+              $formatted_date = $conflict_date_time->format('m-d-Y');
+              $storage = \Drupal::entityTypeManager()->getStorage('node');
+              $room_node = $storage->load(reset($params['rooms']));
+              $message = $room_node->label() . ' is closed on ' . $formatted_date;
+              \Drupal::messenger()->addWarning($message);
+            }
+          }
+        }
+      }
     }
   }
 

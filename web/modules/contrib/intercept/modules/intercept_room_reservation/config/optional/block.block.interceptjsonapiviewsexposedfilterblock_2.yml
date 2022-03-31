@@ -1,4 +1,3 @@
-uuid: c8c5dfc1-b7b7-4a26-91f8-6ccbe1678059
 langcode: en
 status: true
 dependencies:
@@ -6,11 +5,11 @@ dependencies:
     - intercept_room_reservation
     - system
   theme:
-    - richland
+    - intercept_base
 id: interceptjsonapiviewsexposedfilterblock_2
-theme: richland
+theme: intercept_base
 region: content
-weight: -31
+weight: 0
 provider: null
 plugin: intercept_room_reservation_jsonapi_views_filter_block
 settings:

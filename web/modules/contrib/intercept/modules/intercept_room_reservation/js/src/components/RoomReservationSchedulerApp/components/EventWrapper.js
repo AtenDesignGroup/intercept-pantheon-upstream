@@ -72,6 +72,7 @@ class EventWrapper extends React.Component {
     const { event, type, continuesPrior, continuesAfter } = this.props;
 
     let { children } = this.props;
+    const isEditable = get(event, 'isEditable');
 
     if (event.__isPreview) {
       return React.cloneElement(children, {
@@ -85,9 +86,10 @@ class EventWrapper extends React.Component {
     const { draggable } = this.context;
     const { draggableAccessor, resizableAccessor } = draggable;
 
-    const isDraggable = draggableAccessor
-      ? !!get(event, draggableAccessor)
-      : true;
+    const isDraggable = isEditable
+      && (draggableAccessor
+        ? !!get(event, draggableAccessor)
+        : true);
 
     /* Event is not draggable, no need to wrap it */
     if (!isDraggable) {
@@ -113,9 +115,10 @@ class EventWrapper extends React.Component {
      * in the middle of events when showMultiDay is true, and to
      * events at the edges of the calendar's min/max location.
      */
-    const isResizable = resizableAccessor
-      ? !!get(event, resizableAccessor)
-      : true;
+    const isResizable = isEditable
+      && (resizableAccessor
+        ? !!get(event, resizableAccessor)
+        : true);
 
     if (isResizable || isDraggable) {
       /*

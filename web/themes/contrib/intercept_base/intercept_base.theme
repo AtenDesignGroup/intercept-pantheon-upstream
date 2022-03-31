@@ -5,8 +5,23 @@
  * Functions to support theming.
  */
 
-use Drupal\user\Entity\User;
+use Drupal\block\Entity\Block;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_preprocess_HOOK() for html.
+ */
+function intercept_base_preprocess_html(&$variables) {
+
+  // Only add this CSS class if user has permission.
+  if (!\Drupal::currentUser()->hasPermission('access toolbar')) {
+    return;
+  }
+
+  // Set toolbar.
+  $variables['attributes']['class'][] = 'intercept-staff-management-menu';
+}
 
 /**
  * Implements hook_preprocess_HOOK() for page templates.
@@ -37,11 +52,60 @@ function intercept_base_preprocess_page(&$variables) {
 function intercept_base_preprocess_node(&$variables) {
 
   $node = $variables['node'];
-  // Will create a link variable visible on the event registratio page that points to the event detail page
+  // Will create a link variable visible on the event registration
+  // page that points to the event detail page
   if ($variables['view_mode'] == 'header' && $node->getType() == 'event') {
     if (\Drupal::routeMatch()->getRouteName() === 'entity.node.register') {
       $variables['event_details_url'] = $variables['url'];
     }
+  }
+
+  // Making region content available to node templates
+  $view_mode = $variables['view_mode']; // Retrieve view mode
+  $allowed_view_modes = ['full']; // Array of allowed view modes
+  if (in_array($view_mode, $allowed_view_modes)) {
+    // Allowed regions (for performance so as to not execute for unneeded region)
+    $allowed_regions = ['sidebar_first'];
+    intercept_base_add_regions_to_node($allowed_regions, $variables);
+  }
+}
+
+/**
+ * Function to add page regions to node templates.
+ */
+function intercept_base_add_regions_to_node($allowed_regions, &$variables) {
+  // Retrieve active theme
+  $theme = \Drupal::theme()->getActiveTheme()->getName();
+ 
+  // Retrieve theme regions
+  $available_regions = system_region_list($theme, 'REGIONS_ALL');
+ 
+  // Validate allowed regions with available regions
+  $regions = array_intersect(array_keys($available_regions), $allowed_regions);
+ 
+  // For each region
+  foreach ($regions as $key => $region) {
+ 
+    // Load region blocks
+    $blocks = \Drupal::entityTypeManager()->getStorage('block')
+    ->loadByProperties(array('theme' => $theme, 'region' => $region));
+ 
+    // Sort ‘em
+    uasort($blocks, 'Drupal\block\Entity\Block::sort');
+ 
+    // Capture viewable blocks and their settings to $build
+    $build = array();
+    foreach ($blocks as $key => $block) {
+      if ($block->access('view')) {
+        $block = Block::load($key);
+        $block_content = \Drupal::entityTypeManager()->getViewBuilder('block')
+          ->view($block);
+        $build[$key] = $block_content;
+      }
+    }
+ 
+    // Add build to region
+    $variables[$region] = $build;
   }
 }
 
@@ -133,6 +197,7 @@ function intercept_base_preprocess_form(&$variables) {
     case 'views-exposed-form-intercept-event-attendance-by-age-group-page':
     case 'views-exposed-form-intercept-event-attendance-embed':
     case 'views-exposed-form-intercept-rooms-default':
+    case 'views-exposed-form-intercept-rooms-rooms':
     case 'views-exposed-form-intercept-meetings-page':
       $variables['attributes']['class'][] = 'filters__inputs';
       $variables['attributes']['class'][] = 'form-wrapper';
@@ -564,4 +629,15 @@ function intercept_base_view_block($id) {
       ->view($block);
   }
   return NULL;
+}
+
+/**
+ * Implements hook_css_alter().
+ */
+function intercept_base_css_alter(&$css) {
+  if (\Drupal::service('theme_handler')->themeExists('gin')) {
+    unset($css[drupal_get_path('theme', 'gin') . '/dist/css/components/dialog.css']);
+    unset($css[drupal_get_path('theme', 'gin') . '/dist/css/components/ajax.css']);
+    unset($css[drupal_get_path('theme', 'claro') . '/css/components/dialog.css']);
+  }
 }

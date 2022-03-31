@@ -30,6 +30,9 @@
   <div class="listing__content">
     <div class="listing__highlight">
       {% include '@intercept-base-components/highlight/highlight.twig' with { text: type } only %}
+      {% if flag %}
+        <span class="listing__flag">{{ flag }}</span>
+      {% endif %}
     </div>
     {% if supertitle %}
       <span class="listing__supertitle">{{ supertitle }}</span>

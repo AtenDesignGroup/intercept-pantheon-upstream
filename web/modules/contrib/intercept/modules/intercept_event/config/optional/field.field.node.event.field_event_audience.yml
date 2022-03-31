@@ -10,7 +10,7 @@ field_name: field_event_audience
 entity_type: node
 bundle: event
 label: Audience(s)
-description: ''
+description: 'Select all that apply to your event (using Control + Click or Command + Click on a Mac). This will be visible to users.'
 required: false
 translatable: false
 default_value: {  }

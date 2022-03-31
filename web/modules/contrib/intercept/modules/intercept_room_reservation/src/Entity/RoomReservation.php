@@ -31,6 +31,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *       "add" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "copy" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "edit" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
+ *       "customer_reserve" = "Drupal\intercept_room_reservation\Form\RoomReservationForm",
  *       "delete" = "Drupal\intercept_room_reservation\Form\RoomReservationDeleteForm",
  *       "cancel" = "Drupal\intercept_room_reservation\Form\RoomReservationCancelForm",
  *       "approve" = "Drupal\intercept_room_reservation\Form\RoomReservationApproveForm",
@@ -54,9 +55,11 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *   admin_permission = "administer room reservation entities",
  *   constraints = {
  *     "NonOverlappingRoomReservation" = {},
+ *     "FutureReservation" = {},
  *     "LocationOpenHours" = {},
  *     "ReservationLimit" = {},
  *     "ReservationMaxDuration" = {},
+ *     "StaffRoomPermissions" = {},
  *   },
  *   entity_keys = {
  *     "id" = "id",

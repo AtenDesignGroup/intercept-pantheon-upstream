@@ -56,7 +56,7 @@ class LocationOpenHoursConstraintValidator extends ConstraintValidator implement
       $dates = $entity->field_dates->getValue();
       $room = $entity->field_room->entity;
 
-      if (empty($dates) || empty($room->entity)) {
+      if (empty($dates) || empty($room->entity) || empty($dates[0]['value']['time']) || empty($dates[0]['end_value']['time'])) {
         return;
       }
 

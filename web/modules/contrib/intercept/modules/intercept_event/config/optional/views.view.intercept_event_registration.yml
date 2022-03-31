@@ -286,9 +286,7 @@ display:
     display_title: 'REST export'
     position: 1
     display_options:
-      display_extenders:
-        views_ajax_history:
-          history: true
+      display_extenders: { }
       path: data/export/registration-emails.csv
       pager:
         type: none

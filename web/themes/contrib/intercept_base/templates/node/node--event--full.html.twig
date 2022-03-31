@@ -68,6 +68,11 @@
         {% endif %}
       </div>
       <div class="l__secondary">
+        {% if sidebar_first %}
+          <div class="l--padded">
+            {{ sidebar_first }}
+          </div>
+        {% endif %}
         {% if content.field_event_type %}
           {{ content.field_event_type }}
         {% endif %}

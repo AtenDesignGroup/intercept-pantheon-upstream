@@ -6,8 +6,6 @@ dependencies:
     - field.storage.node.field_location_abbreviation
     - node.type.room
     - taxonomy.vocabulary.room_type
-  content:
-    - 'node:location:65e02a9d-6d64-4ffb-be34-e2b715ab160b'
   module:
     - better_exposed_filters
     - intercept_core

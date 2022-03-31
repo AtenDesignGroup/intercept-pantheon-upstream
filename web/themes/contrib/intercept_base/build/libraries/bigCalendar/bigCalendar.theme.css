@@ -71,6 +71,15 @@
   .rbc-show-more:hover, .rbc-show-more:focus {
     color: #4c4d4f; }
 
+.rbc-more-dialog__item-time {
+  font-weight: bold; }
+
+.rbc-more-dialog__item-title {
+  font-weight: bold;
+  color: #0288d1; }
+  .rbc-more-dialog__item-title:hover, .rbc-more-dialog__item-title:focus {
+    color: #0277bd; }
+
 .rbc-day-slot .rbc-event {
   border-color: #0288d1; }
 

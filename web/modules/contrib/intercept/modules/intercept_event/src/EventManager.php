@@ -2,21 +2,21 @@
 
 namespace Drupal\intercept_event;
 
-use Drupal\Component\Serialization\Json;
-use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Language\Language;
 use Drupal\Core\Link;
-use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\Language\Language;
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 
 /**
  * Event Manager service class.
@@ -474,5 +474,28 @@ class EventManager implements EventManagerInterface {
 
     return JsonResponse::create($data['response'], 200);
   }
+
+  /**
+   * Alters widget form for $node['field_primary_image'].
+   *
+   * @param array $elements
+   *   Primary Image entity reference field widget.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Base node event form $form_state.
+   * @param array $context
+   *   Array of context including field info.
+   */
+  public function entityReferenceWidgetFormAlter(array &$elements, FormStateInterface $form_state, array &$context) {
+    // Ensure that we're altering the correct widget. Currently only altering
+    // the primary image field on event forms.
+    $fieldDefinition = $context['items']->getFieldDefinition();
+    if ($fieldDefinition->id() !== 'node.event.image_primary') {
+      return;
+    }
+    $iefAdd = $elements['actions']['ief_add'];
+    unset($elements['actions']['ief_add']);
+    $elements['actions'][] = $iefAdd;
+  }
+
 
 }

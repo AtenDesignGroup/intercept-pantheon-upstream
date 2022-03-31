@@ -8,6 +8,10 @@
   }
 }
 
+* + .summary__main {
+  margin-top: 30px;
+}
+
 .summary__header {
   &:not(:last-child) {
     @include spacing(margin-bottom, tight);
@@ -71,4 +75,8 @@
   &:not(:last-child) {
     @include spacing(margin-bottom, narrow);
   }
+}
+
+#drupal-off-canvas > .summary--off-canvas {
+  margin-top: 1.875rem;
 }

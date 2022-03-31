@@ -19,8 +19,12 @@ import useScrollbarSize from '../hooks/useScrollbarSize';
 
 import interceptClient from 'interceptClient';
 import useEventListener from '../hooks/useEventListener';
+import get from 'lodash/get';
 
 const { utils } = interceptClient;
+
+// Event Constants
+const VIEW_ROOM = 'intercept:viewRoom';
 
 const SLOT_WIDTH = 30;
 const EVENT_HEIGHT = 50;
@@ -31,6 +35,33 @@ function isSelected(event, selected) {
   if (!event || selected == null) return false;
   return [].concat(selected.id).indexOf(event.id) !== -1;
 }
+
+/**
+ * Creates an Intercept VIEW room event to be dispatched
+ *
+ * @param {string} id
+ *   Room id.
+ * @return {CustomEvent}
+ *   A Custom Event object.
+ */
+function getSelectResourceEvent(id) {
+  const event = new CustomEvent(VIEW_ROOM, {
+    detail: {
+      id,
+    },
+  });
+
+  return event;
+}
+
+const onSelectResource = (resource, event) => {
+  console.log({ resource });
+  if (resource.drupal_internal__nid) {
+    console.log('dispatching');
+    window.dispatchEvent(getSelectResourceEvent(resource.drupal_internal__nid));
+  }
+  event.preventDefault();
+};
 
 const SchedulerViewScrollArea = ({
   children,
@@ -114,6 +145,32 @@ const SchedulerViewTimeline = ({ resourceComponent, timelineComponent }) => (
     </td>
   </tr>
 );
+
+const userCanReserveRoom = (roomProps) => {
+  const reservable = get(roomProps, 'room.attributes.field_reservable_online');
+  const mustCertify = get(roomProps, 'room.attributes.field_requires_certification');
+  const userIsCertifiedForRoom = utils.userIsCertifiedForRoom(get(roomProps, 'room.id'));
+
+  // A user can reserve this room if...
+  // they are a manager OR...
+  if (utils.userIsManager()) {
+    return true;
+  }
+  // the room is reservable and they are staff OR...
+  if (reservable && utils.userIsStaff()) {
+    return true;
+  }
+  // ...the room is reservable, requires certification and they are certified OR...
+  if (reservable && mustCertify && userIsCertifiedForRoom) {
+    return true;
+  }
+  // ...the room is reservable and does not require certification.
+  if (reservable && !mustCertify) {
+    return true;
+  }
+
+  return false;
+};
 
 const SchedulerViewGroupHours = ({ group, accessors, slotMetrics, height, step, timeslots }) => {
   let styledHours;
@@ -425,6 +482,18 @@ const SchedulerView = (props) => {
     setTimelineHeight,
   ] = useState(500);
 
+  // Track which column index should be highlighted.
+  const [
+    highlightedIndex,
+    setHighlightedIndex,
+  ] = useState(null);
+
+  // Column heading click handler.
+  const clickColumnHeading = index => () => {
+    // Highlight the current index or unhighlight it if already selected.
+    setHighlightedIndex(index === highlightedIndex ? null : index);
+  };
+
   // Setup scroll refs
   const schedulerRef = useRef(null);
   const timelineRef = useRef(null);
@@ -469,6 +538,7 @@ const SchedulerView = (props) => {
   const scrollbarSize = useScrollbarSize();
   const styledResources = getStyledResources(resources, events, slotMetrics, step, timeslots, accessors);
 
+
   return (
     <table className="scheduler" ref={schedulerRef}>
       <thead className="scheduler__head">
@@ -495,7 +565,7 @@ const SchedulerView = (props) => {
                   <tr>
                     {slots.map((slot, index) => (
                       <td key={index} colSpan={slot.length}>
-                        {moment(slot[0]).format('ha')}
+                        <button onClick={clickColumnHeading(index)}>{moment(slot[0]).format('ha')}</button>
                       </td>
                     ))}
                   </tr>
@@ -540,7 +610,13 @@ const SchedulerView = (props) => {
                               className="scheduler__row scheduler__row--resource"
                               style={{ height: styledResources[resource.id].height }}
                             >
-                              <td>{resource.title}</td>
+                              <td>
+                                {resource.title}
+                                <a
+                                  href={`/room/${resource.drupal_internal__nid}`}
+                                  onClick={e => onSelectResource(resource, e)}
+                                >View Room Details</a>
+                              </td>
                             </tr>
                           ))}
                       </React.Fragment>
@@ -637,11 +713,11 @@ const SchedulerView = (props) => {
                       </colgroup>
                       <tbody>
                         <tr>
-                          {slots.map(slot =>
+                          {slots.map((slot, slotIndex) =>
                             slot.map((minorSlot, index) => (
                               <td
                                 key={index}
-                                className={`scheduler__bg--${index === 0 ? 'major' : 'minor'}`}
+                                className={`scheduler__bg--${index === 0 ? 'major' : 'minor'} ${slotIndex === highlightedIndex ? 'scheduler__bg--highlighted' : ''}`}
                                 style={{ width: `${SLOT_WIDTH}px` }}
                               />
                             )),

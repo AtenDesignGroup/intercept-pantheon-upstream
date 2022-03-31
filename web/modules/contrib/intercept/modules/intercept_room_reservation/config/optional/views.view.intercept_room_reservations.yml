@@ -1427,9 +1427,7 @@ display:
     display_title: Upcoming
     position: 2
     display_options:
-      display_extenders:
-        ajax_history:
-          history: 0
+      display_extenders: { }
       style:
         type: html_list
         options:

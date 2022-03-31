@@ -8,8 +8,8 @@ id: node.event.field_presenter
 field_name: field_presenter
 entity_type: node
 bundle: event
-label: Presenter
-description: ''
+label: 'Non-staff presenters'
+description: 'List all non-staff presenters and co-presenters participating in this event.'
 required: false
 translatable: false
 default_value: {  }

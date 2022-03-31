@@ -5,6 +5,7 @@ namespace Drupal\office_hours\Plugin\migrate\process;
 use Drupal\migrate\MigrateException;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\Row;
+use Drupal\office_hours\OfficeHoursDateHelper;
 
 /**
  * Processes a input array of office hours to the correct format for the field.
@@ -103,11 +104,11 @@ class CSVOfficeHoursField extends OfficeHoursField {
       throw new MigrateException(sprintf('%s is not an array', var_export($value, TRUE)));
     }
 
-    $slots_per_day = isset($this->configuration['slots_per_day']) ? $this->configuration['slots_per_day'] : 1;
-    $delimiter = isset($this->configuration['delimiter']) ? $this->configuration['delimiter'] : '-';
-    $has_comment = isset($this->configuration['comment']) ? $this->configuration['comment'] : FALSE;
+    $slots_per_day = $this->configuration['slots_per_day'] ?? 1;
+    $delimiter = $this->configuration['delimiter'] ?? '-';
+    $has_comment = $this->configuration['comment'] ?? FALSE;
 
-    if (count($value) !== ($slots_per_day * ($has_comment ? 2 : 1) * 7)) {
+    if (count($value) !== ($slots_per_day * ($has_comment ? 2 : 1) * OfficeHoursDateHelper::DAYS_PER_WEEK)) {
       throw new MigrateException(sprintf('%s does not have the correct size', var_export($value, TRUE)));
     }
 
@@ -122,23 +123,24 @@ class CSVOfficeHoursField extends OfficeHoursField {
           'day' => floor($i / $slots_per_day / ($has_comment ? 2 : 1)),
           'starthours' => str_replace(':', '', $time[0]),
           'endhours' => str_replace(':', '', $time[1]),
+          'comment' => '',
         ];
       }
       // Process Comment.
       else {
         $comment_key = ($i - 1) / 2;
-        $office_hours[$comment_key]['comment'] = trim($value[$i]);
-        // Override empty values because it is not well handled if there
-        // is a comment associated with a day. But if there is no comment
-        // it has to be empty.
-        if (!empty($office_hours[$comment_key]['comment'])) {
-          if (empty($office_hours[$comment_key]['starthours'])) {
-            $office_hours[$comment_key]['starthours'] = -1;
-          }
-          if (empty($office_hours[$comment_key]['endhours'])) {
-            $office_hours[$comment_key]['endhours'] = -1;
-          }
-        }
+        $value_of_item = &$office_hours[(int) $comment_key];
+        $value_of_item = [
+          // Convert day number to integer to get '0' for Sunday, not 'false'.
+          'day' => (int) $value_of_item['day'],
+          // Override empty values because it is not well handled if there
+          // is a comment associated with a day. But if there is no comment
+          // it has to be empty.
+          'starthours' => (int) ($value_of_item['starthours'] ?? OfficeHoursDateHelper::EMPTY_HOURS),
+          'endhours' => (int) ($value_of_item['endhours'] ?? OfficeHoursDateHelper::EMPTY_HOURS),
+          // Set default value of comment to empty string.
+          'comment' => trim($value[$i]),
+        ] + $value_of_item;
       }
     }
 

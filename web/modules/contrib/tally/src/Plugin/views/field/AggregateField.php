@@ -61,8 +61,9 @@ class AggregateField extends EntityField {
    * {@inheritdoc}
    */
   public function getValue(ResultRow $values, $field = NULL) {
-    $entity = $this->getEntity($values);
-    $type = $this->getEntityType();
+    if (!$entity = $this->getEntity($values)) {
+      return NULL;
+    }
     // Retrieve the translated object.
     $translated_entity = $this->getEntityFieldRenderer()->getEntityTranslation($entity, $values);
 

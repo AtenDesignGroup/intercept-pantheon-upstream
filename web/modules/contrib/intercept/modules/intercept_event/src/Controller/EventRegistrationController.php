@@ -129,7 +129,7 @@ class EventRegistrationController extends ControllerBase {
    *   The User entity.
    */
   public function manage(UserInterface $user) {
-    return $this->redirect('view.intercept_user_events.page');
+    return $this->redirect('intercept_event.account.events');
   }
 
   /**

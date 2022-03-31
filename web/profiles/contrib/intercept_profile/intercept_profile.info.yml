@@ -6,7 +6,6 @@ distribution:
   name: Intercept Profile
 dependencies:
   - admin_toolbar:admin_toolbar
-  - adminimal_admin_toolbar:adminimal_admin_toolbar
   - components:components
   - better_exposed_filters:better_exposed_filters
   - date_recur:date_recur
@@ -37,6 +36,7 @@ dependencies:
   - drupal:views
   - drupal:views_ui
   - entity_reference_revisions:entity_reference_revisions
+  - gin_toolbar:gin_toolbar
   - intercept:intercept
   - intercept:intercept_event
   - intercept:intercept_room_reservation
@@ -55,5 +55,5 @@ dependencies:
   - twig_field_value:twig_field_value
   - view_user_email:view_user_email
 themes:
-  - adminimal_theme
+  - gin
   - intercept_base

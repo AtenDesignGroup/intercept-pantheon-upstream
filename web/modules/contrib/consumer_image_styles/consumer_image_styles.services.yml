@@ -4,6 +4,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@image.factory'
+      - '@stream_wrapper_manager'
 
   serializer.normalizer.link_collection.consumer_image_styles:
     class: Drupal\consumer_image_styles\Normalizer\LinkCollectionNormalizer

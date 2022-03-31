@@ -6,13 +6,15 @@ use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate_drupal\Plugin\migrate\field\FieldPluginBase;
 
 /**
+ * Field plugin for office_hours migration from D7 to D8/D9.
+ *
  * @MigrateCckField(
  *   id = "office_hours_field",
  *   core = {7},
  *   source_module = "office_hours",
  *   destination_module = "office_hours",
  *   type_map = {
- *    "office_hours" = "office_hours"
+ *    "office_hours" = "office_hours",
  *   }
  * )
  */

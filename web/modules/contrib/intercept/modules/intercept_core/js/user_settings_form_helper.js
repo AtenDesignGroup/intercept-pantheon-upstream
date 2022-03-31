@@ -14,6 +14,11 @@ Drupal.behaviors.userSettingsFormHelper = {
     // Move the PIN field into the correct position.
     $('.form-item-pin').detach().appendTo('#edit-customer-profile-field-ils-username-wrapper');
 
+    // Add error highlighting on username field if there's a related error message.
+    if ($('.messages__content:contains("username")').length > 0) {
+      $('#edit-customer-profile-field-ils-username-0-value').addClass('invalid');
+    }
+
   },
 };
 

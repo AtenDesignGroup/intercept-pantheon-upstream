@@ -62,7 +62,7 @@ class LocationAutocompleteController extends ControllerBase {
     $query->condition($group)
       ->condition('type', 'location')
       ->condition('status', 1)
-      ->sort('title', ASC)
+      ->sort('title', 'ASC')
       ->range(0, 10);
 
     $nodeIds = $query->execute();

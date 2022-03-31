@@ -12,6 +12,10 @@ advanced_reservation_limit_text:
 reservation_barred_text:
   value: "<p>There is a block on your account preventing room reservations.</p>\r\n"
   format: basic_html
+last_reservation_before_closing: '15'
+off_canvas_room_view_mode: off_canvas
+off_canvas_view_mode: off_canvas
+off_canvas_form_mode: customer_reserve
 email:
   reservation_accepted:
     subject: ''
@@ -98,6 +102,6 @@ email:
       intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
-off_canvas_view_mode: off_canvas
-last_reservation_before_closing: '15'
-off_canvas_form_mode: ''
+reservation_limit_message:
+  value: "<p>You are only allowed to reserve a maximum of [max-room-reservations] room(s) at a time. You can view your reservations in [account-link].</p>\r\n"
+  format: basic_html

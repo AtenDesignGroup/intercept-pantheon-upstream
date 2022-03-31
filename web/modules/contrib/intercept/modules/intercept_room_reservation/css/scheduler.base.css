@@ -82,6 +82,20 @@
   z-index: 1;
 }
 
+.scheduler__section--timeline button {
+display: block;
+  background: transparent !important;
+  color: inherit;
+  font-size: inherit;
+  padding: 0;
+  font-weight: inherit;
+  width: 100%;
+  text-align: left;
+  line-height: inherit;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
 .scheduler__row {
   border-bottom: 1px solid  #D3D8DF;
   height: 50px;
@@ -92,6 +106,11 @@
 .scheduler__row--resource > td {
   white-space: nowrap;
   overflow: hidden;
+}
+
+.scheduler__row--resource a {
+  display: block;
+  font-size: .875em;
 }
 
 .scheduler__row-inner {
@@ -182,6 +201,10 @@
 
 .scheduler__bg--minor {
   border-left: 1px dotted #D3D8DF;
+}
+
+.scheduler__bg--highlighted {
+  background-color: #EEF1F4;
 }
 
 .reservation-calendar-event__user {

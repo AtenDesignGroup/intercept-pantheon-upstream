@@ -29,3 +29,6 @@ delete all certification revisions:
   title: 'Delete all revisions'
   description: 'Role requires permission to <em>view Certification revisions</em> and <em>delete rights</em> for certification entities in question or <em>administer certification entities</em>.'
 
+bypass room certification constraints:
+  title: 'Bypass room Certification constraints'
+  description: 'Assign to roles that can reserve rooms requiring certification without being certified.'

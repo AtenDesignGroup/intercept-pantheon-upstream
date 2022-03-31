@@ -22,7 +22,7 @@ class CriteriaWidget extends React.PureComponent {
         onChange={onChange}
         value={value}
         options={options}
-        label={'Tell us Why'}
+        label={'Tell us why'}
         className="evaluation__criteria-widget"
         labelProps={{
           className: 'evaluation__widget-label',

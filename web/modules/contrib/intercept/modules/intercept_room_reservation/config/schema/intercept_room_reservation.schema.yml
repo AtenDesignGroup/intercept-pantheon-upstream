@@ -23,6 +23,9 @@ intercept_room_reservation.settings:
     last_reservation_before_closing:
       type: string
       label: 'Last reservation before closing number of minutes'
+    off_canvas_room_view_mode:
+      type: string
+      label: 'Room off-canvas dialog view mode'
     off_canvas_view_mode:
       type: string
       label: 'Room reservation off-canvas dialog view mode'

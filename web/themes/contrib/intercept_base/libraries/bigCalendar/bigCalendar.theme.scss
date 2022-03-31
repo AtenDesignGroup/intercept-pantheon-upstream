@@ -101,6 +101,20 @@
   }
 }
 
+.rbc-more-dialog__item-time {
+  font-weight: bold;
+}
+
+.rbc-more-dialog__item-title {
+  font-weight: bold;
+  color: $clr-primary;
+
+  &:hover,
+  &:focus {
+    color: $clr-primary-dark;
+  }
+}
+
 .rbc-day-slot .rbc-event {
   border-color: $clr-primary;
 }

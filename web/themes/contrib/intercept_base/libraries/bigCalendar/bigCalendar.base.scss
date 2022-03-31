@@ -763,6 +763,65 @@ button.rbc-input::-moz-focus-inner {
   right: -3px;
 }
 
+// Show More Dialog
+.rbc-more-dialog__header {
+  padding: 30px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.rbc-more-dialog__content {
+  padding: 0 30px 16px;
+  overflow-y: auto;
+}
+
+.rbc-more-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
+  background: white;
+  position: sticky;
+  z-index: 1;
+  bottom: 0;
+}
+
+.rbc-more-dialog__date {
+  color: #575760;
+  font-size: 1.125em;
+}
+
+.rbc-more-dialog__list {
+  margin: 0;
+  padding: 0;
+}
+
+.rbc-more-dialog__item {
+  display: flex;
+  list-style: none;
+  font-size: .875em;
+  line-height: 1.1;
+
+  &:not(:first-child) {
+    margin-top: 1em;
+  }
+}
+
+.rbc-more-dialog__item-time {
+  display: block;
+  flex: none;
+  list-style: none;
+  margin-right: 1em;
+  text-align: right;
+  width: 5em;
+}
+
+.rbc-more-dialog__item-title {
+  flex: 1;
+  list-style: none;
+}
+
 //
 // Room Reservations
 //

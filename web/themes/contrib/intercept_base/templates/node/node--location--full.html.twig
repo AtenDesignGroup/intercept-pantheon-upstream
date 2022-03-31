@@ -50,7 +50,11 @@
     </div>
     {% endif %}
     <div class="l__main l--offset">
+      {% if sidebar_first %}
+      <div class="l__primary l--section">
+      {% else %}
       <div class="l--section">
+      {% endif %}
         {% if content.field_text_content[0] is not empty %}
         <div class="l--section">
           {{ content.field_text_content }}
@@ -69,6 +73,11 @@
         } only %}
         {{ drupal_view('departments', 'block_1', node.id) }}
       </div>
+      {% if sidebar_first %}
+        <div class="l__secondary l--section">
+          {{ sidebar_first }}
+        </div>
+      {% endif %}
     </div>
   </div>
   <div class="l--section l--offset">

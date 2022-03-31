@@ -56,7 +56,7 @@ Only default (out-of-the-box) Views functionality is provided.
 
 == USING VIEWS - SORT CRITERIA ==
 Only default (out-of-the-box) Views functionality is provided.
-- To sort the times per day, add the 'day' sort criterion. 
+- To sort the time slots per day, add the 'day' sort criterion.
 
 
 == USING VIEWS - CREATE A BLOCK PER NODE/ENTITY ==
@@ -100,10 +100,10 @@ To import data with the Feeds module, the following columns can be used:
 - hours/morehours to;
 - hours/morehours from-to.
 
-The day should be stated in full English name, or a day number where sunday = 0, monday=1, etc.
+The day should be stated in full English name, or a day number where Sunday=0, Monday=1, etc.
 The hours can be formatted as hh:mm or hh.mm
 
-I suppose Feeds Tamper can help to format the times and/or day to the proper format.
+I suppose Feeds Tamper can help to format the time slots and/or day to the proper format.
 
 Here is an example file:
 nid;weekday;Hours_1;Hours_2

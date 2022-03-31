@@ -18,6 +18,7 @@ import BigCalendar from 'intercept/BigCalendar';
 /* eslint-enable */
 
 import EventSummaryDialog from './EventSummaryDialog';
+import ShowMoreDialog from './ShowMoreDialog';
 import PrintableMonth from './PrintableMonth';
 
 const { api, constants, utils, select } = interceptClient;
@@ -106,12 +107,17 @@ class EventCalendar extends React.Component {
       showEvent: false,
       selectedEvent: null,
       isPrint: false,
+      showMore: false,
+      showMoreEvents: [],
+      showMoreDate: null,
     };
 
     this.mediaQueryList = window.matchMedia('print');
 
     this.onSelectEvent = this.onSelectEvent.bind(this);
     this.onHideEvent = this.onHideEvent.bind(this);
+    this.onShowMore = this.onShowMore.bind(this);
+    this.onHideMore = this.onHideMore.bind(this);
     this.printTest = this.printTest.bind(this);
     this.setPrintState = this.setPrintState.bind(this);
     this.onPrintClick = this.onPrintClick.bind(this);
@@ -157,6 +163,23 @@ class EventCalendar extends React.Component {
     });
   }
 
+  onShowMore(events, date) {
+    console.log({ events, date });
+    this.setState({
+      showMore: true,
+      showMoreEvents: events,
+      showMoreDate: date,
+    });
+  }
+
+  onHideMore() {
+    this.setState({
+      showMore: false,
+      showMoreEvents: [],
+      showMoreDate: null,
+    });
+  }
+
   onPrintClick() {
     this.setState(() => ({
       isPrint: true,
@@ -188,6 +211,7 @@ class EventCalendar extends React.Component {
           filters={this.props.filters}
           events={this.props.events}
           onSelectEvent={this.onSelectEvent}
+          onShowMore={this.onShowMore}
           titleAccessor={titleAccessor}
           startAccessor={startAccessor}
           endAccessor={endAccessor}
@@ -231,6 +255,12 @@ class EventCalendar extends React.Component {
           open={this.state.showEvent}
           onClose={this.onHideEvent}
           loading={this.props.isEventLoading}
+        />
+        <ShowMoreDialog
+          open={this.state.showMore}
+          onClose={this.onHideMore}
+          events={this.state.showMoreEvents}
+          date={this.state.showMoreDate}
         />
       </React.Fragment>
     );

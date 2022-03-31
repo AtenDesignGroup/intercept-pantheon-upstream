@@ -30,8 +30,12 @@ class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {
    * Times are specified using 24:00 time. For example,
    *   3pm is specified as 15:00.
    *
-   *  Here is an example:
+   *  Here is a Microdata example:
    *   <time itemprop="openingHours" datetime="Tu,Th 16:00-20:00">
+   *     Tuesdays and Thursdays 4-8pm
+   *   </time>.
+   *  Here is an RDFa example:
+   *   <time property="openingHours" datetime="Tu,Th 16:00-20:00">
    *     Tuesdays and Thursdays 4-8pm
    *   </time>.
    *  If a business is open 7 days a week, then it can be specified as
@@ -51,9 +55,10 @@ class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {
         'hours_hours' => '-',
         'more_hours' => ', ',
       ],
-      'current_status' => [
-        'position' => '', // Hidden
-      ],
+      'show_closed' => 'open',
+      'current_status' => ['position' => ''], // Hidden.
+      'grouped' => 'true',
+      'compress' => 'false',
     ] + parent::defaultSettings();
   }
 
@@ -63,28 +68,25 @@ class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
 
-    // Get some settings from field. Do not overwrite defaults.
-    $settings = $this->defaultSettings();
-    unset($settings['compress']);
-    unset($settings['grouped']);
-    unset($settings['show_closed']);
-    $settings += $this->getSettings();
+    if ($items->isEmpty()) {
+      return $elements;
+    }
 
+    // Get some settings from field. Do not overwrite defaults.
+    $settings = $this->defaultSettings() + $this->getSettings();
+    $third_party_settings = $this->getThirdPartySettings();
+    // N.B. 'Show current day' may return nothing in getRows(), while other days are filled.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
-    $office_hours = $this->getRows($items->getValue(), $this->getSettings(), $this->getFieldSettings());
+    $office_hours = $items->getRows($settings, $this->getFieldSettings(), $third_party_settings);
     $elements[] = [
       '#theme' => 'office_hours_schema',
+      // Pass office_hours to twig theming.
       '#office_hours' => $office_hours,
       '#item_separator' => $settings['separator']['days'],
       '#slot_separator' => $settings['separator']['more_hours'],
       '#attributes' => [
         'class' => ['office-hours'],
       ],
-      '#cache' => [
-        'max-age' => $this->getStatusTimeLeft($items, $langcode),
-        'tags' => ['office_hours:field.schema'],
-      ],
-
     ];
 
     return $elements;

@@ -5,6 +5,7 @@
  * Contains intercept_room_reservation.module.
  */
 
+use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
@@ -78,6 +79,12 @@ function intercept_room_reservation_theme() {
       'variables' => ['warnings' => NULL],
     ],
     'room_reservation_scheduler' => [
+      'variables' => ['content' => NULL],
+    ],
+    'room_reservation_selector' => [
+      'variables' => ['content' => NULL],
+    ],
+    'room_reservation_reserve_calendar' => [
       'variables' => ['content' => NULL],
     ],
     'room_reservation_revision_summary' => [
@@ -163,7 +170,10 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
   }
 
   // Room Reserve Staff Calendar View.
-  if ($form['#id'] === 'views-exposed-form-intercept-rooms-default') {
+  if (in_array($form['#id'], [
+    'views-exposed-form-intercept-rooms-default',
+    'views-exposed-form-intercept-rooms-rooms',
+  ])) {
     if (isset($form['min-capacity']) && isset($form['max-capacity'])) {
       // Hide min-capacity as we will set the value to match max capacity
       // to mimic an IS_BETWEEN query. See: intercept_room_reservation_views_pre_view().
@@ -201,11 +211,44 @@ function intercept_room_reservation_form_room_reservation_update_status_form_alt
 }
 
 /**
+ * Implements hook_page_attachments().
+ */
+function intercept_room_reservation_page_attachments(array &$page) {
+  $certifications = [];
+  $current_user = \Drupal::currentUser();
+  $roles = $current_user->getRoles();
+  if (in_array('intercept_registered_customer', $roles)) {
+    $entity_ids = \Drupal::entityQuery('certification')
+      ->condition('field_user', $current_user->id())
+      ->execute();
+    $certs = \Drupal::entityTypeManager()
+      ->getStorage('certification')
+      ->loadMultiple($entity_ids);
+    foreach ($certs as $cert) {
+      $room = $cert->field_room->entity->id();
+      $certifications[] = $room;
+    }
+    $page['#attached']['drupalSettings']['userCertifications'] = $certifications;
+  }
+  else {
+    $page['#attached']['drupalSettings']['userCertifications'] = 'all';
+  }
+}
+
+/**
  * Implements hook_form_alter().
  */
 function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   switch ($form_id) {
     case 'room_reservation_add_form':
+
+      $current_user = \Drupal::currentUser();
+      $roles = $current_user->getRoles();
+      $room = $form_state->getValue('field_room');
+      if (in_array('intercept_registered_customer', $roles)) {
+        $form['field_room']['widget'][0]['target_id']['#attributes']['readonly'][] = 'readonly';
+
+      }
       // The default value on the field needs to be requested,
       // but if a staff member is using the reservation add form
       // let's default to "approved" and just make the field be required.
@@ -213,8 +256,59 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
       if (!$form_state->getValue('field_status')) {
         $form['field_status']['widget']['#default_value'][0] = 'approved';
       }
+
+      if ($form['field_refreshments_description']) {
+        $form['field_refreshments_description']['#states']['visible'] = [
+          ':input[name="field_refreshments"]' => ['value' => '1'],
+        ];
+        $form['field_refreshments_description']['#states']['required'] = [
+          ':input[name="field_refreshments"]' => ['value' => '1'],
+        ];
+      }
+      $form_display = $form_state->getStorage()['form_display']->getMode();
+      if ($form_display === 'customer_reserve') {
+        if ($form['revision_log_message']) {
+          $form['revision_log_message']['#type'] = 'hidden';
+        }
+        if ($form['field_user']) {
+          $form['field_user']['#type'] = 'hidden';
+        }
+        if ($form['author']) {
+          $form['author']['#type'] = 'hidden';
+        }
+      }
       break;
   }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function intercept_room_reservation_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  // Removes the text format options from field_refreshments_description.
+  $map = [
+    'field_refreshments_description' => ['basic_html'],
+  ];
+
+  $field_name = $context['items']->getFieldDefinition()->getName();
+
+  if (array_key_exists($field_name, $map)) {
+    $element['#allowed_formats'] = $map[$field_name];
+    $element['#after_build'][] = '_remove_text_format_box';
+  }
+}
+
+/**
+ * #after_build callback.
+ */
+function _remove_text_format_box($form_element, FormStateInterface $form_state) {
+  // Remove help, guidelines and wrapper.
+  unset($form_element['format']['help']);
+  unset($form_element['format']['guidelines']);
+  unset($form_element['format']['#type']);
+  unset($form_element['format']['#theme_wrappers']);
+
+  return $form_element;
 }
 
 /**
@@ -327,6 +421,39 @@ function intercept_room_reservation_entity_bundle_field_info(EntityTypeInterface
 }
 
 /**
+ * Implements hook_entity_form_display_alter().
+ */
+function intercept_room_reservation_entity_form_display_alter(EntityFormDisplayInterface &$form_display, array $context) {
+  // Use the customer_reserve form display mode for customers.
+  if ($context['entity_type'] == 'room_reservation' && ($context['form_mode'] == 'add' || $context['form_mode'] == 'edit')) {
+    $user = \Drupal::currentUser();
+    $roles = $user->getRoles();
+    $storage = \Drupal::service('entity_type.manager')->getStorage('entity_form_display');
+    if (in_array('intercept_registered_customer', $roles)) {
+      $form_display = $storage->load('room_reservation.room_reservation.customer_reserve');
+    }
+    else {
+      $form_display = $storage->load('room_reservation.room_reservation.default');
+    }
+  }
+}
+
+// /**
+//  * Implements hook_entity_field_access().
+//  */
+// function intercept_room_reservation_entity_field_access($operation, \Drupal\Core\Field\FieldDefinitionInterface $field_definition, \Drupal\Core\Session\AccountInterface $account, \Drupal\Core\Field\FieldItemListInterface $items = NULL) {
+//   if ($field_definition->getTargetEntityTypeId() !== 'room_reservation') {
+//     return AccessResult::neutral();
+//   }
+// switch ($field_definition->getName()) {
+//     case 'field_guest':
+//       return AccessResult::allowedIfHasPermission($account, 'update any room_reservation');.
+// default:
+//       return AccessResult::neutral();
+//   }
+// }
+
+/**
  * Implements hook_views_query_alter().
  */
 function intercept_room_reservation_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
@@ -366,32 +493,64 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
       }
     }
   }
+
+  if ($view->id() == 'intercept_rooms' && in_array($view->current_display, ['entity_reference_1', 'rooms'])) {
+    $current_user = \Drupal::currentUser();
+
+    // Filter out any staff use only rooms if the user can't reserve them.
+    if (!$current_user->hasPermission('view staff use room reservation')) {
+      $query->addTable('node__field_staff_use_only');
+      $query->addWhere('permissions', 'node__field_staff_use_only.field_staff_use_only_value', 0, '=');
+    }
+  }
 }
 
 /**
  * Implements hook_views_pre_view().
  */
 function intercept_room_reservation_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
-  if ($view->id() == 'intercept_room_reservations' && $display_id == 'page') {
-    $exposed_input = $view->getExposedInput();
-    if (!isset($exposed_input['field_dates_value'])) {
-      $date = new DateTime('now');
-      $date_future = new DateTime('+6 months');
-      $exposed_date['field_dates_value']['min'] = $date->format('m/d/Y');
-      $exposed_date['field_dates_value']['max'] = $date_future->format('m/d/Y');
-      $view->setExposedInput(array_merge($exposed_input, $exposed_date));
-    }
+  switch ($view->id()) {
+    case 'intercept_room_reservations':
+      switch ($display_id) {
+        case 'page':
+          $exposed_input = $view->getExposedInput();
+          if (!isset($exposed_input['field_dates_value'])) {
+            $date = new DateTime('now');
+            $date_future = new DateTime('+6 months');
+            $exposed_date['field_dates_value']['min'] = $date->format('m/d/Y');
+            $exposed_date['field_dates_value']['max'] = $date_future->format('m/d/Y');
+            $view->setExposedInput(array_merge($exposed_input, $exposed_date));
+          }
 
-    // Attach JS.
-    $view->element['#attached']['library'][] = 'intercept_room_reservation/roomReservationList';
-  }
-  elseif ($view->id() === 'intercept_rooms' && $display_id === 'default') {
-    $filters = $view->getExposedInput();
-    // Match min-capacity to max-capacity to mimic an IS_BETWEEN query.
-    if (isset($filters['max-capacity'])) {
-      $filters['min-capacity'] = $filters['max-capacity'];
-      $view->setExposedInput($filters);
-    }
+          // Attach JS.
+          $view->element['#attached']['library'][] = 'intercept_room_reservation/roomReservationList';
+          break;
+
+        default:
+          break;
+      }
+      break;
+
+    case 'intercept_rooms':
+      switch ($display_id) {
+        case 'default':
+        case 'rooms':
+          $filters = $view->getExposedInput();
+
+          // Match min-capacity to max-capacity to mimic an IS_BETWEEN query.
+          if (isset($filters['max-capacity'])) {
+            $filters['min-capacity'] = $filters['max-capacity'];
+            $view->setExposedInput($filters);
+          }
+          break;
+
+        default:
+          break;
+      }
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -422,4 +581,27 @@ function intercept_room_reservation_status_values(FieldStorageDefinitionInterfac
   ];
 
   return $options;
+}
+
+/**
+ * Implements hook_preprocess node().
+ */
+function intercept_room_reservation_preprocess_node(&$variables) {
+  if ($variables['node']->getType() === 'room') {
+    $variables['is_certified'] = FALSE;
+    $view_mode = $variables['view_mode'];
+    if ($view_mode === 'off_canvas') {
+      $nid = $variables['node']->id();
+      $current_uid = \Drupal::currentUser()->id();
+      $query = \Drupal::entityQuery('certification')
+        ->condition('field_user', $current_uid)
+        ->condition('field_room', $nid);
+      $entity_ids = $query->execute();
+      $storage = \Drupal::entityTypeManager()->getStorage('certification');
+      $certification = $storage->loadMultiple($entity_ids);
+      if ($certification) {
+        $variables['is_certified'] = TRUE;
+      }
+    }
+  }
 }

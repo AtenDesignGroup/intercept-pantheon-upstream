@@ -657,27 +657,53 @@ table {
 
 thead th {
   vertical-align: bottom;
-  text-transform: uppercase;
   font-weight: 900; }
 
 thead th,
 thead td {
-  font-size: 0.5rem;
+  font-size: 0.57639rem;
   border-bottom: 2px solid #d3d8df; }
   @media (min-width: 48em) {
     thead th,
     thead td {
-      font-size: 0.625rem; } }
+      font-size: 0.72917rem; } }
   @media (min-width: 62em) {
     thead th,
     thead td {
-      font-size: 0.75rem; } }
+      font-size: 0.875rem; } }
   thead th:first-child,
   thead td:first-child {
     padding-left: 0; }
   thead th:last-child,
   thead td:last-child {
     padding-right: 0; }
+
+thead .sortable > a {
+  text-decoration: none;
+  color: #4c4d4f;
+  display: block;
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%229%22%20height%3D%2212%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1.246%207.125a.66.66%200%200%200-.465.191.64.64%200%200%200-.191.465c0%20.192.055.356.191.465L4.035%2011.5c.11.137.274.191.465.191a.64.64%200%200%200%20.465-.191l3.254-3.254a.66.66%200%200%200%20.191-.465c0-.164-.082-.328-.191-.465-.137-.109-.301-.191-.465-.191H1.246ZM8.22%204.254c.11.137.191.3.191.465a.66.66%200%200%201-.191.465.64.64%200%200%201-.465.191H1.246c-.191%200-.355-.055-.465-.191C.645%205.074.59%204.91.59%204.719a.64.64%200%200%201%20.191-.465L4.035%201A.66.66%200%200%201%204.5.809c.164%200%20.328.082.465.191l3.254%203.254Z%22%20fill%3D%22%2351832F%22%2F%3E%3C%2Fsvg%3E");
+  background-position: center right;
+  background-repeat: no-repeat !important;
+  padding-right: 1em;
+  position: relative; }
+  thead .sortable > a .tablesort {
+    position: absolute !important;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    width: 1px;
+    height: 1px;
+    word-wrap: normal; }
+
+thead .sortable.is-active > a::after {
+  content: "";
+  background-color: #e4e8eb;
+  position: absolute;
+  top: -.3em;
+  bottom: -.3em;
+  right: -1em;
+  left: -1em;
+  z-index: -1; }
 
 th,
 td {

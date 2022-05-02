@@ -32,20 +32,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class DateRecurFilter extends FilterPluginBase {
 
   /**
-   * The database connection.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected Connection $database;
-
-  /**
-   * The entity field manager.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
-   */
-  protected EntityFieldManagerInterface $entityFieldManager;
-
-  /**
    * The smallest possible date given an input and granularity.
    *
    * @var \DateTime
@@ -58,13 +44,6 @@ class DateRecurFilter extends FilterPluginBase {
    * @var \DateTime
    */
   protected \DateTime $largestDate;
-
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected AccountInterface $currentUser;
 
   /**
    * Constructs a DateRecurFilter object.
@@ -82,11 +61,8 @@ class DateRecurFilter extends FilterPluginBase {
    * @param \Drupal\Core\Session\AccountInterface $currentUser
    *   The current user.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, EntityFieldManagerInterface $entityFieldManager, AccountInterface $currentUser) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, protected Connection $database, protected EntityFieldManagerInterface $entityFieldManager, protected AccountInterface $currentUser) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->database = $database;
-    $this->entityFieldManager = $entityFieldManager;
-    $this->currentUser = $currentUser;
   }
 
   /**
@@ -224,17 +200,13 @@ class DateRecurFilter extends FilterPluginBase {
     $utc = new \DateTimeZone('UTC');
     /** @var \Drupal\Core\Datetime\DrupalDateTime $min|null */
     $min = $form_state->getValue(['options', 'value_minimum']);
-    if ($min) {
-      $min->setTimezone($utc);
-    }
-    $this->options['value_min'] = $min ? $min->format(\DATE_ISO8601) : NULL;
+    $min?->setTimezone($utc);
+    $this->options['value_min'] = $min?->format(\DATE_ISO8601);
 
     /** @var \Drupal\Core\Datetime\DrupalDateTime $max|null */
     $max = $form_state->getValue(['options', 'value_maximum']);
-    if ($max) {
-      $max->setTimezone($utc);
-    }
-    $this->options['value_max'] = $max ? $max->format(\DATE_ISO8601) : NULL;
+    $max?->setTimezone($utc);
+    $this->options['value_max'] = $max?->format(\DATE_ISO8601);
   }
 
   /**
@@ -254,9 +226,7 @@ class DateRecurFilter extends FilterPluginBase {
     /** @var array $pluginOptions */
     $pluginOptions = $element['#filter_plugin_options'];
     $granularity = $pluginOptions['value_granularity'];
-    if (empty($granularity)) {
-      throw new \LogicException('Granularity not set.');
-    }
+    !empty($granularity) ?: throw new \LogicException('Granularity not set.');
 
     /** @var string|null $optionValueMin */
     $optionValueMin = $pluginOptions['value_min'];

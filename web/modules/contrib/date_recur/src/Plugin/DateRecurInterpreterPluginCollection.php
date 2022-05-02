@@ -13,13 +13,6 @@ use Drupal\Core\Plugin\DefaultSingleLazyPluginCollection;
 class DateRecurInterpreterPluginCollection extends DefaultSingleLazyPluginCollection {
 
   /**
-   * The ID of the date recur interpreter entity using this plugin.
-   *
-   * @var string|null
-   */
-  protected ?string $id = NULL;
-
-  /**
    * Constructs a new DateRecurInterpreterPluginCollection.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $manager
@@ -28,12 +21,15 @@ class DateRecurInterpreterPluginCollection extends DefaultSingleLazyPluginCollec
    *   The ID of the plugin instance.
    * @param array $configuration
    *   An array of configuration.
-   * @param string $id
+   * @param string|null $id
    *   The ID of the date recur interpreter entity using this plugin.
    */
-  public function __construct(PluginManagerInterface $manager, $instance_id, array $configuration, $id) {
+  public function __construct(PluginManagerInterface $manager,
+    $instance_id,
+    array $configuration,
+    protected ?string $id = NULL,
+  ) {
     parent::__construct($manager, $instance_id, $configuration);
-    $this->id = $id;
   }
 
 }

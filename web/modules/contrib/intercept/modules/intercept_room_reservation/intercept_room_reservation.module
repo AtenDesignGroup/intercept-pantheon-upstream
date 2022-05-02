@@ -241,6 +241,10 @@ function intercept_room_reservation_page_attachments(array &$page) {
 function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   switch ($form_id) {
     case 'room_reservation_add_form':
+      // Don't alter the form if the user is not certified for the room.
+      if (array_key_exists('user_not_certified', $form)) {
+        return;
+      }
 
       $current_user = \Drupal::currentUser();
       $roles = $current_user->getRoles();
@@ -252,7 +256,6 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
       // The default value on the field needs to be requested,
       // but if a staff member is using the reservation add form
       // let's default to "approved" and just make the field be required.
-      $status = $form_state->getValue('field_status');
       if (!$form_state->getValue('field_status')) {
         $form['field_status']['widget']['#default_value'][0] = 'approved';
       }
@@ -277,6 +280,8 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
           $form['author']['#type'] = 'hidden';
         }
       }
+      // Add any JS form tweaks here
+      $form['#attached']['library'][] = 'intercept_room_reservation/room_reservation_form_helper';
       break;
   }
 }
@@ -602,6 +607,18 @@ function intercept_room_reservation_preprocess_node(&$variables) {
       if ($certification) {
         $variables['is_certified'] = TRUE;
       }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_bundle_field_info_alter().
+ */
+function intercept_room_reservation_entity_bundle_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type, $bundle) {
+  if ($bundle === 'event') {
+    if (isset($fields['field_capacity_max'])) {
+      // Use the ID as defined in the annotation of the constraint definition
+      $fields['field_capacity_max']->addConstraint('MaxCapacity', []);
     }
   }
 }

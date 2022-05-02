@@ -5,6 +5,12 @@
   padding: percentage(.5/23) percentage(1/23) percentage(1/23);
 }
 
+.filters__summary {
+  @include fs(x-small);
+  font-weight: $fw-bold;
+  font-style: italic;
+}
+
 .filters--uniform-padding .filters__inputs,
 .filters__inputs--uniform-padding {
   padding: percentage(.5/23);

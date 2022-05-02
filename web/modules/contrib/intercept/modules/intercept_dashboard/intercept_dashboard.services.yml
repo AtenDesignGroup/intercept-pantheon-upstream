@@ -1,0 +1,4 @@
+services:
+  intercept_dashboard.filterProvider:
+    class: Drupal\intercept_dashboard\FilterProvider
+    arguments: ['@request_stack', '@entity_type.manager']

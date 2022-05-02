@@ -10,6 +10,7 @@ use Drupal\Core\Datetime\Element\Datetime;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\date_recur\DateRecurHelper;
+use Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
 use Drupal\datetime_range\Plugin\Field\FieldWidget\DateRangeDefaultWidget;
@@ -33,6 +34,8 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
+    assert($items instanceof DateRecurFieldItemList);
+
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
     $element['#theme'] = 'date_recur_basic_widget';
     $element['#element_validate'][] = [$this, 'validateRrule'];
@@ -88,6 +91,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
       '#description' => $this->t('Repeat rule in <a href=":link">iCalendar Recurrence Rule</a> (RRULE) format.', [
         ':link' => 'https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html',
       ]),
+      '#access' => $items->getPartGrid()->isRecurringAllowed(),
     ];
 
     return $element;
@@ -124,9 +128,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
         $timeZoneFieldPath = array_slice($element['#array_parents'], 0, -1);
         $timeZoneFieldPath[] = 'timezone';
         $timeZoneField = NestedArray::getValue($form_state->getCompleteForm(), $timeZoneFieldPath);
-        $submittedTimeZone = isset($timeZoneField['#value'])
-          ? $timeZoneField['#value']
-          : ($timeZoneField['#default_value'] ?? NULL);
+        $submittedTimeZone = $timeZoneField['#value'] ?? ($timeZoneField['#default_value'] ?? NULL);
       }
 
       $allTimeZones = \DateTimeZone::listIdentifiers();
@@ -194,10 +196,10 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
         DateRecurHelper::create(
           $rrule,
           $startDate->getPhpDateTime(),
-          $startDateEnd ? $startDateEnd->getPhpDateTime() : NULL
+          $startDateEnd?->getPhpDateTime(),
         );
       }
-      catch (\Exception $e) {
+      catch (\Exception) {
         $form_state->setError($element['rrule'], (string) $this->t('Repeat rule is formatted incorrectly.'));
       }
     }

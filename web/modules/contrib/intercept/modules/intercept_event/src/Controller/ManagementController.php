@@ -31,7 +31,7 @@ class ManagementController extends ManagementControllerBase {
    */
   private function getCreateEventButton() {
     $route = "intercept_event.management.event_templates";
-    return $this->getButton('Create an Event', 
+    return $this->getButton('Create an Event',
     $route, [
       'user' => $this->currentUser()->id(),
     ],
@@ -131,6 +131,8 @@ class ManagementController extends ManagementControllerBase {
       'user' => $this->currentUser()->id(),
     ]);
     $lists->row($link, $this->t('List of all events categorized as a template. Only System Admins can categorize an event as a template.'));
+    $link = $this->getButton('Check-in Settings', 'intercept_event.checkin.settings', []);
+    $lists->row($link, $this->t('Event self check-in configuration settings'));
 
     return [
       'title' => $this->title('Events'),
@@ -139,7 +141,7 @@ class ManagementController extends ManagementControllerBase {
           '#actions' => [
             'event_template' => [
               '#link' => $this->getButton(
-                'Add Event Template',
+                'Create Event Template',
                 'node.add',
                 [
                   'node_type' => 'event',
@@ -150,11 +152,12 @@ class ManagementController extends ManagementControllerBase {
             ],
             'event_series' => [
               '#link' => $this->getButton(
-                'Add Event Series',
+                'Create Event Series',
                 'node.add',
                 [
                   'node_type' => 'event_series',
-                ]
+                ],
+                ['attributes' => ['class' => ['button', 'create-content-button']]]
               ),
             ],
           ],

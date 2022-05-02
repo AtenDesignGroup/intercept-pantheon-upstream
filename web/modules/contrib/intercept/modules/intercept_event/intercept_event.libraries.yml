@@ -25,6 +25,10 @@ eventCheckin:
     - core/drupal
     - core/drupalSettings
 
+eventCheckinPeriodInvalidator:
+  js:
+    js/event_checkin_period_invalidator.js: {}
+
 eventAddToCalendar:
   js:
     js/dist/eventAddToCalendar.js:

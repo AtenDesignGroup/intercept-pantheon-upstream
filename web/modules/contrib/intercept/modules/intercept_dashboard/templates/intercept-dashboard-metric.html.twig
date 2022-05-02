@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a datapoint.
+ *
+ * Available variables:
+ * - value: The value.
+ * - label: The value's label.
+ * - link: Link to more information.
+ *
+ * @ingroup themeable
+ */
+#}
+<p class="intercept-dashboard-metric">
+  <span class="intercept-dashboard-metric__value">{{ value }}</span>
+  <span class="intercept-dashboard-metric__label">{{ label }}</span>
+  {% if link %}
+  <span class="intercept-dashboard-metric__link">
+  {{ link}}
+  </span>
+  {% endif %}
+</p>

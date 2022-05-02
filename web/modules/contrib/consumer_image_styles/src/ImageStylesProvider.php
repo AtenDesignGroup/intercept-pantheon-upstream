@@ -4,6 +4,7 @@ namespace Drupal\consumer_image_styles;
 
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\consumers\Entity\Consumer;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Image\ImageFactory;
@@ -92,11 +93,15 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
     return $image_styles;
   }
 
-
   /**
    * {@inheritdoc}
    */
-  public function buildDerivativeLink($uri, ImageStyleInterface $image_style) {
+  public function buildDerivativeLink($uri, ImageStyleInterface $image_style, CacheableMetadata $cacheable_metadata = NULL) {
+    if (is_null($cacheable_metadata)) {
+      @trigger_error(sprintf('Calling %s without $cacheable_metadata is deprecated in 4.0.6; it is required in 5.0.', __METHOD__), E_USER_DEPRECATED);
+      $cacheable_metadata = new CacheableMetadata();
+    }
+    $cacheable_metadata->addCacheableDependency($image_style);
     $info = [
       'href' => file_create_url($image_style->buildUrl($uri)),
       'title' => $this->t('Image Style: @name', ['@name' => $image_style->label()]),

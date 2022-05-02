@@ -3,6 +3,7 @@
 namespace Drupal\consumer_image_styles;
 
 use Drupal\consumers\Entity\Consumer;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\image\ImageStyleInterface;
 
@@ -29,13 +30,15 @@ interface ImageStylesProviderInterface {
    *   The file URI.
    * @param \Drupal\image\ImageStyleInterface $image_style
    *   The image style to apply.
+   * @param \Drupal\Core\Cache\CacheableMetadata $cacheable_metadata
+   *   Cacheable metadata for the normalization.
    *
    * @return array
    *   A structured array that complies with the JSON:API spec for links.
    *
    * @see https://jsonapi.org/format/#document-links
    */
-  public function buildDerivativeLink($uri, ImageStyleInterface $image_style);
+  public function buildDerivativeLink($uri, ImageStyleInterface $image_style, ?CacheableMetadata $cacheable_metadata = NULL);
 
   /**
    * Checks if an entity is an image.

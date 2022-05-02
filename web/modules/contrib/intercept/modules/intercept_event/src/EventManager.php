@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Event Manager service class.
@@ -211,6 +212,9 @@ class EventManager implements EventManagerInterface {
       '#weight' => 15,
       '#submit' => array_merge($form['actions']['submit']['#submit'], [[static::class, 'nodeEditFormSubmit']]),
     ];
+
+    // Improve the UI of this form.
+    $form['title']['widget'][0]['value']['#description'] = 'Make your title simple and straightforward. Character limit: 255.';
 
     if ($is_template) {
       $form['actions']['submit']['#value'] = $this->t('Save template');
@@ -492,10 +496,66 @@ class EventManager implements EventManagerInterface {
     if ($fieldDefinition->id() !== 'node.event.image_primary') {
       return;
     }
+    if (empty($elements['actions'])) {
+      return;
+    }
     $iefAdd = $elements['actions']['ief_add'];
     unset($elements['actions']['ief_add']);
     $elements['actions'][] = $iefAdd;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  public function userHasAttended(NodeInterface $node, AccountInterface $user = NULL) {
+    if (!$user instanceof AccountInterface) {
+      $user = $this->currentUser;
+    }
+
+    $attendance = $this->entityTypeManager
+      ->getStorage('event_attendance')
+      ->loadByProperties([
+        'field_user' => $user->id(),
+        'field_event' => $node->id(),
+      ]);
+
+    return !empty($attendance);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function userHasRegistered(NodeInterface $node, AccountInterface $user = NULL) {
+    if (!$user instanceof AccountInterface) {
+      $user = $this->currentUser;
+    }
+
+    $registrations =  $this->entityTypeManager
+      ->getStorage('event_registration')
+      ->loadByProperties([
+        'field_user' => $user->id(),
+        'field_event' => $node->id(),
+      ]);
+
+    return !empty($registrations);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function userHasSaved(NodeInterface $node, AccountInterface $user = NULL) {
+    if (!$user instanceof AccountInterface) {
+      $user = $this->currentUser;
+    }
+
+    $flaggings = $this->entityTypeManager->getStorage('flagging')
+      ->loadByProperties([
+        'entity_id' => $node->id(),
+        'uid' => $user->id(),
+        'flag_id' => 'saved_event',
+      ]);
+
+    return !empty($flaggings);
+  }
 
 }

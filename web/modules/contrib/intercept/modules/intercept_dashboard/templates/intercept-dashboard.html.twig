@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display something.
+ *
+ * Available variables:
+ * - foo: Foo variable description.
+ *
+ * @see template_preprocess_event_dashboard()
+ *
+ * @ingroup themeable
+ */
+#}
+
+<div class="intercept-dashboard">
+  <section class="l--subsection">
+  <h1 class="page-title">{{'Event Data Dashboard'|t}}</h1>
+  <p>{{"See how your events are doing."|t}}</p>
+  </section>
+  {% if filters %}
+    <section class="l--subsection">
+      <h2 class="section-title--dark">{{ 'Event Performance'|t }}</h2>
+      <div class="filters filters--3up">
+        <h3 class="filters__heading">{{ 'Filter Events'|t }}</h3>
+        {{ filters }}
+      </div>
+    </section>
+    <section class="l--subsection">
+      {% if filters_summary.summary %}
+        <p class="filters__summary">{{filters_summary.summary}}</p>
+      {% endif %}
+      {% if filters_summary.current_filters %}
+        {{ filters_summary.current_filters }}
+      {% endif %}
+    </section>
+  {% endif %}
+  {% if summary %}
+    <section class="section">
+      <h2 class="section-title--dark">{{ 'Data Summary'|t }}</h2>
+      <div class="intercept-dashboard__metrics">
+        {{ summary}}
+      </div>
+    </section>
+  {% endif %}
+  {% if event_table %}
+    <section class="section intercept-dashboard-table">
+      {{ event_table.event_table }}
+      <footer class="intercept-dashboard-table__footer">
+        {{ event_table.pager }}
+        {{ event_table.csv_link }}
+      </footer>
+    </section>
+  {% endif %}
+</div>

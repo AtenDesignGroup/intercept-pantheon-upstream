@@ -40,34 +40,6 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
   public const IS_DATE_RECUR = 'is_date_recur';
 
   /**
-   * The database connection.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected Connection $database;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
-
-  /**
-   * The entity field manager.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
-   */
-  protected EntityFieldManagerInterface $entityFieldManager;
-
-  /**
-   * Manages data type plugins.
-   *
-   * @var \Drupal\Core\TypedData\TypedDataManagerInterface
-   */
-  protected TypedDataManagerInterface $typedDataManager;
-
-  /**
    * DateRecurOccurrences constructor.
    *
    * @param \Drupal\Core\Database\Connection $database
@@ -79,11 +51,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
    */
-  public function __construct(Connection $database, EntityFieldManagerInterface $entityFieldManager, TypedDataManagerInterface $typedDataManager, EntityTypeManagerInterface $entityTypeManager) {
-    $this->database = $database;
-    $this->entityTypeManager = $entityTypeManager;
-    $this->entityFieldManager = $entityFieldManager;
-    $this->typedDataManager = $typedDataManager;
+  public function __construct(protected Connection $database, protected EntityFieldManagerInterface $entityFieldManager, protected TypedDataManagerInterface $typedDataManager, protected EntityTypeManagerInterface $entityTypeManager) {
   }
 
   /**

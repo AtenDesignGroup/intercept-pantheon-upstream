@@ -10,6 +10,19 @@ use Drupal\Core\Session\AccountInterface;
 interface EventAttendanceProviderInterface {
 
   /**
+   * Check if the attendance exists by field_event and field_user.
+   *
+   * @param int $nid
+   *   Event node id.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user. Defaults to the current user.
+   *
+   * @return bool|\Drupal\intercept_event\Entity\EventAttendanceInterface
+   *   The Event Attendance entity, or FALSE.
+   */
+  public function getEventAttendance($nid, AccountInterface $account = NULL);
+
+  /**
    * Gets all event attendance entities for an account.
    *
    * @param \Drupal\Core\Session\AccountInterface $account

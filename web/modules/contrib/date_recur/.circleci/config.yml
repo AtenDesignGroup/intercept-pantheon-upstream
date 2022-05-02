@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/php:7.4-cli
+      - image: circleci/php:8.0-cli
     steps:
       - run: sudo apt update -y
       - run: sudo apt install -y libpng-dev libjpeg-dev
@@ -23,7 +23,7 @@ jobs:
 
   coding_standards:
     docker:
-      - image: circleci/php:7.4-cli
+      - image: circleci/php:8.0-cli
     steps:
       - run: sudo apt update -y
       - run: sudo apt install -y libpng-dev libjpeg-dev
@@ -37,7 +37,7 @@ jobs:
 
   static_analysis:
     docker:
-      - image: circleci/php:7.4-cli
+      - image: circleci/php:8.0-cli
     steps:
       - restore_cache:
           key: my-key-{{ .Revision }}

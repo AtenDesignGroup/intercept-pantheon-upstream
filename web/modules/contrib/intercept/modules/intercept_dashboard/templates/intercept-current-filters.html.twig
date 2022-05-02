@@ -1,0 +1,26 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a datapoint.
+ *
+ * Available variables:
+ * - value: The value.
+ * - label: The value's label.
+ * - filters: Link to more information.
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="current-filters__wrapper">
+  {% for filter in filters %}
+  <div class="current-filter">
+    <span class="current-filter__label">{{filter.label}}:</span>
+    {% for value in filter.values %}
+    <a href="{{value.remove_url}}" class="option-chip">
+      <span class="visually-hidden">{{'Remove'|t}} </span><span class="option-chip__label">{{value.text}}</span>
+      <svg width="8" height="8" xmlns="http://www.w3.org/2000/svg" class="option-chip__icon"><g fill="#4C4D4F" fill-rule="evenodd"><path d="M.053 7l7-7 .893.894-7 7z"></path><path d="M7.054 7.893l-7-7L.947.002l7 7z"></path></g></svg>
+    </a>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>

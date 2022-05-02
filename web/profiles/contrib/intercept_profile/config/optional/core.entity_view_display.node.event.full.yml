@@ -172,9 +172,18 @@ content:
     third_party_settings: {  }
     type: media_thumbnail
     region: content
+  checkin_link:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 14
+    region: content
+  evaluation_attendee_js:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
 hidden:
   evaluation_attendee_default: true
-  evaluation_attendee_js: true
   evaluation_staff: true
   event_recurrence: true
   field_attendees: true

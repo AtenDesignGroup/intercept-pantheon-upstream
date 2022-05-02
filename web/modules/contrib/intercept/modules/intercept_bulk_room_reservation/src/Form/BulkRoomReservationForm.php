@@ -3,19 +3,21 @@
 namespace Drupal\intercept_bulk_room_reservation\Form;
 
 use Drupal\Core\Session\AccountProxy;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\webform\Plugin\WebformElement\DateList;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\intercept_room_reservation\Entity\RoomReservation;
-use Drupal\intercept_bulk_room_reservation\SeriesGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\intercept_bulk_room_reservation\Entity\BulkRoomReservation;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\intercept_bulk_room_reservation\SeriesGeneratorInterface;
+use Drupal\intercept_bulk_room_reservation\Entity\BulkRoomReservation;
 
 /**
  * Form controller for the bulk room reservation entity edit forms.
@@ -106,7 +108,19 @@ class BulkRoomReservationForm extends ContentEntityForm {
     $form = parent::form($form, $form_state);
     $entity = $this->getEntity();
     $input = $form_state->getUserInput();
-    $values = $form_state->getValues();
+
+    // Pre-populate the start and end points so that no component of
+    // field_date_time is empty.
+    $values = [];
+    $start = new DrupalDateTime();
+    $start = static::incrementRound($start, 900);
+    $end = new DrupalDateTime('+1 hour');
+    $end = static::incrementRound($end, 900);
+    $values['start'] = $start;
+    $values['end'] = $end;
+    foreach (['start', 'end'] as $endpoint) {
+      $form['field_date_time']['widget'][0][$endpoint]['#default_value'] = $values[$endpoint];
+    }
 
     // Determine available rooms only if the date and location fields have
     // values.
@@ -552,6 +566,42 @@ class BulkRoomReservationForm extends ContentEntityForm {
           '@args' => print_r($error_operation[0]),
         ]);
     }
+  }
+
+  protected static function incrementRound(&$date, $increment) {
+
+    // Round minutes and seconds, if necessary.
+    if ($date instanceof DrupalDateTime && $increment > 1) {
+      $day = intval($date
+        ->format('j'));
+      $hour = intval($date
+        ->format('H'));
+      $second = intval(round(intval($date
+        ->format('s')) / $increment) * $increment);
+      $minute = intval($date
+        ->format('i'));
+      if ($second == 60) {
+        $minute += 1;
+        $second = 0;
+      }
+      $minute = intval(round($minute / $increment) * $increment);
+      if ($minute == 60) {
+        $hour += 1;
+        $minute = 0;
+      }
+      $date
+        ->setTime($hour, $minute, $second);
+      if ($hour == 24) {
+        $day += 1;
+        $year = $date
+          ->format('Y');
+        $month = $date
+          ->format('n');
+        $date
+          ->setDate($year, $month, $day);
+      }
+    }
+    return $date;
   }
 
 }

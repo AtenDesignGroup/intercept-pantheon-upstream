@@ -1,25 +1,26 @@
 {% import '@intercept-base-components/component.twig' as component %}
 {{ attach_library('intercept_base/pager') }}
-
 {% if items %}
   <nav role="navigation" aria-labelledby="pagination-heading" attributes.removeAttribute('class') {{ component.attributes('pager', modifiers, attr) }}>
     <h4 id="pagination-heading" class="visually-hidden">{{ 'Pagination'|t }}</h4>
     <ul class="pager__items js-pager__items">
+      {# Print previous item if we are not on the first page. #}
+      {% if items.previous %}
+        <li class="pager__item pager__item--previous">
+          <a href="{{ items.previous.href }}" class="pager__link" title="{{ 'Go to previous page'|t }}" rel="prev"{{ items.previous.attributes|without('href', 'title', 'rel').addClass('pager__link') }}>
+            <span class="visually-hidden">{{ 'Previous page'|t }}</span>
+            <svg aria-hidden="true" width="9" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M.547 7.363a.693.693 0 0 0-.129.387c0 .172.043.258.129.344l6.316 6.402a.525.525 0 0 0 .73-.043l.86-.816c.086-.086.129-.215.129-.387a.488.488 0 0 0-.129-.344L3.34 7.75l5.113-5.156c.086-.086.129-.172.129-.344a.693.693 0 0 0-.129-.387l-.86-.86a.693.693 0 0 0-.386-.128.488.488 0 0 0-.344.129L.547 7.364Z" fill="currentcolor"/>
+            </svg>
+          </a>
+        </li>
+      {% endif %}
       {# Print first item if we are not on the first page. #}
       {% if items.first %}
         <li class="pager__item pager__item--first">
           <a href="{{ items.first.href }}" class="pager__link" title="{{ 'Go to first page'|t }}"{{ items.first.attributes|without('href', 'title').addClass('pager__link') }}>
             <span class="visually-hidden">{{ 'First page'|t }}</span>
             <span aria-hidden="true">{{ items.first.text|default('« First'|t) }}</span>
-          </a>
-        </li>
-      {% endif %}
-      {# Print previous item if we are not on the first page. #}
-      {% if items.previous %}
-        <li class="pager__item pager__item--previous">
-          <a href="{{ items.previous.href }}" class="pager__link" title="{{ 'Go to previous page'|t }}" rel="prev"{{ items.previous.attributes|without('href', 'title', 'rel').addClass('pager__link') }}>
-            <span class="visually-hidden">{{ 'Previous page'|t }}</span>
-            <span aria-hidden="true">{{ items.previous.text|default('‹ Previous'|t) }}</span>
           </a>
         </li>
       {% endif %}
@@ -47,21 +48,23 @@
       {% if ellipses.next %}
         <li class="pager__item pager__item--ellipsis" role="presentation">&hellip;</li>
       {% endif %}
-      {# Print next item if we are not on the last page. #}
-      {% if items.next %}
-        <li class="pager__item pager__item--next">
-          <a href="{{ items.next.href }}" title="{{ 'Go to next page'|t }}" class="pager__link" rel="next"{{ items.next.attributes|without('href', 'title', 'rel') }}>
-            <span class="visually-hidden">{{ 'Next page'|t }}</span>
-            <span aria-hidden="true">{{ items.next.text|default('Next ›'|t) }}</span>
-          </a>
-        </li>
-      {% endif %}
       {# Print last item if we are not on the last page. #}
       {% if items.last %}
         <li class="pager__item pager__item--last">
           <a href="{{ items.last.href }}" class="pager__link" title="{{ 'Go to last page'|t }}"{{ items.last.attributes|without('href', 'title') }}>
             <span class="visually-hidden">{{ 'Last page'|t }}</span>
             <span aria-hidden="true">{{ items.last.text|default('Last »'|t) }}</span>
+          </a>
+        </li>
+      {% endif %}
+      {# Print next item if we are not on the last page. #}
+      {% if items.next %}
+        <li class="pager__item pager__item--next">
+          <a href="{{ items.next.href }}" title="{{ 'Go to next page'|t }}" class="pager__link" rel="next"{{ items.next.attributes|without('href', 'title', 'rel') }}>
+            <span class="visually-hidden">{{ 'Next page'|t }}</span>
+            <svg aria-hidden="true" width="9" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.453 8.094v.043c.086-.086.129-.215.129-.387a.693.693 0 0 0-.129-.387l-6.316-6.36A.693.693 0 0 0 1.75.876a.488.488 0 0 0-.344.129l-.86.86a.693.693 0 0 0-.128.386c0 .172.043.258.129.344L5.66 7.75.547 12.906a.488.488 0 0 0-.129.344c0 .172.043.3.129.387l.86.86a.525.525 0 0 0 .73-.043l6.316-6.36Z" fill="currentcolor"/>
+            </svg>
           </a>
         </li>
       {% endif %}

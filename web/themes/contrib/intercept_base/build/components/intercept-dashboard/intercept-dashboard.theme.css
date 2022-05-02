@@ -1,0 +1,19 @@
+.intercept-dashboard-table__table thead th {
+  border-bottom: 0; }
+
+.intercept-dashboard-table__table tbody a {
+  text-decoration: none; }
+  .intercept-dashboard-table__table tbody a:hover, .intercept-dashboard-table__table tbody a:focus {
+    text-decoration: underline; }
+
+.intercept-dashboard-table__footer {
+  border-top: 1px solid #d3d8df;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding-top: 20px; }

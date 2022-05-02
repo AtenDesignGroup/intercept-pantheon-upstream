@@ -32,20 +32,6 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
   use DependencyTrait;
 
   /**
-   * The date formatter service.
-   *
-   * @var \Drupal\Core\Datetime\DateFormatterInterface
-   */
-  protected DateFormatterInterface $dateFormatter;
-
-  /**
-   * The date format entity storage.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected EntityStorageInterface $dateFormatStorage;
-
-  /**
    * Constructs a new RlInterpreter.
    *
    * @param array $configuration
@@ -59,11 +45,9 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
    * @param \Drupal\Core\Entity\EntityStorageInterface $dateFormatStorage
    *   The date format storage.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, DateFormatterInterface $dateFormatter, EntityStorageInterface $dateFormatStorage) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, protected DateFormatterInterface $dateFormatter, protected EntityStorageInterface $dateFormatStorage) {
     parent::__construct([], $plugin_id, $plugin_definition);
     $this->setConfiguration($configuration);
-    $this->dateFormatter = $dateFormatter;
-    $this->dateFormatStorage = $dateFormatStorage;
   }
 
   /**
@@ -97,9 +81,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
   public function interpret(array $rules, string $language, ?\DateTimeZone $timeZone = NULL): string {
     $pluginConfig = $this->getConfiguration();
 
-    if (!in_array($language, $this->supportedLanguages())) {
-      throw new \Exception('Language not supported.');
-    }
+    in_array($language, $this->supportedLanguages()) ?: throw new \Exception('Language not supported.');
 
     $options = [
       'locale' => $language,
@@ -113,7 +95,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
       $dateFormat = $this->dateFormatStorage->load($dateFormatId);
       if ($dateFormat) {
         $dateFormatter = function (\DateTimeInterface $date) use ($dateFormat, $timeZone): string {
-          $timeZoneString = $timeZone ? $timeZone->getName() : NULL;
+          $timeZoneString = $timeZone?->getName();
           return $this->dateFormatter->format($date->getTimestamp(), (string) $dateFormat->id(), '', $timeZoneString);
         };
         $options['date_formatter'] = $dateFormatter;

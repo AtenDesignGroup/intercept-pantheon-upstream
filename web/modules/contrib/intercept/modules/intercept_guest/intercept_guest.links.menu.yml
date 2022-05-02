@@ -11,7 +11,7 @@ intercept_guest.settings:
   route_name: intercept_guest.settings
 
 intercept_guest.guest_user_settings:
-  title: Configure Intercept Guest user
-  description: Select a Drupal user to serve as the official guest user account in this environment
-  parent: intercept_guest.settings
   route_name: intercept_guest.guest_user_settings
+  title: Intercept Guest User Settings
+  description: Select a Drupal user to serve as the official guest user account.
+  parent: intercept_core.settings

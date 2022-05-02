@@ -51,6 +51,15 @@ entity.node.attendance:
   requirements:
     _custom_access: '\Drupal\intercept_event\Controller\EventsController::attendanceAccess'
 
+entity.node.checkin:
+  path: '/event/{node}/checkin/self'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventAttendanceController::selfCheckinForm'
+    _title: 'Check-in'
+  requirements:
+    _entity_access: 'node.view'
+    _entity_bundle: 'event'
+
 entity.node.scan:
   path: '/event/{node}/checkin'
   defaults:
@@ -188,5 +197,23 @@ intercept_event.location.autocomplete:
     field_name: NULL
     count: 10
     entity_type_id: NULL
+  requirements:
+    _access: 'TRUE'
+
+intercept_event.checkin.settings:
+  path: '/manage/event-configuration/checkin'
+  defaults:
+    _form: '\Drupal\intercept_event\Form\EventCheckinSettingsForm'
+    _title: 'Event Check-in Settings'
+  requirements:
+    _role: 'intercept_system_admin + administrator'
+
+intercept_event.api.checkin.invalidate_period_cache:
+  path: '/api/event/invalidate-checkin-period'
+  methods: [GET]
+  options:
+    no_cache: 'TRUE'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventCheckinPeriodController::invalidateCheckinPeriods'
   requirements:
     _access: 'TRUE'

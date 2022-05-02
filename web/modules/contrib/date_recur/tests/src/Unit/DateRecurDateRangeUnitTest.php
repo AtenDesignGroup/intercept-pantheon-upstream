@@ -14,14 +14,6 @@ use Drupal\Tests\UnitTestCase;
 class DateRecurDateRangeUnitTest extends UnitTestCase {
 
   /**
-   * Test arguments required.
-   */
-  public function testRequiredConstructorArguments() {
-    $this->expectException(\ArgumentCountError::class);
-    $this->createDateRange();
-  }
-
-  /**
    * Tests start and end getters.
    *
    * @covers ::getStart

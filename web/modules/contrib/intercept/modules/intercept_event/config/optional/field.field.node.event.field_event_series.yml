@@ -5,12 +5,14 @@ dependencies:
     - field.storage.node.field_event_series
     - node.type.event
     - node.type.event_series
+_core:
+  default_config_hash: 6P2NMfiCo-m-xsaRHB-U64Qv46h5sC08jaqCYBOUkPw
 id: node.event.field_event_series
 field_name: field_event_series
 entity_type: node
 bundle: event
 label: 'Event Series'
-description: ''
+description: 'Optional. Used for system-wide themes or initiatives (e.g. Black History Month).'
 required: false
 translatable: false
 default_value: {  }

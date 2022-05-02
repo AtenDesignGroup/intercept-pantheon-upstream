@@ -19,20 +19,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class DateRecurInterpreterEditForm extends EntityForm {
 
   /**
-   * The plugin form factory.
-   *
-   * @var \Drupal\Core\Plugin\PluginFormFactoryInterface
-   */
-  protected PluginFormFactoryInterface $pluginFormFactory;
-
-  /**
-   * Date recur interpreter plugin manager.
-   *
-   * @var \Drupal\date_recur\Plugin\DateRecurInterpreterManagerInterface
-   */
-  protected DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager;
-
-  /**
    * Creates an instance of WorkflowStateEditForm.
    *
    * @param \Drupal\Core\Plugin\PluginFormFactoryInterface $pluginFormFactory
@@ -40,9 +26,7 @@ class DateRecurInterpreterEditForm extends EntityForm {
    * @param \Drupal\date_recur\Plugin\DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager
    *   Date recur interpreter plugin manager.
    */
-  public function __construct(PluginFormFactoryInterface $pluginFormFactory, DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager) {
-    $this->pluginFormFactory = $pluginFormFactory;
-    $this->dateRecurInterpreterPluginManager = $dateRecurInterpreterPluginManager;
+  public function __construct(protected PluginFormFactoryInterface $pluginFormFactory, protected DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager) {
   }
 
   /**

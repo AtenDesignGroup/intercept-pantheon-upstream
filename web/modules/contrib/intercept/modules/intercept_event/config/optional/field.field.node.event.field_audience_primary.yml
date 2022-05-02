@@ -10,7 +10,7 @@ field_name: field_audience_primary
 entity_type: node
 bundle: event
 label: 'Primary Audience'
-description: 'Choose the primary audience. This is used for reporting purposes.'
+description: 'Pick the Audience option most closely aligned with your intended audience. This will be used for statistical purposes.'
 required: false
 translatable: false
 default_value: {  }

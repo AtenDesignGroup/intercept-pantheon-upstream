@@ -1,4 +1,16 @@
 services:
+  intercept_event.checkin_period_invalidator:
+    class: Drupal\intercept_event\CheckinPeriodInvalidator
+    arguments:
+      [
+        '@cache_tags.invalidator',
+        '@config.factory',
+        '@datetime.time',
+        '@duration_field.service',
+        '@entity_type.manager',
+        '@state',
+      ]
+
   intercept_event.manager:
     class: Drupal\intercept_event\EventManager
     arguments: ['@current_user', '@entity_type.manager']
@@ -28,7 +40,7 @@ services:
 
   intercept_event.evaluation_manager:
     class: Drupal\intercept_event\EventEvaluationManager
-    arguments: ['@class_resolver', '@current_user', '@entity_type.manager', '@form_builder']
+    arguments: ['@class_resolver', '@current_user', '@entity_type.manager', '@form_builder', '@intercept_event.manager']
 
   intercept_event.queue:
     class: Drupal\intercept_event\EventQueue

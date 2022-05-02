@@ -21,6 +21,15 @@
     .section-title:not(:last-child) {
       margin-bottom: 0.75rem; } }
 
+.section-title--dark:not(:last-child) {
+  margin-bottom: 1.5625rem; }
+  @media (min-width: 48em) {
+    .section-title--dark:not(:last-child) {
+      margin-bottom: 2.0625rem; } }
+  @media (min-width: 62em) {
+    .section-title--dark:not(:last-child) {
+      margin-bottom: 3.125rem; } }
+
 .section-title--ruled {
   border-bottom: solid 0.0625rem #d3d8df;
   margin-bottom: 6.25rem;

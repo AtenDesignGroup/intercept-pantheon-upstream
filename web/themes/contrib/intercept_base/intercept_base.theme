@@ -7,6 +7,8 @@
 
 use Drupal\block\Entity\Block;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Utility\TableSort;
 use Drupal\user\Entity\User;
 
 /**
@@ -76,23 +78,23 @@ function intercept_base_preprocess_node(&$variables) {
 function intercept_base_add_regions_to_node($allowed_regions, &$variables) {
   // Retrieve active theme
   $theme = \Drupal::theme()->getActiveTheme()->getName();
- 
+
   // Retrieve theme regions
   $available_regions = system_region_list($theme, 'REGIONS_ALL');
- 
+
   // Validate allowed regions with available regions
   $regions = array_intersect(array_keys($available_regions), $allowed_regions);
- 
+
   // For each region
   foreach ($regions as $key => $region) {
- 
+
     // Load region blocks
     $blocks = \Drupal::entityTypeManager()->getStorage('block')
     ->loadByProperties(array('theme' => $theme, 'region' => $region));
- 
+
     // Sort ‘em
     uasort($blocks, 'Drupal\block\Entity\Block::sort');
- 
+
     // Capture viewable blocks and their settings to $build
     $build = array();
     foreach ($blocks as $key => $block) {
@@ -103,7 +105,7 @@ function intercept_base_add_regions_to_node($allowed_regions, &$variables) {
         $build[$key] = $block_content;
       }
     }
- 
+
     // Add build to region
     $variables[$region] = $build;
   }
@@ -114,6 +116,26 @@ function intercept_base_add_regions_to_node($allowed_regions, &$variables) {
  */
 function intercept_base_preprocess_maintenance_page(&$variables) {
   _intercept_base_add_logo($variables);
+}
+
+/**
+ * Implements hook_preprocess_table().
+ */
+function intercept_base_preprocess_table(&$variables) {
+  if (!empty($variables['header'])) {
+    $ts = [];
+    $ts = TableSort::getContextFromRequest($variables['header'], \Drupal::request());
+    if (empty($ts)) {
+      return;
+    }
+    foreach ($variables['header'] as $key => &$cell) {
+      // If content we have a tablesort and the header content is a link,
+      // let's assume it is a sortable column header.
+      if ($cell['content'] instanceof Link) {
+        $cell['attributes']->addClass('sortable');
+      }
+    }
+  }
 }
 
 /**
@@ -151,6 +173,13 @@ function intercept_base_form_system_theme_settings_alter(&$form, FormStateInterf
 /**
  * Implements hook_preprocess_HOOK() for event_eval_feedback templates.
  */
+function intercept_base_preprocess_evaluation_eval_widget(&$variables) {
+  $variables['#attached']['library'][] = 'intercept_base/evaluation';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for event_eval_feedback templates.
+ */
 function intercept_base_preprocess_event_eval_feedback(&$variables) {
   $variables['#attached']['library'][] = 'intercept_base/event-eval-feedback';
 }
@@ -160,6 +189,29 @@ function intercept_base_preprocess_event_eval_feedback(&$variables) {
  */
 function intercept_base_preprocess_event_registration_guest_form(&$variables) {
   $variables['#attached']['library'][] = 'intercept_base/card';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for event_eval_feedback templates.
+ */
+function intercept_base_preprocess_intercept_current_filters(&$variables) {
+  $variables['#attached']['library'][] = 'intercept_base/current-filters';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for event_eval_feedback templates.
+ */
+function intercept_base_preprocess_intercept_dashboard(&$variables) {
+  $variables['#attached']['library'][] = 'intercept_base/intercept-dashboard';
+  $variables['#attached']['library'][] = 'intercept_base/page-title';
+  $variables['#attached']['library'][] = 'intercept_base/section-title';
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function intercept_base_preprocess_intercept_dashboard_metric(array &$variables) {
+  $variables['#attached']['library'][] = 'intercept_base/intercept-dashboard-metric';
 }
 
 /**
@@ -177,6 +229,36 @@ function intercept_base_preprocess_intercept_reservation_status_legend(&$variabl
 }
 
 /**
+ * Implements hook_preprocess_HOOK() for pager templates.
+ */
+function intercept_base_preprocess_pager(&$variables) {
+  $element = $variables['pager']['#element'];
+  /** @var \Drupal\Core\Pager\PagerManagerInterface $pager_manager */
+  $pager_manager = \Drupal::service('pager.manager');
+  $pager = $pager_manager->getPager($element);
+
+  // Nothing to do if there is no pager.
+  if (!isset($pager)) {
+    return;
+  }
+
+  $pager_max = $pager->getTotalPages();
+
+  if (isset($variables['items']['first']) && !empty($variables['ellipses']['previous'])) {
+    $variables['items']['first']['text'] = 1;
+  } else {
+    unset($variables['items']['first']);
+  }
+
+  if (isset($variables['items']['last']) && !empty($variables['ellipses']['next'])) {
+    $variables['items']['last']['text'] = $pager_max;
+  } else {
+    unset($variables['items']['last']);
+  }
+
+}
+
+/**
  * Implements hook_preprocess_form() for forms.
  */
 function intercept_base_preprocess_form(&$variables) {
@@ -187,7 +269,7 @@ function intercept_base_preprocess_form(&$variables) {
     case 'node-event-attendance-form':
       $variables['#attached']['library'][] = 'intercept_base/filters';
       break;
-
+    case 'intercept-dashboard-dashboard-event-filters':
     case 'views-exposed-form-intercept-user-events-page':
     case 'views-exposed-form-intercept-room-reservations-page':
     case 'views-exposed-form-intercept-equipment-reservations-embed':
@@ -213,6 +295,7 @@ function intercept_base_preprocess_form_element(&$variables) {
   $form_id = $variables['element']['#form_id'] ?? NULL;
 
   switch ($form_id) {
+    case 'intercept_dashboard_dashboard_event_filters':
     case 'views_exposed_form':
       switch ($variables['element']['#type']) {
         case 'select':
@@ -224,6 +307,13 @@ function intercept_base_preprocess_form_element(&$variables) {
           break;
       }
       break;
+  }
+
+  // Move the label of a duration number after the input so it reads more naturally.
+  // This is meant for the intercept_event_checkin_settings form,
+  // but form_id is not available in these sub fields.
+  if (isset($variables['element']['#name']) && preg_match('/checkin_(start|end)\[.\]/', $variables['element']['#name'])) {
+    $variables['label_display'] = 'after';
   }
 }
 
@@ -481,7 +571,12 @@ function intercept_base_get_authdata($uid) {
   if ($intercept_ils_plugin) {
     $authmap = \Drupal::service('externalauth.authmap');
     $authdata = $authmap->getAuthdata($uid, $intercept_ils_plugin);
-    return unserialize($authdata['data']);
+    if ($authdata['data']) {
+      return unserialize($authdata['data']);
+    }
+    else {
+      return FALSE;
+    }
   }
   return FALSE;
 }

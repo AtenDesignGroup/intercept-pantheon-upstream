@@ -11,6 +11,7 @@ import drupalSettings from 'drupalSettings';
 
 import FieldInline from './../FieldInline';
 import Teaser from './../Teaser';
+import ButtonCheckin from '../ButtonCheckin';
 import ButtonRegister from './../ButtonRegister';
 import RegistrationStatus from './../RegistrationStatus';
 
@@ -65,6 +66,7 @@ class EventTeaser extends PureComponent {
         registrations={registrations}
         footer={props => (
           <React.Fragment>
+            <ButtonCheckin eventId={props.event.id} />
             <ButtonRegister eventId={props.event.id} />
             <RegistrationStatus eventId={props.event.id} />
           </React.Fragment>

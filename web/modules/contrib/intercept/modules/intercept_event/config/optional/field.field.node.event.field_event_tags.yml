@@ -5,12 +5,14 @@ dependencies:
     - field.storage.node.field_event_tags
     - node.type.event
     - taxonomy.vocabulary.tag
+_core:
+  default_config_hash: rrzXLJ-K4lqRFYdAMABZmY7CEvw9A-8v7qe-TiezCSU
 id: node.event.field_event_tags
 field_name: field_event_tags
 entity_type: node
 bundle: event
 label: Tags
-description: ''
+description: Tags help customers find similar content. Select all that apply. When a customer clicks a tag they'll view site-wide content that shares the same tag.
 required: false
 translatable: false
 default_value: {  }

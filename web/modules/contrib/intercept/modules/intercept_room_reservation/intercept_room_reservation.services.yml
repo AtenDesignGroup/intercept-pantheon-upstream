@@ -7,3 +7,10 @@ services:
   intercept_room_reservation.manager:
     class: Drupal\intercept_room_reservation\RoomReservationManager
     arguments: ['@current_user', '@entity_type.manager']
+
+  intercept_room_reservation.certification_checker:
+    class: Drupal\intercept_room_reservation\RoomReservationCertificationChecker
+    arguments: ['@entity_type.manager']
+
+  intercept_room_reservation.autocomplete_parser:
+    class: Drupal\intercept_room_reservation\ParseAutocompleteInput

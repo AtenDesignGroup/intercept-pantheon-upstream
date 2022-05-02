@@ -45,7 +45,8 @@ const viewOptions = [{ key: 'list', value: 'List' }, { key: 'calendar', value: '
 const sparseFieldsets = (view = 'list') =>
   (view === 'list'
     ? {
-      [c.TYPE_EVENT]: [
+    [c.TYPE_EVENT]: [
+        'checkin_period',
         'drupal_internal__nid',
         'status',
         'title',
@@ -95,8 +96,8 @@ function getDate(value, view = 'day', boundary = 'start') {
 }
 
 function getDateSpan(value, view = 'day') {
-  const start = getDate(value, view, 'start');
-  const end = getDate(value, view, 'end');
+  const start = moment.tz(getDate(value, view, 'start'), 'UTC').format('YYYY-MM-DD\THH:mm:ssZZ');
+  const end = moment.tz(getDate(value, view, 'end'), 'UTC').format('YYYY-MM-DD\THH:mm:ssZZ');
   return [start, end];
 }
 

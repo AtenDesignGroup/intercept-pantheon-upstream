@@ -24,10 +24,13 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Routing\LocalRedirectResponse;
+use Drupal\intercept_event\CheckinPeriodField;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\intercept_event\EventEvaluationManager;
 use Drupal\intercept_event\EventRegistrationField;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\intercept_core\EntityImageThumbnailUriField;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 
@@ -161,6 +164,13 @@ function intercept_event_entity_extra_field_info() {
     'visible' => FALSE,
   ];
 
+  $extra['node']['event']['display']['checkin_link'] = [
+    'label' => new TranslatableMarkup('Checkin link'),
+    'description' => new TranslatableMarkup('Displays a link to check-in during the check-in period'),
+    'weight' => 10,
+    'visible' => FALSE,
+  ];
+
   $extra['node']['event']['display']['evaluation_attendee_default'] = [
     'label' => new TranslatableMarkup('Evaluation default (attendee)'),
     'description' => new TranslatableMarkup('View evaluation widget for attendees.'),
@@ -243,6 +253,14 @@ function intercept_event_entity_field_access($operation, FieldDefinitionInterfac
     }
   }
   return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function intercept_event_page_attachments(array &$attachments) {
+  // Make a request to invalidate the check-in period with each page request.
+  $attachments['#attached']['library'][] = 'intercept_event/eventCheckinPeriodInvalidator';
 }
 
 /**
@@ -636,18 +654,22 @@ function intercept_event_form_node_form_alter(&$form, FormStateInterface $form_s
 function intercept_event_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   if ($entity->bundle() == 'event' && $display->getComponent('evaluation_attendee_default')) {
     $build['evaluation'] = \Drupal::service('intercept_event.evaluation_manager')
-      ->getDefaultForm($entity);
+      ->getAttendeeForm($entity);
   }
+
   if ($entity->bundle() == 'event' && $display->getComponent('evaluation_attendee_js')) {
+    /** @var EventEvaluationManager $evaluation_manager */
     $evaluation_manager = \Drupal::service('intercept_event.evaluation_manager');
 
-    if ($evaluation_manager->eventHasEnded($entity)) {
+    if ($evaluation_manager->eventCustomerEvaluationAllowed($entity, \Drupal::currentUser())) {
       $evaluation = $evaluation_manager->loadByEntity($entity, [
         'user_id' => '<current>',
       ]);
       $build['evaluation'] = $evaluation ? $evaluation->view() : $evaluation_manager->buildJsWidget($entity);
+      $build['evaluation']['#cache']['contexts'][] = 'user';
     }
   }
+
   if ($entity->bundle() === 'event' && $entity->field_must_register->value === '1') {
     $build['register_prompt'] = [
       '#markup' => '<div class="event-register-button js--event-register-button" data-event-uuid="' . $entity->uuid() . '"></div>',
@@ -661,6 +683,41 @@ function intercept_event_node_view(array &$build, EntityInterface $entity, Entit
     // Start and end points are standardized to UTC.
     $start = new DateTime($entity->field_event_register_period->value);
     $end = new DateTime($entity->field_event_register_period->end_value);
+    $now = new DateTime();
+    $time_zone = new DateTimeZone('UTC');
+    $now->setTimeZone($time_zone);
+    // Invalidate tags if we passed either endpoint in the last hour.
+    if (($start->getTimestamp() >= $now->getTimestamp() - 60 * 60)
+      || ($end->getTimestamp() >= $now->getTimestamp() - 60 * 60)) {
+      Cache::invalidateTags($entity->getCacheTags());
+    }
+  }
+
+  if ($entity->bundle() === 'event' && $entity->hasField('checkin_period') && $display->getComponent('checkin_link')) {
+    /** @var \Drupal\intercept_event\EventAttendanceProviderInterface $event_attendance_provider */
+    $event_attendance_provider = \Drupal::service('intercept_event.event_attendance_provider');
+
+    $build['checkin_link'] = Link::createFromRoute(
+      t('Check in'),
+      'entity.node.checkin',
+      [
+        'node' => $entity->id(),
+      ],
+      [
+        'attributes' => [
+          'class' => ['button', 'button--checkin', 'button--small']
+        ],
+      ]
+    )->toRenderable();
+    // Only show the link if it's during the check-in period and the user has not already checked in.
+    $build['checkin_link']['#access'] = $entity->checkin_period->status === 'open' && !$event_attendance_provider->getEventAttendance($entity->id());
+    // Cache the link per user.
+    $build['checkin_link']['#cache']['contexts'][] = 'user';
+
+    // Invalidate this $entity's cache based on field_event_register_period.
+    // Start and end points are standardized to UTC.
+    $start = new DateTime($entity->checkin_period->start);
+    $end = new DateTime($entity->checkin_period->end);
     $now = new DateTime();
     $time_zone = new DateTimeZone('UTC');
     $now->setTimeZone($time_zone);
@@ -805,6 +862,18 @@ function intercept_event_entity_bundle_field_info(EntityTypeInterface $entity_ty
         'thumbnail' => DataDefinition::create('string')->setLabel(t('Image Thumbnail')),
       ])
       ->setClass(EntityImageThumbnailUriField::class);
+
+    // Define check-in period computed fields.
+    $fields['checkin_period'] = BaseFieldDefinition::create('intercept_computed')
+      ->setLabel(t('Check-in Period'))
+      ->setComputed(TRUE)
+      ->setSetting('properties', [
+        'start' => DataDefinition::create('datetime_iso8601')->setLabel(t('Check-in Period Start:')),
+        'end' => DataDefinition::create('datetime_iso8601')->setLabel(t('Check-in Period End:')),
+        'status' => DataDefinition::create('string')->setLabel(t('Check-in Period Status:')),
+        'checkin_url' => DataDefinition::create('string')->setLabel(t('Check-in Url:')),
+      ])
+      ->setClass(CheckinPeriodField::class);
   }
   return $fields;
 }

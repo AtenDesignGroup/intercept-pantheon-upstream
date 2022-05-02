@@ -23,16 +23,14 @@ intercept_core.admin_structure:
   parent: system.admin_structure
 
 intercept_core.account.settings:
-  title: 'Profile'
-  weight: 15
+  title: 'Settings'
   route_name: intercept_core.account.settings
   menu_name: account
   # See: https://gorannikolovski.com/blog/menu-links-dynamic-values
   class: Drupal\intercept_core\Plugin\Menu\UserMenuLink
 
 intercept_core.user_edit:
-  title: 'Profile'
-  weight: 14
+  title: 'Manage Account'
   route_name: intercept_core.user_edit
   menu_name: account
 

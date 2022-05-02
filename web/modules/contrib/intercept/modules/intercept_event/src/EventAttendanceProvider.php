@@ -40,6 +40,22 @@ class EventAttendanceProvider implements EventAttendanceProviderInterface {
   /**
    * {@inheritdoc}
    */
+  public function getEventAttendance($nid, AccountInterface $account = NULL) {
+    $account = $account ?: $this->currentUser;
+    if ($account->isAnonymous()) {
+      return FALSE;
+    }
+
+    $result = $this->eventAttendanceStorage->loadByProperties([
+      'field_event' => $nid,
+      'field_user' => $account->id(),
+    ]);
+    return !empty($result) ? reset($result) : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getEventAttendances(AccountInterface $account = NULL) {
     $event_attendances = [];
     $event_attendance_ids = $this->getEventAttendanceIds($account);

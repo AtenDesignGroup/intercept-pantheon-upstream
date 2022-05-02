@@ -1,8 +1,80 @@
 # Changelog
 
-## Unreleased
+## [Unreleased]
 
-- n/a
+## [2.3.1] - 2022-04-22
+
+### Fixed
+
+- Fix microseconds not always removed from dtstart, causing date comparison issues with specific date input [#104](https://github.com/rlanvin/php-rrule/issues/104)
+
+## [2.3.0] - 2021-10-25
+
+### Added
+
+- Added Swedish translation [#96](https://github.com/rlanvin/php-rrule/pull/96/)
+- Added `bin/review_translations.php` as a helper for translators and contributors
+- Added Hebrew translation [#95](https://github.com/rlanvin/php-rrule/pull/95)
+
+### Fixed
+
+- Fix Finnish translation [#94](https://github.com/rlanvin/php-rrule/issues/94)
+- Update French translation
+- Update German translation
+- Fix compatibility with PHP 8.1 [#100](https://github.com/rlanvin/php-rrule/pull/100)
+
+## [2.2.2] - 2021-01-09
+
+### Fixed
+
+- Fix `getOccurrencesAfter` returns empty array when `$inclusive` is `false` and `$limit` is not set [#93](https://github.com/rlanvin/php-rrule/pull/93)
+
+## [2.2.1] - 2020-12-09
+
+### Fixed
+
+- Fix support for `DateTimeImmutable` [#90](https://github.com/rlanvin/php-rrule/issues/90)
+
+## [2.2.0] - 2019-11-01
+
+### Added
+
+- Persian (Farsi) translation [#72](https://github.com/rlanvin/php-rrule/pull/72)
+- Support for Windows timezone [#69](https://github.com/rlanvin/php-rrule/issues/69)
+
+### Fixed
+
+- Fix valid rules wrongly detected as not producing results, and cut short after MAX_CYCLES [#78](https://github.com/rlanvin/php-rrule/issues/78)
+- Fix `RRule::createFromRfcString` not detecting RSet properly if the rule was lowercase
+- [internal] Replace static variables by array constants (permitted since PHP 5.6). Shouldn't break backward compatibility unless you were doing weird things with this lib in the first place.
+
+## [2.1.0] - 2019-05-30
+
+### Fixed
+
+- Fix locale format for i18n files without `intl` extension [#67](https://github.com/rlanvin/php-rrule/issues/67)
+
+### Added
+
+- Added new methods to `RSet`: `removeDate`, `clearDates`, `removeExDate` and `clearExDates` [#66](https://github.com/rlanvin/php-rrule/pull/66)
+
+## [2.0.0] - 2019-03-16
+
+- Add support for PHP 7.3
+
+## [2.0.0-rc1] - 2019-01-13
+
+- Rewrite the core algorithm to use a native PHP generator, drop compability with PHP < 5.6 [#43](https://github.com/rlanvin/php-rrule/issues/43)
+
+### Added
+
+- New option `custom_path` to `humanReadable()` to use custom translation files [#56](https://github.com/rlanvin/php-rrule/issues/56)
+- New helpers methods [#60](https://github.com/rlanvin/php-rrule/issues/60)
+  - `getOccurrencesBefore`
+  - `getOccurrencesAfter`
+  - `getNthOccurrencesBefore`
+  - `getNthOccurrencesAfter`
+  - `getNthOccurrencesFrom`
 
 ## [1.6.3] - 2019-01-13
 
@@ -151,7 +223,15 @@
 
 - First release, everything before that was unversioned (`dev-master` was used).
 
-[Unreleased]: https://github.com/rlanvin/php-rrule/compare/v1.6.3...HEAD
+[Unreleased]: https://github.com/rlanvin/php-rrule/compare/v2.3.1...HEAD
+[2.3.1]: https://github.com/rlanvin/php-rrule/compare/v2.3.0...v2.3.1
+[2.3.0]: https://github.com/rlanvin/php-rrule/compare/v2.2.2...v2.3.0
+[2.2.2]: https://github.com/rlanvin/php-rrule/compare/v2.2.1...v2.2.2
+[2.2.1]: https://github.com/rlanvin/php-rrule/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/rlanvin/php-rrule/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/rlanvin/php-rrule/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/rlanvin/php-rrule/compare/v2.0.0-rc1...v2.0.0
+[2.0.0-rc1]: https://github.com/rlanvin/php-rrule/compare/v1.6.3...v2.0.0-rc1
 [1.6.3]: https://github.com/rlanvin/php-rrule/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/rlanvin/php-rrule/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/rlanvin/php-rrule/compare/v1.6.0...v1.6.1

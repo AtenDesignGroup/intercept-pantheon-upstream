@@ -206,7 +206,7 @@ class DateRecurItem extends DateRangeItem {
     $element['parts'] = [
       '#type' => 'container',
     ];
-    $element['parts']['#after_build'][] = [get_class($this), 'partsAfterBuild'];
+    $element['parts']['#after_build'][] = [$this::class, 'partsAfterBuild'];
 
     $allPartsSettings = $this->getSetting('parts');
     $element['parts']['all'] = [
@@ -365,7 +365,7 @@ class DateRecurItem extends DateRangeItem {
     try {
       $isInfinite = $this->getHelper()->isInfinite();
     }
-    catch (DateRecurHelperArgumentException $e) {
+    catch (DateRecurHelperArgumentException) {
       $isInfinite = FALSE;
     }
     $this->get('infinite')->setValue($isInfinite);
@@ -429,7 +429,7 @@ class DateRecurItem extends DateRangeItem {
       // string will cause the exception to be thrown.
       $timeZone = new \DateTimeZone(is_string($timeZoneString) ? $timeZoneString : '');
     }
-    catch (\Exception $exception) {
+    catch (\Exception) {
       throw new DateRecurHelperArgumentException('Invalid time zone');
     }
 

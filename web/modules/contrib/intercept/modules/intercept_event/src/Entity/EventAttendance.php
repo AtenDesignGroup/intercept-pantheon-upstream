@@ -31,6 +31,7 @@ use Drupal\user\UserInterface;
  *       "scan" = "Drupal\intercept_event\Form\EventAttendanceScanForm",
  *       "scan_guest" = "Drupal\intercept_event\Form\EventAttendanceScanGuestForm",
  *       "scan_lookup" = "Drupal\intercept_event\Form\EventAttendanceScanLookupForm",
+ *       "self_checkin" = "Drupal\intercept_event\Form\EventAttendanceSelfCheckinForm",
  *       "edit" = "Drupal\intercept_event\Form\EventAttendanceForm",
  *       "delete" = "Drupal\intercept_event\Form\EventAttendanceDeleteForm",
  *     },

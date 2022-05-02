@@ -1,0 +1,13 @@
+intercept_event.checkin:
+  type: config_object
+  label: 'Intercept Event Self Checkin settings'
+  mapping:
+    enable:
+      type: boolean
+      label: 'Enable self check-in for events'
+    checkin_start:
+      type: iso_8601_string
+      label: 'Time before event starts to open check-in period'
+    checkin_end:
+      type: iso_8601_string
+      label: 'Time after event ends to close check-in period'

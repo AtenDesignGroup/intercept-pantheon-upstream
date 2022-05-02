@@ -20,7 +20,11 @@
             flex: none;
     margin: 0.5625rem; }
   .filters__inputs-inner label {
-    margin: 0; }
+    margin: 0;
+    font-size: 0.75rem; }
+    @media (min-width: 62em) {
+      .filters__inputs-inner label {
+        font-size: 1rem; } }
   .filters__inputs-inner input,
   .filters__inputs-inner select {
     width: 100%; }
@@ -128,6 +132,12 @@
 
 [id='views-exposed-form-intercept-events-embed'] .filters__inputs-inner {
   margin-top: 0; }
+
+[id='intercept-dashboard-dashboard-event-filters'] .filters__inputs-inner {
+  margin-top: 0; }
+
+[id='intercept-dashboard-dashboard-event-filters'] .filters__actions {
+  margin-top: 3rem; }
 
 .intercept-event-list .radios legend {
   display: none; }

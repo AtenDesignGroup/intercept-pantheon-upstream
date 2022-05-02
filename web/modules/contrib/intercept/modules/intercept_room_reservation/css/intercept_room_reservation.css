@@ -1,6 +1,7 @@
 /* TODO: Styles need to be moved into Intercept Base theme. */
 #drupal-off-canvas #edit-field-dates-0-message p,
-#edit-field-dates-0-message p {
+#edit-field-dates-0-message p,
+#edit-field-dates-0-message li {
   font-size: large;
   color: #dc0078;
   font-weight: 600;

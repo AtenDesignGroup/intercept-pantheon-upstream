@@ -9,7 +9,7 @@ dependencies:
   - consumers:consumers
   - jsonapi_extras:jsonapi_extras
 
-# Information added by Drupal.org packaging script on 2022-03-07
-version: '4.0.6'
+# Information added by Drupal.org packaging script on 2022-04-21
+version: '4.0.7'
 project: 'consumer_image_styles'
-datestamp: 1646690123
+datestamp: 1650559371

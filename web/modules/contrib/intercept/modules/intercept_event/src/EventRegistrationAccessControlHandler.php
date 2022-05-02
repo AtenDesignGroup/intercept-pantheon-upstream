@@ -20,11 +20,21 @@ class EventRegistrationAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($operation == 'cancel') {
-      $result = AccessResult::allowedIfHasPermission($account, 'cancel event_registration entities');
-      // Ensure that access is evaluated again when the entity changes.
-      return $result->addCacheableDependency($entity);
+    switch ($operation) {
+      case 'cancel':
+        $result = AccessResult::allowedIfHasPermission($account, 'cancel event_registration entities');
+        // Ensure that access is evaluated again when the entity changes.
+        return $result->addCacheableDependency($entity);
+        break;
+
+      case 'update':
+        $result = AccessResult::allowedIfHasPermission($account, 'update any event_registration');
+        // Ensure that access is evaluated again when the entity changes.
+        return $result->addCacheableDependency($entity);
+        break;
+
     }
+
     $account = $this->prepareUser($account);
     $result = parent::checkAccess($entity, $operation, $account);
 

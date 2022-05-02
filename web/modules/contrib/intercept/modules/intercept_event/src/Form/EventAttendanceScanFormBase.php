@@ -19,9 +19,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class EventAttendanceScanFormBase extends ContentEntityForm {
 
-  const SUCCESS_MESSAGE = 'You\'ve successfully scanned in!';
+  protected $successMessage = 'You\'ve successfully scanned in!';
 
-  const ATTENDANCE_EXISTS_MESSAGE = 'You\'ve already scanned in.';
+  protected $attendanceExistsMessage = 'You\'ve already scanned in.';
 
   /**
    * The ExternalAuth object.
@@ -111,7 +111,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        $this->messenger()->addMessage($this->t(self::SUCCESS_MESSAGE, [
+        $this->messenger()->addMessage($this->t($this->successMessage, [
           '%label' => $entity->label(),
         ]));
         break;
@@ -222,6 +222,18 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
    */
   protected function redirectToBaseForm(FormStateInterface $form_state) {
     $form_state->setRedirect('entity.node.scan', [
+      'node' => $this->event()->id(),
+    ]);
+  }
+
+  /**
+   * Redirect to the event.
+   *
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  protected function redirectToEvent(FormStateInterface $form_state) {
+    $form_state->setRedirect('entity.node.canonical', [
       'node' => $this->event()->id(),
     ]);
   }

@@ -254,7 +254,7 @@ class DateRecurFieldItemTest extends KernelTestBase {
   public function testGenerateSampleValue() {
     $entity = DrEntityTest::create();
     $entity->dr->generateSampleItems();
-    $this->assertRegExp('/^FREQ=DAILY;COUNT=\d{1,2}$/', $entity->dr->rrule);
+    $this->assertMatchesRegularExpression('/^FREQ=DAILY;COUNT=\d{1,2}$/', $entity->dr->rrule);
     $this->assertFalse($entity->dr->infinite);
     $this->assertTrue(in_array($entity->dr->timezone, timezone_identifiers_list(), TRUE));
 

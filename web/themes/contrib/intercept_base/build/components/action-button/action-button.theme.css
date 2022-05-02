@@ -12,6 +12,9 @@
           flex-wrap: nowrap; } }
 
 .actions__register {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   margin-bottom: 1.125rem;
   width: 100%; }
   @media (min-width: 37.5em) {

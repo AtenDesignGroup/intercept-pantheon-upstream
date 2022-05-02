@@ -62,9 +62,9 @@ entity.intercept_guest.delete_form:
     _entity_access: 'intercept_guest.delete'
 
 intercept_guest.guest_user_settings:
-  path: '/admin/config/system/guest-user-settings'
+  path: '/admin/config/intercept/guest-user-settings'
   defaults:
-    _title: 'Configure Intercept Guest user'
+    _title: 'Intercept Guest User Settings'
     _form: 'Drupal\intercept_guest\Form\GuestUserSettingsForm'
   requirements:
     _permission: 'administer site configuration'

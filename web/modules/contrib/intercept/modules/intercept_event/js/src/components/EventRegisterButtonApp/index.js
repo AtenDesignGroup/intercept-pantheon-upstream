@@ -17,7 +17,6 @@ class EventRegisterButtonApp extends React.Component {
   }
 
   render() {
-    console.log({...this.props});
     return (
       <div className="event-register-button__inner">
         {this.props.event && <ButtonRegister {...this.props} event={this.props.event.data} />}

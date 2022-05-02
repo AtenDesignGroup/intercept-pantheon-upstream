@@ -37,6 +37,9 @@ button.rbc-input::-moz-focus-inner {
   -webkit-box-sizing: inherit;
           box-sizing: inherit; }
 
+.rbc-calendar .rbc-toolbar__heading button:focus:not(:hover), button:focus:not(:hover) .MuiButton-label h2 {
+  color: #fff; }
+
 .rbc-abs-full,
 .rbc-row-bg {
   overflow: hidden;

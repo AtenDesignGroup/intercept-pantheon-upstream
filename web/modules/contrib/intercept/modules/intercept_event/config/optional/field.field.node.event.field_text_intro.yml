@@ -6,12 +6,14 @@ dependencies:
     - node.type.event
   module:
     - text
+_core:
+  default_config_hash: BM_sOb9-a2f8D7CEnIc3r-6f_wMEZYOWHpEaOQ3rKZ8
 id: node.event.field_text_intro
 field_name: field_text_intro
 entity_type: node
 bundle: event
 label: 'Intro Text'
-description: ''
+description: 'Optional. Displays before the primary content on the event page.'
 required: false
 translatable: true
 default_value: {  }

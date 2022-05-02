@@ -207,8 +207,7 @@ display:
           group_type: group
           admin_label: ''
           operator: or
-          value:
-            - '2792'
+          value: { }
           group: 1
           exposed: true
           expose:

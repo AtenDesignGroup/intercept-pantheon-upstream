@@ -11,4 +11,4 @@
     date: node.field_date_time.start_date|date("l, F j, Y"),
     time: (node.field_date_time.start_date|date("g:i a") ~ ' – ' ~ node.field_date_time.end_date|date("g:i a"))|replace({'m':'.m.'})|replace({':00':''})
   },
-} %}
+} only %}

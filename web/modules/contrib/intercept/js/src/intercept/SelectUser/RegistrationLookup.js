@@ -114,6 +114,7 @@ class RegistrationLookup extends React.Component {
       });
     }
     else {
+      value = value.trim(); //remove any whitespace fore and aft of value
       this.fetchRegistration(value);
     }
   }

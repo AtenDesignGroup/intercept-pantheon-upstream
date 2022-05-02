@@ -2,6 +2,17 @@
   background-color: #eef1f4;
   padding: 2.17391% 4.34783% 4.34783%; }
 
+.filters__summary {
+  font-size: 0.65278rem;
+  font-weight: 900;
+  font-style: italic; }
+  @media (min-width: 48em) {
+    .filters__summary {
+      font-size: 0.83333rem; } }
+  @media (min-width: 62em) {
+    .filters__summary {
+      font-size: 1rem; } }
+
 .filters--uniform-padding .filters__inputs,
 .filters__inputs--uniform-padding {
   padding: 2.17391%; }

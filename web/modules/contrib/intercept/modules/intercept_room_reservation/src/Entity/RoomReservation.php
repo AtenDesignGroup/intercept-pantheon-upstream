@@ -57,6 +57,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *     "NonOverlappingRoomReservation" = {},
  *     "FutureReservation" = {},
  *     "LocationOpenHours" = {},
+ *     "MaxCapacity" = {},
  *     "ReservationLimit" = {},
  *     "ReservationMaxDuration" = {},
  *     "StaffRoomPermissions" = {},

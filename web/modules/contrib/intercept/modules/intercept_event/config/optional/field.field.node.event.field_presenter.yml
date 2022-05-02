@@ -9,7 +9,7 @@ field_name: field_presenter
 entity_type: node
 bundle: event
 label: 'Non-staff presenters'
-description: 'List all non-staff presenters and co-presenters participating in this event.'
+description: 'List all presenters who are non-library staff. Used for reporting purposes.'
 required: false
 translatable: false
 default_value: {  }

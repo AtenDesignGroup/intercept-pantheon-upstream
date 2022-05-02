@@ -29,8 +29,7 @@ events.browse:
   menu_name: main
 
 intercept_event.account.events:
-  title: 'My Events'
-  weight: 5
+  title: 'Saved Events'
   route_name: intercept_event.account.events
   menu_name: account
   class: Drupal\intercept_core\Plugin\Menu\UserMenuLink

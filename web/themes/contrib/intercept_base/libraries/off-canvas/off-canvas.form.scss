@@ -404,13 +404,16 @@
     }
   }
 
-  .messages {
+  .messages--wrapper {
     top: 0;
     left: 0;
     margin: 0 -1.875rem;
     position: sticky;
     right: 0;
     z-index: 10;
+    .messages:not(:last-child) {
+      margin-bottom: 0;
+    }
   }
 
   .user-is-not-certified {

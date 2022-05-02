@@ -9,8 +9,10 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\intercept_event\EventManagerInterface;
 use Drupal\intercept_event\Form\EventEvaluationAttendeeForm;
 use Drupal\intercept_event\Form\EventEvaluationStaffForm;
 use Drupal\node\NodeInterface;
@@ -76,6 +78,13 @@ class EventEvaluationManager {
   protected $voteStorage;
 
   /**
+   * The intercept event manager service.
+   *
+   * @var \Drupal\intercept_event\EventManagerInterface
+   */
+  protected $eventManager;
+
+  /**
    * Constructs a new EventEvaluationManager object.
    *
    * @param \Drupal\Core\DependencyInjection\ClassResolverInterface $class_resolver
@@ -87,12 +96,13 @@ class EventEvaluationManager {
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The currently active request object.
    */
-  public function __construct(ClassResolverInterface $class_resolver, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, FormBuilderInterface $form_builder) {
+  public function __construct(ClassResolverInterface $class_resolver, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, FormBuilderInterface $form_builder, EventManagerInterface $event_manager) {
     $this->classResolver = $class_resolver;
     $this->currentUser = $current_user;
     $this->entityTypeManager = $entity_type_manager;
     $this->formBuilder = $form_builder;
     $this->voteStorage = $this->entityTypeManager->getStorage('vote');
+    $this->eventManager = $event_manager;
   }
 
   /**
@@ -210,6 +220,41 @@ class EventEvaluationManager {
     }
     $vote = reset($votes);
     return $this->createEventEvaluationInstance($vote);
+  }
+
+  /**
+   * Whether the user is allowed to evaluate the event or not.
+   * Users should only be able to evaluate events they actually
+   * attended, registered for or saved.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Event Node.
+   *
+   * @return bool
+   *   Whether the user is allowed to evaluate the event.
+   */
+  public function eventCustomerEvaluationAllowed(EntityInterface $entity) {
+    if (!$this->eventHasEnded($entity)) {
+      return FALSE;
+    }
+    // Disallow if does not have the correct permissions.
+    if (!$this->currentUser->hasPermission('evaluate own events') && !$this->currentUser->hasPermission('evaluate any event')) {
+      return FALSE;
+    }
+    // Allow if attended.
+    if ($this->eventManager->userHasAttended($entity, $this->currentUser)) {
+      return TRUE;
+    }
+    // Allow if registered.
+    if ($this->eventManager->userHasRegistered($entity, $this->currentUser)) {
+      return TRUE;
+    }
+    // Allow if saved.
+    if ($this->eventManager->userHasSaved($entity, $this->currentUser)) {
+      return TRUE;
+    }
+
+    return FALSE;
   }
 
   /**

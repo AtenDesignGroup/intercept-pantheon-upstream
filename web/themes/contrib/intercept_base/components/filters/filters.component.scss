@@ -25,6 +25,11 @@
 
   label {
     margin: 0;
+    font-size: rem(12px);
+
+    @include bp(large) {
+      font-size: 1rem;
+    }
   }
 
   input,
@@ -114,6 +119,16 @@
 
 [id='views-exposed-form-intercept-events-embed'] .filters__inputs-inner {
   margin-top: 0;
+}
+
+[id='intercept-dashboard-dashboard-event-filters'] {
+  .filters__inputs-inner {
+    margin-top: 0;
+  }
+
+  .filters__actions {
+    margin-top: rem(48px);
+  }
 }
 
 .intercept-event-list .radios legend {

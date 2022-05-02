@@ -13,20 +13,6 @@ use Drupal\Component\EventDispatcher\Event;
 class DateRecurValueEvent extends Event {
 
   /**
-   * The field list.
-   *
-   * @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList
-   */
-  protected DateRecurFieldItemList $field;
-
-  /**
-   * Whether the entity was created.
-   *
-   * @var bool
-   */
-  protected bool $insert;
-
-  /**
    * DateRecurValueEvent constructor.
    *
    * @param \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $field
@@ -34,9 +20,7 @@ class DateRecurValueEvent extends Event {
    * @param bool $insert
    *   Specifies whether the entity was created.
    */
-  public function __construct(DateRecurFieldItemList $field, $insert) {
-    $this->field = $field;
-    $this->insert = $insert;
+  public function __construct(protected DateRecurFieldItemList $field, protected bool $insert) {
   }
 
   /**

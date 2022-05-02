@@ -145,7 +145,7 @@ class EventAttendanceScanLookupForm extends EventAttendanceScanFormBase {
 
     $user = $this->createAttendee($values['results']);
     if ($this->attendanceExists($user->id())) {
-      $this->setBarcodeError(static::ATTENDANCE_EXISTS_MESSAGE, $form, $form_state);
+      $this->setBarcodeError($this->attendanceExistsMessage, $form, $form_state);
     }
     else {
       $this->populateAttendance($form, $form_state, $user);

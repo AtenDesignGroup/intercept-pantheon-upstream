@@ -126,17 +126,20 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
         'id' => 'edit-message',
       ],
     ];
-    $ajax_callback = [
-      'callback' => [$this, 'availabilityCallback'],
-      'event' => 'change',
-      'wrapper' => 'edit-message',
-      'progress' => [
-        'type' => 'throbber',
-        'message' => $this->t('Verifying reservation dates...'),
-      ],
-    ];
-    $element['value']['#ajax'] = $ajax_callback;
-    $element['end_value']['#ajax'] = $ajax_callback;
+
+    // @todo Remove this FieldWidget altogether or move all availability logic
+    // from RoomReservationForm to this plugin.
+    // $ajax_callback = [
+    //   'callback' => [$this, 'availabilityCallback'],
+    //   'event' => 'change',
+    //   'wrapper' => 'edit-message',
+    //   'progress' => [
+    //     'type' => 'throbber',
+    //     'message' => $this->t('Verifying reservation dates...'),
+    //   ],
+    // ];
+    // $element['value']['#ajax'] = $ajax_callback;
+    // $element['end_value']['#ajax'] = $ajax_callback;
 
     return $element;
   }

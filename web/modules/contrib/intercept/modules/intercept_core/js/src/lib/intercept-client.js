@@ -8268,6 +8268,7 @@ let schema = {
     uuid: { type: 'string' }, status: { type: 'boolean' }, title: { type: 'string' }, created: { type: 'number' }, changed: { type: 'number' }, promote: { type: 'boolean' }, sticky: { type: 'boolean' }, path: { type: 'object' }, field_duration_min: { type: 'string' }, field_text_content: { type: 'object' }, type: { type: 'relationship', model: 'node_type--node_type', multiple: false }, uid: { type: 'relationship', model: 'user--user', multiple: false }, field_equipment_type: { type: 'relationship', model: 'taxonomy_term--equipment_type', multiple: false }, image_primary: { type: 'relationship', model: 'media--image', multiple: false }
   },
   'node--event': {
+    checkin_period: { type: 'object' },
     drupal_internal__nid: { type: 'integer' },
     uuid: { type: 'string' },
     status: { type: 'boolean' },
@@ -8289,10 +8290,76 @@ let schema = {
     field_text_intro: { type: 'object' },
     field_text_teaser: { type: 'string' },
     field_waitlist_max: { type: 'integer' },
-    field_evanced_id: { type: 'string' }, registration: { type: 'object' }, type: { type: 'relationship', model: 'node_type--node_type', multiple: false }, uid: { type: 'relationship', model: 'user--user', multiple: false }, field_event_audience: { type: 'relationship', model: 'taxonomy_term--audience', multiple: true }, field_event_audience_primary: { type: 'relationship', model: 'taxonomy_term--audience', multiple: false }, field_event_recurrence: { type: 'relationship', model: 'event_recurrence--event_recurrence', multiple: false }, field_event_series: { type: 'relationship', model: 'node--event_series', multiple: false }, field_event_tags: { type: 'relationship', model: 'taxonomy_term--tag', multiple: true }, field_event_type: { type: 'relationship', model: 'taxonomy_term--event_type', multiple: true }, field_event_type_primary: { type: 'relationship', model: 'taxonomy_term--event_type', multiple: false }, image_primary: { type: 'relationship', model: 'media--image', multiple: false }, field_location: { type: 'relationship', model: 'node--location', multiple: false }, field_room: { type: 'relationship', model: 'node--room', multiple: false }, field_event_designation: { type: 'string' }
+    field_evanced_id: { type: 'string' },
+    registration: { type: 'object' },
+    type: {
+      type: 'relationship',
+      model: 'node_type--node_type',
+      multiple: false
+    },
+    uid: {
+      type: 'relationship',
+      model: 'user--user',
+      multiple: false
+    },
+    field_event_audience: {
+      type: 'relationship',
+      model: 'taxonomy_term--audience',
+      multiple: true
+    },
+    field_event_audience_primary: {
+      type: 'relationship',
+      model: 'taxonomy_term--audience',
+      multiple: false
+    },
+    field_event_recurrence: {
+      type: 'relationship',
+      model: 'event_recurrence--event_recurrence',
+      multiple: false
+    },
+    field_event_series: {
+      type: 'relationship',
+      model: 'node--event_series',
+      multiple: false
+    },
+    field_event_tags: {
+      type: 'relationship',
+      model: 'taxonomy_term--tag',
+      multiple: true
+    },
+    field_event_type: {
+      type: 'relationship',
+      model: 'taxonomy_term--event_type',
+      multiple: true
+    },
+    field_event_type_primary: {
+      type: 'relationship',
+      model: 'taxonomy_term--event_type',
+      multiple: false
+    },
+    image_primary: {
+      type: 'relationship',
+      model: 'media--image',
+      multiple: false
+    },
+    field_location: {
+      type: 'relationship',
+      model: 'node--location',
+      multiple: false
+    },
+    field_room: {
+      type: 'relationship',
+      model: 'node--room',
+      multiple: false
+    },
+    field_event_designation: {
+      type: 'string'
+    }
   },
   'node--event_series': {
-    drupal_internal__nid: { type: 'integer' }, uuid: { type: 'string' }, status: { type: 'boolean' }, title: { type: 'string' }, created: { type: 'number' }, changed: { type: 'number' }, promote: { type: 'boolean' }, sticky: { type: 'boolean' }, path: { type: 'object' }, type: { type: 'relationship', model: 'node_type--node_type', multiple: false }, uid: { type: 'relationship', model: 'user--user', multiple: false }
+    drupal_internal__nid: { type: 'integer' },
+    uuid: { type: 'string' },
+    status: { type: 'boolean' }, title: { type: 'string' }, created: { type: 'number' }, changed: { type: 'number' }, promote: { type: 'boolean' }, sticky: { type: 'boolean' }, path: { type: 'object' }, type: { type: 'relationship', model: 'node_type--node_type', multiple: false }, uid: { type: 'relationship', model: 'user--user', multiple: false }
   },
   'node--location': {
     drupal_internal__nid: { type: 'integer' }, uuid: { type: 'string' }, status: { type: 'boolean' }, title: { type: 'string' }, field_location_abbreviation: { type: 'string' }, created: { type: 'number' }, changed: { type: 'number' }, promote: { type: 'boolean' }, sticky: { type: 'boolean' }, path: { type: 'object' }, field_address: { type: 'object' }, field_affiliated: { type: 'boolean' }, field_contact_number: { type: 'string' }, field_features: { type: 'string' }, field_location_hours: { type: 'array' }, field_map_link: { type: 'object' }, field_text_content: { type: 'object' }, field_text_intro: { type: 'object' }, type: { type: 'relationship', model: 'node_type--node_type', multiple: false }, uid: { type: 'relationship', model: 'user--user', multiple: false }, image_primary: { type: 'relationship', model: 'media--image', multiple: false }

@@ -3,7 +3,7 @@
 Lightweight and fast implementation of recurrence rules for PHP (`RRULE` from RFC 5545), to easily calculate recurring/repeating dates and events (such as in a calendar).
 This library started as a port of [python-dateutil](https://labix.org/python-dateutil).
 
-[![Build Status](https://travis-ci.org/rlanvin/php-rrule.svg?branch=master)](https://travis-ci.org/rlanvin/php-rrule)
+[![Build status](https://github.com/rlanvin/php-rrule/workflows/Tests/badge.svg)](https://github.com/rlanvin/php-rrule/actions)
 [![Latest Stable Version](https://poser.pugx.org/rlanvin/php-rrule/v/stable)](https://packagist.org/packages/rlanvin/php-rrule)
 [![Total Downloads](https://poser.pugx.org/rlanvin/php-rrule/downloads)](https://packagist.org/packages/rlanvin/php-rrule)
 
@@ -19,7 +19,7 @@ $rrule = new RRule([
 	'COUNT' => 6
 ]);
 
-foreach ( $rrule as $occurrence ) {
+foreach ($rrule as $occurrence) {
 	echo $occurrence->format('D d M Y'),", ";
 }
 // Mon 01 Jun 2015, Wed 01 Jul 2015, Sat 01 Aug 2015, Tue 01 Sep 2015, Thu 01 Oct 2015, Sun 01 Nov 2015
@@ -32,7 +32,7 @@ Complete documentation and more examples are available in [the wiki](https://git
 
 ## Requirements
 
-- PHP >= 5.3
+- PHP >= 5.6
 - [intl extension](http://php.net/manual/en/book.intl.php) is recommended for `humanReadable()` but not strictly required
 
 ## Installation
@@ -41,26 +41,11 @@ The recommended way is to install the lib [through Composer](http://getcomposer.
 
 Simply run `composer require rlanvin/php-rrule` for it to be automatically installed and included in your `composer.json`.
 
-Alternatively, just add this to your `composer.json` file and then run `composer install` (you can replace `1.*` by any version selector, or even `dev-master` for the latest development version).
-
-```JSON
-{
-    "require": {
-        "rlanvin/php-rrule": "1.*"
-    }
-}
-```
-
 Now you can use the autoloader, and you will have access to the library:
 
 ```php
 require 'vendor/autoload.php';
 ```
-
-### Alternative method (not recommended)
-
-- Download [the latest release](https://github.com/rlanvin/php-rrule/releases/latest)
-- Put the files in a folder that is autoloaded, or `include` or `require` them
 
 ## Documentation
 
@@ -71,6 +56,13 @@ You will also find useful information in the [RFC 5545 section 3.3.10](https://t
 ## Contribution
 
 Feel free to contribute! Just create a new issue or a new pull request.
+
+The coding style is (mostly) PSR-2, but with tabs.
+
+### Translation
+
+Use `./bin/review_translations.php --locale <locale>` to print a list of examples using the locale specified (default is English).
+Use `./bin/review_translations.php --rule "<rule>"` to test a specific rule in all available locales.
 
 ## Note
 

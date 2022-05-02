@@ -6,10 +6,12 @@
 @import '_partials';
 
 .pager {
+  @include fs(x-small);
 }
 
 .pager__items {
   margin: 0;
+  padding: 0;
   text-align: center;
 }
 
@@ -19,22 +21,35 @@
 
   &.is-active a {
     color: #ffffff;
-    background-color: $clr-primary;
     padding: 2px 5px;
   }
 }
 
+.pager__item--ellipsis {
+  font-weight: $fw-bold;
+}
+
 .pager__link {
-  @include link--secondary;
+  @include link--primary;
   text-decoration: none;
+  font-weight: $fw-bold;
 
   &:hover {
     text-decoration: underline;
   }
 }
 
-.pager__item--next {
+.pager__item--previous,
+.pager__item--next, {
+  svg {
+    transform: translateY(.125em);
+  }
 }
 
-.pager__item--last {
+.pager__item--previous {
+  margin-right: 1em;
+}
+
+.pager__item--next {
+  margin-left: 1em;
 }

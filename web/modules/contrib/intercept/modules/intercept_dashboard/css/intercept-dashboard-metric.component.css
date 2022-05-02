@@ -1,0 +1,19 @@
+.intercept-dashboard-metric {
+  margin: 0;
+}
+
+.intercept-dashboard-metric__value {
+  display: block;
+  font-size: 2.25rem;
+  font-weight: bold;
+}
+
+.intercept-dashboard-metric__label {
+  display: block;
+  font-size: 1rem;
+  margin-top: .25em;
+}
+
+.intercept-dashboard-metric__link > a {
+  font-size: 1rem;
+}

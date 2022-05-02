@@ -10,7 +10,7 @@ field_name: field_event_type_primary
 entity_type: node
 bundle: event
 label: 'Primary Event Type'
-description: 'Choose the primary event type. This is used for reporting purposes. '
+description: 'Pick the Event Type most closely aligned with your program. This is used for statistical purposes.'
 required: false
 translatable: false
 default_value: {  }

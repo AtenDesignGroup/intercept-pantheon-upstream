@@ -2,6 +2,7 @@
 
 namespace Drupal\intercept_event;
 
+use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -169,4 +170,42 @@ interface EventManagerInterface {
    */
   public function fillEventOpenCapacity(NodeInterface $node);
 
+  /**
+   * Determines whether the user has attended an event.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The event node.
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   (optional) The user account. Defaults to the current user.
+   *
+   * @return bool
+   *   Whether the user has attended the event.
+   */
+  public function userHasAttended(NodeInterface $node, AccountInterface $user = NULL);
+
+  /**
+   * Determines whether the user has registered for the event.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The event node.
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   (optional) The user account. Defaults to the current user.
+   *
+   * @return bool
+   *   Whether the user has registered for the event.
+   */
+  public function userHasRegistered(NodeInterface $node, AccountInterface $user = NULL);
+
+  /**
+   * Determines whether the user has saved the event.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The event node.
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   (optional) The user account. Defaults to the current user.
+   *
+   * @return bool
+   *   Whether the user has saved the event.
+   */
+  public function userHasSaved(NodeInterface $node, AccountInterface $user = NULL);
 }

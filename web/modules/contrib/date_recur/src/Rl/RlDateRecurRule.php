@@ -14,23 +14,16 @@ use Drupal\date_recur\DateRecurRuleInterface;
 final class RlDateRecurRule implements DateRecurRuleInterface {
 
   /**
-   * The parts for this rule.
-   *
-   * @var array
-   */
-  protected array $parts;
-
-  /**
    * Creates a new RlDateRecurRule.
+   *
+   * @param array $parts
+   *   The parts for this rule.
    *
    * @internal constructor subject to change at any time. Creating
    *   RlDateRecurRule objects is reserved by date_recur module.
    */
-  public function __construct(array $parts) {
-    if (!isset($parts['FREQ'])) {
-      throw new \Exception('Frequency must be defined.');
-    }
-    $this->parts = $parts;
+  public function __construct(protected array $parts) {
+    $this->parts['FREQ'] ?? throw new \Exception('Frequency must be defined.');
   }
 
   /**

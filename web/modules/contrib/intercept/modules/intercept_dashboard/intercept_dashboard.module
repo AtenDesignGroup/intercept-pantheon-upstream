@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Intercept Dashboard module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function intercept_dashboard_theme() {
+  return [
+    'intercept_current_filters' => [
+      'variables' => [
+        'filters' => NULL,
+      ],
+    ],
+    'intercept_dashboard' => [
+      'variables' => [
+        'filters' => NULL,
+        'filters_summary' => NULL,
+        'summary' => NULL,
+        'event_table' => NULL,
+        'charts' => NULL,
+      ],
+    ],
+    'intercept_dashboard_metric' => [
+      'variables' => [
+        'label' => NULL,
+        'value' => NULL,
+        'link' => NULL
+      ],
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for intercept_dashboard template.
+ */
+function template_preprocess_intercept_dashboard(array &$variables) {
+  $variables['#attached']['library'][] = 'intercept_dashboard/intercept_dashboard';
+}
+
+/**
+ * Prepares variables for intercept_dashboard_metric template.
+ */
+function template_preprocess_intercept_dashboard_metric(array &$variables) {
+  $variables['#attached']['library'][] = 'intercept_dashboard/intercept_dashboard_metric';
+}

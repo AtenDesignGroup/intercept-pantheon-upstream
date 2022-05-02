@@ -46,3 +46,8 @@ bypass room reservation open hours constraints:
 bypass room reservation maximum duration constraints:
   title: 'Bypass room reservation maximum duration constraints'
   description: 'Assign to roles that can reserve rooms longer than the maximum duration'
+
+bypass room reservation maximum capacity constraints:
+  title: 'Bypass room reservation maximum room capacity constraints'
+  description: 'Assign to roles that can reserve rooms for groups that exceed the maximum capacity for a room'
+

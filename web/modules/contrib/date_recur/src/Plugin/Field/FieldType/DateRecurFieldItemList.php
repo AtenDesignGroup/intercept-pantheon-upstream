@@ -210,9 +210,7 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
     }
     else {
       $timeZone = \date_default_timezone_get();
-      if (empty($timeZone)) {
-        throw new \Exception('Something went wrong. User has no time zone.');
-      }
+      !empty($timeZone) ?: throw new \Exception('Something went wrong. User has no time zone.');
       $defaultValue[0]['timezone'] = $timeZone;
     }
 

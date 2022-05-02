@@ -50,7 +50,7 @@ class DateRecurRulePartConstraintValidator extends ConstraintValidator {
       // Use a fake start time as there may be an empty or invalid start date.
       $helper = DateRecurHelper::create($value->rrule, new \DateTime());
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       // Invalid RRULE's are handled by DateRecurRruleConstraint.
       return;
     }
@@ -80,7 +80,7 @@ class DateRecurRulePartConstraintValidator extends ConstraintValidator {
             $this->context->addViolation($constraint->disallowedPart, ['%part' => $partLabel]);
           }
         }
-        catch (DateRecurRulePartIncompatible $e) {
+        catch (DateRecurRulePartIncompatible) {
           // If a part is incompatible, add a violation.
           $frequencyLabels = $this->getFrequencyLabels();
           $frequencyLabel = $frequencyLabels[$frequency] ?? $frequency;

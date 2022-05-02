@@ -61,7 +61,7 @@ function renderApp(root) {
   render(<AddToCalendar className={'add-to-cal'} event={event} listItems={items} />, root);
 }
 
-Drupal.behaviors.interceptEventCustomerEvaluation = {
+Drupal.behaviors.interceptAddToCalendar = {
   attach: (context) => {
     const roots = [...context.getElementsByClassName('addtocalendar')];
     roots.map(renderApp);

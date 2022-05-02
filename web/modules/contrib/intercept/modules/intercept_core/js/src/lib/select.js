@@ -232,6 +232,20 @@ export const eventsByDateDescending = createSelector(eventsByDateAscending, item
   items.reverse(),
 );
 
+// open_pending: Check-in period is not yet open
+// open: Check-in period is open
+// closed: Check-in period is closed
+// expired: Check-in period was open but now closed
+export const eventCheckinStatus = id =>
+  createSelector(record(getIdentifier(c.TYPE_EVENT, id)), item =>
+    get(item, 'data.attributes.checkin_period.status'),
+  );
+
+export const eventCheckinUrl = id =>
+  createSelector(record(getIdentifier(c.TYPE_EVENT, id)), item =>
+    get(item, 'data.attributes.checkin_period.checkin_url'),
+  );
+
 export const mustRegisterForEvent = id =>
   createSelector(record(getIdentifier(c.TYPE_EVENT, id)), item =>
     get(item, 'data.attributes.field_must_register'),

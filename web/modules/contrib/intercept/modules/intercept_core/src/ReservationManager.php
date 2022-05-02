@@ -275,6 +275,7 @@ class ReservationManager implements ReservationManagerInterface {
    */
   public function isStaff($reservation) {
     $is_staff = FALSE;
+    if (!$reservation->get('field_user')->entity) { return FALSE; }
     $user_roles = $reservation->get('field_user')->entity->getRoles();
     if (in_array('intercept_staff', $user_roles, TRUE)) {
       $is_staff = TRUE;

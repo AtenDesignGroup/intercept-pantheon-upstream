@@ -321,7 +321,7 @@
   #drupal-off-canvas .field--name-field-guest fieldset {
     min-width: 0;
     width: 100%; }
-  #drupal-off-canvas .messages {
+  #drupal-off-canvas .messages--wrapper {
     top: 0;
     left: 0;
     margin: 0 -1.875rem;
@@ -329,6 +329,8 @@
     position: sticky;
     right: 0;
     z-index: 10; }
+    #drupal-off-canvas .messages--wrapper .messages:not(:last-child) {
+      margin-bottom: 0; }
   #drupal-off-canvas .user-is-not-certified {
     color: #a51b00;
     background-color: #fcf4f2;

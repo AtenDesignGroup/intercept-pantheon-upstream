@@ -57,7 +57,7 @@ class RlHelper implements DateRecurHelperInterface {
     $this->timeZone = $dtStart->getTimezone();
 
     // Ensure the string is prefixed with RRULE if not multiline.
-    if (strpos($string, "\n") === FALSE && strpos($string, 'RRULE:') !== 0) {
+    if (!str_contains($string, "\n") && !str_starts_with($string, 'RRULE:')) {
       $string = "RRULE:$string";
     }
 
@@ -72,14 +72,10 @@ class RlHelper implements DateRecurHelperInterface {
     foreach ($lines as $n => $line) {
       $line = trim($line);
 
-      if (FALSE === strpos($line, ':')) {
-        throw new DateRecurHelperArgumentException(sprintf('Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line %s', $n + 1));
-      }
+      str_contains($line, ':') ?: throw new DateRecurHelperArgumentException(sprintf('Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line %s', $n + 1));
 
       [$part, $partValue] = explode(':', $line, 2);
-      if (!isset($parts[$part])) {
-        throw new DateRecurHelperArgumentException("Unsupported line: " . $part);
-      }
+      $parts[$part] ?? throw new DateRecurHelperArgumentException("Unsupported line: " . $part);
       $parts[$part][] = $partValue;
     }
 

@@ -31,6 +31,11 @@
     <div class="l__main l--offset">
       <div class="l__primary">
         <div class="l--section">
+          {% if content.evaluation %}
+            <div class="l--subsection--tight evaluation evaluation--inline">
+              {{ content.evaluation }}
+            </div>
+          {% endif %}
           <div class="l--subsection--tight">
             {% if content.field_text_intro %}
               {{ content.field_text_intro }}
@@ -39,11 +44,17 @@
               {{ content.field_text_content|field_value }}
             {% endif %}
           </div>
-
-          <div class="actions l--subsection--tight">
+          {% if content.checkin_link['#access'] %}
+          <div class="l--subsection--tight">
+            {{ content.checkin_link }}
+          </div>
+          {% endif %}
+          <div class="l--subsection--tight">
             <div class="actions__register">
               {{ content.register_prompt }}
             </div>
+          </div>
+          <div class="actions l--subsection--tight">
             <div class="actions__save">
               {{ content.flag_saved_event }}
               {{ content.field_add_to_cal|field_value }}

@@ -72,10 +72,16 @@ class ManagementController extends ManagementControllerBase {
         'main' => [
           '#actions' => [
             'equipment_add' => [
-              '#link' => $this->getButton('Add Equipment', 'node.add', [
-                'node_type' => 'equipment',
-                'destination' => Url::fromRoute('<current>')->toString(),
-              ]),
+              '#link' => $this->getButton(
+                'Create Equipment',
+                'node.add',
+                [
+                  'node_type' => 'equipment',
+                  'destination' => Url::fromRoute('<current>')->toString(),
+                ],
+                ['attributes' => ['class' => ['button', 'create-content-button']]]
+              ),
+
             ],
           ],
           '#content' => $lists->toArray(),

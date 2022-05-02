@@ -31,44 +31,9 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
   use StringTranslationTrait;
 
   /**
-   * The active database connection.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected Connection $database;
-
-  /**
-   * Module handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected ModuleHandlerInterface $moduleHandler;
-
-  /**
-   * Entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
-
-  /**
-   * The entity field manager.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
-   */
-  protected EntityFieldManagerInterface $entityFieldManager;
-
-  /**
-   * The typed data manager.
-   *
-   * @var \Drupal\Core\TypedData\TypedDataManagerInterface
-   */
-  protected TypedDataManagerInterface $typedDataManager;
-
-  /**
    * DateRecurViewsHooks constructor.
    *
-   * @param \Drupal\Core\Database\Connection $connection
+   * @param \Drupal\Core\Database\Connection $database
    *   The active database connection.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   Module handler.
@@ -79,12 +44,12 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
    * @param \Drupal\Core\TypedData\TypedDataManagerInterface $typedDataManager
    *   The typed data manager.
    */
-  public function __construct(Connection $connection, ModuleHandlerInterface $moduleHandler, EntityTypeManagerInterface $entityTypeManager, EntityFieldManagerInterface $entityFieldManager, TypedDataManagerInterface $typedDataManager) {
-    $this->database = $connection;
-    $this->moduleHandler = $moduleHandler;
-    $this->entityTypeManager = $entityTypeManager;
-    $this->entityFieldManager = $entityFieldManager;
-    $this->typedDataManager = $typedDataManager;
+  public function __construct(protected Connection $database,
+    protected ModuleHandlerInterface $moduleHandler,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected EntityFieldManagerInterface $entityFieldManager,
+    protected TypedDataManagerInterface $typedDataManager,
+  ) {
   }
 
   /**
@@ -267,7 +232,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
       // Unset some irrelevant fields.
       foreach (array_keys($occurrenceTable) as $fieldId) {
         $fieldId = (string) $fieldId;
-        if (($fieldId === 'table') || (strpos($fieldId, $fieldName . '_value', 0) !== FALSE) || (strpos($fieldId, $fieldName . '_end_value', 0) !== FALSE)) {
+        if (($fieldId === 'table') || (str_contains($fieldId, $fieldName . '_value')) || (str_contains($fieldId, $fieldName . '_end_value'))) {
           continue;
         }
         unset($occurrenceTable[$fieldId]);
@@ -312,23 +277,23 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
           $this->t('@field_label (@argument)', $tArgs) :
           $this->t('@field_label', $tArgs);
       }
-      elseif (strpos($key, $fieldName . '_value', 0) !== FALSE) {
+      elseif (str_contains($key, $fieldName . '_value')) {
         $definitions['title'] = isset($tArgs['@argument']) ?
           $this->t('@field_label: first occurrence start date (@argument)', $tArgs) :
           $this->t('@field_label: first occurrence start date', $tArgs);
       }
-      elseif (strpos($key, $fieldName . '_end_value', 0) !== FALSE) {
+      elseif (str_contains($key, $fieldName . '_end_value')) {
         $definitions['title'] = isset($tArgs['@argument']) ?
           $this->t('@field_label: first occurrence end date (@argument)', $tArgs) :
           $this->t('@field_label: first occurrence end date', $tArgs);
       }
-      elseif (strpos($key, $fieldName . '_rrule', 0) !== FALSE) {
+      elseif (str_contains($key, $fieldName . '_rrule')) {
         $definitions['title'] = $this->t('@field_label: recurring rule', $tArgs);
       }
-      elseif (strpos($key, $fieldName . '_timezone', 0) !== FALSE) {
+      elseif (str_contains($key, $fieldName . '_timezone')) {
         $definitions['title'] = $this->t('@field_label: time zone', $tArgs);
       }
-      elseif (strpos($key, $fieldName . '_infinite', 0) !== FALSE) {
+      elseif (str_contains($key, $fieldName . '_infinite')) {
         $definitions['title'] = $this->t('@field_label: is infinite', $tArgs);
       }
       elseif ('delta' === $key) {
@@ -371,7 +336,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
         }
       }
       catch (PluginNotFoundException $e) {
-        // This can occur when a content-entity is added during a config 
+        // This can occur when a content-entity is added during a config
         // import that enables a module.
         continue;
       }

@@ -90,3 +90,11 @@ jsonApiViewsFilterBlock:
       preprocess: true
   dependencies:
     - core/drupal
+
+room_reservation_form_helper:
+  js:
+    js/room_reservation_form_helper.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal

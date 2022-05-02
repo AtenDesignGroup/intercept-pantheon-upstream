@@ -264,6 +264,12 @@ highlight:
     theme:
       build/components/highlight/highlight.theme.css: {}
 
+# Inline Duration Field
+inline-duration-field:
+  css:
+    component:
+      build/components/inline-duration-field/inline-duration-field.component.css: {}
+
 # Intro
 intro:
   css:
@@ -299,6 +305,18 @@ intercept-management-section:
   css:
     component:
       build/components/intercept-management-section/intercept-management-section.component.css: {}
+
+# Intercept Dashboard Metric
+intercept-dashboard:
+  css:
+    theme:
+      build/components/intercept-dashboard/intercept-dashboard.theme.css: {}
+
+# Intercept Dashboard Metric
+intercept-dashboard-metric:
+  css:
+    theme:
+      build/components/intercept-dashboard-metric/intercept-dashboard-metric.theme.css: {}
 
 # Location
 location:

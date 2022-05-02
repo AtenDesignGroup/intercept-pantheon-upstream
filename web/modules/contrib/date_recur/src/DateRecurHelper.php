@@ -20,20 +20,12 @@ use Drupal\date_recur\Rl\RlHelper;
 final class DateRecurHelper implements DateRecurHelperInterface {
 
   /**
-   * The date recur helper.
-   *
-   * @var \Drupal\date_recur\DateRecurHelperInterface
-   */
-  protected DateRecurHelperInterface $dateRecurHelper;
-
-  /**
    * DateRecurHelper constructor.
    *
    * @param \Drupal\date_recur\DateRecurHelperInterface $dateRecurHelper
    *   The date recur helper.
    */
-  public function __construct(DateRecurHelperInterface $dateRecurHelper) {
-    $this->dateRecurHelper = $dateRecurHelper;
+  public function __construct(protected DateRecurHelperInterface $dateRecurHelper) {
   }
 
   /**
@@ -52,7 +44,7 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    * @throws \Exception
    *   Throws various exceptions if string is invalid.
    */
-  public static function create(string $string, \DateTimeInterface $dtStart, \DateTimeInterface $dtStartEnd = NULL) {
+  public static function create(string $string, \DateTimeInterface $dtStart, \DateTimeInterface $dtStartEnd = NULL): static {
     // @todo Get the helper preference from Drupal module config.
     /** @var \Drupal\date_recur\DateRecurHelperInterface $dateRecurHelper */
     $dateRecurHelper = RlHelper::createInstance($string, $dtStart, $dtStartEnd);

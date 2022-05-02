@@ -1,0 +1,9 @@
+# Custom module library for general purposes.
+intercept_dashboard:
+  css:
+    component:
+      css/intercept-dashboard.component.css: {}
+intercept_dashboard_metric:
+  css:
+    component:
+      css/intercept-dashboard-metric.component.css: {}

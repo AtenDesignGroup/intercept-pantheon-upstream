@@ -29,6 +29,39 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
   }
 
   /**
+   * Tests default value.
+   *
+   * @covers ::isRecurringAllowed
+   */
+  public function testIsRecurringNotAllowedDefault() {
+    // A created part grid without any passed parameters allows everything.
+    $partGrid = $this->createPartGrid();
+    $this->assertTrue($partGrid->isRecurringAllowed());
+  }
+
+  /**
+   * Tests recurring not allowed.
+   *
+   * @covers ::isRecurringAllowed
+   */
+  public function testIsRecurringNotAllowed() {
+    $partGrid = $this->createPartGrid();
+    $partGrid->allowParts('DAILY', []);
+    $this->assertFalse($partGrid->isRecurringAllowed());
+  }
+
+  /**
+   * Tests recurring not allowed.
+   *
+   * @covers ::isRecurringAllowed
+   */
+  public function testIsRecurringAllowed() {
+    $partGrid = $this->createPartGrid();
+    $partGrid->allowParts('DAILY', ['BYSETPOS']);
+    $this->assertTrue($partGrid->isRecurringAllowed());
+  }
+
+  /**
    * Tests a part grid object without making changes to it.
    *
    * @covers ::isPartAllowed

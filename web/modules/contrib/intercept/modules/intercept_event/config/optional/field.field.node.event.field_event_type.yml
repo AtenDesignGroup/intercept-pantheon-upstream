@@ -5,12 +5,14 @@ dependencies:
     - field.storage.node.field_event_type
     - node.type.event
     - taxonomy.vocabulary.event_type
+_core:
+  default_config_hash: 9PBoVsA4CHM5GphrQyI79iog7lc0H5okE_IRISUNWiI
 id: node.event.field_event_type
 field_name: field_event_type
 entity_type: node
 bundle: event
 label: 'Event Type(s)'
-description: 'Select all that apply to your event (using Control + Click or Command + Click on a Mac). This will be visible to users.'
+description: 'Select all that apply to your event. This will be visible to users.'
 required: false
 translatable: false
 default_value: {  }

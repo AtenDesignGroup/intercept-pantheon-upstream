@@ -20,6 +20,12 @@
 
 }
 
+.section-title--dark {
+  &:not(:last-child) {
+    @include spacing(margin-bottom, normal);
+  }
+}
+
 .section-title--ruled {
   border-bottom: solid rem(1px) $clr-border;
   margin-bottom: rem($sp-loose);

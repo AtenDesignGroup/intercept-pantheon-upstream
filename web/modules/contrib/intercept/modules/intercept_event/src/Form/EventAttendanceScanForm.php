@@ -68,7 +68,7 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
     $form['cancel'] = $this->cancelButton();
 
     $form['#attached']['library'][] = 'intercept_event/eventCheckin';
-    $form['#attached']['drupalSettings']['eventCheckinMessage'] = $this->t(self::SUCCESS_MESSAGE);
+    $form['#attached']['drupalSettings']['eventCheckinMessage'] = $this->t($this->successMessage);
     return $form;
   }
 

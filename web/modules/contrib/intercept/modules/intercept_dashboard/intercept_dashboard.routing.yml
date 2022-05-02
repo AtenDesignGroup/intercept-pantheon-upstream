@@ -1,0 +1,7 @@
+intercept_dashboard.event_data_dashboard:
+  path: '/manage/event-data-dashboard'
+  defaults:
+    _title: 'Event Data Dashboard'
+    _controller: '\Drupal\intercept_dashboard\Controller\InterceptDashboardController::dashboard'
+  requirements:
+    _permission: 'analyze events'

@@ -41,6 +41,26 @@ class DateRecurPartGrid {
   }
 
   /**
+   * Determine whether any frequencies are supported.
+   *
+   * @return bool
+   *   Whether recurrences are allowed.
+   */
+  public function isRecurringAllowed(): bool {
+    if ($this->isAllowEverything()) {
+      return TRUE;
+    }
+
+    foreach (DateRecurRruleMap::FREQUENCIES as $frequency) {
+      if ($this->isFrequencyAllowed($frequency)) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
    * Determines whether a frequency and at least one part is supported.
    *
    * @param string $frequency

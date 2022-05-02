@@ -79,7 +79,7 @@ third_party_settings:
       format_settings:
         classes: ''
         id: ''
-        description: ''
+        description: Select the location and room, then click "Create a room reservation" to see if it's available."
         required_fields: true
     group_metadata:
       children:
@@ -98,7 +98,7 @@ third_party_settings:
       format_settings:
         classes: ''
         id: ''
-        description: ''
+        description: Select the location and room, then click “Create a room reservation” to see if it's available.
         required_fields: false
 id: node.event.default
 targetEntityType: node

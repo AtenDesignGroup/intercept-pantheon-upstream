@@ -295,7 +295,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
    * End date must never be required, value is copied over from start date.
    */
   public function testHiddenTimeZoneField() {
-    \Drupal::state()->set(\DATE_RECUR_BASIC_WIDGET_TEST_HIDDEN_TIMEZONE_FIELD_HOOK_FORM_ALTER, TRUE);
+    \Drupal::state()->set('DATE_RECUR_BASIC_WIDGET_TEST_HIDDEN_TIMEZONE_FIELD_HOOK_FORM_ALTER', TRUE);
 
     $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form'));
 

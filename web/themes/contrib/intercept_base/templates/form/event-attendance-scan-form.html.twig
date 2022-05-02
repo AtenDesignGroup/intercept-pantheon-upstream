@@ -4,7 +4,16 @@
       {{form.event}}
     </div>
     <div class="l__primary">
+        {% if form.login_link %}
+        <div class="l--section">
+          {{form.member_checkin_heading}}
+          <div class="form-item--inline">
+            {{form.login_link}}
+          </div>
+        </div>
+        {% endif %}
       <div class="l--subsection">
+        {{form.guest_checkin_heading}}
         {{form.instructions_header}}
         {{form.instructions_text}}
         {{form.results}}
@@ -30,6 +39,9 @@
           'lookup',
           'retry',
           'field_guest_zip_code',
+          'login_link',
+          'member_checkin_heading',
+          'guest_checkin_heading',
           'cancel') }}
         {{ form.actions|without('submit') }}
       </div>

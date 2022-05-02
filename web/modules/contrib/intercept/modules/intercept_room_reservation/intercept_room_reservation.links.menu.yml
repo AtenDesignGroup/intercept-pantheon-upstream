@@ -18,8 +18,7 @@ room_reservation.reserve_room:
   menu_name: main
 
 intercept_room_reservation.account.room_reservations:
-  title: 'My Room Reservations'
-  weight: 10
+  title: 'Room Reservations'
   route_name: intercept_room_reservation.account.room_reservations
   menu_name: account
   class: Drupal\intercept_core\Plugin\Menu\UserMenuLink

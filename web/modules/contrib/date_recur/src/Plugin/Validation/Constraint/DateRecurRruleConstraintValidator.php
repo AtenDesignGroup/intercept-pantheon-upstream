@@ -30,7 +30,7 @@ class DateRecurRruleConstraintValidator extends ConstraintValidator {
       // Use a fake start time as there may be an empty or invalid start date.
       DateRecurHelper::create($value->rrule, new \DateTime());
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       $this->context->addViolation($constraint->invalidRrule);
     }
   }

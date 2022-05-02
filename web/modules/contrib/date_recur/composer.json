@@ -18,9 +18,9 @@
         }
     },
   "require": {
-    "php": ">=7.4 <8.1",
-    "drupal/core": "^9",
-    "rlanvin/php-rrule": "1.*"
+    "php": ">=8.0",
+    "drupal/core": "^9 || ^10",
+    "rlanvin/php-rrule": "^1 || ^2"
   },
   "require-dev": {
     "drupal/coder": "^8.3",

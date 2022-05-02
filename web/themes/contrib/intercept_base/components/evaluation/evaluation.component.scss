@@ -108,6 +108,88 @@
   }
 }
 
-.evaluation__app {
+// This is used on the event detail page.
+.evaluation.evaluation--inline {
+  background-color: $gray-80;
+  display: block;
+  padding: 24px;
 
+  .evaluation__app {
+    width: 100%;
+  }
+
+  .evaluation__eval-widget {
+    flex-basis: min-content;
+    flex-grow: 0;
+    flex-shrink: 1;
+  }
+
+  .evaluation__widget-label {
+    white-space: nowrap;
+  }
+
+  .evaluation__widget-inputs > :not(:last-child) {
+    margin-right: 1em;
+  }
+
+  .evaluation__criteria {
+    flex-grow: 1;
+    flex-shrink: 0;
+  }
+
+  .input-checkboxes__group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(max(8em, 11em), 1fr));
+  }
+
+  .evaluation__radio-icon {
+    --icon-color: #{$clr-secondary};
+    --icon-color-hover: #{$clr-secondary};
+    --icon-color-active: #{$white};
+    --icon-color-background: #{$white};
+    --icon-color-background-hover: #{$clr-secondary};
+    --icon-color-background-active: #{$clr-secondary};
+    background-color: var(--icon-color-background);
+
+    path,
+    circle:first-child {
+      stroke: var(--icon-color) !important;
+    }
+
+    circle:not(:first-child) {
+      fill: var(--icon-color) !important;
+    }
+
+    &:hover {
+      background-color: var(--icon-color-background);
+
+      path,
+      circle:first-child {
+        stroke: var(--icon-color-hover) !important;
+      }
+
+      circle:not(:first-child) {
+        fill: var(--icon-color-hover) !important;
+      }
+    }
+
+    &[class*="checked"] {
+      background-color: var(--icon-color-background-active);
+
+      path,
+      circle:first-child {
+        stroke: var(--icon-color-active) !important;
+      }
+
+      circle:not(:first-child) {
+        fill: var(--icon-color-active) !important;
+      }
+    }
+  }
+
+  .evaluation__widget-label {
+    // This is important to overide the focus state from MUI.
+    color: $clr-text !important;
+    margin-bottom: 16px;
+  }
 }

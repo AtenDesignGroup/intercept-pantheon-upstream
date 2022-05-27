@@ -2,9 +2,6 @@
 
 namespace Drupal\Tests\profile\Kernel;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\EntityViewBuilderInterface;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\profile\Entity\Profile;
 use Drupal\profile\Entity\ProfileType;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -22,12 +19,12 @@ class ProfileTokenTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'system',
     'filter',
     'profile',
     'views',
-    'token'
+    'token',
   ];
 
   /**
@@ -38,7 +35,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
   protected $user;
 
   /**
-   * The profiles storage.
+   * The profile storage.
    *
    * @var \Drupal\profile\ProfileStorageInterface
    */
@@ -54,13 +51,13 @@ class ProfileTokenTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('profile');
     $this->installEntitySchema('view');
     $this->installSchema('user', ['users_data']);
     $this->installConfig(self::$modules);
-    /** @var EntityTypeManagerInterface $entity_type_manager */
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = $this->container->get('entity_type.manager');
     $this->profileStorage = $entity_type_manager->getStorage('profile');
     $this->viewBuilder = $entity_type_manager->getViewBuilder('profile');
@@ -71,7 +68,6 @@ class ProfileTokenTest extends EntityKernelTestBase {
    * Tests tokens for profiles.
    */
   public function testToken() {
-
     $profile_type = ProfileType::create([
       'id' => 'test_defaults',
       'label' => 'test_defaults',
@@ -102,7 +98,8 @@ class ProfileTokenTest extends EntityKernelTestBase {
     $profile->save();
     $profile = $this->reloadEntity($profile);
 
-    // Load $field_token_output with the output of [user:profile:profile_fullname].
+    // Load $field_token_output with the output of
+    // [user:profile:profile_fullname].
     $token_service = \Drupal::service('token');
     $field_token = '[user:' . $profile_type->id() . ':profile_fullname]';
     $field_token_output = $token_service->replace($field_token, ['user' => $this->user]);
@@ -115,7 +112,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
     // it can be compared to the token output.
     $entity_type_manager = \Drupal::entityTypeManager();
 
-    /** @var EntityViewBuilderInterface $view_builder */
+    /** @var \Drupal\Core\Entity\EntityViewBuilderInterface $view_builder */
     $view_builder = $entity_type_manager->getViewBuilder('profile');
     $entity_view = $view_builder->view($profile, 'token');
     $field_view = $view_builder->viewField($profile->get('profile_fullname'));
@@ -123,7 +120,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
     // Add the pre_render method to match the rendered output of a field token.
     $field_output['#pre_render'][] = '\Drupal\token\TokenFieldRender::preRender';
 
-    /** @var RendererInterface $renderer */
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
     $renderer = \Drupal::service('renderer');
     $rendered_field = $renderer->renderPlain($field_view);
     $rendered_entity = $renderer->renderRoot($entity_view);

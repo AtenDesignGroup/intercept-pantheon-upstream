@@ -120,7 +120,9 @@ class UserTest extends ProfileTestBase {
     $this->assertSession()->pageTextContains('John Smith');
 
     // Confirm that the profile can be edited.
-    $this->getSession()->getPage()->clickLink('Edit');
+    $profile_edit_form = $profile->toUrl('edit-form');
+    $this->assertSession()->linkByHrefExists($profile_edit_form->toString());
+    $this->drupalGet($profile_edit_form);
     $this->assertSession()->titleEquals("Edit {$this->type->label()} #{$profile->id()} | Drupal");
     $this->submitForm([
       'profile_fullname[0][value]' => 'John Smith Jr.',

@@ -18,7 +18,9 @@ interface ProfileInterface extends ContentEntityInterface, EntityChangedInterfac
    *
    * Unpublished profiles are only visible to their authors and administrators.
    *
-   * @deprecated in Profile 1.0-rc4. Use ::isPublished instead.
+   * @deprecated in profile:8.x-1.0-rc4 and is removed from
+   *   profile:2.0.0. Use $this->isPublished() instead.
+   * @see https://www.drupal.org/node/3044077
    *
    * @return bool
    *   TRUE if the profile is active, FALSE otherwise.
@@ -31,7 +33,9 @@ interface ProfileInterface extends ContentEntityInterface, EntityChangedInterfac
    * @param bool $active
    *   Whether the profile is active.
    *
-   * @deprecated in Profile 1.0-rc4. Use ::setPublished instead.
+   * @deprecated in profile:8.x-1.0-rc4 and is removed from
+   *   profile:2.0.0. Use $this->setPublished() instead.
+   * @see https://www.drupal.org/node/3044077
    *
    * @return $this
    */
@@ -118,8 +122,9 @@ interface ProfileInterface extends ContentEntityInterface, EntityChangedInterfac
    * @return \Drupal\user\UserInterface
    *   The user entity for the revision author.
    *
-   * @deprecated in Profile 1.0-rc5. Use
-   *   \Drupal\Core\Entity\RevisionLogInterface::getRevisionUser() instead.
+   * @deprecated in profile:8.x-1.0-rc5 and is removed from
+   *   profile:2.0.0. Use $this->getRevisionUser() instead.
+   * @see https://www.drupal.org/node/2844963
    */
   public function getRevisionAuthor();
 
@@ -131,8 +136,9 @@ interface ProfileInterface extends ContentEntityInterface, EntityChangedInterfac
    *
    * @return $this
    *
-   * @deprecated in Profile 1.0-rc5. Use
-   *   \Drupal\Core\Entity\RevisionLogInterface::setRevisionUserId() instead.
+   * @deprecated in profile:8.x-1.0-rc5 and is removed from
+   *   profile:2.0.0. Use $this->setRevisionUserId() instead.
+   * @see https://www.drupal.org/node/2844963
    */
   public function setRevisionAuthorId($uid);
 

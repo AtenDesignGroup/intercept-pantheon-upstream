@@ -198,7 +198,9 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
 
     $form_mode = $this->getSetting('form_mode');
     $element['entity'] = [
-      '#parents' => array_merge($element['#field_parents'], [$items->getName(), $delta, 'entity']),
+      '#parents' => array_merge($element['#field_parents'], [
+        $items->getName(), $delta, 'entity',
+      ]),
       '#bundle' => $profile->bundle(),
       '#element_validate' => [
         [get_class($this), 'validateProfileForm'],

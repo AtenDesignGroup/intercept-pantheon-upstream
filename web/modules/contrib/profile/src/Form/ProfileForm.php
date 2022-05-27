@@ -5,6 +5,9 @@ namespace Drupal\profile\Form;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ * Defines the profile form.
+ */
 class ProfileForm extends ContentEntityForm {
 
   /**

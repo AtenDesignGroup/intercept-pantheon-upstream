@@ -5,10 +5,10 @@ core_version_requirement: ^9
 php: 7.3
 package: Field types
 dependencies:
-  - drupal:system (>=9.0.x)
-  - date_recur:date_recur (>=3.x)
+  - drupal:system
+  - date_recur:date_recur
 
-# Information added by Drupal.org packaging script on 2021-12-03
-version: '3.0.1'
+# Information added by Drupal.org packaging script on 2022-05-11
+version: '3.0.2'
 project: 'date_recur_modular'
-datestamp: 1638549497
+datestamp: 1652252818

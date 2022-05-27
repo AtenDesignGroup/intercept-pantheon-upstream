@@ -23,9 +23,9 @@ class ProfileRevisionTest extends ProfileTestBase {
   protected $useRevisionsType;
 
   /**
-   * @inheritDoc
+   * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $use_revisions_type = ProfileType::create([

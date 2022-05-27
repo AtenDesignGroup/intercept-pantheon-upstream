@@ -7,7 +7,9 @@ use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
 /**
  * Provides specific access control for the profile entity type.
  *
- * @deprecated in Profile 8.x-1.0.
+ * @deprecated in profile:8.x-1.0 and is removed from profile:2.0.0. Use the
+ *  default selection instead.
+ * @see https://www.drupal.org/node/3068777
  *
  * @EntityReferenceSelection(
  *   id = "default:profile",

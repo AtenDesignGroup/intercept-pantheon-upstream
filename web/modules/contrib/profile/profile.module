@@ -269,6 +269,7 @@ function profile_entity_base_field_info(EntityTypeInterface $entity_type) {
       return $fields;
     }
 
+    /** @var Drupal\profile\Entity\ProfileType[] $profile_types */
     $profile_types = $entity_type_manager->getStorage('profile_type')->loadMultiple();
     foreach ($profile_types as $profile_type) {
       $profile_type_id = $profile_type->id();
@@ -281,12 +282,13 @@ function profile_entity_base_field_info(EntityTypeInterface $entity_type) {
         ->setSetting('target_type', 'profile')
         ->setSetting('handler_settings', [
           'target_bundles' => [
-            $profile_type_id => $profile_type_id
+            $profile_type_id => $profile_type_id,
           ],
         ])
         ->setSetting('profile_type', $profile_type_id)
         ->setDisplayConfigurable('view', TRUE)
         ->setDisplayConfigurable('form', TRUE)
+        ->setCardinality($profile_type->allowsMultiple() ? BaseFieldDefinition::CARDINALITY_UNLIMITED : 1)
         ->setComputed(TRUE);
     }
     return $fields;

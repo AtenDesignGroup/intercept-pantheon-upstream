@@ -1,16 +1,16 @@
 <?php
 
+/**
+ * @file
+ * Post update functions for Profile.
+ */
+
 use Drupal\Core\Config\ExtensionInstallStorage;
 use Drupal\Core\Config\InstallStorage;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\profile\Entity\ProfileType;
 use Drupal\system\Entity\Action;
-
-/**
- * @file
- * Post update functions for Profile.
- */
 
 /**
  * Change the plugin ID of the delete action.

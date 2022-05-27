@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\profile\ProfileStorageSchema;
 use Drupal\user\Entity\Role;
 
 /**
@@ -157,7 +158,7 @@ function profile_update_8007() {
 function profile_update_8008() {
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $entity_type = $definition_update_manager->getEntityType('profile');
-  $entity_type->setHandlerClass('storage_schema', \Drupal\profile\ProfileStorageSchema::class);
+  $entity_type->setHandlerClass('storage_schema', ProfileStorageSchema::class);
   $definition_update_manager->updateEntityType($entity_type);
 }
 
@@ -171,7 +172,7 @@ function profile_update_8009() {
   $revision_metadata_keys += [
     'revision_created' => 'revision_created',
     'revision_user' => 'revision_user',
-    'revision_log_message' => 'revision_log_message'
+    'revision_log_message' => 'revision_log_message',
   ];
   $entity_type->set('revision_metadata_keys', $revision_metadata_keys);
   $definition_update_manager->updateEntityType($entity_type);

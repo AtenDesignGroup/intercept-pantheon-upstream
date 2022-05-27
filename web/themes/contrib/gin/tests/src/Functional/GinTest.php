@@ -20,7 +20,7 @@ class GinTest extends BrowserTestBase {
    *
    * @var string[]
    */
-  public static $modules = ['shortcut'];
+  protected static $modules = ['shortcut'];
 
   /**
    * {@inheritdoc}
@@ -40,7 +40,10 @@ class GinTest extends BrowserTestBase {
       ->set('admin', 'gin')
       ->save();
 
-    $adminUser = $this->drupalCreateUser(['access administration pages', 'administer themes']);
+    $adminUser = $this->drupalCreateUser([
+      'access administration pages',
+      'administer themes',
+    ]);
     $this->drupalLogin($adminUser);
   }
 
@@ -50,22 +53,22 @@ class GinTest extends BrowserTestBase {
   public function testDefaultGinSettings() {
     $response = $this->drupalGet('/admin/content');
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertStringContainsString('"darkmode":false', $response);
+    $this->assertStringContainsString('"darkmode":"0"', $response);
     $this->assertStringContainsString('"preset_accent_color":"blue"', $response);
     $this->assertStringContainsString('"preset_focus_color":"gin"', $response);
     $this->assertSession()->responseContains('gin.css');
-    $this->assertSession()->responseContains('gin_toolbar.css');
-    $this->assertSession()->responseNotContains('gin_classic_toolbar.css');
+    $this->assertSession()->responseContains('toolbar.css');
+    $this->assertSession()->responseNotContains('classic_toolbar.css');
   }
 
   /**
    * Tests Darkmode setting.
    */
   public function testDarkModeSetting() {
-    \Drupal::configFactory()->getEditable('gin.settings')->set('enable_darkmode', TRUE)->save();
+    \Drupal::configFactory()->getEditable('gin.settings')->set('enable_darkmode', '1')->save();
     $response = $this->drupalGet('/admin/content');
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertStringContainsString('"darkmode":true', $response);
+    $this->assertStringContainsString('"darkmode":"1"', $response);
   }
 
   /**
@@ -75,7 +78,7 @@ class GinTest extends BrowserTestBase {
     \Drupal::configFactory()->getEditable('gin.settings')->set('classic_toolbar', 'classic')->save();
     $this->drupalGet('/admin/content');
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->responseContains('gin_classic_toolbar.css');
+    $this->assertSession()->responseContains('classic_toolbar.css');
   }
 
   /**
@@ -106,34 +109,38 @@ class GinTest extends BrowserTestBase {
 
     $user1 = $this->createUser();
     $this->drupalLogin($user1);
+
     // Change something on the logged in user form.
-    $this->drupalGet($user1->toUrl('edit-form'));
-    $this->assertSession()->pageTextContains('"darkmode":false');
+    $this->assertStringContainsString('"darkmode":"0"', $this->drupalGet($user1->toUrl('edit-form')));
+
     $this->submitForm([
       'enable_user_settings' => TRUE,
-      'enable_darkmode' => TRUE,
+      'enable_darkmode' => '1',
     ], 'Save');
-    $this->assertSession()->pageTextContains('"darkmode":true');
+    $this->assertStringContainsString('"darkmode":"1"', $this->drupalGet($user1->toUrl('edit-form')));
 
     // Login as admin.
     $this->drupalLogin($this->rootUser);
-    $this->assertSession()->pageTextContains('"darkmode":false');
+    $this->assertStringContainsString('"darkmode":"0"', $this->drupalGet('edit-form'));
+
     // Change something on user1 edit form.
     $this->drupalGet($user1->toUrl('edit-form'));
     $this->submitForm([
       'enable_user_settings' => TRUE,
       'high_contrast_mode' => TRUE,
-      'enable_darkmode' => TRUE,
+      'enable_darkmode' => '1',
     ], 'Save');
 
     // Check logged-in's user is not affected.
-    $this->assertSession()->pageTextContains('"highcontrastmode":false');
-    $this->assertSession()->pageTextContains('"darkmode":false');
+    $loggedInUserResponse = $this->drupalGet('edit-form');
+    $this->assertStringContainsString('"highcontrastmode":false', $loggedInUserResponse);
+    $this->assertStringContainsString('"darkmode":"0"', $loggedInUserResponse);
 
     // Check settings of user1.
     $this->drupalLogin($user1);
-    $this->assertSession()->pageTextContains('"highcontrastmode":true');
-    $this->assertSession()->pageTextContains('"darkmode":true');
+    $rootUserResponse = $this->drupalGet($user1->toUrl('edit-form'));
+    $this->assertStringContainsString('"highcontrastmode":true', $rootUserResponse);
+    $this->assertStringContainsString('"darkmode":"1"', $rootUserResponse);
   }
 
 }

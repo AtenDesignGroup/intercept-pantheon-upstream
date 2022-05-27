@@ -21,7 +21,7 @@ class ProfileTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'entity',
     'profile',
     'views',
@@ -51,7 +51,7 @@ class ProfileTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('profile');
@@ -194,7 +194,9 @@ class ProfileTest extends EntityKernelTestBase {
     ]);
 
     $this->assertTrue($first_profile->equalToProfile($third_profile));
-    $this->assertFalse($first_profile->equalToProfile($third_profile, ['type', 'field_fullname']));
+    $this->assertFalse($first_profile->equalToProfile($third_profile, [
+      'type', 'field_fullname',
+    ]));
     $this->assertFalse($first_profile->equalToProfile($second_profile));
     $this->assertTrue($first_profile->equalToProfile($second_profile, ['type']));
   }

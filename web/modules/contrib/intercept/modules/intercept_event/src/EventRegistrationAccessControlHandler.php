@@ -20,19 +20,19 @@ class EventRegistrationAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    switch ($operation) {
-      case 'cancel':
-        $result = AccessResult::allowedIfHasPermission($account, 'cancel event_registration entities');
-        // Ensure that access is evaluated again when the entity changes.
-        return $result->addCacheableDependency($entity);
-        break;
-
-      case 'update':
-        $result = AccessResult::allowedIfHasPermission($account, 'update any event_registration');
-        // Ensure that access is evaluated again when the entity changes.
-        return $result->addCacheableDependency($entity);
-        break;
-
+    $roles = \Drupal::currentUser()->getRoles();
+    if ($operation == 'cancel') {
+      $result = AccessResult::allowedIfHasPermission($account, 'cancel event_registration entities');
+      // Ensure that access is evaluated again when the entity changes.
+      return $result->addCacheableDependency($entity);
+    }
+    elseif (!in_array('intercept_registered_customer', $roles) && $operation == 'update') {
+      // Enabling this universally causes customers to be able to unable to
+      // cancel their room reservations, so not do this permission check
+      // for customers.
+      $result = AccessResult::allowedIfHasPermission($account, 'update any event_registration');
+      // Ensure that access is evaluated again when the entity changes.
+      return $result->addCacheableDependency($entity);  
     }
 
     $account = $this->prepareUser($account);
@@ -41,6 +41,7 @@ class EventRegistrationAccessControlHandler extends EntityAccessControlHandler {
     if ($result->isNeutral() && $this->hasReferencedUser($entity)) {
       $result = $this->checkEntityUserReferencedPermissions($entity, $operation, $account);
     }
+    $debug = true;
 
     // Ensure that access is evaluated again when the entity changes.
     return $result->addCacheableDependency($entity);

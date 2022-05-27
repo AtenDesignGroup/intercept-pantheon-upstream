@@ -20,7 +20,7 @@ class ProfileRoleAccessTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'entity',
     'profile',
     'views',
@@ -84,7 +84,7 @@ class ProfileRoleAccessTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('profile');

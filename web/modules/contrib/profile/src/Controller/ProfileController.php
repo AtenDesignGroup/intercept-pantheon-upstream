@@ -6,6 +6,9 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\profile\Entity\ProfileInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * Provides the callback for marking a profile as the default one.
+ */
 class ProfileController extends ControllerBase {
 
   /**

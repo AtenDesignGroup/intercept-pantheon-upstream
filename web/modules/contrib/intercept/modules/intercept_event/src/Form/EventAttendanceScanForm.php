@@ -57,13 +57,13 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
       ]),
     ];
 
-    $form['lookup'] = [
-      '#type' => 'link',
-      '#title' => $this->t("Don't have your library card? Scan in by name or email."),
-      '#url' => Url::fromRoute('entity.node.scan_lookup', [
-        'node' => $event->id(),
-      ]),
-    ];
+    // $form['lookup'] = [
+    //   '#type' => 'link',
+    //   '#title' => $this->t("Don't have your library card? Scan in by name or email."),
+    //   '#url' => Url::fromRoute('entity.node.scan_lookup', [
+    //     'node' => $event->id(),
+    //   ]),
+    // ];
 
     $form['cancel'] = $this->cancelButton();
 

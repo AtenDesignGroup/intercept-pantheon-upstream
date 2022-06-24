@@ -22,8 +22,3 @@
 
 .scheduler__group-toggle[aria-expanded="false"]::after {
   content: ""; }
-
-.path-reserve-room .l--page-wrapper > .l--page {
-  width: -webkit-calc(100% - 40px);
-  width: calc(100% - 40px);
-  max-width: 100%; }

@@ -74,7 +74,7 @@ email:
   attendance_created:
     enabled: 1
     subject: 'Thank you for attending [event_attendance:field_event:entity:title]'
-    body: "Hello [event_attendance:first-name],<br />\r\nThank you for attending [event_attendance:field_event:entity:title] at [event_attendance:field_event:entity:field_date_time].  Please take a moment to rate [event_attendance:field_event:entity:title].<br />\r\n<br />\r\n<a href=\"[site:url]account/events?field_date_time_value=1&attended=1&registered=1&saved=1\">Rate This Event</a>"
+    body: "Hello [event_attendance:first-name],<br />\r\nThank you for attending [event_attendance:field_event:entity:title] at [event_attendance:field_event:entity:field_date_time].  Please take a moment to rate [event_attendance:field_event:entity:title].<br />\r\n<br />\r\n<a href=\"[event_attendance:user-login-link]\">Rate This Event</a>"
     user:
       user: user
     user_email_other: ''
@@ -92,7 +92,7 @@ email:
   registration_event_canceled:
     enabled: 1
     subject: 'An upcoming event has been canceled - [event_registration:field_event:entity:title]'
-    body: "Hello [event_registration:first-name],<br />\r\nAn event you previously registration for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time] has been canceled.<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    body: "Hello [event_registration:first-name],<br />\r\nAn event you previously registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time] has been canceled.<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
     status_original: {  }
     status_new: {  }
     user:
@@ -112,7 +112,7 @@ form_settings:
 sms:
   attendance_sms_created:
     enabled: 1
-    body: 'Thanks for attending [event_attendance:field_event:entity:title]. Please rate this event: [site:url]account/events?field_date_time_value=1&attended=1'
+    body: 'Thanks for attending [event_attendance:field_event:entity:title]. Please rate this event: [event_attendance:user-login-link]'
     schedule:
       interval: P0M
   registration_sms_active:
@@ -143,3 +143,6 @@ sms:
   saved_sms_registration_active:
     enabled: 1
     body: 'Registration is open for your saved event [flagging:event-saved-title] [flagging:event-saved-field-date-time]. [flagging:event-saved-url]'
+  registration_sms_event_canceled:
+    enabled: 1
+    body: 'Your upcoming event has been canceled - [event_registration:field_event:entity:title], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a]'

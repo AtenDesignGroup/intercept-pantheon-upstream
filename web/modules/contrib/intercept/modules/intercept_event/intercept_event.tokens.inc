@@ -37,7 +37,7 @@ function intercept_event_token_info_alter(&$data) {
  * Implements hook_token_info().
  */
 function intercept_event_token_info() {
-  
+
   $info['tokens']['flagging']['event-saved-first-name'] = [
     'name' => t('Saved Event - User first name'),
     'description' => t('The first name of this saved event\'s user.'),
@@ -57,6 +57,10 @@ function intercept_event_token_info() {
   $info['tokens']['flagging']['event-saved-url'] = [
     'name' => t('Saved event - URL'),
     'description' => t('A plaintext version of the event\'s URL.'),
+  ];
+  $info['tokens']['event_attendance']['user-login-link'] = [
+    'name' => t('Magic login link'),
+    'description' => t('A password reset link.'),
   ];
   return $info;
 }
@@ -101,6 +105,12 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           $user = $event_attendance->getAttendee();
           $replacements[$original] = $user && $user->full_name ? $user->full_name : 'User';
           break;
+        case 'user-login-link':
+          $user = $event_attendance->getAttendee();
+          $replacements[$original] = \Drupal::request()->getSchemeAndHttpHost()
+            . '/event/evaluate/' . $user->id() . '/' . time() . '/' . user_pass_rehash($user, time())
+            . '/login?destination=/account/events&field_date_time_value=1&attended=1&registered=1&saved=1';
+          break;
       }
     }
   }
@@ -138,6 +148,19 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           break;
       }
     }
+  }
+
+  if ($type == 'intercept_event') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'full-name':
+          $user = $event_attendance->getAttendee();
+          $replacements[$original] = $user && $user->full_name ? $user->full_name : 'User';
+          break;
+      }
+    }
+
+
   }
 
   return $replacements;

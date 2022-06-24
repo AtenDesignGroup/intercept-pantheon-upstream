@@ -161,7 +161,8 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
   $user_is_privileged = FALSE;
   $privileged_roles = [
     'administrator',
-    'intercept_system_admin'
+    'intercept_system_admin',
+    'intercept_room_manager'
   ];
   $current_user = \Drupal::currentUser();
   $roles = $current_user->getRoles();
@@ -178,7 +179,7 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
         || $room_availability['has_reservation_conflict']
         || ($room_availability['has_conflict'] && !$user_is_privileged)
         || ($room_availability['has_open_hours_conflict'] && !$user_is_privileged)
-        || $room_availability['has_max_duration_conflict']
+        || ($room_availability['has_max_duration_conflict'] && !$user_is_privileged)
         || $room_availability['is_closed'])) {
         $available = TRUE;
       }

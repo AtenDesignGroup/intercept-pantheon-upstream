@@ -20,6 +20,7 @@ const c = constants;
 const userId = utils.getUserUuid();
 
 class EventTeaser extends PureComponent {
+
   render() {
     const { id, event, registrations } = this.props;
 
@@ -44,6 +45,14 @@ class EventTeaser extends PureComponent {
     const recommendedEvents = get(drupalSettings, 'intercept.events.recommended');
 
     const highlight = Array.isArray(recommendedEvents) && recommendedEvents.includes(get(event, 'attributes.drupal_internal__nid').toString()) ? 'Recommended For You' : null;
+    const supertitle_location = get(event, 'relationships.field_location.0.attributes.title');
+    // Add the room name onto the supertitle if it's available.
+    const room_title = String(get(event, 'relationships.field_room.attributes.title'));
+    let supertitle_room = '';
+    if (room_title !== 'undefined') {
+      supertitle_room = ': ' + room_title;
+    }
+    const event_supertitle = supertitle_location + supertitle_room;
 
     return (
       <Teaser
@@ -51,7 +60,7 @@ class EventTeaser extends PureComponent {
         modifiers={[image ? 'with-image' : 'without-image']}
         image={image}
         highlight={highlight}
-        supertitle={get(event, 'relationships.field_location.0.attributes.title')}
+        supertitle={event_supertitle}
         title={event.attributes.title}
         titleUrl={
           event.attributes.path ? event.attributes.path.alias : `/node/${event.attributes.nid}`

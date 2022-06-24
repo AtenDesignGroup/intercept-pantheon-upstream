@@ -150,6 +150,8 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     // Add customer barred message.
     $reservation_barred_text = $room_reservation_settings->get('reservation_barred_text');
 
+    $refreshments_text = $room_reservation_settings->get('refreshments_text');
+
     // Add publicize field.
     $reservation_fields = $this->entityFieldManager->getFieldDefinitions('room_reservation', 'room_reservation');
     if (array_key_exists('field_publicize', $reservation_fields)) {
@@ -223,6 +225,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
               ],
               'last_reservation_before_closing' => $last_reservation_before_closing,
               'reservation_barred_text' => $reservation_barred_text['value'],
+              'refreshments_text' => strip_tags($refreshments_text['value']),
             ],
           ],
         ],

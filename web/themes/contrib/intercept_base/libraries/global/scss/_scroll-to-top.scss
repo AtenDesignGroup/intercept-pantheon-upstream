@@ -1,0 +1,31 @@
+#scroll-to-top-wrapper {
+  pointer-events: none; // wrapper spans entire page and prevents elements behind from being clicked
+  position: fixed;
+  width: 100%;
+  bottom: 36px;
+  @include bp(large) {
+    bottom: 150px;
+  }
+  z-index: 1;
+
+  .l--offset {
+    display: flex;
+    flex-direction: row-reverse;
+
+    #scroll-to-top {
+      pointer-events: all; // required to make SVG clickable since parent is set to none
+      background: url('/themes/contrib/intercept_base/images/icons/scroll-to-top.svg');
+      background-repeat: no-repeat;
+      border: 2px solid white;
+      border-radius: 50%;
+      display: none; // let the javascript in global.js fadeIn() and fadeOut() (show/hide) the button as needed
+      width: 70px;
+      height: 70px;
+      cursor: pointer;
+    }
+  }
+}
+
+body.adminimal-admin-toolbar #scroll-to-top-wrapper {
+  width: calc(100% - 60px);
+}

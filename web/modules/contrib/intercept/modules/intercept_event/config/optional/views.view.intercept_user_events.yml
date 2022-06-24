@@ -568,7 +568,7 @@ display:
           table: node__field_date_time
           field: field_date_time_end_value
           plugin_id: datetime
-      title: 'My Events'
+      title: 'Saved Events'
       header: {  }
       footer: {  }
       empty:

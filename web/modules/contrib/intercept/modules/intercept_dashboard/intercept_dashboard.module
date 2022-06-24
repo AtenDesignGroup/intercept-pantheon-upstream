@@ -39,6 +39,22 @@ function intercept_dashboard_theme() {
 }
 
 /**
+ * Implements hook_js_alter().
+ */
+function intercept_dashboard_js_alter(&$javascript, \Drupal\Core\Asset\AttachedAssetsInterface $assets) {
+  /**
+   * Charts module fires a custom JS event when the charts are initialized.
+   * We need to ensure our overrides load first so we have the opportunity
+   * to attach an event listener before the initial listener is dispatched.
+   */
+  $dashboard_file = 'modules/contrib/intercept/modules/intercept_dashboard/js/intercept-dashboard-bar-chart.js';
+  $charts_file = 'modules/contrib/charts/modules/charts_chartjs/js/charts_chartjs.js';
+  if (isset($javascript[$charts_file]) && isset($javascript[$dashboard_file])) {
+    $javascript[$dashboard_file]['weight'] = $javascript[$charts_file]['weight'] - 0.001;
+  }
+}
+
+/**
  * Prepares variables for intercept_dashboard template.
  */
 function template_preprocess_intercept_dashboard(array &$variables) {

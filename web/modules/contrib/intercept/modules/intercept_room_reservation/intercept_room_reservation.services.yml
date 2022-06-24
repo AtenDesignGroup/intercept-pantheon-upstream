@@ -14,3 +14,7 @@ services:
 
   intercept_room_reservation.autocomplete_parser:
     class: Drupal\intercept_room_reservation\ParseAutocompleteInput
+
+  intercept_room_reservation.validation_message_builder:
+    class: Drupal\intercept_room_reservation\ValidationMessageBuilder
+    arguments: ['@intercept_core.reservation.manager', '@entity_type.manager', '@intercept_core.utility.dates', '@current_user']

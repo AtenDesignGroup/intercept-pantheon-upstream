@@ -34,14 +34,6 @@ intercept_core.user_edit:
   route_name: intercept_core.user_edit
   menu_name: account
 
-# Toggle link for Staff Management Menu
-intercept_core.account.manage:
-  title: 'Manage'
-  weight: 15
-  route_name: <front>
-  menu_name: account
-  class: Drupal\intercept_core\Plugin\Menu\StaffOnlyMenuLink
-
 # Management menu
 intercept_core.manage:
   deriver: \Drupal\intercept_core\Plugin\Derivative\InterceptMenuLinks

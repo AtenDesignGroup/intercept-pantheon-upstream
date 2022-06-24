@@ -367,7 +367,8 @@ function intercept_base_theme_suggestions_fieldset_alter(array &$suggestions, ar
     $date_ids = [
       'edit-field-dates-value-wrapper', // room reservations
       'edit-field-date-time-value-wrapper', // events
-      'edit-field-dates-value-1-wrapper' // equipment
+      'edit-field-dates-value-1-wrapper', // equipment
+      'edit-attendance-date-wrapper' // attendance/scans
     ];
     if (in_array($variables['element']['#id'], $date_ids) || strstr($variables['element']['#id'], 'edit-field-dates-value-wrapper')) {
       $suggestions[] = 'fieldset__views_exposed_form__dates';
@@ -571,7 +572,7 @@ function intercept_base_get_authdata($uid) {
   if ($intercept_ils_plugin) {
     $authmap = \Drupal::service('externalauth.authmap');
     $authdata = $authmap->getAuthdata($uid, $intercept_ils_plugin);
-    if ($authdata['data']) {
+    if ($authdata && $authdata['data']) {
       return unserialize($authdata['data']);
     }
     else {

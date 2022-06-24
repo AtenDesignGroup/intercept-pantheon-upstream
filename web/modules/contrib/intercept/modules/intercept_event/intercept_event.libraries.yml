@@ -43,6 +43,7 @@ eventList:
   js:
     js/dist/eventList.js:
       preprocess: true
+    js/event_filter_toggle.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings

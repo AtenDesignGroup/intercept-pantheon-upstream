@@ -3,6 +3,7 @@
 namespace Drupal\intercept_event\Controller;
 
 use Drupal\Core\Url;
+use Drupal\Core\Render\Element\RenderCallbackInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\intercept_core\Controller\ManagementControllerBase;
 use Drupal\views\Element\View;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * The management controller for intercept_event.
  */
-class ManagementController extends ManagementControllerBase {
+class ManagementController extends ManagementControllerBase implements RenderCallbackInterface {
 
   /**
    * {@inheritdoc}
@@ -133,6 +134,8 @@ class ManagementController extends ManagementControllerBase {
     $lists->row($link, $this->t('List of all events categorized as a template. Only System Admins can categorize an event as a template.'));
     $link = $this->getButton('Check-in Settings', 'intercept_event.checkin.settings', []);
     $lists->row($link, $this->t('Event self check-in configuration settings'));
+    $link = $this->getButton('Events List Settings', 'intercept_event.list.settings', []);
+    $lists->row($link, $this->t('Configuration settings for the Events listing page'));
 
     return [
       'title' => $this->title('Events'),

@@ -33,11 +33,7 @@
     <ul {{ attributes.setAttribute('data-depth', menu_depth) }}>
     {% for item in items %}
       <li {{ item.attributes.addClass(classes) }}>
-        {% if item.title == 'Manage' %}
-          <label for="slide-menu-toggle">{{ item.title }}</label>
-        {% else %}
-          {{ link(item.title, item.url, link_attributes) }}
-        {% endif %}
+        {{ link(item.title, item.url, link_attributes) }}
         {% if item.below %}
           {{ menus.menu_links(item.below, attributes, menu_depth + 1, modifier) }}
         {% endif %}

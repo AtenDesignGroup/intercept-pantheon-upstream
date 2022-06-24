@@ -178,6 +178,8 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
 function intercept_messages_sms_schedule_message($message, $token_replacements, $send_timestamp, $telephone, $entity) {
   $token_service = \Drupal::token();
   $message_final = PlainTextOutput::renderFromHtml($token_service->replace($message, $token_replacements));
+  // Remove the "Canceled: " from the beginning of the event title if present.
+  $message_final = str_replace('Canceled: ', '', $message_final);
   /** @var \Drupal\sms\Provider\SmsProviderInterface $sms_service */
   $sms_service = \Drupal::service('sms.provider');
   // Because we're doing a delayed message with a timestamp, we need
@@ -252,21 +254,20 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
       }
       // Insert messages to notify registered customers that the registration
       // event has been canceled, but not if it was just unpublished.
-      // Also Make sure it's a future event before sending.
-      /*if ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled') {
+      // Also make sure it's a future event before sending.
+      if ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled') {
         if ($event_date >= $timestamp) { // Future event. Send it!
-          \Drupal::service('database')
-          ->insert('intercept_messages_scheduled_message')
-          ->fields([
-            'template_id' => 'registration_event_canceled',
-            'entity_type' => 'event_registration',
-            'entity_id' => $registration_id,
-            'is_sent' => 0,
-            'send' => $send_timestamp,
-          ])
-          ->execute();
+          // Get the body of the message we're trying to send and information
+          // specific to this event registration.
+          $message = \Drupal::config('intercept_event.settings')->get('sms')['registration_sms_event_canceled'];
+          if (isset($message['enabled']) && $message['enabled'] == TRUE) {
+            $registration_entity = reset($event_registration_provider->getEventRegistrationsByIds([$registration_id]));
+            $telephone = MessageSettingsHelper::getEventRegistrationPhone($registration_entity);
+            $token_replacements = ['event_registration' => $registration_entity];
+            intercept_messages_sms_schedule_message($message['body'], $token_replacements, $send_timestamp, $telephone, $registration_entity);
+          }
         }
-      }*/
+      }
     }
     // Find flaggings/saves that pertain to this event node.
     $flag = \Drupal::service('flag')->getFlagById('saved_event');

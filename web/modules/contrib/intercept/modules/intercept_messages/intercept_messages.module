@@ -203,7 +203,7 @@ function intercept_messages_entity_update(EntityInterface $entity) {
       }
       // Insert messages to notify registered customers that the registration
       // event has been canceled, but not if it was just unpublished.
-      // Also Make sure it's a future event before sending.
+      // Also make sure it's a future event before sending.
       if ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled') {
         if ($event_date >= $timestamp) { // Future event. Send it!
           \Drupal::service('database')

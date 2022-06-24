@@ -394,7 +394,7 @@ class EventManager implements EventManagerInterface {
       return 0;
     }
     if ($active_registrations = $this->getEventRegistrations($node, 'active')) {
-      return array_reduce($active_registrations, function (&$total, $reg) {
+      return array_reduce($active_registrations, function ($total, $reg) {
         $total += $reg->total();
         return $total;
       }, 0);

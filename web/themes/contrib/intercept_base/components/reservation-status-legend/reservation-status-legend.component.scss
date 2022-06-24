@@ -3,6 +3,7 @@
 .reservation-status-legend {
   display: flex;
   margin: rem(15px) rem(-15px);
+  flex-wrap: wrap;
 
   > * {
     margin: rem(15px);

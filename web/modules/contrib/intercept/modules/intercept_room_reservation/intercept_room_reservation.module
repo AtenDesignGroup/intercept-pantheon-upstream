@@ -217,7 +217,7 @@ function intercept_room_reservation_page_attachments(array &$page) {
   $certifications = [];
   $current_user = \Drupal::currentUser();
   $roles = $current_user->getRoles();
-  if (in_array('intercept_registered_customer', $roles)) {
+  if (in_array('intercept_registered_customer', $roles) && \Drupal::moduleHandler()->moduleExists('intercept_certification')) {
     $entity_ids = \Drupal::entityQuery('certification')
       ->condition('field_user', $current_user->id())
       ->execute();
@@ -241,8 +241,8 @@ function intercept_room_reservation_page_attachments(array &$page) {
 function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   switch ($form_id) {
     case 'room_reservation_add_form':
-      // Don't alter the form if the user is not certified for the room.
-      if (array_key_exists('user_not_certified', $form)) {
+      // Don't alter the form if the user cannot reserve the room.
+      if (array_key_exists('user_cannot_reserve_room', $form)) {
         return;
       }
 

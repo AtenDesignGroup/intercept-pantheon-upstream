@@ -6,17 +6,18 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\intercept_core\ReservationManager;
-use Drupal\intercept_core\Plugin\Field\FieldWidget\DateRangeTimeSelectWidget;
 use Drupal\intercept_core\Utility\Dates;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\intercept_core\ReservationManager;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\intercept_room_reservation\ValidationMessageBuilder;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\intercept_core\Plugin\Field\FieldWidget\DateRangeTimeSelectWidget;
 
 /**
  * Plugin implementation of the 'daterange_availability' widget.
@@ -67,6 +68,13 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
   protected $room;
 
   /**
+   * The intercept_room_reservation.validation_message_builder service.
+   *
+   * @var \Drupal\intercept_room_reservation\ValidationMessageBuilder
+   */
+  protected $validationMessageBuilder;
+
+  /**
    * Constructs a RoomDateAvailabilityWidget object.
    *
    * @param string $plugin_id
@@ -87,13 +95,16 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
    *   The Intercept dates utility.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
+   * @param \Drupal\intercept_room_reservation\ValidationMessageBuilder $validationMessageBuilder
+   *   The intercept_room_reservation.validation_message_builder service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityStorageInterface $date_storage, ReservationManager $reservation_manager, Dates $date_utility, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityStorageInterface $date_storage, ReservationManager $reservation_manager, Dates $date_utility, EntityTypeManagerInterface$entity_type_manager, ValidationMessageBuilder $validationMessageBuilder) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $date_storage);
 
     $this->reservationManager = $reservation_manager;
     $this->dateUtility = $date_utility;
     $this->entityTypeManager = $entity_type_manager;
+    $this->validationMessageBuilder = $validationMessageBuilder;
   }
 
   /**
@@ -109,7 +120,8 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
       $container->get('entity_type.manager')->getStorage('date_format'),
       $container->get('intercept_core.reservation.manager'),
       $container->get('intercept_core.utility.dates'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('intercept_room_reservation.validation_message_builder')
     );
   }
 
@@ -127,19 +139,18 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
       ],
     ];
 
-    // @todo Remove this FieldWidget altogether or move all availability logic
-    // from RoomReservationForm to this plugin.
-    // $ajax_callback = [
-    //   'callback' => [$this, 'availabilityCallback'],
-    //   'event' => 'change',
-    //   'wrapper' => 'edit-message',
-    //   'progress' => [
-    //     'type' => 'throbber',
-    //     'message' => $this->t('Verifying reservation dates...'),
-    //   ],
-    // ];
-    // $element['value']['#ajax'] = $ajax_callback;
-    // $element['end_value']['#ajax'] = $ajax_callback;
+    $ajax_callback = [
+      'callback' => [$this, 'availabilityCallback'],
+      'event' => 'delayed_keyup',
+      'wrapper' => 'edit-message',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => $this->t('Verifying reservation dates...'),
+      ],
+    ];
+
+    $element['value']['#ajax'] = $ajax_callback;
+    $element['end_value']['#ajax'] = $ajax_callback;
 
     return $element;
   }
@@ -165,106 +176,6 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
   }
 
   /**
-   * Checks to see if the given resource is available at the current time.
-   *
-   * @param \Drupal\Core\Datetime\DrupalDateTime $start_date
-   *   The start datetime.
-   * @param \Drupal\Core\Datetime\DrupalDateTime $end_date
-   *   The end datetime.
-   *
-   * @return array
-   *   A validation message render array.
-   */
-  public function checkAvailability(DrupalDateTime $start_date, DrupalDateTime $end_date) {
-    if (!$this->room) {
-      return [];
-    }
-
-    $message = [];
-    $reservation_params = [];
-
-    $reservation = $this->entity;
-    $reservation_params['rooms'] = [$this->room->id()];
-    $reservation_params['start'] = $start_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
-    $reservation_params['end'] = $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
-
-    if ($reservation->id()) {
-      $reservation_params['exclude'] = [$reservation->id()];
-    }
-    if ($availability = $this->reservationManager->availability($reservation_params)) {
-      foreach ($availability as $room_availability) {
-        if ($room_availability['has_reservation_conflict']) {
-          $message = [
-            '#type' => 'intercept_field_error_message',
-            '#message' => 'WARNING: It looks like the time that you\'re picking already has a room reservation. Are you sure you want to proceed?',
-          ];
-        }
-        if ($room_availability['has_open_hours_conflict']) {
-          $message = [
-            '#type' => 'intercept_field_error_message',
-            '#message' => 'WARNING: You are reserving a closed space. Are you sure you want to proceed?',
-          ];
-        }
-      }
-    }
-
-    return [
-      '#type' => 'html_tag',
-      '#attributes' => [
-        'id' => 'edit-message',
-      ],
-      '#tag' => 'div',
-      'child' => $message,
-    ];
-  }
-
-  /**
-   * Runs availability validation and triggers an update event in the browser.
-   *
-   * @param array $form
-   *   The form structure.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current form state.
-   *
-   * @return Drupal\Core\Ajax\AjaxResponse
-   *   An array of Ajax commands.
-   */
-  public function availabilityCallback(array &$form, FormStateInterface $form_state) {
-    $this->setReservationRoom($form_state);
-    $this->entity = $form_state->getFormObject()->getEntity();
-    $response = new AjaxResponse();
-
-    $field_name = $this->fieldDefinition->getName();
-    $value = $form_state->getValue($field_name)[0];
-    $start_date = $this->getDateObject($value['value']);
-    $end_date = $this->getDateObject($value['end_value']);
-
-    if (!$this->isValidDate($start_date) || !$this->isValidDate($end_date) || !$room = $this->room) {
-      return $response;
-    }
-
-    $validationMessage = $this->checkAvailability($start_date, $end_date);
-    if (!empty($validationMessage)) {
-      $command = new ReplaceCommand('[class^="edit-message"]', $validationMessage);
-      $response->addCommand($command);
-    }
-
-    // Trigger the intercept:updateRoomReservation event.
-    if (!$this->entity->isNew()) {
-      $reservation_params['id'] = $this->entity->uuid();
-      $reservation_params['start'] = $start_date->format(\DateTime::RFC3339);
-      $reservation_params['end'] = $end_date->format(\DateTime::RFC3339);
-      $reservation_params['room'] = $room->uuid();
-      $command = new InvokeCommand('html', 'trigger', [
-        'intercept:updateRoomReservation', $reservation_params,
-      ]);
-      $response->addCommand($command);
-    }
-
-    return $response;
-  }
-
-  /**
    * Whether the date value is valid.
    */
   public function isValidDate($datetime) {
@@ -286,6 +197,17 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
     }
 
     return NULL;
+  }
+
+  /**
+   * Returns the ValidationMessageBuilder service's availabilityCallback.
+   *
+   * @param array $form
+   * @param FormStateInterface $form_state
+   * @return void
+   */
+  public function availabilityCallback(array &$form, FormStateInterface $form_state ) {
+    return $this->validationMessageBuilder->availabilityCallback($form, $form_state);
   }
 
 }

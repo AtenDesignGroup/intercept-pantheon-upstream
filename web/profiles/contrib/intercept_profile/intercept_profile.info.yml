@@ -38,6 +38,7 @@ dependencies:
   - entity_reference_revisions:entity_reference_revisions
   - gin_toolbar:gin_toolbar
   - intercept:intercept
+  - intercept:intercept_certification
   - intercept:intercept_event
   - intercept:intercept_room_reservation
   - intercept:intercept_equipment

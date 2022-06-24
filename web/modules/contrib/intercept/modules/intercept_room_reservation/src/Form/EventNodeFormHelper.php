@@ -306,7 +306,7 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
       $end_date = $dates['end'];
     }
     $params = [
-      'debug' => TRUE,
+      // 'debug' => TRUE,
       'rooms' => [$room[0]['target_id']],
       'start' => $this->dateUtility->convertTimezone($start_date)->format($this->reservationManager::FORMAT),
       'end' => $this->dateUtility->convertTimezone($end_date)->format($this->reservationManager::FORMAT),

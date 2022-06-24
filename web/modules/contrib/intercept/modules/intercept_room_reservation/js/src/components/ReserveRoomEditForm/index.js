@@ -43,7 +43,6 @@ const c = constants;
 const CONFLICT = 'conflict';
 const SAVED = 'saved';
 
-const FIELD_REFRESHMENTS_DESC = 'I would like to serve refreshments and agree to the $25 charge that will be added to my library card. (Note: Some spaces may not allow refreshments. We will contact you if we are unable to fulfill this request.)';
 const FIELD_REFRESHMENTS_OPTIONS = [
   {
     key: '1',
@@ -443,6 +442,7 @@ class ReserveRoomEditForm extends PureComponent {
 
     let content = null;
     let contact = null;
+    let refreshments = null;
 
     this.form = React.createRef();
 
@@ -454,8 +454,32 @@ class ReserveRoomEditForm extends PureComponent {
           <small>
             Telephone: {drupalSettings.intercept.user.telephone}<br />
             Email: {drupalSettings.intercept.user.email}<br />
-            <em>Need to update your info? After finishing your reservation visit My Account &gt; Profile.</em>
+            <em>Need to update your info? After finishing your reservation visit My Account &gt; Settings.</em>
           </small>
+        </div>
+      );
+    }
+    // Refreshments text display for customers
+    if (drupalSettings.intercept.room_reservations.refreshments_text) {
+      refreshments = (
+        <div className="l--subsection">
+          <h4 className="section-title section-title--secondary">Refreshments</h4>
+          <RadioGroup
+            label={drupalSettings.intercept.room_reservations.refreshments_text}
+            value={values.refreshments}
+            onChange={this.onValueChange('refreshments')}
+            name="refreshments"
+            required
+            options={FIELD_REFRESHMENTS_OPTIONS}
+          />
+          <InputText
+            label="Please describe your light refreshments."
+            value={values.refreshmentsDesc}
+            onChange={this.onValueChange('refreshmentsDesc')}
+            name="refreshmentDesc"
+            required={values.refreshments === '1'}
+            disabled={values.refreshments !== '1'}
+          />
         </div>
       );
     }
@@ -597,25 +621,7 @@ class ReserveRoomEditForm extends PureComponent {
                   name={'user'}
                 />
               </div>
-              <div className="l--subsection">
-                <h4 className="section-title section-title--secondary">Refreshments</h4>
-                <RadioGroup
-                  label={FIELD_REFRESHMENTS_DESC}
-                  value={values.refreshments}
-                  onChange={this.onValueChange('refreshments')}
-                  name="refreshments"
-                  required
-                  options={FIELD_REFRESHMENTS_OPTIONS}
-                />
-                <InputText
-                  label="Please describe your light refreshments."
-                  value={values.refreshmentsDesc}
-                  onChange={this.onValueChange('refreshmentsDesc')}
-                  name="refreshmentDesc"
-                  required={values.refreshments === '1'}
-                  disabled={values.refreshments !== '1'}
-                />
-              </div>
+              {refreshments}
               <div className="l--subsection">
                 <h4 className="section-title section-title--secondary">Publicize</h4>
                 <RadioGroup

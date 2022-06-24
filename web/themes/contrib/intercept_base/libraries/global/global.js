@@ -2,7 +2,23 @@
 
   $(document).ready(function () {
 
-    // Add your code here
+    // scroll to top functionality
+    const topBtn = $('#scroll-to-top');
+
+    $(window).scroll(function() {
+      const scrollPos = $(window).scrollTop();
+
+      if (scrollPos > 2000) {
+        topBtn.fadeIn();
+      } else {
+        topBtn.fadeOut();
+      }
+    });
+
+    topBtn.click(function() {
+      console.log('clicked');
+      $('html, body').animate({ scrollTop: '0px' }, 800);
+    });
 
   });
 

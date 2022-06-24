@@ -205,7 +205,6 @@ class SelectTime extends React.Component {
     } = this.props;
     const { autocompleteIsOpen } = this.state;
     const options = this.options(min, max, step, disabledSpans, disabledExclude);
-    console.log({ options });
     const checkboxId = (id) => `select-filter--${id}`;
     const inputId = `select-filter__menu--${name}`;
     const checkboxLabel = (text, id) => (

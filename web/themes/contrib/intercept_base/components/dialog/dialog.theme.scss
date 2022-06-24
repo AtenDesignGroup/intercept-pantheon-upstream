@@ -13,13 +13,17 @@
 .ui-dialog.ui-dialog-off-canvas {
   /* Layer the dialog just under the toolbar. */
   z-index: 501;
+  bottom: 0;
   padding: 0;
   color: $clr-text;
   border-radius: 0;
   background: white;
   box-shadow: 0 -5px 50px 0 rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
   font-size: inherit;
   font-family: inherit;
+  justify-content: stretch;
 }
 
 .ui-widget.ui-dialog.ui-dialog-off-canvas {
@@ -40,6 +44,7 @@
   border-radius: 0;
   background-color: $gray-80;
   font-weight: normal;
+  flex: none;
 }
 
 /* Hide the default jQuery UI dialog close button. */

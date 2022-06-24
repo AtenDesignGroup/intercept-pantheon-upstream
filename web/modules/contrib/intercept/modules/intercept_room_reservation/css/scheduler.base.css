@@ -1,3 +1,6 @@
+:root {
+  --schedular-resources-width: min(300px, 40vw);
+}
 
 .scheduler,
 .scheduler table {
@@ -44,11 +47,25 @@
 .scheduler__section--resource {
   position: relative;
   width: 300px;
+  width: var(--schedular-resources-width);
   overflow-x: hidden;
+}
+
+.scheduler__section--resource .scheduler__scroll-frame {
+  /* Internet Explorer 10+ */
+  -ms-overflow-style: none;
+  /* Firefox */
+  scrollbar-width: none;
+}
+
+.scheduler__section--resource .scheduler__scroll-frame::-webkit-scrollbar {
+  /* Safari and Chrome */
+  display: none;
 }
 
 .scheduler__section--resource table {
   width: 300px;
+  width: var(--schedular-resources-width);
 }
 
 .scheduler__section--resource th,
@@ -56,6 +73,7 @@
   font-size: 12px;
   color: #4C4D4F;
   width: 300px;
+  width: var(--schedular-resources-width);
   text-overflow: ellipsis;
   padding-top: .5em;
 }
@@ -79,6 +97,10 @@
 .scheduler__timeline {
   position: relative;
   width: 100%;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-select: none;
   z-index: 1;
 }
 

@@ -143,7 +143,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
       'event' => 'change',
       'progress' => [
         'type' => 'throbber',
-        'message' => $this->t('Getting room options.'),
+        'message' => $this->t('Getting room options...'),
       ],
     ];
 

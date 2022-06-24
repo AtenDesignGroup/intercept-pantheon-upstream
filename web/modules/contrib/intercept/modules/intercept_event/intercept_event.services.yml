@@ -45,3 +45,10 @@ services:
   intercept_event.queue:
     class: Drupal\intercept_event\EventQueue
     arguments: ['@queue']
+
+  intercept_event.user.authentication.cookie:
+    class: Drupal\intercept_event\Authentication\Provider\InterceptEventCookie
+    arguments: ['@session_configuration', '@database', '@messenger']
+    tags:
+      - { name: authentication_provider, provider_id: 'cookie', priority: 0, global: TRUE }
+      - { name: event_subscriber }

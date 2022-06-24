@@ -7,3 +7,9 @@ intercept_dashboard_metric:
   css:
     component:
       css/intercept-dashboard-metric.component.css: {}
+intercept_dashboard_chart:
+  js:
+    js/intercept-dashboard-toggle.js: {}
+    js/intercept-dashboard-bar-chart.js: {}
+  dependencies:
+    - charts/global

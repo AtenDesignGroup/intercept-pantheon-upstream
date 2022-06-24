@@ -54,7 +54,7 @@ class MessageSettingsHelper {
    *   Whether the email settings overrides the user settings, default FALSE.
    */
   public static function eventEmailOverridden(array $settings) {
-    if ((bool) $settings['user_settings_override'] === TRUE) {
+    if (isset($settings['user_settings_override']) && (bool) $settings['user_settings_override'] === TRUE) {
       return TRUE;
     }
     return FALSE;

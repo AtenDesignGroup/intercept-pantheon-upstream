@@ -299,7 +299,7 @@ const RoomReservationScheduler = ({
    *  The reservation's room UUID.
    */
   const onUpdateEvent = (values) => {
-    const event = find(events, item => item.id === values.id) || {
+    const event = events.find(item => item.id === values.id) || {
       title: '',
     };
 

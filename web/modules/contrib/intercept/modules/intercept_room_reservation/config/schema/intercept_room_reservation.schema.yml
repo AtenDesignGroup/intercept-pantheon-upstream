@@ -20,6 +20,9 @@ intercept_room_reservation.settings:
     reservation_barred_text:
       type: text_format
       label: 'Room reservation barred user message'
+    refreshments_text:
+      type: text_format
+      label: 'Room reservation refreshments configuration'
     last_reservation_before_closing:
       type: string
       label: 'Last reservation before closing number of minutes'

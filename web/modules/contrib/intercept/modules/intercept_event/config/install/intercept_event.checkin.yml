@@ -1,0 +1,6 @@
+enable: true
+checkin_start: PT30M
+checkin_end: PT4H
+dependencies:
+  module:
+    - duration_field

@@ -55,9 +55,7 @@ function getSelectResourceEvent(id) {
 }
 
 const onSelectResource = (resource, event) => {
-  console.log({ resource });
   if (resource.drupal_internal__nid) {
-    console.log('dispatching');
     window.dispatchEvent(getSelectResourceEvent(resource.drupal_internal__nid));
   }
   event.preventDefault();
@@ -323,7 +321,8 @@ const SchedulerViewEventsRow = (props) => {
   </div>);
 };
 
-const getFrameWidth = ref => (ref ? (ref.offsetWidth - 300) : 800);
+const getResourcesWidth = ref => (ref ? (ref.offsetWidth) : 300);
+const getFrameWidth = (ref, resourcesWidth) => (ref ? (ref.offsetWidth - resourcesWidth) : 800);
 
 const getTimelineWidth = slots => [].concat(...slots).length * SLOT_WIDTH;
 
@@ -350,11 +349,12 @@ const scrollSyncEffect = refs => () => {
   const { resourcesRef, scheduleRef, timelineRef } = refs;
 
   let isSyncingScheduleScroll = false;
+  let isSyncingResourcesScroll = false;
 
   const onScheduleScroll = (e) => {
     window.requestAnimationFrame(() => {
       if (!isSyncingScheduleScroll) {
-        isSyncingScheduleScroll = true;
+        isSyncingResourcesScroll = true;
         timelineRef.current.scrollLeft = e.target.scrollLeft;
         resourcesRef.current.scrollTop = e.target.scrollTop;
       }
@@ -362,10 +362,22 @@ const scrollSyncEffect = refs => () => {
     });
   };
 
+  const onResourcesScroll = (e) => {
+    window.requestAnimationFrame(() => {
+      if (!isSyncingResourcesScroll) {
+        isSyncingScheduleScroll = true;
+        scheduleRef.current.scrollTop = e.target.scrollTop;
+      }
+      isSyncingResourcesScroll = false;
+    });
+  };
+
   scheduleRef.current.addEventListener('scroll', onScheduleScroll);
+  resourcesRef.current.addEventListener('scroll', onResourcesScroll);
 
   return () => {
     scheduleRef.current.removeEventListener('scroll', onScheduleScroll);
+    resourcesRef.current.removeEventListener('scroll', onResourcesScroll);
   };
 };
 
@@ -508,7 +520,8 @@ const SchedulerView = (props) => {
   });
 
   const slots = slotMetrics.groups;
-  const frameWidth = getFrameWidth(schedulerRef.current);
+  const resourcesWidth = getResourcesWidth(resourcesRef.current);
+  const frameWidth = getFrameWidth(schedulerRef.current, resourcesWidth);
   const timelineWidth = getTimelineWidth(slots);
 
   useEventListener(
@@ -581,6 +594,7 @@ const SchedulerView = (props) => {
             <SchedulerViewScrollArea
               vertical
               hideScrollbar
+              overflow
               height={timelineHeight}
               scrollRef={resourcesRef}
               scrollbarSize={scrollbarSize}

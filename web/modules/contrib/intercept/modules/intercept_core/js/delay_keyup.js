@@ -6,25 +6,22 @@
 (function ($, Drupal) {
   Drupal.behaviors.delayed_keyup = {
     attach: function (context, settings) {
-      $('input.delayed-keyup').not('.picker__input').once('delayed_keyup').each(function () {
+      $('input.delayed-keyup', context).last().triggerHandler('delayed_keyup');
+      var typingTimer;
+      var delay = 1100;
+      $('input.delayed-keyup', context).not('.picker__input').once('delayed_keyup').on('keyup', function (e) {
         const $self = $(this);
-        let timeout = null;
-        const delay = $self.data('delay') || 700;
-        const triggerEvent = $self.data('event') || 'delayed_keyup';
-
-        $self.unbind('change blur').on('change blur', () => {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => {
-            // Ensure 15 minute intervals on time fields.
-            // console.log('Trying the reservation form helper code.');
+        clearTimeout(typingTimer);
+        if ($(this).val()) {
+          var trigid = $(this);
+          typingTimer = setTimeout(function () {
             if ($self.hasClass('form-time')) {
               var startTime = $self;
               roundMinutes(startTime);
             }
-            // Check availability.
-            $self.triggerHandler(triggerEvent);
+            trigid.triggerHandler('delayed_keyup');
           }, delay);
-        });
+        }
       });
     },
   };

@@ -90,7 +90,7 @@
 }
 
 // Copyright
-#block-copyrightblock {
+[id^="block-copyrightblock"] {
   flex-basis: 50%;
   order: 6;
   @include bp(large) {
@@ -163,7 +163,7 @@
 }
 
 // Footer Menu (Social)
-#block-socialmediamenu {
+[id^="block-socialmediamenu"] {
   flex-basis: 100%;
   justify-content: flex-start;
   @include bp(large) {

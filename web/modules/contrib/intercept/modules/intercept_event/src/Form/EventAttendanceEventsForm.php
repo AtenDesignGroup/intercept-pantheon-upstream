@@ -7,6 +7,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\intercept_core\DateRangeFormatterTrait;
 use Drupal\intercept_core\Utility\Dates;
@@ -76,6 +77,18 @@ class EventAttendanceEventsForm extends ContentEntityForm {
     $form['revision_log']['#access'] = FALSE;
     $form['advanced']['#access'] = FALSE;
     $form['#process'][] = '::processNodeForm';
+    $form['actions']['attendance_sheet'] = [
+      '#title' => 'Print Sign-In Sheet',
+      '#type' => 'link',
+      '#url' => Url::fromRoute('entity.node.attendance_sheet', [
+        'node' => $this->entity->id(),
+      ]),
+      '#attributes' => [
+        'class' => ['button button-action'],
+      ],
+      '#prefix' => '&nbsp;&nbsp;',
+      '#weight' => 10
+    ];
 
     return $form;
   }

@@ -172,6 +172,14 @@ class RoomReservationSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('reservation_barred_text.value'),
       '#format' => $config->get('reservation_barred_text.format'),
     ];
+    
+    $form['refreshments_text'] = [
+      '#title' => $this->t('Room reservation refreshments configuration'),
+      '#description' => $this->t('If you enter a value here, customers will see this notice when they reserve a room.'),
+      '#type' => 'text_format',
+      '#default_value' => $config->get('refreshments_text.value'),
+      '#format' => $config->get('refreshments_text.format'),
+    ];
 
     $view_modes = $this->entityDisplayRepository->getViewModeOptions('room_reservation');
     $form_modes = $this->entityDisplayRepository->getFormModeOptions('room_reservation');

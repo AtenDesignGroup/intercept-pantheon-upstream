@@ -23,6 +23,6 @@ class MaxCapacityConstraint extends Constraint {
    *
    * @var string
    */
-  public $maxCapacityMessage = '%value exceeds this room\'s maximum capacity (%max)';
+  public $maxCapacityMessage = '%value exceeds this room\'s maximum capacity (%max).';
 
 }

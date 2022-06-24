@@ -4,6 +4,7 @@ namespace Drupal\intercept_dashboard\Controller;
 
 use DateInterval;
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Database\Query\TableSortExtender;
@@ -108,6 +109,17 @@ class InterceptDashboardController extends ControllerBase {
      * Data Table
      */
     $build['#event_table'] = $this->buildEventTable();
+
+    $build['#charts'] = [];
+
+    /**
+     * Attendees by Event Type chart
+     */
+    $build['#charts']['by_primary_event_type'] = $this->buildBarChart(
+      'attendeesByPrimaryEventType',
+      $this->t('Attendance by Primary Event Type'),
+      $this->getAttendeesByPrimaryEventTypeData(),
+    );
 
     return $build;
   }
@@ -800,6 +812,180 @@ class InterceptDashboardController extends ControllerBase {
   }
 
   /**
+   * Constructs a bar chart render array.
+   *
+   * @param string $id
+   *   The chart identifier.
+   * @param string $label
+   *   The chart label
+   * @param array $data
+   *   An associative array of chart data.
+   * @param array $data['header']
+   *   An array of table header columns.
+   * @param array $data['rows']
+   *   An array of table rows.
+   * @return array
+   *   A render array.
+   */
+  public function buildBarChart($id, $label, array $data) {
+    $build = [];
+    $html_id = Html::getUniqueId($id);
+    $html_label_id = $html_id . '--label';
+    $build['id'] = $html_id;
+    $build['label_id'] = $html_label_id;
+    $build['label'] = [
+      '#markup' => $label,
+    ];
+    $build['chart'] = [
+      '#type' => 'chart',
+      '#chart_type' => 'column',
+      'series' => [
+        '#type' => 'chart_data',
+        '#title' => t('Attendees'),
+        '#data' => array_map(function ($row) {
+          return $row['data']['attendees'] ?? 0;
+        }, $data['rows']),
+        '#color' => '#007E9E',
+      ],
+      'xaxis' => [
+        '#type' => 'chart_xaxis',
+        '#labels' => array_map(function ($row) {
+          return $row['data']['name'];
+        }, $data['rows']),
+      ],
+      '#raw_options' => [
+        'options' => [
+          'indexAxis' => 'y',
+          'maintainAspectRatio' => FALSE,
+          'barThickness' => 22,
+          'plugins' => [
+            'legend' => [
+              'display' => FALSE,
+            ],
+          ],
+          'scales' => [
+            'x' => [
+              'grid' => [
+                'borderColor' => '#000000',
+                'color' => '#000000',
+                'borderDash' => [],
+                'tickBorderDash' => [],
+                'tickColor' => '#000000',
+                'tickLength' => 18,
+              ],
+              'ticks' => [
+                'font' => [
+                  'size' => 14,
+                ]
+              ]
+            ],
+            'y' => [
+              'grid' => [
+                'drawOnChartArea' => FALSE,
+                'offset' => FALSE,
+                'drawTicks' => TRUE,
+                'tickBorderDash' => [1],
+                'tickLength' => 32,
+                'tickColor' => '#4C4D4F',
+              ],
+              'ticks' => [
+                'color' => '#4C4D4F',
+                'font' => [
+                  'weight' => 'normal',
+                  'size' => 16,
+                ]
+              ],
+            ],
+          ],
+        ],
+      ],
+      '#attached' => [
+        'library' => [
+          'intercept_dashboard/intercept_dashboard_chart',
+        ],
+      ],
+    ];
+    $build['height'] = (count($data['rows']) + 1) * 40;
+
+    // Generate the table.
+    $build['table'] = array(
+      '#theme' => 'table',
+      '#header' => $data['header'],
+      '#rows' => $data['rows'],
+      '#attributes' => [
+        'class' => [
+          'intercept-dashboard-chart__table'
+        ],
+        'aria-labelledby' => $html_label_id,
+      ]
+    );
+
+    return $build;
+  }
+
+  public function getAttendeesByPrimaryEventTypeData() {
+    $header = [
+      [
+        'data' => $this->t('Primary Event Type'),
+      ],
+      [
+        'data' => $this->t('Attendees'),
+      ],
+    ];
+
+    $query = $this->database->select('taxonomy_term_field_data', 't');
+    $query->condition('t.vid', 'event_type');
+    $query->fields('t', [
+      'tid',
+      'name'
+    ]);
+
+    $eventQuery = $this->getBaseQuery();
+
+    // Attendees
+    $attendees_table = $eventQuery->join($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
+    $eventQuery->fields($attendees_table, [
+      'attendees'
+    ]);
+    $eventQuery->addExpression('SUM(attendees)', 'total_attendees');
+
+    // Term data
+    $relationship_table = $eventQuery->join('node__field_event_type_primary', 'event_types', 'n.nid = event_types.entity_id');
+    $eventQuery->addField($relationship_table, 'field_event_type_primary_target_id', 'tid');
+    $event_type_table = $eventQuery->join($query, 'term', 'term.tid = ' . $relationship_table . '.field_event_type_primary_target_id');
+    $eventQuery->groupBy('tid');
+
+    $eventQuery->fields($event_type_table, [
+      'tid',
+      'name',
+    ]);
+
+    /** @var TableSortExtender $table_sort */
+    $table_sort = $eventQuery->extend('Drupal\Core\Database\Query\TableSortExtender');
+    $table_sort->orderBy('total_attendees', 'DESC');
+
+    $result = $eventQuery->execute();
+
+    // Populate the rows.
+    $rows = [];
+    foreach($result as $row) {
+      $rows[] = [
+        'data' => [
+          // Keep for debugging purposes.
+          // 'tid' => $row->tid,
+          'name' => $row->name,
+          'attendees' => $row->total_attendees ?? 0,
+        ]
+      ];
+    }
+
+    return [
+      'header' => $header,
+      'rows' => $rows,
+    ];
+  }
+
+  /**
    * Construct a query to count users checked-in to events.
    * This is a sum of all field_attendees_count values on event_attendance entities
    * that reference the given events.
@@ -813,7 +999,6 @@ class InterceptDashboardController extends ControllerBase {
       'field_table'  => 'event_attendance__field_attendees',
       'field_column' => 'field_attendees_count',
     ];
-    $count_field = 'event_count_value';
 
     // Construct the CheckedIn subQuery.
     $query = $this->database->select($data['entity_table'], 'related_entity_table');

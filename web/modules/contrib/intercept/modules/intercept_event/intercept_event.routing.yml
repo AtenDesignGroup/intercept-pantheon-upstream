@@ -10,7 +10,7 @@ intercept_event.account.events:
   path: '/account/events'
   defaults:
     _controller: '\Drupal\intercept_event\Controller\EventsController::myEvents'
-    _title: 'My Events'
+    _title: 'Saved Events'
   requirements:
     _user_is_logged_in: 'TRUE'
 
@@ -18,7 +18,7 @@ entity.user.events:
   path: '/user/{user}/events'
   defaults:
     _controller: '\Drupal\intercept_event\Controller\EventRegistrationController::manage'
-    _title: 'My Events'
+    _title: 'Saved Events'
   requirements:
     _entity_access: 'user.update'
     user: \d+
@@ -51,6 +51,16 @@ entity.node.attendance:
   requirements:
     _custom_access: '\Drupal\intercept_event\Controller\EventsController::attendanceAccess'
 
+entity.node.attendance_sheet:
+  path: '/event/{node}/attendance-sheet'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventsController::getEventAttendanceSheet'
+    _title: 'Print Sign-In Sheet'
+  requirements:
+    _permission: 'access event registrations tab'
+  options:
+    no_cache: 'TRUE'
+
 entity.node.checkin:
   path: '/event/{node}/checkin/self'
   defaults:
@@ -77,13 +87,13 @@ entity.node.scan_guest:
   requirements:
     _entity_access: 'node.scan'
 
-entity.node.scan_lookup:
-  path: '/event/{node}/checkin/lookup'
-  defaults:
-    _controller: '\Drupal\intercept_event\Controller\EventAttendanceController::scanLookupForm'
-    _title: 'Lookup'
-  requirements:
-    _entity_access: 'node.scan'
+# entity.node.scan_lookup:
+#   path: '/event/{node}/checkin/lookup'
+#   defaults:
+#     _controller: '\Drupal\intercept_event\Controller\EventAttendanceController::scanLookupForm'
+#     _title: 'Lookup'
+#   requirements:
+#     _entity_access: 'node.scan'
 
 entity.node.template_preview:
   path: '/node/preview/event/{node}'
@@ -217,3 +227,22 @@ intercept_event.api.checkin.invalidate_period_cache:
     _controller: '\Drupal\intercept_event\Controller\EventCheckinPeriodController::invalidateCheckinPeriods'
   requirements:
     _access: 'TRUE'
+
+intercept_event.reset.login:
+  path: '/event/evaluate/{uid}/{timestamp}/{hash}/login'
+  defaults:
+    _title: 'Login using magic link'
+    _controller: '\Drupal\intercept_event\Controller\InterceptEventUserController::resetPassLogin'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _maintenance_access: TRUE
+    no_cache: TRUE
+
+intercept_event.list.settings:
+  path: '/manage/event-configuration/list'
+  defaults:
+    _form: '\Drupal\intercept_event\Form\EventSettingsForm'
+    _title: 'Event Settings'
+  requirements:
+    _role: 'intercept_system_admin + administrator'

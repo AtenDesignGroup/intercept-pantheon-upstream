@@ -213,6 +213,19 @@ class ReserveRoom extends React.Component {
       this.handleFormChange(this.getEventValues());
       this.props.onChangeRoom(get(this, 'props.eventRecord.data.relationships.field_room.data.id'));
     }
+
+    // If the step has changed, scroll the page to the stepper.
+    // Changing the step acts similar to navigating to a new page.
+    // This is more obvious on desktop. However on mobile, the
+    // interface may change while the user is scrolled down the page.
+    // We want to reset the scroll position so the user knows where they are.
+    if (prevProps.step !== this.props.step) {
+      const header = document.querySelector('.room-reservation-app__header');
+      header.scrollIntoView({
+        block: 'start',
+        behavior: 'smooth',
+      });
+    }
   }
 
   onExited() {
@@ -361,7 +374,7 @@ class ReserveRoom extends React.Component {
 
     return (
       <div className="l--offset">
-        <div className="l__header l--section">
+        <div className="room-reservation-app__header l__header l--section">
           <ReserveRoomStepper
             {...this.props}
             step={currentStep}

@@ -312,7 +312,7 @@ export const userHasRole = roles =>
  *     intercept_event_organizer
  *     intercept_staff
  *     intercept_system_admin
- *     intercept_room_reservation_approver
+ *     intercept_room_manager
  *   otherwise False.
  */
 export const userIsStaff = () =>
@@ -321,7 +321,7 @@ export const userIsStaff = () =>
     'intercept_event_organizer',
     'intercept_staff',
     'intercept_system_admin',
-    'intercept_room_reservation_approver',
+    'intercept_room_manager',
   ]);
 
 /**
@@ -332,7 +332,7 @@ export const userIsStaff = () =>
  *     intercept_event_manager
  *     intercept_event_organizer
  *     intercept_system_admin
- *     intercept_room_reservation_approver
+ *     intercept_room_manager
  *   otherwise False.
  */
 export const userIsManager = () =>
@@ -340,7 +340,7 @@ export const userIsManager = () =>
     'intercept_event_manager',
     'intercept_event_organizer',
     'intercept_system_admin',
-    'intercept_room_reservation_approver',
+    'intercept_room_manager',
   ]);
 
 /**

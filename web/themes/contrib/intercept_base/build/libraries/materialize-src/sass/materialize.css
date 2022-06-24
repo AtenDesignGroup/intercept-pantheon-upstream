@@ -5293,22 +5293,6 @@ button.btn-floating {
         width: 80%;
         width: -webkit-calc(100% - 3rem);
         width: calc(100% - 3rem); } }
-  .materialize .form-wrapper .dob_error,
-  .materialize .form-wrapper .phone1_error,
-  .materialize .form-wrapper .phone2_error,
-  .materialize .form-wrapper .dob_error_connected,
-  .materialize .form-wrapper .email_msg,
-  .views-exposed-form .dob_error,
-  .views-exposed-form .phone1_error,
-  .views-exposed-form .phone2_error,
-  .views-exposed-form .dob_error_connected,
-  .views-exposed-form .email_msg,
-  .webform-submission-form .dob_error,
-  .webform-submission-form .phone1_error,
-  .webform-submission-form .phone2_error,
-  .webform-submission-form .dob_error_connected,
-  .webform-submission-form .email_msg {
-    font-size: 12px; }
   .materialize .form-wrapper .helper-text,
   .views-exposed-form .helper-text,
   .webform-submission-form .helper-text {

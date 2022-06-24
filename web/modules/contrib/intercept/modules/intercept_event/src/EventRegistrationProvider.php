@@ -88,4 +88,11 @@ class EventRegistrationProvider implements EventRegistrationProviderInterface {
     return $query->execute();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getEventRegistrationsByIds($ids) {
+    return $this->eventRegistrationStorage->loadMultiple($ids);
+  }
+
 }

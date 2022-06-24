@@ -105,6 +105,43 @@
   }
 }
 
+[id^="block-intercept-base-useraccountmenu"] {
+
+  a,
+  .menu__item label {
+    line-height: 1.8;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background-color: #fff;
+      opacity: 0;
+      transform: scale(0);
+      transition:
+        transform 0.3s ease-in-out,
+        height 0.2s ease-in-out,
+        opacity 0.2s ease-in-out;
+    }
+
+    &:hover {
+      color: #fff;
+    }
+
+    &:hover::after,
+    &.is-active {
+      bottom: 0;
+      height: .9px; // yes, I know sub-pixels don't exist (yet) but if you set it to 1px or higher some menu items get a 1px underline while others get 2px (or 2px and 3px if you set it to 2px). I thought it was a rounding error when the height was in ems, but it still does it in pixels. Which is odd. The only way to force it to be consistent is to trick it by using a height of less than a pixel. Which forces the browser to round up consistentely to 1px rather than rounding to 1px sometimes and 2px other times. 
+
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
 // My Account Trigger
 .account-trigger {
   clip: rect(0, 0, 0, 0);

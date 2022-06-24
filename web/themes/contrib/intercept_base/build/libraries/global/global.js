@@ -5,8 +5,23 @@ require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof requ
 
   $(document).ready(function () {
 
-    // Add your code here
+    // scroll to top functionality
+    var topBtn = $('#scroll-to-top');
 
+    $(window).scroll(function () {
+      var scrollPos = $(window).scrollTop();
+
+      if (scrollPos > 2000) {
+        topBtn.fadeIn();
+      } else {
+        topBtn.fadeOut();
+      }
+    });
+
+    topBtn.click(function () {
+      console.log('clicked');
+      $('html, body').animate({ scrollTop: '0px' }, 800);
+    });
   });
 })(jQuery);
 

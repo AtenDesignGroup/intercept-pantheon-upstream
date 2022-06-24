@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta3] - 2022-06-23
+
+- Text Notification to Customer when Event is Canceled
+- Add Customer Email Address and Barcode to Room Reservation Export
+- Event Recurrences - Error When the Recurrence End Date is Set to "Never"
+- Bulk Room Reservation - Allow Staff to Exceed Max. Duration
+- Improved Printable Versions of Events and Room Reservations
+- Fixed: Room Reservation Calendar Allowing Negative Attendees
+- Add Back to Top Button to Intercept Base
+- Fixed: Minimum Attendees Not Enforced Correctly on Reserve Room by Calendar
+
+## [8.x-1.0-beta2] - 2022-05-27
+
+- Make Refreshments Notice Configurable
+- Ability to generate and download attendance rosters/printable sign-in sheets that include blank spaces to record non-registered attendees (3279478)
+- Bypass logging in when clicking link to rate event in text or email
+- Customer Room Reservation Group Name
+- Chart: Attendees by Event Type
+- Table view of each metric
+- Fix contrast on hover state of My Account menu items
+- Adding Expand/Collapse Feature to Events Page (3275341)
+- Fixed: Unable to reserve rooms on mobile (by Calendar)
+- Fixed: Copying Room Reservation Incorrectly Lists Staff in the “Reserved For” Field
+- Consolidate room reservation availability logic
+- Deprecate or integrate intercept_core/delay_keyup library on RoomReservationForm
+- Fixed: Unable to reserve rooms on mobile (by Room)
+- Fixed Theme Error on Export Scans Page           
+- Remove Link to Customer Lookup on Scan Tab
+
 ## [8.x-1.0-beta1] - 2022-05-02
 
 - Convert System Config links from cards to buttons

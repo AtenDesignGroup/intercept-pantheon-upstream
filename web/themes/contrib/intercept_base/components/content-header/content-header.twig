@@ -28,11 +28,19 @@
 
     {% if title %}
     <div class="content-header__title">
-      {% include '@intercept-base-components/page-title/page-title.twig' with {
-        text: title,
-        modifiers: ['reversed'],
-        url: url
-      } only %}
+      {% if type == 'Event' %}
+        {# Don't include a hyperlink unnecessarily on event headers. #}
+        {% include '@intercept-base-components/page-title/page-title.twig' with {
+          text: title,
+          modifiers: ['reversed'],
+        } only %}
+      {% else %}
+        {% include '@intercept-base-components/page-title/page-title.twig' with {
+          text: title,
+          modifiers: ['reversed'],
+          url: url
+        } only %}
+      {% endif %}
     </div>
     {% endif %}
 

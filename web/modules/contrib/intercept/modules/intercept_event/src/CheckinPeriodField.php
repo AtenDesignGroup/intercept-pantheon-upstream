@@ -56,7 +56,7 @@ class CheckinPeriodField extends ComputedItemList implements CacheableDependency
     $config = \Drupal::config('intercept_event.checkin')->get();
 
     // If check-in is disabled, return closed.
-    if (!$config['enable']) {
+    if (!isset($config['enable']) || !$config['enable']) {
       return 'closed';
     }
 

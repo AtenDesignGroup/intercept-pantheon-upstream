@@ -43,12 +43,32 @@
     </section>
   {% endif %}
   {% if event_table %}
-    <section class="section intercept-dashboard-table">
+    <section class="l--section intercept-dashboard-table">
+      <h3 class="visually-hidden">{{ 'Event Performance Table'|t }}</h3>
       {{ event_table.event_table }}
       <footer class="intercept-dashboard-table__footer">
         {{ event_table.pager }}
         {{ event_table.csv_link }}
       </footer>
     </section>
+  {% endif %}
+  {% if charts %}
+    {% for chart in charts %}
+    <section id="{{chart.id}}" data-dashboard-context="chart" class="l--section intercept-dashboard-chart">
+      <header class="intercept-dashboard-chart__header">
+        <h2 id="{{chart.label_id}}" class="section-title--dark">{{chart.label}}</h2>
+        <button class="button intercept-dashboard-chart__toggle js-intercept-chart-toggle" aria-controls="{{chart.id}}--table" data-action="show-table">
+          {{'View Table'|t}}
+        </button>
+      </header>
+      <span aria-live="polite" class="visually-hidden">{{'Hiding Table'|t}}</span>
+      <div id="{{chart.id}}--table" class="intercept-dashboard-chart__table-wrapper visually-hidden">
+        {{ chart.table }}
+      </div>
+      <div aria-hidden="true" style="height: {{chart.height}}px">
+        {{ chart.chart }}
+      </div>
+    </section>
+    {% endfor %}
   {% endif %}
 </div>

@@ -1,6 +1,5 @@
-@import url(https://fonts.googleapis.com/css?family=Quicksand);
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css);
-body.intercept-staff-management-menu {
+[dir="ltr"] body.intercept-staff-management-menu {
   padding-left: 60px; }
 
 #slide-menu-toggle:checked ~ .left-menu {
@@ -197,11 +196,3 @@ body.toolbar-tray-open .left-menu {
           color: #21ccfc; }
   .left-menu .contextual .trigger {
     display: none; }
-
-.menu--account .menu__item label {
-  color: #fff;
-  line-height: 1.8;
-  padding: 0.25rem 0;
-  text-decoration: none; }
-  .menu--account .menu__item label:hover {
-    color: #ff7548; }

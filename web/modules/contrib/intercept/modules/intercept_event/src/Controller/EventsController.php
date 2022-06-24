@@ -15,8 +15,12 @@ use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\EventEvaluationManager;
 use Drupal\intercept_event\SuggestedEventsProvider;
+use Drupal\node\Entity\Node;
+use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Dompdf\Dompdf;
 
 /**
  * Class EventsController.
@@ -80,6 +84,13 @@ class EventsController extends ControllerBase {
   protected $dateUtility;
 
   /**
+   * Gets the plugin ID string.
+   *
+   * @var string
+   */
+  protected $pluginId;
+
+  /**
    * Constructs an EventsController object.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
@@ -108,6 +119,15 @@ class EventsController extends ControllerBase {
     $this->renderer = $renderer;
     $this->connection = $connection;
     $this->dateUtility = $date_utility;
+    $config_factory = \Drupal::service('config.factory');
+    $settings = $config_factory->get('intercept_ils.settings');
+    $intercept_ils_plugin = $settings->get('intercept_ils_plugin', '');
+    if ($intercept_ils_plugin) {
+      $ils_manager = \Drupal::service('plugin.manager.intercept_ils');
+      $ils_plugin = $ils_manager->createInstance($intercept_ils_plugin);
+      $this->client = $ils_plugin->getClient();
+      $this->pluginId = $intercept_ils_plugin;
+    }
   }
 
   /**
@@ -134,6 +154,7 @@ class EventsController extends ControllerBase {
    */
   public function list() {
     $suggested_events = $this->suggestedEventsProvider->getSuggestedEventIds();
+    $toggle_filter = \Drupal::config('intercept_event.list')->get('toggle_filter');
 
     $build = [
       '#theme' => 'intercept_event_list',
@@ -142,6 +163,7 @@ class EventsController extends ControllerBase {
           'intercept' => [
             'events' => [
               'recommended' => $suggested_events,
+              'toggle_filter' => $toggle_filter,
             ],
           ],
         ],
@@ -331,6 +353,17 @@ class EventsController extends ControllerBase {
       ],
       '#prefix' => '&nbsp;&nbsp;'
     ];
+    $content['attendance_sheet'] = [
+      '#title' => 'Print Sign-In Sheet',
+      '#type' => 'link',
+      '#url' => Url::fromRoute('entity.node.attendance_sheet', [
+        'node' => $node->id(),
+      ]),
+      '#attributes' => [
+        'class' => ['button button-action'],
+      ],
+      '#prefix' => '&nbsp;&nbsp;'
+    ];
     $content['list'] = $this->getListBuilder('event_registration', $node)->render();
     return $build;
   }
@@ -395,7 +428,7 @@ class EventsController extends ControllerBase {
   }
 
   /**
-   * This is the My Events page. Shows a list of events for the logged in
+   * This is the Saved Events page. Shows a list of events for the logged in
    * customer account.
    *
    * @return array
@@ -405,7 +438,7 @@ class EventsController extends ControllerBase {
     $query_params = \Drupal::request()->query->all();
     $build = [];
     $build['#attached']['library'][] = 'intercept_base/evaluation';
-    $build['#title'] = $this->t('My Events');
+    $build['#title'] = $this->t('Saved Events');
     $content = &$build['content'];
 
     // This is a 4-part query to get events.
@@ -528,6 +561,318 @@ class EventsController extends ControllerBase {
     }
 
     return $build;
+  }
+
+  /**
+   * This is the main function for obtaining the attendance sheet.
+   *
+   * @param $node
+   *   An integer that is the event ID. This should be passed into the function
+   *   from the API call.
+   */
+  public function getEventAttendanceSheet($node) {
+
+    $event = Node::load($node);
+    $title = $event->getTitle();
+    // Convert from stdObject to array.
+    $registrations = \Drupal::service('intercept_event.manager')->getEventRegistrations($event);
+    $arryResults = [];
+    // Count multiple registrants from a single registration (children, spouses, etc.)
+    $total_registrations = \Drupal::service('intercept_event.manager')->getEventActiveRegistrants($event);
+    if ($total_registrations > count($registrations)) {
+      foreach ($registrations as $index => $registration) {
+        $arryResults[$index] = $registration;
+        // Put it into the array multiple times if there are multiple people
+        // registered so that it appears multiple times on the signup sheet.
+        $num_registrants = $registration->get('field_registrants')->getTotal();
+        if ($num_registrants > 1) {
+          for ($n = 2; $n <= $num_registrants; $n++) {
+            // Duplicate the entry to show multiple registered people.
+            $id = $n * $index * 100; // Build a hopefully unique array index #.
+            $arryResults[$id] = $registration;
+          }
+        }
+      }
+    }
+    else {
+      $arryResults = $registrations;
+    }
+
+    // Build an array of names to correspond with the array of event nodes.
+    $names = [];
+    foreach ($arryResults as $id => $registration) {
+      $uid = $this->simplifyValues($registration->get('field_user')->getValue());
+      if ($uid) {
+        $authdata = $this->getAuthdata($uid);
+        if (!empty($authdata)) {
+          $names[$id]['name_first'] = $authdata->NameFirst;
+          $names[$id]['name_last'] = $authdata->NameLast;
+          $names[$id]['barcode'] = $authdata->Barcode;
+        }
+        if (empty($names[$id]['name_last']) && empty($names[$id]['name_first'])) {
+          $account = User::load($uid);
+          $names[$id]['name_last'] = $account->getUsername();
+        }
+        $names[$id]['name_full'] = $names[$id]['name_last'] . ', ' . $names[$id]['name_first'];
+      }
+    }
+
+    // Let's sort the array by Last Name, First Name to make it easier to find
+    // names when the list is printed out and we're tracking attendance from
+    // the sign-in sheet.
+    uasort($names, function ($a, $b) {
+      return strcasecmp($a['name_full'], $b['name_full']);
+    });
+    // Use that sorting outcome to sort $arryResults which contains the entities.
+    $arryResultsSorted = [];
+    foreach ($names as $id => $name) {
+      $arryResultsSorted[$id] = $arryResults[$id];
+    }
+
+    // Get list of locations.
+    $locations = [];
+    $locations[] = Node::load($this->simplifyValues($event->get('field_location')->getValue()));
+
+    $strCSS = $this->getPdfStyle();
+    $strHTML = "<html>\n\t<head>\n\t\t<title>$title</title>\n\t\t$strCSS";
+    $strHTML .= "\n\t</head>\n\t<body>";
+
+    // Fix timezone to default of site.
+    $date_item = $event->get('field_date_time')->getValue();
+    $start_date = $this->dateUtility->getDrupalDate($date_item[0]['value']);
+    $end_date = $this->dateUtility->getDrupalDate($date_item[0]['end_value']);
+    $strEventDateFull = $this->dateUtility->convertTimezone($start_date, 'default')->format('F j, Y');
+    $strEventTimeRange = $this->dateUtility->convertTimezone($start_date, 'default')->format('g:i A') . " to " . $this->dateUtility->convertTimezone($end_date, 'default')->format('g:i A');
+
+    // Generate A Signup page for each Location.
+    foreach ($locations as $intLocationID => $location) {
+      $strPageHTML = "";
+      $intLocationID = $location->Id();
+      $strEventLocation = $location->getTitle();
+
+      /*
+      Calculate the number of attendees.
+      The number of attendees per page depends on the number registrations
+      we have for an event.
+
+      This is because the line height for each registrant is smaller than
+      the empty space for those who did not register.
+
+      We are looking to have approximately 18 registrants per page. This
+      number takes into account the header for each page as well as
+      registrants.
+
+      If there are 10 or fewer registrants for a particular location, the
+      script will fill the remaining lines on the page with manual
+      registrations.
+
+      If there are more than 10, but fewer than 18 registrants, a second
+      page with just manual registrations will be create for the location.
+
+      This same idea applies to the last page of the registrants for a
+      particular location.
+        */
+
+      $intItemsPerPage = 18;
+      (int) $intNumPages = ceil($total_registrations / $intItemsPerPage);
+      // Round up to the next whole number since we can't have half pages.
+      $intExpectedItemCount = $intItemsPerPage * $intNumPages;
+
+      // Calculate difference between the remaining items and the expected items
+      $intDifference = $intExpectedItemCount - $total_registrations;
+
+      // If the difference is zero, or greater than 10, add a page
+      // for blank lines.
+      if ($intDifference == 0 || ($intItemsPerPage - $intDifference) > 12) {
+        $intNumPages++;
+      }
+
+      $intTempOffset = 0;
+      $intPageID = 1;
+      $intCurrPage = 0;
+      while ($intCurrPage < $intNumPages) {
+        $intTempOffset = $intItemsPerPage * $intCurrPage;
+        $arryPageData = array_slice($arryResultsSorted, $intTempOffset, $intItemsPerPage, TRUE);
+
+        $strPageType = "registrations";
+        if (empty($arryPageData)) {
+          $strPageType = "blanklines";
+        }
+        $intPageItemCount = count($arryPageData);
+
+        $strPageOfPages = "(" . $intPageID . " of " . $intNumPages . ")";
+        $strPageHTML = '
+        <table class="table">
+          <thead>
+            <tr class="header-tr">
+              <td colspan="2" class="sign-in">' . $strPageOfPages . ' Sign-in sheet for:</td>
+              <td colspan="1" class="event-date-time">' . $strEventDateFull . ' - ' . $strEventTimeRange . '</td>
+            </tr>
+            <tr class="header-tr">
+              <td colspan="2" class="event-title">' . $title . '</td>
+              <td colspan="1" class="event-location">' . $strEventLocation . '</td>
+            </tr>
+          </thead>
+        </table>';
+
+        $strPageHTML .= '
+        <table class="table">
+          <tbody>
+            <tr class="header">
+              <td class="header-last-name">Last Name</td>
+              <td class="header-first-name">First Name</td>
+              <td class="header-sign-in">Sign In</td>
+            </tr>';
+
+        if ($strPageType == "registrations") {
+          foreach ($arryPageData as $id => $arryRegistrationInfo) {
+
+            $debug = true;
+            $strPageHTML .= '
+            <tr>
+              <td class="container">' . $names[$id]['name_last'] . '</td>
+              <td class="container">' . $names[$id]['name_first'] . '</td>
+              <td class="border-bottom-1-black" class="container">&nbsp;</td>
+            </tr>';
+          }
+
+          // If we have more 10 or fewer attendees on this page, fill the
+          // Remaining lines with manual sign-in lines.
+          if ($intPageItemCount < $intItemsPerPage) {
+            $intDifference = $intItemsPerPage - $intPageItemCount;
+            $intI = 0;
+            // The blank lines are larger than the normal lines, so we
+            // need to have one fewer blank line to fit on the page.
+            while ($intI < $intDifference) {
+              $strPageHTML .=
+              '<tr class="sign-in-blank">
+                <td><div class="border-bottom-1-black">&nbsp;</div></td>
+                <td><div class="border-bottom-1-black">&nbsp;</div></td>
+                <td id="sign-in-line"><div class="border-bottom-1-black">&nbsp;</div></td>
+              </tr>';
+              $intI++;
+            }
+          }
+        }
+        elseif ($strPageType == "blanklines") {
+          $intI = 0;
+          // Need to adjust for line height differences.
+          while ($intI <= $intItemsPerPage - 1) {
+            $strPageHTML .= '
+            <tr class="sign-in-blank">
+              <td><div class="border-bottom-1-black">&nbsp;</div></td>
+              <td><div class="border-bottom-1-black">&nbsp;</div></td>
+              <td id="sign-in-line"><div class="border-bottom-1-black">&nbsp;</div></td>
+            </tr>
+            ';
+
+            $intI++;
+          }
+        }
+        $strPageHTML .= '
+          </tbody>
+        </table>';
+        // $strPageHTML .= '<div class="page-break"></div>';
+        $strHTML .= $strPageHTML;
+
+        $intCurrPage++;
+        $intPageID++;
+      }
+    }
+
+    $strHTML .= "\n\t</body>\n</html>";
+
+    // DEBUGGING for strHTML
+    // ini_set('xdebug.var_display_max_data', -1);
+    // print '<pre>';
+    // var_dump($strHTML);
+    // print '</pre>';
+    // exit;
+    // End debugging
+
+    $dompdf = new Dompdf();
+    $options = $dompdf->getOptions();
+    $options->setIsHtml5ParserEnabled(TRUE);
+    $dompdf->setOptions($options);
+    $dompdf->setPaper('letter', 'landscape');
+    $dompdf->load_html($strHTML);
+    $dompdf->render();
+
+    // Set PDF File name.
+    $arryReplaceFile = [" ", "/", "?", "!"];
+    $arryReplaceFileWith = ["-", "", "", ""];
+    $strFileEventTitle = strtolower(str_ireplace($arryReplaceFile, $arryReplaceFileWith, $title));
+    $strFileName = $event->Id() . "--" . $strFileEventTitle . "--attendance.pdf";
+
+    // Stream/Download PDF File.
+    $dompdf->stream($strFileName);
+
+    return new JsonResponse("", 200);
+  }
+
+  /**
+   * This defines various CSS classes within the PDF.
+   *
+   * This is here to make it easier to separate out the CSS styles instead
+   * of using them inline.
+   */
+  protected function getPdfStyle() {
+    $strStyle = <<< EOF
+    <style>
+    \t\t\tbody { font-family: DejaVu Serif; font-size: 12px; }
+    \t\t\ttr { font-family: DejaVu Serif; font-size: 12px; height: 4em !important; }
+
+    \t\t\t.border-bottom-1-black { border-bottom: 1px solid #000; }
+
+    \t\t\t.clear { clear: both; }
+    \t\t\t.container { height: 2rem; vertical-align: bottom; padding-bottom: 9.5px; padding-bottom:0px; }
+
+    \t\t\t.event-date-time { text-align: right; }
+    \t\t\t.event-title { font-weight: 600; font-size: 1.5em; }
+    \t\t\t.event-location { text-align: right; }
+
+    \t\t\t.header { text-align: left; font-size: 1.2em; font-weight: 600; }
+    \t\t\t.header-last-name { width: 20%; }
+    \t\t\t.header-first-name { width: 20%; }
+    \t\t\t.header-organization { width: 30%; }
+    \t\t\t.header-sign-in { width: 30%;}
+    \t\t\t.header-tr { font-weight: 350; }
+
+    \t\t\t.page-break { page-break-after: always; }
+
+    \t\t\t.sign-in { font-weight: 600; }
+    \t\t\t.sign-in-blank { font-size: 1.6em;}
+    \t\t\t.sign-in-blank > td { padding-left: 0; padding-right: 15px; }
+    \t\t\ttd#sign-in-line { padding-right: 0px !important; margin-right:0px; }
+
+    \t\t\t.table { margin-left: 0px; margin-right: 0px; width: 100%; }
+
+    \t\t</style>
+    EOF;
+
+    return $strStyle;
+  }
+
+  /**
+   * Convert from sub-arrays with target_id to simple arrays.
+   */
+  private function simplifyValues($values) {
+    $result = array_column($values, 'target_id');
+    return $result[0];
+  }
+
+  /**
+   * Get authdata for user in the row in order to display customer info.
+   */
+  protected function getAuthdata($uid) {
+    if ($this->pluginId) {
+      $authmap = \Drupal::service('externalauth.authmap');
+      $authdata = $authmap->getAuthdata($uid, $this->pluginId);
+      $authdata_data = unserialize($authdata['data']);
+
+      return $authdata_data;
+    }
+    return NULL;
   }
 
 }

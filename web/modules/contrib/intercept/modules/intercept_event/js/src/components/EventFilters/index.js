@@ -81,14 +81,18 @@ class EventFilters extends PureComponent {
     const { showDate, filters, view } = this.props;
 
     let currentFilters = currentFiltersConfig(filters);
+    let filterToggle = null;
 
     if (!showDate) {
       currentFilters = currentFilters.filter((f) => [c.DATE_START, c.DATE_END].indexOf(f.key) < 0);
     }
+    if (drupalSettings) {
+      filterToggle = <div class="filter_toggle"><h3 className="filters__heading">Filter</h3> <label class="show_fltr"><input type="checkbox" id="filter_toggle" name="filter_toggle" /><span class="show_fltr__toggle"></span>Show Event Filters</label></div>
+    }
 
     return (
       <div className={`filters filters--${view === 'calendar' ? '4up' : '3up'}`}>
-        <h3 className="filters__heading">Filter</h3>
+        {filterToggle}
         <Formsy className="filters__inner filters__inputs">
           <div className="filters__inputs-inner">
             <KeywordFilter

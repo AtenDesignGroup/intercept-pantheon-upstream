@@ -188,6 +188,12 @@
     #drupal-off-canvas .form-date:first-child,
     #drupal-off-canvas .form-time:first-child {
       margin-top: 0; }
+  #drupal-off-canvas .form-number,
+  #drupal-off-canvas .form-date,
+  #drupal-off-canvas .form-time {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none; }
   #drupal-off-canvas details,
   #drupal-off-canvas .form-select,
   #drupal-off-canvas .form-text,
@@ -222,6 +228,10 @@
     border-color: #40b6ff;
     -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.125), 0 0 8px #40b6ff;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.125), 0 0 8px #40b6ff; }
+  #drupal-off-canvas .form-date {
+    max-width: 9em; }
+  #drupal-off-canvas .form-time {
+    white-space: nowrap; }
   #drupal-off-canvas td .form-item,
   #drupal-off-canvas td .form-select {
     margin: 0; }

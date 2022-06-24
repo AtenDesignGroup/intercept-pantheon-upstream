@@ -10,6 +10,24 @@
   justify-content: space-between;
 }
 
+.intercept-dashboard-chart__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.intercept-dashboard-chart__table {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.intercept-dashboard-chart__table th:first-child,
+.intercept-dashboard-chart__table td:first-child {
+  text-align: right;
+}
+
 .feeback__wrapper {
   display: flex;
 }

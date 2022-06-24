@@ -48,8 +48,6 @@ import ReservationTeaser from './../../../ReservationTeaser';
 const { actions, constants, select, utils } = interceptClient;
 const c = constants;
 
-const FIELD_REFRESHMENTS_DESC =
-  'I would like to serve refreshments and agree to the $25 charge that will be added to my library card. (Note: Some spaces may not allow refreshments. We will contact you if we are unable to fulfill this request.)';
 const FIELD_REFRESHMENTS_OPTIONS = [
   {
     key: '1',
@@ -327,6 +325,7 @@ class ReserveRoomForm extends PureComponent {
 
     let content = null;
     let contact = null;
+    let refreshments = null;
 
     this.form = React.createRef();
 
@@ -351,6 +350,32 @@ class ReserveRoomForm extends PureComponent {
                 Profile.
               </em>
             </small>
+          </div>
+        );
+      }
+      // Refreshments text display for customers
+      if (drupalSettings.intercept.room_reservations.refreshments_text) {
+        refreshments = (
+          <div className="l--subsection">
+            <h3 className="section-title section-title--secondary">Refreshments</h3>
+            <RadioGroup
+              label={drupalSettings.intercept.room_reservations.refreshments_text}
+              value={values.refreshments}
+              onChange={this.onValueChange('refreshments')}
+              name="refreshments"
+              required
+              options={FIELD_REFRESHMENTS_OPTIONS}
+            />
+            <div className="form-item">
+              <InputText
+                label="Please describe your light refreshments."
+                value={values.refreshmentsDesc}
+                onChange={this.onValueChange('refreshmentsDesc')}
+                name="refreshmentDesc"
+                required={values.refreshments === '1'}
+                disabled={values.refreshments !== '1'}
+              />
+            </div>
           </div>
         );
       }
@@ -403,7 +428,6 @@ class ReserveRoomForm extends PureComponent {
                       value={values.groupName}
                       name="groupName"
                       helperText={'Help others find you by name.'}
-                      required={!utils.userIsStaff()}
                     />
                   </div>
                   <div className="form-item">
@@ -438,27 +462,7 @@ class ReserveRoomForm extends PureComponent {
                     name={'user'}
                   />
                 </div>
-                <div className="l--subsection">
-                  <h3 className="section-title section-title--secondary">Refreshments</h3>
-                  <RadioGroup
-                    label={FIELD_REFRESHMENTS_DESC}
-                    value={values.refreshments}
-                    onChange={this.onValueChange('refreshments')}
-                    name="refreshments"
-                    required
-                    options={FIELD_REFRESHMENTS_OPTIONS}
-                  />
-                  <div className="form-item">
-                    <InputText
-                      label="Please describe your light refreshments."
-                      value={values.refreshmentsDesc}
-                      onChange={this.onValueChange('refreshmentsDesc')}
-                      name="refreshmentDesc"
-                      required={values.refreshments === '1'}
-                      disabled={values.refreshments !== '1'}
-                    />
-                  </div>
-                </div>
+                {refreshments}
                 <div className="l--subsection">
                   <h3 className="section-title section-title--secondary">Publicize</h3>
                   <RadioGroup

@@ -30,8 +30,8 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
     return;
   };
 
-  // Abort if user is not certified to reserve this room.
-  if (array_key_exists('user_not_certified', $form)) {
+  // Abort if user cannot reserve this room.
+  if (array_key_exists('user_cannot_reserve_room', $form)) {
     return;
   }
 

@@ -13,7 +13,7 @@ const { select, utils } = interceptClient;
 
 const styles = theme => ({
   root: {
-    width: '90%',
+    maxWidth: '65em',
   },
   button: {
     marginRight: theme.spacing(1),

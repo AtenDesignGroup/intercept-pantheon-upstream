@@ -16,7 +16,7 @@ use Drupal\Core\Entity\EntityTypeRepositoryInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\jsonapi\ResourceType\ResourceType;
-use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -88,7 +88,7 @@ class JsonapiResourceConfigForm extends EntityForm {
    *
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info
    *   Bundle information service.
-   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepository $resource_type_repository
+   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface $resource_type_repository
    *   The JSON:API resource type repository.
    * @param \Drupal\Core\Entity\EntityFieldManager $field_manager
    *   The entity field manager.
@@ -103,7 +103,7 @@ class JsonapiResourceConfigForm extends EntityForm {
    * @param \Drupal\Core\Config\TypedConfigManagerInterface $typed_config_manager
    *   The typed config manager.
    */
-  public function __construct(EntityTypeBundleInfoInterface $bundle_info, ResourceTypeRepository $resource_type_repository, EntityFieldManager $field_manager, EntityTypeRepositoryInterface $entity_type_repository, ResourceFieldEnhancerManager $enhancer_manager, ImmutableConfig $config, Request $request, TypedConfigManagerInterface $typed_config_manager) {
+  public function __construct(EntityTypeBundleInfoInterface $bundle_info, ResourceTypeRepositoryInterface $resource_type_repository, EntityFieldManager $field_manager, EntityTypeRepositoryInterface $entity_type_repository, ResourceFieldEnhancerManager $enhancer_manager, ImmutableConfig $config, Request $request, TypedConfigManagerInterface $typed_config_manager) {
     $this->bundleInfo = $bundle_info;
     $this->resourceTypeRepository = $resource_type_repository;
     $this->fieldManager = $field_manager;

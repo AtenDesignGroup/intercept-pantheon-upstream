@@ -4,6 +4,7 @@ dependencies:
   config:
     - core.date_format.medium
     - field.field.bulk_room_reservation.bulk_room_reservation.field_date_time
+    - field.field.bulk_room_reservation.bulk_room_reservation.field_group_name
     - field.field.bulk_room_reservation.bulk_room_reservation.field_location
     - field.field.bulk_room_reservation.bulk_room_reservation.field_overridden
     - field.field.bulk_room_reservation.bulk_room_reservation.field_related_room_reservations
@@ -18,101 +19,110 @@ bundle: bulk_room_reservation
 mode: default
 content:
   created:
-    label: above
     type: timestamp
-    weight: 8
-    region: content
+    label: above
     settings:
       date_format: medium
       custom_date_format: ''
       timezone: ''
     third_party_settings: {  }
+    weight: 8
+    region: content
   field_date_time:
-    weight: 1
+    type: date_recur_basic_formatter
     label: above
     settings:
+      timezone_override: ''
+      format_type: medium
+      separator: '-'
       show_next: 5
       count_per_item: true
       occurrence_format_type: medium
       same_end_date_format_type: medium
       interpreter: null
-      separator: '-'
-      format_type: medium
-      timezone_override: ''
     third_party_settings: {  }
-    type: date_recur_basic_formatter
+    weight: 1
     region: content
-  field_location:
-    weight: 2
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  field_overridden:
-    weight: 5
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  field_related_room_reservations:
-    weight: 4
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  field_room:
-    weight: 3
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  name:
-    label: above
+  field_group_name:
     type: string
-    weight: 0
-    region: content
+    label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
+    weight: 9
+    region: content
+  field_location:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_overridden:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_related_room_reservations:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_room:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  name:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
   status:
     type: boolean
     label: above
-    weight: 6
     settings:
       format: enabled-disabled
       format_custom_false: ''
       format_custom_true: ''
-    region: content
     third_party_settings: {  }
-  title:
-    label: hidden
-    type: string
-    weight: 0
+    weight: 6
     region: content
+  title:
+    type: string
+    label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
+    weight: 0
+    region: content
   uid:
-    label: above
     type: author
+    label: above
+    settings: {  }
+    third_party_settings: {  }
     weight: 7
     region: content
+  user_id:
+    type: author
+    label: hidden
     settings: {  }
     third_party_settings: {  }
-  user_id:
-    label: hidden
-    type: author
     weight: 2
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
+  langcode: true
   search_api_excerpt: true

@@ -36,6 +36,7 @@ function intercept_profile_install() {
     'access content',
     'create event_registration',
     'view any audience taxonomy_term',
+    'view any disclaimer taxonomy_term',
     'view any equipment_type taxonomy_term',
     'view any evaluation_criteria taxonomy_term',
     'view any event content',

@@ -5,3 +5,10 @@ intercept_dashboard.event_data_dashboard:
     _controller: '\Drupal\intercept_dashboard\Controller\InterceptDashboardController::dashboard'
   requirements:
     _permission: 'analyze events'
+intercept_dashboard.event_data_dashboard.export:
+  path: '/manage/event-data-dashboard/export.csv'
+  defaults:
+    _title: 'Event Data Dashboard Export'
+    _controller: '\Drupal\intercept_dashboard\Controller\InterceptDashboardController::buildCsv'
+  requirements:
+    _permission: 'analyze events'

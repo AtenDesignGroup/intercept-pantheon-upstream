@@ -34,7 +34,7 @@
   .intercept-dashboard-chart__toggle:before {
     content: "";
     display: block;
-    height: 1em;
+    height: .9em;
     width: 1em;
     background-image: svg-inline('<svg width="16" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 0c.406 0 .75.156 1.063.438.28.312.437.656.437 1.062v11c0 .438-.156.781-.438 1.063A1.416 1.416 0 0 1 14.5 14h-13c-.438 0-.781-.125-1.063-.438C.126 13.283 0 12.938 0 12.5v-11C0 1.094.125.75.438.437A1.436 1.436 0 0 1 1.5 0h13ZM7.25 12.5V8.25H1.5v4.063c0 .062 0 .093.063.124.03.063.062.063.125.063H7.25Zm0-5.75V2.5H1.5v4.25h5.75Zm7.063 5.75c.03 0 .062 0 .124-.063.032-.03.063-.062.063-.124V8.25H8.75v4.25h5.563Zm.187-5.75V2.5H8.75v4.25h5.75Z" fill="#51832F"/></svg>');
     background-position: center;

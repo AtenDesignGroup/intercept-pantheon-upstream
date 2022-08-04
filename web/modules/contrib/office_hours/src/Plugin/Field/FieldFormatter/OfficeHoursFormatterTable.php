@@ -41,7 +41,8 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
     $settings = $this->getSettings();
     $third_party_settings = $this->getThirdPartySettings();
     $field_definition = $items->getFieldDefinition();
-    // N.B. 'Show current day' may return nothing in getRows(), while other days are filled.
+    // N.B. 'Show current day' may return nothing in getRows(),
+    // while other days are filled.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
     $office_hours = $items->getRows($settings, $this->getFieldSettings(), $third_party_settings);
 
@@ -50,8 +51,8 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
       return $elements;
     }
 
-    // For a11y screen readers, a header is introduced.
-    // Superfluous comments are removed. @see #3110755 for examples and explanation.
+    // For accessibility (a11y) screen readers, a header/title is introduced.
+    // Superfluous comments are removed. @see #3110755 for examples.
     $isLabelEnabled = $settings['day_format'] != 'none';
     $isTimeSlotEnabled = TRUE;
     $isCommentEnabled = $this->getFieldSetting('comment');
@@ -64,6 +65,9 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
         'no_striping' => TRUE,
         'class' => ['office-hours__item'],
       ];
+      if ($item['current'] == TRUE) {
+        $table_rows[$delta]['class'][] = 'office-hours__item-current';
+      }
 
       if ($isLabelEnabled) {
         $table_rows[$delta]['data']['label'] = [
@@ -121,17 +125,19 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterBase {
     $elements[] = [
       '#theme' => 'office_hours_table',
       '#table' => $table,
-      // Pass office_hours to twig theming.
+      // Pass filtered office_hours structures to twig theming.
       '#office_hours' => $office_hours,
-      '#cache' => [
-        'max-age' => $items->getStatusTimeLeft($settings, $this->getFieldSettings()),
-        'tags' => ['office_hours:field.table'],
-      ],
-
+      // Pass (unfiltered) office_hours items to twig theming.
+      '#office_hours_field' => $items,
     ];
 
     $elements = $this->addSchemaFormatter($items, $langcode, $elements);
     $elements = $this->addStatusFormatter($items, $langcode, $elements);
+
+    // Add a ['#cache']['max-age'] attribute to $elements.
+    // Note: This invalidates a previous Cache in Status Formatter.
+    $this->addCacheMaxAge($items, $elements);
+
     return $elements;
   }
 

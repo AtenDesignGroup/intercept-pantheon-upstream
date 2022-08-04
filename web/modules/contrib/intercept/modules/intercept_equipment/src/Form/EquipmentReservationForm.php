@@ -40,7 +40,7 @@ class EquipmentReservationForm extends ContentEntityForm {
       '#value' => $this->t('Check Availability'),
       '#limit_validation_errors' => [],
       '#ajax' => [
-        'callback' => 'Drupal\intercept_equipment\Form\EquipmentReservationForm::equipmentAvailabilityView',
+        'callback' => '::equipmentAvailabilityView',
         'event' => 'click',
         'wrapper' => 'edit-output',
         'progress' => [

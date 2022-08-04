@@ -32,8 +32,11 @@ class OfficeHoursDateHelper extends DateHelper {
    * @return int
    *   Returns the number.
    */
-  public static function getFirstDay() {
-    return \Drupal::config('system.date')->get('first_day');
+  public static function getFirstDay($first_day = '') {
+    if ($first_day == '') {
+      $first_day = \Drupal::config('system.date')->get('first_day');
+    }
+    return $first_day;
   }
 
   /**
@@ -197,7 +200,10 @@ class OfficeHoursDateHelper extends DateHelper {
       return '';
     }
 
-    return $start_time . $separator . $end_time;
+    $formatted_time = $start_time . $separator . $end_time;
+    \Drupal::moduleHandler()->alter('office_hours_time_format', $formatted_time);
+
+    return $formatted_time;
   }
 
   /**
@@ -297,15 +303,14 @@ class OfficeHoursDateHelper extends DateHelper {
   /**
    * {@inheritdoc}
    */
-  public static function weekDaysOrdered($office_hours, $first_day = NULL) {
+  public static function weekDaysOrdered($office_hours, $first_day = '') {
     $new_office_hours = [];
 
     // Do an initial re-sort on day number.
     ksort($office_hours);
 
     // Fetch first day of week from field settings.
-    // $first_day = \Drupal::config('system.date')->get('first_day');
-    $first_day = $first_day ?? OfficeHoursDateHelper::getFirstDay();
+    $first_day = OfficeHoursDateHelper::getFirstDay($first_day);
     if ($first_day > 0) {
       // Sort Weekdays. Leave Exception days at bottom of list.
       // Copying to new array to preserve keys.

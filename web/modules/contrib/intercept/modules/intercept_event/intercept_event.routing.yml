@@ -246,3 +246,11 @@ intercept_event.list.settings:
     _title: 'Event Settings'
   requirements:
     _role: 'intercept_system_admin + administrator'
+
+intercept_event.disclaimers:
+  path: '/manage/disclaimers'
+  defaults:
+      _controller: '\Drupal\intercept_event\Controller\EventsController::disclaimers'
+      _title: 'Event Disclaimers'
+  requirements:
+    _role: 'intercept_staff + intercept_system_admin + administrator'

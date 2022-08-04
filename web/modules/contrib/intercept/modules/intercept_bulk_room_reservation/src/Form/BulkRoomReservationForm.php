@@ -272,12 +272,12 @@ class BulkRoomReservationForm extends ContentEntityForm {
 
         // Add an operation to the batch for each date.
         foreach ($dates as $date) {
-
           $values = [
             // Not associating bulk room reservations with events.
             'field_event' => NULL,
             'field_room' => $date['room'],
             'field_user' => $this->currentUser->id(),
+            'field_group_name' => $form_state->getValue(['field_group_name', 0]),
             'field_dates' => [
               'value' => $date['range']['start']->format('Y-m-d\TH:i:s'),
               'end_value' => $date['range']['end']->format('Y-m-d\TH:i:s'),
@@ -487,7 +487,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
       }
 
       // Update this $room_reservation.
-      foreach (['field_room', 'field_user', 'field_dates'] as $field) {
+      foreach (['field_room', 'field_user', 'field_dates', 'field_group_name'] as $field) {
         $room_reservation->set($field, $values[$field]);
       }
       $room_reservation->save();

@@ -216,6 +216,10 @@ function intercept_messages_entity_update(EntityInterface $entity) {
             'send' => $send_timestamp,
           ])
           ->execute();
+          // Let's also cancel this customer's event registration
+          $registration_entity = reset($event_registration_provider->getEventRegistrationsByIds([$registration_id]));
+          $registration_entity->set('status', 'canceled');
+          $registration_entity->save();
         }
       }
     }

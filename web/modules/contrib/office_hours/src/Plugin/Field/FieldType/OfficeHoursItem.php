@@ -424,7 +424,8 @@ class OfficeHoursItem extends FieldItemBase {
    * Implements the #element_validate callback for storageSettingsForm().
    *
    * Verifies the office hours limits.
-   * "Please note that this will work as long as the opening hours are not through midnight."
+   * "Please note that this will work as long as the opening hours
+   * "are not through midnight.
    * "You may leave 'until' time empty. Use '00:00' for closing at midnight."
    *
    * @param array $element

@@ -107,6 +107,7 @@ libraries-extend:
     - intercept_base/view-switcher
   intercept_room_reservation/roomReservationScheduler:
     - intercept_base/bigCalendarScheduler
+    - intercept_base/value-summary
   intercept_room_reservation/roomReservationActionButton:
     - intercept_base/action-button
     - intercept_base/loading-indicator

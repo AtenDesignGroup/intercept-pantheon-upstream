@@ -14,6 +14,8 @@ import RoomsContext from '../context/RoomsContext';
 import GroupsContext from '../context/GroupsContext';
 import useEventListener from '../hooks/useEventListener';
 import withAvailability from './../../ReserveRoomApp/withAvailability';
+import withUserStatus from './../../ReserveRoomApp/withUserStatus';
+import RoomLimitWarning from './../../ReserveRoomApp/RoomLimitWarning';
 
 const { constants, api, select, utils } = interceptClient;
 const c = constants;
@@ -196,6 +198,8 @@ const RoomReservationScheduler = ({
   getLocationHours,
   fetchAvailability,
   fetchLocations,
+  fetchUserStatus,
+  userStatus,
   onChangeDate,
   onChangeView,
   purgeReservations,
@@ -240,6 +244,7 @@ const RoomReservationScheduler = ({
         [c.TYPE_LOCATION]: ['title', 'field_location_hours', 'field_branch_location', 'status'],
       },
     });
+    fetchUserStatus();
   }, []);
 
   useEffect(() => {
@@ -375,6 +380,7 @@ const RoomReservationScheduler = ({
   });
 
   return (<div>
+    <RoomLimitWarning userStatus={userStatus} />
     <Calendar
       date={date}
       events={events}
@@ -403,6 +409,8 @@ RoomReservationScheduler.propTypes = {
   locationsLoading: PropTypes.bool.isRequired,
   fetchAvailability: PropTypes.func.isRequired,
   fetchLocations: PropTypes.func.isRequired,
+  fetchUser: PropTypes.func.isRequired,
+  fetchUserStatus: PropTypes.func.isRequired,
   onChangeDate: PropTypes.func.isRequired,
   onChangeView: PropTypes.func.isRequired,
   purgeReservations: PropTypes.func.isRequired,
@@ -438,4 +446,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withAvailability(RoomReservationScheduler));
+)(withUserStatus(withAvailability(RoomReservationScheduler)));

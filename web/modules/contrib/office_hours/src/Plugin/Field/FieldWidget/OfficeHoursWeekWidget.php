@@ -97,7 +97,7 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
 
     // Build multi element widget. Copy the description, etc. into the table.
     $header = [
-      'title' => $this->t($element['#title']),
+      'title' => $this->t(''), // or $this->t('Day of week'), // or NULL,
       'from' => $this->t('From', [], ['context' => 'A point in time']),
       'to' => $this->t('To', [], ['context' => 'A point in time']),
       'comment' => $this->t('Comment'),
@@ -122,8 +122,6 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
     $element['#type'] = 'details';
     // Controls the HTML5 'open' attribute. Defaults to FALSE.
     $element['#open'] = TRUE;
-    // Remove field_name from first column.
-    $element['value']['#header']['title'] = NULL;
 
     return $element;
   }

@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: Disclaimer
+vid: disclaimer
+description: 'Allows staff to select common disclaimers for their events.'
+weight: 0

@@ -18,6 +18,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "entity_bundle",
  *   deriver = "\Drupal\ctools\Plugin\Deriver\EntityBundle"
  * )
+ *
+ * @deprecated in ctools:8.x-1.10. Will be removed before ctools:4.1.0.
+ *   Use \Drupal\ctools\Plugin\Condition\EntityBundleConstraint instead.
+ *
+ * @see https://www.drupal.org/node/2983299
  */
 class EntityBundle extends ConditionPluginBase implements ConstraintConditionInterface, ContainerFactoryPluginInterface {
 
@@ -142,7 +147,7 @@ class EntityBundle extends ConditionPluginBase implements ConstraintConditionInt
     // Nullify any bundle constraints on contexts we care about.
     $this->removeConstraints($contexts);
     $bundle = array_values($this->configuration['bundles']);
-    // There's only one expected context for this plugint type.
+    // There's only one expected context for this plugin type.
     foreach ($this->getContextMapping() as $definition_id => $context_id) {
       $contexts[$context_id]->getContextDefinition()->addConstraint('Bundle', ['value' => $bundle]);
     }

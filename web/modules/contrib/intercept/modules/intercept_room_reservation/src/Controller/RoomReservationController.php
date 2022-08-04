@@ -160,21 +160,8 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
 
     // Add default location.
     $default_locations = [];
-    $customer_barred = FALSE;
     if ($this->currentUser->isAuthenticated()) {
       $user = $this->entityTypeManager()->getStorage('user')->load($this->currentUser->id());
-      $customer = $this->entityTypeManager()
-        ->getStorage('profile')
-        ->loadByProperties([
-          'type' => 'customer',
-          'uid' => $this->currentUser->id(),
-        ]);
-      if (!empty($customer)) {
-        $customer = reset($customer);
-        // See if the customer is allowed to make reservations or is barred.
-        $customer_barred = $customer->get('field_room_reservation_barred')->getString();
-        $customer_barred = $customer_barred === '1';
-      }
 
       if ($reservations = $this->reservationManager->getReservationsByUser('room', $user)) {
         if (!empty($reservations)) {
@@ -212,7 +199,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
         'drupalSettings' => [
           'intercept' => [
             'user' => [
-              'barred' => $customer_barred,
+              'barred' => $this->evaluateCustomerBarred(),
             ],
             'room_reservations' => [
               'agreement_text' => $agreement_text['value'],
@@ -286,6 +273,8 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       '#theme' => 'room_reservation_scheduler',
     ];
 
+    // Add information about whether the customer is barred or not.
+    $build['#attached']['drupalSettings']['intercept']['user']['barred'] = $this->evaluateCustomerBarred();
     $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationScheduler';
     $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationMediator';
     $build['#content'] = [
@@ -768,6 +757,31 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     }
 
     return JsonResponse::create($result, 200);
+  }
+
+  /**
+   * Determines whether or not a given customer has been barred from making
+   * room reservations.
+   * 
+   * @return bool
+   */
+  private function evaluateCustomerBarred() {
+    $customer = $this->entityTypeManager()
+    ->getStorage('profile')
+    ->loadByProperties([
+      'type' => 'customer',
+      'uid' => $this->currentUser->id(),
+    ]);
+    if (!empty($customer)) {
+      $customer = reset($customer);
+      // See if the customer is allowed to make reservations or is barred.
+      $customer_barred = $customer->get('field_room_reservation_barred')->getString();
+      $customer_barred = $customer_barred === '1';
+    }
+    else {
+      $customer_barred = FALSE;
+    }
+    return $customer_barred;
   }
 
 }

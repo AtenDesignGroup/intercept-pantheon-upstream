@@ -875,4 +875,38 @@ class EventsController extends ControllerBase {
     return NULL;
   }
 
+  /**
+   * Shows staff a list of disclaimers that can appear for customers.
+   * This is linked from the description on that field on the event node form.
+   */
+  public function disclaimers() {
+
+    $build = [];
+    $content = &$build['content'];
+    $content['title'] = [
+      '#markup' => '<h1 class="title">Event Disclaimers</h1>',
+    ];
+    $content['overview'] = [
+      '#markup' => '<p>This page shows a listing of all available disclaimers that staff can add to events for customers to see.</p>',
+    ];
+
+    // Get taxonomy term list for custom display.
+    /** @var TermStorageInterface $termStorage */
+    $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $terms = $termStorage->loadTree('disclaimer');
+
+    foreach ($terms as $term) {
+      $content['divider_' . $term->tid] = [
+        '#markup' => '<hr>',
+      ];
+      $content['term_name_' . $term->tid] = [
+        '#markup' => '<p><strong>' . $term->name . '</strong></p>',
+      ];
+      $content['term_description_' . $term->tid] = [
+        '#markup' => $term->description__value,
+      ];
+    }
+    return $build;
+  }
+
 }

@@ -43,6 +43,9 @@
             {% if content.field_text_content %}
               {{ content.field_text_content|field_value }}
             {% endif %}
+            {% if content.field_disclaimer %}
+              {{ content.field_disclaimer }}
+            {% endif %}
           </div>
           {% if content.checkin_link['#access'] %}
           <div class="l--subsection--tight">

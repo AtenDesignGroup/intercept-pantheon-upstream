@@ -1,0 +1,9 @@
+{% extends '@intercept_base/page/page.html.twig' %}
+{% set page_class = 'l--page-minimal' %}
+{% block main %}
+{{ attach_library('intercept_base/page-title') }}
+<main role="main" class="l--section l--offset">
+  <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
+  {{ page.content }}
+</main>
+{% endblock %}

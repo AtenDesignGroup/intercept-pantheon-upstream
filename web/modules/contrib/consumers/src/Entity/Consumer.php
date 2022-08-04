@@ -195,6 +195,7 @@ class Consumer extends ContentEntityBase implements EntityOwnerInterface {
       ->getStorage($this->getEntityTypeId());
     $entity_ids = $entity_storage
       ->getQuery()
+      ->accessCheck(TRUE)
       ->condition('is_default', TRUE)
       ->condition('id', $this->id(), '!=')
       ->execute();

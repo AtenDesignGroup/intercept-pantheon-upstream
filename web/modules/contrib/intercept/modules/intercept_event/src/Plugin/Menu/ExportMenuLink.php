@@ -11,7 +11,7 @@ class ExportMenuLink extends MenuLinkDefault {
    */
   public function isEnabled() {
     $current_user = \Drupal::currentUser();
-    $permission = $current_user->hasPermission('access management page event_attendance_export');
+    $permission = $current_user->hasPermission('analyze events');
 
     if ($permission) {
       return TRUE;

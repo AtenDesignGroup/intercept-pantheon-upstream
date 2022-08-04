@@ -40,11 +40,23 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    *   The formatter settings.
    * @param array $field_settings
    *   The field settings.
+   * @param array $third_party_settings
+   *   The formatter's third party settings.
    *
    * @return int
    *   The time that a render element (formatter) can be cached.
+   *
+   * @see https://www.drupal.org/docs/8/api/cache-api/cache-max-age
    */
-  public function getStatusTimeLeft(array $settings, array $field_settings);
+  public function getCacheTime(array $settings, array $field_settings, array $third_party_settings);
+
+  /**
+   * Determines if the Entity has Exception days.
+   *
+   * @return bool
+   *   Indicator whether the entity has Exception days.
+   */
+  public function hasExceptionDays();
 
   /**
    * Determines if the Entity is Open or Closed.

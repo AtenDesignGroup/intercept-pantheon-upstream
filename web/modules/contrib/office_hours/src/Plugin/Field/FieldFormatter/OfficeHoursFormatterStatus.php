@@ -60,11 +60,11 @@ class OfficeHoursFormatterStatus extends OfficeHoursFormatterBase {
       '#open_text' => (string) $this->t($settings['current_status']['open_text']),
       '#closed_text' => (string) $this->t($settings['current_status']['closed_text']),
       '#position' => $this->settings['current_status']['position'],
-      '#cache' => [
-        'max-age' => $items->getStatusTimeLeft($settings, $this->getFieldSettings()),
-        'tags' => ['office_hours:field.status'],
-      ],
     ];
+
+    // Add a ['#cache']['max-age'] attribute to $elements.
+    // Note: This invalidates a previous Cache in Status Formatter.
+    $this->addCacheMaxAge($items, $elements);
 
     return $elements;
   }

@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
+    - field.field.node.event.field_disclaimer
     - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
     - field.field.node.event.field_event_designation
@@ -47,6 +48,13 @@ content:
     settings:
       placeholder: ''
     third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
 hidden:
   created: true
   event_recurrence: true
@@ -54,6 +62,7 @@ hidden:
   field_audience_primary: true
   field_capacity_max: true
   field_date_time: true
+  field_disclaimer: true
   field_evanced_id: true
   field_event_audience: true
   field_event_designation: true

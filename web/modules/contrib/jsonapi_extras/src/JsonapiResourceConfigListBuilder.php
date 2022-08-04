@@ -8,7 +8,9 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
-use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceTypeRepository;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
+use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
+use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType;
 use Drupal\jsonapi_extras\ResourceType\NullJsonapiResourceConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -45,14 +47,14 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
    *   The entity type.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The storage.
-   * @param \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceTypeRepository $resource_type_repository
-   *   The JSON:API configurable resource type repository.
+   * @param ResourceTypeRepositoryInterface $resource_type_repository
+   *   The JSON:API resource type repository.
    * @param \Drupal\Core\Config\ImmutableConfig $config
    *   The config instance.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entityTypeManager
    *   Entity type manager.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, ConfigurableResourceTypeRepository $resource_type_repository, ImmutableConfig $config, EntityTypeManagerInterface $entityTypeManager = NULL) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, ResourceTypeRepositoryInterface $resource_type_repository, ImmutableConfig $config, EntityTypeManagerInterface $entityTypeManager = NULL) {
     parent::__construct($entity_type, $storage);
     $this->resourceTypeRepository = $resource_type_repository;
     $this->config = $config;
@@ -155,15 +157,17 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
     $resource_types = $this->resourceTypeRepository->all();
     $default_disabled = $this->config->get('default_disabled');
     foreach ($resource_types as $resource_type) {
-      /** @var \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config */
-      $resource_config = $resource_type->getJsonapiResourceConfig();
+      // Other modules may create resource types, e.g. jsonapi_cross_bundles.
+      $resource_config = $resource_type instanceof ConfigurableResourceType
+        ? $resource_type->getJsonapiResourceConfig()
+        : NULL;
 
       /** @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType $resource_type */
       $entity_type_id = $resource_type->getEntityTypeId();
       $bundle = $resource_type->getBundle();
 
       $default_group = 'enabled';
-      if ($resource_type->isInternal() && !$resource_config->get('disabled')) {
+      if ($resource_config && $resource_type->isInternal() && !$resource_config->get('disabled')) {
         // Either this item is marked internal by the entity-type OR the default
         // disabled setting is active.
         if (!$default_disabled) {
@@ -181,14 +185,19 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
         }
         $default_group = 'disabled';
       }
+      else if (!$resource_config && $resource_type->isInternal()) {
+        continue;
+      }
 
-      $group = $resource_config->get('disabled') ? 'disabled' : $default_group;
+      $group = ($resource_config && $resource_config->get('disabled')) || (!$resource_config && !$resource_type->isLocatable())
+        ? 'disabled'
+        : $default_group;
       $row = [
         'name' => ['#plain_text' => $resource_type->getTypeName()],
         'path' => [
           '#type' => 'html_tag',
           '#tag' => 'code',
-          '#value' => sprintf('/%s%s', $prefix, $resource_type->getPath()),
+          '#value' => sprintf('/%s/%s', $prefix, ltrim($resource_type->getPath(), '/')),
         ],
         'state' => [
           '#type' => 'html_tag',
@@ -200,7 +209,7 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
             ],
           ],
         ],
-        'operations' => [
+        'operations' => $resource_config ? [
           '#type' => 'operations',
           '#links' => [
             'overwrite' => [
@@ -212,10 +221,10 @@ class JsonapiResourceConfigListBuilder extends ConfigEntityListBuilder {
               ]),
             ],
           ],
-        ],
+        ]: [],
       ];
 
-      if (!$resource_config instanceof NullJsonapiResourceConfig) {
+      if ($resource_config && !($resource_config instanceof NullJsonapiResourceConfig)) {
         $row['state']['#value'] = $this->t('Overwritten');
         $row['state']['#attributes']['class'][] = 'label--overwritten';
         $row['operations']['#links'] = $this->getDefaultOperations($resource_config);

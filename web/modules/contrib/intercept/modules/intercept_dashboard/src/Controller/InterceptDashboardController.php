@@ -13,8 +13,10 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\csv_serialization\Encoder\CsvEncoder;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Returns responses for Intercept Dashboard routes.
@@ -56,6 +58,13 @@ class InterceptDashboardController extends ControllerBase {
   protected $currentRequest;
 
   /**
+   * The CSV encoder.
+   *
+   * @var \Drupal\csv_serialization\Encoder\CsvEncoder $encoder
+   */
+  protected $encoder;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
@@ -65,6 +74,7 @@ class InterceptDashboardController extends ControllerBase {
     $instance->database = $container->get('database');
     $instance->filterProvider = $container->get('intercept_dashboard.filterProvider');
     $instance->currentRequest = $container->get('request_stack')->getCurrentRequest();
+    $instance->encoder = new CsvEncoder();
     return $instance;
   }
 
@@ -113,6 +123,15 @@ class InterceptDashboardController extends ControllerBase {
     $build['#charts'] = [];
 
     /**
+     * Attendees by Primary Audience chart
+     */
+    $build['#charts']['by_primary_audience'] = $this->buildBarChart(
+      'attendeesByPrimaryAudience',
+      $this->t('Attendance by Primary Audience'),
+      $this->getAttendeesByPrimaryAudienceData(),
+    );
+
+    /**
      * Attendees by Event Type chart
      */
     $build['#charts']['by_primary_event_type'] = $this->buildBarChart(
@@ -128,7 +147,7 @@ class InterceptDashboardController extends ControllerBase {
    * Constructs the base query to select events based on
    * the provided filter values.
    *
-   * @return SelectInterface
+   * @return $query
    */
   public function getBaseQuery() {
     // Get filter and sort criteria from url query params.
@@ -620,10 +639,14 @@ class InterceptDashboardController extends ControllerBase {
 
   /**
    * Generates a sortable paginated table view of filtered events
+   * 
+   * @param int|false $limit
+   *   An integer specifying the number of elements per page. If passed a false
+   *   value, the pager is disabled.
    *
    * @return array Render array.
    */
-  public function buildEventTable() {
+  public function buildEventTable($limit = 20) {
 
     $header = [
       // Keep for debugging purposes.
@@ -732,7 +755,7 @@ class InterceptDashboardController extends ControllerBase {
 
     /** @var PagerSelectExtender $pager */
     $pager = $table_sort->extend('Drupal\Core\Database\Query\PagerSelectExtender');
-    $pager->limit(20);
+    $pager->limit($limit);
 
     $result = $pager->execute();
 
@@ -797,7 +820,7 @@ class InterceptDashboardController extends ControllerBase {
       ]
     );
 
-    // Finally add the pager.
+    // Add the pager.
     $build['pager'] = array(
       '#type' => 'pager',
       '#quantity' => 5,
@@ -807,6 +830,12 @@ class InterceptDashboardController extends ControllerBase {
         ]
       ]
     );
+
+    // Add the link to download the CSV.
+    $request = \Drupal::request();
+    $link_renderable = Link::createFromRoute('Download CSV', 'intercept_dashboard.event_data_dashboard.export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable['#attributes'] = ['class' => ['button', 'intercept-dashboard-chart__toggle']];
+    $build['csv_link'] = \Drupal::service('renderer')->renderPlain($link_renderable);
 
     return $build;
   }
@@ -921,6 +950,68 @@ class InterceptDashboardController extends ControllerBase {
     );
 
     return $build;
+  }
+
+  public function getAttendeesByPrimaryAudienceData() {
+    $header = [
+      [
+        'data' => $this->t('Primary Audience'),
+      ],
+      [
+        'data' => $this->t('Attendees'),
+      ],
+    ];
+
+    $query = $this->database->select('taxonomy_term_field_data', 't');
+    $query->condition('t.vid', 'audience');
+    $query->fields('t', [
+      'tid',
+      'name'
+    ]);
+
+    $eventQuery = $this->getBaseQuery();
+
+    // Attendees
+    $attendees_table = $eventQuery->join($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
+    $eventQuery->fields($attendees_table, [
+      'attendees'
+    ]);
+    $eventQuery->addExpression('SUM(attendees)', 'total_attendees');
+
+    // Term data
+    $relationship_table = $eventQuery->join('node__field_audience_primary', 'audiences', 'n.nid = audiences.entity_id');
+    $eventQuery->addField($relationship_table, 'field_audience_primary_target_id', 'tid');
+    $audience_table = $eventQuery->join($query, 'term', 'term.tid = ' . $relationship_table . '.field_audience_primary_target_id');
+    $eventQuery->groupBy('tid');
+
+    $eventQuery->fields($audience_table, [
+      'tid',
+      'name',
+    ]);
+
+    /** @var TableSortExtender $table_sort */
+    $table_sort = $eventQuery->extend('Drupal\Core\Database\Query\TableSortExtender');
+    $table_sort->orderBy('total_attendees', 'DESC');
+
+    $result = $eventQuery->execute();
+
+    // Populate the rows.
+    $rows = [];
+    foreach($result as $row) {
+      $rows[] = [
+        'data' => [
+          // Keep for debugging purposes.
+          // 'tid' => $row->tid,
+          'name' => $row->name,
+          'attendees' => $row->total_attendees ?? 0,
+        ]
+      ];
+    }
+
+    return [
+      'header' => $header,
+      'rows' => $rows,
+    ];
   }
 
   public function getAttendeesByPrimaryEventTypeData() {
@@ -1132,6 +1223,49 @@ class InterceptDashboardController extends ControllerBase {
       ->fetchAssoc();
 
     return $results;
+  }
+
+  /**
+   * Sends CSV data being displayed at the current path to the browser to download.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   A Response in CSV format.
+   */
+  public function buildCsv() {
+    $limit = 10000; // We can't show all rows by default so we must pass a number.
+    $table = $this->buildEventTable($limit);
+    $headers = $table['event_table']['#header'];
+    $rows = $table['event_table']['#rows'];
+    // Get a simple string for each header item.
+    $headers_simplified = [];
+    foreach ($headers as $header) {
+      $headers_simplified[] = $header['data']->__tostring();
+    }
+    // Change the table rows into CSV format.
+    $csv_data = [];
+    foreach ($rows as $key => $row) {
+      $customer_rating = $row['data']['customer_rating']->__tostring();
+      if (!empty($customer_rating)) {
+        $customer_rating = str_replace('—', '', strip_tags($customer_rating));
+        $customer_rating = str_replace('Positive', '', $customer_rating);
+        if (is_numeric($customer_rating)) {
+          $customer_rating = $customer_rating / 100; // Change to a value usable in CSV as percentage.
+        } 
+      }
+      $csv_data[$key] = [
+        $headers_simplified[0] => $row['data']['title']->__tostring(),
+        $headers_simplified[1] => $row['data']['date'],
+        $headers_simplified[2] => $row['data']['attendees'],
+        $headers_simplified[3] => $row['data']['checked_in'],
+        $headers_simplified[4] => $row['data']['registrants'],
+        $headers_simplified[5] => $row['data']['saves'],
+        $headers_simplified[6] => $customer_rating,
+        // $headers_simplified[7] => str_replace('—', '', $row['data']['customer_evaluations']),
+        // $headers_simplified[8] => str_replace('—', '', $row['data']['staff_evaluations']),
+      ];
+    }
+    $result = $this->encoder->encode($csv_data, 'csv');
+    return new Response($result);
   }
 
 }

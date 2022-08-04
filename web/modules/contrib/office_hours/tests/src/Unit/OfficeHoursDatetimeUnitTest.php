@@ -106,8 +106,7 @@ class OfficeHoursDatetimeUnitTest extends UnitTestCase {
       "one1" => ['1:00', 'G', '1'],
       "one2" => ['01:00', 'G', '1'],
       "one3" => ['1:00', 'H:i', '01:00'],
-      "fallback" => ['00:00', 'g:i a', '24:00'],
-      "fallback2" => ['00:00', 'M', '24:00'],
+      "fallback" => ['12:00 am', 'g:i a', '24:00'],
     ];
   }
 

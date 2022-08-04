@@ -89,6 +89,19 @@ field.formatter.settings.office_hours:
         closed_text:
          type: label
          label: 'Currently closed message'
+    exceptions:
+      type: mapping
+      label: 'Exception dates'
+      mapping:
+        restrict_exceptions_to_num_days:
+          type: integer
+          label: 'Restrict exceptions display to x days in future'
+        date_format:
+          type: string
+          label: 'Date format for exception day'
+        title:
+         type: label
+         label: 'Title for exceptions'
     timezone_field:
       type: string
       label: 'Timezone field'

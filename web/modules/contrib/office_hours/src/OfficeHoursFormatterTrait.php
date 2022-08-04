@@ -44,20 +44,14 @@ trait OfficeHoursFormatterTrait {
       'comments' => [],
     ];
 
-    // Initialize days and times, using date_api as key (0=Sun, 6=Sat).
-    // Empty days are not yet present in $values, and are now added in $days.
+    // Initialize $office_hours.
     $office_hours = [];
+    // Create 7 empty weekdays, using date_api as key (0=Sun, 6=Sat).
     for ($day = 0; $day < OfficeHoursDateHelper::DAYS_PER_WEEK; $day++) {
       $office_hours[$day] = ['startday' => $day] + $default_office_hours;
     }
-
-    // Loop through all lines.
-    // Detect the current line and the open/closed status.
-    $time = ($time) ?? \Drupal::time()->getRequestTime();
-    $today = (int) idate('w', $time); // Get day_number: (0=Sun, 6=Sat).
-    $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
+    // Move items to $office_hours.
     foreach ($values as $key => $value) {
-      // Calculate start and end times.
       $day = $value['day'];
       $office_hours[$day] = $office_hours[$day] ?? ['startday' => $day] + $default_office_hours;
       $office_hours[$day]['slots'][] = [
@@ -65,53 +59,12 @@ trait OfficeHoursFormatterTrait {
         'end' => $value['endhours'],
         'comment' => $value['comment'] ?? '',
       ];
-    }
-
-    $next = NULL;
-    foreach ($office_hours as $day => &$day_data) {
-      foreach ($day_data['slots'] as $slot_id => $slot) {
-        if ($day <= $today) {
-          // Initialize to first day of (next) week, in case we're closed
-          // the rest of the week.
-          // @todo Use $settings['office_hours_first_day'] ?
-          if ($next === NULL) {
-            $next = $day;
-          }
-        }
-
-        if ($day == $today) {
-          $start = $slot['start'];
-          $end = $slot['end'];
-          if ($start > $now) {
-            // We will open later today.
-            $next = $day;
-          }
-          elseif (($start < $end) && ($end < $now)) {
-            // We were open today, but are already closed.
-          }
-          else {
-            // We are still open.
-            $day_data['current'] = TRUE;
-            $next = $day;
-          }
-        }
-        elseif ($day > $today) {
-          if ($next === NULL) {
-            $next = $day;
-          }
-          elseif ($next < $today) {
-            $next = $day;
-          }
-          else {
-            // Just for analysis.
-          }
-        }
-        else {
-          // Just for analysis.
-        }
+      if (isset($value['current'])) {
+        $office_hours[$day]['current'] = $value['current'];
       }
     }
 
+    $next = $this->nextDay;
     if ($next !== NULL) {
       $office_hours[$next]['next'] = TRUE;
     }
@@ -233,7 +186,7 @@ trait OfficeHoursFormatterTrait {
     $result = [];
     foreach ($office_hours as $day => $info) {
       if (!empty($info['slots'])) {
-        $result[] = $info;
+        $result[$day] = $info;
       }
     }
     return $result;
@@ -272,9 +225,13 @@ trait OfficeHoursFormatterTrait {
   protected function keepCurrentDay(array $office_hours, $time = NULL) {
     $result = [];
 
-    $time = $time ?? \Drupal::time()->getRequestTime();
+    // Get the current time. May be adapted for User Timezone.
+    $time = $this->getRequestTime($time);
+    // Convert day number to integer to get '0' for Sunday, not 'false'.
     $today = (int) idate('w', $time); // Get day_number (0=Sun, 6=Sat).
 
+    // Loop through all items.
+    // Keep the current one.
     foreach ($office_hours as $info) {
       if ($info['startday'] == $today) {
         $result[$today] = $info;
@@ -299,13 +256,14 @@ trait OfficeHoursFormatterTrait {
   protected function keepCurrentSlot(array $office_hours, $time = NULL) {
     $result = [];
 
-    // Loop through all lines.
-    // Detect the current line and the open/closed status.
+    // Get the current time. May be adapted for User Timezone.
+    $time = $this->getRequestTime($time);
     // Convert day number to integer to get '0' for Sunday, not 'false'.
-    $time = $time ?? \Drupal::time()->getRequestTime();
     $today = (int) idate('w', $time); // Get day_number (0=Sun, 6=Sat).
     $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
 
+    // Loop through all items.
+    // Detect the current item and the open/closed status.
     foreach ($office_hours as $key => $info) {
       // Calculate start and end times.
       $day = (int) $info['day'];
@@ -352,7 +310,7 @@ trait OfficeHoursFormatterTrait {
    */
   protected function formatLabels(array $office_hours, array $settings, array $third_party_settings) {
     $day_format = $settings['day_format'];
-    $exceptions_day_format = $third_party_settings['office_hours_exceptions']['date_format'] ?? NULL;
+    $exceptions_day_format = $settings['exceptions']['date_format'] ?? NULL;
     $group_separator = $settings['separator']['grouped_days'];
     $days_suffix = $settings['separator']['day_hours'];
     foreach ($office_hours as $key => &$info) {
@@ -475,7 +433,7 @@ trait OfficeHoursFormatterTrait {
       if (!$item->isExceptionDay()) {
         return TRUE;
       }
-      if (self::$horizon == NULL) {
+      if (self::$horizon == 0) {
         // Exceptions settings are not set / submodule is disabled.
         return FALSE;
       }

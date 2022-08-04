@@ -3,8 +3,9 @@
 namespace Drupal\jsonapi_extras\Normalizer;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
+use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType;
 use Drupal\schemata_json_schema\Normalizer\jsonapi\SchemataSchemaNormalizer as SchemataJsonSchemaSchemataSchemaNormalizer;
-use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 
 /**
  * Applies JSONAPI Extras attribute overrides to entity schemas.
@@ -21,10 +22,10 @@ class SchemataSchemaNormalizer extends SchemataJsonSchemaSchemataSchemaNormalize
   /**
    * Constructs a SchemataSchemaNormalizer object.
    *
-   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepository $resource_type_repository
+   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface $resource_type_repository
    *   A resource repository.
    */
-  public function __construct(ResourceTypeRepository $resource_type_repository) {
+  public function __construct(ResourceTypeRepositoryInterface $resource_type_repository) {
     $this->resourceTypeRepository = $resource_type_repository;
   }
 
@@ -42,7 +43,7 @@ class SchemataSchemaNormalizer extends SchemataJsonSchemaSchemataSchemaNormalize
       $bundle
     );
 
-    if (!$resource_type) {
+    if (!$resource_type || !$resource_type instanceof ConfigurableResourceType) {
       return $normalized;
     }
 
@@ -57,26 +58,15 @@ class SchemataSchemaNormalizer extends SchemataJsonSchemaSchemataSchemaNormalize
       if (!isset($root[$property_type]['required'])) {
         $root[$property_type]['required'] = [];
       }
-      $required_fields = [];
-      $properties = NestedArray::getValue($root, [$property_type, 'properties']);
-      $properties = $properties ?: [];
+      $properties = NestedArray::getValue($root, [$property_type, 'properties']) ?: [];
       foreach ($properties as $fieldname => $schema) {
-        unset($properties[$fieldname]);
-
-        if (!$resource_type->isFieldEnabled($fieldname)) {
-          // If the field is disabled, do nothing after removal.
-          continue;
-        }
-        else {
-          // Otherwise, substitute the public name.
-          $public_name = $resource_type->getPublicName($fieldname);
-          $properties[$public_name] = $schema;
-          if (in_array($fieldname, $root[$property_type]['required'])) {
-            $required_fields[] = $public_name;
-          }
+        if ($enhancer = $resource_type->getFieldEnhancer($resource_type->getFieldByPublicName($fieldname)->getInternalName())) {
+          $root[$property_type]['properties'][$fieldname] = array_merge(
+            array_intersect_key($root[$property_type]['properties'][$fieldname], array_flip(['title', 'description'])),
+            $enhancer->getOutputJsonSchema()
+          );
         }
       }
-      $root[$property_type]['required'] = $required_fields;
     }
 
     return $normalized;

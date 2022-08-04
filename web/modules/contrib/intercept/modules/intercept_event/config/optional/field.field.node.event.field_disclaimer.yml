@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_disclaimer
+    - node.type.event
+    - taxonomy.vocabulary.disclaimer
+id: node.event.field_disclaimer
+field_name: field_disclaimer
+entity_type: node
+bundle: event
+label: Disclaimer
+description: '<a href="/manage/disclaimers" target="_blank">All available event disclaimers can be seen here.</a>'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      disclaimer: disclaimer
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

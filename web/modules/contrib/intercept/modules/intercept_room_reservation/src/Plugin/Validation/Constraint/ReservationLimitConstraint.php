@@ -20,6 +20,6 @@ class ReservationLimitConstraint extends Constraint {
    *
    * @var string
    */
-  public $errorMessage = 'User has exceeded their reservation limit.';
+  public $errorMessage = 'This reservation can\'t be made because it would exceed the reservation limit.';
 
 }

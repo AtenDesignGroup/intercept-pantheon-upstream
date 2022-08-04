@@ -11,9 +11,12 @@
 function office_hours_theme() {
   $themes['office_hours'] = [
     'variables' => [
-      'office_hours' => [],
       'parent' => NULL,
       'view_mode' => NULL,
+      // Pass filtered office_hours structures to twig theming.
+      'office_hours' => [],
+      // Pass (unfiltered) office_hours items to twig theming.
+      'office_hours_field' => [],
       'item_separator' => '<br />',
       'slot_separator' => ', ',
       'closed_text' => NULL,
@@ -24,7 +27,10 @@ function office_hours_theme() {
     'variables' => [
       'parent' => NULL,
       'view_mode' => NULL,
+      // Pass filtered office_hours structures to twig theming.
       'office_hours' => [],
+      // Pass (unfiltered) office_hours items to twig theming.
+      'office_hours_field' => [],
       'table' => [],
     ],
     'file' => 'office_hours.theme.inc',
@@ -33,6 +39,10 @@ function office_hours_theme() {
     'variables' => [
       'parent' => NULL,
       'view_mode' => NULL,
+      // Pass filtered office_hours structures to twig theming.
+      'office_hours' => [],
+      // Pass (unfiltered) office_hours items to twig theming.
+      'office_hours_field' => [],
       'is_open' => FALSE,
       'open_text' => NULL,
       'closed_text' => NULL,
@@ -41,9 +51,12 @@ function office_hours_theme() {
   ];
   $themes['office_hours_schema'] = [
     'variables' => [
-      'office_hours' => [],
       'parent' => NULL,
       'view_mode' => NULL,
+      // Pass filtered office_hours structures to twig theming.
+      'office_hours' => [],
+      // Pass (unfiltered) office_hours items to twig theming.
+      'office_hours_field' => [],
     ],
     'file' => 'office_hours.theme.inc',
   ];
@@ -63,6 +76,8 @@ function office_hours_preprocess_field(&$variables, $hook) {
       $delta++;
     }
   }
+  // Add exception hours.
+  office_hours_exceptions_preprocess_field($variables, $hook);
 }
 
 /**

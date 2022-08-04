@@ -4,9 +4,9 @@ namespace Drupal\jsonapi_extras\Normalizer;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType;
 use Drupal\schemata_json_schema\Normalizer\jsonapi\FieldDefinitionNormalizer as SchemataJsonSchemaFieldDefinitionNormalizer;
-use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 
 /**
  * Applies field enhancer schema changes to field schema.
@@ -23,10 +23,10 @@ class SchemaFieldDefinitionNormalizer extends SchemataJsonSchemaFieldDefinitionN
   /**
    * Constructs a SchemaFieldDefinitionNormalizer object.
    *
-   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepository $resource_type_repository
+   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface $resource_type_repository
    *   A resource type repository.
    */
-  public function __construct(ResourceTypeRepository $resource_type_repository) {
+  public function __construct(ResourceTypeRepositoryInterface $resource_type_repository) {
     $this->resourceTypeRepository = $resource_type_repository;
   }
 

@@ -141,7 +141,7 @@ class DashboardEventFilters extends FormBase {
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Send'),
+      '#value' => $this->t('Submit'),
     ];
 
     $form['actions']['reset'] = array(

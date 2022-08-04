@@ -55,7 +55,7 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
    *
    * @var \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig[]
    */
-  protected $resourceConfigs;
+  protected static $resourceConfigs;
 
   /**
    * Builds the resource config ID from the entity type ID and bundle.
@@ -193,7 +193,7 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function getResourceConfigs() {
-    if (!$this->resourceConfigs) {
+    if (!static::$resourceConfigs) {
       $resource_config_ids = [];
       foreach ($this->getEntityTypeBundleTuples() as $tuple) {
         list($entity_type_id, $bundle) = $tuple;
@@ -202,11 +202,11 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
           $bundle
         );
       }
-      $this->resourceConfigs = $this->entityTypeManager
+      static::$resourceConfigs = $this->entityTypeManager
         ->getStorage('jsonapi_resource_config')
         ->loadMultiple($resource_config_ids);
     }
-    return $this->resourceConfigs;
+    return static::$resourceConfigs;
   }
 
   /**
@@ -232,9 +232,8 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
   /**
    * Resets the internal caches for resource types and resource configs.
    */
-  public function reset() {
-    $this->all = [];
-    $this->resourceConfigs = [];
+  public static function reset() {
+    static::$resourceConfigs = [];
   }
 
   /**

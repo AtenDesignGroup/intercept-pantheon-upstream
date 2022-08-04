@@ -5,7 +5,9 @@
   <a href="{{ url }}" title="{{ title }}">
   {% endif %}
 
-  {{ text }}
+  {% autoescape false %}
+    {{ text }}
+  {% endautoescape %}
 
   {% if url %}
   </a>

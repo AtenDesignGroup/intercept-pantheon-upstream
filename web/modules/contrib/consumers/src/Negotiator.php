@@ -117,6 +117,7 @@ class Negotiator {
   protected function loadDefaultConsumer() {
     // Find the default consumer.
     $results = $this->storage->getQuery()
+      ->accessCheck(TRUE)
       ->condition('is_default', TRUE)
       ->execute();
     $consumer_id = reset($results);

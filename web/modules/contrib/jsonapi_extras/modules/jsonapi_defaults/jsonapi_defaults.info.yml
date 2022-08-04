@@ -8,7 +8,7 @@ dependencies:
   - jsonapi:jsonapi
   - jsonapi_extras:jsonapi_extras
 
-# Information added by Drupal.org packaging script on 2021-12-15
-version: '8.x-3.20'
+# Information added by Drupal.org packaging script on 2022-07-28
+version: '8.x-3.21'
 project: 'jsonapi_extras'
-datestamp: 1639580053
+datestamp: 1659004734

@@ -22,7 +22,7 @@
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
     "drupal/core-composer-scaffold": "^9.2",
-    "drupal/core-recommended": "9.3.16",
+    "drupal/core-recommended": "9.3.19",
     "drupal/date_recur": "^3.0",
     "drupal/date_recur_modular": "^3.0",
     "drupal/default_content": "^1.0",
@@ -52,7 +52,13 @@
   },
   "minimum-stability": "dev",
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "composer/installers": true,
+      "cweagans/composer-patches": true,
+      "drupal/core-composer-scaffold": true,
+      "zaporylie/composer-drupal-optimizations": true
+    }
   },
   "prefer-stable": true,
   "autoload": {
@@ -120,9 +126,6 @@
       },
       "drupal/core": {
         "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch"
-      },
-      "drupal/csv_serialization": {
-        "Unable to Override Headers/Labels with hook_views_pre_render(). Used in export by age group": "https://www.drupal.org/files/issues/2019-10-10/3087166-csv_serialization-8.x-2.x-dev-views-pre-render-alter-headers.patch"
       },
       "drupal/date_recur_modular": {
         "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2020-04-01/3124197.patch"

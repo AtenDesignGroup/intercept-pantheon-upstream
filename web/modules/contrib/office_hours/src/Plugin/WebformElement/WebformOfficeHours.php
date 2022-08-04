@@ -100,16 +100,21 @@ class WebformOfficeHours extends WebformCompositeBase {
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
 
-    // Convert values to ItemList, in order to use Widget.
-    $office_hours = $element['#default_value'] ?? [];
-    /** @var \Drupal\Core\Field\FieldItemListInterface $items */
-    $items = $this->unserialize($office_hours, $element);
-    /** @var \Drupal\Core\Field\WidgetInterface $widget */
+    // If the element is not properly defined, do not show the formatter/widget.
+    if (!isset($element['#webform_key'])) {
+      return;
+    }
     $widget = $this->getWebformOfficeHoursPlugin(
       'plugin.manager.field.widget',
       'office_hours_default',
       $element
     );
+
+    // Convert values to ItemList, in order to use Widget.
+    $office_hours = $element['#default_value'] ?? [];
+    /** @var \Drupal\Core\Field\FieldItemListInterface $items */
+    $items = $this->unserialize($office_hours, $element);
+    /** @var \Drupal\Core\Field\WidgetInterface $widget */
 
     $form = [];
     $form_state = new FormState();
@@ -167,10 +172,15 @@ class WebformOfficeHours extends WebformCompositeBase {
    *
    * Copied from office_hours\...\OfficeHoursFormatterDefault\viewElements().
    *
-   * @todo Allow to change the Formatter settings via UI.
+   * @todo Allow to changgetWebformOfficeHoursPlugine the Formatter settings via UI.
    */
   protected function viewElements(array $element, WebformSubmissionInterface $webform_submission, array $options) {
     $elements = [];
+
+    // If the element is not properly defined, do not show the formatter/widget.
+    if (!isset($element['#webform_key'])) {
+      return $elements;
+    }
 
     // Convert values to ItemList, in order to use Widget.
     $office_hours = $this->getValue($element, $webform_submission, $options);
@@ -187,6 +197,7 @@ class WebformOfficeHours extends WebformCompositeBase {
       'office_hours',
       $element
     );
+
     // @todo Add configurable $langcode to Formatter.
     $langcode = NULL;
     $elements = $formatter->viewElements($item_list, $langcode);
@@ -251,14 +262,14 @@ class WebformOfficeHours extends WebformCompositeBase {
    *   An Office Hours field definition.
    */
   protected function getFieldDefinition(array $element) {
-    $field_name = $element['#webform_key'];
-    if (!isset($this->fieldDefinitions[$field_name])) {
+    $field_name = $element['#webform_key'] ?? '';
+    if ($field_name && !isset($this->fieldDefinitions[$field_name])) {
       $field_type = $element['#type'];
       $this->fieldDefinitions[$field_name] = BaseFieldDefinition::create($field_type)
         ->setName($field_name)
         ->setSettings($this->getSettings($element));
     }
-    return $this->fieldDefinitions[$field_name];
+    return $this->fieldDefinitions[$field_name] ?? NULL;
   }
 
   /**
@@ -273,6 +284,10 @@ class WebformOfficeHours extends WebformCompositeBase {
    */
   protected function getWebformOfficeHoursPlugin($service_id, $plugin_id, array $element) {
     $field_definition = $this->getFieldDefinition($element);
+    if (!$field_definition) {
+      return NULL;
+    }
+
     $settings = $this->getSettings($element);
     $pluginManager = \Drupal::service($service_id);
     return $pluginManager->getInstance([

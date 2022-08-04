@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
+    - field.field.node.event.field_disclaimer
     - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
     - field.field.node.event.field_event_designation
@@ -44,31 +45,31 @@ bundle: event
 mode: default
 content:
   field_attendees:
-    weight: 20
+    type: tally_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: tally_default
+    weight: 20
     region: content
   field_audience_primary:
-    weight: 22
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 22
     region: content
   field_capacity_max:
-    weight: 5
+    type: number_integer
     label: above
     settings:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    type: number_integer
+    weight: 5
     region: content
   field_date_time:
-    weight: 3
+    type: daterange_default
     label: hidden
     settings:
       timezone_override: ''
@@ -106,192 +107,196 @@ content:
             'Outlook Online': 0
             'Yahoo! Calendar': 0
         addtocalendar_show: 0
-    type: daterange_default
+    weight: 3
     region: content
-  field_event_audience:
-    weight: 14
+  field_disclaimer:
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
+    weight: 28
+    region: content
+  field_event_audience:
     type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 14
     region: content
   field_event_designation:
-    weight: 23
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 23
     region: content
   field_event_register_period:
-    weight: 7
+    type: daterange_default
     label: above
     settings:
-      separator: '-'
-      format_type: medium
       timezone_override: ''
+      format_type: medium
+      separator: '-'
     third_party_settings: {  }
-    type: daterange_default
+    weight: 7
     region: content
   field_event_series:
     type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
     weight: 12
     region: content
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
   field_event_tags:
-    weight: 15
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 15
     region: content
   field_event_type:
-    weight: 13
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 13
     region: content
   field_event_type_primary:
-    weight: 21
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 21
     region: content
   field_event_user_reg_max:
-    weight: 26
+    type: number_integer
     label: above
     settings:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    type: number_integer
+    weight: 26
     region: content
   field_featured:
-    weight: 18
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 18
     region: content
   field_has_waitlist:
-    weight: 9
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 9
     region: content
   field_location:
-    weight: 16
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 16
     region: content
   field_must_register:
-    weight: 6
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 6
     region: content
   field_presented_by_non_staff:
-    weight: 25
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 25
     region: content
   field_presenter:
-    weight: 24
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 24
     region: content
   field_room:
-    weight: 4
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 4
     region: content
   field_text_content:
-    weight: 2
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 2
     region: content
   field_text_intro:
-    weight: 1
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 1
     region: content
   field_text_teaser:
-    weight: 0
+    type: basic_string
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    weight: 0
     region: content
   field_waitlist_max:
-    weight: 19
+    type: number_integer
     label: above
     settings:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    type: number_integer
+    weight: 19
     region: content
   flag_saved_event:
+    settings: {  }
+    third_party_settings: {  }
     weight: 8
     region: content
-    settings: {  }
-    third_party_settings: {  }
-  flag_subscribe_node:
-    weight: 10
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   image_primary:
-    weight: 17
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 17
     region: content
   links:
-    weight: 11
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 11
+    region: content
 hidden:
+  checkin_link: true
   evaluation_attendee_default: true
   evaluation_attendee_js: true
   evaluation_staff: true
@@ -301,3 +306,5 @@ hidden:
   field_event_is_template: true
   field_event_status: true
   field_keywords: true
+  langcode: true
+  search_api_excerpt: true

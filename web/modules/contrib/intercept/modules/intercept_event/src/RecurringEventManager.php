@@ -360,7 +360,9 @@ class RecurringEventManager {
     $elements['end']['#access'] = FALSE;
     $elements['time_zone']['#access'] = FALSE;
     // Disable "Never" option for "ends on". Causes 500 error on Recurrences tab.
-    $elements['ends_mode']['#default_value'] = 'count'; // Default to "count".
+    if ($elements['ends_mode']['#default_value'] != 'count' && $elements['ends_mode']['#default_value'] != 'date') {
+      $elements['ends_mode']['#default_value'] = null;
+    }
     unset($elements['ends_mode']['#options']['infinite']);
   }
 

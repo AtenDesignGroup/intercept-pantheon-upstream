@@ -48,7 +48,7 @@ span.office-hours__item-comments {
 /*
  * Formatter settings - table formatter
  */
-/* Transparant background, hiding table details from user. */
+/* Transparent background, hiding table details from user. */
 tr.office-hours__item {
   background: rgba(0, 0, 0, 0);
 }
@@ -57,6 +57,10 @@ tr.office-hours__item {
 .office-hours__item td {
   white-space: nowrap;
   vertical-align: text-top;
+}
+
+/* The currently active time slot. */
+tr.office-hours__item-current {
 }
 
 /*

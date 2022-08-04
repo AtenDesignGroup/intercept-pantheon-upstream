@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
+    - field.field.node.event.field_disclaimer
     - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
     - field.field.node.event.field_event_designation
@@ -32,14 +33,12 @@ dependencies:
     - field.field.node.event.field_text_intro
     - field.field.node.event.field_text_teaser
     - field.field.node.event.field_waitlist_max
-    - field.field.node.event.field_whats_new_homepage_sched
     - field.field.node.event.image_primary
     - node.type.event
   module:
     - addtocalendar
     - datetime_range
     - entity_browser_entity_form
-    - eqsf
     - existing_values_autocomplete_widget
     - field_group
     - inline_entity_form
@@ -59,7 +58,7 @@ third_party_settings:
       label: Registration
       region: content
       parent_name: ''
-      weight: 15
+      weight: 16
       format_type: fieldset
       format_settings:
         classes: ''
@@ -74,12 +73,12 @@ third_party_settings:
       label: Logistics
       region: content
       parent_name: ''
-      weight: 11
+      weight: 12
       format_type: fieldset
       format_settings:
         classes: ''
         id: ''
-        description: Select the location and room, then click "Create a room reservation" to see if it's available."
+        description: 'Select the location and room, then click "Create a room reservation" to see if it''s available.'
         required_fields: true
     group_metadata:
       children:
@@ -93,12 +92,12 @@ third_party_settings:
       label: Metadata
       region: content
       parent_name: ''
-      weight: 13
+      weight: 14
       format_type: fieldset
       format_settings:
         classes: ''
         id: ''
-        description: Select the location and room, then click “Create a room reservation” to see if it's available.
+        description: 'Select the location and room, then click “Create a room reservation” to see if it''s available.'
         required_fields: false
 id: node.event.default
 targetEntityType: node
@@ -113,7 +112,7 @@ content:
     third_party_settings: {  }
   event_recurrence:
     type: inline_entity_form_simple
-    weight: 14
+    weight: 15
     region: content
     settings:
       form_mode: events
@@ -126,7 +125,7 @@ content:
     third_party_settings: {  }
   field_add_to_cal:
     type: add_to_calendar_widget_type
-    weight: 21
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -145,6 +144,12 @@ content:
     third_party_settings: {  }
   field_date_time:
     type: daterange_default
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_disclaimer:
+    type: options_buttons
     weight: 10
     region: content
     settings: {  }
@@ -157,7 +162,7 @@ content:
     third_party_settings: {  }
   field_event_designation:
     type: options_buttons
-    weight: 22
+    weight: 23
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -175,7 +180,7 @@ content:
     third_party_settings: {  }
   field_event_status:
     type: options_select
-    weight: 24
+    weight: 25
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -206,7 +211,7 @@ content:
     third_party_settings: {  }
   field_featured:
     type: boolean_checkbox
-    weight: 19
+    weight: 20
     region: content
     settings:
       display_label: true
@@ -311,12 +316,12 @@ content:
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 17
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
   recurring_event:
-    weight: 12
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -326,7 +331,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 20
+    weight: 21
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -357,12 +362,12 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 16
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 18
+    weight: 19
     region: content
     settings: {  }
     third_party_settings: {  }

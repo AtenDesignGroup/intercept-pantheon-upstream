@@ -4,6 +4,8 @@ namespace Drupal\jsonapi_extras\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\jsonapi\Routing\Routes;
+use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceTypeRepository;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
@@ -108,8 +110,8 @@ class JsonapiResourceConfig extends ConfigEntityBase {
    */
   protected static function rebuildRoutes() {
     try {
-      \Drupal::service('jsonapi.resource_type.repository')->reset();
-      \Drupal::service('router.builder')->setRebuildNeeded();
+      ConfigurableResourceTypeRepository::reset();
+      Routes::rebuild();
     }
     catch (ServiceNotFoundException $exception) {
       // This is intentionally empty.

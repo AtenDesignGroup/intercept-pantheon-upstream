@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta4] - 2022-08-04
+
+- Chart: Attendees by Primary Audience
+- Event Data Download CSV
+- Fixed: Event Organizers Cannot Access Event Data Dashboard
+- Create quick links for Export Event Attendance
+- RR CALENDAR Notify anonymous users on /reserve-room/by-calendar that they must be logged in
+- Fixed: Customers Still Registered for Canceled Events
+- Fixed: Event Entry Draft Screen
+- Fixed: Customers Reserving Rooms After Library is Closed
+- Fixed AJAX callback on equipment reservation form
+- Fixed: Staff Can Double-Book Rooms When Editing a Room Reservation
+- Fixed: Recurring Event Creation - After Number of Occurrences Input Not Appearing Immediately
+- Adding Common Event Messaging Types For Disclaimers
+- Add Group Name to Bulk Reservations
+
 ## [8.x-1.0-beta3] - 2022-06-23
 
 - Text Notification to Customer when Event is Canceled

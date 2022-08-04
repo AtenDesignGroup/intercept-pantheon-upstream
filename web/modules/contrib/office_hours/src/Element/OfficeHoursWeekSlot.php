@@ -43,6 +43,9 @@ class OfficeHoursWeekSlot extends OfficeHoursBaseSlot {
 
     // Override (hide) the 'day' select-field.
     $element['day'] = [
+      // For accessibility (a11y) screen readers, a header/title is introduced.
+      '#title' => $label,
+      // '#type' => 'item', // #3273363.
       '#type' => 'hidden',
       '#prefix' => $day_delta
         ? "<div class='office-hours-more-label'>$label</div>"

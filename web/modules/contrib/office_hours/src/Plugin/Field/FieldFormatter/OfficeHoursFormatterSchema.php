@@ -75,13 +75,16 @@ class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {
     // Get some settings from field. Do not overwrite defaults.
     $settings = $this->defaultSettings() + $this->getSettings();
     $third_party_settings = $this->getThirdPartySettings();
-    // N.B. 'Show current day' may return nothing in getRows(), while other days are filled.
+    // N.B. 'Show current day' may return nothing in getRows(),
+    // while other days are filled.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
     $office_hours = $items->getRows($settings, $this->getFieldSettings(), $third_party_settings);
     $elements[] = [
       '#theme' => 'office_hours_schema',
-      // Pass office_hours to twig theming.
+      // Pass filtered office_hours structures to twig theming.
       '#office_hours' => $office_hours,
+      // Pass (unfiltered) office_hours items to twig theming.
+      '#office_hours_field' => $items,
       '#item_separator' => $settings['separator']['days'],
       '#slot_separator' => $settings['separator']['more_hours'],
       '#attributes' => [

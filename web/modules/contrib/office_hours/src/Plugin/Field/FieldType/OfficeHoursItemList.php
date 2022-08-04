@@ -21,6 +21,13 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   }
 
   /**
+   * An integer representing the next open day.
+   *
+   * @var int
+   */
+  protected $nextDay = NULL;
+
+  /**
    * Helper for creating a list item object of several types.
    *
    * {@inheritdoc}
@@ -49,10 +56,10 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     if (!$exceptions_list) {
       $pluginManager = \Drupal::service('plugin.manager.field.field_type');
       // Get field definition of ExceptionsItem.
-      $plugin_id = 'office_hours_exception';
+      $plugin_id = 'office_hours_exceptions';
       $field_definition = BaseFieldDefinition::create($plugin_id);
-      // Create an ItemList with ExceptionsItems.
-      $exceptions_list = new OfficeHoursItemList($field_definition);
+      // Create an ItemList with OfficeHoursExceptionsItem items.
+      $exceptions_list = OfficeHoursItemList::createInstance($field_definition, $this->name, NULL);
     }
     // Then, add an item to the list with Exception day field definition.
     $item = $pluginManager->createFieldItem($exceptions_list, $offset, $value);
@@ -65,17 +72,119 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    * {@inheritdoc}
    */
   public function getRows(array $settings, array $field_settings, array $third_party_settings, $time = NULL) {
-    // @todo move more from getRows here, using itemList, not values.
-    $this->keepExceptionDaysInHorizon($third_party_settings['office_hours_exceptions']['restrict_exceptions_to_num_days'] ?? NULL);
+    // @todo Move more from getRows here, using itemList, not values.
+    $this->getCurrentSlot($time);
+    $this->keepExceptionDaysInHorizon($settings['exceptions']['restrict_exceptions_to_num_days'] ?? 0);
     return $this->getFieldRows($this->getValue(), $settings, $field_settings, $third_party_settings, $time);
+  }
+
+  /**
+   * Returns the timestamp for the current request.
+   *
+   * @return int
+   *   A Unix timestamp.
+   *
+   * @see \Drupal\Component\Datetime\TimeInterface
+   */
+  public function getRequestTime($time) {
+    $time = ($time) ?? \Drupal::time()->getRequestTime();
+    // Call hook. Allows to alter the current time using a timezone.
+    $entity = $this->getEntity();
+    \Drupal::moduleHandler()->alter('office_hours_current_time', $time, $entity);
+
+    return $time;
+  }
+
+  /**
+   * Get the current slot and the next day from the Office hours.
+   *
+   * - Variable $this->nextDay is set to day number.
+   * - Attribute 'current' is set on the active slot.
+   *
+   * @param $time
+   *   The desired timestamp.
+   */
+  protected function getCurrentSlot($time = NULL) {
+
+    if (isset($this->nextDay)) {
+      return;
+    }
+
+    // Detect the current slot and the open/closed status.
+    $time = $this->getRequestTime($time);
+    $today = (int) idate('w', $time); // Get day_number: (0=Sun, 6=Sat).
+    $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
+
+    $next_day = NULL;
+
+    $iterator = $this->getIterator();
+    while ($iterator->valid()) {
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+      $item = $iterator->current();
+      $slot = $item->getValue();
+      $day = $slot['day'];
+
+      if ($day <= $today) {
+        // Initialize to first day of (next) week, in case we're closed
+        // the rest of the week. This works for any first_day.
+        if (!isset($first_day_next_week) || ($day < $first_day_next_week)) {
+          $first_day_next_week = $day;
+        }
+      }
+
+      if ($day == $today) {
+        $start = $slot['starthours'];
+        $end = $slot['endhours'];
+        if ($start > $now) {
+          // We will open later today.
+          $next_day = $day;
+        }
+        elseif (($start < $end) && ($end < $now)) {
+          // We were open today, but are already closed.
+        }
+        else {
+          $next_day = $day;
+          // We are still open. @todo move to end of code.
+          $slot['current'] = TRUE;
+          $iterator->current()->setValue($slot);
+        }
+      }
+      elseif ($day > $today) {
+        if ($next_day === NULL) {
+          $next_day = $day;
+        }
+        elseif ($next_day < $today) {
+          $next_day = $day;
+        }
+        else {
+          // Just for analysis.
+        }
+      }
+      else {
+        // Just for analysis.
+      }
+
+      $iterator->next();
+    }
+
+    if (!isset($next_day) && isset($first_day_next_week)) {
+      $next_day = $first_day_next_week;
+    }
+
+    // Set the result: $nextDay
+    // Note: also $slot['current'] is set. See above.
+    if (isset($next_day)) {
+      $this->nextDay = $next_day;
+    }
+
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getStatusTimeLeft(array $settings, array $field_settings) {
+  public function getCacheTime(array $settings, array $field_settings, array $third_party_settings) {
 
-    // @see https://www.drupal.org/docs/8/api/cache-api/cache-max-age
+    // @see https://www.drupal.org/docs/drupal-apis/cache-api/cache-max-age
     // If there are no open days, cache forever.
     if ($this->isEmpty()) {
       return Cache::PERMANENT;
@@ -88,9 +197,15 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
 
     $next_time = '0000';
     $add_days = 0;
+
+    // Take the 'open/closed' indicator, if set, since it is the lowest.
+    $cache_setting = $settings['show_closed'];
+    if ($settings['current_status']['position'] !== '') {
+      $cache_setting = 'next';
+    }
     // Get some settings from field. Do not overwrite defaults.
     // Return the filtered days/slots/items/rows.
-    switch ($settings['show_closed']) {
+    switch ($cache_setting) {
       case 'all':
       case 'open':
       case 'none':
@@ -107,18 +222,20 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
         // Get the first (and only) day of the list.
         // Make sure we only receive 1 day, only to calculate the cache.
         $office_hours = $this->getRows($settings, $field_settings, []);
-        $next = array_shift($office_hours);
+        $next_day = array_shift($office_hours);
+        if (!$next_day) {
+          return Cache::PERMANENT;
+        }
 
         // Get the difference in hours/minutes between 'now' and next open/closing time.
-        $first_time = NULL;
-        foreach ($next['slots'] as $slot) {
+        foreach ($next_day['slots'] as $slot) {
           $start = $slot['start'];
           $end = $slot['end'];
 
-          if ($next['startday'] != $today) {
+          if ($next_day['startday'] != $today) {
             // We will open tomorrow or later.
             $next_time = $start;
-            $add_days = ($next['startday'] - $today + OfficeHoursDateHelper::DAYS_PER_WEEK)
+            $add_days = ($next_day['startday'] - $today + OfficeHoursDateHelper::DAYS_PER_WEEK)
               % OfficeHoursDateHelper::DAYS_PER_WEEK;
             break;
           }
@@ -163,6 +280,22 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     $time_left -= $seconds; // Correct for the current minute.
 
     return $time_left;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @todo Enable isOpen() for Exception days.
+   */
+  public function hasExceptionDays() {
+    $exception_exists = FALSE;
+    // Check if an exception day exists in the table.
+    foreach ($this->getValue() as $day => $item) {
+      $is_exception_day = OfficeHoursDateHelper::isExceptionDay($item);
+      $exception_exists |= $is_exception_day;
+    }
+
+    return $exception_exists;
   }
 
   /**

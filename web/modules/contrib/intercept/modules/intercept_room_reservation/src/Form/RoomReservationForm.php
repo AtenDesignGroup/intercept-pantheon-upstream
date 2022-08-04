@@ -473,7 +473,10 @@ class RoomReservationForm extends ContentEntityForm {
       }
     }
 
-    $validationMessages = $this->validationMessageBuilder->checkAvailability($form, $form_state);
+    $reservationParams = $this->validationMessageBuilder->getReservationParams($form_state);
+    $reservationParams['entity'] = $form_state->getFormObject()->getEntity();
+    $validationMessages = $this->validationMessageBuilder->checkAvailability($reservationParams);
+    
     if (!empty(array_filter($validationMessages))) {
       foreach (array_filter($validationMessages) as $key => $validationMessage) {
         // Don't set errors if the user should be able to bypass this constraint.

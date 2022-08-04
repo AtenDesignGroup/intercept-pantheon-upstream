@@ -41,7 +41,8 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
     $settings = $this->getSettings();
     $third_party_settings = $this->getThirdPartySettings();
     $field_definition = $items->getFieldDefinition();
-    // N.B. 'Show current day' may return nothing in getRows(), while other days are filled.
+    // N.B. 'Show current day' may return nothing in getRows(),
+    // while other days are filled.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
     $office_hours = $items->getRows($settings, $this->getFieldSettings(), $third_party_settings);
 
@@ -53,8 +54,10 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
     $elements[] = [
       '#theme' => 'office_hours',
       '#parent' => $field_definition,
-      // Pass office_hours to twig theming.
+      // Pass filtered office_hours structures to twig theming.
       '#office_hours' => $office_hours,
+      // Pass (unfiltered) office_hours items to twig theming.
+      '#office_hours_field' => $items,
       '#item_separator' => $settings['separator']['days'],
       '#slot_separator' => $settings['separator']['more_hours'],
       '#attributes' => [
@@ -66,14 +69,15 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
           'office_hours/office_hours_formatter',
         ],
       ],
-      '#cache' => [
-        'max-age' => $items->getStatusTimeLeft($settings, $this->getFieldSettings()),
-        'tags' => ['office_hours:field.default'],
-      ],
     ];
 
     $elements = $this->addSchemaFormatter($items, $langcode, $elements);
     $elements = $this->addStatusFormatter($items, $langcode, $elements);
+
+    // Add a ['#cache']['max-age'] attribute to $elements.
+    // Note: This invalidates a previous Cache in Status Formatter.
+    $this->addCacheMaxAge($items, $elements);
+
     return $elements;
   }
 

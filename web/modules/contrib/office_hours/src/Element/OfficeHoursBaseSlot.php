@@ -179,6 +179,9 @@ class OfficeHoursBaseSlot extends FormElement {
     $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
     $input_exists = TRUE;
 
+    // Avoid complex validation below. Remove comment, only in validation.
+    $input['comment'] = NULL;
+    // No complex validation if empty.
     if (OfficeHoursItem::isValueEmpty($input)) {
       return;
     }

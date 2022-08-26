@@ -1,0 +1,41 @@
+{{ attach_library('intercept_base/header-mobile') }}
+{{ attach_library('intercept_base/main-menu')}}
+{% import '@intercept-base-components/account-menu/account-menu.twig' as account %}
+
+{% macro tab(id, label, content) %}
+  <button class="js-mobile-tab header-mobile__tab" aria-controls="mobile-panel--{{id}}" aria-expanded="false" role="tab">
+    <span class="header-mobile__tab-text visually-hidden" data-action="expand">{{ 'Expand @label'|t({'@label': label}) }}</span>
+    <div class="header-mobile__tab-icon" data-action="expand"></div>
+    <span class="header-mobile__tab-text visually-hidden" data-action="collapse">{{ 'Collapse @label'|t({'@label': label}) }}</span>
+    <div class="header-mobile__tab-icon" data-action="collapse"></div>
+  </button>
+  <div id="mobile-panel--{{id}}" class="js-mobile-panel header-mobile__panel" aria-hidden="true" role="tabpanel">{{ content }}</div>
+{% endmacro %}
+
+{% set menu = header.menu %}
+
+{# Add footer links and move copyright block to the bottom. #}
+{#intercept-profile-copyright#}
+{% if header.footer %}
+  {% set menu = menu|merge({
+    'footer': header.footer|without('copyrightblock', 'footermenu'),
+    'copyrightblock': header.footer.copyrightblock
+  }) %}
+{% endif %}
+
+<header class="js-header-mobile header-mobile" role="banner">
+  <div class="header-mobile__logo">
+    {% include '@intercept-base-components/logo/logo.twig' with { logo_path: '/themes/contrib/intercept_base/logo.svg', alt: site_name ~ ' logo' } only %}
+  </div>
+  <div class="header-mobile__tabs">
+    {#
+      To prevent issues with duplicate block ids and caching, we setup mostly empty tabs
+      so we can move content back and forth between mobile and desktop menus.
+      This also allows us to keep the CSS and HTML a bit simpler as we are not
+      trying to position content outside the natural HTML flow.
+      See header-deviceContext.js
+    #}
+    {{ _self.tab('account', 'Account' )}}
+    {{ _self.tab('menu', 'Menu', [header.menu, [header.footer.copyrightblock]])}}
+  </div>
+</header>

@@ -347,7 +347,7 @@ class ReserveRoomForm extends PureComponent {
               <br />
               <em>
                 Need to update your info? After finishing your reservation visit My Account &gt;
-                Profile.
+                Settings.
               </em>
             </small>
           </div>

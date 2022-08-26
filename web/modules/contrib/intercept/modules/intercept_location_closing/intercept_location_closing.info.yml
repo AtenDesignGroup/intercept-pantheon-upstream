@@ -1,4 +1,4 @@
-name: 'Intercept Locations Closing'
+name: 'Intercept Location Closing'
 type: module
 description: 'Allows locations to be marked as closed'
 core_version_requirement: ^8.9 || ^9

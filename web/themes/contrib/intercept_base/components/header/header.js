@@ -1,24 +1,31 @@
-(function ($) {
+(function ($, Drupal) {
+  $(document).ready(function() {
 
-  $(document).ready(function () {
+    // logic for the logged in greeting in block--useraccountmenu.html.twig
+    const hour = new Date().getHours();
+    let salutation;
+    if (hour < 12) {
+      salutation = 'Good morning';
+    } else if (hour < 17) {
+      salutation = 'Good afternoon';
+    } else {
+      salutation = 'Good evening';
+    }
+    $('#salutation').text(Drupal.t(salutation));
 
-    $('.js-mobile-nav-trigger').on('change', e => {
-      $('body')[e.target.checked ? 'addClass' : 'removeClass']('js-prevent-scroll');
-      $(this)[e.target.checked ? 'addClass' : 'removeClass']('checked');
-    });
+    // Remove anchors from menu items with "no-link" class.
+    $(".region--primary-menu ul.menu li a.no-link").each(function() {
+      const textContent = document.createElement("span");
+      const classes = $(this).attr('class').split(/\s+/);
+      $.each(classes, function(index, item) {
+        textContent.classList.add(item);
+      });
 
-    $(document).click(function(e) { 
-      if(!$(e.target).closest('.header__utilities, .header__menu-main, .header__site-search').length) {
-        $('.js-mobile-nav-trigger').prop('checked', false);
-      }
-    });
-
-    // TODO: Combine with ^ above function
-    $('.js-mobile-nav-trigger').on('change', function() {
-      // Uncheck (toggle) other mobile dropdowns
-      $(this).parent().siblings().children('.js-mobile-nav-trigger').prop('checked', false);
+      textContent.innerHTML = $(this).html();
+      const parent = $(this).parent();
+      parent.find("a").remove();
+      parent.append(textContent);
     });
 
   });
-
-})(jQuery);
+})(jQuery, Drupal);

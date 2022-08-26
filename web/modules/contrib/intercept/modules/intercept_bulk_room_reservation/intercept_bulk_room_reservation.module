@@ -10,6 +10,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**
@@ -415,28 +416,33 @@ function intercept_bulk_room_reservation_delete_ids(array $entities) {
 }
 
 /**
- * Implements hook_preprocess().
- */
-function intercept_bulk_room_reservation_preprocess(&$variables, $hook, &$info) {
-  $route_name = \Drupal::routeMatch()->getRouteName();
-  if ($hook == 'date_recur_modular_alpha_widget' && $route_name == 'entity.bulk_room_reservation.add_form') {
-    $module_path = drupal_get_path('module', 'intercept_bulk_room_reservation');
-    $info['theme path'] = $module_path;
-    $info['template'] = 'date-recur-modular-alpha-widget--bulk-room-reservation';
-    $info['path'] = $module_path . '/templates/form';
-  }
-}
-
-/**
  * Implements hook_theme_suggestions_HOOK_alter().
  *
  * @param array $suggestions
  * @param array $variables
  */
 function intercept_bulk_room_reservation_theme_suggestions_date_recur_modular_alpha_widget_alter(array &$suggestions, array $variables) {
-  // If this is part of a bulk room reservation, suggest custom template.
-  $route = \Drupal::request()->attributes->get('_route');
-  if ($route == 'entity.bulk_room_reservation.edit_form') {
-    array_splice($suggestions, 1, 0, 'date_recur_modular_alpha_widget__bulk_room_reservation');
+  // This template will be added to the Gin theme via patch in composer.json.
+  $suggestions[] = 'date_recur_modular_alpha_widget__bulk_room_reservation';
+}
+
+/**
+ * Implements hook_intercept_room_reservation_dates_alter().
+ */
+function intercept_bulk_room_reservation_intercept_room_reservation_dates_alter(&$dates, $params, $node) {
+  // Unset dates previously marked as closed by the Intercept Location Closing module.
+  // We don't want to do this in the case of blocking bulk room reservations.
+  $current_path = \Drupal::service('path.current')->getPath();
+  if (strstr($current_path, '/bulk-room-reservation')) {
+    if (\Drupal::moduleHandler()->moduleExists('intercept_location_closing')) {
+      if ($location = $node->field_location->entity) {
+        if ($closings = intercept_location_closing_get_closing($location, $params['start'], $params['end'])) {
+          foreach ($closings as $closing_id) {
+            $closing = \Drupal::service('entity_type.manager')->getStorage('intercept_location_closing')->load($closing_id);
+            unset($dates[$closing->uuid()]);
+          }
+        }
+      }
+    }
   }
 }

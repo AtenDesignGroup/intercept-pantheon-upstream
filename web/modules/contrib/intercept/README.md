@@ -6225,13 +6225,13 @@ If your library is planning to display events and room reservations on digital s
     * `location_id`
     * `room_id`
     * `featured`
-  * Example: `/events/feed?location_id=2790&room_id=2811&featured=1`
+  * Example: `/events/feed?location_id=2790&room_id=2812&featured=0`
 * Room Reservations
   * Path: `/room-reservations/feed`
   * Accepted Query Parameters:
     * `location_id`
     * `room_id`
-  * Example: `/room-reservations/feed?location_id=2790&room_id=2811`
+  * Example: `/room-reservations/feed?location_id=2790&room_id=2812`
 
 
 MAINTAINERS

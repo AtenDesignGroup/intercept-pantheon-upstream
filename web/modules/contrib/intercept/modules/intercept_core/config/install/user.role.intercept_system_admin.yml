@@ -57,7 +57,6 @@ permissions:
   - 'bypass room reservation limit'
   - 'bypass room reservation maximum duration constraints'
   - 'bypass room reservation open hours constraints'
-  - 'bypass room reservation overlap constraints'
   - 'bypass room reservation maximum capacity constraints'
   - 'cancel event_registration entities'
   - 'clone event content'

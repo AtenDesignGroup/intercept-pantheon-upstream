@@ -34,8 +34,8 @@ const labels = {
   [c.TYPE_EVENT_TYPE]: 'Event Type',
   [c.TYPE_LOCATION]: 'Location',
   [c.TYPE_AUDIENCE]: 'Audience',
-  [c.DATE_START]: 'After Date',
-  [c.DATE_END]: 'Before Date',
+  [c.DATE_START]: 'Start Date',
+  [c.DATE_END]: 'End Date',
   [c.KEYWORD]: 'Keyword',
   [DESIGNATION]: 'Event Designation',
 };

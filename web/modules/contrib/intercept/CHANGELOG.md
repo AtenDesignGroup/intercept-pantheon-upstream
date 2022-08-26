@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta5] - 2022-08-26
+
+- Chart: Attendees by Hour and Day of Week
+- Fixed: Dragging Staff Room Reservation Can Result in Double-Booking (No Error Message)
+- Share Navigation Updates With Intercept Base Theme
+- Fixed: Bulk Reservations Timing Out When "Never" is Selected as End Date
+- Allow Event Organizers (Not Just Original Event Author) to View/Edit "How'd the event go?" Field Value
+- Fixed: Room Reservation Calendar Customer Double Booking
+- Update "Your Current Contact Information" Instructions to Say "My Account > Settings"
+- Bulk Reservation Blocks
+- Favorite Event Location
+
 ## [8.x-1.0-beta4] - 2022-08-04
 
 - Chart: Attendees by Primary Audience

@@ -355,10 +355,12 @@ class RecurringEventManager {
     // DateRecurModularAlphaWidget::extractFormValues().
     // - Validate if 'infinite' and not hardcoding the form path to here.
     // - Hide start, end, and time_zone without hardcoding the form path here.
-    $elements['#element_validate'][] = [static::class, 'dateRecurWidgetValidate'];
-    $elements['start']['#access'] = FALSE;
-    $elements['end']['#access'] = FALSE;
-    $elements['time_zone']['#access'] = FALSE;
+    if (isset($elements['#field_parents'][0]) && $elements['#field_parents'][0] == 'event_recurrence') { // Only do this for events.
+      $elements['#element_validate'][] = [static::class, 'dateRecurWidgetValidate'];
+      $elements['start']['#access'] = FALSE;
+      $elements['end']['#access'] = FALSE;
+      $elements['time_zone']['#access'] = FALSE;
+    }
     // Disable "Never" option for "ends on". Causes 500 error on Recurrences tab.
     if ($elements['ends_mode']['#default_value'] != 'count' && $elements['ends_mode']['#default_value'] != 'date') {
       $elements['ends_mode']['#default_value'] = null;

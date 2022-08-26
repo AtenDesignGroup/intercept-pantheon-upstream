@@ -15,6 +15,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\csv_serialization\Encoder\CsvEncoder;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\intercept_core\Utility\Dates;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -65,6 +66,13 @@ class InterceptDashboardController extends ControllerBase {
   protected $encoder;
 
   /**
+   * The Intercept dates utility.
+   *
+   * @var \Drupal\intercept_core\Utility\Dates
+   */
+  protected $dateUtility;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
@@ -75,7 +83,15 @@ class InterceptDashboardController extends ControllerBase {
     $instance->filterProvider = $container->get('intercept_dashboard.filterProvider');
     $instance->currentRequest = $container->get('request_stack')->getCurrentRequest();
     $instance->encoder = new CsvEncoder();
+    $instance->dateUtility = $container->get('intercept_core.utility.dates');
     return $instance;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function dateUtility() {
+    return $this->dateUtility;
   }
 
   /**
@@ -138,7 +154,25 @@ class InterceptDashboardController extends ControllerBase {
       'attendeesByPrimaryEventType',
       $this->t('Attendance by Primary Event Type'),
       $this->getAttendeesByPrimaryEventTypeData(),
+      '#51832F'
     );
+
+    /**
+     * Attendees by Time
+     */
+    $date = new \DateTime('Saturday');
+    $day = '';
+    for ($days = 7; $days--;) {
+      // $day == Sunday, Monday, etc.
+      $day = $date->modify('+1 days')->format('l');
+
+      $build['#charts']['by_time_' . strtolower($day)] = $this->buildLineChart(
+        'attendeesByTime' . $day,
+        $this->t('Attendance by Time'),
+        $this->getAttendeesByTime(),
+        $day
+      );
+    }
 
     return $build;
   }
@@ -563,7 +597,6 @@ class InterceptDashboardController extends ControllerBase {
    * @return array Render array
    */
   public function buildTotalAttendeesCheckedIn() {
-    // Join the attendee counts to the eventQuery.
     $eventQuery = $this->getBaseQuery();
     $eventQuery->join($this->getCheckedInSubQuery(), 'checked_in', 'n.nid = checked_in.nid');
     $eventQuery->addExpression('SUM(checked_in)', 'total_checked_in');
@@ -590,7 +623,6 @@ class InterceptDashboardController extends ControllerBase {
    * @return array Render array
    */
   public function buildTotalRegistrants() {
-    // Join the attendee counts to the eventQuery.
     $eventQuery = $this->getBaseQuery();
     $eventQuery->join($this->getRegistrantsSubQuery(), 'registrants', 'n.nid = registrants.nid');
     $eventQuery->addExpression('SUM(registrants)', 'total_registrants');
@@ -809,7 +841,7 @@ class InterceptDashboardController extends ControllerBase {
     }
 
     // Generate the table.
-    $build['event_table'] = array(
+    $build['event_table'] = [
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
@@ -818,10 +850,10 @@ class InterceptDashboardController extends ControllerBase {
           'intercept-dashboard-table__table'
         ]
       ]
-    );
+    ];
 
     // Add the pager.
-    $build['pager'] = array(
+    $build['pager'] = [
       '#type' => 'pager',
       '#quantity' => 5,
       '#attributes' => [
@@ -829,7 +861,7 @@ class InterceptDashboardController extends ControllerBase {
           'intercept-dashboard-pager'
         ]
       ]
-    );
+    ];
 
     // Add the link to download the CSV.
     $request = \Drupal::request();
@@ -856,7 +888,7 @@ class InterceptDashboardController extends ControllerBase {
    * @return array
    *   A render array.
    */
-  public function buildBarChart($id, $label, array $data) {
+  public function buildBarChart($id, $label, array $data, $color = '#007E9E') {
     $build = [];
     $html_id = Html::getUniqueId($id);
     $html_label_id = $html_id . '--label';
@@ -874,7 +906,7 @@ class InterceptDashboardController extends ControllerBase {
         '#data' => array_map(function ($row) {
           return $row['data']['attendees'] ?? 0;
         }, $data['rows']),
-        '#color' => '#007E9E',
+        '#color' => $color,
       ],
       'xaxis' => [
         '#type' => 'chart_xaxis',
@@ -937,7 +969,7 @@ class InterceptDashboardController extends ControllerBase {
     $build['height'] = (count($data['rows']) + 1) * 40;
 
     // Generate the table.
-    $build['table'] = array(
+    $build['table'] = [
       '#theme' => 'table',
       '#header' => $data['header'],
       '#rows' => $data['rows'],
@@ -947,7 +979,7 @@ class InterceptDashboardController extends ControllerBase {
         ],
         'aria-labelledby' => $html_label_id,
       ]
-    );
+    ];
 
     return $build;
   }
@@ -1077,6 +1109,248 @@ class InterceptDashboardController extends ControllerBase {
   }
 
   /**
+   * Constructs a bar chart render array.
+   *
+   * @param string $id
+   *   The chart identifier.
+   * @param string $label
+   *   The chart label
+   * @param array $data
+   *   An associative array of chart data.
+   * @param array $data['header']
+   *   An array of table header columns.
+   * @param array $data['rows']
+   *   An array of table rows.
+   * @param string $day
+   *   The day of the week for this chart.
+   * @return array
+   *   A render array.
+   */
+  public function buildLineChart($id, $label, array $data, $day) {
+    $build = [];
+    $html_id = Html::getUniqueId($id);
+    $html_label_id = $html_id . '--label';
+    $build['id'] = $html_id;
+    $build['label_id'] = $html_label_id;
+    if ($day == 'Sunday') {
+      $build['label'] = [
+        '#markup' => $label,
+      ];
+    }
+    // Get the first 3 characters of the day to match up with data rows.
+    $day_short = substr($day, 0, 3);
+
+    $build['chart'] = [
+      '#type' => 'chart',
+      '#chart_type' => 'line',
+      'series' => [
+        '#type' => 'chart_data',
+        '#title' => $day,
+        '#data' => [
+          isset($data['rows'][$day_short . '9']) ? $data['rows'][$day_short . '9'] : 0, // 9th hour of the day
+          isset($data['rows'][$day_short . '10']) ? $data['rows'][$day_short . '10'] : 0, // 10th hour of the day
+          isset($data['rows'][$day_short . '11']) ? $data['rows'][$day_short . '11'] : 0,
+          isset($data['rows'][$day_short . '12']) ? $data['rows'][$day_short . '12'] : 0,
+          isset($data['rows'][$day_short . '13']) ? $data['rows'][$day_short . '13'] : 0,
+          isset($data['rows'][$day_short . '14']) ? $data['rows'][$day_short . '14'] : 0,
+          isset($data['rows'][$day_short . '15']) ? $data['rows'][$day_short . '15'] : 0,
+          isset($data['rows'][$day_short . '16']) ? $data['rows'][$day_short . '16'] : 0,
+          isset($data['rows'][$day_short . '17']) ? $data['rows'][$day_short . '17'] : 0,
+          isset($data['rows'][$day_short . '18']) ? $data['rows'][$day_short . '18'] : 0,
+          isset($data['rows'][$day_short . '19']) ? $data['rows'][$day_short . '19'] : 0,
+          isset($data['rows'][$day_short . '20']) ? $data['rows'][$day_short . '20'] : 0,
+        ],
+        '#color' => '#007E9E',
+      ],
+      'xaxis' => [
+        '#type' => 'chart_xaxis',
+        '#labels' => [
+          '9:00',
+          '10:00',
+          '11:00',
+          '12:00',
+          '1:00',
+          '2:00',
+          '3:00',
+          '4:00',
+          '5:00',
+          '6:00',
+          '7:00',
+          '8:00',
+        ],
+        // '#title' => $this->t('This is the x axis title.'),
+      ],
+      'yaxis' => [
+        '#type' => 'chart_yaxis',
+        // '#title' => $this->t('This is the y axis title.'),
+      ],
+      '#raw_options' => [
+        'options' => [ // See https://www.chartjs.org/docs/latest/charts/line.html
+          'indexAxis' => 'x',
+          'maintainAspectRatio' => FALSE,
+          // 'showLine' => FALSE,
+          // 'layout' => [
+          //   'padding' => [
+          //     'bottom' => 5
+          //   ]
+          // ],
+          'plugins' => [
+            'legend' => [
+              'display' => TRUE,
+              'position' => 'left',
+              'labels' => [
+                'boxWidth' => 0,
+                'boxHeight' => 0,
+              ],
+              'font' => [
+                'weight' => 'normal',
+                'size' => 16,
+              ],
+            ],
+          ],
+          'scales' => [
+            'x' => [
+              'grid' => [
+                'display' => false,
+              ],
+              'ticks' => [
+                'font' => [
+                  'size' => 14,
+                ]
+              ],
+            ],
+            'y' => [
+              'grid' => [
+                'display' => false,
+              ],
+              'ticks' => [
+                'color' => '#4C4D4F',
+                'font' => [
+                  'weight' => 'normal',
+                  'size' => 16,
+                ]
+              ],
+              'min' => 0,
+            ],
+          ],
+        ],
+      ],
+      '#attached' => [
+        'library' => [
+          'intercept_dashboard/intercept_dashboard_chart',
+        ],
+      ],
+    ];
+
+    return $build;
+  }
+
+  public function getAttendeesByTime() {
+    $header = [
+      [
+        'data' => $this->t('Time'),
+      ],
+      [
+        'data' => $this->t('Attendees'),
+      ],
+    ];
+
+    $eventQuery = $this->getBaseQuery();
+    $eventQuery->fields('n', [
+      'nid',
+      'title'
+    ]);
+    $eventQuery->fields('date', [
+      'field_date_time_value',
+      'field_date_time_end_value'
+    ]);
+
+    // Attendees
+    $eventQuery->join('node__field_attendees', 'attendees', 'n.nid = attendees.entity_id');
+    $eventQuery->addExpression('SUM(field_attendees_count)', 'attendees_count');
+    $eventQuery->groupBy('attendees.entity_id');
+
+    // Execute the query.
+    $result = $eventQuery->execute();
+
+    // Populate the rows.
+    $rows = [];
+    $grouping_totals = [];
+    foreach($result as $row) {
+      $start_date = $this->dateUtility->getDrupalDate($row->field_date_time_value);
+      $end_date = $this->dateUtility->getDrupalDate($row->field_date_time_end_value);
+      $start_date = $this->dateUtility->convertTimezone($start_date, 'default')->format('Y-m-d\TH:i:s');
+      $end_date = $this->dateUtility->convertTimezone($end_date, 'default')->format('Y-m-d\TH:i:s');
+      $start_date_ts = strtotime($start_date);
+      $end_date_ts = strtotime($end_date);
+      $dayofweek = date('D', $start_date_ts);
+      $start_hour = date('G', $start_date_ts);
+      $end_hour = date('G', $end_date_ts);
+      $duration_seconds = $end_date_ts - $start_date_ts;
+      $duration_hours = $duration_seconds / 60 / 60;
+      $grouping = $dayofweek . $start_hour;
+      $attendees_count = (int) $row->attendees_count;
+      $rows[] = [
+        'data' => [
+          'nid' => $row->nid,
+          'title' => $row->title,
+          'start_start' => $start_date,
+          'end_date' => $end_date,
+          'attendees' => $attendees_count,
+          'dayofweek' => $dayofweek,
+          'start_hour' => $start_hour,
+          'end_hour' => $end_hour,
+          'duration_seconds' => $duration_seconds,
+          'duration' => $duration_hours,
+          'grouping' => $grouping,
+        ]
+      ];
+
+      // Let's get a sum of attendees for the events broken up by hour of the day
+      // and by day of the week.
+      // During for loop classify each start date as Monday Tuesday etc.
+      // Total those together.
+      if (isset($grouping_totals[$grouping])) {
+        $grouping_totals[$grouping] = $grouping_totals[$grouping] + $attendees_count;
+      }
+      else {
+        $grouping_totals[$grouping] = $attendees_count;
+      }
+      
+      // Get the "previous whole number".
+      // This is equal to the number of additional hourly groupings.
+      if (floor($duration_hours) == $duration_hours) { // Is it a whole number?
+        // Subtract 1.
+        $previous_whole_number = $duration_hours - 1;
+      }
+      else { // It is a fraction.
+        // Round down.
+        $previous_whole_number = floor($duration_hours);
+      }
+
+      // Handle events that last for longer than 1 hour.
+      // @TODO: Handle multi-day events.
+      if ($previous_whole_number >= 1 && $previous_whole_number <= 24) {
+        for ($n = 1; $n <= $previous_whole_number; $n++) {
+          if (isset($grouping_totals[$dayofweek . ($start_hour + $n)])) {
+            $grouping_totals[$dayofweek . ($start_hour + $n)] = $grouping_totals[$dayofweek . ($start_hour + $n)] + $attendees_count;
+          }
+          else {
+            $grouping_totals[$dayofweek . ($start_hour + $n)] = $attendees_count;
+          }
+        }
+      }
+
+    }
+    ksort($grouping_totals);
+
+    return [
+      'header' => $header,
+      'rows' => $grouping_totals,
+    ];
+  }
+
+  /**
    * Construct a query to count users checked-in to events.
    * This is a sum of all field_attendees_count values on event_attendance entities
    * that reference the given events.
@@ -1108,7 +1382,6 @@ class InterceptDashboardController extends ControllerBase {
    * @return SelectInterface
    */
   public function getSavedEventsSubQuery() {
-    // Construct the Customer Evaluation subQuery.
     $query = $this->database->select('flag_counts', 'saves');
     $query->condition('flag_id', 'saved_event');
     $query->addField('saves', 'entity_id', 'nid');
@@ -1118,12 +1391,11 @@ class InterceptDashboardController extends ControllerBase {
   }
 
   /**
-   * Construct a query of attendees for an events.
+   * Construct a query of attendees for an event.
    *
    * @return SelectInterface
    */
   public function getAttendeesTotalSubQuery() {
-    // Construct the Customer Evaluation subQuery.
     $query = $this->database->select('node__field_attendees', 'attendees');
     $query->addExpression('SUM(field_attendees_count)', 'attendees');
     $query->addField('attendees', 'entity_id', 'nid');
@@ -1158,7 +1430,6 @@ class InterceptDashboardController extends ControllerBase {
    * @return SelectInterface
    */
   public function getStaffEvaluationsSubQuery() {
-    // Construct the Customer Evaluation subQuery.
     $query = $this->database->select('votingapi_vote', 'v');
     $query->condition('type', 'evaluation_staff');
     $query->isNotNull('feedback__value');
@@ -1209,7 +1480,6 @@ class InterceptDashboardController extends ControllerBase {
    * ].
    */
   public function queryTotalCustomerEvaluations() {
-    // Join the attendee counts to the eventQuery.
     $query = $this->getBaseQuery();
     $query->join($this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.nid');
     $query->addExpression('SUM(customer_evaluations)', 'total_customer_evaluations');

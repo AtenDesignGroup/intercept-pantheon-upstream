@@ -5,22 +5,20 @@
   "license": "GPL-2.0+",
   "repositories": {
     "drupal": {
-        "type": "composer",
-        "url": "https://packages.drupal.org/8"
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
     },
     "assets": {
-        "type": "composer",
-        "url": "https://asset-packagist.org"
+      "type": "composer",
+      "url": "https://asset-packagist.org"
     }
   },
   "require": {
-    "drupal/adminimal_admin_toolbar": "^1.11",
-    "drupal/adminimal_theme": "^1.6",
     "drupal/better_normalizers": "^1.0@beta",
     "drupal/default_content": "^1.0@alpha",
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept": "1.x-dev",
-    "drupal/quick_node_clone": "^1.14",
+    "drupal/quick_node_clone": "^1.15",
     "drupal/stories": "^2.0@alpha",
     "drupal/view_unpublished": "^1.0",
     "drupal/view_user_email": "^1.0.1"

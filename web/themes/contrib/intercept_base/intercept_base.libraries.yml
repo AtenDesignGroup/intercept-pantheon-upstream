@@ -81,6 +81,12 @@ userEvents:
 # Component Library
 #
 
+# Account Menu
+account-menu:
+  css:
+    component:
+      build/components/account-menu/account-menu.component.css: {}
+
 # Action Button
 action-button:
   css:
@@ -248,13 +254,46 @@ footer:
 # Header
 header:
   css:
-    component:
-      build/components/header/header.css: {}
-      build/components/header/header--primary-menu.css: {}
+    theme:
       build/components/header/header--secondary-menu.css: {}
-      build/components/header/header--search.css: {}
+      build/components/header/header.theme.css: {}
   js:
     build/components/header/header.js: {}
+    build/components/header/headerDeviceContext.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - intercept_base/hoverIntent
+    - intercept_base/toggle
+
+# Header - Desktop
+header-desktop:
+  css:
+    component:
+      build/components/header-desktop/header-desktop.component.css: {}
+  js:
+    build/components/header-desktop/header-desktop.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - intercept_base/hoverIntent
+    - intercept_base/tabbed
+
+# Header - Mobile
+header-mobile:
+  css:
+    component:
+      build/components/header-mobile/header-mobile.component.css: {}
+  js:
+    build/components/header-mobile/header-mobile.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - intercept_base/hoverIntent
+    - intercept_base/tabbed
 
 # Highlight
 highlight:
@@ -325,6 +364,18 @@ location:
       build/components/location/location.component.css: {}
     theme:
       build/components/location/location.theme.css: {}
+
+# Main Menu
+main-menu:
+  css:
+    component:
+      build/components/main-menu/main-menu.component.css: {}
+  js:
+    build/components/main-menu/main-menu.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - intercept_base/tabbed
 
 # Media
 media:
@@ -505,3 +556,21 @@ view-switcher:
       build/components/view-switcher/view-switcher.component.css: {}
     theme:
       build/components/view-switcher/view-switcher.theme.css: {}
+
+# Nav / Menu
+hoverIntent:
+  version: 1.0.x
+  js:
+    vendor/jQuery.hoverIntent/jQuery.hoverIntent.js: {}
+
+tabbed:
+  version: 1.0.x
+  js:
+    build/libraries/tabbed/tabbed.js: {}
+
+toggle:
+  version: 1.0.x
+  js:
+    build/libraries/toggle/toggle.js: {}
+  dependencies:
+    - core/jquery

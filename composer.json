@@ -22,7 +22,7 @@
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
     "drupal/core-composer-scaffold": "^9.2",
-    "drupal/core-recommended": "9.3.19",
+    "drupal/core-recommended": "9.4.5",
     "drupal/date_recur": "^3.0",
     "drupal/date_recur_modular": "^3.0",
     "drupal/default_content": "^1.0",
@@ -41,6 +41,7 @@
     "drupal/video_embed_field": "^2.4",
     "drupal/view_unpublished": "^1.0",
     "drupal/view_user_email": "^1.0.1",
+    "drupal/views_bulk_operations": "^4.0",
     "drush/drush": "^10",
     "lordelph/php-sip2": "^2.0",
     "pantheon-systems/drupal-integrations": "^9",
@@ -132,6 +133,9 @@
       },
       "drupal/field_group": {
         "Resolves PHP notices on My Account Settings form": "https://www.drupal.org/files/issues/2021-02-26/3059614-field_group-8.x-dev-fix-undefined-property-48.patch"
+      },
+      "drupal/gin": {
+        "Adds template override for /bulk-room-reservation/add": "patches/bulk_room_reservations_date_recur_template.patch"
       },
       "drupal/smsframework": {
         "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"

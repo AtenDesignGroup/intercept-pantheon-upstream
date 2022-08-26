@@ -46,6 +46,9 @@ function intercept_base_preprocess_page(&$variables) {
       $variables['is_staff'] = FALSE;
     }
   }
+
+  $config = \Drupal::config('system.site');
+  $variables['site_name'] = $config->get('name');
 }
 
 /**

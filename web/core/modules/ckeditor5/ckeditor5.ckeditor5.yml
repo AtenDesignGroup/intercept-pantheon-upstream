@@ -232,8 +232,8 @@ ckeditor5_codeBlock:
       - codeBlock.CodeBlock
       - htmlSupport.GeneralHtmlSupport
     config:
-      # The CodeBlock plugin supports only `<pre><code>â€¦</code></pre>`.
-      # Configure GHS to support `<pre>â€¦</pre>` markup as well.
+      # The CodeBlock plugin supports only `<pre><code>…</code></pre>`.
+      # Configure GHS to support `<pre>…</pre>` markup as well.
       htmlSupport:
         allow:
           -

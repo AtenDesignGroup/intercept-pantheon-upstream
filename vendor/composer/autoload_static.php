@@ -165,6 +165,7 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
             'Drupal\\Component\\' => 17,
             'DrupalCodeGenerator\\' => 20,
             'Dompdf\\' => 7,
+            'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Collections\\' => 28,
             'Doctrine\\Common\\Annotations\\' => 28,
@@ -495,6 +496,10 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         array (
             0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
+        'Doctrine\\Deprecations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
+        ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/lexer/lib/Doctrine/Common/Lexer',
@@ -620,9 +625,6 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'Drupal\\Core\\Cache\\DatabaseCacheTagsChecksum' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Cache/DatabaseCacheTagsChecksum.php',
         'Drupal\\Core\\Database\\Connection' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Database/Connection.php',
         'Drupal\\Core\\Database\\Database' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Database/Database.php',
-        'Drupal\\Core\\Database\\Driver\\mysql\\Connection' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Database/Driver/mysql/Connection.php',
-        'Drupal\\Core\\Database\\Driver\\pgsql\\Connection' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Database/Driver/pgsql/Connection.php',
-        'Drupal\\Core\\Database\\Driver\\sqlite\\Connection' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Database/Driver/sqlite/Connection.php',
         'Drupal\\Core\\Database\\Statement' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Database/Statement.php',
         'Drupal\\Core\\Database\\StatementInterface' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/Database/StatementInterface.php',
         'Drupal\\Core\\DependencyInjection\\Container' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core/DependencyInjection/Container.php',
@@ -639,6 +641,7 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PEAR_Exception' => __DIR__ . '/..' . '/pear/pear_exception/PEAR/Exception.php',
+        'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',

@@ -186,7 +186,7 @@ class SourceEditingRedundantTagsConstraintValidator extends ConstraintValidator 
   private function pluginsSupplyingTagsMessage(HTMLRestrictions $overlap, array $plugin_definitions, HTMLRestrictions $enabled_plugin_restrictions): string {
     $message_array = [];
     $message_string = '';
-    foreach ($plugin_definitions as $plugin_id => $definition) {
+    foreach ($plugin_definitions as $definition) {
       if ($definition->hasElements()) {
         $plugin_capabilities = HTMLRestrictions::fromString(implode(' ', $definition->getElements()));
 

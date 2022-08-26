@@ -370,7 +370,7 @@ class EventRegisterForm extends React.Component {
           <small>
             Telephone: {drupalSettings.intercept.user.telephone}<br />
             Email: {drupalSettings.intercept.user.email}<br />
-            <em>Need to update your info? After finishing your registration visit My Account &gt; Profile.</em>
+            <em>Need to update your info? After finishing your registration visit My Account &gt; Settings.</em>
           </small>
         </div>
       );

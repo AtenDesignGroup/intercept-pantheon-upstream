@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function intercept_bulk_room_reservation_install() {
+  // Increase module weight to perform the authmap cleanup later.
+  module_set_weight('intercept_bulk_room_reservation', 1);
+}
+
+/**
+ * Increase intercept_bulk_room_reservation module weight.
+ *
+ * Implements hook_update_N().
+ */
+function intercept_bulk_room_reservation_update_9001() {
+  // Increase module weight to perform the authmap cleanup later.
+  module_set_weight('intercept_bulk_room_reservation', 1);
+}

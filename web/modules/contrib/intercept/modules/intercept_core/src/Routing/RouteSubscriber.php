@@ -100,6 +100,16 @@ class RouteSubscriber extends RouteSubscriberBase {
     if ($route = $collection->get('user.page')) {
       $route->setRequirement('_role', 'intercept_registered_customer');
     }
+    elseif ($route = $collection->get('entity.user.collection')) {
+      $people_permissions = [
+        'administer users',
+        'access all management pages'
+      ];
+      $collection->addRequirements([
+        '_permission' => implode('+', $people_permissions),
+      ]);
+
+    }
   }
 
 }

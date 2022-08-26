@@ -1,0 +1,25 @@
+
+{% macro account_menu(content, id, is_staff, logged_in) %}
+  {% set button_id = 'account-menu__button--' ~ id %}
+  {% set panel_id = 'account-menu__panel--' ~ id %}
+  {% set label = "Log In / Sign Up" %}
+  {% set modifier = "logged-out" %}
+
+  {% if is_staff %}
+    {% set label = "Admin" %}
+    {% set modifier = "is-staff" %}
+  {% elseif logged_in %}
+    {% set label = "My Account" %}
+    {% set modifier = "is-logged-in" %}
+  {% endif %}
+  {{ attach_library('intercept_base/account-menu') }}
+  <div class="account-menu">
+    <button id="{{button_id}}" data-toggleGroup="header" data-toggleFocused aria-controls="{{panel_id}}" aria-haspopup aria-expanded="false" class="js-toggle account-menu__button">{{ label|t }}</button>
+    <div id="{{panel_id}}" class="account-menu__panel" role="dialog" aria-labelledby="{{button_id}}" aria-expanded="false">
+      <div class="account-menu__content">
+        {{content}}
+      </div>
+    </div>
+  </div>
+
+{% endmacro %}

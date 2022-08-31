@@ -29,7 +29,7 @@
     "jss": "^10.0.4",
     "lodash": "4.17.19",
     "moment": "^2.20.1",
-    "moment-timezone": "^0.5.17",
+    "moment-timezone": "^0.5.35",
     "prop-types": "^15.7.2",
     "react": "17.0.1",
     "react-app-polyfill": "2.0.0",

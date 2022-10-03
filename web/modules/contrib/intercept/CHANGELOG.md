@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [8.x-1.0-beta5] - 2022-10-3
+## [8.x-1.0-beta6] - 2022-10-3
 
 - Fixed Intercept: Event Teaser Not Using Serifed Font For Location Details
 - Room Reservation Form Updates:

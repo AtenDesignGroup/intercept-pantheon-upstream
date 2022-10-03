@@ -58,6 +58,7 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *     "FutureReservation" = {},
  *     "LocationOpenHours" = {},
  *     "MaxCapacity" = {},
+ *     "MinCapacity" = {},
  *     "ReservationLimit" = {},
  *     "ReservationMaxDuration" = {},
  *     "StaffRoomPermissions" = {},

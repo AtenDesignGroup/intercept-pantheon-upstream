@@ -95,7 +95,7 @@ class Profile extends EditorialContentEntityBase implements ProfileInterface {
     // Allow the label to be overridden.
     $event = new ProfileLabelEvent($this, $label);
     $event_dispatcher = \Drupal::service('event_dispatcher');
-    $event_dispatcher->dispatch(ProfileEvents::PROFILE_LABEL, $event);
+    $event_dispatcher->dispatch($event, ProfileEvents::PROFILE_LABEL);
     $label = $event->getLabel();
 
     return $label;
@@ -259,8 +259,12 @@ class Profile extends EditorialContentEntityBase implements ProfileInterface {
     if (!$this->isPublished()) {
       $this->setDefault(FALSE);
     }
-    // Mark the profile as default if there's no other default.
-    if ($this->getOwnerId() && $this->isPublished() && !$this->isDefault()) {
+    // Mark the profile as default if it's being owned by existing
+    // non-anonymous user and there's no other default.
+    if ($this->getOwnerId()
+      && $this->getOwner()
+      && $this->isPublished()
+      && !$this->isDefault()) {
       $profile = $storage->loadByUser($this->getOwner(), $this->bundle());
       if (!$profile || !$profile->isDefault()) {
         $this->setDefault(TRUE);
@@ -283,7 +287,7 @@ class Profile extends EditorialContentEntityBase implements ProfileInterface {
     if ($this->getOwnerId()) {
       $default = $this->isDefault();
       $original_default = $this->original ? $this->original->isDefault() : FALSE;
-      if ($default && !$original_default) {
+      if ($default && !$original_default && $this->getOwner()) {
         // The profile was set as default, remove the flag from other profiles.
         $profiles = $storage->loadMultipleByUser($this->getOwner(), $this->bundle());
         foreach ($profiles as $profile) {

@@ -116,9 +116,6 @@ function intercept_equipment_mail($key, &$message, $params) {
         '@room_title' => $params['room_title'],
         '@event_title' => $params['event_title'],
       ], $options);
-      // Do we need a notification for the requestor? Legacy system did it but
-      // we also have an equipment reservations listing page. Let's not do
-      // this for launch.
       break;
   }
 }

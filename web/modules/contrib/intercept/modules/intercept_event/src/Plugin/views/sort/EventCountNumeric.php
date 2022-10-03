@@ -21,7 +21,6 @@ class EventCountNumeric extends SortPluginBase implements CacheableDependencyInt
   public function query() {
 
     $this->ensureMyTable();
-    $debug = true;
 
     if ($this->field == 'event_registration_count') {
       $alias = 'event_count_value';

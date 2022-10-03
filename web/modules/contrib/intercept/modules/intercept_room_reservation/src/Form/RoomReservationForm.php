@@ -181,8 +181,12 @@ class RoomReservationForm extends ContentEntityForm {
     }
     // Only set the field_user value if it's not already set via clone/copy.
     $field_user = $entity->get('field_user')->getValue();
+    $current_user = \Drupal::currentUser();
+    $roles = $current_user->getRoles();
     if ($entity->isNew() && empty($field_user)) {
-      $entity->set('field_user', \Drupal::currentUser()->id());
+      if (in_array('intercept_registered_customer', $roles)) {
+        $entity->set('field_user', \Drupal::currentUser()->id());
+      }
     }
 
     // We make multiple trips through this buildForm() method, and the $room
@@ -208,7 +212,7 @@ class RoomReservationForm extends ContentEntityForm {
     $moduleHandler = \Drupal::moduleHandler();
     $userIsCertified = TRUE;
     if ($moduleHandler->moduleExists('intercept_certification')) {
-      $userIsCertified = (!empty($room)) ? $this->certificationChecker->userIsCertified($entity->field_user->target_id, $room) : TRUE;
+      $userIsCertified = (!empty($room) && isset($entity->field_user->target_id)) ? $this->certificationChecker->userIsCertified($entity->field_user->target_id, $room) : TRUE;
     }
 
     if (empty($userCanReserveRoom) && !empty($room)) {
@@ -240,11 +244,24 @@ class RoomReservationForm extends ContentEntityForm {
       return $form;
     }
 
+    // The following checkbox is only for the staff version of the form.
+    if ($entity->isNew() && empty($field_user)) {
+      if (!in_array('intercept_registered_customer', $roles)) {
+        $form['reservation_for_me'] = [
+          '#type' => 'checkbox',
+          '#title' => 'This reservation is for me.',
+          '#default_value' => 0,
+          '#weight' => 3,
+        ];
+      }
+    }
+
     $form = parent::buildForm($form, $form_state);
     $form['#attached'] = [
       'library' => [
         'intercept_room_reservation/room-reservations',
         'intercept_core/delay_keyup',
+        'intercept_room_reservation/reservation_for_me',
       ],
     ];
 
@@ -266,6 +283,39 @@ class RoomReservationForm extends ContentEntityForm {
       'delayed-keyup',
     ];
     $form['field_dates']['widget'][0]['end_value']['#attributes']['class'] = [
+      'delayed-keyup',
+    ];
+    // AJAX userCallback is called when a customer card number is selected.
+    $form['field_user']['widget'][0]['target_id']['#ajax'] = [
+      'callback' => [$this, 'userCallback'],
+      'event' => 'autocompleteclose',
+      'wrapper' => 'edit-field-user-0-message',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t('Verifying account...'),
+      ],
+    ];
+    $form['field_user']['widget'][0]['message'] = [
+      '#type' => 'item',
+    ];
+    $form['field_user']['widget'][0]['value']['#attributes']['class'] = [
+      'delayed-keyup',
+    ];
+
+    // Adds AJAX callback for minimum/maximum on attendee count field.
+    $form['field_attendee_count']['widget'][0]['value']['#ajax'] = [
+      'callback' => [$this, 'attendeeCountCallback'],
+      'event' => 'change',
+      'wrapper' => 'edit-field-attendee-count-0-message',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t('Checking room capacity...'),
+      ],
+    ];
+    $form['field_attendee_count']['widget'][0]['message'] = [
+      '#type' => 'item',
+    ];
+    $form['field_attendee_count']['widget'][0]['value']['#attributes']['class'] = [
       'delayed-keyup',
     ];
 
@@ -454,19 +504,6 @@ class RoomReservationForm extends ContentEntityForm {
         $node = $this->entityTypeManager->getStorage('node')->load($room);
         // Check permissions to reserve this room.
         $userCanReserveRoom = $this->userCanReserveRoom($node, $userIsCertified);
-
-        // Check attendees vs. capacity.
-        $attendees = $form_state->getValue(['field_attendee_count', 0])['value'];
-        if ($attendees > 0) {
-          $capacity_min = $node->get('field_capacity_min')->value;
-          $capacity_max = $node->get('field_capacity_max')->value;
-          if ($attendees < $capacity_min) {
-            $form_state->setErrorByName('field_attendee_count', $this->t('Sorry, the minimum number of attendees for this room is @capacity.', ['@capacity' => $capacity_min]));
-          }
-          // elseif ($attendees > $capacity_max) { // Already handled by MaxCapacityConstraintValidator
-          //   $form_state->setErrorByName('field_attendee_count', $this->t('Sorry, the maximum capacity of this room is @capacity.', ['@capacity' => $capacity_max]));
-          // }
-        }
       }
       if ($userCanReserveRoom == FALSE) {
         $form_state->setErrorByName('field_room', $this->t('Sorry, it doesn\'t appear that you\'re able to reserve that room.'));
@@ -497,6 +534,35 @@ class RoomReservationForm extends ContentEntityForm {
    */
   public function availabilityCallback(array &$form, FormStateInterface $form_state) {
     return $this->validationMessageBuilder->availabilityCallback($form, $form_state);
+  }
+
+  /**
+   * Custom AJAX handler. Adds validation messages in relation to field_user.
+   *
+   * @param array $form
+   *   Nested array of form elements that comprise the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return void
+   */
+  public function userCallback(array &$form, FormStateInterface $form_state) {
+    return $this->validationMessageBuilder->userCallback($form, $form_state);
+  }
+
+  /**
+   * Custom AJAX handler. Adds validation messages in relation to
+   * field_attendee_count for staff.
+   *
+   * @param array $form
+   *   Nested array of form elements that comprise the form.
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return void
+   */
+  public function attendeeCountCallback(array &$form, FormStateInterface $form_state) {
+    return $this->validationMessageBuilder->attendeeCountCallback($form, $form_state);
   }
 
   /**

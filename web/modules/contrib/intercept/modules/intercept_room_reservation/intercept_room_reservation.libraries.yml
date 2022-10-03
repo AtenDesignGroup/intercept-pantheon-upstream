@@ -98,3 +98,11 @@ room_reservation_form_helper:
     - core/jquery
     - core/jquery.once
     - core/drupal
+
+reservation_for_me:
+  js:
+    js/reservation_for_me.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal

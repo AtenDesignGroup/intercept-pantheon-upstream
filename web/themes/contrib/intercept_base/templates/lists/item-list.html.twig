@@ -31,7 +31,7 @@
     {%- if items -%}
       <{{ list_type }}{{ attributes.addClass(list_type == 'ol' ? 'list--numbered' : 'list--bullets') }}>
         {%- for item in items -%}
-          <li{{ item.attributes }}>{{ item.value }}</li>
+          <li{{ item.attributes }}>{{ item.value|raw }}</li>
         {%- endfor -%}
       </{{ list_type }}>
     {%- else -%}

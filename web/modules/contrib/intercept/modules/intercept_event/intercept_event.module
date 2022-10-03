@@ -387,6 +387,12 @@ function intercept_event_entity_presave(EntityInterface $entity) {
             if ($recurring_event) {
               \Drupal::messenger()->addMessage(t('You have successfully canceled this instance of the event. If you need to cancel other recurrences, please use the Recurrences tab.'));
             }
+            // Registration should also be closed.
+            $entity->set('field_must_register', NULL);
+            $entity->set('field_has_waitlist', NULL);
+            $entity->set('field_capacity_max', NULL);
+            $entity->set('field_event_register_period', NULL);
+            $entity->set('field_waitlist_max', NULL);
           }
           elseif ($event_status == 'scheduled') {
             if (strpos($title, 'Canceled') !== FALSE) {

@@ -1,0 +1,5 @@
+services:
+  intercept_certification.route_subscriber:
+    class: Drupal\intercept_certification\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

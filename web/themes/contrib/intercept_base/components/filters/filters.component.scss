@@ -37,6 +37,11 @@
     }
   }
 
+  .field-suffix {
+    position:absolute;
+    top: 50px;
+  }
+
   input,
   select {
     width: 100%;
@@ -118,6 +123,46 @@
 
     .form-actions {
       flex-basis: 100%;
+    }
+  }
+
+  
+  #edit-field-user-0-message {
+    color: #dc0078;
+    font-weight: 600;
+    margin: 1em 0;
+    @include bp(large) {
+      font-size: 1rem;
+    }
+  }
+
+
+  .ajax-progress-throbber {
+    position: absolute;
+    top: 50px;
+    .message {
+      margin-top: 0.5em;
+      font-family: inherit;
+      font-size: rem(12px);
+      font-style: normal;
+    }
+  } 
+
+}
+
+/* Certifications View */
+#views-exposed-form-intercept-certifications-page {
+  .filters__inputs-inner {
+    ul#edit-field-user-0-message {
+      margin: 0 0 0 30px;
+    }
+    @include bp(medium) {
+      > .form-item-field-room-target-id {
+        align-self: flex-start;
+      }
+    }
+    #edit-field-user-target-id {
+      min-width: 350px;
     }
   }
 }

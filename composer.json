@@ -22,7 +22,7 @@
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
     "drupal/core-composer-scaffold": "^9.2",
-    "drupal/core-recommended": "9.4.5",
+    "drupal/core-recommended": "9.4.7",
     "drupal/date_recur": "^3.0",
     "drupal/date_recur_modular": "^3.0",
     "drupal/default_content": "^1.0",
@@ -126,7 +126,8 @@
         "Fix configuration": "https://www.drupal.org/files/issues/2020-05-06/schema-add-to-calender-config-3092765-6.patch"
       },
       "drupal/core": {
-        "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch"
+        "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",
+        "Allows custom AJAX callbacks on Views exposed filters": "https://www.drupal.org/files/issues/2022-09-08/2842525-116-media-library-quickfix.patch"
       },
       "drupal/date_recur_modular": {
         "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2020-04-01/3124197.patch"

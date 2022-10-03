@@ -5,3 +5,7 @@ Filtering on multiple relationships in JSON:API
 Source: https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch
 
 
+Allows custom AJAX callbacks on Views exposed filters
+Source: https://www.drupal.org/files/issues/2022-09-08/2842525-116-media-library-quickfix.patch
+
+

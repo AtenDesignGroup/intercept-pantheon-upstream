@@ -17,4 +17,4 @@ services:
 
   intercept_room_reservation.validation_message_builder:
     class: Drupal\intercept_room_reservation\ValidationMessageBuilder
-    arguments: ['@intercept_core.reservation.manager', '@entity_type.manager', '@intercept_core.utility.dates', '@current_user']
+    arguments: ['@intercept_core.reservation.manager', '@entity_type.manager', '@intercept_core.utility.dates', '@current_user', '@config.factory', '@plugin.manager.intercept_ils']

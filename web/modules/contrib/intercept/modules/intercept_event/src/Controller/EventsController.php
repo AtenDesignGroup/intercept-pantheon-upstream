@@ -727,7 +727,6 @@ class EventsController extends ControllerBase {
         if ($strPageType == "registrations") {
           foreach ($arryPageData as $id => $arryRegistrationInfo) {
 
-            $debug = true;
             $strPageHTML .= '
             <tr>
               <td class="container">' . $names[$id]['name_last'] . '</td>

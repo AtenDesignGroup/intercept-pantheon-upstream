@@ -146,7 +146,8 @@
     opacity: 0; }
   #drupal-off-canvas .description,
   #drupal-off-canvas .form-item .description,
-  #drupal-off-canvas .details-description {
+  #drupal-off-canvas .details-description,
+  #drupal-off-canvas .ajax-progress-throbber .message {
     margin-top: 0.5em;
     font-family: inherit;
     font-size: 0.75rem;

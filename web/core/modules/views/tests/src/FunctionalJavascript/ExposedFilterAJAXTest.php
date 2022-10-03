@@ -5,6 +5,7 @@ namespace Drupal\Tests\views\FunctionalJavascript;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\views\Tests\ViewTestData;
 
 /**
  * Tests the basic AJAX functionality of Views exposed forms.
@@ -19,7 +20,12 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['node', 'views', 'views_test_modal'];
+  protected static $modules = ['node', 'views', 'views_test_modal', 'views_test_config'];
+
+  /**
+   * {@inheritdoc}
+   */
+  public static $testViews = ['test_content_ajax'];
 
   /**
    * {@inheritdoc}
@@ -192,6 +198,29 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
     // Make sure that the views_dom_id didn't change, which would indicate that
     // the page reloaded instead of doing an AJAX update.
     $this->assertSame($ajax_views_before, $ajax_views_after);
+  }
+
+  /**
+   * Tests if AJAX events can be attached to the exposed filter form.
+   */
+  public function testExposedFilterAjaxCallback() {
+    ViewTestData::createTestViews(self::class, ['views_test_config']);
+
+    // Attach an AJAX event to all 'title' fields in the exposed filter form.
+    \Drupal::service('module_installer')->install(['views_test_exposed_filter']);
+    $this->resetAll();
+    $this->rebuildContainer();
+    $this->container->get('module_handler')->reload();
+
+    $this->drupalGet('test-content-ajax');
+
+    $page = $this->getSession()->getPage();
+    $this->assertSession()->pageTextContains('Default prefix');
+
+    $page->fillField('title', 'value');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    $this->assertSession()->pageTextContains('Callback called.');
   }
 
 }

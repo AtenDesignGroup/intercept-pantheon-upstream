@@ -279,7 +279,6 @@ function profile_entity_base_field_info(EntityTypeInterface $entity_type) {
         ->setDescription(t('User profiles.'))
         ->setClass(ProfileEntityFieldItemList::class)
         ->setSetting('target_type', 'profile')
-        ->setSetting('target_type', 'profile')
         ->setSetting('handler_settings', [
           'target_bundles' => [
             $profile_type_id => $profile_type_id,

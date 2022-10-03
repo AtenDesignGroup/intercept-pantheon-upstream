@@ -84,7 +84,7 @@ class ProfileDefaultTest extends ProfileTestBase {
     $this->assertSession()->pageTextContains($field_label);
     $edit = ["fields[{$id}_profiles][label]" => 'inline'];
     $edit = ["fields[{$id}_profiles][type]" => 'entity_reference_entity_view'];
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->submitForm($edit, t('Save'));
   }
 
 }

@@ -5,12 +5,15 @@ namespace Drupal\intercept_room_reservation;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
-use Drupal\Core\Session\AccountProxy;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountProxy;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_core\ReservationManager;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\intercept_ils\ILSManager;
+use Drupal\node\Entity\Node;
 
 /**
  * ValidationMessageBuilder service.
@@ -46,6 +49,20 @@ class ValidationMessageBuilder {
   protected $reservationManager;
 
   /**
+   * ILS client object.
+   *
+   * @var object
+   */
+  private $client;
+
+  /**
+   * ILS plugin object.
+   *
+   * @var object
+   */
+  protected $interceptILSPlugin;
+
+  /**
    * Constructs a ValidationMessageBuilder object.
    *
    * @param \Drupal\example\ExampleInterface $intercept_core_reservation_manager
@@ -56,12 +73,22 @@ class ValidationMessageBuilder {
    *   The intercept_core.utility.dates service.
    * @param \Drupal\intercept_core\Utility\Dates $dateUtility
    *   The Intercept dates utility.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\intercept_ils\ILSManager $ils_manager
+   *   The intercept_ils ILS manager service.
    */
-  public function __construct(ReservationManager $reservationManager, EntityTypeManagerInterface $entityTypeManager, Dates $dateUtility, AccountProxy $currentUser) {
+  public function __construct(ReservationManager $reservationManager, EntityTypeManagerInterface $entityTypeManager, Dates $dateUtility, AccountProxy $currentUser, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
     $this->reservationManager = $reservationManager;
     $this->entityTypeManager = $entityTypeManager;
     $this->dateUtility = $dateUtility;
     $this->currentUser = $currentUser;
+    $settings = $config_factory->get('intercept_ils.settings');
+    $intercept_ils_plugin = $settings->get('intercept_ils_plugin', '');
+    if ($intercept_ils_plugin) {
+      $this->interceptILSPlugin = $ils_manager->createInstance($intercept_ils_plugin);
+      $this->client = $this->interceptILSPlugin->getClient();
+    }
   }
 
   /**
@@ -111,6 +138,89 @@ class ValidationMessageBuilder {
       ]);
       $response->addCommand($command);
     }
+
+    return $response;
+  }
+
+  /**
+   * Runs user validation and triggers an update event in the browser.
+   *
+   * @param array $form
+   *   The form structure.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current form state.
+   *
+   * @return \Drupal\Core\Ajax\AjaxResponse
+   *   An array of Ajax commands.
+   */
+  public function userCallback(array &$form, FormStateInterface $form_state) {
+    $messages = [];
+    $response = new AjaxResponse();
+    $markup = NULL;
+    $validationMessages = [];
+
+    $field_user = $form_state->getValue('field_user');
+    if (isset($field_user[0]['target_id'])) {
+      $uid = $field_user[0]['target_id'];
+      $validationMessages = $this->checkUser($uid);
+    }
+    if (!empty($validationMessages)) {
+      $messages = [];
+      foreach (array_filter($validationMessages) as $key => $validationMessage) {
+        if (!empty($validationMessage)) {
+          $messages[] = $validationMessage;
+        }
+      }
+    }
+    $markup = $this->wrapUserValidationError($messages);
+    $command = new ReplaceCommand('[id^="edit-field-user-0-message"]', $markup);
+    $response->addCommand($command);
+
+    return $response;
+  }
+
+  /**
+   * Runs attendee count validation and triggers an update event in the browser.
+   *
+   * @param array $form
+   *   The form structure.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current form state.
+   *
+   * @return \Drupal\Core\Ajax\AjaxResponse
+   *   An array of Ajax commands.
+   */
+  public function attendeeCountCallback(array &$form, FormStateInterface $form_state) {
+    $messages = [];
+    $response = new AjaxResponse();
+    $markup = NULL;
+    $validationMessages = [];
+
+    $field_attendee_count = $form_state->getValue('field_attendee_count');
+    if (isset($field_attendee_count[0]['value'])) {
+      $attendee_count = $field_attendee_count[0]['value'];
+
+      // Get the room value from the form_state.
+      $field_room = $form_state->getValue('field_room');
+      if (isset($field_room[0]['target_id'])) {
+        // Get the min and max capacity values from the room node.
+        $room_node = Node::load($field_room[0]['target_id']);
+        $field_capacity_min = $room_node->get('field_capacity_min')->getString();
+        $field_capacity_max = $room_node->get('field_capacity_max')->getString();
+        $validationMessages = $this->checkAttendeeCount($attendee_count, $field_capacity_min, $field_capacity_max);
+      }
+    }
+    if (!empty($validationMessages)) {
+      $messages = [];
+      foreach (array_filter($validationMessages) as $key => $validationMessage) {
+        if (!empty($validationMessage)) {
+          $messages[] = $validationMessage;
+        }
+      }
+    }
+    $markup = $this->wrapAttendeeCountValidationError($messages);
+    $command = new ReplaceCommand('[id^="edit-field-attendee-count-0-message"]', $markup);
+    $response->addCommand($command);
 
     return $response;
   }
@@ -167,6 +277,92 @@ class ValidationMessageBuilder {
   }
 
   /**
+   * Checks to see details of the customer being selected for the reservation.
+   *
+   * @param string $uid
+   *   Contains the user id to check.
+   *
+   * @return array
+   *   Array of zero or more validation errors to be inserted into render array.
+   */
+  public function checkUser($uid) {
+    $messages = [];
+    $user = $this->entityTypeManager->getStorage('user')->load($uid);
+    // Get current reservations for this user.
+    if ($reservations = $this->reservationManager->getUserReservations($user)) {
+      if (!empty($reservations)) {
+        $messages['has_existing_reservation'] = 'WARNING: This customer has an existing room reservation.';
+      }
+    }
+    if ($this->client && $patron = $this->client->patron->getByUser($user)) {
+      // Get notes for this user.
+      $notes = $patron->getNotes();
+      if (isset($notes->NonBlockingStatusNotes) && !empty($notes->NonBlockingStatusNotes)) {
+        $messages['notes_non_blocking'] = 'Notes: ' . $this->nl2br2($notes->NonBlockingStatusNotes);
+      }
+      if (isset($notes->BlockingStatusNotes) && !empty($notes->BlockingStatusNotes)) {
+        $messages['notes_blocking'] = 'BLOCKING NOTES: ' . $this->nl2br2($notes->BlockingStatusNotes);
+      }
+      // Check expiration date.
+      if (method_exists($patron, 'circulateBlocksGet')) {
+        $circulation_blocks = $patron->circulateBlocksGet();
+        preg_match('/\/Date\((-*)(\d+)(-\d+)\)\//', $circulation_blocks->ExpirationDate, $date);
+        $expiration_date = $date[1] . $date[2]/1000;
+        if ($expiration_date < time()) { // This card is expired.
+          $messages['expired_account'] = "WARNING: This customer's account has expired.";
+        }
+        // For debugging:
+        // elseif ($expiration_date) {
+        //   $messages['debug'] = "This customer's account will expire on " . date('m-d-Y', $expiration_date) . ".";
+        // }
+      }
+    }
+
+    return $messages;
+  }
+
+  /**
+   * Replaces all linebreaks with <br>
+   * 
+   * @param str $string
+   *   The string to be replaced.
+   */
+  public function nl2br2($string) {
+    $string = str_replace(["\r\n", "\r", "\n"], "<br>", $string);
+    return $string;
+  }
+
+  /**
+   * Checks to see if the attendee count requested for the reservation is in
+   * line with the specified min/max attendees of the room.
+   *
+   * @param string $attendee_count
+   *   Contains the user id to check.
+   * @param string $field_capacity_min
+   *   The minimum capacity of the selected room.
+   * @param string $field_capacity_max
+   *   The maximum capacity of the selected room.
+   *
+   * @return array
+   *   Array of zero or more validation errors to be inserted into render array.
+   */
+  public function checkAttendeeCount($attendee_count, $field_capacity_min, $field_capacity_max) {
+    $messages = [];
+
+    if ($field_capacity_min == 1 && $field_capacity_max == 1 && $attendee_count != 1) {
+      $messages['attendee_count'] = 'WARNING: This room is designated for only 1 person at a time.';
+    }
+    elseif ($attendee_count < $field_capacity_min || $attendee_count > $field_capacity_max) {
+      $messages['attendee_count'] = "WARNING: This room is designated for groups of $field_capacity_min-$field_capacity_max people.";
+    }
+    // else {
+    //   $messages['attendee_count'] = 'This is a good number of attendees for capacity.';
+    // }
+    
+    return $messages;
+  }
+
+  /**
    * Gets the base reservation parameters.
    *
    * @param \Drupal\Core\Form\FormStateInterface $form_state
@@ -213,18 +409,6 @@ class ValidationMessageBuilder {
         ],
       ];
     }
-
-    $item = [
-      '#type' => 'html_tag',
-      '#attributes' => [
-        'id' => 'edit-field-dates-0-message',
-      ],
-      '#tag' => 'div',
-      'child' => [
-        '#type' => 'intercept_field_error_message',
-        '#message' => reset($messages),
-      ],
-    ];
     if (count($messages) > 1) {
       $item = [
         '#theme' => 'item_list',
@@ -234,6 +418,108 @@ class ValidationMessageBuilder {
           'id' => 'edit-field-dates-0-message',
         ],
         '#wrapper_attributes' => ['class' => 'container'],
+      ];
+    }
+    else {
+      $item = [
+        '#type' => 'html_tag',
+        '#attributes' => [
+          'id' => 'edit-field-dates-0-message',
+        ],
+        '#tag' => 'div',
+        'child' => [
+          '#type' => 'intercept_field_error_message',
+          '#message' => reset($messages),
+        ],
+      ];
+
+    }
+    return $item;
+  }
+
+  /**
+   * Creates a render array from the $messages returned by checkUser().
+   */
+  public function wrapUserValidationError($messages) {
+    if (empty($messages)) {
+      return [
+        '#type' => 'html_tag',
+        '#attributes' => [
+          'id' => 'edit-field-user-0-message',
+        ],
+        '#tag' => 'div',
+        'child' => [
+          '#type' => 'intercept_field_error_message',
+          '#message' => '',
+        ],
+      ];
+    }
+    if (count($messages) > 1) {
+      $item = [
+        '#theme' => 'item_list',
+        '#list_type' => 'ul',
+        '#items' => $messages,
+        '#attributes' => [
+          'id' => 'edit-field-user-0-message',
+        ],
+        '#wrapper_attributes' => ['class' => 'container'],
+      ];
+    }
+    else {
+      $item = [
+        '#type' => 'html_tag',
+        '#attributes' => [
+          'id' => 'edit-field-user-0-message',
+        ],
+        '#tag' => 'div',
+        'child' => [
+          '#type' => 'intercept_field_error_message',
+          '#message' => reset($messages),
+        ],
+      ];
+    }
+    return $item;
+  }
+
+  /**
+   * Creates a render array from the $messages returned by checkUser().
+   */
+  public function wrapAttendeeCountValidationError($messages) {
+    if (empty($messages)) {
+      return [
+        '#type' => 'html_tag',
+        '#attributes' => [
+          'id' => 'edit-field-attendee-count-0-message',
+        ],
+        '#tag' => 'div',
+        'child' => [
+          '#type' => 'intercept_field_error_message',
+          '#message' => '',
+        ],
+      ];
+    }
+    if (count($messages) > 1) {
+      $item = [
+        '#theme' => 'item_list',
+        '#list_type' => 'ul',
+        '#items' => $messages,
+        '#attributes' => [
+          'id' => 'edit-field-attendee-count-0-message',
+        ],
+        '#wrapper_attributes' => ['class' => 'container'],
+      ];
+    }
+    else {
+      $item = [
+        '#type' => 'html_tag',
+        '#attributes' => [
+          'id' => 'edit-field-attendee-count-0-message',
+        ],
+        '#tag' => 'div',
+        'child' => [
+          '#type' => 'intercept_field_error_message',
+          '#message' => reset($messages),
+        ],
       ];
     }
     return $item;

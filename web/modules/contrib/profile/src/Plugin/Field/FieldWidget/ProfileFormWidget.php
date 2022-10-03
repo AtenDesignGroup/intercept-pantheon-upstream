@@ -160,9 +160,13 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
         $profile = $profile_storage->loadByUser($account, $profile_type->id());
       }
       if (!$profile) {
-        $profile = $profile_storage->create([
+        $values = [
           'type' => $profile_type->id(),
-        ]);
+        ];
+        if (!$account->isAnonymous()) {
+          $values['uid'] = $account->id();
+        }
+        $profile = $profile_storage->create($values);
       }
       $form_state->set($property, $profile);
     }

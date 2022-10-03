@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta5] - 2022-10-3
+
+- Fixed Intercept: Event Teaser Not Using Serifed Font For Location Details
+- Room Reservation Form Updates:
+  - Certifications - Indicate Expired Polaris Accounts
+  - Fixed: "Reserved for" section is auto-filling the admin (who is logged in) as who is reserving the room
+  - Room Reservations (Staff side) should allow staff to override minimum room attendee numbers
+  - Staff Room Reservation Entry: Outstanding Reservation Warning
+- Updates to My Account > Settings Heading
+- When Event is Canceled, No More Registrations Should Be Allowed
+
 ## [8.x-1.0-beta5] - 2022-08-26
 
 - Chart: Attendees by Hour and Day of Week

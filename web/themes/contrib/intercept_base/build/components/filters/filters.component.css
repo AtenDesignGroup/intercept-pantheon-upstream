@@ -27,6 +27,9 @@
     @media (min-width: 62em) {
       .filters__inputs-inner label {
         font-size: 1rem; } }
+  .filters__inputs-inner .field-suffix {
+    position: absolute;
+    top: 50px; }
   .filters__inputs-inner input,
   .filters__inputs-inner select {
     width: 100%; }
@@ -131,6 +134,33 @@
     .filters__inputs-inner .form-actions {
       -ms-flex-preferred-size: 100%;
           flex-basis: 100%; } }
+  .filters__inputs-inner #edit-field-user-0-message {
+    color: #dc0078;
+    font-weight: 600;
+    margin: 1em 0; }
+    @media (min-width: 62em) {
+      .filters__inputs-inner #edit-field-user-0-message {
+        font-size: 1rem; } }
+  .filters__inputs-inner .ajax-progress-throbber {
+    position: absolute;
+    top: 50px; }
+    .filters__inputs-inner .ajax-progress-throbber .message {
+      margin-top: 0.5em;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-style: normal; }
+
+/* Certifications View */
+#views-exposed-form-intercept-certifications-page .filters__inputs-inner ul#edit-field-user-0-message {
+  margin: 0 0 0 30px; }
+
+@media (min-width: 48em) {
+  #views-exposed-form-intercept-certifications-page .filters__inputs-inner > .form-item-field-room-target-id {
+    -ms-flex-item-align: start;
+        align-self: flex-start; } }
+
+#views-exposed-form-intercept-certifications-page .filters__inputs-inner #edit-field-user-target-id {
+  min-width: 350px; }
 
 [id='views-exposed-form-intercept-events-embed'] .filters__inputs-inner {
   margin-top: 0; }

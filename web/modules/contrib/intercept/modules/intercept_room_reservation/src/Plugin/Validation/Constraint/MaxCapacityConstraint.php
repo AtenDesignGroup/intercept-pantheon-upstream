@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Constraint;
  *   label = @Translation("MaxCapacity", context = "Validation"),
  * )
  *
- * @DCG
  * To apply this constraint on a particular field implement
  * hook_entity_type_build().
  */

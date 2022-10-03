@@ -2,13 +2,13 @@
 
 namespace Drupal\intercept_room_reservation\Plugin\Validation\Constraint;
 
-use Drupal\node\Entity\Node;
-use Symfony\Component\Validator\Constraint;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\node\Entity\Node;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\intercept_room_reservation\Plugin\Validation\Constraint\ReservationMaxDurationConstraintValidator;
+use Symfony\Component\Validator\Constraint;
+use Drupal\intercept_room_reservation\Plugin\Validation\Constraint\ReservationMinDurationConstraintValidator;
 
 /**
  * Validates the MaxCapacity constraint.
@@ -23,7 +23,7 @@ class MaxCapacityConstraintValidator extends ConstraintValidator implements Cont
   protected $currentUser;
 
   /**
-   * Constructs a new ReservationMaxDurationConstraintValidator.
+   * Constructs a new MaxCapacityConstraintValidator.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
@@ -60,13 +60,13 @@ class MaxCapacityConstraintValidator extends ConstraintValidator implements Cont
       $room = Node::load($roomId);
       $maxCapacity = (!empty($room->field_capacity_max->value)) ? $room->field_capacity_max->value : NULL;
     }
-    // @DCG Validate the entity here.
+    // Validate the entity here.
     if (!empty($entity->field_attendee_count->value) && !is_null($maxCapacity) && $entity->field_attendee_count->value > $maxCapacity) {
       $this->context->buildViolation($constraint->maxCapacityMessage, [
         '%value' => $entity->field_attendee_count->value,
         '%max' => $maxCapacity
         ])
-        // @DCG The path depends on entity type. It can be title, name, etc.
+        // The path depends on entity type. It can be title, name, etc.
         ->atPath('field_capacity_max')
         ->addViolation();
     }

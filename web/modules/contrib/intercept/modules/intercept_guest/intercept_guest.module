@@ -7,7 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
  * @file
  * Primary module hooks for Intercept Guest module.
  *
- * @DCG
  * This file is no longer required in Drupal 8.
  * @see https://www.drupal.org/node/2217931
  */
@@ -73,6 +72,11 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
       'select[name="reservation_member_guest"]' => ['value' => 'guest'],
     ],
   ];
+  $form['reservation_for_me']['#states'] = [
+    'invisible' => [
+      'select[name="reservation_member_guest"]' => ['value' => 'guest'],
+    ],
+  ];
 
   $form['field_user']['widget'][0]['target_id']['#states'] = [
     'required' => [
@@ -129,7 +133,7 @@ function intercept_guest_reservation_form_validate($form, FormStateInterface &$f
       // The form has been submitted. Make it fail validation if field_user is not
       // set.
       if (empty($input['field_user'][0]['target_id'])) {
-        $form_state->setErrorByName('field_user', t('User field is required for member reservations'));
+        $form_state->setErrorByName('field_user', t('The "Reserved for" field is required for member reservations.'));
       }
       break;
 

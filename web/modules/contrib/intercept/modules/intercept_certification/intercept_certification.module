@@ -2,9 +2,12 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\Node;
 use Drupal\intercept_certification\Controller\CertificationController;
 use Drupal\intercept_certification\Entity\Certification;
+use Drupal\intercept_room_reservation\ValidationMessageBuilder;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -180,6 +183,34 @@ function intercept_certification_form_views_exposed_form_alter(&$form, FormState
     }
     asort($options);
     $form['field_room_target_id']['#options'] = $options;
+
+    // Here we add a custom form validation onto the customer id field.
+    $form['#validate'][] = 'intercept_certification_views_exposed_form_validate';
+
+  }
+}
+
+/**
+ * Custom form validation for the views exposed form.
+ *
+ * @see intercept_certification_form_views_exposed_form_alter()
+ */
+function intercept_certification_views_exposed_form_validate(&$form, FormStateInterface $form_state) {
+  $field_user = $form_state->getValue('field_user_target_id');
+
+  if (!empty($field_user)) {
+    $uid = $field_user[0]['target_id'];
+    $validationMessageBuilder = \Drupal::service('intercept_room_reservation.validation_message_builder');
+    $validationMessages = $validationMessageBuilder->checkUser($uid);
+
+    // Note: AJAX & caching must be turned off for this view in order for these
+    // validation messages to display.
+    if (!empty($validationMessages)) {
+      $message = implode('<br>', $validationMessages);
+      $rendered_message = Markup::create($message);
+      $error_message = new TranslatableMarkup('@message', ['@message' => $rendered_message]);
+      $form_state->setErrorByName('field_user_target_id', $error_message);
+    }
   }
 }
 

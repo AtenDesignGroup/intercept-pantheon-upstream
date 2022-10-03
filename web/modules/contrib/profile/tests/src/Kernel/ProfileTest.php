@@ -303,6 +303,18 @@ class ProfileTest extends EntityKernelTestBase {
     // Confirm that re-saving the other published profile sets it as default.
     $profile1->save();
     $this->assertTrue($profile1->isDefault());
+
+    // Confirm that profile may be still saved, even if it references
+    // non-existing user.
+    /** @var \Drupal\profile\Entity\ProfileInterface $profile1 */
+    $profile3 = Profile::create([
+      'type' => $profile_type->id(),
+      'uid' => $this->user2->id() + 100,
+    ]);
+    $profile3->save();
+    // Confirm that the profile was not set as default.
+    $this->assertFalse($profile3->isDefault());
+
   }
 
   /**

@@ -327,7 +327,7 @@ function intercept_messages_delete_message($message_id) {
 function intercept_messages_mail($key, &$message, $params) {
   $token_service = \Drupal::token();
   $context = $params['context'];
-  $message['headers']['content-type'] = 'text/html';
+  $message['headers']['Content-Type'] = 'text/html';
   $message['from'] = \Drupal::config('system.site')->get('mail');
   $message['subject'] = $token_service->replace($context['subject'], $context['tokens']);
   $message['body'][] = $token_service->replace($context['body'], $context['tokens']);

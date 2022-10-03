@@ -9,7 +9,7 @@ id: profile.customer.field_preferred_location
 field_name: field_preferred_location
 entity_type: profile
 bundle: customer
-label: 'Favorite Event Locations'
+label: 'Event Locations'
 description: 'Your preferred location(s) or branch(es).'
 required: false
 translatable: false

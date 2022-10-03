@@ -223,15 +223,36 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
-   * Gets the room reservations made by a user.
+   * Gets the room reservations made by the current user.
    *
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The user to check.
    *
    * @return array
-   *   The room reservations made by a user.
+   *   The room reservations made by the current user.
    */
   public function currentUserReservations(AccountInterface $user) {
+    $reservations = $this->reservations('room', function ($query) use ($user) {
+      $query->condition('field_user', $user->id(), '=');
+      $date = new DrupalDateTime('now', $this->dateUtility->getDefaultTimezone());
+      $query->condition('field_dates.end_value', $date->format('Y-m-d\TH:i:sP'), '>');
+      $query->condition('field_status', ['requested', 'approved'], 'IN');
+      $query->sort('field_dates.value', 'ASC');
+    });
+
+    return $reservations;
+  }
+
+  /**
+   * Gets the room reservations made by a user.
+   *
+   * @param \Drupal\user\Entity\User $user
+   *   The user to check.
+   *
+   * @return array
+   *   The room reservations made by the current user.
+   */
+  public function getUserReservations(User $user) {
     $reservations = $this->reservations('room', function ($query) use ($user) {
       $query->condition('field_user', $user->id(), '=');
       $date = new DrupalDateTime('now', $this->dateUtility->getDefaultTimezone());

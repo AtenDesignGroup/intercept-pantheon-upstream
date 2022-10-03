@@ -187,7 +187,8 @@
 
   .description,
   .form-item .description,
-  .details-description {
+  .details-description,
+  .ajax-progress-throbber .message {
     margin-top: 0.5em;
     font-family: inherit;
     font-size: rem(12px);

@@ -41,7 +41,6 @@ class EventRegistrationAccessControlHandler extends EntityAccessControlHandler {
     if ($result->isNeutral() && $this->hasReferencedUser($entity)) {
       $result = $this->checkEntityUserReferencedPermissions($entity, $operation, $account);
     }
-    $debug = true;
 
     // Ensure that access is evaluated again when the entity changes.
     return $result->addCacheableDependency($entity);

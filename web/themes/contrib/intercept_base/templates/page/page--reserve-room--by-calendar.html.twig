@@ -3,12 +3,10 @@
 {% block main %}
 <main role="main" class="l--section l--offset">
   <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
-  <div class="l--constrained">
-    {% include '@intercept-base-components/page-title/page-title.twig' with {
-      text: page['#title'],
-      modifiers: ['ruled'],
-    } %}
-  </div>
+  {% include '@intercept-base-components/page-title/page-title.twig' with {
+    text: page['#title'],
+    modifiers: ['ruled'],
+  } %}
   {{ page.content }}
 </main>
 {% endblock %}

@@ -273,8 +273,7 @@ function intercept_base_preprocess_form(&$variables) {
       $variables['#attached']['library'][] = 'intercept_base/filters';
       break;
     case 'intercept-dashboard-dashboard-event-filters':
-    case 'views-exposed-form-intercept-user-events-page':
-    case 'views-exposed-form-intercept-room-reservations-page':
+    case 'views-exposed-form-intercept-certifications-page':
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
     case 'views-exposed-form-intercept-equipment-page':
@@ -282,8 +281,10 @@ function intercept_base_preprocess_form(&$variables) {
     case 'views-exposed-form-intercept-event-attendance-by-age-group-page':
     case 'views-exposed-form-intercept-event-attendance-embed':
     case 'views-exposed-form-intercept-rooms-default':
+    case 'views-exposed-form-intercept-room-reservations-page':
     case 'views-exposed-form-intercept-rooms-rooms':
     case 'views-exposed-form-intercept-meetings-page':
+    case 'views-exposed-form-intercept-user-events-page':
       $variables['attributes']['class'][] = 'filters__inputs';
       $variables['attributes']['class'][] = 'form-wrapper';
       $variables['#attached']['library'][] = 'intercept_base/filters';

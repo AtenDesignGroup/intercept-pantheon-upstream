@@ -1,13 +1,7 @@
 /**
- * @file
- * Provides JavaScript for node edit/add forms.
+ * Provides supporting functionality for the room reservation forms.
  */
-
 (function ($, Drupal) {
-
-  /**
-   * Provides supporting functionality for the room reservation forms.
-   */
   Drupal.behaviors.roomReservationFormHelper = {
     attach: function (context, settings) {
 

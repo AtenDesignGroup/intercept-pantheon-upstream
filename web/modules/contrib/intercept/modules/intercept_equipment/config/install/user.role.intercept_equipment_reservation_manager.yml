@@ -16,6 +16,7 @@ permissions:
   - 'bypass room reservation agreement'
   - 'bypass room reservation limit'
   - 'bypass room reservation maximum capacity constraints'
+  - 'bypass room reservation minimum capacity constraints'
   - 'cancel equipment_reservation'
   - 'cancel referenced user equipment_reservation'
   - 'create equipment_reservation'

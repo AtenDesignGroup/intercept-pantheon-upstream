@@ -41,7 +41,10 @@ class ProfileAccessControlHandler extends UncacheableEntityAccessControlHandler 
     $result = parent::checkAccess($entity, $operation, $account);
     if ($result->isAllowed()) {
       /** @var \Drupal\profile\Entity\ProfileInterface $entity */
-      $result = $result->andIf($this->checkRoleAccess($entity->getOwner(), $entity->bundle()));
+      $owner = $entity->getOwner();
+      if ($owner) {
+        $result = $result->andIf($this->checkRoleAccess($owner, $entity->bundle()));
+      }
     }
 
     return $result;

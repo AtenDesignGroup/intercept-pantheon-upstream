@@ -6,13 +6,6 @@
  */
 
 /**
- * Implements hook_install().
- */
-function intercept_guest_install() {
-  \Drupal::messenger()->addStatus(__FUNCTION__);
-}
-
-/**
  * Implements hook_uninstall().
  */
 function intercept_guest_uninstall() {

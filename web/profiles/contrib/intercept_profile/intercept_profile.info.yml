@@ -40,6 +40,7 @@ dependencies:
   - intercept:intercept
   - intercept:intercept_certification
   - intercept:intercept_event
+  - intercept:intercept_guest
   - intercept:intercept_room_reservation
   - intercept:intercept_equipment
   - intercept:intercept_location

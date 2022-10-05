@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_room_reservation
+id: room_reservation.customer_reserve
+label: 'Customer Reserve'
+targetEntityType: room_reservation
+cache: true

@@ -25,7 +25,6 @@ dependencies:
     - entity_browser_entity_form
     - inline_entity_form
     - path
-    - scheduler
     - telephone
     - text
 _core:

@@ -56,8 +56,6 @@ RECOMMENDED MODULES
 
   * Intercept Base Theme (https://www.drupal.org/project/intercept_base):<br>
   This theme is custom-built to be the customer-facing theme.
-  * Material Admin (https://www.drupal.org/project/material_admin):<br>
-  This theme is recommended as the current administrative theme.
   * Polaris (https://www.drupal.org/project/polaris):<br>
   This plugin module can be used by libraries that utilize the Polaris ILS.
 

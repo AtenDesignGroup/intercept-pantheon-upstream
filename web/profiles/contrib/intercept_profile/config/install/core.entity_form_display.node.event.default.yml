@@ -43,7 +43,6 @@ dependencies:
     - field_group
     - inline_entity_form
     - path
-    - scheduler
     - text
 third_party_settings:
   field_group:
@@ -327,11 +326,6 @@ content:
     third_party_settings: {  }
   reservation:
     weight: 14
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  scheduler_settings:
-    weight: 21
     region: content
     settings: {  }
     third_party_settings: {  }

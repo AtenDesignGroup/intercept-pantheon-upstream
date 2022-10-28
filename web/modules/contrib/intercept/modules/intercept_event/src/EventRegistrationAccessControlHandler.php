@@ -32,7 +32,7 @@ class EventRegistrationAccessControlHandler extends EntityAccessControlHandler {
       // for customers.
       $result = AccessResult::allowedIfHasPermission($account, 'update any event_registration');
       // Ensure that access is evaluated again when the entity changes.
-      return $result->addCacheableDependency($entity);  
+      return $result->addCacheableDependency($entity);
     }
 
     $account = $this->prepareUser($account);

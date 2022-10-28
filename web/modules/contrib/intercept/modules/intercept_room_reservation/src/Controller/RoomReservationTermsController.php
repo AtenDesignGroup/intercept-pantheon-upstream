@@ -15,12 +15,10 @@ class RoomReservationTermsController extends ControllerBase {
    * Creates a NodeViewController object.
    *
    * @param \Drupal\Core\Config\Config $config
-   *
    */
   public function __construct(Config $config) {
     $this->config = $config;
   }
-
 
   /**
    * {@inheritdoc}

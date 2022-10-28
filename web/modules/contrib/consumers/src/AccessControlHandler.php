@@ -14,13 +14,18 @@ use Drupal\Core\Access\AccessResult;
  */
 class AccessControlHandler extends EntityAccessControlHandler {
 
+  /**
+   * The entity id.
+   *
+   * @var string
+   */
   public static $name = 'consumer';
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\consumers\Entity\Consumer $entity */
+    /** @var \Drupal\consumers\Entity\ConsumerInterface $entity */
     $admin_permission = $this->entityType->getAdminPermission();
     if ($account->hasPermission($admin_permission)) {
       return AccessResult::allowed()->cachePerPermissions();

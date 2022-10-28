@@ -2,7 +2,6 @@
 
 namespace Drupal\intercept_location;
 
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\node\NodeListBuilder;

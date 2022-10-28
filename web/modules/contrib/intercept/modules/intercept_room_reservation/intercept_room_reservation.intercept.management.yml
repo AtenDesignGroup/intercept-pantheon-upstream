@@ -24,4 +24,3 @@ intercept_room_reservation:
     room_reservation_configuration:
       title: 'Room Reservations'
       menu_link: FALSE # not displayed on the menu
-

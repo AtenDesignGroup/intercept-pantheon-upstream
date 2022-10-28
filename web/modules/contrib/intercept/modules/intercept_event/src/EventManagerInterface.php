@@ -208,4 +208,5 @@ interface EventManagerInterface {
    *   Whether the user has saved the event.
    */
   public function userHasSaved(NodeInterface $node, AccountInterface $user = NULL);
+
 }

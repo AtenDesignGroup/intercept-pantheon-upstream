@@ -4,7 +4,8 @@
 
 .intercept-dashboard-chart__table tbody a,
 .intercept-dashboard-table__table tbody a {
-  text-decoration: none; }
+  text-decoration: none;
+  font-weight: 900; }
   .intercept-dashboard-chart__table tbody a:hover, .intercept-dashboard-chart__table tbody a:focus,
   .intercept-dashboard-table__table tbody a:hover,
   .intercept-dashboard-table__table tbody a:focus {

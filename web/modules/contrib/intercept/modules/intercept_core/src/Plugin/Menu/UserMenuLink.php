@@ -4,6 +4,9 @@ namespace Drupal\intercept_core\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ *
+ */
 class UserMenuLink extends MenuLinkDefault {
 
   /**

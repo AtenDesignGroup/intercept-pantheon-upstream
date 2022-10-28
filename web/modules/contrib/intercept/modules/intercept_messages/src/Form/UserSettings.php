@@ -71,7 +71,7 @@ class UserSettings implements ContainerInjectionInterface {
       $form['notifications']['email_event'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Enable event notifications by email'),
-        '#default_value' => isset($email_event_enabled) ? $email_event_enabled : TRUE,
+        '#default_value' => $email_event_enabled ?? TRUE,
         '#description' => $this->t("If disabled, we'll still contact you in some cases when necessary, but we'll try to keep it to a minimum."),
       ];
     }

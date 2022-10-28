@@ -7,15 +7,11 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Entity\RevisionLogInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\webform\Plugin\WebformElement\DateList;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\intercept_room_reservation\Entity\RoomReservation;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_bulk_room_reservation\SeriesGeneratorInterface;
 use Drupal\intercept_bulk_room_reservation\Entity\BulkRoomReservation;
 
@@ -119,7 +115,9 @@ class BulkRoomReservationForm extends ContentEntityForm {
     $values['start'] = $start;
     $values['end'] = $end;
     foreach (['start', 'end'] as $endpoint) {
-      $form['field_date_time']['widget'][0][$endpoint]['#default_value'] = $values[$endpoint];
+      if (!$form['field_date_time']['widget'][0][$endpoint]['#default_value']) {
+        $form['field_date_time']['widget'][0][$endpoint]['#default_value'] = $values[$endpoint];
+      }
     }
 
     // Determine available rooms only if the date and location fields have
@@ -568,6 +566,9 @@ class BulkRoomReservationForm extends ContentEntityForm {
     }
   }
 
+  /**
+   *
+   */
   protected static function incrementRound(&$date, $increment) {
 
     // Round minutes and seconds, if necessary.

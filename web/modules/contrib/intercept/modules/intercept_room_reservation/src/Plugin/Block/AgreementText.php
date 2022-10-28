@@ -4,7 +4,6 @@ namespace Drupal\intercept_room_reservation\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockPluginInterface;
-use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Provides the agreement text block as seen on /room-reservations.
@@ -30,12 +29,12 @@ class AgreementText extends BlockBase implements BlockPluginInterface {
     $output = str_replace('<h', '<hr><h', $agreement_text['value']);
     // Add a link to the end.
     $output .= '<h2><a href="/reserve-room">Reserve a Room→</a></h2>';
-    
+
     return [
       '#markup' => $output,
-      '#format' => $agreement_text['format']
+      '#format' => $agreement_text['format'],
     ];
-    
+
   }
 
 }

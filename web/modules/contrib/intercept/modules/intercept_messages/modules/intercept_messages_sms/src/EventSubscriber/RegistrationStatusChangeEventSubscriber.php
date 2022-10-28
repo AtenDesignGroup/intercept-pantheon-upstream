@@ -231,7 +231,8 @@ class RegistrationStatusChangeEventSubscriber implements EventSubscriberInterfac
    */
   protected function getPhoneNumber(EventRegistrationInterface $event_registration) {
     $registrant = $event_registration->getRegistrant();
-    if (!$registrant) { // Don't send to guests.
+    // Don't send to guests.
+    if (!$registrant) {
       return NULL;
     }
     if (!$this->eventSmsEnabled($registrant)) {

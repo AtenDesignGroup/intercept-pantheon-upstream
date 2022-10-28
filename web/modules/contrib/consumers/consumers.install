@@ -14,6 +14,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  */
 function consumers_install() {
   Consumer::create([
+    'client_id' => 'default_consumer',
     'label' => 'Default Consumer',
     'description' => 'This is the default consumer. This was created programmatically when the Consumers module was first installed. Feel free to edit, or delete this.',
     'is_default' => TRUE,
@@ -135,5 +136,37 @@ function consumers_update_8107() {
     $options['type'] = 'image_image';
     $image_field->setDisplayOptions('form', $options);
     $definition_update_manager->installFieldStorageDefinition('image', 'consumer', 'consumer', $image_field);
+  }
+}
+
+/**
+ * Add field 'client_id'.
+ */
+function consumers_update_8108() {
+  $field_definition = BaseFieldDefinition::create('string')
+    ->setLabel(new TranslatableMarkup('Client ID'))
+    ->setDescription(new TranslatableMarkup('The client ID associated with this consumer.'))
+    ->setRequired(TRUE)
+    ->setRevisionable(TRUE)
+    ->addConstraint('UniqueField')
+    ->setSetting('max_length', 255)
+    ->setDisplayOptions('form', [
+      'type' => 'string_textfield',
+      'weight' => -4,
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('client_id', 'consumer', 'consumers', $field_definition);
+}
+
+/**
+ * Set uuid as client_id for existing consumers.
+ */
+function consumers_update_8109() {
+  $consumers = \Drupal::entityTypeManager()->getStorage('consumer')->loadMultiple();
+  foreach ($consumers as $consumer) {
+    $consumer->set('client_id', $consumer->uuid());
+    $consumer->save();
   }
 }

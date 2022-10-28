@@ -4,6 +4,9 @@ namespace Drupal\intercept_room_reservation\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ *
+ */
 class ExportMenuLink extends MenuLinkDefault {
 
   /**

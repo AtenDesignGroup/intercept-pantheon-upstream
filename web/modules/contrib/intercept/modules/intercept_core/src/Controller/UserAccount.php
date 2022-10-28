@@ -2,7 +2,6 @@
 
 namespace Drupal\intercept_core\Controller;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\intercept_core\Utility\Obfuscate;
 use Drupal\intercept_core\HttpRequestTrait;

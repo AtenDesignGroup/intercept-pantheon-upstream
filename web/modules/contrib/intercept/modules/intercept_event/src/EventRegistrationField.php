@@ -60,7 +60,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
 
     // If there is no date set, skip further checks.
     if (!$this->eventDate()) {
-      // TODO: This might need to reflect an error.
+      // @todo This might need to reflect an error.
       return $default_status;
     }
 
@@ -354,7 +354,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
    * {@inheritdoc}
    */
   public function getCacheTags() {
-    // TODO: Possibly add the current registration tags in here, but it depends.
+    // @todo Possibly add the current registration tags in here, but it depends.
     return [];
   }
 

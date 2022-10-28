@@ -13,7 +13,6 @@ use Drupal\Core\State\StateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\duration_field\Service\DurationServiceInterface;
-use Drupal\intercept_event\CheckinPeriodInvalidatorInterface;
 
 /**
  * Class EventCheckinPeriodController.
@@ -34,14 +33,14 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
   /**
    * The checkin period configuration.
    *
-   * @var \Drupal\Core\Config\ImmutableConfig $config
+   * @var \Drupal\Core\Config\ImmutableConfig
    */
   protected $config;
 
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -113,7 +112,6 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
     // started or ended during either the old EventCheckinSettingsForm configs
     // or the new configs. We'll also set $lastRun to be $now minus the check-in
     // end new config.
-
     // Get the request time.
     $now = $this->time->getRequestTime();
     $events = [];
@@ -122,15 +120,15 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
     // ourselves.
     $column = [
       'start' => 'field_date_time.value',
-      'end' => 'field_date_time.end_value'
+      'end' => 'field_date_time.end_value',
     ];
 
     // Invalidate cache tags.
     $query = $this->entityTypeManager
-    ->getStorage('node')
-    ->getQuery()
-    ->condition('type', 'event')
-    ->condition('status', '1');
+      ->getStorage('node')
+      ->getQuery()
+      ->condition('type', 'event')
+      ->condition('status', '1');
 
     // Initialize an orConditionGroup.
     $group = $query->orConditionGroup();
@@ -212,7 +210,6 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
       // in the database, we need to manually adjust the start and end ranges
       // based on the checkin period durations so we can query the event start
       // and end dates directly.
-
       // Clone the dates so we don't manaipulate the originals.
       $previous = DrupalDateTime::createFromTimestamp($lastRun);
       $previous->setTimezone(new \DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE));
@@ -230,7 +227,7 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
       $current = DrupalDateTime::createFromTimestamp($now);
       $current->setTimezone(new \DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE));
 
-      // range start date = last run add checkin period start duration
+      // Range start date = last run add checkin period start duration.
       $endRange = [
         'start' => $previous->sub($this->durationService->getDateIntervalFromDurationString($this->config->get('checkin_end')))->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
         'end' => $current->sub($this->durationService->getDateIntervalFromDurationString($this->config->get('checkin_end')))->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
@@ -253,7 +250,7 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
 
       if (!empty($events)) {
         // Generate cache tags from nids.
-        $cacheTags = array_map(function($nid) {
+        $cacheTags = array_map(function ($nid) {
           return 'node:' . $nid;
         }, $events);
 

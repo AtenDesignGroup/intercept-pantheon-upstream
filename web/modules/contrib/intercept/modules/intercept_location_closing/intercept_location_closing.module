@@ -7,7 +7,6 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Implements hook_help().

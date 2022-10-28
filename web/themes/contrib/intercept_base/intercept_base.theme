@@ -58,16 +58,18 @@ function intercept_base_preprocess_node(&$variables) {
 
   $node = $variables['node'];
   // Will create a link variable visible on the event registration
-  // page that points to the event detail page
+  // page that points to the event detail page.
   if ($variables['view_mode'] == 'header' && $node->getType() == 'event') {
     if (\Drupal::routeMatch()->getRouteName() === 'entity.node.register') {
       $variables['event_details_url'] = $variables['url'];
     }
   }
 
-  // Making region content available to node templates
-  $view_mode = $variables['view_mode']; // Retrieve view mode
-  $allowed_view_modes = ['full']; // Array of allowed view modes
+  // Making region content available to node templates.
+  // Retrieve view mode.
+  $view_mode = $variables['view_mode'];
+  // Array of allowed view modes.
+  $allowed_view_modes = ['full'];
   if (in_array($view_mode, $allowed_view_modes)) {
     // Allowed regions (for performance so as to not execute for unneeded region)
     $allowed_regions = ['sidebar_first'];
@@ -79,27 +81,27 @@ function intercept_base_preprocess_node(&$variables) {
  * Function to add page regions to node templates.
  */
 function intercept_base_add_regions_to_node($allowed_regions, &$variables) {
-  // Retrieve active theme
+  // Retrieve active theme.
   $theme = \Drupal::theme()->getActiveTheme()->getName();
 
-  // Retrieve theme regions
+  // Retrieve theme regions.
   $available_regions = system_region_list($theme, 'REGIONS_ALL');
 
-  // Validate allowed regions with available regions
+  // Validate allowed regions with available regions.
   $regions = array_intersect(array_keys($available_regions), $allowed_regions);
 
-  // For each region
+  // For each region.
   foreach ($regions as $key => $region) {
 
-    // Load region blocks
+    // Load region blocks.
     $blocks = \Drupal::entityTypeManager()->getStorage('block')
-    ->loadByProperties(array('theme' => $theme, 'region' => $region));
+      ->loadByProperties(['theme' => $theme, 'region' => $region]);
 
-    // Sort ‘em
+    // Sort ‘em.
     uasort($blocks, 'Drupal\block\Entity\Block::sort');
 
-    // Capture viewable blocks and their settings to $build
-    $build = array();
+    // Capture viewable blocks and their settings to $build.
+    $build = [];
     foreach ($blocks as $key => $block) {
       if ($block->access('view')) {
         $block = Block::load($key);
@@ -109,7 +111,7 @@ function intercept_base_add_regions_to_node($allowed_regions, &$variables) {
       }
     }
 
-    // Add build to region
+    // Add build to region.
     $variables[$region] = $build;
   }
 }
@@ -249,13 +251,15 @@ function intercept_base_preprocess_pager(&$variables) {
 
   if (isset($variables['items']['first']) && !empty($variables['ellipses']['previous'])) {
     $variables['items']['first']['text'] = 1;
-  } else {
+  }
+  else {
     unset($variables['items']['first']);
   }
 
   if (isset($variables['items']['last']) && !empty($variables['ellipses']['next'])) {
     $variables['items']['last']['text'] = $pager_max;
-  } else {
+  }
+  else {
     unset($variables['items']['last']);
   }
 
@@ -272,7 +276,9 @@ function intercept_base_preprocess_form(&$variables) {
     case 'node-event-attendance-form':
       $variables['#attached']['library'][] = 'intercept_base/filters';
       break;
+
     case 'intercept-dashboard-dashboard-event-filters':
+    case 'views-exposed-form-intercept-bulk-room-reservations-page':
     case 'views-exposed-form-intercept-certifications-page':
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
@@ -369,10 +375,14 @@ function intercept_base_theme_suggestions_field_alter(array &$suggestions, array
 function intercept_base_theme_suggestions_fieldset_alter(array &$suggestions, array $variables) {
   if (isset($variables['element']['#id'])) {
     $date_ids = [
-      'edit-field-dates-value-wrapper', // room reservations
-      'edit-field-date-time-value-wrapper', // events
-      'edit-field-dates-value-1-wrapper', // equipment
-      'edit-attendance-date-wrapper' // attendance/scans
+    // Room reservations.
+      'edit-field-dates-value-wrapper',
+    // Events.
+      'edit-field-date-time-value-wrapper',
+    // Equipment.
+      'edit-field-dates-value-1-wrapper',
+    // attendance/scans.
+      'edit-attendance-date-wrapper',
     ];
     if (in_array($variables['element']['#id'], $date_ids) || strstr($variables['element']['#id'], 'edit-field-dates-value-wrapper')) {
       $suggestions[] = 'fieldset__views_exposed_form__dates';
@@ -465,7 +475,7 @@ function intercept_base_preprocess_user(array &$variables) {
   ];
 
   foreach ($blocks as $key => $config) {
-    $params = isset($config['params']) ? $config['params'] : [];
+    $params = $config['params'] ?? [];
     $block = $block_manager->createInstance($config['id'], $params);
     $variables['content'][$key] = $block->build();
   }
@@ -670,7 +680,6 @@ function intercept_base_preprocess_menu(&$variables) {
   }
 }
 
-
 /**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
@@ -682,7 +691,7 @@ function intercept_base_theme_suggestions_taxonomy_term_alter(array &$suggestion
 /**
  * Implements hook_theme_suggestions_HOOK_alter().
  *
- * @Todo remove after these are resolved:
+ * @todo remove after these are resolved:
  * https://www.drupal.org/project/drupal/issues/2270883
  * https://www.drupal.org/project/drupal/issues/2766379
  */

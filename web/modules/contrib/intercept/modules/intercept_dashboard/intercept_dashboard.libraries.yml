@@ -3,6 +3,8 @@ intercept_dashboard:
   css:
     component:
       css/intercept-dashboard.component.css: {}
+  dependencies:
+    - core/drupal.dialog.ajax
 intercept_dashboard_metric:
   css:
     component:

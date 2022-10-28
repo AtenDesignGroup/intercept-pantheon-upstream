@@ -22,7 +22,7 @@
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
     "drupal/core-composer-scaffold": "^9.2",
-    "drupal/core-recommended": "9.4.7",
+    "drupal/core-recommended": "9.4.8",
     "drupal/date_recur": "^3.0",
     "drupal/date_recur_modular": "^3.0",
     "drupal/default_content": "^1.0",
@@ -131,9 +131,6 @@
       },
       "drupal/date_recur_modular": {
         "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2020-04-01/3124197.patch"
-      },
-      "drupal/field_group": {
-        "Resolves PHP notices on My Account Settings form": "https://www.drupal.org/files/issues/2021-02-26/3059614-field_group-8.x-dev-fix-undefined-property-48.patch"
       },
       "drupal/gin": {
         "Adds template override for /bulk-room-reservation/add": "patches/bulk_room_reservations_date_recur_template.patch"

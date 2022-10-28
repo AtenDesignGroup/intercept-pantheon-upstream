@@ -127,7 +127,8 @@ class InterceptEventUserController extends UserController {
     if ($user->getLastLoginTime() && $current - $timestamp > $timeout) {
       $this->messenger()->addError($this->t('You have tried to use a one-time login link that has expired. Please request a new one using the form below.'));
       return $this->redirect('user.pass');
-    } elseif ($user->isAuthenticated() && ($timestamp >= $user->getLastLoginTime()) && ($timestamp <= $current) && hash_equals($hash, user_pass_rehash($user, $timestamp))) {
+    }
+    elseif ($user->isAuthenticated() && ($timestamp >= $user->getLastLoginTime()) && ($timestamp <= $current) && hash_equals($hash, user_pass_rehash($user, $timestamp))) {
       user_login_finalize($user);
       $this->logger->notice('User %name used evaluation login link at time %timestamp.', ['%name' => $user->getDisplayName(), '%timestamp' => $timestamp]);
       $message = 'We logged you in automatically.';
@@ -147,7 +148,7 @@ class InterceptEventUserController extends UserController {
           'query' => ['pass-reset-token' => $token],
           'absolute' => TRUE,
         ]
-      );
+          );
     }
 
     $this->messenger()->addError($this->t('You have tried to use a one-time login link that has either been used or is no longer valid. Please request a new one using the form below.'));

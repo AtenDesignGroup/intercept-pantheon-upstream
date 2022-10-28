@@ -54,4 +54,3 @@ bypass room reservation maximum capacity constraints:
 bypass room reservation minimum capacity constraints:
   title: 'Bypass room reservation minimum room capacity constraints'
   description: 'Assign to roles that can reserve rooms for groups that are smaller than the minimum capacity for a room'
-

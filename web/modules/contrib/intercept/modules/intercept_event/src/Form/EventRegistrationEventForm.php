@@ -22,7 +22,7 @@ class EventRegistrationEventForm extends ContentEntityForm {
     if ($event = $this->getRouteMatch()->getParameter('node')) {
       $this->entity->field_event->setValue($event);
     }
-    /* @var $entity \Drupal\intercept_event\Entity\EventRegistration */
+    /** @var \Drupal\intercept_event\Entity\EventRegistration $entity */
     $form = parent::buildForm($form, $form_state);
 
     $form['#theme'] = 'event_registration_event_form';
@@ -116,7 +116,6 @@ class EventRegistrationEventForm extends ContentEntityForm {
     }
     return $entity;
   }
-
 
   /**
    * {@inheritdoc}

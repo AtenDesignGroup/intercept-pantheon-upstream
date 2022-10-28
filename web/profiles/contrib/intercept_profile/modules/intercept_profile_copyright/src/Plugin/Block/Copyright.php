@@ -16,6 +16,7 @@ use Drupal\Core\Session\AccountInterface;
  * )
  */
 class Copyright extends BlockBase {
+
   /**
    * {@inheritdoc}
    */
@@ -52,4 +53,5 @@ class Copyright extends BlockBase {
   public function blockSubmit($form, FormStateInterface $form_state) {
     $this->configuration['intercept_profile_copyright_settings'] = $form_state->getValue('intercept_profile_copyright_settings');
   }
+
 }

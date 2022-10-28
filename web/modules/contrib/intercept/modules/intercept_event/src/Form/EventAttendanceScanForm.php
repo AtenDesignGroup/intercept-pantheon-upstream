@@ -30,7 +30,7 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var $entity \Drupal\intercept_event\Entity\EventAttendance */
+    /** @var \Drupal\intercept_event\Entity\EventAttendance $entity */
     $form = parent::buildForm($form, $form_state);
     $event = $this->entity->field_event->entity;
 
@@ -64,7 +64,6 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
     //     'node' => $event->id(),
     //   ]),
     // ];
-
     $form['cancel'] = $this->cancelButton();
 
     $form['#attached']['library'][] = 'intercept_event/eventCheckin';
@@ -106,4 +105,5 @@ class EventAttendanceScanForm extends EventAttendanceScanFormBase {
       ]),
     ];
   }
+
 }

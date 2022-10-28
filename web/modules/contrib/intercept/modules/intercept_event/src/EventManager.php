@@ -239,7 +239,7 @@ class EventManager implements EventManagerInterface {
     \Drupal::messenger()->addMessage(new TranslatableMarkup('Event template @link has been created.', [
       '@link' => $event_template->toLink()->toString(),
     ]));
-    // TODO: Fix this so that this overrides the admin/content destination.
+    // @todo Fix this so that this overrides the admin/content destination.
     $form_state->setRedirect('entity.node.edit_form', [
       'node' => $event_template->id(),
     ]);
@@ -530,7 +530,7 @@ class EventManager implements EventManagerInterface {
       $user = $this->currentUser;
     }
 
-    $registrations =  $this->entityTypeManager
+    $registrations = $this->entityTypeManager
       ->getStorage('event_registration')
       ->loadByProperties([
         'field_user' => $user->id(),

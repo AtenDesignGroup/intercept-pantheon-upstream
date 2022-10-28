@@ -28,7 +28,6 @@ class CertificationAccessControlHandler extends EntityAccessControlHandler {
           return AccessResult::allowedIfHasPermission($account, 'view unpublished certification entities');
         }
 
-
         return AccessResult::allowedIfHasPermission($account, 'view published certification entities');
 
       case 'update':
@@ -50,6 +49,5 @@ class CertificationAccessControlHandler extends EntityAccessControlHandler {
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
     return AccessResult::allowedIfHasPermission($account, 'add certification entities');
   }
-
 
 }

@@ -121,7 +121,7 @@ function intercept_core_theme() {
  * Implements hook_entity_type_build().
  */
 function intercept_core_entity_type_build(array &$entity_types) {
-  /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   $entity_types['user']
     ->setFormClass('customer', '\Drupal\intercept_core\Form\UserProfileForm')
     ->setLinkTemplate('customer-form', '/user/{user}/settings');
@@ -182,7 +182,7 @@ function intercept_core_entity_extra_field_info() {
  * Implements hook_ENTITY_TYPE_load().
  */
 function intercept_core_user_load(array $entities) {
-  // TODO: This would be more efficient as a calculated field.
+  // @todo This would be more efficient as a calculated field.
   $profile_storage = \Drupal::service('entity_type.manager')->getStorage('profile');
   $profiles = $profile_storage->loadByProperties([
     'uid' => array_keys($entities),

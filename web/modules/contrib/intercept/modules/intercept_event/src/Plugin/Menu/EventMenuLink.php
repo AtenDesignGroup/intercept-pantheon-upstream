@@ -4,6 +4,9 @@ namespace Drupal\intercept_event\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ *
+ */
 class EventMenuLink extends MenuLinkDefault {
 
   /**

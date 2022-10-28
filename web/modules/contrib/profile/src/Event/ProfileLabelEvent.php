@@ -2,8 +2,8 @@
 
 namespace Drupal\profile\Event;
 
-use Symfony\Contracts\EventDispatcher\Event;
 use Drupal\profile\Entity\ProfileInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Defines the profile label event.
@@ -22,7 +22,7 @@ class ProfileLabelEvent extends Event {
   /**
    * The label.
    *
-   * @var string
+   * @var string|null
    */
   protected $label;
 
@@ -31,10 +31,10 @@ class ProfileLabelEvent extends Event {
    *
    * @param \Drupal\profile\Entity\ProfileInterface $profile
    *   The profile.
-   * @param string $label
+   * @param string|null $label
    *   The profile label.
    */
-  public function __construct(ProfileInterface $profile, string $label) {
+  public function __construct(ProfileInterface $profile, ?string $label) {
     $this->profile = $profile;
     $this->label = $label;
   }
@@ -52,22 +52,22 @@ class ProfileLabelEvent extends Event {
   /**
    * Gets the profile label.
    *
-   * @return string
+   * @return string|null
    *   The profile label.
    */
-  public function getLabel() {
+  public function getLabel(): ?string {
     return $this->label;
   }
 
   /**
    * Sets the profile label.
    *
-   * @param string $label
+   * @param string|null $label
    *   The profile label.
    *
    * @return $this
    */
-  public function setLabel(string $label) {
+  public function setLabel(?string $label) {
     $this->label = $label;
     return $this;
   }

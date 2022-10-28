@@ -39,4 +39,5 @@ class ParseAutocompleteInput {
 
     return $nid;
   }
+
 }

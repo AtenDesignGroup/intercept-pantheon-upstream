@@ -30,7 +30,7 @@ class EventRegistrationHtmlRouteProvider extends InterceptHtmlRouteProvider {
       $collection->add("entity.$entity_type_id.cancel_form", $cancel_form_route);
     }
 
-    // TODO: Use this for other event related entities.
+    // @todo Use this for other event related entities.
     if ($event_form_route = $this->getEventFormRoutes($entity_type)) {
       $collection->add("entity.$entity_type_id.event_form", $event_form_route);
     }
@@ -72,7 +72,7 @@ class EventRegistrationHtmlRouteProvider extends InterceptHtmlRouteProvider {
    *   The new Route.
    */
   protected function getEventFormRoutes(EntityTypeInterface $entity_type) {
-    /** @var $entity_type EntityTypeInterface */
+    /** @var \Drupal\Core\Entity\EntityTypeInterface $entity_type */
     if ($entity_type->hasLinkTemplate("event-form")) {
       $entity_type_id = $entity_type->id();
       $route = new Route($entity_type->getLinkTemplate("event-form"));

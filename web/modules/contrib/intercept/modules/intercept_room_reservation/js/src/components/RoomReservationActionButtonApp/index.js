@@ -128,14 +128,47 @@ class RoomReservationActionButtonApp extends React.Component {
     const { cancel, deny, approve, request, edit } = this;
     const { editDialogOpen } = this.state;
     const isManager = utils.userIsManager();
+    const { record } = this.props;
+    const start = utils.getTimeStamp(get(record, 'data.attributes.field_dates.value'));
+    const now = utils.getTimeStamp(utils.getUserTimeNow());
+    const past = now > start;
+    const secondsPassed = now - start;
 
     switch (status) {
       case 'requested':
-        return isManager ? [approve(), deny(), edit()] : [edit(), cancel()];
+        if (isManager) {
+          return [approve(), deny(), edit()];
+        }
+        // Reservation started 30 mins or more ago.
+        else if (past && secondsPassed >= 1800) {
+          return null;
+        }
+        // Reservation started less than 30 mins ago.
+        else if (past && secondsPassed < 1800) {
+          return [cancel()];
+        }
+        // Reservation hasn't started.
+        else {
+          return [edit(), cancel()];
+        }
       case 'denied':
         return isManager ? [approve(), cancel()] : null;
       case 'approved':
-        return isManager ? [deny(), edit(), cancel()] : [edit(), cancel()];
+        if (isManager) {
+          return [deny(), edit(), cancel()];
+        }
+        // Reservation started 30 mins or more ago.
+        else if (past && secondsPassed >= 1800) {
+          return null;
+        }
+        // Reservation started less than 30 mins ago.
+        else if (past && secondsPassed < 1800) {
+          return [cancel()];
+        }
+        // Reservation hasn't started.
+        else {
+          return [edit(), cancel()];
+        }
       case 'canceled':
         return (this.isConflicted() && !editDialogOpen) ? this.getConflictedMessage() : [request(), edit()];
       default:

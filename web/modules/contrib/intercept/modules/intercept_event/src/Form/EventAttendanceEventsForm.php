@@ -87,7 +87,7 @@ class EventAttendanceEventsForm extends ContentEntityForm {
         'class' => ['button button-action'],
       ],
       '#prefix' => '&nbsp;&nbsp;',
-      '#weight' => 10
+      '#weight' => 10,
     ];
 
     return $form;
@@ -156,7 +156,7 @@ class EventAttendanceEventsForm extends ContentEntityForm {
     else {
       $occurrences = $item->occurrences;
       // We have to compensate for the DateTimeComputed class assuming UTC.
-      // TODO: Create issue for this in date_recur or in Drupal core.
+      // @todo Create issue for this in date_recur or in Drupal core.
       foreach ($occurrences as &$value) {
         $value['value'] = $this->compensate($value['value'], $timezone);
         $value['end_value'] = $this->compensate($value['end_value'], $timezone);
@@ -199,7 +199,7 @@ class EventAttendanceEventsForm extends ContentEntityForm {
       }
       // Copy the fields over to the other events from the base event.
       foreach ($this->entity->getFields(FALSE) as $field_name => $field) {
-        // TODO: This should be grabbed from form_state and processed
+        // @todo This should be grabbed from form_state and processed
         // through EntityFormDisplay.
         if (in_array($field_name, [
           'event_recurrence',

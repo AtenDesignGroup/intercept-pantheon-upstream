@@ -23,7 +23,7 @@ class UserSettings extends MessagesUserSettings {
       $form['notifications']['sms_event'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Enable event notifications by SMS'),
-        '#default_value' => isset($sms_event_enabled) ? $sms_event_enabled : FALSE,
+        '#default_value' => $sms_event_enabled ?? FALSE,
       ];
     }
     $form['actions']['submit']['#submit'][] = [$this, 'submitSettingsForm'];

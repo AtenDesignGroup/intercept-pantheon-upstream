@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Link;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -67,7 +66,7 @@ class CertificationListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var \Drupal\intercept_certification\Entity\Certification $entity */
+    /** @var \Drupal\intercept_certification\Entity\Certification $entity */
     $row['id'] = $entity->id();
     $row['field_room'] = $entity->getRoom()->label();
     $row['field_user'] = $entity->getCustomer()->label();

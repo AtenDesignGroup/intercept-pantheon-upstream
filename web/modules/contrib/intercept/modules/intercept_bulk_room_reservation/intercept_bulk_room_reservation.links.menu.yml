@@ -10,8 +10,8 @@ entity.bulk_room_reservation.collection:
   parent: entity.room_reservation.collection
 bulk_room_reservation.admin.structure.settings:
   parent: intercept_room_reservation.room_parent
-  title: 'Bulk Reservation'
+  title: 'Bulk Reservations'
   weight: 4
-  route_name: entity.bulk_room_reservation.collection
+  route_name: view.intercept_bulk_room_reservations.page
   menu_name: intercept-manage
-  class: Drupal\intercept_room_reservation\Plugin\Menu\BulkMenuLink
+  class: Drupal\intercept_bulk_room_reservation\Plugin\Menu\BulkMenuLink

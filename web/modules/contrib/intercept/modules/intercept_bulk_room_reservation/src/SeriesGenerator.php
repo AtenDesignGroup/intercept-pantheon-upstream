@@ -99,6 +99,13 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     }
 
     $dates = $logistics['dates'];
+    
+    // Return error/warning if end time is before start time.
+    $startTime = strtotime($input['field_date_time'][0]['start']['date'] . ' ' . $input['field_date_time'][0]['start']['time']);
+    $endTime = strtotime($input['field_date_time'][0]['end']['date'] . ' ' . $input['field_date_time'][0]['end']['time']);
+    if ($startTime > $endTime) {
+      \Drupal::messenger()->addWarning('It looks like you have entered a start time that is later than the end time. Please check your times and try again.');
+    }
 
     $utcTimeZone = new \DateTimeZone('UTC');
 
@@ -223,8 +230,8 @@ class SeriesGenerator implements SeriesGeneratorInterface {
    * {@inheritDoc}
    */
   public function weekOfYear($date) {
-    $weekOfYear = intval(date("W", $date));
-    if (date('n', $date) == "1" && $weekOfYear > 51) {
+    $weekOfYear = intval(date('W', $date));
+    if (date('n', $date) == '1' && $weekOfYear > 51) {
       // It's the last week of the previous year.
       $weekOfYear = 0;
     }
@@ -236,7 +243,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
    */
   public function weekOfMonth($date) {
     // Get the first day of the month.
-    $firstOfMonth = strtotime(date("Y-m-01", $date));
+    $firstOfMonth = strtotime(date('Y-m-01', $date));
 
     return $this->weekOfYear($date) - $this->weekOfYear($firstOfMonth);
 

@@ -4,6 +4,9 @@ namespace Drupal\intercept_equipment\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ *
+ */
 class EquipmentMenuLink extends MenuLinkDefault {
 
   /**

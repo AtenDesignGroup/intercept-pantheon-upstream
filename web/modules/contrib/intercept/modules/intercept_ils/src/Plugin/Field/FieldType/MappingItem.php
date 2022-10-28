@@ -39,7 +39,7 @@ class MappingItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public function setValue($values, $notify = TRUE) {
-    // @TODO: Eventually make this a dynamic property definition.
+    // @todo Eventually make this a dynamic property definition.
     foreach ($values['data'] as $key => $value) {
       if ($key == 'data') {
         continue;

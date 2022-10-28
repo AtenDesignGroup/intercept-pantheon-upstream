@@ -34,7 +34,7 @@ class CertificationForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var \Drupal\intercept_certification\Entity\Certification $entity */
+    /** @var \Drupal\intercept_certification\Entity\Certification $entity */
     $form = parent::buildForm($form, $form_state);
 
     if (!$this->entity->isNew()) {
@@ -64,7 +64,8 @@ class CertificationForm extends ContentEntityForm {
       $entity->setRevisionUserId($this->account->id());
     }
     else {
-      $entity->setNewRevision(TRUE); // Default to always creating a new revision.
+      // Default to always creating a new revision.
+      $entity->setNewRevision(TRUE);
     }
 
     $status = parent::save($form, $form_state);

@@ -35,7 +35,7 @@ class EquipmentReservationListBuilder extends EntityListBuilder {
     $reservation_start_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
     $dateTime = new DrupalDateTime($reservation_dates[0]['end_value'], 'UTC');
     $reservation_end_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
-    /* @var $entity \Drupal\intercept_equipment\Entity\EquipmentReservation */
+    /** @var \Drupal\intercept_equipment\Entity\EquipmentReservation $entity */
     $row['name'] = $entity->toLink($reservation_start_date . ' - ' . $reservation_end_date)->toString();
     $row['equipment'] = $this->getEntityLabel($entity->field_equipment->entity, $this->t('No equipment'));
     $row['location'] = $entity->get('field_location')->entity ? $entity->get('field_location')->entity->label() : '';

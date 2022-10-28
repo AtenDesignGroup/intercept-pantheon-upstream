@@ -82,6 +82,7 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           $display_name = $user ? $user->getDisplayName() : '';
           $replacements[$original] = $user && $user->first_name ? $user->first_name : $display_name;
           break;
+
         case 'full-name':
           $user = $event_registration->getRegistrant();
           $display_name = $user ? $user->getDisplayName() : '';
@@ -101,10 +102,12 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           $user = $event_attendance->getAttendee();
           $replacements[$original] = $user && $user->first_name ? $user->first_name : 'User';
           break;
+
         case 'full-name':
           $user = $event_attendance->getAttendee();
           $replacements[$original] = $user && $user->full_name ? $user->full_name : 'User';
           break;
+
         case 'user-login-link':
           $user = $event_attendance->getAttendee();
           $replacements[$original] = \Drupal::request()->getSchemeAndHttpHost()
@@ -115,14 +118,13 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
     }
   }
 
-  // Saved Events
+  // Saved Events.
   if ($type == 'flagging' && !empty($data['flagging'])) {
     /** @var \Drupal\flag\Entity\Flagging $flag */
     $flagging = $entity = $data['flagging'];
     $saved_event_id = $entity->get('entity_id')->getString();
     $event = Node::load($saved_event_id);
     $user = $flagging->getOwner();
-
 
     // Fill in first-name, full-name, title, and field_date_time with
     // info from the flagging (saved event).
@@ -131,19 +133,23 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
         case 'event-saved-title':
           $replacements[$original] = $event && $event->getTitle() ? $event->getTitle() : 'Library Event';
           break;
+
         case 'event-saved-field-date-time':
           $dateTime = new DrupalDateTime($event->get('field_date_time')->value, 'UTC');
           $saved_event_date = date('m/d/y \a\t g:i a', $dateTime->getTimestamp());
           $replacements[$original] = $saved_event_date;
           break;
+
         case 'event-saved-first-name':
           $replacements[$original] = $user && $user->first_name ? $user->first_name : 'User';
           break;
+
         case 'event-saved-full-name':
           $replacements[$original] = $user && $user->full_name ? $user->full_name : 'User';
           break;
+
         case 'event-saved-url':
-          $url = Url::fromRoute('entity.node.canonical', ['node' => $saved_event_id], ['absolute' => true])->toString();
+          $url = Url::fromRoute('entity.node.canonical', ['node' => $saved_event_id], ['absolute' => TRUE])->toString();
           $replacements[$original] = $url;
           break;
       }
@@ -159,7 +165,6 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           break;
       }
     }
-
 
   }
 

@@ -72,7 +72,7 @@ class EventEvaluation {
     $this->vote->setValue($value)
       ->set('vote_criteria', $data)
       ->save();
-    // @TODO: Finish calculating results.
+    // @todo Finish calculating results.
     return $this;
   }
 
@@ -299,7 +299,7 @@ class EventEvaluation {
     if (!$account->hasPermission('evaluate own events')) {
       return AccessResult::neutral();
     }
-    // @TODO: Move this to the event manager.
+    // @todo Move this to the event manager.
     $flaggings = \Drupal::service('entity_type.manager')
       ->getStorage('flagging')
       ->loadByProperties([

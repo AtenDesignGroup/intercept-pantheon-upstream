@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SettingsForm extends ConfigFormBase {
 
   /**
-   * @var EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -79,7 +79,9 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'select',
       '#multiple' => TRUE,
       '#default_value' => $config->get('dashboard_redirect_limit_roles'),
-      '#options' => array_map(function($role) { return $role->label(); }, $roles),
+      '#options' => array_map(function ($role) {
+        return $role->label();
+      }, $roles),
     ];
 
     return $form;

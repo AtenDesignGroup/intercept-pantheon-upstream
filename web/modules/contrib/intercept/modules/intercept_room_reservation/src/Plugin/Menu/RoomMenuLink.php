@@ -4,6 +4,9 @@ namespace Drupal\intercept_room_reservation\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ *
+ */
 class RoomMenuLink extends MenuLinkDefault {
 
   /**
@@ -16,7 +19,8 @@ class RoomMenuLink extends MenuLinkDefault {
     if ($permission) {
       $roles = $current_user->getRoles();
       if (!in_array('intercept_registered_customer', $roles)) {
-        return TRUE; // Don't show these menu items to customers. Staff only.
+        // Don't show these menu items to customers. Staff only.
+        return TRUE;
       }
       else {
         return FALSE;

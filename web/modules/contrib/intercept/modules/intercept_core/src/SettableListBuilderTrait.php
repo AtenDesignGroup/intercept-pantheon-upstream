@@ -5,7 +5,7 @@ namespace Drupal\intercept_core;
 /**
  * Trait for modifiable list builder.
  *
- * @TODO: combine this with EventListBuilderTrait.
+ * @todo combine this with EventListBuilderTrait.
  */
 trait SettableListBuilderTrait {
 

@@ -169,7 +169,8 @@ class RecurringEventManager {
     if ($event_recurrence && $event_recurrence->event->entity != $node) {
       // Hide inline entity form and add remove from recurrence.
       $this->eventRecurrenceForm($elements, $form_state);
-    } else {
+    }
+    else {
       // If this is the base event we let them add/edit their recurrence.
       $this->eventRecurrenceBaseForm($elements, $form_state);
     }
@@ -355,7 +356,8 @@ class RecurringEventManager {
     // DateRecurModularAlphaWidget::extractFormValues().
     // - Validate if 'infinite' and not hardcoding the form path to here.
     // - Hide start, end, and time_zone without hardcoding the form path here.
-    if (isset($elements['#field_parents'][0]) && $elements['#field_parents'][0] == 'event_recurrence') { // Only do this for events.
+    // Only do this for events.
+    if (isset($elements['#field_parents'][0]) && $elements['#field_parents'][0] == 'event_recurrence') {
       $elements['#element_validate'][] = [static::class, 'dateRecurWidgetValidate'];
       $elements['start']['#access'] = FALSE;
       $elements['end']['#access'] = FALSE;
@@ -363,7 +365,7 @@ class RecurringEventManager {
     }
     // Disable "Never" option for "ends on". Causes 500 error on Recurrences tab.
     if ($elements['ends_mode']['#default_value'] != 'count' && $elements['ends_mode']['#default_value'] != 'date') {
-      $elements['ends_mode']['#default_value'] = null;
+      $elements['ends_mode']['#default_value'] = NULL;
     }
     unset($elements['ends_mode']['#options']['infinite']);
   }
@@ -419,4 +421,5 @@ class RecurringEventManager {
   private function getFrequencyOptions($type = 0) {
     return array_column($this->getFrequencies(), $type);
   }
+
 }

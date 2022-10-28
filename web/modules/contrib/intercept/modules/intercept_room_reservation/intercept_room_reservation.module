@@ -280,7 +280,7 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
           $form['author']['#type'] = 'hidden';
         }
       }
-      // Add any JS form tweaks here
+      // Add any JS form tweaks here.
       $form['#attached']['library'][] = 'intercept_room_reservation/room_reservation_form_helper';
       break;
   }
@@ -614,10 +614,10 @@ function intercept_room_reservation_preprocess_node(&$variables) {
 /**
  * Implements hook_entity_bundle_field_info_alter().
  */
-function intercept_room_reservation_entity_bundle_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type, $bundle) {
+function intercept_room_reservation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
   if ($bundle === 'event') {
     if (isset($fields['field_capacity_max'])) {
-      // Use the ID as defined in the annotation of the constraint definition
+      // Use the ID as defined in the annotation of the constraint definition.
       $fields['field_capacity_max']->addConstraint('MaxCapacity', []);
     }
   }

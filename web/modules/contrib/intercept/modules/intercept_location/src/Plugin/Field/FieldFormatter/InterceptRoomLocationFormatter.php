@@ -178,4 +178,5 @@ class InterceptRoomLocationFormatter extends EntityReferenceLabelFormatter {
   protected function checkAccess(EntityInterface $entity) {
     return $entity->access('view label', NULL, TRUE);
   }
+
 }

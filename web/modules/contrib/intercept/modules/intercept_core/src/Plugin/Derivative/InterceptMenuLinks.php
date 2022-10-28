@@ -73,10 +73,10 @@ class InterceptMenuLinks extends DeriverBase implements ContainerDeriverInterfac
 
       $this->derivatives[$id] = [
         'title' => $page->title,
-        'weight' => isset($page->menu_weight) ? $page->menu_weight : 0,
+        'weight' => $page->menu_weight ?? 0,
         'route_name' => $this->getPageRouteName($page),
         'menu_name' => 'intercept-manage',
-        'parent' => isset($page->parent) ? $page->parent : NULL,
+        'parent' => $page->parent ?? NULL,
       ];
     }
 

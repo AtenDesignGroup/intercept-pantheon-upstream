@@ -4,6 +4,9 @@ namespace Drupal\intercept_dashboard\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ *
+ */
 class InterceptDashboardLink extends MenuLinkDefault {
 
   /**

@@ -6,7 +6,6 @@ use Drupal\externalauth\Event\ExternalAuthEvents;
 use Drupal\user\Entity\Role;
 use Drupal\user\UserInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class PatronEventSubscriber.
@@ -17,7 +16,7 @@ class PatronEventSubscriber implements EventSubscriberInterface {
    * Constructs a new PatronEventSubscriber object.
    */
   public function __construct() {
-    
+
   }
 
   /**

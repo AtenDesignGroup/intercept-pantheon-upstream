@@ -49,7 +49,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    * @var \Drupal\intercept_core\Utility\Dates
    */
   protected $dateUtility;
-  
+
   /**
    * The reservation manager.
    *
@@ -94,7 +94,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var $entity \Drupal\node\Entity\Node */
+    /** @var \Drupal\node\Entity\Node $entity */
     $entity = $this->entity;
     $this->eventRecurrence = $this->recurringEventManager->getBaseEventRecurrence($entity);
 
@@ -280,7 +280,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       }
       // Copy the fields over to the other events from the base event.
       foreach ($this->entity->getFields(FALSE) as $field_name => $field) {
-        // TODO: This should be grabbed from form_state and processed
+        // @todo This should be grabbed from form_state and processed
         // through EntityFormDisplay.
         if (in_array($field_name, [
           'event_recurrence',
@@ -453,7 +453,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
 
-    // TODO: Create confirmation forms from these actions.
+    // @todo Create confirmation forms from these actions.
     $actions['events_generate'] = [
       '#type' => 'submit',
       '#value' => $this->t('Generate events'),

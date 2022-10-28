@@ -43,7 +43,7 @@ class EventRecurrenceListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\intercept_event\Entity\EventRecurrence */
+    /** @var \Drupal\intercept_event\Entity\EventRecurrence $entity */
     $row['id'] = Link::createFromRoute(
       $entity->id(),
       'entity.event_recurrence.edit_form',

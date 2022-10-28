@@ -16,6 +16,11 @@
 #}
 {{ attach_library('richland/bulk-room-reservations') }}
 <article{{attributes.addClass('l--offset','bulk-room-reservation-detail')}}>
+  <div class="l--1-col l--offset">
+    <div class="l--section">
+      {{ drupal_block('local_tasks_block') }}
+    </div>
+  </div>
 	{% if content %}
 		{{- content -}}
 	{% endif %}

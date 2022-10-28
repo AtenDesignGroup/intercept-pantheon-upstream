@@ -143,7 +143,7 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
   /**
    * A string for the location node associated with this reservation.
    *
-   * @TODO: Change this to locationString();
+   * @todo Change this to locationString();
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The location node title string.

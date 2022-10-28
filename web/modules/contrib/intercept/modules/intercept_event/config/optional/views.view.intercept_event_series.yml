@@ -12,7 +12,7 @@ id: intercept_event_series
 label: 'Intercept Event Series'
 module: views
 description: 'Displays teasers for all events in a series.'
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
 display:

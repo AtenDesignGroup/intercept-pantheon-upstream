@@ -2,13 +2,11 @@
 
 namespace Drupal\intercept_guest\Entity;
 
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\intercept_guest\InterceptGuestInterface;
 use Drupal\user\UserInterface;
-use Drupal\Core\Entity\EntityChangedTrait;
 
 /**
  * Defines the InterceptGuest entity.

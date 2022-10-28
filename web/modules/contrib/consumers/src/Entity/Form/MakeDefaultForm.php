@@ -2,7 +2,6 @@
 
 namespace Drupal\consumers\Entity\Form;
 
-use Drupal\consumers\Entity\Consumer;
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -42,7 +41,7 @@ class MakeDefaultForm extends ContentEntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Make the submitted entity the new default.
-    /** @var \Drupal\consumers\Entity\Consumer $entity */
+    /** @var \Drupal\consumers\Entity\ConsumerInterface $entity */
     $entity = $this->getEntity();
     if ($entity->get('is_default')->value) {
       // This is already the default. Do nothing.

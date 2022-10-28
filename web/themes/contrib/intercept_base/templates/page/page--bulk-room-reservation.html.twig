@@ -1,0 +1,18 @@
+{% extends '@intercept_base/page/page.html.twig' %}
+
+{% block main %}
+<main role="main" class="l--section l--offset">
+
+  {% include '@intercept-base-components/page-title/page-title.twig' with {
+    text: page['#title'],
+    modifiers: ['ruled'],
+  } %}
+
+  <a id="main-content" tabindex="-1"></a>{# link is in html.html.twig #}
+  {%
+    include '@intercept-base-components/content/content.twig' with {
+      content: page.content|without('intercept_base_local_tasks')
+    }
+  %}
+</main>
+{% endblock %}

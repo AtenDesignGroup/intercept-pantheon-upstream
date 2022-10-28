@@ -45,7 +45,7 @@ class EquipmentReservationHtmlRouteProvider extends AdminHtmlRouteProvider {
    *   The modified route.
    */
   protected function getUpdateStatusFormRoutes(EntityTypeInterface $entity_type, $operation) {
-    /* @var $entity_type EntityTypeInterface */
+    /** @var \Drupal\Core\Entity\EntityTypeInterface $entity_type */
     if ($entity_type->hasLinkTemplate("{$operation}-form")) {
       $entity_type_id = $entity_type->id();
       $operation_label = ucwords($operation);

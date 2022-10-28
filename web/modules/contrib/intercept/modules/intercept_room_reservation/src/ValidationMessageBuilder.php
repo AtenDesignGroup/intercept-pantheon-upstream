@@ -307,8 +307,9 @@ class ValidationMessageBuilder {
       if (method_exists($patron, 'circulateBlocksGet')) {
         $circulation_blocks = $patron->circulateBlocksGet();
         preg_match('/\/Date\((-*)(\d+)(-\d+)\)\//', $circulation_blocks->ExpirationDate, $date);
-        $expiration_date = $date[1] . $date[2]/1000;
-        if ($expiration_date < time()) { // This card is expired.
+        $expiration_date = $date[1] . $date[2] / 1000;
+        // This card is expired.
+        if ($expiration_date < time()) {
           $messages['expired_account'] = "WARNING: This customer's account has expired.";
         }
         // For debugging:
@@ -323,8 +324,8 @@ class ValidationMessageBuilder {
 
   /**
    * Replaces all linebreaks with <br>
-   * 
-   * @param str $string
+   *
+   * @param string $string
    *   The string to be replaced.
    */
   public function nl2br2($string) {

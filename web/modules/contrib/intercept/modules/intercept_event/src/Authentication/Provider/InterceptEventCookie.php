@@ -5,7 +5,6 @@ namespace Drupal\intercept_event\Authentication\Provider;
 use Drupal\Core\Database\Connection;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Messenger\MessengerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Drupal\user\Authentication\Provider\Cookie;
 use Drupal\Core\Routing\TrustedRedirectResponse;
@@ -108,4 +107,5 @@ class InterceptEventCookie extends Cookie {
     $events[KernelEvents::RESPONSE][] = ['addCheckToUrl', -1000];
     return $events;
   }
+
 }

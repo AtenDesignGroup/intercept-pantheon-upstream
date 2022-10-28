@@ -9,7 +9,6 @@ use Drupal\Core\Http\RequestStack;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
-use Drupal\user\UserInterface;
 
 /**
  * Filter Provider service class.
@@ -37,7 +36,7 @@ class FilterProvider implements FilterProviderInterface {
   /**
    * Cached options.
    *
-   * @var array $options
+   * @var array
    */
   protected $options = [];
 
@@ -85,7 +84,7 @@ class FilterProvider implements FilterProviderInterface {
 
       $nodes = Node::loadMultiple($nids);
 
-      foreach($nodes as $node) {
+      foreach ($nodes as $node) {
         $options[$node->id()] = $node->getTitle();
       }
 
@@ -106,8 +105,8 @@ class FilterProvider implements FilterProviderInterface {
 
       $users = User::loadMultiple($ids);
 
-      /** @var UserInterface $user */
-      foreach($users as $user) {
+      /** @var \Drupal\user\Entity\UserInterface $user */
+      foreach ($users as $user) {
         $options[$user->id()] = $user->label();
       }
 
@@ -131,7 +130,8 @@ class FilterProvider implements FilterProviderInterface {
     if (empty($value) || !isset($params[$param][$value])) {
       $value = $params[$param];
       unset($options['query'][$param]);
-    } else {
+    }
+    else {
       unset($options['query'][$param][$value]);
     }
 
@@ -141,4 +141,5 @@ class FilterProvider implements FilterProviderInterface {
       $options,
     );
   }
+
 }

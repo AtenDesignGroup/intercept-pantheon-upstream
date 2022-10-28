@@ -3,7 +3,6 @@
 namespace Drupal\intercept_room_reservation\Form;
 
 use Drupal\Core\Link;
-use Drupal\node\Entity\Node;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
@@ -26,7 +25,6 @@ use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\intercept_room_reservation\ParseAutocompleteInput;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\intercept_room_reservation\ValidationMessageBuilder;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_room_reservation\RoomReservationCertificationChecker;
 
 /**
@@ -41,7 +39,7 @@ class RoomReservationForm extends ContentEntityForm {
   /**
    * The autocomplete parser service.
    *
-   * @var \Drupal\intercept_room_reservation\ParseAutocompleteInput;
+   * @var \Drupal\intercept_room_reservation\ParseAutocompleteInput
    */
   protected $autocompleteParser;
 
@@ -163,7 +161,8 @@ class RoomReservationForm extends ContentEntityForm {
       $roles = $current_user->getRoles();
       if (in_array('intercept_registered_customer', $roles)) {
         $form_display = $this->entityDisplayRepository->getFormDisplay('room_reservation', 'room_reservation', 'customer_reserve');
-      } else {
+      }
+      else {
         $form_display = $this->entityDisplayRepository->getFormDisplay('room_reservation', 'room_reservation', 'default');
       }
       $this->setFormDisplay($form_display, $form_state);
@@ -368,7 +367,8 @@ class RoomReservationForm extends ContentEntityForm {
       // If a new revision is created, save the current user as revision author.
       $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
       $entity->setRevisionUserId(\Drupal::currentUser()->id());
-    } else {
+    }
+    else {
       $entity->setNewRevision(FALSE);
     }
 
@@ -417,7 +417,8 @@ class RoomReservationForm extends ContentEntityForm {
       // them sticky.
       $selector = '.messages';
       $response->addCommand(new InvokeCommand($selector, 'wrapAll', ["<div class='messages--wrapper'></div>"]));
-    } else {
+    }
+    else {
       $response = $this->successfulAjaxSubmit($form, $form_state);
     }
     return $response;
@@ -464,10 +465,10 @@ class RoomReservationForm extends ContentEntityForm {
     $bypassPermissions = [
       'has_max_duration_conflict' => 'bypass room reservation maximum duration constraints',
       'has_open_hours_conflict' => 'bypass room reservation open hours constraints',
-      'has_reservation_conflict' => 'bypass room reservation overlap constraints'
+      'has_reservation_conflict' => 'bypass room reservation overlap constraints',
     ];
 
-    // Check dates
+    // Check dates.
     $config = $this->config('intercept_room_reservation.settings');
 
     // Add customer advanced limit.
@@ -476,7 +477,7 @@ class RoomReservationForm extends ContentEntityForm {
     $reservation_start = new DrupalDateTime($reservation_dates[0]['value']);
     $reservation_end = new DrupalDateTime($reservation_dates[0]['end_value']);
     $acceptableDates = $this->checkDates($advanced_limit, $reservation_start, $reservation_end);
-    
+
     if (!$acceptableDates) {
       $advanced_text = $config->get('advanced_reservation_text');
       if ($advanced_text) {
@@ -513,7 +514,7 @@ class RoomReservationForm extends ContentEntityForm {
     $reservationParams = $this->validationMessageBuilder->getReservationParams($form_state);
     $reservationParams['entity'] = $form_state->getFormObject()->getEntity();
     $validationMessages = $this->validationMessageBuilder->checkAvailability($reservationParams);
-    
+
     if (!empty(array_filter($validationMessages))) {
       foreach (array_filter($validationMessages) as $key => $validationMessage) {
         // Don't set errors if the user should be able to bypass this constraint.
@@ -529,7 +530,8 @@ class RoomReservationForm extends ContentEntityForm {
    * Returns the ValidationMessageBuilder service's availabilityCallback.
    *
    * @param array $form
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *
    * @return void
    */
   public function availabilityCallback(array &$form, FormStateInterface $form_state) {
@@ -593,7 +595,7 @@ class RoomReservationForm extends ContentEntityForm {
     if ($userIsManager == TRUE) {
       return TRUE;
     }
-    // the room is reservable and they are staff OR...
+    // The room is reservable and they are staff OR...
     if ($reservable && $userIsStaff) {
       return TRUE;
     }
@@ -610,7 +612,7 @@ class RoomReservationForm extends ContentEntityForm {
   }
 
   /**
-   * Mimics functionality from RoomReserveApp to check dates
+   * Mimics functionality from RoomReserveApp to check dates.
    */
   public function checkDates($advanced_limit, $start_date, $end_date) {
     $current_user = \Drupal::currentUser();
@@ -631,8 +633,9 @@ class RoomReservationForm extends ContentEntityForm {
     $diff = $now->diff($start_date)->days;
     if ($diff <= $advanced_limit) {
       return TRUE;
-    } 
+    }
 
     return FALSE;
   }
+
 }

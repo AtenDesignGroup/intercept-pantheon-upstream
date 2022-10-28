@@ -182,6 +182,10 @@ export const getDayTimeStamp = date =>
     .startOf('day')
     .format('YYYY-MM-DD');
 
+export const getTimeStamp = date =>
+  moment(date)
+    .unix();
+
 export const getDateFromDayTimeStamp = timestamp =>
   moment.tz(timestamp, 'YYYY-MM-DD', getUserTimezone()).toDate();
 

@@ -7,10 +7,12 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ *
+ */
 class Redirect {
 
   use DependencySerializationTrait;
@@ -18,7 +20,7 @@ class Redirect {
   /**
    * The config factory service.
    *
-   * @var ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
@@ -46,9 +48,9 @@ class Redirect {
   /**
    * Redirect constructor.
    *
-   * @param ConfigFactoryInterface $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Config factory service.
-   * @param RedirectDestinationInterface $redirect_destination
+   * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   Destination service.
    */
   public function __construct(ConfigFactoryInterface $config_factory, RequestStack $request_stack, EntityTypeManagerInterface $entity_type_manager) {
@@ -63,7 +65,7 @@ class Redirect {
    *
    * @param array $form
    *   Associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
   public static function userLoginFormSubmitCallback(&$form, FormStateInterface $form_state) {
@@ -77,7 +79,7 @@ class Redirect {
    *
    * @param array $form
    *   Associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
   public function userLoginFormAlter(&$form, FormStateInterface $form_state) {
@@ -94,7 +96,7 @@ class Redirect {
    *
    * @param array $form
    *   Associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
   public function userLoginFormSubmit(&$form, FormStateInterface $form_state) {
@@ -188,4 +190,5 @@ class Redirect {
     $whitelist_array = explode("\r\n", $whitelist);
     return in_array($path, $whitelist_array);
   }
+
 }

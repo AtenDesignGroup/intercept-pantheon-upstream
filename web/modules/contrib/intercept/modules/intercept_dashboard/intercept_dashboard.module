@@ -8,6 +8,8 @@
  * @see https://www.drupal.org/node/2217931
  */
 
+use Drupal\Core\Asset\AttachedAssetsInterface;
+
 /**
  * Implements hook_theme().
  */
@@ -31,7 +33,7 @@ function intercept_dashboard_theme() {
       'variables' => [
         'label' => NULL,
         'value' => NULL,
-        'link' => NULL
+        'link' => NULL,
       ],
     ],
   ];
@@ -40,7 +42,7 @@ function intercept_dashboard_theme() {
 /**
  * Implements hook_js_alter().
  */
-function intercept_dashboard_js_alter(&$javascript, \Drupal\Core\Asset\AttachedAssetsInterface $assets) {
+function intercept_dashboard_js_alter(&$javascript, AttachedAssetsInterface $assets) {
   /**
    * Charts module fires a custom JS event when the charts are initialized.
    * We need to ensure our overrides load first so we have the opportunity

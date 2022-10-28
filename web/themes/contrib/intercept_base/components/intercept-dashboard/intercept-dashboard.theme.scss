@@ -8,6 +8,7 @@
 
   tbody a {
     @include link--underline-on-hover;
+    font-weight: $fw-bold;
   }
 }
 

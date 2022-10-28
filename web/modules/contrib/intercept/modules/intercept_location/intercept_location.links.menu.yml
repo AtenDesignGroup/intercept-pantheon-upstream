@@ -3,4 +3,3 @@ intercept_location.general:
   description: 'Intercept location settings.'
   route_name: intercept_location.general
   parent: intercept_core.settings
-

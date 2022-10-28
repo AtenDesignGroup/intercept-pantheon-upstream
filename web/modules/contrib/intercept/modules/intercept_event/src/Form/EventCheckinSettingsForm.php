@@ -23,7 +23,7 @@ class EventCheckinSettingsForm extends ConfigFormBase {
   protected const CONFIG_NAME = 'intercept_event.checkin';
 
   /**
-   * @var \Drupal\duration_field\Service\DurationServiceInterface $durationService
+   * @var \Drupal\duration_field\Service\DurationServiceInterface
    */
   protected $durationService;
 
@@ -101,7 +101,7 @@ class EventCheckinSettingsForm extends ConfigFormBase {
       '#type' => 'duration',
       '#title' => $this->t('Check-in period opens'),
       '#description' => $this->t(' before the event starts'),
-      '#default_value' =>  $this->durationService->getDateIntervalFromDurationString($config->get('checkin_start')),
+      '#default_value' => $this->durationService->getDateIntervalFromDurationString($config->get('checkin_start')),
       // Only 5 minute increments.
       '#date_increment' => 300,
       '#granularity' => 'h:i',
@@ -115,7 +115,7 @@ class EventCheckinSettingsForm extends ConfigFormBase {
     $form['checkin_end'] = [
       '#title' => $this->t('Check-in period closes'),
       '#description' => $this->t('after event ends'),
-      '#default_value' =>  $this->durationService->getDateIntervalFromDurationString($config->get('checkin_end')),
+      '#default_value' => $this->durationService->getDateIntervalFromDurationString($config->get('checkin_end')),
       '#type' => 'duration',
       // Only 5 minute increments.
       '#date_increment' => 300,

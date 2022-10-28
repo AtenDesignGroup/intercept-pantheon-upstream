@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-## [8.x-1.0-beta6] - 2022-10-3
+## [8.x-1.0-beta7] - 2022-10-28
+
+- Added the ability to view staff comments on the event data dashboard
+- Updated a few My Account menu items for easier understanding
+- Rebuilt the Bulk Room Reservations page to be more user friendly for staff
+- Reviewed Intercept code and made improvements via Coder
+- Bulk Room Reservation - Fixed warning messages when invalid times are entered
+- Fixed automatic approval bug in staff room reservations when status is set to "requested"
+- Fixed triangle alignment on location detail pages
+- Fixed text field label overlap on form fields
+- Fixed bug in customer certification lookup when customer notes are present
+- Limited customer’s ability to edit and cancel a room reservation after the reservation has begun
+- Fixed issue with unpkg.com scripts not loading
+
+## [8.x-1.0-beta6] - 2022-10-03
 
 - Fixed Intercept: Event Teaser Not Using Serifed Font For Location Details
 - Room Reservation Form Updates:

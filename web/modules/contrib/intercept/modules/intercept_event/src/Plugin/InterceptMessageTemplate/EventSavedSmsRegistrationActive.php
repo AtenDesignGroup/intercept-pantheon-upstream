@@ -33,7 +33,7 @@ class EventSavedSmsRegistrationActive extends InterceptMessageSmsTemplateBase im
       'description' => [
         '#markup' => '<p>This notification is sent to customers who save a registration-required event before registration opens. They will be notified when registration opens so they can sign up.</p>',
         '#allowed_tags' => ['p'],
-      ]
+      ],
     ];
 
     $form = parent::buildConfigurationForm($form, $form_state);

@@ -27,7 +27,7 @@ class InterceptLocationClosingListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\intercept_location_closing\Entity\InterceptLocationClosing */
+    /** @var \Drupal\intercept_location_closing\Entity\InterceptLocationClosing $entity */
     $row['name'] = Link::createFromRoute(
       $entity->label(),
       'entity.intercept_location_closing.edit_form',

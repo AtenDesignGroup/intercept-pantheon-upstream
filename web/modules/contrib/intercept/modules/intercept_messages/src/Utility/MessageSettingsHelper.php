@@ -30,7 +30,6 @@ class MessageSettingsHelper {
     return (bool) \Drupal::service('user.data')->get('intercept_messages', $user->id(), 'email_event');
   }
 
-
   /**
    * Whether the user allows SMS notifications for events.
    *
@@ -107,7 +106,7 @@ class MessageSettingsHelper {
    * @param \Drupal\intercept_event\Entity\EventAttendanceInterface $event_attendance
    *   The event attendance entity.
    *
-   * @return string $telephone
+   * @return string
    *   The telephone number of the customer
    */
   public static function getEventAttendancePhone(EventAttendanceInterface $event_attendance) {
@@ -167,7 +166,7 @@ class MessageSettingsHelper {
    * @param \Drupal\intercept_event\Entity\EventRegistrationInterface $event_registration
    *   The event registration entity.
    *
-   * @return string $telephone
+   * @return string
    *   The telephone number of the customer
    */
   public static function getEventRegistrationPhone(EventRegistrationInterface $event_registration) {
@@ -219,7 +218,7 @@ class MessageSettingsHelper {
    * @param \Drupal\flag\Entity\FlaggingInterface $flagging
    *   The flagging entity.
    *
-   * @return string $telephone
+   * @return string
    *   The telephone number of the customer
    */
   public static function getEventSavedPhone(FlaggingInterface $flagging) {
@@ -230,8 +229,6 @@ class MessageSettingsHelper {
     }
     return $telephone;
   }
-
-
 
   /**
    * Gets the recipient phone number.

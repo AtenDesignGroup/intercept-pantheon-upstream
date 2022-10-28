@@ -274,7 +274,6 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
     parent::preSave($storage);
 
     if ($this->isNew()) {
-      $this->setDefaultStatus();
       // If they've signed the agreement, remove it from their session.
       if (\Drupal::service('current_user')->isAnonymous()) {
         return;
@@ -298,30 +297,6 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
 
     if ($this->statusHasChanged()) {
       \Drupal::service('intercept_core.reservation.manager')->notifyStatusChange($this, $this->getOriginalStatus(), $this->getNewStatus());
-    }
-  }
-
-  /**
-   * Set status based on the room being reserved.
-   */
-  public function setDefaultStatus() {
-    if (!$this->hasField(self::PARENT_FIELD)) {
-      return;
-    }
-    if (!$this->get(self::PARENT_FIELD)->isEmpty()) {
-      $room = $this->get(self::PARENT_FIELD)->entity;
-      $approval_required = $room->field_approval_required->getString();
-
-      $current_user = \Drupal::currentUser();
-      if ($current_user->hasPermission('bypass room reservation agreement')) {
-        $approval_required = FALSE;
-      }
-
-      $current_status = $this->get(self::STATUS_FIELD)->getString();
-
-      if (!$approval_required && $current_status == 'requested') {
-        $this->approve();
-      }
     }
   }
 

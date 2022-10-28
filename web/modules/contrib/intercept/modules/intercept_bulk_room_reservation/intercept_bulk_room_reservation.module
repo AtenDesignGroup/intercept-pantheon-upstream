@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
@@ -10,8 +14,8 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements hook_theme().
@@ -87,7 +91,7 @@ function intercept_bulk_room_reservation_get_rooms_for_location(FormStateInterfa
         $daysToCheck = round((strtotime($values['end_date']) - strtotime($values['start_date'])) / (60 * 60 * 24));
         for ($day = 0; $day <= $daysToCheck; $day++) {
           $increment = (string) $day . ' days';
-          $dates[] = date('Y-m-d', strtotime($values['start_date']. $increment));
+          $dates[] = date('Y-m-d', strtotime($values['start_date'] . $increment));
         }
         break;
 
@@ -163,7 +167,7 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
   $privileged_roles = [
     'administrator',
     'intercept_system_admin',
-    'intercept_room_manager'
+    'intercept_room_manager',
   ];
   $current_user = \Drupal::currentUser();
   $roles = $current_user->getRoles();
@@ -176,7 +180,7 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
 
   if ($availability = $reservationManager->availability($params)) {
     foreach ($availability as $room_availability) {
-      if (! ($room_availability['user_exceeded_limit']
+      if (!($room_availability['user_exceeded_limit']
         || $room_availability['has_reservation_conflict']
         || ($room_availability['has_conflict'] && !$user_is_privileged)
         || ($room_availability['has_open_hours_conflict'] && !$user_is_privileged)
@@ -191,6 +195,9 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
           $storage = \Drupal::entityTypeManager()->getStorage('node');
           $room_node = $storage->load(reset($params['rooms']));
           $conflict_date_string = $room_availability['dates'][0]['start'];
+          if (is_null($conflict_date_string)) {
+            continue;
+          }
           $conflict_time = strtotime($conflict_date_string);
           $conflict_date_time = new \DateTime();
           $conflict_date_time->setTimestamp($conflict_time);
@@ -274,24 +281,24 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
       if (($room_res['start'] <= DateTime::createFromFormat('Y-m-d\TH:i:s', $params['end'])->getTimestamp())
         && ($room_res['end'] >= DateTime::createFromFormat('Y-m-d\TH:i:s', $params['start'])->getTimestamp())
         && $room_reservation_entity->field_room->target_id == $room[0]) {
-          // Treat overridden room reservations as though they are not part of
-          // the series in determining availability.
-          if (count($entity->field_overridden) > 0) {
-            foreach ($entity->field_overridden as $overridden_id) {
-              if ($overridden_id->target_id == $room_reservation->target_id) {
-                $message = t('<a href=":room_reservation_edit">This overridden room reservation</a> is in conflict with your series, making your desired room unavailable for the series. You can <a href=":delete_overridden" target="_blank">delete the overridden room reservation</a>, <a href=":remove_override" target="_blank">remove the override</a> or change the dates or desired room for your series.',
-                [
-                  ':room_reservation_edit' => \Drupal::request()->getSchemeAndHttpHost() . '/bulk-room-reservation/' . $room_reservation->target_id,
-                  ':delete_overridden' => \Drupal::request()->getSchemeAndHttpHost() . '/room-reservation/' . $room_reservation->target_id . '/delete',
-                  ':remove_override' => \Drupal::request()->getSchemeAndHttpHost() . '/bulk-room-reservation/' . $room_reservation->target_id . '/remove-override',
-                ]);
-                \Drupal::messenger()->addError($message);
-                return FALSE;
-              }
+        // Treat overridden room reservations as though they are not part of
+        // the series in determining availability.
+        if (count($entity->field_overridden) > 0) {
+          foreach ($entity->field_overridden as $overridden_id) {
+            if ($overridden_id->target_id == $room_reservation->target_id) {
+              $message = t('<a href=":room_reservation_edit">This overridden room reservation</a> is in conflict with your series, making your desired room unavailable for the series. You can <a href=":delete_overridden" target="_blank">delete the overridden room reservation</a>, <a href=":remove_override" target="_blank">remove the override</a> or change the dates or desired room for your series.',
+              [
+                ':room_reservation_edit' => \Drupal::request()->getSchemeAndHttpHost() . '/bulk-room-reservation/' . $room_reservation->target_id,
+                ':delete_overridden' => \Drupal::request()->getSchemeAndHttpHost() . '/room-reservation/' . $room_reservation->target_id . '/delete',
+                ':remove_override' => \Drupal::request()->getSchemeAndHttpHost() . '/bulk-room-reservation/' . $room_reservation->target_id . '/remove-override',
+              ]);
+              \Drupal::messenger()->addError($message);
+              return FALSE;
             }
           }
-          $available = TRUE;
-          break;
+        }
+        $available = TRUE;
+        break;
       }
     }
   }
@@ -366,7 +373,7 @@ function intercept_bulk_room_reservation_room_reservation_presave(EntityInterfac
  * When deleting room_reservations, remove them from any bulk room reservation
  * to which they belong.
  *
- * @param EntityInterface $entity
+ * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The RoomReservation entity to delete.
  */
 function intercept_bulk_room_reservation_room_reservation_predelete(EntityInterface $entity) {
@@ -389,6 +396,16 @@ function intercept_bulk_room_reservation_room_reservation_predelete(EntityInterf
   }
 }
 
+
+/**
+ * Implements hook_entity_delete().
+ */
+function intercept_bulk_room_reservation_entity_delete(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'bulk_room_reservation') {
+    return new RedirectResponse('/manage/bulk-room-reservations');
+  }
+}
+
 /**
  * Returns an array of room reservation entity ids to be deleted.
  *
@@ -396,6 +413,7 @@ function intercept_bulk_room_reservation_room_reservation_predelete(EntityInterf
  *
  * @param array $entities
  *   Array of BulkRoomReservation entities.
+ *
  * @return array
  *   Array of room reservation entity ids.
  */
@@ -452,11 +470,25 @@ function intercept_bulk_room_reservation_intercept_room_reservation_dates_alter(
  */
 function intercept_bulk_room_reservation_field_widget_date_recur_modular_alpha_form_alter(array &$elements, FormStateInterface $form_state, array $context) {
   // If this is part of a bulk room reservation, alter the field as
-  // it is done in events module
+  // it is done in events module.
   $route = \Drupal::request()->attributes->get('_route');
   if ($route == 'entity.bulk_room_reservation.edit_form' || $route == 'entity.bulk_room_reservation.add_form') {
     if (\Drupal::moduleHandler()->moduleExists('intercept_event')) {
       \Drupal::service('intercept_event.recurring_manager')->dateRecurWidgetFormAlter($elements, $form_state, $context);
     }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function intercept_bulk_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  switch ($form_id) {
+    case 'bulk_room_reservation_add_form':
+    case 'bulk_room_reservation_edit_form':
+      // Hide revision log message & new revision fields.
+      $form['revision_log']['#access'] = FALSE;
+      $form['revision_information']['#access'] = FALSE;
+      break;
   }
 }

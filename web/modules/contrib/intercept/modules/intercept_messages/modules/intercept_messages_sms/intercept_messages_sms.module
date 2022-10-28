@@ -13,7 +13,6 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\Core\Utility\Token;
 use Drupal\sms\Direction;
 use Drupal\sms\Entity\SmsMessage as SmsMessageAdvanced;
 use Drupal\sms\Exception\RecipientRouteException;
@@ -89,7 +88,8 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
     return;
   }
   if ($entity_type_id == 'flagging' && $bundle != 'saved_event') {
-    return; // The only type of flags we're worried about are saved events.
+    // The only type of flags we're worried about are saved events.
+    return;
   }
   // Get the telephone number & tokens.
   switch ($entity_type_id) {
@@ -97,10 +97,12 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
       $telephone = MessageSettingsHelper::getEventAttendancePhone($entity);
       $token_replacements = ['event_attendance' => $entity];
       break;
+
     case 'event_registration':
       $telephone = MessageSettingsHelper::getEventRegistrationPhone($entity);
       $token_replacements = ['event_registration' => $entity];
       break;
+
     case 'flagging':
       $telephone = MessageSettingsHelper::getEventSavedPhone($entity);
       $token_replacements = ['flagging' => $entity];
@@ -132,7 +134,8 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
         $interval_time = \Drupal::service('duration_field.service')->getSecondsFromDurationString($interval);
         if ($entity_type_id == 'flagging') {
           if ($registration == TRUE) {
-            continue; // Don't send messages for saves when registration is required.
+            // Don't send messages for saves when registration is required.
+            continue;
           }
         }
         if ($event->hasField('field_date_time')) {
@@ -141,6 +144,7 @@ function intercept_messages_sms_entity_insert(EntityInterface $entity) {
               $event_date = $event->get('field_date_time')->end_date;
               $send_timestamp = $event_date->format('U') + $interval_time;
               break;
+
             case 'event_registration':
             case 'flagging':
               // When the customer flags/saves the event, we're going to use the
@@ -234,13 +238,14 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
   }
   $dateTime = new DrupalDateTime($entity->get('field_date_time')->value, 'UTC');
   $event_date = $dateTime->getTimestamp();
-  $timestamp = $send_timestamp = strtotime('now'); // Send any update messages immediately.
+  // Send any update messages immediately.
+  $timestamp = $send_timestamp = strtotime('now');
   /** @var \Drupal\node\NodeInterface $entity */
   if (!$entity->isPublished() || ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled')) {
     $event_registration_provider = \Drupal::service('intercept_event.event_registration_provider');
     /** @var \Drupal\intercept_event\EventRegistrationProviderInterface $event_registration_provider */
     foreach ($event_registration_provider->getEventRegistrationIdsByEvent($entity) as $registration_id) {
-      // Delete existing event registration reminder messages
+      // Delete existing event registration reminder messages.
       $messages = \Drupal::service('database')
         ->select('sms', 'm')
         ->fields('m', [
@@ -256,7 +261,8 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
       // event has been canceled, but not if it was just unpublished.
       // Also make sure it's a future event before sending.
       if ($entity->hasField('field_event_status') && $entity->field_event_status->value == 'canceled') {
-        if ($event_date >= $timestamp) { // Future event. Send it!
+        // Future event. Send it!
+        if ($event_date >= $timestamp) {
           // Get the body of the message we're trying to send and information
           // specific to this event registration.
           $message = \Drupal::config('intercept_event.settings')->get('sms')['registration_sms_event_canceled'];
@@ -273,7 +279,7 @@ function intercept_messages_sms_entity_update(EntityInterface $entity) {
     $flag = \Drupal::service('flag')->getFlagById('saved_event');
     $flaggings = \Drupal::service('flag')->getEntityFlaggings($flag, $entity);
     foreach ($flaggings as $flagging) {
-      // Delete existing event save reminder messages
+      // Delete existing event save reminder messages.
       $messages = \Drupal::service('database')
         ->select('sms', 'm')
         ->fields('m', [
@@ -299,9 +305,10 @@ function intercept_messages_sms_entity_delete(EntityInterface $entity) {
     return;
   }
   if ($entity_type_id == 'flagging' && $bundle != 'saved_event') {
-    return; // The only type of flags we're worried about are saved events.
+    // The only type of flags we're worried about are saved events.
+    return;
   }
-  // Delete existing event save reminder messages
+  // Delete existing event save reminder messages.
   $messages = \Drupal::service('database')
     ->select('sms', 'm')
     ->fields('m', [

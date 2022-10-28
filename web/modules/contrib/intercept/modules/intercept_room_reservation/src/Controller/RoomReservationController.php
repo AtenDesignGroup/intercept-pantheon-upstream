@@ -748,9 +748,9 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       $result = $manager->availability([
         'start' => $params['start'],
         'end' => $params['end'],
-        'exclude' => isset($params['exclude']) ? $params['exclude'] : NULL,
-        'exclude_uuid' => isset($params['exclude_uuid']) ? $params['exclude_uuid'] : NULL,
-        'duration' => isset($params['duration']) ? $params['duration'] : NULL,
+        'exclude' => $params['exclude'] ?? NULL,
+        'exclude_uuid' => $params['exclude_uuid'] ?? NULL,
+        'duration' => $params['duration'] ?? NULL,
         'rooms' => $rooms,
         'debug' => !empty($params['debug']),
       ]);
@@ -762,16 +762,16 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   /**
    * Determines whether or not a given customer has been barred from making
    * room reservations.
-   * 
+   *
    * @return bool
    */
   private function evaluateCustomerBarred() {
     $customer = $this->entityTypeManager()
-    ->getStorage('profile')
-    ->loadByProperties([
-      'type' => 'customer',
-      'uid' => $this->currentUser->id(),
-    ]);
+      ->getStorage('profile')
+      ->loadByProperties([
+        'type' => 'customer',
+        'uid' => $this->currentUser->id(),
+      ]);
     if (!empty($customer)) {
       $customer = reset($customer);
       // See if the customer is allowed to make reservations or is barred.

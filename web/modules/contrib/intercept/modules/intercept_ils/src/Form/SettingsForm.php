@@ -70,7 +70,7 @@ class SettingsForm extends ConfigFormBase {
       '#required' => TRUE,
       '#options' => $ils_plugins,
     ];
-    
+
     $form['intercept_ils_reminder'] = [
       '#type' => 'markup',
       '#markup' => '<p>' . $this->t('Don\'t forget to create the necessary keys for your ILS at') . ' <a href="/admin/config/system/keys">/admin/config/system/keys</a>. ' . $this->t('Please see the README.md file included with the Intercept module for more information.') . '</p>',

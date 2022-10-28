@@ -37,7 +37,7 @@ class ManagementController extends ManagementControllerBase implements RenderCal
       'user' => $this->currentUser()->id(),
     ],
     ['attributes' => ['class' => ['button', 'create-content-button']]]
-  );
+    );
   }
 
   /**

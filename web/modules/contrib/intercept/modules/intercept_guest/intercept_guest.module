@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -12,15 +16,15 @@ use Drupal\Core\Form\FormStateInterface;
  */
 
 /**
-  * Implements hook_form_BASE_FORM_ID_alter().
-  *
-  * @param $form
-  *   Nested array of form elements that comprise the form.
-  * @param \Drupal\Core\Form\FormStateInterface $form_state
-  *   The current state of the form.
-  * @param $form_id
-  *   String representing the name of the form itself.
-  */
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * @param $form
+ *   Nested array of form elements that comprise the form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The current state of the form.
+ * @param $form_id
+ *   String representing the name of the form itself.
+ */
 function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
   // Abort if user does not have permissions to register guests.
@@ -119,7 +123,8 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
  * Validation function for the room reservation form.
  *
  * @param array $form
- * @param FormStateInterface $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *
  * @return void
  */
 function intercept_guest_reservation_form_validate($form, FormStateInterface &$form_state) {
@@ -169,11 +174,11 @@ function intercept_guest_inline_entity_form_entity_form_alter(array &$entity_for
 }
 
 /**
-* Implements hook_ENTITY_TYPE_presave().
-*
-* @param Drupal\Core\Entity\EntityInterface $reservation
-*   The room_reservation entity.
-*/
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * @param Drupal\Core\Entity\EntityInterface $reservation
+ *   The room_reservation entity.
+ */
 function intercept_guest_room_reservation_presave(EntityInterface $reservation) {
   if (empty($reservation->field_user->entity)) {
     // This is a guest room reservation; set field_user as the site's official

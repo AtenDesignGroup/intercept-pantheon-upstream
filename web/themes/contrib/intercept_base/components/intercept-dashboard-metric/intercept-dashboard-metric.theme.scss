@@ -1,6 +1,16 @@
 @import "_partials";
 
+.intercept-dashboard-metric {
+  line-height: 1.1;
+}
+
 .intercept-dashboard-metric__value {
   color: $clr-secondary;
+  font-weight: $fw-bold;
+}
+
+.intercept-dashboard__metrics a {
+  @include link--secondary;
+  @include link--underline-on-hover;
   font-weight: $fw-bold;
 }

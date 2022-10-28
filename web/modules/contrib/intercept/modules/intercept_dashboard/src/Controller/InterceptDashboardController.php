@@ -2,20 +2,14 @@
 
 namespace Drupal\intercept_dashboard\Controller;
 
-use DateInterval;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Database\Query\SelectInterface;
-use Drupal\Core\Database\Query\TableSortExtender;
-use Drupal\Core\Database\Query\PagerSelectExtender;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\csv_serialization\Encoder\CsvEncoder;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\intercept_core\Utility\Dates;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,7 +20,7 @@ class InterceptDashboardController extends ControllerBase {
   /**
    * EntityQuery service.
    *
-   * @var QueryInterface $entityQuery
+   * @var \Drupal\Core\Entity\Query\QueryInterface
    */
   protected $entityQuery;
 
@@ -34,20 +28,20 @@ class InterceptDashboardController extends ControllerBase {
    * The database connection.
    *
    * @var \Drupal\Core\Database\Connection
-  */
+   */
   protected $database;
 
   /**
    * The total number of events returned.
    *
    * @var int
-  */
+   */
   protected $totalEvents;
 
   /**
    * FilterProvider service.
    *
-   * @var \Drupal\intercept_dashboard\FilterProviderInterface $filterProvider
+   * @var \Drupal\intercept_dashboard\FilterProviderInterface
    */
   protected $filterProvider;
 
@@ -61,7 +55,7 @@ class InterceptDashboardController extends ControllerBase {
   /**
    * The CSV encoder.
    *
-   * @var \Drupal\csv_serialization\Encoder\CsvEncoder $encoder
+   * @var \Drupal\csv_serialization\Encoder\CsvEncoder
    */
   protected $encoder;
 
@@ -121,14 +115,13 @@ class InterceptDashboardController extends ControllerBase {
     $build['#summary']['total_saves'] = $this->buildTotalSaves();
     // The following lines are not rendered but are helpful for debugging.
     // $build['#summary']['total_registrants'] = $this->buildTotalRegistrants();
-
     $totalCustomerEvaluations = $this->queryTotalCustomerEvaluations();
     $build['#summary']['percent_positive_customer_evaluations'] = $this->buildPercentPositiveCustomerEvaluations($totalCustomerEvaluations['percent_positive_customer_evaluations']);
     $build['#summary']['percent_negative_customer_evaluations'] = $this->buildPercentNegativeCustomerEvaluations($totalCustomerEvaluations['percent_negative_customer_evaluations']);
     $build['#summary']['total_customer_evaluations'] = $this->buildTotalCustomerEvaluations($totalCustomerEvaluations['total_customer_evaluations']);
     // The following lines are not rendered but are helpful for debugging.
     // $build['#summary']['positive_customer_evaluations'] = $this->buildTotalPositiveCustomerEvaluations($totalCustomerEvaluations['total_positive_customer_evaluations']);
-    // $build['#summary']['negative_customer_evaluations'] = $this->buildTotalNegativeCustomerEvaluations($totalCustomerEvaluations['total_negative_customer_evaluations']);
+    // $build['#summary']['negative_customer_evaluations'] = $this->buildTotalNegativeCustomerEvaluations($totalCustomerEvaluations['total_negative_customer_evaluations']);.
     $build['#summary']['total_staff_evaluations'] = $this->buildTotalStaffEvaluations();
 
     /**
@@ -181,7 +174,7 @@ class InterceptDashboardController extends ControllerBase {
    * Constructs the base query to select events based on
    * the provided filter values.
    *
-   * @return $query
+   * @return query
    */
   public function getBaseQuery() {
     // Get filter and sort criteria from url query params.
@@ -193,18 +186,18 @@ class InterceptDashboardController extends ControllerBase {
     $query->condition('n.status', 1);
 
     /**
-     * @todo: Make sure the default value is shared with the form.
+     * @todo Make sure the default value is shared with the form.
      */
     $startDate = new DrupalDateTime($params['start'] ?? date('Y-m-01'));
     $startDate->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
     $startFormatted = $startDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
 
     /**
-     * @todo: Make sure the default value is shared with the form.
+     * @todo Make sure the default value is shared with the form.
      */
     $endDate = new DrupalDateTime($params['end'] ?? date('Y-m-d'));
     // Increase the date by 1 day to include the current day.
-    $endDate->add(DateInterval::createFromDateString('1 day'));
+    $endDate->add(\DateInterval::createFromDateString('1 day'));
     $endDate->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
     $endFormatted = $endDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
 
@@ -212,7 +205,7 @@ class InterceptDashboardController extends ControllerBase {
     $query->condition('date.field_date_time_value', [$startFormatted, $endFormatted], 'BETWEEN');
 
     // Add keyword condition.
-    // @todo: Can this be integrated into search_api?
+    // @todo Can this be integrated into search_api?
     if (isset($params['keyword']) && !empty($params['keyword'])) {
       $query->leftJoin('node__field_text_content', 'text_content', 'n.nid = text_content.entity_id');
       $query->leftJoin('node__field_text_intro', 'text_intro', 'n.nid = text_intro.entity_id');
@@ -260,7 +253,8 @@ class InterceptDashboardController extends ControllerBase {
       $query->leftJoin('node__field_presenter', 'presenter', 'n.nid = presenter.entity_id');
       if ($params['external_presenter'] === 'yes') {
         $query->isNotNull('presenter.field_presenter_value');
-      } else {
+      }
+      else {
         $query->isNull('presenter.field_presenter_value');
       }
     }
@@ -347,7 +341,7 @@ class InterceptDashboardController extends ControllerBase {
       'summary' => [
         '#markup' => $this->t('Showing data for @total events.', [
           '@total' => number_format($this->getTotalEvents()),
-        ])
+        ]),
       ],
     ];
 
@@ -370,6 +364,7 @@ class InterceptDashboardController extends ControllerBase {
    *   Human-readable filter set label.
    * @param string[] $options
    *   (optional) Id Label pairs. Used to determine the human-readable label for the filter.
+   *
    * @return void
    */
   public function buildCurrentFilter($param, $label, $options = NULL) {
@@ -388,7 +383,8 @@ class InterceptDashboardController extends ControllerBase {
           'text' => isset($options) ? $options[$value] : $value,
         ];
       }
-    } else {
+    }
+    else {
       $value = $params[$param];
       $filter['values'][] = [
         'remove_url' => $this->filterProvider->getRemoveUrl($param),
@@ -411,7 +407,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($value ?? 0) . '%',
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
     return $build;
   }
@@ -429,7 +425,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($value ?? 0) . '%',
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
     return $build;
   }
@@ -447,13 +443,13 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($value ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
-    // @todo: Provide a view of all feedback.
+    // @todo Provide a view of all feedback.
     // if ($value > 0) {
     //   $build['#link'] = Link::createFromRoute($this->t('View All', []), '<current>', [], [
     //     'attributes' => [
-    //       'title' => $this->t('View all staff comments'),
+    //       'title' => $this->t('View all customer comments'),
     //       'rel' => 'nofollow'
     //     ],
     //   ]);
@@ -474,7 +470,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($value ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
     return $build;
   }
@@ -492,7 +488,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($value ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
     return $build;
   }
@@ -517,7 +513,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($count ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
     return $build;
   }
@@ -531,10 +527,7 @@ class InterceptDashboardController extends ControllerBase {
     $eventQuery = $this->getBaseQuery();
     $eventQuery->join($this->getStaffEvaluationsSubQuery(), 'staff_evaluations', 'n.nid = staff_evaluations.nid');
     $eventQuery->addExpression('SUM(staff_evaluations)', 'total_staff_evaluations');
-
-    $count = $eventQuery
-      ->execute()
-      ->fetchAssoc()['total_staff_evaluations'];
+    $count = $eventQuery->execute()->fetchAssoc()['total_staff_evaluations'];
 
     $build = [
       '#theme' => 'intercept_dashboard_metric',
@@ -542,17 +535,25 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($count ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
-
-    if ($count > 0) {
-      // @todo: Provide a view of all feedback.
-      // $build['#link'] = Link::createFromRoute($this->t('View All', []), '<current>', [], [
-      //   'attributes' => [
-      //     'title' => $this->t('View all staff comments'),
-      //     'rel' => 'nofollow'
-      //   ],
-      // ]);
+    
+    // Build the "View All" link to view all staff feedback.
+    $eventQuery = $this->getBaseQuery();
+    $eventQuery->addJoin('right', $this->getStaffEvaluationsSubQuery(), 'staff_evaluations', 'n.nid = staff_evaluations.nid'); // rightJoin is removed in D9.
+    $eventQuery->fields('staff_evaluations', ['nid']);
+    $all_staff_evaluations = $eventQuery->execute()->fetchAll();
+    $nids = [];
+    foreach ($all_staff_evaluations as $evaluation) {
+      $nids[] = $evaluation->nid;
+    }
+    if (count($nids) > 0) {
+      $build['#link'] = new FormattableMarkup('
+        <a href="@url" class="use-ajax" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:1000,&quot;height&quot;:600}">View All</a>',
+        [
+          '@url' => Url::fromRoute('intercept_event.staff_evaluations')->setOption('query', ['nids' => implode(',', $nids)])->toString(),
+        ]
+      );
     }
     return $build;
   }
@@ -586,7 +587,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($value ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
     return $build;
   }
@@ -611,7 +612,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($count ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
 
     return $build;
@@ -637,7 +638,7 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($count ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
 
     return $build;
@@ -663,15 +664,14 @@ class InterceptDashboardController extends ControllerBase {
       '#value' => number_format($count ?? 0),
       '#cache' => [
         'context' => 'url',
-      ]
+      ],
     ];
     return $build;
   }
 
-
   /**
-   * Generates a sortable paginated table view of filtered events
-   * 
+   * Generates a sortable paginated table view of filtered events.
+   *
    * @param int|false $limit
    *   An integer specifying the number of elements per page. If passed a false
    *   value, the pager is disabled.
@@ -686,7 +686,7 @@ class InterceptDashboardController extends ControllerBase {
       //   'data' => $this->t('NID'),
       //   'field' => 'nid',
       //   'initial_click_sort' => 'asc',
-      // ],
+      // ],.
       [
         'data' => $this->t('Event'),
         'field' => 'title',
@@ -737,37 +737,37 @@ class InterceptDashboardController extends ControllerBase {
     $eventQuery = $this->getBaseQuery();
     $eventQuery->fields('n', [
       'nid',
-      'title'
+      'title',
     ]);
     $eventQuery->fields('date', [
-      'field_date_time_value'
+      'field_date_time_value',
     ]);
 
-    // Attendees
+    // Attendees.
     $eventQuery->leftJoin($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
     $eventQuery->fields('attendees', [
-      'attendees'
+      'attendees',
     ]);
 
-    // Checked-in
+    // Checked-in.
     $eventQuery->leftJoin($this->getCheckedInSubQuery(), 'checked_in', 'n.nid = checked_in.nid');
     $eventQuery->fields('checked_in', [
-      'checked_in'
+      'checked_in',
     ]);
 
-    // Saves
+    // Saves.
     $eventQuery->leftJoin($this->getSavedEventsSubQuery(), 'saves', 'n.nid = saves.nid');
     $eventQuery->fields('saves', [
-      'saves'
+      'saves',
     ]);
 
-    // Registrants
+    // Registrants.
     $eventQuery->leftJoin($this->getRegistrantsSubQuery(), 'registrants', 'n.nid = registrants.nid');
     $eventQuery->fields('registrants', [
-      'registrants'
+      'registrants',
     ]);
 
-    // Customer Evaluations
+    // Customer Evaluations.
     $eventQuery->leftJoin($this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.nid');
     $eventQuery->fields('customer_evaluations', [
       'percent_positive_customer_evaluations',
@@ -775,17 +775,17 @@ class InterceptDashboardController extends ControllerBase {
       'customer_evaluations',
     ]);
 
-    // Staff Evaluations
+    // Staff Evaluations.
     $eventQuery->leftJoin($this->getStaffEvaluationsSubQuery(), 'staff_evaluations', 'n.nid = staff_evaluations.nid');
     $eventQuery->fields('staff_evaluations', [
       'staff_evaluations',
     ]);
 
-    /** @var TableSortExtender $table_sort */
+    /** @var \Drupal\Core\Database\Query\TableSortExtender $table_sort */
     $table_sort = $eventQuery->extend('Drupal\Core\Database\Query\TableSortExtender');
     $table_sort->orderByHeader($header);
 
-    /** @var PagerSelectExtender $pager */
+    /** @var \Drupal\Core\Database\Query\PagerSelectExtender $pager */
     $pager = $table_sort->extend('Drupal\Core\Database\Query\PagerSelectExtender');
     $pager->limit($limit);
 
@@ -793,17 +793,17 @@ class InterceptDashboardController extends ControllerBase {
 
     // Populate the rows.
     $rows = [];
-    foreach($result as $row) {
+    foreach ($result as $row) {
       $date = new DrupalDateTime($row->field_date_time_value);
       $rows[] = [
         'data' => [
           // Keep for debugging purposes.
-          // 'nid' => $row->nid,
+          // 'nid' => $row->nid,.
           'title' => new FormattableMarkup('
               <a href="@url">@title</a>',
               [
                 '@title' => $row->title,
-                '@url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid])->toString()
+                '@url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid])->toString(),
               ]
           ),
           'date' => $date->format('n/j/y'),
@@ -812,31 +812,31 @@ class InterceptDashboardController extends ControllerBase {
           'registrants' => number_format($row->registrants ?? 0),
           'saves' => number_format($row->saves ?? 0),
           'customer_rating' => $row->customer_evaluations ?
-            new FormattableMarkup('<div class="feeback__wrapper">
+          new FormattableMarkup('<div class="feeback__wrapper">
                 <span class="feedback feedback--positive"><span class="feedback__icon"></span> <span class="visually-hidden">Positive</span>@positive<span class="feedback__suffix">%</span></span>
                 <span class="feedback feedback--negative"><span class="feedback__icon"></span> <span class="visually-hidden">Negative</span> @negative<span class="feedback__suffix">%</span></span>
             </div>', [
               '@positive' => number_format($row->percent_positive_customer_evaluations, 0),
               '@negative' => number_format($row->percent_negative_customer_evaluations, 0),
             ]) :
-            new FormattableMarkup('<span>—</span>', []),
+          new FormattableMarkup('<span>—</span>', []),
           'customer_evaluations' => $row->customer_evaluations ?
-            new FormattableMarkup('
+          new FormattableMarkup('
               <a href="@url">View <span class="visually-hidden">Customer Evaluations</span></a>',
               [
-                '@url' => Url::fromRoute('entity.node.analysis', ['node' => $row->nid])->toString()
+                '@url' => Url::fromRoute('entity.node.analysis', ['node' => $row->nid])->toString(),
               ]
-              ) :
-            '—',
+          ) :
+          '—',
           'staff_evaluations' => $row->staff_evaluations ?
-            new FormattableMarkup('
-              <a href="@url">View <span class="visually-hidden">Staff Comments</span></a>',
+          new FormattableMarkup('
+              <a href="@url" class="use-ajax" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:1000}">View <span class="visually-hidden">Staff Comments</span></a>',
               [
-                '@url' => Url::fromRoute('entity.node.analysis', ['node' => $row->nid])->toString()
+                '@url' => Url::fromRoute('entity.node.staff_evaluations', ['node' => $row->nid])->toString(),
               ]
-              ) :
-            '—',
-        ]
+          ) :
+          '—',
+        ],
       ];
     }
 
@@ -847,9 +847,9 @@ class InterceptDashboardController extends ControllerBase {
       '#rows' => $rows,
       '#attributes' => [
         'class' => [
-          'intercept-dashboard-table__table'
-        ]
-      ]
+          'intercept-dashboard-table__table',
+        ],
+      ],
     ];
 
     // Add the pager.
@@ -858,9 +858,9 @@ class InterceptDashboardController extends ControllerBase {
       '#quantity' => 5,
       '#attributes' => [
         'class' => [
-          'intercept-dashboard-pager'
-        ]
-      ]
+          'intercept-dashboard-pager',
+        ],
+      ],
     ];
 
     // Add the link to download the CSV.
@@ -878,13 +878,14 @@ class InterceptDashboardController extends ControllerBase {
    * @param string $id
    *   The chart identifier.
    * @param string $label
-   *   The chart label
+   *   The chart label.
    * @param array $data
    *   An associative array of chart data.
    * @param array $data['header']
    *   An array of table header columns.
    * @param array $data['rows']
    *   An array of table rows.
+   *
    * @return array
    *   A render array.
    */
@@ -937,8 +938,8 @@ class InterceptDashboardController extends ControllerBase {
               'ticks' => [
                 'font' => [
                   'size' => 14,
-                ]
-              ]
+                ],
+              ],
             ],
             'y' => [
               'grid' => [
@@ -954,7 +955,7 @@ class InterceptDashboardController extends ControllerBase {
                 'font' => [
                   'weight' => 'normal',
                   'size' => 16,
-                ]
+                ],
               ],
             ],
           ],
@@ -975,15 +976,18 @@ class InterceptDashboardController extends ControllerBase {
       '#rows' => $data['rows'],
       '#attributes' => [
         'class' => [
-          'intercept-dashboard-chart__table'
+          'intercept-dashboard-chart__table',
         ],
         'aria-labelledby' => $html_label_id,
-      ]
+      ],
     ];
 
     return $build;
   }
 
+  /**
+   *
+   */
   public function getAttendeesByPrimaryAudienceData() {
     $header = [
       [
@@ -998,19 +1002,19 @@ class InterceptDashboardController extends ControllerBase {
     $query->condition('t.vid', 'audience');
     $query->fields('t', [
       'tid',
-      'name'
+      'name',
     ]);
 
     $eventQuery = $this->getBaseQuery();
 
-    // Attendees
+    // Attendees.
     $attendees_table = $eventQuery->join($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
     $eventQuery->fields($attendees_table, [
-      'attendees'
+      'attendees',
     ]);
     $eventQuery->addExpression('SUM(attendees)', 'total_attendees');
 
-    // Term data
+    // Term data.
     $relationship_table = $eventQuery->join('node__field_audience_primary', 'audiences', 'n.nid = audiences.entity_id');
     $eventQuery->addField($relationship_table, 'field_audience_primary_target_id', 'tid');
     $audience_table = $eventQuery->join($query, 'term', 'term.tid = ' . $relationship_table . '.field_audience_primary_target_id');
@@ -1021,7 +1025,7 @@ class InterceptDashboardController extends ControllerBase {
       'name',
     ]);
 
-    /** @var TableSortExtender $table_sort */
+    /** @var \Drupal\Core\Database\Query\TableSortExtender $table_sort */
     $table_sort = $eventQuery->extend('Drupal\Core\Database\Query\TableSortExtender');
     $table_sort->orderBy('total_attendees', 'DESC');
 
@@ -1029,14 +1033,14 @@ class InterceptDashboardController extends ControllerBase {
 
     // Populate the rows.
     $rows = [];
-    foreach($result as $row) {
+    foreach ($result as $row) {
       $rows[] = [
         'data' => [
           // Keep for debugging purposes.
-          // 'tid' => $row->tid,
+          // 'tid' => $row->tid,.
           'name' => $row->name,
           'attendees' => $row->total_attendees ?? 0,
-        ]
+        ],
       ];
     }
 
@@ -1046,6 +1050,9 @@ class InterceptDashboardController extends ControllerBase {
     ];
   }
 
+  /**
+   *
+   */
   public function getAttendeesByPrimaryEventTypeData() {
     $header = [
       [
@@ -1060,19 +1067,19 @@ class InterceptDashboardController extends ControllerBase {
     $query->condition('t.vid', 'event_type');
     $query->fields('t', [
       'tid',
-      'name'
+      'name',
     ]);
 
     $eventQuery = $this->getBaseQuery();
 
-    // Attendees
+    // Attendees.
     $attendees_table = $eventQuery->join($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
     $eventQuery->fields($attendees_table, [
-      'attendees'
+      'attendees',
     ]);
     $eventQuery->addExpression('SUM(attendees)', 'total_attendees');
 
-    // Term data
+    // Term data.
     $relationship_table = $eventQuery->join('node__field_event_type_primary', 'event_types', 'n.nid = event_types.entity_id');
     $eventQuery->addField($relationship_table, 'field_event_type_primary_target_id', 'tid');
     $event_type_table = $eventQuery->join($query, 'term', 'term.tid = ' . $relationship_table . '.field_event_type_primary_target_id');
@@ -1083,7 +1090,7 @@ class InterceptDashboardController extends ControllerBase {
       'name',
     ]);
 
-    /** @var TableSortExtender $table_sort */
+    /** @var \Drupal\Core\Database\Query\TableSortExtender $table_sort */
     $table_sort = $eventQuery->extend('Drupal\Core\Database\Query\TableSortExtender');
     $table_sort->orderBy('total_attendees', 'DESC');
 
@@ -1091,14 +1098,14 @@ class InterceptDashboardController extends ControllerBase {
 
     // Populate the rows.
     $rows = [];
-    foreach($result as $row) {
+    foreach ($result as $row) {
       $rows[] = [
         'data' => [
           // Keep for debugging purposes.
-          // 'tid' => $row->tid,
+          // 'tid' => $row->tid,.
           'name' => $row->name,
           'attendees' => $row->total_attendees ?? 0,
-        ]
+        ],
       ];
     }
 
@@ -1114,7 +1121,7 @@ class InterceptDashboardController extends ControllerBase {
    * @param string $id
    *   The chart identifier.
    * @param string $label
-   *   The chart label
+   *   The chart label.
    * @param array $data
    *   An associative array of chart data.
    * @param array $data['header']
@@ -1123,6 +1130,7 @@ class InterceptDashboardController extends ControllerBase {
    *   An array of table rows.
    * @param string $day
    *   The day of the week for this chart.
+   *
    * @return array
    *   A render array.
    */
@@ -1147,18 +1155,20 @@ class InterceptDashboardController extends ControllerBase {
         '#type' => 'chart_data',
         '#title' => $day,
         '#data' => [
-          isset($data['rows'][$day_short . '9']) ? $data['rows'][$day_short . '9'] : 0, // 9th hour of the day
-          isset($data['rows'][$day_short . '10']) ? $data['rows'][$day_short . '10'] : 0, // 10th hour of the day
-          isset($data['rows'][$day_short . '11']) ? $data['rows'][$day_short . '11'] : 0,
-          isset($data['rows'][$day_short . '12']) ? $data['rows'][$day_short . '12'] : 0,
-          isset($data['rows'][$day_short . '13']) ? $data['rows'][$day_short . '13'] : 0,
-          isset($data['rows'][$day_short . '14']) ? $data['rows'][$day_short . '14'] : 0,
-          isset($data['rows'][$day_short . '15']) ? $data['rows'][$day_short . '15'] : 0,
-          isset($data['rows'][$day_short . '16']) ? $data['rows'][$day_short . '16'] : 0,
-          isset($data['rows'][$day_short . '17']) ? $data['rows'][$day_short . '17'] : 0,
-          isset($data['rows'][$day_short . '18']) ? $data['rows'][$day_short . '18'] : 0,
-          isset($data['rows'][$day_short . '19']) ? $data['rows'][$day_short . '19'] : 0,
-          isset($data['rows'][$day_short . '20']) ? $data['rows'][$day_short . '20'] : 0,
+    // 9th hour of the day
+          $data['rows'][$day_short . '9'] ?? 0,
+    // 10th hour of the day
+          $data['rows'][$day_short . '10'] ?? 0,
+          $data['rows'][$day_short . '11'] ?? 0,
+          $data['rows'][$day_short . '12'] ?? 0,
+          $data['rows'][$day_short . '13'] ?? 0,
+          $data['rows'][$day_short . '14'] ?? 0,
+          $data['rows'][$day_short . '15'] ?? 0,
+          $data['rows'][$day_short . '16'] ?? 0,
+          $data['rows'][$day_short . '17'] ?? 0,
+          $data['rows'][$day_short . '18'] ?? 0,
+          $data['rows'][$day_short . '19'] ?? 0,
+          $data['rows'][$day_short . '20'] ?? 0,
         ],
         '#color' => '#007E9E',
       ],
@@ -1185,7 +1195,8 @@ class InterceptDashboardController extends ControllerBase {
         // '#title' => $this->t('This is the y axis title.'),
       ],
       '#raw_options' => [
-        'options' => [ // See https://www.chartjs.org/docs/latest/charts/line.html
+      // See https://www.chartjs.org/docs/latest/charts/line.html
+        'options' => [
           'indexAxis' => 'x',
           'maintainAspectRatio' => FALSE,
           // 'showLine' => FALSE,
@@ -1211,24 +1222,24 @@ class InterceptDashboardController extends ControllerBase {
           'scales' => [
             'x' => [
               'grid' => [
-                'display' => false,
+                'display' => FALSE,
               ],
               'ticks' => [
                 'font' => [
                   'size' => 14,
-                ]
+                ],
               ],
             ],
             'y' => [
               'grid' => [
-                'display' => false,
+                'display' => FALSE,
               ],
               'ticks' => [
                 'color' => '#4C4D4F',
                 'font' => [
                   'weight' => 'normal',
                   'size' => 16,
-                ]
+                ],
               ],
               'min' => 0,
             ],
@@ -1245,6 +1256,9 @@ class InterceptDashboardController extends ControllerBase {
     return $build;
   }
 
+  /**
+   *
+   */
   public function getAttendeesByTime() {
     $header = [
       [
@@ -1258,14 +1272,14 @@ class InterceptDashboardController extends ControllerBase {
     $eventQuery = $this->getBaseQuery();
     $eventQuery->fields('n', [
       'nid',
-      'title'
+      'title',
     ]);
     $eventQuery->fields('date', [
       'field_date_time_value',
-      'field_date_time_end_value'
+      'field_date_time_end_value',
     ]);
 
-    // Attendees
+    // Attendees.
     $eventQuery->join('node__field_attendees', 'attendees', 'n.nid = attendees.entity_id');
     $eventQuery->addExpression('SUM(field_attendees_count)', 'attendees_count');
     $eventQuery->groupBy('attendees.entity_id');
@@ -1276,7 +1290,7 @@ class InterceptDashboardController extends ControllerBase {
     // Populate the rows.
     $rows = [];
     $grouping_totals = [];
-    foreach($result as $row) {
+    foreach ($result as $row) {
       $start_date = $this->dateUtility->getDrupalDate($row->field_date_time_value);
       $end_date = $this->dateUtility->getDrupalDate($row->field_date_time_end_value);
       $start_date = $this->dateUtility->convertTimezone($start_date, 'default')->format('Y-m-d\TH:i:s');
@@ -1303,7 +1317,7 @@ class InterceptDashboardController extends ControllerBase {
           'duration_seconds' => $duration_seconds,
           'duration' => $duration_hours,
           'grouping' => $grouping,
-        ]
+        ],
       ];
 
       // Let's get a sum of attendees for the events broken up by hour of the day
@@ -1316,20 +1330,22 @@ class InterceptDashboardController extends ControllerBase {
       else {
         $grouping_totals[$grouping] = $attendees_count;
       }
-      
+
       // Get the "previous whole number".
       // This is equal to the number of additional hourly groupings.
-      if (floor($duration_hours) == $duration_hours) { // Is it a whole number?
+      // Is it a whole number?
+      if (floor($duration_hours) == $duration_hours) {
         // Subtract 1.
         $previous_whole_number = $duration_hours - 1;
       }
-      else { // It is a fraction.
+      // It is a fraction.
+      else {
         // Round down.
         $previous_whole_number = floor($duration_hours);
       }
 
       // Handle events that last for longer than 1 hour.
-      // @TODO: Handle multi-day events.
+      // @todo Handle multi-day events.
       if ($previous_whole_number >= 1 && $previous_whole_number <= 24) {
         for ($n = 1; $n <= $previous_whole_number; $n++) {
           if (isset($grouping_totals[$dayofweek . ($start_hour + $n)])) {
@@ -1355,7 +1371,7 @@ class InterceptDashboardController extends ControllerBase {
    * This is a sum of all field_attendees_count values on event_attendance entities
    * that reference the given events.
    *
-   * @return SelectInterface
+   * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getCheckedInSubQuery() {
     $data = [
@@ -1379,7 +1395,7 @@ class InterceptDashboardController extends ControllerBase {
   /**
    * Construct a query of saved events counts.
    *
-   * @return SelectInterface
+   * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getSavedEventsSubQuery() {
     $query = $this->database->select('flag_counts', 'saves');
@@ -1393,7 +1409,7 @@ class InterceptDashboardController extends ControllerBase {
   /**
    * Construct a query of attendees for an event.
    *
-   * @return SelectInterface
+   * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getAttendeesTotalSubQuery() {
     $query = $this->database->select('node__field_attendees', 'attendees');
@@ -1407,7 +1423,7 @@ class InterceptDashboardController extends ControllerBase {
   /**
    * Construct a query to count customer evaluations for an events.
    *
-   * @return SelectInterface
+   * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getCustomerEvaluationsSubQuery() {
     // Construct the Customer Evaluation subQuery.
@@ -1427,7 +1443,7 @@ class InterceptDashboardController extends ControllerBase {
   /**
    * Construct a query to count staff evaluations for an events.
    *
-   * @return SelectInterface
+   * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getStaffEvaluationsSubQuery() {
     $query = $this->database->select('votingapi_vote', 'v');
@@ -1445,7 +1461,7 @@ class InterceptDashboardController extends ControllerBase {
    * This is a sum of all field_registrants_count values on event_registration entities
    * that reference the given events.
    *
-   * @return SelectInterface
+   * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getRegistrantsSubQuery() {
     $data = [
@@ -1467,9 +1483,8 @@ class InterceptDashboardController extends ControllerBase {
     return $query;
   }
 
-
   /**
-   * Executes a queries the Total Customer Evaluations
+   * Executes a queries the Total Customer Evaluations.
    *
    * @return array[
    *   'total_customer_evaluations' => string
@@ -1477,7 +1492,7 @@ class InterceptDashboardController extends ControllerBase {
    *   'total_negative_customer_evaluations' => string
    *   'percent_positive_customer_evaluations' => string
    *   'percent_negative_customer_evaluations' => string
-   * ].
+   *   ].
    */
   public function queryTotalCustomerEvaluations() {
     $query = $this->getBaseQuery();
@@ -1502,7 +1517,8 @@ class InterceptDashboardController extends ControllerBase {
    *   A Response in CSV format.
    */
   public function buildCsv() {
-    $limit = 10000; // We can't show all rows by default so we must pass a number.
+    // We can't show all rows by default so we must pass a number.
+    $limit = 10000;
     $table = $this->buildEventTable($limit);
     $headers = $table['event_table']['#header'];
     $rows = $table['event_table']['#rows'];
@@ -1519,8 +1535,9 @@ class InterceptDashboardController extends ControllerBase {
         $customer_rating = str_replace('—', '', strip_tags($customer_rating));
         $customer_rating = str_replace('Positive', '', $customer_rating);
         if (is_numeric($customer_rating)) {
-          $customer_rating = $customer_rating / 100; // Change to a value usable in CSV as percentage.
-        } 
+          // Change to a value usable in CSV as percentage.
+          $customer_rating = $customer_rating / 100;
+        }
       }
       $csv_data[$key] = [
         $headers_simplified[0] => $row['data']['title']->__tostring(),

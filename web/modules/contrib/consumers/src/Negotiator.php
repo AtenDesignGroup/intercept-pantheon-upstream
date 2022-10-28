@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 /**
  * Extracts the consumer information from the given context.
@@ -54,7 +53,7 @@ class Negotiator {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request.
    *
-   * @return \Drupal\consumers\Entity\Consumer|null
+   * @return \Drupal\consumers\Entity\ConsumerInterface|null
    *   The consumer.
    *
    * @throws \Drupal\consumers\MissingConsumer
@@ -73,7 +72,7 @@ class Negotiator {
     }
     if ($consumer_uuid) {
       try {
-        /** @var \Drupal\consumers\Entity\Consumer $consumer */
+        /** @var \Drupal\consumers\Entity\ConsumerInterface $consumer */
         $consumer = $this->entityRepository->loadEntityByUuid('consumer', $consumer_uuid);
       }
       catch (EntityStorageException $exception) {
@@ -93,7 +92,7 @@ class Negotiator {
    *   The request object to inspect for a consumer. Set to NULL to use the
    *   current request.
    *
-   * @return \Drupal\consumers\Entity\Consumer|null
+   * @return \Drupal\consumers\Entity\ConsumerInterface|null
    *   The consumer.
    *
    * @throws \Drupal\consumers\MissingConsumer
@@ -109,7 +108,7 @@ class Negotiator {
   /**
    * Finds and loads the default consumer.
    *
-   * @return \Drupal\consumers\Entity\Consumer
+   * @return \Drupal\consumers\Entity\ConsumerInterface
    *   The consumer entity.
    *
    * @throws \Drupal\consumers\MissingConsumer
@@ -125,7 +124,7 @@ class Negotiator {
       // Throw if there is no default consumer..
       throw new MissingConsumer('Unable to find the default consumer.');
     }
-    /** @var \Drupal\consumers\Entity\Consumer $consumer */
+    /** @var \Drupal\consumers\Entity\ConsumerInterface $consumer */
     $consumer = $this->storage->load($consumer_id);
     return $consumer;
   }

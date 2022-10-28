@@ -106,7 +106,6 @@ class Twilio extends SmsGatewayPluginBase {
   public function send(SmsMessageInterface $sms_message) {
     // Messages: https://www.twilio.com/docs/api/rest/message
     // Testing API: https://www.twilio.com/docs/api/rest/test-credentials
-
     $recipient = $sms_message->getRecipients()[0];
     $entity_id = $sms_message->getOption('sender_entity__target_id');
     $entity_type = $sms_message->getOption('sender_entity__target_type');
@@ -134,12 +133,12 @@ class Twilio extends SmsGatewayPluginBase {
           'options' => serialize($options),
           'queued' => 0,
           'send_on' => $time,
-          'message' => $sms_message->getMessage()
+          'message' => $sms_message->getMessage(),
         ])
         ->execute();
-      return null;
+      return NULL;
     }
-     // Immediate messages or scheduled ones that are now ready to send
+    // Immediate messages or scheduled ones that are now ready to send.
     else {
       $result = new SmsMessageResult();
 

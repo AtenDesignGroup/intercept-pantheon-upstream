@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Filters a view by entity references.
  *
- * @TODO: Remove when https://www.drupal.org/project/drupal/issues/2429699 lands.
+ * @todo Remove when https://www.drupal.org/project/drupal/issues/2429699 lands.
  *
  * @ingroup views_filter_handlers
  *
@@ -190,7 +190,7 @@ class EntityReference extends ManyToOne {
 
     $form['#process'] = [[get_class($this), 'extraOptionsAjaxProcess']];
 
-    // @todo: We would actually prefer organizing the form elements according
+    // @todo We would actually prefer organizing the form elements according
     // to the required structure of the value tree, and to rearrange the visual
     // grouping using the #group key, in order to avoid messing with #parents.
     // Currently, this however isn't possible. Revisit once Core issue

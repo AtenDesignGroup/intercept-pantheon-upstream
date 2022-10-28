@@ -32,11 +32,12 @@ function intercept_event_views_data_alter(&$data) {
       'id' => 'event_attendance_count',
     ],
     'sort' => [
-      'id' => 'event_count_numeric', // Points to custom Numeric.php sort handler.
+    // Points to custom Numeric.php sort handler.
+      'id' => 'event_count_numeric',
     ],
   ];
 
-  // TODO: Create this definition for all entity types and create a
+  // @todo Create this definition for all entity types and create a
   // votingapi ticket.
   $entity_type_manager = \Drupal::service('entity_type.manager');
   $entity_type = $entity_type_manager
@@ -69,7 +70,8 @@ function intercept_event_views_data_alter(&$data) {
       'id' => 'event_registration_count',
     ],
     'sort' => [
-      'id' => 'event_count_numeric', // Points to custom Numeric.php sort handler.
+    // Points to custom Numeric.php sort handler.
+      'id' => 'event_count_numeric',
     ],
   ];
 

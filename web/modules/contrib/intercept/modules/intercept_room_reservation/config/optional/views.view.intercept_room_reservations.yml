@@ -1937,8 +1937,8 @@ display:
           empty: true
           tokenize: false
           content:
-            value: 'No upcoming room reservations were found.'
-            format: basic_html
+            value: "<p>No upcoming room reservations were found.</p>\r\n<p><a href=\"/reserve-room\" class=\"button button--primary\">Reserve a Room</a></p>"
+            format: full_html
           plugin_id: text
       display_description: ''
       sorts:

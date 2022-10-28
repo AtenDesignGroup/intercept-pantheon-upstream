@@ -23,7 +23,7 @@ class JsonapiViewsFilterBlockBlock extends ViewsExposedFilterBlocksBlock {
     if ($build['#form_id'] == 'views_exposed_form') {
       $view_display = $this->configuration['view_display'];
       if (!empty($view_display)) {
-        list($view_id, $display_id) = explode(':', $view_display);
+        [$view_id, $display_id] = explode(':', $view_display);
         if (empty($view_id) || empty($display_id)) {
           return $build;
         }

@@ -19,7 +19,7 @@ class EntityBundleAccessCheck implements AccessInterface {
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
     $requirement = $route->getRequirement('_entity_access');
     $bundle = $route->getRequirement('_entity_bundle');
-    list($entity_type, $operation) = explode('.', $requirement);
+    [$entity_type, $operation] = explode('.', $requirement);
     $parameters = $route_match->getParameters();
     if ($parameters->has($entity_type)) {
       $entity = $parameters->get($entity_type);

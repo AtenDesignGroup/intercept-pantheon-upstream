@@ -1,9 +1,9 @@
 react:
   js:
-    https://unpkg.com/react@17/umd/react.production.min.js:
+    https://cdn.jsdelivr.net/npm/react@17/umd/react.production.min.js:
       external: true
       minified: true
-    https://unpkg.com/react-dom@17/umd/react-dom.production.min.js:
+    https://cdn.jsdelivr.net/npm/react-dom@17/umd/react-dom.production.min.js:
       external: true
       minified: true
 
@@ -45,7 +45,7 @@ bigCalendarDnd:
 
 moment:
   js:
-    https://unpkg.com/moment@2.20.1/min/moment.min.js:
+    https://cdn.jsdelivr.net/npm/moment@2.20.1/min/moment.min.js:
       external: true
     https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.17/moment-timezone-with-data-2012-2022.min.js:
       external: true

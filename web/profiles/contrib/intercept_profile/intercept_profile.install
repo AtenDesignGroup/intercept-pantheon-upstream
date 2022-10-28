@@ -49,7 +49,7 @@ function intercept_profile_install() {
     'view any room content',
     'view any room_type taxonomy_term',
     'view any tag taxonomy_term',
-    'view media'
+    'view media',
   ];
   user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, $permissions);
   // Grant permissions to authenticated users.

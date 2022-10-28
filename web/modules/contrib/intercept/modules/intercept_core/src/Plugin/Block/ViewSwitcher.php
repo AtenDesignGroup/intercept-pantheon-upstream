@@ -21,15 +21,21 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 class ViewSwitcher extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * @var RouteProviderInterface
+   * @var \Drupal\Core\Routing\RouteProviderInterface
    */
   protected $routeProvider;
 
+  /**
+   *
+   */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, RouteProviderInterface $route_provider) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->routeProvider = $route_provider;
   }
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
@@ -72,6 +78,9 @@ class ViewSwitcher extends BlockBase implements ContainerFactoryPluginInterface 
     return $form;
   }
 
+  /**
+   *
+   */
   public function blockValidate($form, FormStateInterface $form_state) {
     $links = &$form_state->getValue('links');
     foreach ($links as &$link) {
@@ -90,6 +99,9 @@ class ViewSwitcher extends BlockBase implements ContainerFactoryPluginInterface 
     }
   }
 
+  /**
+   *
+   */
   public function blockSubmit($form, FormStateInterface $form_state) {
     $complete = $form_state->getCompleteFormState();
     $request_path = &$complete->getValue(['visibility', 'request_path']);
@@ -104,6 +116,9 @@ class ViewSwitcher extends BlockBase implements ContainerFactoryPluginInterface 
     $request_path['pages'] = implode("\n", $request_path['pages']);
   }
 
+  /**
+   *
+   */
   public function build() {
     $build = [
       '#theme' => 'intercept_view_switcher',

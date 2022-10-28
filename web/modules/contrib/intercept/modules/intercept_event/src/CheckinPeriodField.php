@@ -2,11 +2,8 @@
 
 namespace Drupal\intercept_event;
 
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Url;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_core\Plugin\Field\FieldType\ComputedItemList;
 
 /**
@@ -62,7 +59,7 @@ class CheckinPeriodField extends ComputedItemList implements CacheableDependency
 
     // If there is no date set, skip further checks.
     if (!$this->eventDate()) {
-      // TODO: This might need to reflect an error.
+      // @todo This might need to reflect an error.
       return 'closed';
     }
 
@@ -108,7 +105,7 @@ class CheckinPeriodField extends ComputedItemList implements CacheableDependency
       return FALSE;
     }
 
-    // @todo: Use dependency injection once https://www.drupal.org/node/2053415 lands.
+    // @todo Use dependency injection once https://www.drupal.org/node/2053415 lands.
     $config = \Drupal::config('intercept_event.checkin')->get();
     $durationFieldService = \Drupal::service('duration_field.service');
 

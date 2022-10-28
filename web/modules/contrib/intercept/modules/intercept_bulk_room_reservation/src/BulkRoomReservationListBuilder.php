@@ -91,7 +91,7 @@ class BulkRoomReservationListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\intercept_bulk_room_reservation\BulkRoomReservationInterface */
+    /** @var \Drupal\intercept_bulk_room_reservation\BulkRoomReservationInterface $entity */
     $row['id'] = $entity->id();
     $row['title'] = $entity->toLink();
     $row['status'] = $entity->isEnabled() ? $this->t('Enabled') : $this->t('Disabled');

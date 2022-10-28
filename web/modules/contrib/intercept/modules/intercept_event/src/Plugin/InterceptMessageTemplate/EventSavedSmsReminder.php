@@ -44,7 +44,7 @@ class EventSavedSmsReminder extends InterceptMessageSmsTemplateBase implements S
       'description' => [
         '#markup' => '<p>This notification is sent as a reminder to customers who save an upcoming non-registration event.</p>',
         '#allowed_tags' => ['p'],
-      ]
+      ],
     ];
     $form = parent::buildConfigurationForm($form, $form_state);
 

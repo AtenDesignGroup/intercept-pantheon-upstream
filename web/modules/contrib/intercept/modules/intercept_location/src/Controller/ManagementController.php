@@ -43,24 +43,24 @@ class ManagementController extends ManagementControllerBase {
           '#actions' => [
             'location_add' => [
               '#link' => $this->getButton(
-                'Create Location', 
-                'node.add', 
+                'Create Location',
+                'node.add',
                 [
-                    'node_type' => 'location',
+                  'node_type' => 'location',
                 ],
                 ['attributes' => ['class' => ['button', 'create-content-button']]]
               ),
-              
+
             ],
             'room_add' => [
               '#link' => $this->getButton(
-                'Create Room', 
-                'node.add', 
+                'Create Room',
+                'node.add',
                 [
                   'node_type' => 'room',
                 ],
                 ['attributes' => ['class' => ['button', 'create-content-button']]]
-              ),    
+              ),
             ],
           ],
         ],

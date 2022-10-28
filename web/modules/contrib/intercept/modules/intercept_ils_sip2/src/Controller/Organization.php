@@ -21,6 +21,9 @@ class Organization extends EntityBase {
     return [];
   }
 
+  /**
+   *
+   */
   public function getById($id) {
     foreach ($this->getAll() as $name => $location_id) {
       if ($location_id == $id) {
@@ -29,8 +32,10 @@ class Organization extends EntityBase {
     }
     return NULL;
   }
-  
-  // Get the node title and see if it matches to one of the locations.
+
+  /**
+   * Get the node title and see if it matches to one of the locations.
+   */
   public function getByNode(NodeInterface $node) {
     $title = $node->getTitle();
     foreach ($this->getAll() as $name => $location_id) {
@@ -40,4 +45,5 @@ class Organization extends EntityBase {
     }
     return FALSE;
   }
+
 }

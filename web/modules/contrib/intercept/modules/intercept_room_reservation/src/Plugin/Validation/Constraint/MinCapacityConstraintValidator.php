@@ -8,7 +8,6 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
-use Drupal\intercept_room_reservation\Plugin\Validation\Constraint\ReservationMinDurationConstraintValidator;
 
 /**
  * Validates the MinCapacity constraint.
@@ -64,8 +63,8 @@ class MinCapacityConstraintValidator extends ConstraintValidator implements Cont
     if (!empty($entity->field_attendee_count->value) && !is_null($minCapacity) && $entity->field_attendee_count->value < $minCapacity) {
       $this->context->buildViolation($constraint->minCapacityMessage, [
         '%value' => $entity->field_attendee_count->value,
-        '%min' => $minCapacity
-        ])
+        '%min' => $minCapacity,
+      ])
         // The path depends on entity type. It can be title, name, etc.
         ->atPath('field_capacity_min')
         ->addViolation();

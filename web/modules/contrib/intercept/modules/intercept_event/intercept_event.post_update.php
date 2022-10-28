@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**

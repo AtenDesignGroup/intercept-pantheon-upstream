@@ -78,8 +78,8 @@ class EventSettingsForm extends ConfigFormBase {
       '#options' => [
         'collapsed' => 'Collapsed by default',
         'expanded' => 'Expanded by default',
-        'hidden' => 'Hidden'
-      ]
+        'hidden' => 'Hidden',
+      ],
     ];
 
     $this->alterForm($form, $form_state);

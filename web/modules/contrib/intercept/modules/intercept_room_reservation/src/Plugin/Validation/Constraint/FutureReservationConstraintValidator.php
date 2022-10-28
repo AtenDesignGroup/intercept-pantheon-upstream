@@ -2,7 +2,6 @@
 
 namespace Drupal\intercept_room_reservation\Plugin\Validation\Constraint;
 
-use DateTime;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\intercept_core\ReservationManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -57,7 +56,7 @@ class FutureReservationConstraintValidator extends ConstraintValidator implement
       return;
     }
 
-    if (new DateTime($dates[0]['value']) < new DateTime()) {
+    if (new \DateTime($dates[0]['value']) < new \DateTime()) {
       $this->context->addViolation($constraint->errorMessage);
     }
   }

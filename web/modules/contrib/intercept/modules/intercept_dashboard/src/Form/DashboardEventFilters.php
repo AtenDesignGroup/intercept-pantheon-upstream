@@ -4,9 +4,7 @@ namespace Drupal\intercept_dashboard\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Url;
-use Drupal\taxonomy\TermStorageInterface;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -18,14 +16,14 @@ class DashboardEventFilters extends FormBase {
   /**
    * EntityQuery service.
    *
-   * @var QueryInterface $entityQuery
+   * @var \Drupal\Core\Entity\Query\QueryInterface
    */
   protected $entityQuery;
 
   /**
    * FilterProvider service.
    *
-   * @var \Drupal\intercept_dashboard\FilterProviderInterface $filterProvider
+   * @var \Drupal\intercept_dashboard\FilterProviderInterface
    */
   protected $filterProvider;
 
@@ -51,38 +49,38 @@ class DashboardEventFilters extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $params =  \Drupal::request()->query->all();
+    $params = \Drupal::request()->query->all();
 
     $form['date'] = [
       '#type' => 'container',
       '#attributes' => [
-        'class' => ['filters__inputs-inner']
-      ]
+        'class' => ['filters__inputs-inner'],
+      ],
     ];
 
     $form['date']['start'] = [
       '#type' => 'date',
       '#title' => $this
         ->t('Start Date'),
-      // First day of the current month
+      // First day of the current month.
       '#default_value' => $params['start'] ?? date('Y-m-01'),
-      '#required' => TRUE
+      '#required' => TRUE,
     ];
 
     $form['date']['end'] = [
       '#type' => 'date',
       '#title' => $this
         ->t('End Date'),
-      // Today
+      // Today.
       '#default_value' => $params['end'] ?? date('Y-m-d'),
-      '#required' => TRUE
+      '#required' => TRUE,
     ];
 
     $form['filters'] = [
       '#type' => 'container',
       '#attributes' => [
-        'class' => ['filters__inputs-inner']
-      ]
+        'class' => ['filters__inputs-inner'],
+      ],
     ];
 
     $form['filters']['keyword'] = [
@@ -107,7 +105,7 @@ class DashboardEventFilters extends FormBase {
     // Tags filter.
     $form['filters']['tags'] = $this->getTagFilter('tags', $params);
 
-    // Created by filter
+    // Created by filter.
     $form['filters']['created_by'] = [
       '#title' => $this->t('Created by'),
       '#type' => 'entity_autocomplete',
@@ -115,7 +113,7 @@ class DashboardEventFilters extends FormBase {
       '#target_type' => 'user',
       '#default_value' => !empty($params['created_by'])
         ? User::loadMultiple(array_values($params['created_by'][0]))
-        : ''
+        : '',
     ];
 
     $form['filters']['external_presenter'] = [
@@ -125,7 +123,7 @@ class DashboardEventFilters extends FormBase {
       '#empty_option' => $this->t('- Any -'),
       '#options' => [
         'yes' => 'Yes',
-        'no' => 'No'
+        'no' => 'No',
       ],
     ];
 
@@ -135,8 +133,8 @@ class DashboardEventFilters extends FormBase {
     $form['actions'] = [
       '#type' => 'actions',
       '#attributes' => [
-        'class' => ['filters__actions']
-      ]
+        'class' => ['filters__actions'],
+      ],
     ];
 
     $form['actions']['submit'] = [
@@ -144,11 +142,11 @@ class DashboardEventFilters extends FormBase {
       '#value' => $this->t('Submit'),
     ];
 
-    $form['actions']['reset'] = array(
+    $form['actions']['reset'] = [
       '#type' => 'submit',
       '#value' => t('Clear'),
       '#submit' => ['::resetForm'],
-    );
+    ];
 
     return $form;
   }
@@ -157,9 +155,9 @@ class DashboardEventFilters extends FormBase {
    * Gets the Audience filter form element.
    *
    * @param string $name
-   *  The name of the form element.
+   *   The name of the form element.
    * @param array $params
-   *  The url parameters used to populate the default_value
+   *   The url parameters used to populate the default_value.
    *
    * @return array Render Array
    */
@@ -180,9 +178,9 @@ class DashboardEventFilters extends FormBase {
    * Gets the Event Type filter form element.
    *
    * @param string $name
-   *  The name of the form element.
+   *   The name of the form element.
    * @param array $params
-   *  The url parameters used to populate the default_value
+   *   The url parameters used to populate the default_value.
    *
    * @return array Render Array
    */
@@ -203,16 +201,16 @@ class DashboardEventFilters extends FormBase {
    * Gets the Tags filter form element.
    *
    * @param string $name
-   *  The name of the form element.
+   *   The name of the form element.
    * @param array $params
-   *  The url parameters used to populate the default_value
+   *   The url parameters used to populate the default_value.
    *
    * @return array Render Array
    */
   public function getTagFilter($name, $params) {
     $options = [];
 
-    /** @var TermStorageInterface $termStorage */
+    /** @var \Drupal\taxonomy\TermStorageInterface $termStorage */
     $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     $terms = $termStorage->loadTree('tag');
 
@@ -234,9 +232,9 @@ class DashboardEventFilters extends FormBase {
    * Gets the Location filter form element.
    *
    * @param string $name
-   *  The name of the form element.
+   *   The name of the form element.
    * @param array $params
-   *  The url parameters used to populate the default_value
+   *   The url parameters used to populate the default_value.
    *
    * @return array Render Array
    */
@@ -257,9 +255,9 @@ class DashboardEventFilters extends FormBase {
    * Gets the Event Series filter form element.
    *
    * @param string $name
-   *  The name of the form element.
+   *   The name of the form element.
    * @param array $params
-   *  The url parameters used to populate the default_value
+   *   The url parameters used to populate the default_value.
    *
    * @return array Render Array
    */
@@ -281,8 +279,7 @@ class DashboardEventFilters extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Redirect the form to the url with query parameters.
-
-    // Clear out empty values to keep the url clean
+    // Clear out empty values to keep the url clean.
     $params = array_filter(
       $form_state->cleanValues()->getValues(),
       function ($param) {
@@ -297,10 +294,11 @@ class DashboardEventFilters extends FormBase {
   }
 
   /**
-   * Resets the form and url to default values
+   * Resets the form and url to default values.
    *
    * @param array $form
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *
    * @return void
    */
   public function resetForm(array &$form, FormStateInterface $form_state) {
@@ -308,4 +306,5 @@ class DashboardEventFilters extends FormBase {
     $path = Url::fromRoute('intercept_dashboard.event_data_dashboard');
     $form_state->setRedirectUrl($path);
   }
+
 }

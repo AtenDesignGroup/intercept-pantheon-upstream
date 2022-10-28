@@ -14,7 +14,6 @@ use Drupal\key\KeyRepository;
 use Drupal\intercept_ils\ILSBase;
 use lordelph\SIP2\SIP2Client;
 use lordelph\SIP2\Request\LoginRequest;
-use lordelph\SIP2\Request\PatronInformationRequest;
 // The container factory plugin interface is crucial if passing a service
 // using dependency injection.
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -51,7 +50,8 @@ class SIP2ILS extends ILSBase implements ContainerFactoryPluginInterface {
 
   /**
    * Constructs a new SIP2ILS object.
-   * @param SIP2Client $client
+   *
+   * @param \lordelph\SIP2\SIP2Client $client
    *   intercept_ils_sip2.client service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, SIP2Client $client, KeyRepository $keyRepository, Authmap $authmap) {
@@ -61,6 +61,9 @@ class SIP2ILS extends ILSBase implements ContainerFactoryPluginInterface {
     $this->authmap = $authmap;
   }
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
@@ -72,6 +75,9 @@ class SIP2ILS extends ILSBase implements ContainerFactoryPluginInterface {
     );
   }
 
+  /**
+   *
+   */
   public function getClient() {
 
     $host = $this->keyRepository->getKey('intercept_ils_sip2_host');
@@ -87,7 +93,7 @@ class SIP2ILS extends ILSBase implements ContainerFactoryPluginInterface {
       $this->client->setDefault('SIPLogin', $username);
       $this->client->setDefault('SIPPassword', $password);
       $this->client->setDefault('InstitutionId', $institution_id);
-    
+
       // Connect to the SIP server.
       $this->client->connect($host . ':' . $port);
 
@@ -103,9 +109,10 @@ class SIP2ILS extends ILSBase implements ContainerFactoryPluginInterface {
   }
 
   /**
-   * @return Authmap
+   * @return \Drupal\externalauth\Authmap
    */
   public function authmap() {
     return $this->authmap;
   }
+
 }

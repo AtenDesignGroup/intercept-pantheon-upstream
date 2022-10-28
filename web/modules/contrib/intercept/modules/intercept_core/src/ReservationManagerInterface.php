@@ -80,7 +80,7 @@ interface ReservationManagerInterface {
    * @return bool
    *   Whether a start and end date conflicts with a Location's hours.
    *
-   * @TODO: Refactor the app to make multiple kinds of conflict checks.
+   * @todo Refactor the app to make multiple kinds of conflict checks.
    */
   public function aggressiveOpeningHoursConflict(array $reservations, array $params, NodeInterface $room);
 

@@ -5,7 +5,6 @@ namespace Drupal\intercept_ils;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\intercept_ils\ILSManager;
 
 /**
  * The ILS mapping manager.

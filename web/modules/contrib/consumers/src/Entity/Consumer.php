@@ -9,7 +9,6 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -55,7 +54,7 @@ use Drupal\user\EntityOwnerTrait;
  *   }
  * )
  */
-class Consumer extends ContentEntityBase implements EntityOwnerInterface {
+class Consumer extends ContentEntityBase implements ConsumerInterface {
 
   use EntityChangedTrait;
   use EntityOwnerTrait;
@@ -96,6 +95,18 @@ class Consumer extends ContentEntityBase implements EntityOwnerInterface {
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 
+    $fields['client_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Client ID'))
+      ->setDescription(new TranslatableMarkup('The client ID associated with this consumer. This is an arbitrary unique field, like a machine name.'))
+      ->setRequired(TRUE)
+      ->setRevisionable(TRUE)
+      ->addConstraint('UniqueField')
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -4,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Label'))
       ->setDescription(new TranslatableMarkup('The consumer label.'))
@@ -209,7 +220,7 @@ class Consumer extends ContentEntityBase implements EntityOwnerInterface {
         static::setDefaultTo(FALSE),
         $default_entities
       );
-      $invalid_entities = array_filter($default_entities, function (Consumer $consumer) {
+      $invalid_entities = array_filter($default_entities, function (ConsumerInterface $consumer) {
         return !$consumer->access('update', NULL, TRUE)->isAllowed();
       });
       if (count($invalid_entities)) {
@@ -228,10 +239,17 @@ class Consumer extends ContentEntityBase implements EntityOwnerInterface {
    * @return \Closure
    */
   protected static function setDefaultTo($value) {
-    return function (Consumer $consumer) use ($value) {
+    return function (ConsumerInterface $consumer) use ($value) {
       $consumer->set('is_default', $value);
       return $consumer;
     };
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClientId(): string {
+    return $this->get('client_id')->value;
   }
 
 }

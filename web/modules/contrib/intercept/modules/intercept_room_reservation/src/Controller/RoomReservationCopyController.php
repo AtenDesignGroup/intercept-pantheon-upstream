@@ -6,7 +6,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\intercept_room_reservation\Entity\RoomReservation;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

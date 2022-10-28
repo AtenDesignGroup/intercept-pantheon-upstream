@@ -16,7 +16,7 @@ id: intercept_certifications
 label: 'Intercept Certifications'
 module: views
 description: ''
-tag: ''
+tag: Intercept
 base_table: certification_field_data
 base_field: id
 display:

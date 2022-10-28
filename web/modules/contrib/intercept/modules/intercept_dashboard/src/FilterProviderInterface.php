@@ -2,8 +2,6 @@
 
 namespace Drupal\intercept_dashboard;
 
-use Drupal\Core\Url;
-
 /**
  * Filter provider service class interface.
  */
@@ -46,13 +44,14 @@ interface FilterProviderInterface {
    * Creates a url to the filters with the provide param value removed.
    *
    * @param string $param
-   *   The url query parameter to target
+   *   The url query parameter to target.
    * @param string $value
    *   (optional) The specific value to remove. Leaving this NULL will result in
    *   the full query parameter being removed.
    *
-   * @return Url
+   * @return \Drupal\Core\Url
    *   The url to the filters with the query parameter removed.
    */
   public function getRemoveUrl(string $param, ?string $value = NULL);
+
 }

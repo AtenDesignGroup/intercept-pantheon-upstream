@@ -2,11 +2,12 @@
 
 namespace Drupal\intercept_event\Controller;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -16,10 +17,10 @@ use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\EventEvaluationManager;
 use Drupal\intercept_event\SuggestedEventsProvider;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Dompdf\Dompdf;
 
 /**
@@ -351,7 +352,7 @@ class EventsController extends ControllerBase {
       '#attributes' => [
         'class' => ['button button-action'],
       ],
-      '#prefix' => '&nbsp;&nbsp;'
+      '#prefix' => '&nbsp;&nbsp;',
     ];
     $content['attendance_sheet'] = [
       '#title' => 'Print Sign-In Sheet',
@@ -362,7 +363,7 @@ class EventsController extends ControllerBase {
       '#attributes' => [
         'class' => ['button button-action'],
       ],
-      '#prefix' => '&nbsp;&nbsp;'
+      '#prefix' => '&nbsp;&nbsp;',
     ];
     $content['list'] = $this->getListBuilder('event_registration', $node)->render();
     return $build;
@@ -428,6 +429,97 @@ class EventsController extends ControllerBase {
   }
 
   /**
+   * Node staff evaluations task callback.
+   */
+  public function staffEvaluations(NodeInterface $node) {
+    return $this->staffEvaluationBuildTable($node);
+  }
+
+  /**
+   * All staff evaluations task callback. Builds multiple tables in a modal.
+   */
+  public function staffEvaluationsAll() {
+    // Get specific node ids.
+    $query_params = \Drupal::request()->query->all();
+    $nids = explode(',', $query_params['nids']);
+    if (empty($nids)) {
+      return;
+    }
+    $nodes = Node::loadMultiple($nids);
+    $tables = [];
+
+    foreach($nodes as $node) {
+      $tables[] = $this->staffEvaluationBuildTable($node);
+    }
+    return $tables;
+  }
+
+  /**
+   * Builds a table (row and header) for a given node object.
+   */
+  private function staffEvaluationBuildTable(NodeInterface $node) {
+
+    // Build rows first. We need to get a count to include in the header markup.
+    $rows = [];
+
+    $query = $this->connection->select('votingapi_vote', 'v');
+    $query->condition('type', 'evaluation_staff');
+    $query->isNotNull('feedback__value');
+    $query->fields('v', [
+      'feedback__value',
+      'user_id'
+    ]);
+    $query->condition('entity_id', $node->id());
+    $result = $query->execute()->fetchAll();
+    if (count($result) > 0) {
+      foreach ($result as $value) {
+        $username = '';
+        $user = User::load($value->user_id);
+        if ($user) {
+          $username = $user->name->value;
+        }
+        $rows[] = [
+          'data' => [
+            [
+              'data' => new FormattableMarkup('@feedback<div class="right-align"><i>Feedback left by: @username</i></div>', [
+                '@feedback' => $value->feedback__value,
+                '@username' => $username
+              ]),
+              'colspan' => 2
+            ]
+          ]
+        ];
+      }
+    }
+
+    // Now we'll build the header since we have a count.
+    $dateTime = new DrupalDateTime($node->get('field_date_time')->value, 'UTC');
+    $event_date = date('n/j/y', $dateTime->getTimestamp());
+    $count = count($rows);
+    $header = [
+      ['data' => $node->getTitle()],
+      ['data' => new FormattableMarkup('@event_date&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;@count @comments', [
+        '@event_date' => $event_date, 
+        '@count' => $count,
+        '@comments' => $count = 1 ? 'comment' : 'comments'
+        ])]
+    ];
+
+    $build = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#attributes' => [
+        'class' => [
+          'intercept-event-evaluations-table__table',
+        ],
+      ]
+    ];
+
+    return $build;
+  }
+
+  /**
    * This is the Saved Events page. Shows a list of events for the logged in
    * customer account.
    *
@@ -459,7 +551,8 @@ class EventsController extends ControllerBase {
     }
 
     // 2) Get attendances/scans for the current user.
-    if (@$query_params['field_date_time_value'] == 1) { // Past Events
+    // Past Events
+    if (@$query_params['field_date_time_value'] == 1) {
       $query_ea = $this->connection->select('event_attendance', 'ea');
       $query_ea->join('event_attendance__field_event', 'eafe', 'ea.id = eafe.entity_id');
       $query_ea->join('event_attendance__field_user', 'eafu', 'ea.id = eafu.entity_id');
@@ -473,7 +566,7 @@ class EventsController extends ControllerBase {
         }
       }
     }
-    
+
     // 3) Get the saves/flags for the current user.
     $query_f = $this->connection->select('flagging', 'f');
     $query_f->addField('f', 'entity_id');
@@ -498,7 +591,8 @@ class EventsController extends ControllerBase {
 
       // Query differences in Past vs. Upcoming:
       date_default_timezone_set('UTC');
-      if (@$query_params['field_date_time_value'] == 1) { // Past Events
+      // Past Events.
+      if (@$query_params['field_date_time_value'] == 1) {
         $query->condition('field_date_time.end_value', date(DateTimeItemInterface::DATETIME_STORAGE_FORMAT, strtotime('now')), '<');
         $query->sort('field_date_time.end_value', 'DESC');
 
@@ -508,19 +602,21 @@ class EventsController extends ControllerBase {
           ->condition('field_event_status', NULL, '=');
         $query->condition($orGroup);
       }
-      else { // Upcoming Events
+      // Upcoming Events.
+      else {
         $query->condition('field_date_time.end_value', date(DateTimeItemInterface::DATETIME_STORAGE_FORMAT, strtotime('now')), '>=');
         $query->sort('field_date_time.value', 'ASC');
       }
       $events = $query->execute();
     }
-    if (count($events) > 0) { // See if we still have any after specifying upcoming/past.
+    // See if we still have any after specifying upcoming/past.
+    if (count($events) > 0) {
       $content['prefix']['#markup'] = '<div class="view__content l--section"><div class="list__wrapper"><ol class="list--content">';
 
       $allowed_tags = [
         'div', 'article', 'h3', 'h4', 'i', 'b', 'em', 'strong', 'li', 'p', 'span',
         'a', 'img', 'svg', 'title',
-        'g', 'circle', 'path'
+        'g', 'circle', 'path',
       ];
 
       // From: https://www.drupal.org/forum/support/module-development-and-code-questions/2019-04-24/how-to-integrate-a-render-array-into
@@ -534,8 +630,8 @@ class EventsController extends ControllerBase {
         $start_date = $this->dateUtility->convertTimezone($start_date, 'default')->format('Y-m-d\TH:i:s');
         $end_date = $this->dateUtility->convertTimezone($end_date, 'default')->format('Y-m-d\TH:i:s');
         $node->set('field_date_time', [
-          'value'=> $start_date,
-          'end_value' => $end_date
+          'value' => $start_date,
+          'end_value' => $end_date,
         ]);
 
         $view = $this->entityTypeManager->getViewBuilder('node')->view($node, 'evaluation_attendee');
@@ -548,11 +644,12 @@ class EventsController extends ControllerBase {
       $content['suffix']['#markup'] = '</ol></div></div>';
 
       $build['pager'] = [
-        '#type' => 'pager'
+        '#type' => 'pager',
       ];
     }
     else {
-      if (@$query_params['field_date_time_value'] == 1) { // Past Events
+      // Past Events.
+      if (@$query_params['field_date_time_value'] == 1) {
         $content['prefix']['#markup'] = '<div class="view__content l--section">No matching past events were found.</div>';
       }
       else {
@@ -588,7 +685,8 @@ class EventsController extends ControllerBase {
         if ($num_registrants > 1) {
           for ($n = 2; $n <= $num_registrants; $n++) {
             // Duplicate the entry to show multiple registered people.
-            $id = $n * $index * 100; // Build a hopefully unique array index #.
+            // Build a hopefully unique array index #.
+            $id = $n * $index * 100;
             $arryResults[$id] = $registration;
           }
         }
@@ -671,14 +769,14 @@ class EventsController extends ControllerBase {
 
       This same idea applies to the last page of the registrants for a
       particular location.
-        */
+       */
 
       $intItemsPerPage = 18;
       (int) $intNumPages = ceil($total_registrations / $intItemsPerPage);
       // Round up to the next whole number since we can't have half pages.
       $intExpectedItemCount = $intItemsPerPage * $intNumPages;
 
-      // Calculate difference between the remaining items and the expected items
+      // Calculate difference between the remaining items and the expected items.
       $intDifference = $intExpectedItemCount - $total_registrations;
 
       // If the difference is zero, or greater than 10, add a page
@@ -787,8 +885,7 @@ class EventsController extends ControllerBase {
     // var_dump($strHTML);
     // print '</pre>';
     // exit;
-    // End debugging
-
+    // End debugging.
     $dompdf = new Dompdf();
     $options = $dompdf->getOptions();
     $options->setIsHtml5ParserEnabled(TRUE);

@@ -104,7 +104,7 @@ class ManagementControllerBase extends ControllerBase {
     $definitions = \Drupal::service('plugin.manager.intercept_management')->getDefinitions();
     $machine_name = $this->getMachineName();
     foreach ($definitions as $definition) {
-      list($callable, $method) = \Drupal::service('controller_resolver')->getControllerFromDefinition($definition['controller']);
+      [$callable, $method] = \Drupal::service('controller_resolver')->getControllerFromDefinition($definition['controller']);
       $callable->alter($build, $machine_name);
     }
 
@@ -368,7 +368,7 @@ class ManagementControllerBase extends ControllerBase {
   /**
    * Hide all elements in a form except specified keys.
    *
-   * TODO: Rename this to isolateElements, or something similar.
+   * @todo Rename this to isolateElements, or something similar.
    *
    * @param array $form
    *   Drupal form object.

@@ -155,7 +155,8 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $form['reservation']['dates']['start'] = [
       '#title' => $this->t('Reservation start time'),
       '#type' => 'datetime',
-      '#date_increment' => 900, // Use 15 minute increments.
+    // Use 15 minute increments.
+      '#date_increment' => 900,
       '#default_value' => $start_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
@@ -173,7 +174,8 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $form['reservation']['dates']['end'] = [
       '#title' => $this->t('Reservation end time'),
       '#type' => 'datetime',
-      '#date_increment' => 900, // Use 15 minute increments.
+    // Use 15 minute increments.
+      '#date_increment' => 900,
       '#default_value' => $end_date_object,
       '#ajax' => [
         'callback' => [$this, 'updateFormStatusField'],
@@ -205,7 +207,7 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     }
 
     if (!empty($reservation)) {
-      /* @var $view_builder \Drupal\Core\Entity\EntityViewBuilderInterface */
+      /** @var \Drupal\Core\Entity\EntityViewBuilderInterface $view_builder */
       $view_builder = $this->entityTypeManager
         ->getViewBuilder('room_reservation');
       $form['reservation']['view'] = $view_builder->view($reservation, 'event');

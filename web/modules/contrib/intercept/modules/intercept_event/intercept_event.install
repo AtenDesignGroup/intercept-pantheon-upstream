@@ -5,8 +5,6 @@
  * Update hooks.
  */
 
-use Drupal\node\Entity\Node;
-
 /**
  * Add status of "scheduled" to future published events and templates.
  */

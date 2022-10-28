@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
@@ -7,7 +11,6 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\Node;
 use Drupal\intercept_certification\Controller\CertificationController;
 use Drupal\intercept_certification\Entity\Certification;
-use Drupal\intercept_room_reservation\ValidationMessageBuilder;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -54,6 +57,7 @@ function intercept_certification_form_alter(&$form, FormStateInterface $form_sta
       $form['revision_log_message']['#access'] = FALSE;
       $form['new_revision'] = FALSE;
       break;
+
     case 'user_customer_form':
       $form['actions']['submit']['#submit'][] = 'intercept_certification_update_certifications_submit';
       break;
@@ -71,7 +75,7 @@ function intercept_certification_form_alter(&$form, FormStateInterface $form_sta
  *   The form state of the parent form.
  */
 function intercept_certification_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
-  if ($entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
+  if (isset($entity_form['#form_id']) && $entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
     // Only staff are allowed to edit the Customer Information fields.
     $current_user = \Drupal::currentUser();
     $roles = $current_user->getRoles();
@@ -85,7 +89,7 @@ function intercept_certification_inline_entity_form_entity_form_alter(&$entity_f
       $certification_rooms = Node::loadMultiple($certification_room_ids);
       // Build the form options based off of that list.
       $options = [];
-      foreach($certification_rooms as $key => $room) {
+      foreach ($certification_rooms as $key => $room) {
         $options[$key] = $room->getTitle();
       }
       asort($options);
@@ -97,7 +101,7 @@ function intercept_certification_inline_entity_form_entity_form_alter(&$entity_f
       $default_values = [];
       if (!empty($certifications)) {
         // Fill in the default values.
-        foreach($certifications as $key => $certification) {
+        foreach ($certifications as $key => $certification) {
           $default_values[] = $certification->get('field_room')->getString();
         }
       }
@@ -130,13 +134,13 @@ function intercept_certification_update_certifications_submit(&$form, FormStateI
   $certification_ids = CertificationController::getUserCertifications($uid);
   $current_certifications = Certification::loadMultiple($certification_ids);
   $current_certification_room_ids = [];
-  foreach($current_certifications as $certification) {
+  foreach ($current_certifications as $certification) {
     $current_certification_room_ids[] = $certification->get('field_room')->getString();
   }
 
   // Let's compare what's stored.
   if ($submitted_certifications) {
-    foreach($submitted_certifications as $key => $value) {
+    foreach ($submitted_certifications as $key => $value) {
       // If the value = 0 that means it's unchecked.
       // If the value is not 0 then that means it's checked. (It's equal to the room id.)
       // The key of each certification here will also be the room id.
@@ -160,7 +164,7 @@ function intercept_certification_update_certifications_submit(&$form, FormStateI
  */
 function intercept_certification_entity_type_alter(array &$entity_types) {
   // Add validation constraint to the room reservation entity
-  // $entity_types['room_reservation']->addConstraint('RoomCertification');
+  // $entity_types['room_reservation']->addConstraint('RoomCertification');.
 }
 
 /**
@@ -178,7 +182,7 @@ function intercept_certification_form_views_exposed_form_alter(&$form, FormState
     $certification_rooms = Node::loadMultiple($certification_room_ids);
     // Build the form options based off of that list.
     $options = [];
-    foreach($certification_rooms as $key => $room) {
+    foreach ($certification_rooms as $key => $room) {
       $options[$key] = $room->getTitle();
     }
     asort($options);
@@ -209,7 +213,7 @@ function intercept_certification_views_exposed_form_validate(&$form, FormStateIn
       $message = implode('<br>', $validationMessages);
       $rendered_message = Markup::create($message);
       $error_message = new TranslatableMarkup('@message', ['@message' => $rendered_message]);
-      $form_state->setErrorByName('field_user_target_id', $error_message);
+      \Drupal::messenger()->addWarning($error_message);
     }
   }
 }

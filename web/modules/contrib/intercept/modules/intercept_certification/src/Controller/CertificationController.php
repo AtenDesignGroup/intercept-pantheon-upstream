@@ -6,7 +6,6 @@ use Drupal\Core\Link;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\intercept_certification\Entity\CertificationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -216,16 +215,16 @@ class CertificationController extends ControllerBase implements ContainerInjecti
    */
   public static function getCertificationRooms() {
     $query = \Drupal::entityQuery('node')
-        ->condition('status', 1)
-        ->condition('type', 'room')
-        ->condition('field_requires_certification', 1);
+      ->condition('status', 1)
+      ->condition('type', 'room')
+      ->condition('field_requires_certification', 1);
     $options = $query->execute();
     return $options;
   }
 
   /**
    * Get certifications that exist for the given user.
-   * 
+   *
    * @param int $uid
    *   The user id to check.
    *

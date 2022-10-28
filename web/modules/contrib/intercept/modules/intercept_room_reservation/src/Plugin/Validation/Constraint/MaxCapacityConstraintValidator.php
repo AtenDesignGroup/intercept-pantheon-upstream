@@ -8,7 +8,6 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
-use Drupal\intercept_room_reservation\Plugin\Validation\Constraint\ReservationMinDurationConstraintValidator;
 
 /**
  * Validates the MaxCapacity constraint.
@@ -64,8 +63,8 @@ class MaxCapacityConstraintValidator extends ConstraintValidator implements Cont
     if (!empty($entity->field_attendee_count->value) && !is_null($maxCapacity) && $entity->field_attendee_count->value > $maxCapacity) {
       $this->context->buildViolation($constraint->maxCapacityMessage, [
         '%value' => $entity->field_attendee_count->value,
-        '%max' => $maxCapacity
-        ])
+        '%max' => $maxCapacity,
+      ])
         // The path depends on entity type. It can be title, name, etc.
         ->atPath('field_capacity_max')
         ->addViolation();

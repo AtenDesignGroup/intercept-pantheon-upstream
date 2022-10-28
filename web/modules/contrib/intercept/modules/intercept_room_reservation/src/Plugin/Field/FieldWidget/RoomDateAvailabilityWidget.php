@@ -2,9 +2,6 @@
 
 namespace Drupal\intercept_room_reservation\Plugin\Field\FieldWidget;
 
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\InvokeCommand;
-use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\intercept_core\Utility\Dates;
@@ -16,7 +13,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\intercept_room_reservation\ValidationMessageBuilder;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_core\Plugin\Field\FieldWidget\DateRangeTimeSelectWidget;
 
 /**
@@ -98,7 +94,7 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
    * @param \Drupal\intercept_room_reservation\ValidationMessageBuilder $validationMessageBuilder
    *   The intercept_room_reservation.validation_message_builder service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityStorageInterface $date_storage, ReservationManager $reservation_manager, Dates $date_utility, EntityTypeManagerInterface$entity_type_manager, ValidationMessageBuilder $validationMessageBuilder) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityStorageInterface $date_storage, ReservationManager $reservation_manager, Dates $date_utility, EntityTypeManagerInterface $entity_type_manager, ValidationMessageBuilder $validationMessageBuilder) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $date_storage);
 
     $this->reservationManager = $reservation_manager;
@@ -203,10 +199,11 @@ class RoomDateAvailabilityWidget extends DateRangeTimeSelectWidget implements Co
    * Returns the ValidationMessageBuilder service's availabilityCallback.
    *
    * @param array $form
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *
    * @return void
    */
-  public function availabilityCallback(array &$form, FormStateInterface $form_state ) {
+  public function availabilityCallback(array &$form, FormStateInterface $form_state) {
     return $this->validationMessageBuilder->availabilityCallback($form, $form_state);
   }
 

@@ -33,6 +33,9 @@ class Patron extends EntityBase {
    */
   public $barcode;
 
+  /**
+   *
+   */
   public function patronInformationRequest($barcode) {
     // Grab the PIN.
     $tempstore = \Drupal::service('tempstore.private')->get('intercept_ils_sip2');
@@ -41,7 +44,8 @@ class Patron extends EntityBase {
     $request = new PatronInformationRequest();
     $request->setVariable('PatronIdentifier', $barcode);
     $request->setVariable('PatronPassword', $pin);
-    $request->setType('none'); // General info about patron is the "none" type.
+    // General info about patron is the "none" type.
+    $request->setType('none');
     $response = $this->client->sendRequest($request);
     return $response;
   }
@@ -59,7 +63,9 @@ class Patron extends EntityBase {
     return $parts;
   }
 
-  // Does not return barcode so cannot start a new patron object.
+  /**
+   * Does not return barcode so cannot start a new patron object.
+   */
   public function authenticate($barcode, $pin) {
 
     $this->barcode = $barcode;
@@ -99,6 +105,9 @@ class Patron extends EntityBase {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function barcode() {
     return $this->barcode;
   }
@@ -122,6 +131,9 @@ class Patron extends EntityBase {
     return $data;
   }
 
+  /**
+   *
+   */
   public function get($barcode) {
     return new Entity($this, ['barcode' => $barcode]);
   }
@@ -159,10 +171,16 @@ class Patron extends EntityBase {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function searchAnd(array $array) {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function searchBasic(array $values = []) {
     return NULL;
   }
@@ -176,4 +194,5 @@ class Patron extends EntityBase {
     $pin = $tempstore->get('pin');
     return $this->authenticate($barcode, $pin);
   }
+
 }

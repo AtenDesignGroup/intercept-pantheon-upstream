@@ -14,7 +14,7 @@ id: rooms
 label: Rooms
 module: views
 description: ''
-tag: ''
+tag: Intercept
 base_table: node_field_data
 base_field: nid
 display:

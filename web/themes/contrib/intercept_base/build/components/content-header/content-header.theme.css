@@ -10,5 +10,5 @@
 
 .content-header__description {
   color: #fff; }
-  .content-header__description .intro {
+  .content-header__description .intro, .content-header__description .intro a {
     color: #fff; }

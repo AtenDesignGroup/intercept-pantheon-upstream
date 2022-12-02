@@ -133,7 +133,7 @@ function intercept_core_entity_type_build(array &$entity_types) {
 function intercept_core_menu_links_discovered_alter(&$links) {
   // Change the title of the default user view menu link.
   if (isset($links['user.page'])) {
-    $links['user.page']['title'] = new TranslatableMarkup('Account Summary');
+    $links['user.page']['title'] = new TranslatableMarkup('Overview');
   }
 }
 

@@ -2,10 +2,9 @@ name: Duration Field
 description: Creates a duration Field API field, that collects a period of time, whether that be hours, minutes, seconds, days, months, years, or any combination of those.
 type: module
 package: Field types
-core: '8.x'
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 
-# Information added by Drupal.org packaging script on 2020-12-07
-version: '8.x-2.0'
+# Information added by Drupal.org packaging script on 2022-11-20
+version: '8.x-2.1'
 project: 'duration_field'
-datestamp: 1607303976
+datestamp: 1668979039

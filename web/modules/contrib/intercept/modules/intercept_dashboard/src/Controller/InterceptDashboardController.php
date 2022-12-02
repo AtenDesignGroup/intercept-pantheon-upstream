@@ -445,15 +445,23 @@ class InterceptDashboardController extends ControllerBase {
         'context' => 'url',
       ],
     ];
-    // @todo Provide a view of all feedback.
-    // if ($value > 0) {
-    //   $build['#link'] = Link::createFromRoute($this->t('View All', []), '<current>', [], [
-    //     'attributes' => [
-    //       'title' => $this->t('View all customer comments'),
-    //       'rel' => 'nofollow'
-    //     ],
-    //   ]);
-    // }
+    // Build the "View All" link to view all staff feedback.
+    $eventQuery = $this->getBaseQuery();
+    $eventQuery->addJoin('right', $this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.nid');
+    $eventQuery->fields('customer_evaluations', ['nid']);
+    $all_staff_evaluations = $eventQuery->execute()->fetchAll();
+    $nids = [];
+    foreach ($all_staff_evaluations as $evaluation) {
+      $nids[] = $evaluation->nid;
+    }
+    if (count($nids) > 0) {
+      $build['#link'] = new FormattableMarkup('
+        <a href="@url" class="use-ajax" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:1000,&quot;height&quot;:600}">View All</a>',
+        [
+          '@url' => Url::fromRoute('intercept_event.customer_evaluations')->setOption('query', ['nids' => implode(',', $nids)])->toString(),
+        ]
+      );
+    }
     return $build;
   }
 
@@ -812,7 +820,7 @@ class InterceptDashboardController extends ControllerBase {
           'registrants' => number_format($row->registrants ?? 0),
           'saves' => number_format($row->saves ?? 0),
           'customer_rating' => $row->customer_evaluations ?
-          new FormattableMarkup('<div class="feeback__wrapper">
+          new FormattableMarkup('<div class="feedback__wrapper">
                 <span class="feedback feedback--positive"><span class="feedback__icon"></span> <span class="visually-hidden">Positive</span>@positive<span class="feedback__suffix">%</span></span>
                 <span class="feedback feedback--negative"><span class="feedback__icon"></span> <span class="visually-hidden">Negative</span> @negative<span class="feedback__suffix">%</span></span>
             </div>', [
@@ -822,9 +830,9 @@ class InterceptDashboardController extends ControllerBase {
           new FormattableMarkup('<span>—</span>', []),
           'customer_evaluations' => $row->customer_evaluations ?
           new FormattableMarkup('
-              <a href="@url">View <span class="visually-hidden">Customer Evaluations</span></a>',
+              <a href="@url" class="use-ajax" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:1000}">View <span class="visually-hidden">Customer Feedback</span></a>',
               [
-                '@url' => Url::fromRoute('entity.node.analysis', ['node' => $row->nid])->toString(),
+                '@url' => Url::fromRoute('entity.node.customer_evaluations', ['node' => $row->nid])->toString(),
               ]
           ) :
           '—',

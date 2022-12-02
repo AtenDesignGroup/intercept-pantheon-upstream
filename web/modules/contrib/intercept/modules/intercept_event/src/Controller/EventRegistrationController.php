@@ -4,9 +4,13 @@ namespace Drupal\intercept_event\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Form\FormState;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\intercept_core\HttpRequestTrait;
+use Drupal\intercept_event\Form\EventNotificationsForm;
 use Drupal\node\NodeInterface;
+use Drupal\user\UserDataInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,16 +38,34 @@ class EventRegistrationController extends ControllerBase {
   protected $currentUser;
 
   /**
+   * The user data service.
+   *
+   * @var \Drupal\user\UserDataInterface
+   */
+  protected $userData;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
    * EventRegistrationController constructor.
    *
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The entity form builder.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
+   * @param \Drupal\user\UserDataInterface $user_data
+   *   The user data service.
    */
-  public function __construct(FormBuilderInterface $form_builder, AccountInterface $current_user) {
+  public function __construct(FormBuilderInterface $form_builder, AccountInterface $current_user, UserDataInterface $user_data, RendererInterface $renderer) {
     $this->formBuilder = $form_builder;
     $this->currentUser = $current_user;
+    $this->userData = $user_data;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -52,7 +74,9 @@ class EventRegistrationController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('form_builder'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('user.data'),
+      $container->get('renderer')
     );
   }
 
@@ -72,6 +96,38 @@ class EventRegistrationController extends ControllerBase {
         '#header' => $view_builder->view($node, 'header'),
       ];
     }
+    $markup = '<div id="eventRegisterRoot" data-uuid="' . $node->uuid() . '"></div>';
+
+    // Add the "Notification Settings" form here. Repeated from Settings.
+    if (\Drupal::moduleHandler()->moduleExists('intercept_messages')) {
+      // Rebuild the settings form in this context even though this isn't a
+      // normal Drupal form.
+      $form_id = new EventNotificationsForm;
+      $form_state = new FormState();
+      $form = $this->formBuilder->buildForm($form_id, $form_state);
+      $markup .= '<div class="l--section materialize"><div class="form-wrapper">';
+      $markup .= '<h2 class="section-title section-title--secondary">Notification Settings</h2>';
+      $markup .= $this->renderer->render($form);
+      $markup .= '</div></div>';
+    }
+
+    // Your Current Contact Information
+    $authmap = \Drupal::service('externalauth.authmap');
+    $plugin_id = \Drupal::config('intercept_ils.settings')->get('intercept_ils_plugin', '');
+    if (!empty($plugin_id) && $authdata = $authmap->getAuthdata($this->currentUser->id(), $plugin_id)) {
+      $authdata_data = unserialize($authdata['data']);
+      if (isset($authdata_data)) {
+        $contact = '<div class="l--section">
+            <h2 class="section-title section-title--secondary">Your Current Contact Information</h2>
+            <small>
+              Telephone: ' . $authdata_data->PhoneNumber . '<br />
+              Email: ' . $authdata_data->EmailAddress . '<br />
+              <em>Need to update your info? After finishing your registration visit My Account &gt; Settings.</em>
+            </small>
+          </div>';
+        $markup .= '<div class="l--subsection">' . $contact . '</div>';
+      }
+    }
     return [
       '#theme' => 'event_registration_user_form',
       '#event' => $node,
@@ -82,7 +138,8 @@ class EventRegistrationController extends ControllerBase {
             'intercept_event/eventRegister',
           ],
         ],
-        '#markup' => '<div id="eventRegisterRoot" data-uuid="' . $node->uuid() . '"></div>',
+        '#markup' => '<div class="l--offset">' . $markup . '</div>',
+        '#allowed_tags' => ['form', 'label', 'div', 'span', 'input', 'h1', 'h2', 'h3', 'h4', 'p', 'a', 'textarea', 'b', 'br']
       ],
     ];
   }

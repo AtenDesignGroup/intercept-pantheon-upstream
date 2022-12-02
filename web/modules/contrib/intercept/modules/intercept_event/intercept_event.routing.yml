@@ -158,6 +158,23 @@ intercept_event.staff_evaluations:
   requirements:
     _permission: 'analyze events'
 
+entity.node.customer_evaluations:
+  path: '/event/{node}/customer-evaluations'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventsController::customerEvaluations'
+    _title: 'Customer Feedback'
+  requirements:
+    _entity_access: 'node.analysis'
+    _entity_bundle: 'event'
+
+intercept_event.customer_evaluations:
+  path: '/event/customer-evaluations'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventsController::customerEvaluationsAll'
+    _title: 'Customer Feedback'
+  requirements:
+    _permission: 'analyze events'
+
 intercept_event.api.attendance_update:
   path: '/api/attendance/update'
   methods: [POST]

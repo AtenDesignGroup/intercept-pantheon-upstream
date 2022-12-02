@@ -51,7 +51,7 @@ final class CacheabilityCapturingExecutor {
   public function executeQueryAndCaptureCacheability(QueryInterface $query, RefinableCacheableDependencyInterface $cacheable_metadata) {
     $context = new RenderContext();
     $results = $this->renderer->executeInRenderContext($context, function () use ($query) {
-      return $query->execute();
+      return $query->accessCheck(TRUE)->execute();
     });
     $paginator_metadata = $query->getMetaData(PaginatorMetadata::KEY);
     if (is_array($results) && $paginator_metadata instanceof PaginatorMetadata && count($results) > (int) $paginator_metadata->pageSizeMax) {

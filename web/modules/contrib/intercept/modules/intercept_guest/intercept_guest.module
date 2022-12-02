@@ -111,7 +111,7 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
 
   $form['guest_information']['info'] = [
     '#type' => 'item',
-    '#markup' => '<h2>' . t('Guest information') . '</h2><p>' . t('All guest fields are required **') . '</p>',
+    '#markup' => '<h2>' . t('Guest Information') . '</h2><p>' . t('All guest fields are required **') . '</p>',
   ];
 
   // Add a validate callback.

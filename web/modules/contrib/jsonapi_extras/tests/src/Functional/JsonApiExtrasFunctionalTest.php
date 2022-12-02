@@ -27,7 +27,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'jsonapi_extras',
     'basic_auth',
     'jsonapi_test_resource_type_building',
@@ -36,7 +36,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     // Check that the e0ipso/shaper library is available.
     if (!class_exists("\\Shaper\\DataAdaptor\\DataAdaptorBase")) {
       $this->fail('The e0ipso/shaper library is missing. You can install it with `composer require e0ipso/shaper`.');
@@ -122,7 +122,6 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $config->set('path_prefix', 'api');
     $config->set('include_count', TRUE);
     $config->save(TRUE);
-    $this->grantPermissions(Role::load(Role::ANONYMOUS_ID), ['access jsonapi resource list']);
     static::overrideResources();
     $this->resetAll();
     $role = $this->user->get('roles')[0]->entity;

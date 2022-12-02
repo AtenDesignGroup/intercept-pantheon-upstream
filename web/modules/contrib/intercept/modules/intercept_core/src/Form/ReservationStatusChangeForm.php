@@ -2,17 +2,18 @@
 
 namespace Drupal\intercept_core\Form;
 
-use Drupal\Core\Url;
-use Drupal\Core\Link;
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Render\Element;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Ajax\AjaxHelperTrait;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -141,6 +142,12 @@ class ReservationStatusChangeForm extends FormBase {
       '#default_value' => $current_value,
       '#options' => $this->options,
     ];
+    // Just show the updated "view" (status change) form.
+    $form['#attached'] = [
+      'library' => [
+        'intercept_room_reservation/roomReservationMediator',
+      ],
+    ];
     // Retrieve and add the form actions array.
     $actions = $this->actionsElement($form, $form_state);
     if (!empty($actions)) {
@@ -177,7 +184,8 @@ class ReservationStatusChangeForm extends FormBase {
     $actions['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Save'),
-      '#submit' => ['::submitForm'],
+      // '#submit' => ['::submitForm'],
+      '#ajax' => ['callback' => '::ajaxSubmit'],
     ];
 
     if (!$this->entity->isNew() && $this->entity->hasLinkTemplate('delete-form')) {
@@ -188,7 +196,6 @@ class ReservationStatusChangeForm extends FormBase {
           'room_reservation' => $this->entity->id(),
           'destination' => Url::fromRoute('<current>')->toString(),
         ]);
-
       }
 
       $actions['copy'] = [
@@ -217,7 +224,7 @@ class ReservationStatusChangeForm extends FormBase {
         '#title' => $this->t('Delete'),
         '#access' => $this->entity->access('delete'),
         '#attributes' => [
-          'class' => ['button', 'button--danger'],
+          'class' => ['button'],
         ],
       ];
       $actions['delete']['#url'] = $route_info;
@@ -244,8 +251,7 @@ class ReservationStatusChangeForm extends FormBase {
         $element[$button] = $tmp;
         switch ($button) {
           case 'delete':
-            $element[$button]['#button_type'] = 'danger';
-            $element[$button]['#attributes']['class'][] = 'button--right';
+            // $element[$button]['#button_type'] = 'danger';
             break;
 
           case 'copy':
@@ -319,4 +325,21 @@ class ReservationStatusChangeForm extends FormBase {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   *
+   * Repeats the ajaxSubmit function code from core, but adds messages wrapper.
+   */
+  public function ajaxSubmit(array &$form, FormStateInterface $form_state) {
+    $entity = $this->entity;
+
+    $response = new AjaxResponse();
+    // Trigger the Save success event.
+    $command = new InvokeCommand('html', 'trigger', [
+      'intercept:saveRoomReservationSuccess',
+      ['id' => $entity->id()]
+    ]);
+    $response->addCommand($command);
+    return $response;
+  }
 }

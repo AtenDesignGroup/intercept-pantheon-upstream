@@ -9,7 +9,6 @@ dependencies:
     - field.field.profile.customer.field_email_address
     - field.field.profile.customer.field_event_types
     - field.field.profile.customer.field_first_name
-    - field.field.profile.customer.field_hold_pickup_location
     - field.field.profile.customer.field_ils_username
     - field.field.profile.customer.field_last_name
     - field.field.profile.customer.field_phone
@@ -81,12 +80,6 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
-  field_hold_pickup_location:
-    type: options_select
-    weight: 11
-    region: content
-    settings: {  }
     third_party_settings: {  }
   field_ils_username:
     type: string_textfield

@@ -135,59 +135,6 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    *   Return Room reservation page.
    */
   public function reserve(Request $request) {
-    $room_reservation_settings = \Drupal::config('intercept_room_reservation.settings');
-    // Add customer room reservation limit.
-    $limit = $room_reservation_settings->get('reservation_limit', 0);
-    // Add room reservation agreement text.
-    $agreement_text = $room_reservation_settings->get('agreement_text', '');
-
-    // Add customer advanced limit.
-    $advanced_limit = $room_reservation_settings->get('advanced_reservation_limit', 0);
-
-    // Add last reservation before closing value (number of minutes).
-    $last_reservation_before_closing = $room_reservation_settings->get('last_reservation_before_closing', 15);
-
-    // Add customer barred message.
-    $reservation_barred_text = $room_reservation_settings->get('reservation_barred_text');
-
-    $refreshments_text = $room_reservation_settings->get('refreshments_text');
-
-    // Add publicize field.
-    $reservation_fields = $this->entityFieldManager->getFieldDefinitions('room_reservation', 'room_reservation');
-    if (array_key_exists('field_publicize', $reservation_fields)) {
-      $publicize_description = $reservation_fields['field_publicize']->getDescription();
-    }
-
-    // Add default location.
-    $default_locations = [];
-    if ($this->currentUser->isAuthenticated()) {
-      $user = $this->entityTypeManager()->getStorage('user')->load($this->currentUser->id());
-
-      if ($reservations = $this->reservationManager->getReservationsByUser('room', $user)) {
-        if (!empty($reservations)) {
-          $last_reservation = reset($reservations);
-          // First, look for the last room reservation made.
-          if ($last_reservation = reset($reservations)) {
-            $last_room = $last_reservation->field_room->entity;
-            $last_location = $last_room->field_location->entity;
-
-            if (!empty($last_location)) {
-              $default_locations = [$last_location->uuid()];
-            }
-          }
-        }
-      }
-      else {
-        // If no reservation, get the preferred locations.
-        if (!empty($customer)) {
-          foreach ($customer->get('field_preferred_location')->referencedEntities() as $location) {
-            if ($location->field_branch_location->value) {
-              $default_locations[] = $location->uuid();
-            }
-          }
-        }
-      }
-    }
     $build = [
       'intercept_room_reserve' => [
         '#markup' => '<div id="reserveRoomRoot"></div>',
@@ -196,28 +143,9 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
         'library' => [
           'intercept_room_reservation/reserveRoom',
         ],
-        'drupalSettings' => [
-          'intercept' => [
-            'user' => [
-              'barred' => $this->evaluateCustomerBarred(),
-            ],
-            'room_reservations' => [
-              'agreement_text' => $agreement_text['value'],
-              'customer_advanced_limit' => $advanced_limit,
-              'customer_advanced_text' => $advanced_limit > 0 ? $this->t('Reservations may be made up to @limit days in advance', ['@limit' => $advanced_limit]) : '',
-              'customer_limit' => $limit,
-              'default_locations' => $default_locations,
-              'field_publicize' => [
-                'description' => $publicize_description ?: '',
-              ],
-              'last_reservation_before_closing' => $last_reservation_before_closing,
-              'reservation_barred_text' => $reservation_barred_text['value'],
-              'refreshments_text' => strip_tags($refreshments_text['value']),
-            ],
-          ],
-        ],
       ],
     ];
+    $this->attachDrupalSettings($build);
 
     return $build;
   }
@@ -465,7 +393,10 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    */
   public function manage(UserInterface $user) {
     $build = [];
+
     $build['#attached']['library'][] = 'intercept_room_reservation/manageRoomReservations';
+    $this->attachDrupalSettings($build);
+
     $build['#markup'] = '';
     $build['intercept_room_reserve']['#markup'] = '<div id="roomReservationsRoot"></div>';
 
@@ -757,6 +688,92 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     }
 
     return JsonResponse::create($result, 200);
+  }
+
+
+  /**
+   * Attaches room_reservation related configuration to drupalSettings for client-side use.
+   *
+   * @return void
+   */
+  private function attachDrupalSettings(&$build) {
+    $room_reservation_settings = \Drupal::config('intercept_room_reservation.settings');
+
+    // Get room reservation agreement text.
+    $agreement_text = $room_reservation_settings->get('agreement_text', '');
+
+    // Add customer room reservation limit.
+    $limit = $room_reservation_settings->get('reservation_limit', 0);
+
+    // Add customer advanced limit.
+    $advanced_limit = $room_reservation_settings->get('advanced_reservation_limit', 0);
+
+    // Add last reservation before closing value (number of minutes).
+    $last_reservation_before_closing = $room_reservation_settings->get('last_reservation_before_closing', 15);
+
+    // Add customer barred message.
+    $reservation_barred_text = $room_reservation_settings->get('reservation_barred_text');
+
+    $refreshments_text = $room_reservation_settings->get('refreshments_text');
+
+    // Add publicize field.
+    $reservation_fields = $this->entityFieldManager->getFieldDefinitions('room_reservation', 'room_reservation');
+    if (array_key_exists('field_publicize', $reservation_fields)) {
+      $publicize_description = $reservation_fields['field_publicize']->getDescription();
+    }
+
+    // Add default location.
+    $default_locations = [];
+    if ($this->currentUser->isAuthenticated()) {
+      /** @var $userStorage Drupal\user\UserStorageInterface */
+      $userStorage = $this->entityTypeManager()->getStorage('user');
+      /** @var $user Drupal\Core\Session\AccountInterface */
+      $user = $userStorage->load($this->currentUser->id());
+
+      if ($reservations = $this->reservationManager->getReservationsByUser('room', $user)) {
+        if (!empty($reservations)) {
+          $last_reservation = reset($reservations);
+          // First, look for the last room reservation made.
+          if ($last_reservation = reset($reservations)) {
+            $last_room = $last_reservation->field_room->entity;
+            $last_location = $last_room->field_location->entity;
+
+            if (!empty($last_location)) {
+              $default_locations = [$last_location->uuid()];
+            }
+          }
+        }
+      }
+      else {
+        // If no reservation, get the preferred locations.
+        if (!empty($customer)) {
+          foreach ($customer->get('field_preferred_location')->referencedEntities() as $location) {
+            if ($location->field_branch_location->value) {
+              $default_locations[] = $location->uuid();
+            }
+          }
+        }
+      }
+    }
+
+    // Attach general room_reservation configuration settings.
+    $build['#attached']['drupalSettings']['intercept']['room_reservations'] = [
+      'agreement_text' => $agreement_text['value'],
+      'customer_advanced_limit' => $advanced_limit,
+      'customer_advanced_text' => $advanced_limit > 0 ? $this->t('Reservations may be made up to @limit days in advance', ['@limit' => $advanced_limit]) : '',
+      'customer_limit' => $limit,
+      'default_locations' => $default_locations,
+      'field_publicize' => [
+        'description' => $publicize_description ?: '',
+      ],
+      'last_reservation_before_closing' => $last_reservation_before_closing,
+      'reservation_barred_text' => $reservation_barred_text['value'],
+      'refreshments_text' => strip_tags($refreshments_text['value']),
+    ];
+
+    // Attach general room_reservation user barred status settings.
+    $build['#attached']['drupalSettings']['intercept']['user']['barred'] =  $this->evaluateCustomerBarred();
+
   }
 
   /**

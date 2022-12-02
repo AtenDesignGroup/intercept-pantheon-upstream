@@ -2,13 +2,13 @@
 
 namespace Drupal\jsonapi_extras\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\DrupalKernelInterface;
 use Drupal\Core\Routing\RouteBuilderInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -72,10 +72,10 @@ class ConfigSubscriber implements EventSubscriberInterface {
   /**
    * Associates JSON:API Extras' config cache tag with all JSON:API responses.
    *
-   * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $event
+   * @param \Symfony\Component\HttpKernel\Event\ResponseEvent $event
    *   The response event.
    */
-  public function onResponse(FilterResponseEvent $event) {
+  public function onResponse(ResponseEvent $event) {
     if ($event->getRequest()->getRequestFormat() !== 'api_json') {
       return;
     }

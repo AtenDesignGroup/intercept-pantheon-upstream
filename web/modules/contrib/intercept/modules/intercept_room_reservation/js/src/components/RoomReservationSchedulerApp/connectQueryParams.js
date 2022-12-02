@@ -31,30 +31,22 @@ const NOW = 'now';
 const removeFalseyProps = obj => pickBy(obj, prop => prop);
 
 const decodeDate = (value) => {
+  // Convert the url param to a date object in local time.
   const date = decode(UrlQueryParamTypes.date, value) || null;
 
   if (date === null) {
     return undefined;
   }
-  const userNow = moment.tz(new Date(), utils.getUserTimezone());
-  const newDate = moment.tz(
-    utils.convertDateToLocal(date, utils.getUserTimezone()),
-    utils.getUserTimezone(),
-  );
-  newDate.set({
-    hour: userNow.hour(),
-    minute: userNow.minute(),
-    second: userNow.second(),
-    millisecond: userNow.millisecond(),
-  });
 
-  return newDate.toDate() || null;
-};
+  // Convert the date object to the start of the User's timezone day, in local time.
+  const output = utils.convertDateFromLocal(date, utils.getUserTimezone());
+  return output;
+}
 
-const encodeDate = value =>
-  moment(value)
-    .tz(utils.getUserTimezone())
+const encodeDate = (value) => {
+  return moment(value)
     .format('YYYY-MM-DD') || null;
+}
 
 const encodeFilters = (value) => {
   const filters = removeFalseyProps({

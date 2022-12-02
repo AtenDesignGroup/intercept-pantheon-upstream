@@ -20,7 +20,8 @@
           justify-content: $justify;
 }
 
-.form-type-duration
+.form-type-duration,
+.form-type--duration
 {
 	.duration-inner-wrapper
 	{
@@ -29,7 +30,8 @@
 		@include justify-content(flex-start);
 		-ms-flex-pack: start;
 		margin:0 -5px;
-		.form-type-number
+		.form-type-number,
+		.form-type--number
 		{
 			padding:0 5px;
 			width:5em;

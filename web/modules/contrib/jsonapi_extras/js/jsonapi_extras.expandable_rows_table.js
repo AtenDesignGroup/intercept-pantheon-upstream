@@ -12,7 +12,7 @@
    */
   Drupal.behaviors.jsonapi_extras_expandable_rows_table = {
     attach: function (context, settings) {
-      var $advanced_opts_links = $('.toggle-expanded', context).once('toggle-expanded');
+      var $advanced_opts_links = $(once('toggle-expanded', '.toggle-expanded', context));
 
       $advanced_opts_links.click(function () {
         $(this).removeClass("content-collapsed content-expanded");

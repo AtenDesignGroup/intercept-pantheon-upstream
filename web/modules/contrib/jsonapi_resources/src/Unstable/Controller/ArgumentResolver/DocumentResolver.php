@@ -35,7 +35,7 @@ final class DocumentResolver implements ArgumentValueResolverInterface {
   /**
    * {@inheritdoc}
    */
-  public function supports(Request $request, ArgumentMetadata $argument) {
+  public function supports(Request $request, ArgumentMetadata $argument): bool {
     $supported_method = in_array($request->getMethod(), [
       'POST',
       'PATCH',
@@ -51,7 +51,7 @@ final class DocumentResolver implements ArgumentValueResolverInterface {
   /**
    * {@inheritdoc}
    */
-  public function resolve(Request $request, ArgumentMetadata $argument) {
+  public function resolve(Request $request, ArgumentMetadata $argument): iterable {
     yield $this->documentExtractor->getDocument($request);
   }
 

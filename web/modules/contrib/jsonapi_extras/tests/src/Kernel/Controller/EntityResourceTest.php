@@ -29,7 +29,7 @@ class EntityResourceTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'node',
     'jsonapi',
     'serialization',
@@ -40,7 +40,7 @@ class EntityResourceTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     NodeType::create([
@@ -235,7 +235,7 @@ class EntityResourceTest extends KernelTestBase {
       $this->container->get('datetime.time'),
       $this->container->get('current_user')
     );
-    $response = $entity_resource->deleteIndividual($node_type, new Request());
+    $response = $entity_resource->deleteIndividual($node_type);
     // As a side effect, the node will also be deleted.
     $count = $this->container->get('entity_type.manager')
       ->getStorage('node_type')

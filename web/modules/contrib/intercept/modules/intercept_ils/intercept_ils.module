@@ -82,3 +82,40 @@ function intercept_ils_entity_extra_field_info() {
 
   return $extra;
 }
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function intercept_ils_preprocess_views_view_field(&$variables) {
+  $view = $variables['view'];
+  $row = $variables['row'];
+  $field = $variables['field']->field;
+  // If it's the field in the customer lookup, show the latest authdata here too.
+  if ($view->id() == 'intercept_customers' && $view->current_display == 'manage') {
+    $uid = $row->uid;
+    // Now let's find the authdata for this uid.
+    if ($field == 'field_phone') {
+      $authdata = intercept_base_get_authdata($uid);
+      if ($authdata) {
+        // Change output.
+        $variables['output'] =  [
+          '#markup' => $authdata->PhoneNumber
+        ];
+      }
+    }
+    elseif ($field == 'field_address') {
+      $authdata = intercept_base_get_authdata($uid);
+      if ($authdata) {
+        // Change output.
+        $address = $authdata->PatronAddresses[0]->StreetOne;
+        if (!empty($authdata->PatronAddresses[0]->StreetTwo)) {
+          $address .= ', ' . $authdata->PatronAddresses[0]->StreetTwo;
+        }
+        $address .= '<br>' . $authdata->PatronAddresses[0]->City . ', ' . $authdata->PatronAddresses[0]->State . ' ' . $authdata->PatronAddresses[0]->PostalCode;
+        $variables['output'] =  [
+          '#markup' => $address
+        ];
+      }
+    }
+  }
+}

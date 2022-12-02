@@ -34,7 +34,6 @@ class ContentEntityDenormalizer extends JsonApiNormalizerDecoratorBase {
         $resource_type->getEntityTypeId()
       );
     $data_internal = [];
-    /** @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType $resource_type */
     // Translate the public fields into the entity fields.
     foreach ($data as $public_field_name => $field_value) {
       // Skip any disabled field.

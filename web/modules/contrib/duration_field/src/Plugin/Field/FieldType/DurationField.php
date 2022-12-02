@@ -24,6 +24,13 @@ class DurationField extends FieldItemBase implements FieldItemInterface {
   /**
    * {@inheritdoc}
    */
+  public static function mainPropertyName() {
+    return "duration";
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function defaultFieldSettings() {
     return [
       'granularity' => 'y:m:d:h:i:s',

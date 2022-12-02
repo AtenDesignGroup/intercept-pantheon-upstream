@@ -274,6 +274,7 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
     parent::preSave($storage);
 
     if ($this->isNew()) {
+      $this->setDefaultStatus();
       // If they've signed the agreement, remove it from their session.
       if (\Drupal::service('current_user')->isAnonymous()) {
         return;
@@ -297,6 +298,40 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
 
     if ($this->statusHasChanged()) {
       \Drupal::service('intercept_core.reservation.manager')->notifyStatusChange($this, $this->getOriginalStatus(), $this->getNewStatus());
+    }
+  }
+
+  /**
+   * Set status based on the room being reserved.
+   */
+  public function setDefaultStatus() {
+    if (!$this->hasField(self::PARENT_FIELD)) {
+      return;
+    }
+    if (!$this->get(self::PARENT_FIELD)->isEmpty()) {
+      $room = $this->get(self::PARENT_FIELD)->entity;
+      $approval_required = $room->field_approval_required->getString();
+
+      $current_user = \Drupal::currentUser();
+      if ($current_user->hasPermission('bypass room reservation agreement')) {
+        $approval_required = FALSE;
+        $is_staff = TRUE;
+      }
+
+      $current_status = $this->get(self::STATUS_FIELD)->getString();
+      $current_path = \Drupal::service('path.current')->getPath();
+
+      // Room reservations automatically get approved if either:
+      // A) the room itself doesn't require staff approval of the reservations
+      // OR B) the staff member has permission to bypass.
+      // We DON'T want to do this, however, on the standard
+      // room reservation form for staff.
+      if ($current_path == '/room-reservation/add' && $is_staff == TRUE) {
+        // Do NOT auto-approve.
+      }
+      elseif (!$approval_required && $current_status == 'requested') {
+        $this->approve();
+      }
     }
   }
 

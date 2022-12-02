@@ -7,7 +7,7 @@ core_version_requirement: ^8 || ^9
 dependencies:
   - duration_field
 
-# Information added by Drupal.org packaging script on 2020-12-07
-version: '8.x-2.0'
+# Information added by Drupal.org packaging script on 2022-11-20
+version: '8.x-2.1'
 project: 'duration_field'
-datestamp: 1607303976
+datestamp: 1668979039

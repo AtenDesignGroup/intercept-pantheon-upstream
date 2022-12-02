@@ -30,6 +30,7 @@ final class FeaturedNodes extends EntityQueryResourceBase {
    */
   public function process(Request $request): ResourceResponse {
     $query = $this->getEntityQuery('node')
+      ->accessCheck(TRUE)
       ->condition('status', NodeInterface::PUBLISHED)
       ->condition('promote', NodeInterface::PROMOTED);
 

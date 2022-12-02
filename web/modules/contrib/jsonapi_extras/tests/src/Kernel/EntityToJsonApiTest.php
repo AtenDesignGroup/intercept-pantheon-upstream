@@ -38,7 +38,7 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'jsonapi',
     'jsonapi_extras',
     'field',
@@ -68,9 +68,49 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   private $node;
 
   /**
+   * A user instance for the test.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $user;
+
+  /**
+   * A user instance for the test.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $user2;
+
+  /**
+   * Taxonomy term.
+   *
+   * @var \Drupal\taxonomy\TermInterface
+   */
+  protected $term1;
+
+  /**
+   * Taxonomy term.
+   *
+   * @var \Drupal\taxonomy\TermInterface
+   */
+  protected $term2;
+
+  /**
+   * File entity.
+   *
+   * @var \Drupal\file\FileInterface
+   */
+  protected $file;
+
+  /**
+   * @var \Drupal\user\RoleInterface
+   */
+  protected $role;
+
+  /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // Add the entity schemas.
     $this->installEntitySchema('node');
@@ -221,7 +261,7 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
     $request_stack = $this->container->get('request_stack');
     $this->sut->serialize($this->node);
     $request = $request_stack->pop();
-    $this->assertNotEqual($request->getPathInfo(), '/jsonapi/node/' . $this->nodeType->id() . '/' . $this->node->uuid(), 'The request from jsonapi_extras.entity.to_jsonapi should not linger in the request stack.');
+    $this->assertNotEquals($request->getPathInfo(), '/jsonapi/node/' . $this->nodeType->id() . '/' . $this->node->uuid(), 'The request from jsonapi_extras.entity.to_jsonapi should not linger in the request stack.');
   }
 
   /**

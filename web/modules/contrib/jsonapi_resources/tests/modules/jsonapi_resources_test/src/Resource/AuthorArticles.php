@@ -39,6 +39,7 @@ class AuthorArticles extends EntityQueryResourceBase {
 
     $entity_type = $this->entityTypeManager->getDefinition('node');
     $entity_query = $this->getEntityQuery('node')
+      ->accessCheck(TRUE)
       ->condition($entity_type->getKey('bundle'), 'article')
       ->condition($entity_type->getKey('status'), NodeInterface::PUBLISHED)
       ->condition($entity_type->getKey('uid'), $user->id());

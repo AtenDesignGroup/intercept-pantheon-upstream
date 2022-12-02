@@ -80,8 +80,13 @@ final class OffsetLimitPaginator implements PaginatorInterface {
     // Ensure that different pages will be cached separately.
     $cacheable_metadata->addCacheContexts(['url.query_args:page']);
     // Derive any pagination options from the query params or use defaults.
+    $data = $this->request->query->all();
+    // We can't use directly ie $this->request->query->get('page')
+    // Because it returns an array and fetching arrays directly from InputBag
+    // is deprecated & removed with symfony 6.x.
+    // @see https://github.com/symfony/symfony/issues/44432
     $pagination = $this->request->query->has('page')
-      ? OffsetPage::createFromQueryParameter($this->request->query->get('page'))
+      ? OffsetPage::createFromQueryParameter($data['page'])
       : new OffsetPage(OffsetPage::DEFAULT_OFFSET, OffsetPage::SIZE_MAX);
     $query->range($pagination->getOffset(), $pagination->getSize() + 1);
     $metadata = new PaginatorMetadata();

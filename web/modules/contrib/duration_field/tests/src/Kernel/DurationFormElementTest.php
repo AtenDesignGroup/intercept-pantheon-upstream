@@ -32,7 +32,7 @@ class DurationFormElementTest extends KernelTestBase implements FormInterface {
   /**
    * Sets up the test.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installSchema('system', ['sequences', 'key_value_expire']);
     $this->installEntitySchema('user');
@@ -170,7 +170,7 @@ class DurationFormElementTest extends KernelTestBase implements FormInterface {
     ];
     $this->assertCount(count($expected_errors), $errors);
     foreach ($expected_errors as $field => $name) {
-      $this->assertEqual($errors[$field], t('%name is not a valid number.', ['%name' => $name]));
+      $this->assertEquals($errors[$field], t('%name is not a valid number.', ['%name' => $name]));
     }
   }
 

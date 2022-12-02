@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types = 1);
 
 namespace Drupal\Tests\jsonapi_resources\Unit\Routing;
 
@@ -7,6 +9,7 @@ use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\jsonapi_resources\Exception\RouteDefinitionException;
 use Drupal\jsonapi_resources\Unstable\Routing\ResourceRoutes;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -18,6 +21,8 @@ use Symfony\Component\Routing\RouteCollection;
  * @coversDefaultClass \Drupal\jsonapi_resources\Unstable\Routing\ResourceRoutes
  */
 final class ResourceRoutesTest extends UnitTestCase {
+
+  use ProphecyTrait;
 
   /**
    * Tests route decoration.
@@ -36,6 +41,8 @@ final class ResourceRoutesTest extends UnitTestCase {
 
     $resource_type_repository = $this->prophesize(ResourceTypeRepositoryInterface::class);
     $container = $this->prophesize(ContainerInterface::class);
+    $container->has($route_defaults["_jsonapi_resource"])->willReturn(TRUE);
+    $container->get($route_defaults["_jsonapi_resource"])->willReturn(new $route_defaults["_jsonapi_resource"]());
     $resource_routes = new ResourceRoutes($resource_type_repository->reveal(), ['basic_auth' => 'basic_auth'], '/custom-base-path', $container->reveal());
     $resource_routes->decorateJsonapiResourceRoutes($route_rebuild_event);
 
@@ -69,6 +76,8 @@ final class ResourceRoutesTest extends UnitTestCase {
 
     $resource_type_repository = $this->prophesize(ResourceTypeRepositoryInterface::class);
     $container = $this->prophesize(ContainerInterface::class);
+    $container->has($route_defaults["_jsonapi_resource"])->willReturn(TRUE);
+    $container->get($route_defaults["_jsonapi_resource"])->willReturn(new $route_defaults["_jsonapi_resource"]());
     $resource_routes = new ResourceRoutes($resource_type_repository->reveal(), ['basic_auth' => 'basic_auth'], '/custom-base-path', $container->reveal());
 
     $this->expectExceptionObject(new RouteDefinitionException("The jsonapi_resource_route route definition's path, `/missing-base-path`, must begin with `/%jsonapi%` so that the JSON:API base path can be substituted in its place."));

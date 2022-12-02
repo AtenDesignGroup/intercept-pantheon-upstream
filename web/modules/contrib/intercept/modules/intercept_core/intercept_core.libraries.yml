@@ -47,7 +47,7 @@ moment:
   js:
     https://cdn.jsdelivr.net/npm/moment@2.20.1/min/moment.min.js:
       external: true
-    https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.17/moment-timezone-with-data-2012-2022.min.js:
+    https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.38/moment-timezone-with-data-10-year-range.js:
       external: true
 
 materialIcons:

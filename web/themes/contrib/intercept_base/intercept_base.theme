@@ -280,6 +280,7 @@ function intercept_base_preprocess_form(&$variables) {
     case 'intercept-dashboard-dashboard-event-filters':
     case 'views-exposed-form-intercept-bulk-room-reservations-page':
     case 'views-exposed-form-intercept-certifications-page':
+    case 'views-exposed-form-intercept-customers-manage':
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
     case 'views-exposed-form-intercept-equipment-page':
@@ -499,53 +500,58 @@ function intercept_base_preprocess_user(array &$variables) {
 function intercept_base_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
   $row = $variables['row'];
-  if ($variables['field']->field == 'field_user') {
-    if ($view->id() == 'intercept_room_reservations' && $view->current_display == 'page') {
-      $uid = $variables['field']->getValue($row);
-      if ($uid) {
-        // Output depends on whether this is a guest registration.
-        $guestUserId = \Drupal::config('intercept_guest.settings')->get('guest_user');
-        switch ($uid == $guestUserId) {
-          case TRUE:
-            // Look up the guest entity and use its name, email address and
-            // telephone number.
-            $storage = \Drupal::entityTypeManager()->getStorage('room_reservation');
-            $reservation = $storage->load($row->id);
-            $guest_id = $reservation->get('field_guest')->getValue()[0]['target_id'];
-            $storage = \Drupal::entityTypeManager()->getStorage('intercept_guest');
-            $guest = $storage->load($guest_id);
-            $username = $guest->get('field_first_name')->value . ' ' . $guest->get('field_last_name')->value;
-            $email = $guest->get('field_email')->value;
-            $phone = $guest->get('field_phone')->value;
+  $field = $variables['field']->field;
+  if ($field == 'field_user' && $view->id() == 'intercept_room_reservations' && $view->current_display == 'page') {
+    $uid = $variables['field']->getValue($row);
+    if ($uid) {
+      // Output depends on whether this is a guest registration.
+      $guestUserId = \Drupal::config('intercept_guest.settings')->get('guest_user');
+      switch ($uid == $guestUserId) {
+        case TRUE:
+          // Look up the guest entity and use its name, email address and
+          // telephone number.
+          $storage = \Drupal::entityTypeManager()->getStorage('room_reservation');
+          $reservation = $storage->load($row->id);
+          $guest_id = $reservation->get('field_guest')->getValue()[0]['target_id'];
+          $storage = \Drupal::entityTypeManager()->getStorage('intercept_guest');
+          $guest = $storage->load($guest_id);
+          $username = $guest->get('field_first_name')->value . ' ' . $guest->get('field_last_name')->value;
+          $email = $guest->get('field_email')->value;
+          $phone = $guest->get('field_phone')->value;
 
-            // Assemble the output including name, email and phone.
-            $variables['output'] = t($username) . "\n" . $email . "\n" . $phone;
-            break;
+          // Assemble the output including name, email and phone.
+          $variables['output'] =  [
+            '#markup' => $username . '<br>' . $email . '<br>' . $phone
+          ];
+          break;
 
-          case FALSE:
-            $username = $variables['field']->advancedRender($row);
-            if ($username) {
-              $username = $username->__toString();
-            }
+        case FALSE:
+          $username = $variables['field']->advancedRender($row);
+          if ($username) {
+            $username = $username->__toString();
+          }
 
-            // Got the username & uid. Now, find the authdata.
-            $authdata = intercept_base_get_authdata($uid);
-            if ($authdata) {
+          // Got the username & uid. Now, find the authdata.
+          $authdata = intercept_base_get_authdata($uid);
+          if ($authdata) {
+            // Append the name and email address.
+            $variables['output'] =  [
+              '#markup' => $authdata->NameFirst . ' ' . $authdata->NameLast . '<br>' . $authdata->EmailAddress . '<br>' . $authdata->PhoneNumber . '<br>' . $authdata->Barcode
+            ];
+          }
+          else {
+            // It should be a staff member.
+            // Just show that user's email and name from Drupal.
+            $user = User::load($uid);
+            if ($user) {
+              $email = $user->getEmail();
+              $name = $user->getDisplayName();
               // Append the name and email address.
-              $variables['output'] = $authdata->NameFirst . ' ' . $authdata->NameLast . "\n" . $authdata->EmailAddress . "\n" . $authdata->PhoneNumber . "\n" . $authdata->Barcode;
+              $variables['output'] =  [
+                '#markup' => $name . '<br>' . $email
+              ];
             }
-            else {
-              // It should be a staff member.
-              // Just show that user's email and name from Drupal.
-              $user = User::load($uid);
-              if ($user) {
-                $email = $user->getEmail();
-                $name = $user->getDisplayName();
-                // Append the name and email address.
-                $variables['output'] = $name . "\n" . $email;
-              }
-            }
-        }
+          }
       }
     }
   }
@@ -600,7 +606,7 @@ function intercept_base_get_authdata($uid) {
  * Implements hook_preprocess_menu().
  */
 function intercept_base_preprocess_menu__account(&$variables) {
-  // Remove the Account Summary menu item if the user isn't a customer.
+  // Remove the Overview menu item if the user isn't a customer.
   $roles = \Drupal::currentUser()->getRoles();
   if (!in_array('intercept_registered_customer', $roles)) {
     unset($variables['items']['user.page']);

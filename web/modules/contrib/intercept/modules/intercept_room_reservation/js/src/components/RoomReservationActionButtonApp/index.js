@@ -74,6 +74,7 @@ class RoomReservationActionButtonApp extends React.Component {
       notes: '',
     };
     this.actionButton = this.actionButton.bind(this);
+    this.editButton = this.editButton.bind(this);
   }
 
   componentDidMount() {

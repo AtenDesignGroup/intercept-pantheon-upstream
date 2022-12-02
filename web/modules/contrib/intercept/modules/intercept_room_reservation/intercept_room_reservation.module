@@ -20,6 +20,7 @@ use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\intercept_core\EntityImageThumbnailUriField;
+use Drupal\intercept_room_reservation\Controller\RoomReservationController;
 use Drupal\intercept_room_reservation\Form\EventNodeFormHelper;
 use Drupal\node\NodeInterface;
 use Drupal\views\ViewExecutable;
@@ -232,6 +233,15 @@ function intercept_room_reservation_page_attachments(array &$page) {
   }
   else {
     $page['#attached']['drupalSettings']['userCertifications'] = 'all';
+  }
+  $current_path = \Drupal::service('path.current')->getPath();
+  if ($current_path == '/user/' . $current_user->id()) {
+    // Attach any necessary drupalSettings here.
+    $room_reservation_settings = \Drupal::config('intercept_room_reservation.settings');
+    $refreshments_text = $room_reservation_settings->get('refreshments_text');
+    $page['#attached']['drupalSettings']['intercept']['room_reservations'] = [
+      'refreshments_text' => strip_tags($refreshments_text['value']),
+    ];
   }
 }
 

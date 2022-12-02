@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta8] - 2022-12-02
+
+- Fixed issue in Intercept Profile with image uploads on rooms
+- Allow customers to opt in to text and email notifications during event registration
+- Added the ability to review customer feedback on the event data dashboard
+- Fixed unnecessary redirect when staff change room reservation status
+- Fixed disappearing options when clicking "EDIT" on customer reservation
+- Fixed room reservation calendar date selection error
+- Fixed issue with automatic room reservation approvals not working
+
 ## [8.x-1.0-beta7] - 2022-10-28
 
 - Added the ability to view staff comments on the event data dashboard

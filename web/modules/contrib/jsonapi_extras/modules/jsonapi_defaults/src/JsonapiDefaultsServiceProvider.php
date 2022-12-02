@@ -14,9 +14,9 @@ class JsonapiDefaultsServiceProvider extends ServiceProviderBase {
    * {@inheritdoc}
    */
   public function alter(ContainerBuilder $container) {
-    /** @var \Symfony\Component\DependencyInjection\Definition $definition */
 
     if ($container->hasDefinition('jsonapi.entity_resource')) {
+      /** @var \Symfony\Component\DependencyInjection\Definition $definition */
       $definition = $container->getDefinition('jsonapi.entity_resource');
       $definition->setClass('Drupal\jsonapi_defaults\Controller\EntityResource');
     }

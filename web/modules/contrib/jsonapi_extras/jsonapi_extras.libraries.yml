@@ -8,7 +8,7 @@ admin:
   dependencies:
     - core/jquery
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 expandable_rows_table:
   version: VERSION
@@ -20,4 +20,4 @@ expandable_rows_table:
   dependencies:
     - core/jquery
     - core/drupal
-    - core/jquery.once
+    - core/once

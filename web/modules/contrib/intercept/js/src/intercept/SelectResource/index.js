@@ -71,7 +71,6 @@ class SelectResource extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) =>
-  // console.log(select.getTermTree(ownProps.type)(state));
   ({
     options: select.recordOptions(ownProps.type)(state),
   })

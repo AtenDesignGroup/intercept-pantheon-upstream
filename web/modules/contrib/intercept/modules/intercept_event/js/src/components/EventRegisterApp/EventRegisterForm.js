@@ -340,7 +340,6 @@ class EventRegisterForm extends React.Component {
     const { uuid } = this.state;
     const total = this.getValuesTotal();
     let currentStatus = status;
-    let contact = null;
     const limitText = this.getLimitText();
     const statusText = this.getStatusText();
 
@@ -362,93 +361,72 @@ class EventRegisterForm extends React.Component {
       );
     }
 
-    // Contact Information display for customers
-    if (drupalSettings.intercept.user.telephone && drupalSettings.intercept.user.email) {
-      contact = (
-        <div className="l--section">
-          <h4 className="section-title section-title--secondary">Your Current Contact Information</h4>
-          <small>
-            Telephone: {drupalSettings.intercept.user.telephone}<br />
-            Email: {drupalSettings.intercept.user.email}<br />
-            <em>Need to update your info? After finishing your registration visit My Account &gt; Settings.</em>
-          </small>
-        </div>
-      );
-    }
-
     return (
-      <div className="l--section">
-        <div className="l--subsection">
-          <FormWrapper>
-            <Formsy
-              className="form__main"
-              ref={this.form}
-              onChange={this.validateForm}
-              onValidSubmit={this.onOpenDialog}
-              onValid={this.enableButton}
-              onInvalid={this.disableButton}
-              validationErrors={this.state.validationErrors}
-            >
-              {limitText && (
-                <p className="action-button__message action-button__message--left">{limitText}</p>
-              )}
-              {statusText && (
-                <p className="action-button__message action-button__message--left">{statusText}</p>
-              )}
-              <div className="l--subsection input-group--find-room">
-                {segments.map(s => (
-                  <InputIncrementer
-                    label={s.value}
-                    value={values[s.key] || 0}
-                    onChange={this.onValueChange(s.key)}
-                    key={s.key}
-                    name={s.key}
-                    min={0}
-                    int
-                    required={values.meeting}
-                    validations="isPositive"
-                    validationError="Attendees must be a positive number"
-                  />
-                ))}
-                <p>Total: {total}</p>
-              </div>
+      <FormWrapper>
+        <Formsy
+          className="form__main"
+          ref={this.form}
+          onChange={this.validateForm}
+          onValidSubmit={this.onOpenDialog}
+          onValid={this.enableButton}
+          onInvalid={this.disableButton}
+          validationErrors={this.state.validationErrors}
+        >
+          {limitText && (
+            <p className="action-button__message action-button__message--left">{limitText}</p>
+          )}
+          {statusText && (
+            <p className="action-button__message action-button__message--left">{statusText}</p>
+          )}
+          <div className="l--subsection input-group--find-room">
+            {segments.map(s => (
+              <InputIncrementer
+                label={s.value}
+                value={values[s.key] || 0}
+                onChange={this.onValueChange(s.key)}
+                key={s.key}
+                name={s.key}
+                min={0}
+                int
+                required={values.meeting}
+                validations="isPositive"
+                validationError="Attendees must be a positive number"
+              />
+            ))}
+            <p>Total: {total}</p>
+          </div>
 
-              <div className="form__actions">
-                <Button
-                  variant="contained"
-                  size="small"
-                  color="primary"
-                  type="submit"
-                  className="button button--primary"
-                  disabled={this.isDisabled(total)}
-                >
-                  {text[currentStatus].button}
-                </Button>
-              </div>
-            </Formsy>
-            <EventRegisterConfirmation
-              open={this.state.openDialog}
-              onCancel={this.onCloseDialog}
-              uuid={uuid}
-              eventId={eventId}
-              heading={text[currentStatus].dialogHeading}
-              total={total}
-              status={currentStatus}
-              onConfirm={() =>
-                this.saveEntitytoStore({
-                  user: user.uuid,
-                  event: eventId,
-                  status: currentStatus,
-                  registrants: this.getCurrentValues(),
-                })
-              }
-            />
-          </FormWrapper>
-        </div>
-        <div className="l--subsection">
-          {contact}
-        </div>
-      </div>
+          <div className="form__actions">
+            <Button
+              variant="contained"
+              size="small"
+              color="primary"
+              type="submit"
+              className="button button--primary"
+              disabled={this.isDisabled(total)}
+            >
+              {text[currentStatus].button}
+            </Button>
+          </div>
+        </Formsy>
+        <EventRegisterConfirmation
+          open={this.state.openDialog}
+          onCancel={this.onCloseDialog}
+          uuid={uuid}
+          eventId={eventId}
+          heading={text[currentStatus].dialogHeading}
+          total={total}
+          status={currentStatus}
+          onConfirm={() =>
+            this.saveEntitytoStore({
+              user: user.uuid,
+              event: eventId,
+              status: currentStatus,
+              registrants: this.getCurrentValues(),
+            })
+          }
+        />
+      </FormWrapper>
     );
   }
 }

@@ -29,7 +29,7 @@
   text-align: right;
 }
 
-.feeback__wrapper {
+.feedback__wrapper {
   display: flex;
 }
 
@@ -53,6 +53,13 @@
 .feedback--negative > .feedback__icon {
   margin-left: 1em;
   background-image: url(data:image/svg+xml,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M8.25.25A7.749%207.749%200%200%200%20.5%208a7.749%207.749%200%200%200%207.75%207.75A7.749%207.749%200%200%200%2016%208%207.749%207.749%200%200%200%208.25.25Zm2.5%205.25a.999.999%200%201%201%200%202%20.999.999%200%201%201%200-2Zm-5%200a.999.999%200%201%201%200%202%20.999.999%200%201%201%200-2Zm5.319%206.819A3.667%203.667%200%200%200%208.25%2011c-1.09%200-2.119.481-2.819%201.319-.422.51-1.19-.132-.769-.64a4.668%204.668%200%200%201%207.172.002c.425.507-.343%201.147-.765.638Z%22%20fill%3D%22%23707070%22%2F%3E%3C%2Fsvg%3E);
+}
+.intercept-event-customer-evaluations-table__table .feedback--negative .feedback__icon {
+  margin-left: 0;
+}
+
+.intercept-event-customer-evaluations-table__table td {
+  width: 25%;
 }
 
 #attendeesbytimesunday,

@@ -235,8 +235,8 @@ class RoomReservationCalendar extends React.Component {
           })}
           events={applySelectedEvent(events, selected)}
           resources={this.props.view === 'day' ? resources : undefined}
-          max={this.getDateFromTime(max && max !== '2400' && max !== '0000' ? max : '2359', date)}
-          min={this.getDateFromTime(min || '0000', date)}
+          max={this.getDateFromTime(max && max !== '2400' && max !== '0000' ? max : '2359', utils.normalizeStartOfDay(date).toDate())}
+          min={this.getDateFromTime(min || '0000', utils.normalizeStartOfDay(date).toDate())}
           onNavigate={this.props.onDateChange}
           onView={this.handleViewChange}
           onEventDrop={this.props.onChangeEvent}

@@ -31,6 +31,20 @@ class MessageSettingsHelper {
   }
 
   /**
+   * Updates the user setting for the user allows SMS notifications
+   * for events.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The User entity.
+   * @param bool $value
+   *   Whether the user allows SMS notifications for events.
+   *
+   */
+  public static function eventEmailUpdate(UserInterface $user, $value) {
+    \Drupal::service('user.data')->set('intercept_messages', $user->id(), 'email_event', $value);
+  }
+
+  /**
    * Whether the user allows SMS notifications for events.
    *
    * @param \Drupal\user\UserInterface $user
@@ -41,6 +55,20 @@ class MessageSettingsHelper {
    */
   public static function eventSmsEnabled(UserInterface $user) {
     return \Drupal::service('user.data')->get('intercept_messages_sms', $user->id(), 'sms_event') ?: FALSE;
+  }
+
+  /**
+   * Updates the user setting for the user allows SMS notifications
+   * for events.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The User entity.
+   * @param bool $value
+   *   Whether the user allows SMS notifications for events.
+   *
+   */
+  public static function eventSmsUpdate(UserInterface $user, $value) {
+    \Drupal::service('user.data')->set('intercept_messages_sms', $user->id(), 'sms_event', $value);
   }
 
   /**

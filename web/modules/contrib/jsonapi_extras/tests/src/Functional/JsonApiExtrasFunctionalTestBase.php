@@ -18,7 +18,7 @@ abstract class JsonApiExtrasFunctionalTestBase extends JsonApiFunctionalTestBase
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // Add vocabs field to the tags.
     $this->createEntityReferenceField(
@@ -60,7 +60,6 @@ abstract class JsonApiExtrasFunctionalTestBase extends JsonApiFunctionalTestBase
     $config->set('path_prefix', 'api');
     $config->set('include_count', TRUE);
     $config->save(TRUE);
-    $this->grantPermissions(Role::load(Role::ANONYMOUS_ID), ['access jsonapi resource list']);
     static::overrideResources();
     $this->resetAll();
     $role = $this->user->get('roles')[0]->entity;

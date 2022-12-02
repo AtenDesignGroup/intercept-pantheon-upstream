@@ -114,6 +114,7 @@ class TimeZoneAgnosticBigCalendar extends Component {
       slotPropGetter,
       timeZoneName,
       ...props } = this.props;
+
     const bigCalendarProps = {
       ...props,
       startAccessor: this.startAccessor,
@@ -125,7 +126,7 @@ class TimeZoneAgnosticBigCalendar extends Component {
       onNavigate:
         onNavigate &&
         ((dateTime) => {
-          onNavigate(convertDateToDateTime(dateTime, timeZoneName));
+          onNavigate(dateTime);
         }),
       onSelectSlot:
         onSelectSlot &&

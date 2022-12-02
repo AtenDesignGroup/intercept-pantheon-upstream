@@ -18,6 +18,7 @@ use Drupal\intercept_event\EventEvaluationManager;
 use Drupal\intercept_event\SuggestedEventsProvider;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -511,7 +512,168 @@ class EventsController extends ControllerBase {
       '#rows' => $rows,
       '#attributes' => [
         'class' => [
-          'intercept-event-evaluations-table__table',
+          'intercept-event-staff-evaluations-table__table',
+        ],
+      ]
+    ];
+
+    return $build;
+  }
+
+  /**
+   * Node customer evaluations task callback.
+   */
+  public function customerEvaluations(NodeInterface $node) {
+    return $this->customerEvaluationBuildTable($node);
+  }
+
+  /**
+   * All customer evaluations task callback. Builds multiple tables in a modal.
+   */
+  public function customerEvaluationsAll() {
+    // Get specific node ids.
+    $query_params = \Drupal::request()->query->all();
+    $nids = explode(',', $query_params['nids']);
+    if (empty($nids)) {
+      return;
+    }
+    $nodes = Node::loadMultiple($nids);
+    $tables = [];
+
+    foreach($nodes as $node) {
+      $tables[] = $this->customerEvaluationBuildTable($node);
+    }
+    return $tables;
+  }
+
+  /**
+   * Builds a table (row and header) for a given node object.
+   */
+  private function customerEvaluationBuildTable(NodeInterface $node) {
+
+    // Build rows first. We need to get a count to include in the header markup.
+    $rows = [];
+
+    // Positive/negative taxonomy terms
+    // Get the primary event type for this event (term).
+    // should be Lifeskills (194)
+    $event_type_primary = $node->get('field_event_type_primary')->target_id;
+    // Get the positive/negative terms that are associated that term.
+    $term = Term::load($event_type_primary);
+
+    // Get the term names and ids for display.
+    $positives = $negatives = [];
+    $positive_terms = $term->get('field_evaluation_criteria_pos')->referencedEntities();
+    foreach($positive_terms as $positive) {
+      $positives[] = [
+        'id' => $positive->id(),
+        'name' => $positive->getName(),
+        'count' => 0
+      ];
+    }
+    $negative_terms = $term->get('field_evaluation_criteria_neg')->referencedEntities();
+    foreach($negative_terms as $negative) {
+      $negatives[] = [
+        'id' => $negative->id(),
+        'name' => $negative->getName(),
+        'count' => 0
+      ];
+    }
+
+    // Sums
+    $percentage_positive = 0;
+    $percentage_negative = 0;
+    $query = $this->connection->select('votingapi_vote', 'v');
+    $query->condition('type', 'evaluation');
+    $query->condition('entity_id', $node->id());
+    $query->addExpression('SUM(value=1) / COUNT(value) * 100', 'percent_positive_customer_evaluations');
+    $query->addExpression('SUM(value=0) / COUNT(value) * 100', 'percent_negative_customer_evaluations');
+    $result = $query->execute()->fetchAll();
+    if (count($result) > 0) {
+      foreach ($result as $value) {
+        $percentage_positive = $value->percent_positive_customer_evaluations;$percentage_negative = $value->percent_negative_customer_evaluations;
+      }
+    }
+    $rows[] = [
+      [
+        'data' => new FormattableMarkup('<div   class="feedback__wrapper">
+          <span class="feedback feedback--positive"><span class="feedback__icon"></span> <b>@positive% Positive</b></span>
+          </div>', [
+            '@positive' => number_format($percentage_positive, 0),
+          ]
+        ),
+        'colspan' => 2
+      ],
+      [
+        'data' => new FormattableMarkup('<div   class="feedback__wrapper">
+          <span class="feedback feedback--negative"><span class="feedback__icon"></span> <b>@negative% Negative</b></span>
+          </div>', [
+            '@negative' => number_format  ($percentage_negative, 0),
+          ]
+        ),
+        'colspan' => 2
+      ]
+    ];
+
+    // Individual evaluations
+    $query = $this->connection->select('votingapi_vote', 'v');
+    $query->condition('type', 'evaluation');
+    $query->fields('v', [
+      'vote_criteria',
+      'value'
+    ]);
+    $query->condition('entity_id', $node->id());
+    $result = $query->execute()->fetchAll();
+    if (count($result) > 0) {
+      foreach ($result as $value) {
+        $vote_criteria = unserialize($value->vote_criteria);
+        foreach ($vote_criteria['taxonomy_term'] as $taxonomy_term) {
+          // Loop through the responses and each time a term pops up add to the total for that term.
+          foreach($positives as $key => $positive) {
+            if ($taxonomy_term == $positive['id']) {
+              $positives[$key]['count']++;
+            }
+          }
+          foreach($negatives as $key => $negative) {
+            if ($taxonomy_term == $negative['id']) {
+              $negatives[$key]['count']++;
+            }
+          }
+        }
+      }
+    }
+
+    // Print each one with a total.
+    foreach($positives as $index => $positive) {
+      $rows[] = [
+        ['data' => $positive['name']],
+        ['data' => new FormattableMarkup('<b>@id</b>', [
+          '@id' => $positive['count']
+        ])],
+        ['data' => $negatives[$index]['name']],
+        ['data' => new FormattableMarkup('<b>@id</b>', [
+          '@id' => $negatives[$index]['count']
+        ])],
+      ];
+    }
+
+    // Now we'll build the header since we have a count.
+    $dateTime = new DrupalDateTime($node->get('field_date_time')->value, 'UTC');
+    $event_date = date('n/j/y', $dateTime->getTimestamp());
+    $header = [
+      ['data' => $node->getTitle(), 'colspan' => 3],
+      ['data' => new FormattableMarkup('@event_date', [
+        '@event_date' => $event_date
+        ])]
+    ];
+
+    $build = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#attributes' => [
+        'class' => [
+          'intercept-event-customer-evaluations-table__table',
         ],
       ]
     ];

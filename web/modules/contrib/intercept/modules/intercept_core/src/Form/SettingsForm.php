@@ -60,7 +60,7 @@ class SettingsForm extends ConfigFormBase {
 
     $form['enable_dashboard_redirect'] = [
       '#title' => $this->t('Enable dashboard redirect'),
-      '#description' => $this->t('By enabling this redirect, in most cases customers will be redirected to their Intercept Account Summary page at login.'),
+      '#description' => $this->t('By enabling this redirect, in most cases customers will be redirected to their My Account Overview page at login.'),
       '#type' => 'checkbox',
       '#default_value' => $config->get('enable_dashboard_redirect'),
     ];

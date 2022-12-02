@@ -164,7 +164,6 @@ class EventCalendar extends React.Component {
   }
 
   onShowMore(events, date) {
-    console.log({ events, date });
     this.setState({
       showMore: true,
       showMoreEvents: events,

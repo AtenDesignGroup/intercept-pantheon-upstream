@@ -608,8 +608,8 @@ class ReserveRoomEditForm extends PureComponent {
                   name="meetingDetails"
                   required={showMeetingPurposeExplanation}
                 />
-                {contact}
               </div>
+              {contact}
             </div>
             <div className="l__secondary">
               <div className="l--subsection">

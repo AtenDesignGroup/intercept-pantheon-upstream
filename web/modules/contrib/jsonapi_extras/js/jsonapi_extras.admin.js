@@ -12,7 +12,7 @@
    */
   Drupal.behaviors.resourcesTableFilterByText = {
     attach: function (context, settings) {
-      var $input = $('input.jsonapi-resources-filter-text', context).once('jsonapi-resources-filter-text');
+      var $input = $(once('jsonapi-resources-filter-text', 'input.jsonapi-resources-filter-text', context));
       var $table = $($input.attr('data-table'));
       var $rows;
 

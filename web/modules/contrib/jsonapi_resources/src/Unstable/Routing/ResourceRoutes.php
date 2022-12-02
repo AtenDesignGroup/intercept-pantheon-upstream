@@ -68,7 +68,7 @@ final class ResourceRoutes implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     // Run before route_http_method_subscriber, so that we can ensure JSON:API
     // Resource routes default to only GET methods if not set.
     $events[RoutingEvents::ALTER][] = ['decorateJsonapiResourceRoutes', 6000];

@@ -164,9 +164,15 @@ function consumers_update_8108() {
  * Set uuid as client_id for existing consumers.
  */
 function consumers_update_8109() {
-  $consumers = \Drupal::entityTypeManager()->getStorage('consumer')->loadMultiple();
-  foreach ($consumers as $consumer) {
-    $consumer->set('client_id', $consumer->uuid());
-    $consumer->save();
+  $database = \Drupal::database();
+  $query = $database->select('consumer', 'c')
+    ->fields('c', ['id', 'uuid']);
+  $results = $query->execute()->fetchAllKeyed();
+
+  foreach ($results as $consumer_id => $consumer_uuid) {
+    $database->update('consumer_field_data')
+      ->fields(['client_id' => $consumer_uuid])
+      ->condition('id', $consumer_id)
+      ->execute();
   }
 }

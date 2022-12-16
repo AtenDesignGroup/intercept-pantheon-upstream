@@ -179,7 +179,7 @@ class ReservationStatusChangeForm extends ContentEntityForm {
 
     // @todo: Find a more reliable way to get the current value of the entity
     // since this build may run before the entity is saved.
-    $current_value = $form_state->getUserInput()['status']
+    $current_value = isset($form_state->getUserInput()['status'])
       ? $form_state->getUserInput()['status']
       : $entity->get('field_status')->value;
 

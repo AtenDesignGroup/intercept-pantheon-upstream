@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta9] - 2022-12-16
+
+- Ensured uneditable room reservation detail displays after saving
+- Fixed misaligned fields on room reservation calendar view
+- Made event email notifications style-able
+- 3326093: Fixed issue with mobile logo in Intercept Base theme
+- Added Drupal 9.4.9 update
+
 ## [8.x-1.0-beta8] - 2022-12-02
 
 - Fixed issue in Intercept Profile with image uploads on rooms

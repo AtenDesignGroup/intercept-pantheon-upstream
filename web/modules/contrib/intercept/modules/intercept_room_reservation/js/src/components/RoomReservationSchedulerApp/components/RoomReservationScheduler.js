@@ -24,11 +24,11 @@ const ADD_ROOM_RESERVATION = 'intercept:addRoomReservation';
 const EDIT_ROOM_RESERVATION = 'intercept:editRoomReservation';
 const VIEW_ROOM_RESERVATION = 'intercept:viewRoomReservation';
 const SAVE_ROOM_RESERVATION = 'intercept:saveRoomReservation';
-const SAVE_ROOM_RESERVATION_SUCCESS = 'intercept:saveRoomReservationSuccess';
 const SAVE_ROOM_RESERVATION_ERROR = 'intercept:saveRoomReservationError';
 const CHANGE_ROOM_RESERVATION = 'intercept:changeRoomReservation';
 const CLOSE_ROOM_RESERVATION = 'intercept:closeRoomReservation';
 const REFRESH_ROOM_RESERVATION = 'intercept:updateRoomReservation';
+var saveRoomReservationSuccess = 'intercept:saveRoomReservationSuccess';
 
 const getResourceGroupFromLocation = (location, getHours) => ({
   id: location.data.id,
@@ -354,7 +354,7 @@ const RoomReservationScheduler = ({
   };
 
   useEventListener(
-    SAVE_ROOM_RESERVATION_SUCCESS,
+    saveRoomReservationSuccess,
     () => {
       doFetchBlockedTime();
       // If we were creating a new reservation deselect the temp event.

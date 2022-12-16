@@ -204,7 +204,6 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     // Add information about whether the customer is barred or not.
     $build['#attached']['drupalSettings']['intercept']['user']['barred'] = $this->evaluateCustomerBarred();
     $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationScheduler';
-    $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationMediator';
     $build['#content'] = [
       'intercept_room_reservation_scheduler' => [
         '#markup' => '<div id="roomReservationSchedulerRoot" data-jsonapi-views-view="' . $views_id . '" data-jsonapi-views-display="' . $display_id . '"></div>',
@@ -274,7 +273,6 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     ];
 
     $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationScheduler';
-    $build['#attached']['library'][] = 'intercept_room_reservation/roomReservationMediator';
     $build['#content'] = [
       'intercept_room_reservation_scheduler' => [
         '#markup' => '<div id="roomReservationSchedulerRoot"></div>',

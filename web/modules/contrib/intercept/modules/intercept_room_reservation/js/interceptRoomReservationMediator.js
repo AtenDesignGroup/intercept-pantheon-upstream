@@ -51,12 +51,12 @@ const ADD_ROOM_RESERVATION = 'intercept:addRoomReservation';
 const EDIT_ROOM_RESERVATION = 'intercept:editRoomReservation';
 const VIEW_ROOM_RESERVATION = 'intercept:viewRoomReservation';
 const SAVE_ROOM_RESERVATION = 'intercept:saveRoomReservation';
-const SAVE_ROOM_RESERVATION_SUCCESS = 'intercept:saveRoomReservationSuccess';
 const SAVE_ROOM_RESERVATION_ERROR = 'intercept:saveRoomReservationError';
 const CHANGE_ROOM_RESERVATION = 'intercept:changeRoomReservation';
 const REFRESH_ROOM_RESERVATION = 'intercept:updateRoomReservation';
 const CLOSE_ROOM_RESERVATION = 'intercept:closeRoomReservation';
 const VIEW_ROOM_DETAILS = 'intercept:viewRoomDetails';
+var saveRoomReservationSuccess = 'intercept:saveRoomReservationSuccess';
 
 /**
  * Actions
@@ -172,7 +172,7 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
           [VIEW_ROOM_RESERVATION]: this.onViewRoomReservation,
           [EDIT_ROOM_RESERVATION]: this.onEditRoomReservation,
           [CHANGE_ROOM_RESERVATION]: this.onChangeRoomReservation,
-          [SAVE_ROOM_RESERVATION_SUCCESS]: this.onSaveRoomReservationSuccess,
+          [saveRoomReservationSuccess]: this.onSaveRoomReservationSuccess,
           'dialog:afterclose': this.onCloseDialog,
         });
       $('#view-room-details').on('click', function(e) {

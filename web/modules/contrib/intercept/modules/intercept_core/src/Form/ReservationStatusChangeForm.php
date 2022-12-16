@@ -7,8 +7,9 @@ use Drupal\Core\Ajax\AjaxHelperTrait;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
@@ -19,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * A form to update the status of a reservation.
  */
-class ReservationStatusChangeForm extends FormBase {
+class ReservationStatusChangeForm extends ContentEntityForm {
 
   use AjaxHelperTrait;
 
@@ -29,11 +30,11 @@ class ReservationStatusChangeForm extends FormBase {
   protected $currentUser;
 
   /**
-   * The status field name.
+   * The entity type manager.
    *
-   * @var string
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $fieldName = 'field_status';
+  protected $entityTypeManager;
 
   /**
    * The options array.
@@ -45,8 +46,9 @@ class ReservationStatusChangeForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(AccountProxyInterface $currentUser) {
+  public function __construct(AccountProxyInterface $currentUser, EntityTypeManagerInterface $entity_manager) {
     $this->currentUser = $currentUser;
+    $this->entityTypeManager = $entity_manager;
   }
 
   /**
@@ -56,7 +58,8 @@ class ReservationStatusChangeForm extends FormBase {
     // Instantiates this form class.
     return new static(
       // Load the service required to construct this class.
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('entity_type.manager'),
     );
   }
 
@@ -119,10 +122,42 @@ class ReservationStatusChangeForm extends FormBase {
       throw new \RuntimeException('No entity provided to ReservationStatusChangeForm.');
     }
     $form_id = $this->getBaseFormId();
-    $form_id .= '_' . $entity->getEntityTypeId() . '_' . $this->fieldName;
+    $form_id .= '_' . $entity->getEntityTypeId() . '_field_status';
     $form_id .= '_' . $entity->id();
 
     return $form_id;
+  }
+
+  /**
+   * Gets the form submit url.
+   *
+   * @return URL
+   */
+  private function getActionUrl() {
+    return Url::fromRoute('intercept_room_reservation.reservation.change_status', [
+      'room_reservation' => $this->entity->id(),
+    ]);
+  }
+
+  /**
+   * Determines if the current user can change statuses.
+   *
+   * @return URL
+   */
+  private function userCanChangeStatus() {
+    $entity = $this->entity;
+    $operations = ['approve', 'deny', 'archive'];
+    $canChangeStatus = FALSE;
+    $accessControlHandler = $this->entityTypeManager->getAccessControlHandler($entity->getEntityTypeId());
+    $user = $this->currentUser->getAccount();
+
+    foreach ($operations as $operation) {
+      if ($accessControlHandler->access($entity, $operation, $user)) {
+        $canChangeStatus = TRUE;
+      }
+    }
+
+    return $canChangeStatus;
   }
 
   /**
@@ -131,17 +166,37 @@ class ReservationStatusChangeForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\intercept_core\Entity\ReservationInterface $entity */
     $entity = $this->entity;
-    $options = $this->options;
-    $current_value = $entity->get($this->fieldName)->value;
+    $userCanChangeStatus = $this->userCanChangeStatus();
+
+    $statusFieldStorage = $entity->field_status->getFieldDefinition()->getFieldStorageDefinition();
+    $property_names = $statusFieldStorage->getPropertyNames();
+    $options = $entity->field_status->getFieldDefinition()
+      ->getFieldStorageDefinition()
+      ->getOptionsProvider($property_names[0], $entity)
+      ->getSettableOptions($this->currentUser);
+
+    $this->setOptions($options);
+
+    // @todo: Find a more reliable way to get the current value of the entity
+    // since this build may run before the entity is saved.
+    $current_value = $form_state->getUserInput()['status']
+      ? $form_state->getUserInput()['status']
+      : $entity->get('field_status')->value;
 
     $form['current_status'] = [
-      '#markup' => $options[$current_value],
+      '#theme' => 'intercept_reservation_status',
+      '#status' => $this->options[$current_value],
+      '#prefix' => '<h4>' . t('Status:') . ' ',
+      '#suffix' => '</h4>',
     ];
+
     $form['status'] = [
       '#type' => 'radios',
       '#default_value' => $current_value,
       '#options' => $this->options,
+      '#access' => $userCanChangeStatus
     ];
+
     // Just show the updated "view" (status change) form.
     $form['#attached'] = [
       'library' => [
@@ -157,6 +212,8 @@ class ReservationStatusChangeForm extends FormBase {
       // @todo Remove when https://www.drupal.org/node/2897377 lands.
       $form['#id'] = Html::getId($form_state->getBuildInfo()['form_id']);
     }
+    // Ensure the form action remains consistent.
+    $form['#action'] = $this->getActionUrl()->toString();
     return $form;
   }
 
@@ -178,14 +235,15 @@ class ReservationStatusChangeForm extends FormBase {
    *   many entity types.
    */
   protected function actions(array $form, FormStateInterface $form_state) {
-    // @todo Consider renaming the action key from submit to save. The impacts
-    //   are hard to predict. For example, see
-    //   \Drupal\language\Element\LanguageConfiguration::processLanguageConfiguration().
     $actions['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Save'),
-      // '#submit' => ['::submitForm'],
-      '#ajax' => ['callback' => '::ajaxSubmit'],
+      '#submit' => ['::submitForm'],
+      '#access' => $this->userCanChangeStatus(),
+      '#ajax' => [
+        'callback' => '::ajaxSubmit',
+        'url' => $this->getActionUrl(),
+      ],
     ];
 
     if (!$this->entity->isNew() && $this->entity->hasLinkTemplate('delete-form')) {
@@ -196,38 +254,40 @@ class ReservationStatusChangeForm extends FormBase {
           'room_reservation' => $this->entity->id(),
           'destination' => Url::fromRoute('<current>')->toString(),
         ]);
+
+        $actions['copy'] = [
+          '#type' => 'link',
+          '#title' => $this->t('Copy'),
+          '#weight' => 10,
+          '#access' => $this->entity->access('copy'),
+          '#attributes' => [
+            'class' => ['button', 'use-ajax'],
+            'data-dialog-type' => 'dialog',
+            'data-dialog-options' => '{"width": "400"}',
+            'data-dialog-renderer' => 'off_canvas',
+          ],
+        ];
+        $actions['copy']['#url'] = $copyLink->toRenderable()['#url'];
       }
 
-      $actions['copy'] = [
-        '#type' => 'link',
-        '#title' => $this->t('Copy'),
-        '#weight' => 10,
-        '#access' => $this->entity->access('copy'),
-        '#attributes' => [
-          'class' => ['button', 'use-ajax'],
-          'data-dialog-type' => 'dialog',
-          'data-dialog-options' => '{"width": "400"}',
-          'data-dialog-renderer' => 'off_canvas',
-        ],
-      ];
-      $actions['copy']['#url'] = $copyLink->toRenderable()['#url'];
-
-      // Add a delete button.
-      $route_info = $this->entity->toUrl('delete-form');
-      if ($this->getRequest()->query->has('destination')) {
-        $query = $route_info->getOption('query');
-        $query['destination'] = $this->getRequest()->query->get('destination');
-        $route_info->setOption('query', $query);
+      if ($user->hasPermission('delete room reservation entities')) {
+        // Add a delete button.
+        $route_info = $this->entity->toUrl('delete-form');
+        if ($this->getRequest()->query->has('destination')) {
+          $query = $route_info->getOption('query');
+          $query['destination'] = $this->getRequest()->query->get('destination');
+          $route_info->setOption('query', $query);
+        }
+        $actions['delete'] = [
+          '#type' => 'link',
+          '#title' => $this->t('Delete'),
+          '#access' => $this->entity->access('delete'),
+          '#attributes' => [
+            'class' => ['button'],
+          ],
+        ];
+        $actions['delete']['#url'] = $route_info;
       }
-      $actions['delete'] = [
-        '#type' => 'link',
-        '#title' => $this->t('Delete'),
-        '#access' => $this->entity->access('delete'),
-        '#attributes' => [
-          'class' => ['button'],
-        ],
-      ];
-      $actions['delete']['#url'] = $route_info;
     }
 
     return $actions;
@@ -309,19 +369,13 @@ class ReservationStatusChangeForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    if ($this->isAjax()) {
-      $form_state->disableRedirect();
-    }
     /** @var \Drupal\intercept_core\Entity\ReservationInterface $entity */
     $entity = $this->entity;
-    $entity->set($this->fieldName, $form_state->getValue('status'));
+    $entity->set('field_status', $form_state->getValue('status'));
     $entity->save();
 
     if ($this->isAjax()) {
-      $this->setEntity($entity);
-      $response = new AjaxResponse();
-      $response->addCommand(new ReplaceCommand('[data-drupal-selector="' . $form['#attributes']['data-drupal-selector'] . '"]', $form));
-      return $response;
+      return $this->ajaxSubmit($form, $form_state);
     }
   }
 
@@ -330,16 +384,54 @@ class ReservationStatusChangeForm extends FormBase {
    *
    * Repeats the ajaxSubmit function code from core, but adds messages wrapper.
    */
-  public function ajaxSubmit(array &$form, FormStateInterface $form_state) {
+  public function ajaxSubmit(array &$form, FormStateInterface &$form_state) {
+    $form_state->disableRedirect();
     $entity = $this->entity;
 
-    $response = new AjaxResponse();
-    // Trigger the Save success event.
-    $command = new InvokeCommand('html', 'trigger', [
-      'intercept:saveRoomReservationSuccess',
-      ['id' => $entity->id()]
-    ]);
-    $response->addCommand($command);
+    // @todo: Find a more reliable way to get the current value of the entity
+    // since this build may run before the entity is saved.
+    $current_value = $form_state->getUserInput()['status']
+      ? $form_state->getUserInput()['status']
+      : $entity->get($this->fieldName)->value;
+
+    if ($form_state->hasAnyErrors()) {
+      $form['status_messages'] = [
+        '#type' => 'status_messages',
+        '#weight' => -1000,
+      ];
+      $form['#sorted'] = FALSE;
+      $response = new AjaxResponse();
+      $response->addCommand(new ReplaceCommand('[data-drupal-selector="' . $form['#attributes']['data-drupal-selector'] . '"]', $form));
+      // Wrap all messages in a container div in order to help with making
+      // them sticky.
+      $selector = '.messages';
+      $response->addCommand(new InvokeCommand($selector, 'wrapAll', ["<div class='messages--wrapper'></div>"]));
+    }
+    else {
+      $response = $this->successfulAjaxSubmit($form, $form_state);
+    }
+    $form_state->setResponse($response);
     return $response;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function successfulAjaxSubmit(array &$form, FormStateInterface &$form_state) {
+    $response = new AjaxResponse();
+    $form['status_messages'] = [
+      '#type' => 'status_messages',
+      '#weight' => -1000,
+    ];
+    $form['#sorted'] = FALSE;
+    // Replace the form with an updated version.
+    $response->addCommand(new ReplaceCommand('[data-drupal-selector="' . $form['#attributes']['data-drupal-selector'] . '"]', $form));
+    // Trigger the Save success event.
+    $response->addCommand(new InvokeCommand('html', 'trigger', [
+      'intercept:saveRoomReservationSuccess',
+      ['id' => $this->entity->id()]
+    ]));
+    return $response;
+  }
+
 }

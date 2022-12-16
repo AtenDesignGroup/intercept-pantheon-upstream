@@ -338,5 +338,22 @@ function intercept_messages_mail($key, &$message, $params) {
   $message['headers']['Content-Type'] = 'text/html';
   $message['from'] = \Drupal::config('system.site')->get('mail');
   $message['subject'] = $token_service->replace($context['subject'], $context['tokens']);
-  $message['body'][] = $token_service->replace($context['body'], $context['tokens']);
+  $body = $token_service->replace($context['body'], $context['tokens']);
+  // Use the theme/Twig template for the body of the message.
+  $renderable = [
+    '#theme' => 'intercept_messages_email',
+    '#message' => $body,
+  ];
+  $message['body'][] = \Drupal::service('renderer')->renderPlain($renderable);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function intercept_messages_theme($existing, $type, $theme, $path) {
+  return [
+    'intercept_messages_email' => [
+      'variables' => ['message' => ''],
+    ],
+  ];
 }

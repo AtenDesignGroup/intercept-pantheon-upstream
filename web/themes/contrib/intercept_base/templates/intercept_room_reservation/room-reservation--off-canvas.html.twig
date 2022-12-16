@@ -1,6 +1,11 @@
 <article{{ attributes.addclass(['room-reservation']) }}>
   <div class="l--1-col l--offset l--padded">
     <div class="l__primary">
+      {% if content.messages %}
+        <div class="l--subsection">
+          {{ content.messages }}
+        </div>
+      {% endif %}
       <div class="l--subsection">
         {{ content.field_status }}
       </div>
@@ -13,7 +18,7 @@
               {{ edit_link }}
             </div>
           {% endif %}
-          {{ content|without('field_status', 'field_user', 'field_guest') }}
+          {{ content|without('field_status', 'field_user', 'field_guest', 'messages') }}
         </div>
       {% endif %}
 

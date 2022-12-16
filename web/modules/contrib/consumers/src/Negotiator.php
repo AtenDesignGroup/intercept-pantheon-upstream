@@ -40,6 +40,13 @@ class Negotiator {
   protected $storage;
 
   /**
+   * The default consumer.
+   *
+   * @var \Drupal\consumers\Entity\ConsumerInterface
+   */
+  protected $defaultConsumer;
+
+  /**
    * Instantiates a new Negotiator object.
    */
   public function __construct(RequestStack $request_stack, EntityRepositoryInterface $entity_repository) {
@@ -114,6 +121,10 @@ class Negotiator {
    * @throws \Drupal\consumers\MissingConsumer
    */
   protected function loadDefaultConsumer() {
+    if (!empty($this->defaultConsumer)) {
+      return $this->defaultConsumer;
+    }
+
     // Find the default consumer.
     $results = $this->storage->getQuery()
       ->accessCheck(TRUE)
@@ -124,9 +135,9 @@ class Negotiator {
       // Throw if there is no default consumer..
       throw new MissingConsumer('Unable to find the default consumer.');
     }
-    /** @var \Drupal\consumers\Entity\ConsumerInterface $consumer */
-    $consumer = $this->storage->load($consumer_id);
-    return $consumer;
+    $this->defaultConsumer = $this->storage->load($consumer_id);
+
+    return $this->defaultConsumer;
   }
 
   /**

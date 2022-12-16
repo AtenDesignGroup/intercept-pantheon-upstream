@@ -7,9 +7,10 @@ use Drupal\consumers\Entity\Consumer;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Image\ImageFactory;
-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
+use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
@@ -41,6 +42,13 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
   private $imageFactory;
 
   /**
+   * The file URL generator.
+   *
+   * @var \Drupal\Core\File\FileUrlGeneratorInterface
+   */
+  protected $fileUrlGenerator;
+
+  /**
    * Stream Wrapper Manager.
    *
    * @var \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface
@@ -54,21 +62,26 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
    *   Entity type manager.
    * @param \Drupal\Core\Image\ImageFactory $image_factory
    *   Image factory.
+   * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
+   *   The file URL generator.
    * @param \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $stream_wrapper_manager
    *   Stream wrapper manager.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     ImageFactory $image_factory,
+    FileUrlGeneratorInterface $file_url_generator,
     ?StreamWrapperManagerInterface $stream_wrapper_manager = NULL
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->imageFactory = $image_factory;
+    $this->fileUrlGenerator = $file_url_generator;
     if (!$stream_wrapper_manager) {
       @trigger_error(sprintf('Invoking %s without $stream_wrapper_manager is deprecated in 4.0.6 and unsupported in 5.0. See https://www.drupal.org/project/consumer_image_styles/issues/3252023', __FUNCTION__), E_USER_DEPRECATED);
       $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
     }
     $this->streamWrapperManager = $stream_wrapper_manager;
+
   }
 
   /**
@@ -103,7 +116,7 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
     }
     $cacheable_metadata->addCacheableDependency($image_style);
     $info = [
-      'href' => file_create_url($image_style->buildUrl($uri)),
+      'href' => $this->fileUrlGenerator->generateAbsoluteString($image_style->buildUrl($uri)),
       'title' => $this->t('Image Style: @name', ['@name' => $image_style->label()]),
       'meta' => ['rel' => static::DERIVATIVE_LINK_REL],
       // This is json:api 1.1 compatible.
@@ -122,6 +135,7 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
     $image_style->transformDimensions($dimensions, $uri);
     $info['meta'] += $dimensions;
     $info['type'] = $image->getMimeType();
+
     return $info;
   }
 

@@ -348,9 +348,6 @@ function intercept_base_preprocess_links__buttons(&$variables) {
 function intercept_base_form_alter(array &$form, FormStateInterface $form_state) {
   // Alter reservation status change forms.
   if (strpos($form['#id'], 'reservation-status-change-form') !== FALSE) {
-    $form['current_status']['#prefix'] = '<h2>' . t('Status') . ' ';
-    $form['current_status']['#suffix'] = '</h2>';
-
     foreach ($form['actions'] as $key => $value) {
       if (strpos($key, '#') === FALSE) {
         $form['actions'][$key]['#attributes']['class'][] = 'button--outline';

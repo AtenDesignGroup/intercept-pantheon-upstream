@@ -2,13 +2,14 @@
 
 namespace Drupal\consumer_image_styles\Normalizer;
 
-use Drupal\consumer_image_styles\ImageStylesProvider;
-use Drupal\consumer_image_styles\ImageStylesProviderInterface;
 use Drupal\consumers\Entity\Consumer;
 use Drupal\consumers\MissingConsumer;
 use Drupal\consumers\Negotiator;
-use Drupal\Core\Image\ImageFactory;
+use Drupal\consumer_image_styles\ImageStylesProviderInterface;
+use Drupal\consumer_image_styles\ImageStylesProvider;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\Core\Image\ImageFactory;
 use Drupal\Core\Url;
 use Drupal\image\ImageStyleInterface;
 use Drupal\jsonapi\JsonApiResource\Link;
@@ -51,6 +52,13 @@ class LinkCollectionNormalizer implements NormalizerInterface {
   protected $requestStack;
 
   /**
+   * The file URL generator.
+   *
+   * @var \Drupal\Core\File\FileUrlGeneratorInterface
+   */
+  protected $fileUrlGenerator;
+
+  /**
    * Constructs a LinkCollectionNormalizer object.
    *
    * @param \Symfony\Component\Serializer\Normalizer\NormalizerInterface $inner
@@ -63,13 +71,16 @@ class LinkCollectionNormalizer implements NormalizerInterface {
    *   The image factory.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
+   * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
+   *   The file URL generator.
    */
-  public function __construct(NormalizerInterface $inner, Negotiator $consumer_negotiator, ImageStylesProviderInterface $imageStylesProvider, ImageFactory $image_factory, RequestStack $request_stack) {
+  public function __construct(NormalizerInterface $inner, Negotiator $consumer_negotiator, ImageStylesProviderInterface $imageStylesProvider, ImageFactory $image_factory, RequestStack $request_stack, FileUrlGeneratorInterface $file_url_generator) {
     $this->inner = $inner;
     $this->consumerNegotiator = $consumer_negotiator;
     $this->imageStylesProvider = $imageStylesProvider;
     $this->imageFactory = $image_factory;
     $this->requestStack = $request_stack;
+    $this->fileUrlGenerator = $file_url_generator;
   }
 
   /**
@@ -118,7 +129,7 @@ class LinkCollectionNormalizer implements NormalizerInterface {
       $image_style->transformDimensions($dimensions, $uri);
       $variant_link = new Link(
         CacheableMetadata::createFromObject($image_style),
-        Url::fromUri(file_create_url($image_style->buildUrl($uri))),
+        $this->fileUrlGenerator->generate($image_style->buildUrl($uri)),
         ImageStylesProvider::DERIVATIVE_LINK_REL,
         // Target attributes can only be strings, but dimensions are links.
         array_map(function (?int $dimension): string {

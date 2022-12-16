@@ -350,7 +350,8 @@ function template_preprocess_room_reservation(array &$variables) {
   if ($room_reservation->access('update')) {
     $edit_link = Link::createFromRoute(t('Edit'), 'intercept_room_reservation.reservation.edit', [
       'room_reservation' => $room_reservation->id(),
-      'destination' => Url::fromRoute('<current>')->toString(),
+      // 'destination' => Url::fromRoute('<current>')->toString(),
+      // 'destination' => Url::fromRoute('entity.room_reservation.canonical', ['room_reservation' => $room_reservation->id()])->toString(),
     ]);
     $edit_link = $edit_link->toRenderable();
     $edit_link['#attributes'] = [

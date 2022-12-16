@@ -1105,7 +1105,7 @@ function user_form_process_password_confirm($element) {
     $password_settings['showStrengthIndicator'] = TRUE;
     $password_settings += [
       'strengthTitle' => t('Password strength:'),
-      'hasWeaknesses' => t('Recommendations to make your password stronger:'),
+      'hasWeaknesses' => t('Strong Password Requirements:'),
       'tooShort' => t('Make it at least 12 characters'),
       'addLowerCase' => t('Add lowercase letters'),
       'addUpperCase' => t('Add uppercase letters'),

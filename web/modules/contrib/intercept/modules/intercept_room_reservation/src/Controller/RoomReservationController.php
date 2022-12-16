@@ -361,23 +361,33 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     $config = $this->config('intercept_room_reservation.settings');
     $form_mode = $config->get('off_canvas_form_mode') ? $config->get('off_canvas_form_mode') : 'default';
 
+    // @todo: Use dependency injection for this.
     $form = \Drupal::service('entity.form_builder')->getForm($room_reservation, $form_mode);
     $build = [
       'form' => $form,
     ];
 
     $response = new AjaxResponse();
-    $action = $request->get('action');
 
-    switch ($action) {
-      case 'replace':
-        $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
-        $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
-        break;
+    // @todo: This is buggy. There are inconsistencies in how and when thos controller gets fired.
+    // In some cases, this is called if the user submits a ReservationStatusChangeForm after it has been
+    // injected with Ajax.
+    if ($request->getMethod() === 'POST') {
+      $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
+    }
+    else {
+      $action = $request->get('action');
 
-      default:
-        $response->addCommand(new OpenOffCanvasDialogCommand('Edit Reservation', $build, $request->get('dialogOptions')));
-        break;
+      switch ($action) {
+        case 'replace':
+          $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
+          $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
+          break;
+
+        default:
+          $response->addCommand(new OpenOffCanvasDialogCommand('Edit Reservation', $build, $request->get('dialogOptions')));
+          break;
+      }
     }
 
     return $response;

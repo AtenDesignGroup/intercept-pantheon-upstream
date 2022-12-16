@@ -19,7 +19,7 @@ class ReservationStatus extends React.PureComponent {
       case 'approved':
         return syncing ? 'Approving' : 'Approved';
       case 'canceled':
-        return syncing ? 'Cancelling' : 'Canceled';
+        return syncing ? 'Canceling' : 'Canceled';
       case 'requested':
         return syncing ? 'Rerequesting' : 'Awaiting Approval';
       default:

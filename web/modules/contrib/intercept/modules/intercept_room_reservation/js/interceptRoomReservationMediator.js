@@ -172,6 +172,7 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
           [VIEW_ROOM_RESERVATION]: this.onViewRoomReservation,
           [EDIT_ROOM_RESERVATION]: this.onEditRoomReservation,
           [CHANGE_ROOM_RESERVATION]: this.onChangeRoomReservation,
+          [SAVE_ROOM_RESERVATION_SUCCESS]: this.onSaveRoomReservationSuccess,
           'dialog:afterclose': this.onCloseDialog,
         });
       $('#view-room-details').on('click', function(e) {
@@ -267,9 +268,16 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
       activateDialog(`/room-reservation/${event.detail.id}`);
     },
 
+    onSaveRoomReservationSuccess: function (event, details) {
+      // Scroll dialog back to the top.
+      const dialog = document.getElementById('drupal-off-canvas');
+      if (dialog) {
+        dialog.scroll(0, 0);
+      }
+    },
+
     onViewRoom: function (event) {
       const id = event.detail.id;
-      // console.log({event});
       // Abort if we are already viewing or editing this event.
       if (currentEvent === id && !!currentAction) {
         return;

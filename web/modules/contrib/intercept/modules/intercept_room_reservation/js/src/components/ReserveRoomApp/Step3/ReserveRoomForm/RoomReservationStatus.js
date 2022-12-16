@@ -11,13 +11,13 @@ const messages = {
     requested: 'Requesting reservation',
     approved: 'Approving reservation',
     denied: 'Denying reservation',
-    canceled: 'Cancelling reservation',
+    canceled: 'Canceling reservation',
   },
   syncing: {
     requested: 'Requesting reservation',
     approved: 'Approving reservation',
     denied: 'Denying reservation',
-    canceled: 'Cancelling reservation',
+    canceled: 'Canceling reservation',
   },
   saved: {
     requested: 'This reservation has been requested',
@@ -29,7 +29,7 @@ const messages = {
     requested: 'An error occured while requesting this reservation',
     approved: 'An error occured while approving this reservation',
     denied: 'An error occured while denying this reservation',
-    canceled: 'An error occured while cancelling this reservation',
+    canceled: 'An error occured while canceling this reservation',
   },
 };
 

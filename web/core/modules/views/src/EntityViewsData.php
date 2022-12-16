@@ -645,7 +645,7 @@ class EntityViewsData implements EntityHandlerInterface, EntityViewsDataInterfac
         ];
         $views_field['field']['id'] = 'field';
         $views_field['argument']['id'] = 'numeric';
-        $views_field['filter']['id'] = 'numeric';
+        $views_field['filter']['id'] = 'entity_reference';
         $views_field['sort']['id'] = 'standard';
       }
       else {

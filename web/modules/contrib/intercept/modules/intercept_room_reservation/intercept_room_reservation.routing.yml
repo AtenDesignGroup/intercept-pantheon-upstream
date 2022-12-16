@@ -56,6 +56,20 @@ intercept_room_reservation.reservation.edit:
     _entity_access: 'room_reservation.update'
     _entity_bundle: 'room_reservation'
 
+intercept_room_reservation.reservation.change_status:
+  path: '/manage/room-reservations/{room_reservation}/change-status'
+  defaults:
+    _entity_form: 'room_reservation.change_status'
+    _title: 'Change Reservation Status'
+  options:
+    parameters:
+      room_reservation:
+        type: entity:room_reservation
+  requirements:
+    room_reservation: \d+
+    _entity_access: 'room_reservation.update'
+    _entity_bundle: 'room_reservation'
+
 intercept_room_reservation.reserve_room:
   path: '/reserve-room/by-room'
   defaults:

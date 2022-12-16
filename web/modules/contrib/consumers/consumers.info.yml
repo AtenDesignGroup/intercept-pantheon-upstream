@@ -8,7 +8,7 @@ dependencies:
   - drupal:system (>=8.7.x)
   - drupal:image
 
-# Information added by Drupal.org packaging script on 2022-11-14
-version: '8.x-1.15'
+# Information added by Drupal.org packaging script on 2022-12-15
+version: '8.x-1.16'
 project: 'consumers'
-datestamp: 1668447866
+datestamp: 1671105686

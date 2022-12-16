@@ -66,6 +66,7 @@ roomReservationScheduler:
     - intercept_core/bigCalendar
     - intercept_core/bigCalendarDnd
     - intercept_core/materialIcons
+    - intercept_room_reservation/roomReservationMediator
 
 roomReservationMediator:
   js:
@@ -75,7 +76,6 @@ roomReservationMediator:
     - core/drupal
     - core/drupal.dialog.off_canvas
     - core/drupalSettings
-    - intercept_room_reservation/roomReservationScheduler
 
 # RoomReservationForm.php
 room-reservations:

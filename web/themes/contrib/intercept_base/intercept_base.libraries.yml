@@ -11,6 +11,7 @@ global:
     build/libraries/global/global.js: { preprocess: true }
   dependencies:
     - core/jquery
+    - core/jquery.form
     - intercept_base/materialize
 
 # Materialize

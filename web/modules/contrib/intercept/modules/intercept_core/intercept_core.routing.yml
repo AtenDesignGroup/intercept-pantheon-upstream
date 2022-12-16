@@ -47,6 +47,20 @@ entity.user.customer_form:
     user: '\d+'
     _entity_access: 'user.update'
 
+# entity.room_reservation.change_status_form:
+#   path: '/room-reservation/{room_reservation}/change-status'
+#   defaults:
+#     _entity_form: 'room_reservation.change_status'
+#     _title: 'Reservation Status'
+#   options:
+#     parameters:
+#       room_reservation:
+#         type: entity:room_reservation
+#   requirements:
+#     room_reservation: \d+
+#     _entity_access: 'room_reservation.update'
+#     _entity_bundle: 'room_reservation'
+
 # "Profile" link for staff
 intercept_core.user_edit:
   path: '/account/edit'

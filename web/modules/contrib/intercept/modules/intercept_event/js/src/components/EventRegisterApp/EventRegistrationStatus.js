@@ -10,12 +10,12 @@ const messages = {
   dirty: {
     waitlist: 'Submitting registration to the waitlist',
     active: 'Submitting registration',
-    canceled: 'Cancelling registration',
+    canceled: 'Canceling registration',
   },
   syncing: {
     waitlist: 'Submitting registration to the waitlist',
     active: 'Submitting registration',
-    canceled: 'Cancelling registration',
+    canceled: 'Canceling registration',
   },
   saved: {
     waitlist: 'This registration has been added to the waitlist.',
@@ -25,7 +25,7 @@ const messages = {
   error: {
     waitlist: 'An error occured while adding to the waitlist.',
     active: 'An error occured while submitting this registration.',
-    canceled: 'An error occured while cancelling this registration.',
+    canceled: 'An error occured while canceling this registration.',
   },
 };
 

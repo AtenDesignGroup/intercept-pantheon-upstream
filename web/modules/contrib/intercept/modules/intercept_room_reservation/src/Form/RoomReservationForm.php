@@ -2,30 +2,33 @@
 
 namespace Drupal\intercept_room_reservation\Form;
 
-use Drupal\Core\Link;
-use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\Core\Ajax\AjaxFormHelperTrait;
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\Ajax\RemoveCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
-use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Session\AccountProxy;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\intercept_core\Utility\Dates;
-use Drupal\Core\Ajax\AjaxFormHelperTrait;
-use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Ajax\SetDialogTitleCommand;
-use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Session\AccountProxy;
+use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_room_reservation\ParseAutocompleteInput;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\intercept_room_reservation\ValidationMessageBuilder;
 use Drupal\intercept_room_reservation\RoomReservationCertificationChecker;
+use Drupal\intercept_room_reservation\ValidationMessageBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Form controller for Room reservation edit forms.
@@ -261,6 +264,7 @@ class RoomReservationForm extends ContentEntityForm {
         'intercept_room_reservation/room-reservations',
         'intercept_core/delay_keyup',
         'intercept_room_reservation/reservation_for_me',
+        'intercept_room_reservation/roomReservationMediator',
       ],
     ];
 
@@ -372,31 +376,39 @@ class RoomReservationForm extends ContentEntityForm {
       $entity->setNewRevision(FALSE);
     }
 
-    // Ensure that notes are saved. Non-privileged users don't have access to
-    // the notes field. Save notes only if 'notes' element exists in the user
-    // input.
-    if (array_key_exists('notes', $form_state->getUserInput())) {
-      $notes = $this->t($form_state->getUserInput()['notes'][0]['value']);
-      $entity->set('notes', $notes);
-    }
-
-    $entity->save();
-
     $this->status = parent::save($form, $form_state);
 
     switch ($this->status) {
       case SAVED_NEW:
-        $this->messenger()->addMessage($this->t('Created the %label Room reservation.', [
+        $this->messenger()->addMessage($this->t('Created the %label room reservation.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        $this->messenger()->addMessage($this->t('Saved the %label Room reservation.', [
+        $this->messenger()->addMessage($this->t('Saved the %label room reservation.', [
           '%label' => $entity->label(),
         ]));
+        // Ensure that notes and statuses are saved. Non-privileged users don't have access to
+        // the notes field. Save notes only if 'notes' element exists in the user
+        // input.
+        $resave = FALSE;
+        if (array_key_exists('field_status', $form_state->getUserInput())) {
+          $field_status = $form_state->getUserInput()['field_status'];
+          $entity->set('field_status', $field_status);
+          $resave = TRUE;
+        }
+        if (array_key_exists('notes', $form_state->getUserInput())) {
+          $notes = $this->t($form_state->getUserInput()['notes'][0]['value']);
+          $entity->set('notes', $notes);
+          $resave = TRUE;
+        }
+        if ($resave) {
+          $entity->save();
+        }
     }
-    $form_state->setRedirect('entity.room_reservation.canonical', ['room_reservation' => $entity->id()]);
+    // Commenting this out fixes the redirect issue mentioned in CRL-1541. NOPE
+    // $form_state->setRedirect('entity.room_reservation.canonical', ['room_reservation' => $entity->id()]);
   }
 
   /**
@@ -429,28 +441,36 @@ class RoomReservationForm extends ContentEntityForm {
    */
   protected function successfulAjaxSubmit(array $form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
+    $entity_id = $form_state->getFormObject()->getEntity()->id();
+    $entity_type = 'room_reservation';
 
-    if ($this->status === SAVED_NEW) {
-      $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
+    // If this user doesn't manage reservations, redirect them to their room reservations account page.
+    if (!$this->currentUser->hasPermission('update any room_reservation')) {
+      $response->addCommand(new RedirectCommand(Url::fromRoute('entity.user.room_reservations', [ 'user' => $this->currentUser()->id()])->toString()));
+      return $response;
     }
 
-    $messages = ['#type' => 'status_messages'];
-    $response->addCommand(new HtmlCommand('#room-reservation-form__messages', $messages));
+    // Otherwise replace the contents of the dialog with a the room reservation display.
+    $view_mode = 'off_canvas';
+    $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($entity_id);
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
+    $pre_render = $view_builder->view($entity, $view_mode);
+    $entityView = $pre_render;
+
+    $messages = [
+      '#type' => 'status_messages',
+      '#weight' => -100,
+    ];
+    $entityView['messages'] = $messages;
+    $response->addCommand(new HtmlCommand('#drupal-off-canvas', $entityView));
+    $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Reservation Details'));
 
     // Trigger the Save success event.
     $command = new InvokeCommand('html', 'trigger', [
       'intercept:saveRoomReservationSuccess',
+      ['id' => $entity_id]
     ]);
     $response->addCommand($command);
-
-    // Remove any validation errors from previous submission.
-    $selector = '.messages--error';
-    $response->addCommand(new RemoveCommand($selector));
-    $selector = '.messages--warning';
-    $response->addCommand(new RemoveCommand($selector));
-    // Remove the error class from any inputs.
-    $selector = 'input.error';
-    $response->addCommand(new InvokeCommand($selector, 'removeClass', ['error']));
 
     return $response;
   }

@@ -636,6 +636,9 @@ const SchedulerView = (props) => {
                       </React.Fragment>
                     );
                   })}
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
                 </tbody>
               </table>
             </SchedulerViewScrollArea>
@@ -714,6 +717,9 @@ const SchedulerView = (props) => {
                           </React.Fragment>
                         );
                       })}
+                      <tr>
+                        <td>&nbsp;</td>
+                      </tr>
                     </tbody>
                   </table>
                   <div className="scheduler__bg">

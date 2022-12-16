@@ -25,7 +25,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
   use ImageFieldCreationTrait;
   use JsonApiRequestTestTrait;
 
-  public static $modules = [
+  protected static $modules = [
     'consumers',
     'consumer_image_styles',
     'jsonapi',
@@ -180,8 +180,8 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
       return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
     });
-    $this->assertStringContainsString(file_create_url('public://styles/foo/public/'), $derivatives['foo']['href']);
-    $this->assertStringContainsString(file_create_url('public://styles/bar/public/'), $derivatives['bar']['href']);
+    $this->assertStringContainsString(\Drupal::service('file_url_generator')->generateAbsoluteString('public://styles/foo/public/'), $derivatives['foo']['href']);
+    $this->assertStringContainsString(\Drupal::service('file_url_generator')->generateAbsoluteString('public://styles/bar/public/'), $derivatives['bar']['href']);
     $this->assertStringContainsString('itok=', $derivatives['foo']['href']);
     $this->assertStringContainsString('itok=', $derivatives['bar']['href']);
 
@@ -221,7 +221,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       return ImageStylesProvider::DERIVATIVE_LINK_REL === ($link['meta']['rel'] ?? '');
     });
     $this->assertStringContainsString(
-      file_create_url('public://styles/foo/public/'),
+      \Drupal::service('file_url_generator')->generateAbsoluteString('public://styles/foo/public/'),
       $derivatives['foo']['href']
     );
     $this->assertStringContainsString(

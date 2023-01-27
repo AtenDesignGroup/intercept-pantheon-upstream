@@ -1435,11 +1435,7 @@ tbody + tbody {
   .l--sidebar-after > .l__main > .l__secondary {
     position: -webkit-sticky;
     position: sticky;
-    top: 1em;
-    max-height: -webkit-calc(100vh - 125px);
-    max-height: calc(100vh - 125px);
-    overflow-y: scroll;
-    overflow-x: hidden; } }
+    top: 1em; } }
 
 .l--sidebar-after > .l__main > .l__secondary::-webkit-scrollbar {
   display: none; }

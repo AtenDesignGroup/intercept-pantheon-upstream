@@ -22,3 +22,32 @@ function existing_values_autocomplete_widget_help($route_name, RouteMatchInterfa
     default:
   }
 }
+
+/**
+ * Implements hook_field_migration_field_widget_info().
+ *
+ * NOTE, this currently requires the following patches:
+ * "https://www.drupal.org/files/issues/2021-12-27/3204212-field-migration-widget-formatter-mapping-41--fix-only.patch"
+ * "https://www.drupal.org/files/issues/2022-04-07/core-allow_map_formatter_migration-3202462-16--on-top-of-3204212-41.patch"
+ */
+function existing_values_autocomplete_widget_field_migration_field_widget_info() {
+  return [
+    'list_text' => [
+      'autocomplete_widgets_allowvals' => 'existing_autocomplete_field_widget',
+    ],
+    'list_integer' => [
+      'autocomplete_widgets_allowvals' => 'existing_autocomplete_field_widget',
+    ],
+    'list_decimal' => [
+      'autocomplete_widgets_allowvals' => 'existing_autocomplete_field_widget',
+    ],
+    'list_float' => [
+      'autocomplete_widgets_allowvals' => 'existing_autocomplete_field_widget',
+    ],
+    'text' => [
+      'autocomplete_widgets_flddata' => 'existing_autocomplete_field_widget',
+      'autocomplete_widgets_suggested' => 'existing_autocomplete_field_widget',
+      'autocomplete_widgets_node_reference' => 'existing_autocomplete_field_widget',
+    ],
+  ];
+}

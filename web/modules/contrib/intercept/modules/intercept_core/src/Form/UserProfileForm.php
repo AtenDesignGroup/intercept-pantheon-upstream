@@ -122,6 +122,12 @@ class UserProfileForm extends ProfileForm {
         $entity_form['field_ils_username']['widget'][0]['value']['#default_value'] = $patron->basicData()->Username;
       }
       $entity_form['field_phone']['widget'][0]['value']['#default_value'] = $patron->basicData()->PhoneNumber ?? '';
+      // Phone carrier
+      $entity_form['field_carrier']['widget']['#default_value'] = $patron->basicData()->Phone1CarrierID ?? '-2';
+      unset($entity_form['field_carrier']['widget']['#options']['_none']);
+      // Notification/delivery option
+      $entity_form['field_delivery_option']['widget']['#default_value'] = $patron->basicData()->DeliveryOptionID ?? '0';
+      unset($entity_form['field_delivery_option']['widget']['#options']['_none']);
       $entity_form['field_email_address']['widget'][0]['value']['#default_value'] = $patron->basicData()->EmailAddress ?? '';
       $entity_form['#element_validate'][] = [$this, 'validateInlineEntityForm'];
       $entity_form['#ief_element_submit'][] = [$this, 'saveInlineEntityForm'];
@@ -265,7 +271,17 @@ class UserProfileForm extends ProfileForm {
       'field_phone',
     ]);
     $phone = $phone[0]['value'];
-    if (!empty($pin) || !empty($phone) || !empty($email_address)) {
+    $carrier = $form_state->cleanValues()->getValue([
+      'customer_profile',
+      'field_carrier',
+    ]);
+    $carrier = $carrier[0]['value'];
+    $delivery_option = $form_state->cleanValues()->getValue([
+      'customer_profile',
+      'field_delivery_option',
+    ]);
+    $delivery_option = $delivery_option[0]['value'];
+    if (!empty($pin) || !empty($phone) || !empty($email_address) || !empty($carrier) || !empty($delivery_option)) {
       // If $patron is empty, this submit handler is never set.
       $patron = $form_state->get('patron');
       if (!empty($pin)) {
@@ -280,6 +296,16 @@ class UserProfileForm extends ProfileForm {
       }
       if (!empty($email_address)) {
         $patron->EmailAddress = $email_address;
+      }
+      if (!empty($carrier)) {
+        $patron->Phone1CarrierID = $carrier;
+      }
+      if (!empty($delivery_option)) {
+        $patron->DeliveryOptionID = $delivery_option;
+        if ($delivery_option == '8') {
+          // Check the TXT box next to the number in Polaris.
+          $patron->TxtPhoneNumber = '1';
+        }
       }
       $patron->update();
 

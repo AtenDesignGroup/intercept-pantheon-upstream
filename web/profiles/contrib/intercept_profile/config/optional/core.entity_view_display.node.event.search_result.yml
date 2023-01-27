@@ -22,6 +22,7 @@ dependencies:
     - field.field.node.event.field_event_user_reg_max
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_hosting_location
     - field.field.node.event.field_keywords
     - field.field.node.event.field_location
     - field.field.node.event.field_must_register
@@ -235,6 +236,7 @@ hidden:
   field_event_is_template: true
   field_event_status: true
   field_event_user_reg_max: true
+  field_hosting_location: true
   field_keywords: true
   field_presented_by_non_staff: true
   field_presenter: true

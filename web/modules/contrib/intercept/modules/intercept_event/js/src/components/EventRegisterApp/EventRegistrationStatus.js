@@ -23,9 +23,9 @@ const messages = {
     canceled: 'This registration has been canceled.',
   },
   error: {
-    waitlist: 'An error occured while adding to the waitlist.',
-    active: 'An error occured while submitting this registration.',
-    canceled: 'An error occured while canceling this registration.',
+    waitlist: 'An error occurred while adding to the waitlist.',
+    active: 'An error occurred while submitting this registration.',
+    canceled: 'An error occurred while canceling this registration.',
   },
 };
 

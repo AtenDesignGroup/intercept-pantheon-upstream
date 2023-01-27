@@ -500,7 +500,7 @@ class EventsController extends ControllerBase {
     $header = [
       ['data' => $node->getTitle()],
       ['data' => new FormattableMarkup('@event_date&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;@count @comments', [
-        '@event_date' => $event_date, 
+        '@event_date' => $event_date,
         '@count' => $count,
         '@comments' => $count = 1 ? 'comment' : 'comments'
         ])]

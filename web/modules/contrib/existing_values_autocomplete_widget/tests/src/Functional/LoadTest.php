@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\existing_values_autocomplete_widget\Functional;
 
-use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -17,30 +16,53 @@ class LoadTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['existing_values_autocomplete_widget'];
+  public static $modules = [
+    'existing_values_autocomplete_widget',
+    'field',
+    'text',
+    'test_page_test',
+  ];
 
   /**
-   * A user with permission to administer site configuration.
+   * A user with authenticated permissions.
    *
-   * @var \Drupal\user\UserInterface
+   * @var \Drupal\Core\Session\AccountInterface
    */
   protected $user;
 
   /**
+   * A user with admin permissions.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $adminUser;
+
+  /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
-    $this->user = $this->drupalCreateUser(['administer site configuration']);
-    $this->drupalLogin($this->user);
+
+    $this->config('system.site')->set('page.front', '/test-page')->save();
+    $this->user = $this->drupalCreateUser([]);
+    $this->adminUser = $this->drupalCreateUser([]);
+    $this->adminUser->addRole($this->createAdminRole('admin', 'admin'));
+    $this->adminUser->save();
+    $this->drupalLogin($this->adminUser);
   }
 
   /**
-   * Tests that the home page loads with a 200 response.
+   * Tests if the module installation, won't break the site.
    */
-  public function testLoad() {
-    $this->drupalGet(Url::fromRoute('<front>'));
-    $this->assertSession()->statusCodeEquals(200);
+  public function testInstallation() {
+    $session = $this->assertSession();
+    $this->drupalGet('<front>');
+    $session->statusCodeEquals(200);
   }
 
 }

@@ -349,6 +349,9 @@ class TermTest extends TaxonomyTestBase {
     $this->drupalGet('admin/structure/taxonomy/manage/' . $this->vocabulary->id() . '/add');
     $this->submitForm($edit, 'Save');
 
+    // Ensure form redirected back to term add page.
+    $this->assertSession()->addressEquals('admin/structure/taxonomy/manage/' . $this->vocabulary->id() . '/add');
+
     $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
       'name' => $edit['name[0][value]'],
     ]);
@@ -372,6 +375,9 @@ class TermTest extends TaxonomyTestBase {
     // Edit the term.
     $this->drupalGet('taxonomy/term/' . $term->id() . '/edit');
     $this->submitForm($edit, 'Save');
+
+    // Ensure form redirected back to term view.
+    $this->assertSession()->addressEquals('taxonomy/term/' . $term->id());
 
     // Check that the term is still present at admin UI after edit.
     $this->drupalGet('admin/structure/taxonomy/manage/' . $this->vocabulary->id() . '/overview');

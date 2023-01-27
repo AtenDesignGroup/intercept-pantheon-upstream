@@ -418,7 +418,8 @@ class EntityViewsDataTest extends KernelTestBase {
     $this->assertEquals([
       'left_field' => 'id',
       'field' => 'entity_id',
-      'extra' => [[
+      'extra' => [
+        [
           'field' => 'deleted',
           'value' => 0,
           'numeric' => TRUE,
@@ -506,7 +507,8 @@ class EntityViewsDataTest extends KernelTestBase {
     $this->assertEquals([
       'left_field' => 'id',
       'field' => 'entity_id',
-      'extra' => [[
+      'extra' => [
+        [
           'field' => 'deleted',
           'value' => 0,
           'numeric' => TRUE,
@@ -636,7 +638,8 @@ class EntityViewsDataTest extends KernelTestBase {
     $this->assertEquals([
       'left_field' => 'id',
       'field' => 'entity_id',
-      'extra' => [[
+      'extra' => [
+        [
           'field' => 'deleted',
           'value' => 0,
           'numeric' => TRUE,
@@ -649,7 +652,8 @@ class EntityViewsDataTest extends KernelTestBase {
     $this->assertEquals([
       'left_field' => 'revision_id',
       'field' => 'entity_id',
-      'extra' => [[
+      'extra' => [
+        [
           'field' => 'deleted',
           'value' => 0,
           'numeric' => TRUE,
@@ -778,7 +782,7 @@ class EntityViewsDataTest extends KernelTestBase {
    */
   protected function assertEntityReferenceField(array $data): void {
     $this->assertEquals('field', $data['field']['id']);
-    $this->assertEquals('entity_reference', $data['filter']['id']);
+    $this->assertEquals('numeric', $data['filter']['id']);
     $this->assertEquals('numeric', $data['argument']['id']);
     $this->assertEquals('standard', $data['sort']['id']);
   }

@@ -359,7 +359,7 @@ class ValidationMessageBuilder {
     // else {
     //   $messages['attendee_count'] = 'This is a good number of attendees for capacity.';
     // }
-    
+
     return $messages;
   }
 

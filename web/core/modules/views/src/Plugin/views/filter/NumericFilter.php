@@ -407,12 +407,7 @@ class NumericFilter extends FilterPluginBase {
     // rewrite the input value so that it's in the correct format so that
     // the parent gets the right data.
     if (!empty($this->options['expose']['identifier'])) {
-      if ($this->options['is_grouped']) {
-        $value = $input[$this->options['group_info']['identifier']];
-      }
-      else {
-        $value = &$input[$this->options['expose']['identifier']];
-      }
+      $value = &$input[$this->options['expose']['identifier']];
       if (!is_array($value)) {
         $value = [
           'value' => $value,
@@ -428,15 +423,12 @@ class NumericFilter extends FilterPluginBase {
       if (!empty($info[$this->operator]['values'])) {
         switch ($info[$this->operator]['values']) {
           case 1:
-            if (!isset($value['value']) || $value['value'] === '') {
+            if ($value['value'] === '') {
               return FALSE;
             }
             break;
 
           case 2:
-            if (!isset($value['min']) && !isset($value['max'])) {
-              return FALSE;
-            }
             if ($value['min'] === '' && $value['max'] === '') {
               return FALSE;
             }

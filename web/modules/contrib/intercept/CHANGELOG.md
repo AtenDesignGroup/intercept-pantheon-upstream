@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta10] - 2023-01-27
+
+- Added "hosting location" field for online events
+- Fixed bug when staff re-generate recurring events
+- Added Drupal 9.5 update
+
 ## [8.x-1.0-beta9] - 2022-12-16
 
 - Ensured uneditable room reservation detail displays after saving
@@ -99,7 +105,7 @@ All notable changes to this project will be documented in this file.
 - Consolidate room reservation availability logic
 - Deprecate or integrate intercept_core/delay_keyup library on RoomReservationForm
 - Fixed: Unable to reserve rooms on mobile (by Room)
-- Fixed Theme Error on Export Scans Page           
+- Fixed Theme Error on Export Scans Page
 - Remove Link to Customer Lookup on Scan Tab
 
 ## [8.x-1.0-beta1] - 2022-05-02

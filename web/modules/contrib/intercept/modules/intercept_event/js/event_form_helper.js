@@ -19,6 +19,16 @@ Drupal.behaviors.eventFormHelper = {
       }
     });
 
+    // Show/hide hosting location field.
+    $('#edit-field-hosting-location-wrapper').hide();
+    $('#edit-field-hosting-location').val('_none');
+    $('#edit-field-hosting-location option:contains(Online)').each(function() {
+      $(this).remove();
+    });
+    if ($('#edit-field-location option:contains(Online)').prop('selected') == true) {
+      $('#edit-field-hosting-location-wrapper').show();
+    }
+
     // Ensure 15 minute intervals on time fields.
     var wto;
     var fields = [

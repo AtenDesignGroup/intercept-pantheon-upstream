@@ -99,7 +99,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     }
 
     $dates = $logistics['dates'];
-    
+
     // Return error/warning if end time is before start time.
     $startTime = strtotime($input['field_date_time'][0]['start']['date'] . ' ' . $input['field_date_time'][0]['start']['time']);
     $endTime = strtotime($input['field_date_time'][0]['end']['date'] . ' ' . $input['field_date_time'][0]['end']['time']);

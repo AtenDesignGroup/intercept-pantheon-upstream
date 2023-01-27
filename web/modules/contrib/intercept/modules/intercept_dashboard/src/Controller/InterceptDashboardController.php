@@ -545,7 +545,7 @@ class InterceptDashboardController extends ControllerBase {
         'context' => 'url',
       ],
     ];
-    
+
     // Build the "View All" link to view all staff feedback.
     $eventQuery = $this->getBaseQuery();
     $eventQuery->addJoin('right', $this->getStaffEvaluationsSubQuery(), 'staff_evaluations', 'n.nid = staff_evaluations.nid'); // rightJoin is removed in D9.

@@ -5966,70 +5966,64 @@ label[for='edit-is-there-anything-else-you-d-like-us-to-know-about-your-needs-']
   .webform-submission-form .select-label,
   .header__site-search .select-label {
     position: absolute; }
-  .materialize .form-wrapper .select-wrapper,
-  .views-exposed-form .select-wrapper,
-  .webform-submission-form .select-wrapper,
-  .header__site-search .select-wrapper {
+  .materialize .form-wrapper .select-wrapper.valid + label,
+  .materialize .form-wrapper .select-wrapper.invalid + label,
+  .views-exposed-form .select-wrapper.valid + label,
+  .views-exposed-form .select-wrapper.invalid + label,
+  .webform-submission-form .select-wrapper.valid + label,
+  .webform-submission-form .select-wrapper.invalid + label,
+  .header__site-search .select-wrapper.valid + label,
+  .header__site-search .select-wrapper.invalid + label {
+    width: 100%;
+    pointer-events: none; }
+  .materialize .form-wrapper .select-wrapper input.select-dropdown,
+  .views-exposed-form .select-wrapper input.select-dropdown,
+  .webform-submission-form .select-wrapper input.select-dropdown,
+  .header__site-search .select-wrapper input.select-dropdown {
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
     position: relative;
-    margin-top: 26px; }
-    .materialize .form-wrapper .select-wrapper.valid + label,
-    .materialize .form-wrapper .select-wrapper.invalid + label,
-    .views-exposed-form .select-wrapper.valid + label,
-    .views-exposed-form .select-wrapper.invalid + label,
-    .webform-submission-form .select-wrapper.valid + label,
-    .webform-submission-form .select-wrapper.invalid + label,
-    .header__site-search .select-wrapper.valid + label,
-    .header__site-search .select-wrapper.invalid + label {
-      width: 100%;
-      pointer-events: none; }
-    .materialize .form-wrapper .select-wrapper input.select-dropdown,
-    .views-exposed-form .select-wrapper input.select-dropdown,
-    .webform-submission-form .select-wrapper input.select-dropdown,
-    .header__site-search .select-wrapper input.select-dropdown {
-      -webkit-box-sizing: border-box;
-              box-sizing: border-box;
-      position: relative;
-      cursor: pointer;
-      background-color: transparent;
-      border: none;
-      border-bottom: 1px solid #9e9e9e;
-      outline: none;
-      height: 2rem;
-      line-height: 2rem;
-      width: 100%;
-      font-size: 16px;
-      margin: 0 0 8px 0;
-      padding: 0 1.5em 0 0;
-      display: block;
-      -webkit-user-select: none;
-         -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none;
-      z-index: 1;
-      text-overflow: ellipsis; }
-      .materialize .form-wrapper .select-wrapper input.select-dropdown:focus,
-      .views-exposed-form .select-wrapper input.select-dropdown:focus,
-      .webform-submission-form .select-wrapper input.select-dropdown:focus,
-      .header__site-search .select-wrapper input.select-dropdown:focus {
-        border-bottom: 1px solid #00AFD0; }
-    .materialize .form-wrapper .select-wrapper .caret,
-    .views-exposed-form .select-wrapper .caret,
-    .webform-submission-form .select-wrapper .caret,
-    .header__site-search .select-wrapper .caret {
-      bottom: 0;
-      fill: rgba(0, 0, 0, 0.87);
-      margin: auto 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-      z-index: 0; }
-    .materialize .form-wrapper .select-wrapper + label,
-    .views-exposed-form .select-wrapper + label,
-    .webform-submission-form .select-wrapper + label,
-    .header__site-search .select-wrapper + label {
-      position: absolute !important;
-      top: -26px !important;
-      font-size: 1rem !important; }
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #9e9e9e;
+    outline: none;
+    height: 2rem;
+    line-height: 2rem;
+    width: 100%;
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    padding: 0 1.5em 0 0;
+    display: block;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    z-index: 1;
+    text-overflow: ellipsis; }
+    .materialize .form-wrapper .select-wrapper input.select-dropdown:focus,
+    .views-exposed-form .select-wrapper input.select-dropdown:focus,
+    .webform-submission-form .select-wrapper input.select-dropdown:focus,
+    .header__site-search .select-wrapper input.select-dropdown:focus {
+      border-bottom: 1px solid #00AFD0; }
+  .materialize .form-wrapper .select-wrapper .caret,
+  .views-exposed-form .select-wrapper .caret,
+  .webform-submission-form .select-wrapper .caret,
+  .header__site-search .select-wrapper .caret {
+    bottom: 0;
+    fill: rgba(0, 0, 0, 0.87);
+    margin: auto 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 0; }
+  .materialize .form-wrapper .select-wrapper + label,
+  .views-exposed-form .select-wrapper + label,
+  .webform-submission-form .select-wrapper + label,
+  .header__site-search .select-wrapper + label {
+    position: absolute !important;
+    top: -26px !important;
+    font-size: 1rem !important; }
   .materialize .form-wrapper select:disabled,
   .views-exposed-form select:disabled,
   .webform-submission-form select:disabled,

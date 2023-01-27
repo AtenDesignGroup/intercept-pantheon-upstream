@@ -21,6 +21,7 @@ dependencies:
     - field.field.node.event.field_event_user_reg_max
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_hosting_location
     - field.field.node.event.field_keywords
     - field.field.node.event.field_location
     - field.field.node.event.field_must_register
@@ -202,6 +203,14 @@ content:
       format_custom_true: ''
     third_party_settings: {  }
     weight: 9
+    region: content
+  field_hosting_location:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 29
     region: content
   field_location:
     type: entity_reference_label

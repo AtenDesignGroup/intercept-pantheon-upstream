@@ -122,7 +122,7 @@ below, only a few are publicly accessible. The rest are currently only available
 for use within the application itself.
 
 Since Drupal core now includes JSON:API for queries related to content, queries
-for information about events, rooms, and locations (all of which are standard 
+for information about events, rooms, and locations (all of which are standard
 Drupal content "nodes") can all be built using the JSON:API standard syntax.
 Example queries and responses are included below. Also included below are
 instructions on how to get a full list of Intercept fields that can be used in
@@ -260,9 +260,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":true,
         "field_reservation_phone_number":null,
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -355,9 +353,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":true,
         "field_reservation_phone_number":null,
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -450,9 +446,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":true,
         "field_reservation_phone_number":null,
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -1745,9 +1739,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":true,
         "field_reservation_phone_number":null,
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -1840,9 +1832,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":true,
         "field_reservation_phone_number":null,
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -1938,9 +1928,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":false,
         "field_reservation_phone_number":"803-776-0855",
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -2039,9 +2027,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":true,
         "field_reservation_phone_number":"803-772-6675",
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -2134,9 +2120,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
         "field_reservable_online":true,
         "field_reservation_phone_number":"803-929-3470",
         "field_room_fees":null,
-        "field_room_standard_equipment":[
-          
-        ],
+        "field_room_standard_equipment":[],
         "field_staff_use_only":true,
         "field_text_content":null,
         "field_text_intro":null,
@@ -2321,9 +2305,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/cdf7ed47-4cba-441c-8388-0fc63b224b04\/field_tags?resourceVersion=id%3A134"
@@ -2448,9 +2430,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/22749e9d-255c-4149-b9ab-e641acb8263a\/field_tags?resourceVersion=id%3A1979"
@@ -2572,9 +2552,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/794bcd09-5d3d-4e51-be7c-9ee7b9262c14\/field_tags?resourceVersion=id%3A6130"
@@ -2696,9 +2674,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/8e1158a7-82a2-4c62-b3a2-db762c9ee0ca\/field_tags?resourceVersion=id%3A6131"
@@ -2823,9 +2799,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/aab1773d-15eb-4215-b24d-10da6b07df70\/field_tags?resourceVersion=id%3A6149"
@@ -2947,9 +2921,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/0295a8e9-f730-4eb4-ae51-2ca043a7a658\/field_tags?resourceVersion=id%3A6137"
@@ -3071,9 +3043,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a8729fc5-3257-41f6-9629-8f0362b3d5a0\/field_tags?resourceVersion=id%3A6138"
@@ -3195,9 +3165,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/f15c715c-e9bb-4c4b-a7ec-ea868134b6c7\/field_tags?resourceVersion=id%3A6136"
@@ -3319,9 +3287,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/2f088896-f8d9-4cde-99a3-9f1afa91a8d7\/field_tags?resourceVersion=id%3A6132"
@@ -3443,9 +3409,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/3e705abd-b79c-4cc7-8172-d68437bedc70\/field_tags?resourceVersion=id%3A6133"
@@ -3567,9 +3531,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/a311dcc0-b0d9-4f23-b59b-b3d5896654a7\/field_tags?resourceVersion=id%3A6134"
@@ -3691,9 +3653,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/915bb5ee-a767-4da0-bfce-032eb90fe78c\/field_tags?resourceVersion=id%3A1429"
@@ -3815,9 +3775,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/72446988-7e98-449a-a63d-93653de9bae2\/field_tags?resourceVersion=id%3A390"
@@ -3943,9 +3901,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/room?filter%5Bstatus%5D%5
           }
         },
         "field_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/media\/image\/50d0dd96-6a44-443b-aa4a-62979395d0fb\/field_tags?resourceVersion=id%3A2011"
@@ -4881,9 +4837,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter%5Bstatus%5D%
           }
         },
         "field_event_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/4610c77c-2afa-41e8-b880-7e25bbae383a\/field_event_tags?resourceVersion=id%3A52785"
@@ -5005,9 +4959,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter%5Bstatus%5D%
           }
         },
         "field_event_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/40fd2da6-89cd-4f43-8993-bb64b50bb45a\/field_event_tags?resourceVersion=id%3A52786"
@@ -5125,9 +5077,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter%5Bstatus%5D%
           }
         },
         "field_event_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f0b93118-cbc9-4514-8a4a-e5f34d3a73c0\/field_event_tags?resourceVersion=id%3A51330"
@@ -5264,9 +5214,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter%5Bstatus%5D%
           }
         },
         "field_event_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/2cfbecea-c37e-4706-930a-980cf172be4b\/field_event_tags?resourceVersion=id%3A52234"
@@ -5410,9 +5358,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter%5Bstatus%5D%
           }
         },
         "field_event_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/f3ef6319-a3d9-4071-9bd5-7bca46df134c\/field_event_tags?resourceVersion=id%3A52235"
@@ -5781,9 +5727,7 @@ https://dev-richland-site.pantheonsite.io/jsonapi/node/event?filter%5Bstatus%5D%
           }
         },
         "field_event_tags":{
-          "data":[
-            
-          ],
+          "data":[],
           "links":{
             "related":{
               "href":"https:\/\/dev-richland-site.pantheonsite.io\/jsonapi\/node\/event\/e80a74e5-f6b2-4f52-8f0c-ba7bb6a55b45\/field_event_tags?resourceVersion=id%3A49742"

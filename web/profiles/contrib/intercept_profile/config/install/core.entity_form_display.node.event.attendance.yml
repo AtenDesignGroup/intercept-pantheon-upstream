@@ -22,6 +22,7 @@ dependencies:
     - field.field.node.event.field_event_user_reg_max
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_hosting_location
     - field.field.node.event.field_keywords
     - field.field.node.event.field_location
     - field.field.node.event.field_must_register
@@ -76,6 +77,7 @@ hidden:
   field_event_user_reg_max: true
   field_featured: true
   field_has_waitlist: true
+  field_hosting_location: true
   field_keywords: true
   field_location: true
   field_must_register: true
@@ -92,7 +94,6 @@ hidden:
   publish_on: true
   recurring_event: true
   reservation: true
-  status: true
   sticky: true
   title: true
   uid: true

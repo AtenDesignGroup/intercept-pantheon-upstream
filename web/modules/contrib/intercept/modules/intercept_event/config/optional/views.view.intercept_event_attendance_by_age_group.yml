@@ -7,6 +7,7 @@ dependencies:
     - field.storage.node.field_date_time
     - field.storage.node.field_event_tags
     - field.storage.node.field_event_type_primary
+    - field.storage.node.field_hosting_location
     - field.storage.node.field_location
     - field.storage.node.field_presented_by_non_staff
     - field.storage.node.field_presenter
@@ -36,107 +37,12 @@ base_table: node_field_data
 base_field: nid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'access management page event_attendance_export'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: bef
-        options:
-          submit_button: Apply
-          reset_button: true
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-          input_required: false
-          text_input_required: 'Select any filter and click on Apply to see results'
-          bef:
-            general:
-              autosubmit: false
-              autosubmit_exclude_textfield: false
-              autosubmit_hide: false
-              input_required: false
-              text_input_required: 'Select any filter and click on Apply to see results'
-              text_input_required_format: basic_html
-              allow_secondary: false
-              secondary_label: 'Advanced options'
-            filter:
-              field_date_time_value:
-                plugin_id: bef_datepicker
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  sort_options: false
-              title:
-                plugin_id: default
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                  placeholder_text: Title
-                  rewrite:
-                    filter_rewrite_values: ''
-                  sort_options: false
-              field_presenter_value:
-                plugin_id: default
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  sort_options: false
-          text_input_required_format: basic_html
-      pager:
-        type: full
-        options:
-          items_per_page: 10
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: '‹ Prev'
-            next: 'Next ›'
-            first: '« First'
-            last: 'Last »'
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
-      style:
-        type: serializer
-      row:
-        type: fields
-        options:
-          inline: {  }
-          separator: ''
-          hide_empty: false
-          default_field_elements: true
+      title: 'Intercept Export Event Attendance'
       fields:
         nid:
           id: nid
@@ -145,6 +51,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: field
           label: 'Event NID'
           exclude: false
           alter:
@@ -201,9 +110,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: nid
-          plugin_id: field
         title:
           id: title
           table: node_field_data
@@ -211,6 +117,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: field
           label: 'Event Title'
           exclude: false
           alter:
@@ -266,9 +175,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: title
-          plugin_id: field
         field_attendees:
           id: field_attendees
           table: node__field_attendees
@@ -276,6 +182,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: tally_field
           label: 'Attendees - Population Segment 1'
           exclude: false
           alter:
@@ -330,7 +237,6 @@ display:
           multi_type: individual
           separator: '|'
           field_api_classes: false
-          plugin_id: tally_field
         field_attendees_1:
           id: field_attendees_1
           table: node__field_attendees
@@ -338,6 +244,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: tally_field
           label: 'Attendees - Population Segment 2'
           exclude: false
           alter:
@@ -392,7 +299,6 @@ display:
           multi_type: individual
           separator: ', '
           field_api_classes: false
-          plugin_id: tally_field
         field_attendees_2:
           id: field_attendees_2
           table: node__field_attendees
@@ -400,6 +306,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: tally_field
           label: 'Attendees - Population Segment 3'
           exclude: false
           alter:
@@ -454,7 +361,6 @@ display:
           multi_type: individual
           separator: ', '
           field_api_classes: false
-          plugin_id: tally_field
         field_attendees_3:
           id: field_attendees_3
           table: node__field_attendees
@@ -462,6 +368,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: tally_field
           label: 'Attendees - Population Segment 4'
           exclude: false
           alter:
@@ -516,7 +423,6 @@ display:
           multi_type: individual
           separator: ', '
           field_api_classes: false
-          plugin_id: tally_field
         field_date_time:
           id: field_date_time
           table: node__field_date_time
@@ -524,6 +430,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: Date
           exclude: false
           alter:
@@ -581,7 +488,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_date_time_1:
           id: field_date_time_1
           table: node__field_date_time
@@ -589,6 +495,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: Time
           exclude: false
           alter:
@@ -646,7 +553,69 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        field_hosting_location:
+          id: field_hosting_location
+          table: node__field_hosting_location
+          field: field_hosting_location
+          relationship: none
+          group_type: group
+          admin_label: ''
           plugin_id: field
+          label: 'Hosting Location'
+          exclude: true
+          alter:
+            alter_text: true
+            text: ', {{ field_hosting_location }}'
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: true
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         field_location:
           id: field_location
           table: node__field_location
@@ -654,11 +623,12 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: Location
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '{{ field_location }}{{ field_hosting_location }}'
             make_link: false
             path: ''
             absolute: false
@@ -709,7 +679,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_room:
           id: field_room
           table: node__field_room
@@ -717,6 +686,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: Room
           exclude: false
           alter:
@@ -772,7 +742,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_audience_primary:
           id: field_audience_primary
           table: node__field_audience_primary
@@ -780,6 +749,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: 'Primary Audience'
           exclude: false
           alter:
@@ -835,7 +805,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_event_type_primary:
           id: field_event_type_primary
           table: node__field_event_type_primary
@@ -843,6 +812,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: 'Primary Event Type'
           exclude: false
           alter:
@@ -898,7 +868,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_event_tags:
           id: field_event_tags
           table: node__field_event_tags
@@ -906,6 +875,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: Tags
           exclude: false
           alter:
@@ -961,7 +931,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_presented_by_non_staff:
           id: field_presented_by_non_staff
           table: node__field_presented_by_non_staff
@@ -969,6 +938,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: 'Presented or co-presented by non-library staff'
           exclude: false
           alter:
@@ -1014,8 +984,8 @@ display:
           type: boolean
           settings:
             format: yes-no
-            format_custom_true: ''
             format_custom_false: ''
+            format_custom_true: ''
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -1026,7 +996,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_presenter:
           id: field_presenter
           table: node__field_presenter
@@ -1034,6 +1003,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: Presenter
           exclude: false
           alter:
@@ -1089,7 +1059,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         count:
           id: count
           table: flag_counts
@@ -1097,6 +1066,7 @@ display:
           relationship: flag_relationship
           group_type: group
           admin_label: ''
+          plugin_id: numeric
           label: Interested
           exclude: false
           alter:
@@ -1146,7 +1116,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          plugin_id: numeric
         event_attendance_count:
           id: event_attendance_count
           table: node_field_data
@@ -1154,6 +1123,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: event_attendance_count
           label: Attended
           exclude: false
           alter:
@@ -1203,8 +1174,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          entity_type: node
-          plugin_id: event_attendance_count
         event_registration_count:
           id: event_registration_count
           table: node_field_data
@@ -1212,6 +1181,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: event_registration_count
           label: Registered
           exclude: false
           alter:
@@ -1261,8 +1232,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          entity_type: node
-          plugin_id: event_registration_count
         event_evaluation_positive_count:
           id: event_evaluation_positive_count
           table: node_field_data
@@ -1270,6 +1239,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: event_evaluation_positive_count
           label: 'Event evaluation positive count'
           exclude: false
           alter:
@@ -1319,8 +1290,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          entity_type: node
-          plugin_id: event_evaluation_positive_count
         event_evaluation_negative_count:
           id: event_evaluation_negative_count
           table: node_field_data
@@ -1328,6 +1297,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: event_evaluation_negative_count
           label: 'Event evaluation negative count'
           exclude: false
           alter:
@@ -1377,31 +1348,125 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          entity_type: node
-          plugin_id: event_evaluation_negative_count
+      pager:
+        type: full
+        options:
+          offset: 0
+          items_per_page: 10
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Prev'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Apply
+          reset_button: true
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+          input_required: false
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
+          bef:
+            general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_hide: false
+              input_required: false
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+              text_input_required: 'Select any filter and click on Apply to see results'
+              text_input_required_format: basic_html
+            filter:
+              field_date_time_value:
+                plugin_id: bef_datepicker
+                advanced:
+                  sort_options: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              title:
+                plugin_id: default
+                advanced:
+                  sort_options: false
+                  placeholder_text: Title
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              field_presenter_value:
+                plugin_id: default
+                advanced:
+                  sort_options: false
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+      access:
+        type: perm
+        options:
+          perm: 'access management page event_attendance_export'
+      cache:
+        type: tag
+        options: {  }
+      empty: {  }
+      sorts:
+        field_date_time_value:
+          id: field_date_time_value
+          table: node__field_date_time
+          field: field_date_time_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: datetime
+          order: DESC
+          expose:
+            label: ''
+            field_identifier: field_date_time_value
+          exposed: false
+          granularity: minute
+      arguments: {  }
       filters:
         status:
-          value: '1'
+          id: status
           table: node_field_data
           field: status
-          plugin_id: boolean
           entity_type: node
           entity_field: status
-          id: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
           expose:
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
-          group: 1
         type:
           id: type
           table: node_field_data
           field: type
-          value:
-            event: event
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          value:
+            event: event
           expose:
             operator_limit_selection: false
             operator_list: {  }
@@ -1412,6 +1477,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: datetime
           operator: between
           value:
             min: ''
@@ -1426,6 +1492,8 @@ display:
             description: ''
             use_operator: false
             operator: field_date_time_value_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: field_date_time_value
             required: false
             remember: false
@@ -1440,11 +1508,9 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
               administrator: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -1457,7 +1523,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          plugin_id: datetime
         title:
           id: title
           table: node_field_data
@@ -1465,6 +1530,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: string
           operator: contains
           value: ''
           group: 1
@@ -1475,6 +1543,8 @@ display:
             description: ''
             use_operator: false
             operator: title_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: title
             required: false
             remember: false
@@ -1491,8 +1561,6 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1505,9 +1573,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: title
-          plugin_id: string
         field_presenter_value:
           id: field_presenter_value
           table: node__field_presenter
@@ -1515,6 +1580,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: string
           operator: contains
           value: ''
           group: 1
@@ -1525,6 +1591,8 @@ display:
             description: ''
             use_operator: false
             operator: field_presenter_value_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: field_presenter_value
             required: false
             remember: false
@@ -1541,8 +1609,6 @@ display:
               intercept_staff: '0'
               intercept_system_admin: '0'
             placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1555,7 +1621,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          plugin_id: string
         field_event_designation_value:
           id: field_event_designation_value
           table: node__field_event_designation
@@ -1563,6 +1628,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: list_field
           operator: or
           value:
             events: events
@@ -1596,7 +1662,6 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           reduce_duplicates: false
-          plugin_id: list_field
         field_event_tags_target_id:
           id: field_event_tags_target_id
           table: node__field_event_tags
@@ -1604,6 +1669,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: taxonomy_index_tid
           operator: or
           value: {  }
           group: 1
@@ -1645,29 +1711,28 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           reduce_duplicates: false
-          type: select
-          limit: true
           vid: tag
+          type: select
           hierarchy: false
+          limit: true
           error_message: true
-          plugin_id: taxonomy_index_tid
-      sorts:
-        field_date_time_value:
-          id: field_date_time_value
-          table: node__field_date_time
-          field: field_date_time_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: DESC
-          exposed: false
-          expose:
-            label: ''
-          granularity: minute
-          plugin_id: datetime
-      header: {  }
-      footer: {  }
-      empty: {  }
+      style:
+        type: serializer
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: false
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
       relationships:
         field_location:
           id: field_location
@@ -1676,8 +1741,8 @@ display:
           relationship: none
           group_type: group
           admin_label: Location
-          required: false
           plugin_id: standard
+          required: false
         flag_relationship:
           id: flag_relationship
           table: node_field_data
@@ -1685,16 +1750,16 @@ display:
           relationship: none
           group_type: group
           admin_label: Flags
+          entity_type: node
+          plugin_id: flag_relationship
           required: false
           flag: saved_event
           user_scope: any
-          entity_type: node
-          plugin_id: flag_relationship
-      arguments: {  }
-      display_extenders: {  }
-      group_by: false
-      title: 'Intercept Export Event Attendance'
       css_class: table-overflow-x-scroll
+      group_by: false
+      header: {  }
+      footer: {  }
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -1712,33 +1777,28 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_event_tags'
         - 'config:field.storage.node.field_event_type_primary'
+        - 'config:field.storage.node.field_hosting_location'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
   page:
-    display_plugin: page
     id: page
     display_title: Page
+    display_plugin: page
     position: 1
     display_options:
-      display_extenders: { }
-      path: account/manage/intercept_event_attendance_by_age_group
       style:
         type: table
         options:
           grouping: {  }
           row_class: ''
           default_row_class: true
-          override: true
-          sticky: false
-          caption: ''
-          summary: ''
-          description: ''
           columns:
             nid: nid
             title: title
             field_attendees: field_attendees
+          default: '-1'
           info:
             nid:
               sortable: false
@@ -1759,18 +1819,24 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-          default: '-1'
+          override: true
+          sticky: false
+          summary: ''
           empty_table: false
-      defaults:
-        style: false
-        row: false
+          caption: ''
+          description: ''
       row:
         type: fields
         options:
+          default_field_elements: true
           inline: {  }
           separator: ''
           hide_empty: false
-          default_field_elements: true
+      defaults:
+        style: false
+        row: false
+      display_extenders: { }
+      path: account/manage/intercept_event_attendance_by_age_group
     cache_metadata:
       max-age: -1
       contexts:
@@ -1787,22 +1853,25 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_event_tags'
         - 'config:field.storage.node.field_event_type_primary'
+        - 'config:field.storage.node.field_hosting_location'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'
         - 'config:field.storage.node.field_room'
   rest_export:
-    display_plugin: rest_export
     id: rest_export
     display_title: 'REST export'
+    display_plugin: rest_export
     position: 2
     display_options:
-      display_extenders: { }
-      path: data/export/attendance-by-age-group.csv
       pager:
         type: none
         options:
           offset: 0
+      access:
+        type: perm
+        options:
+          perm: 'create event content'
       style:
         type: serializer
         options:
@@ -1813,12 +1882,10 @@ display:
         type: data_field
         options:
           field_options: {  }
-      access:
-        type: perm
-        options:
-          perm: 'create event content'
       defaults:
         access: false
+      display_extenders: { }
+      path: data/export/attendance-by-age-group.csv
     cache_metadata:
       max-age: -1
       contexts:
@@ -1835,6 +1902,7 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_event_tags'
         - 'config:field.storage.node.field_event_type_primary'
+        - 'config:field.storage.node.field_hosting_location'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_presented_by_non_staff'
         - 'config:field.storage.node.field_presenter'

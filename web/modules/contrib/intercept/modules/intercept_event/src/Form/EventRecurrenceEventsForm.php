@@ -3,11 +3,12 @@
 namespace Drupal\intercept_event\Form;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
-use Drupal\node\Entity\Node;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\inline_entity_form\ElementSubmit;
@@ -17,6 +18,7 @@ use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_event\RecurringEventManager;
 use Drupal\intercept_event\Entity\EventRecurrenceInterface;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -452,8 +454,8 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
+    $events = $this->eventRecurrence->getEvents();
 
-    // @todo Create confirmation forms from these actions.
     $actions['events_generate'] = [
       '#type' => 'submit',
       '#value' => $this->t('Generate events'),
@@ -461,18 +463,50 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       '#access' => empty($this->eventRecurrence->getEvents()),
     ];
 
-    $actions['events_regenerate'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Re-generate events'),
-      '#submit' => $this->submitHandlers(['::regenerateEvents']),
-      '#access' => !empty($this->eventRecurrence->getEvents()),
-    ];
+    // Don't allow events to be regenerated if some have passed.
+    if (!empty($events)) {
+      $disabled = FALSE;
+      foreach ($events as $event) {
+        // Check the date for each. If date has passed...
+        $now = new DrupalDateTime('now', 'UTC');
+        $start_date = new DrupalDateTime($event->get('field_date_time')->start_date, 'UTC');
+        if ($start_date < $now) {
+          // Display a disabled regenerate button.
+          $disabled = TRUE;
+        }
+      }
+      if ($disabled == TRUE) {
+        // Warn staff not to re-generate. Clone instead.
+        \Drupal::messenger()->addWarning($this->t('Since instances of this recurring event have already passed, you can no longer re-generate events without causing data loss. If you need to add new instances of this event, it\'s recommended that you @clone_link and create a new recurring event from there.', [
+          '@clone_link' => Link::createFromRoute('clone the original base event', 'quick_node_clone.node.quick_clone', [
+            'node' => $this->entity->id(),
+          ])->toString(),
+        ]));
+        $actions['events_regenerate'] = [
+          '#type' => 'submit',
+          '#value' => $this->t('Re-generate events'),
+          // '#submit' => $this->submitHandlers(['::regenerateEvents']),
+          '#access' => TRUE,
+          '#attributes' => [
+            'disabled' => 'disabled'
+          ]
+        ];
+      }
+      else {
+        $actions['events_regenerate'] = [
+          '#type' => 'submit',
+          '#value' => $this->t('Re-generate events'),
+          '#submit' => $this->submitHandlers(['::regenerateEvents']),
+          '#access' => !empty($events),
+        ];
+      }
+    }
 
     $actions['events_update'] = [
       '#type' => 'submit',
       '#value' => $this->t('Update events'),
       '#submit' => $this->submitHandlers(['::updateEvents']),
-      '#access' => !empty($this->eventRecurrence->getEvents()),
+      '#access' => !empty($events),
     ];
 
     $actions['events_delete'] = [
@@ -480,7 +514,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       '#value' => $this->t('Delete events'),
       '#limit_validation_errors' => [],
       '#submit' => $this->submitHandlers(['::deleteEvents']),
-      '#access' => !empty($this->eventRecurrence->getEvents()),
+      '#access' => !empty($events),
     ];
     $actions['submit']['#access'] = FALSE;
     $actions['delete']['#access'] = FALSE;

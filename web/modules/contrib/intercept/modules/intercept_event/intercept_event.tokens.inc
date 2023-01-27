@@ -16,21 +16,33 @@ use Drupal\node\Entity\Node;
  */
 function intercept_event_token_info_alter(&$data) {
   $data['tokens']['event_attendance']['first-name'] = [
-    'name' => new TranslatableMarkup("User first name"),
-    'description' => new TranslatableMarkup("The first name of this event attendance's user."),
+    'name' => new TranslatableMarkup('User first name'),
+    'description' => new TranslatableMarkup('The first name of this event attendance\'s user.'),
   ];
   $data['tokens']['event_attendance']['full-name'] = [
-    'name' => new TranslatableMarkup("User full name"),
-    'description' => new TranslatableMarkup("The full name of this event attendance's user."),
+    'name' => new TranslatableMarkup('User full name'),
+    'description' => new TranslatableMarkup('The full name of this event attendance\'s user.'),
   ];
   $data['tokens']['event_registration']['first-name'] = [
-    'name' => new TranslatableMarkup("User first name"),
-    'description' => new TranslatableMarkup("The first name of this event registration's user."),
+    'name' => new TranslatableMarkup('User first name'),
+    'description' => new TranslatableMarkup('The first name of this event registration\'s user.'),
   ];
   $data['tokens']['event_registration']['full-name'] = [
-    'name' => new TranslatableMarkup("User full name"),
-    'description' => new TranslatableMarkup("The full name of this event registration's user."),
+    'name' => new TranslatableMarkup('User full name'),
+    'description' => new TranslatableMarkup('The full name of this event registration\'s user.'),
   ];
+}
+
+/**
+ * Implements hook_tokens_alter().
+ */
+function intercept_event_tokens_alter(array &$replacements, array $context, BubbleableMetadata $bubbleable_metadata) {
+  if ($context['type'] == 'entity' && count($context['tokens']) > 1) {
+    if (isset($replacements['[event_registration:field_event:entity:field_date_time]'])) {
+      // Get rid of extra white space on dates in emails.
+      $replacements['[event_registration:field_event:entity:field_date_time]'] = new TranslatableMarkup(strip_tags(trim(preg_replace('/\s+/', ' ', $replacements['[event_registration:field_event:entity:field_date_time]']->__toString()))));
+    }
+  }
 }
 
 /**

@@ -156,7 +156,7 @@ function _intercept_base_add_logo(array &$variables) {
     $variables['logo_path'] = '/' . $theme_path . '/logo.svg';
   }
   else {
-    $variables['logo_path'] = theme_get_setting('logo.path') ? file_create_url(theme_get_setting('logo.path')) : '';
+    $variables['logo_path'] = theme_get_setting('logo.path') ? \Drupal::service('file_url_generator')->generateAbsoluteString(theme_get_setting('logo.path')) : '';
   }
 }
 
@@ -748,8 +748,8 @@ function intercept_base_view_block($id) {
  */
 function intercept_base_css_alter(&$css) {
   if (\Drupal::service('theme_handler')->themeExists('gin')) {
-    unset($css[drupal_get_path('theme', 'gin') . '/dist/css/components/dialog.css']);
-    unset($css[drupal_get_path('theme', 'gin') . '/dist/css/components/ajax.css']);
-    unset($css[drupal_get_path('theme', 'claro') . '/css/components/dialog.css']);
+    unset($css[\Drupal::service('extension.list.theme')->getPath('gin') . '/dist/css/components/dialog.css']);
+    unset($css[\Drupal::service('extension.list.theme')->getPath('gin') . '/dist/css/components/ajax.css']);
+    unset($css[\Drupal::service('extension.list.theme')->getPath('claro') . '/css/components/dialog.css']);
   }
 }

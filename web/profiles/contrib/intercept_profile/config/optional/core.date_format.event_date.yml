@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+id: event_date
+label: 'Event date'
+locked: false
+pattern: 'l, F j, Y g:i a'

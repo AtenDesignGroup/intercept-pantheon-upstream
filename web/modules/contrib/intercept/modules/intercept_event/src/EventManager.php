@@ -140,6 +140,7 @@ class EventManager implements EventManagerInterface {
 
     // Sort locations alphabetically.
     asort($form['field_location']['widget']['#options']);
+    asort($form['field_hosting_location']['widget']['#options']);
 
     $form['field_location']['widget']['#options'] = [0 => '- None -'] + $form['field_location']['widget']['#options'];
     $form['field_location']['widget']['#ajax'] = [

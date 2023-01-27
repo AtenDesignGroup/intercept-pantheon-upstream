@@ -137,7 +137,7 @@ class Views {
    * @param array $base
    *   An array of possible base tables.
    *
-   * @return
+   * @return array
    *   A keyed array of in the form of 'base_table' => 'Description'.
    */
   public static function fetchPluginNames($type, $key = NULL, array $base = []) {
@@ -308,7 +308,7 @@ class Views {
       case 'disabled':
       case 'enabled':
         $filter = ucfirst($filter);
-        $views = call_user_func("static::get{$filter}Views");
+        $views = call_user_func(static::class . "::get{$filter}Views");
         break;
 
       default:

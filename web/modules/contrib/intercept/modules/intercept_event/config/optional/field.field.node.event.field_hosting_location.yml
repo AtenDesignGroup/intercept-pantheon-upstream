@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_hosting_location
+    - node.type.event
+    - node.type.location
+id: node.event.field_hosting_location
+field_name: field_hosting_location
+entity_type: node
+bundle: event
+label: 'Hosting Location'
+description: 'Since this is an online event, please record the location that is hosting/sponsoring the event for data tracking purposes.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      location: location
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

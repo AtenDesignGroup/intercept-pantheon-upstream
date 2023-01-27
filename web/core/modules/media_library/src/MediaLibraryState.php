@@ -204,7 +204,6 @@ class MediaLibraryState extends ParameterBag implements CacheableDependencyInter
    *   The hashed parameters.
    */
   public function isValidHash($hash) {
-    $hash = str_replace('?_wrapper_format=drupal_ajax', '', $hash);
     return hash_equals($this->getHash(), $hash);
   }
 

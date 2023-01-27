@@ -145,7 +145,6 @@ final class SmartDefaultSettings {
     $editor->setEditor('ckeditor5');
 
     $source_editing_additions = HTMLRestrictions::emptySet();
-
     // Compute the appropriate settings based on the CKEditor 4 configuration
     // if it exists.
     $old_editor = $editor->id() ? Editor::load($editor->id()) : NULL;

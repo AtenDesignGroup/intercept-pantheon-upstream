@@ -22,14 +22,14 @@ function views_views_data() {
   $data['views']['table']['group'] = t('Global');
   $data['views']['table']['join'] = [
   // #global is a special flag which allows a table to appear all the time.
-  '#global' => [],
+    '#global' => [],
   ];
 
   $data['views']['random'] = [
-  'title' => t('Random'),
-  'help' => t('Randomize the display order.'),
-  'sort' => [
-    'id' => 'random',
+    'title' => t('Random'),
+    'help' => t('Randomize the display order.'),
+    'sort' => [
+      'id' => 'random',
     ],
   ];
 
@@ -116,7 +116,7 @@ function views_views_data() {
   ];
 
   $data['views']['combine'] = [
-   'title' => t('Combine fields filter'),
+    'title' => t('Combine fields filter'),
     'help' => t('Combine multiple fields together and search by them.'),
     'filter' => [
       'id' => 'combine',
@@ -767,10 +767,9 @@ function views_field_default_views_data(FieldStorageConfigInterface $field_stora
 /**
  * Implements hook_field_views_data().
  *
- * The function implements the hook in behalf of 'core' because it updates
- * filters to use the entity_reference handler, adds a relationship and a
- * reverse relationship to entity_reference field type, which is provided by
- * core.
+ * The function implements the hook in behalf of 'core' because it adds a
+ * relationship and a reverse relationship to entity_reference field type, which
+ * is provided by core.
  */
 function core_field_views_data(FieldStorageConfigInterface $field_storage) {
   $data = views_field_default_views_data($field_storage);
@@ -795,13 +794,6 @@ function core_field_views_data(FieldStorageConfigInterface $field_storage) {
     $field_name = $field_storage->getName();
 
     if ($target_entity_type instanceof ContentEntityTypeInterface) {
-      // Use the entity_reference filter for this field.
-      foreach ($table_data as $table_field_name => $table_field_data) {
-        if (isset($table_field_data['filter']) && $table_field_name != 'delta') {
-          $data[$table_name][$table_field_name]['filter']['id'] = 'entity_reference';
-        }
-      }
-
       // Provide a relationship for the entity type with the entity reference
       // field.
       $args = [

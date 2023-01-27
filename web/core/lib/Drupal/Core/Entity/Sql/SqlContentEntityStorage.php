@@ -24,7 +24,6 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Logger\RfcLogLevel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

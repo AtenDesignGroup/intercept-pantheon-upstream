@@ -26,10 +26,10 @@ const messages = {
     canceled: 'This reservation has been canceled',
   },
   error: {
-    requested: 'An error occured while requesting this reservation',
-    approved: 'An error occured while approving this reservation',
-    denied: 'An error occured while denying this reservation',
-    canceled: 'An error occured while canceling this reservation',
+    requested: 'An error occurred while requesting this reservation',
+    approved: 'An error occurred while approving this reservation',
+    denied: 'An error occurred while denying this reservation',
+    canceled: 'An error occurred while canceling this reservation',
   },
 };
 

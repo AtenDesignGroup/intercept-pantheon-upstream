@@ -26,8 +26,6 @@
   }
 
   .select-wrapper {
-    position: relative;
-    margin-top: 26px;
 
     &.valid .helper-text[data-success],
     &.invalid ~ .helper-text[data-error] {

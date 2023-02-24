@@ -36,7 +36,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['jsonapi_views_test'];
+  protected static $modules = ['jsonapi_views_test'];
 
   /**
    * Views used by this test.
@@ -48,8 +48,8 @@ class JsonapiViewsResourceTest extends ViewTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp($import_test_views = TRUE): void {
-    parent::setUp($import_test_views);
+  protected function setUp($import_test_views = TRUE, $modules = ['views_test_config']): void {
+    parent::setUp($import_test_views, $modules);
 
     ViewTestData::createTestViews(get_class($this), ['jsonapi_views_test']);
     $this->enableViewsTestModule();
@@ -138,7 +138,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     $this->assertIsArray($response_document['data']);
     $this->assertArrayNotHasKey('errors', $response_document);
     $this->assertCount(2, $response_document['data']);
-    $this->assertEqual(2, $response_document['meta']['count']);
+    $this->assertEquals(2, $response_document['meta']['count']);
     $this->assertCacheContext($headers, 'url.query_args:page');
     $this->assertCacheTags($headers, [
       'config:views.view.jsonapi_views_test_node_view',
@@ -156,7 +156,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     $this->assertIsArray($response_document['data']);
     $this->assertArrayNotHasKey('errors', $response_document);
     $this->assertCount(1, $response_document['data']);
-    $this->assertEqual(1, $response_document['meta']['count']);
+    $this->assertEquals(1, $response_document['meta']['count']);
     $this->assertSame($room->uuid(), $response_document['data'][0]['id']);
     $this->assertCacheContext($headers, 'url.query_args:page');
 
@@ -168,7 +168,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     $this->assertIsArray($response_document['data']);
     $this->assertArrayNotHasKey('errors', $response_document);
     $this->assertCount(1, $response_document['data']);
-    $this->assertEqual(1, $response_document['meta']['count']);
+    $this->assertEquals(1, $response_document['meta']['count']);
     $this->assertSame($location->uuid(), $response_document['data'][0]['id']);
     $this->assertCacheContext($headers, 'url.query_args:page');
 
@@ -247,7 +247,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     );
 
     $this->assertCount(5, $response_document['data']);
-    $this->assertEqual(9, $response_document['meta']['count']);
+    $this->assertEquals(9, $response_document['meta']['count']);
     $this->assertArrayHasKey('next', $response_document['links']);
     $this->assertSame(array_slice(array_keys($nodes['all']), 0, 5), array_map(static function (array $data) {
       return $data['id'];
@@ -371,7 +371,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     );
 
     $this->assertCount(5, $response_document['data']);
-    $this->assertEqual(9, $response_document['meta']['count']);
+    $this->assertEquals(9, $response_document['meta']['count']);
     $this->assertArrayHasKey('next', $response_document['links']);
     $this->assertSame(array_slice(array_keys($nodes['all']), 0, 5), array_map(static function (array $data) {
       return $data['id'];
@@ -406,7 +406,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     );
 
     $this->assertCount(5, $response_document['data']);
-    $this->assertEqual(5, $response_document['meta']['count']);
+    $this->assertEquals(5, $response_document['meta']['count']);
     $this->assertSame(array_keys($nodes['paged'][0]), array_map(static function (array $data) {
       return $data['id'];
     }, $response_document['data']));
@@ -421,7 +421,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     );
 
     $this->assertCount(5, $response_document['data']);
-    $this->assertEqual(12, $response_document['meta']['count']);
+    $this->assertEquals(12, $response_document['meta']['count']);
     $this->assertSame(array_keys($nodes['paged'][0]), array_map(static function (array $data) {
       return $data['id'];
     }, $response_document['data']));
@@ -437,7 +437,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     );
 
     $this->assertCount(5, $response_document['data']);
-    $this->assertEqual(12, $response_document['meta']['count']);
+    $this->assertEquals(12, $response_document['meta']['count']);
     $this->assertSame(array_keys($nodes['paged'][1]), array_map(static function (array $data) {
       return $data['id'];
     }, $response_document['data']));
@@ -456,7 +456,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     );
 
     $this->assertCount(2, $response_document['data']);
-    $this->assertEqual(12, $response_document['meta']['count']);
+    $this->assertEquals(12, $response_document['meta']['count']);
     $this->assertSame(array_keys($nodes['paged'][2]), array_map(static function (array $data) {
       return $data['id'];
     }, $response_document['data']));
@@ -475,7 +475,7 @@ class JsonapiViewsResourceTest extends ViewTestBase {
     );
 
     $this->assertCount(0, $response_document['data']);
-    $this->assertEqual(12, $response_document['meta']['count']);
+    $this->assertEquals(12, $response_document['meta']['count']);
     $this->assertArrayNotHasKey('next', $response_document['links']);
     $this->assertCacheContext($headers, 'url.query_args:page');
   }

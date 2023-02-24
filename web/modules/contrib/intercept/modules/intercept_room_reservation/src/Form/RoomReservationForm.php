@@ -270,6 +270,7 @@ class RoomReservationForm extends ContentEntityForm {
 
     $form['field_room']['widget'][0]['target_id']['#ajax'] = [
       'callback' => [$this, 'availabilityCallback'],
+      'disable-refocus' => TRUE,
       'event' => 'autocompleteclose',
       'wrapper' => 'edit-field-dates-0-message',
       'progress' => [
@@ -291,6 +292,7 @@ class RoomReservationForm extends ContentEntityForm {
     // AJAX userCallback is called when a customer card number is selected.
     $form['field_user']['widget'][0]['target_id']['#ajax'] = [
       'callback' => [$this, 'userCallback'],
+      'disable-refocus' => TRUE,
       'event' => 'autocompleteclose',
       'wrapper' => 'edit-field-user-0-message',
       'progress' => [
@@ -308,6 +310,7 @@ class RoomReservationForm extends ContentEntityForm {
     // Adds AJAX callback for minimum/maximum on attendee count field.
     $form['field_attendee_count']['widget'][0]['value']['#ajax'] = [
       'callback' => [$this, 'attendeeCountCallback'],
+      'disable-refocus' => TRUE,
       'event' => 'change',
       'wrapper' => 'edit-field-attendee-count-0-message',
       'progress' => [
@@ -364,17 +367,12 @@ class RoomReservationForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $entity = $this->entity;
 
-    // Save as a new revision if requested to do so.
-    if (!$form_state->isValueEmpty('new_revision') && $form_state->getValue('new_revision') != FALSE) {
-      $entity->setNewRevision();
+    // Save as a new revision.
+    $entity->setNewRevision();
 
-      // If a new revision is created, save the current user as revision author.
-      $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-      $entity->setRevisionUserId(\Drupal::currentUser()->id());
-    }
-    else {
-      $entity->setNewRevision(FALSE);
-    }
+    // If a new revision is created, save the current user as revision author.
+    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+    $entity->setRevisionUserId(\Drupal::currentUser()->id());
 
     $this->status = parent::save($form, $form_state);
 
@@ -407,8 +405,6 @@ class RoomReservationForm extends ContentEntityForm {
           $entity->save();
         }
     }
-    // Commenting this out fixes the redirect issue mentioned in CRL-1541. NOPE
-    // $form_state->setRedirect('entity.room_reservation.canonical', ['room_reservation' => $entity->id()]);
   }
 
   /**
@@ -486,6 +482,7 @@ class RoomReservationForm extends ContentEntityForm {
       'has_max_duration_conflict' => 'bypass room reservation maximum duration constraints',
       'has_open_hours_conflict' => 'bypass room reservation open hours constraints',
       'has_reservation_conflict' => 'bypass room reservation overlap constraints',
+      'attendee_count' => 'bypass room reservation maximum capacity constraints',
     ];
 
     // Check dates.
@@ -542,6 +539,19 @@ class RoomReservationForm extends ContentEntityForm {
           continue;
         }
         $form_state->setErrorByName('field_dates', $validationMessage);
+      }
+    }
+
+    // Double-check attendee count.
+    $counts = $this->validationMessageBuilder->getAttendeeCounts($form_state);
+    $validationMessages = $this->validationMessageBuilder->checkAttendeeCount($counts['attendee_count'], $counts['field_capacity_min'], $counts['field_capacity_max']);
+    if (!empty(array_filter($validationMessages))) {
+      foreach (array_filter($validationMessages) as $key => $validationMessage) {
+        // Don't set errors if the user should be able to bypass this constraint.
+        if ($this->currentUser->hasPermission($bypassPermissions[$key])) {
+          continue;
+        }
+        $form_state->setErrorByName('field_attendee_count', $validationMessage);
       }
     }
   }

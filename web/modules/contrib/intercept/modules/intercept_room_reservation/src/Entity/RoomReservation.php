@@ -319,6 +319,9 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
         $approval_required = FALSE;
         $is_staff = TRUE;
       }
+      else {
+        $is_staff = FALSE;
+      }
 
       $current_status = $this->get(self::STATUS_FIELD)->getString();
       $current_path = \Drupal::service('path.current')->getPath();

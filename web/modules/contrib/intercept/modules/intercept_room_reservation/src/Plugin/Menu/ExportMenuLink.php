@@ -14,7 +14,7 @@ class ExportMenuLink extends MenuLinkDefault {
    */
   public function isEnabled() {
     $current_user = \Drupal::currentUser();
-    $permission = $current_user->hasPermission('access management page room_reservations_export');
+    $permission = $current_user->hasPermission('access room reservations export');
 
     if ($permission) {
       return TRUE;

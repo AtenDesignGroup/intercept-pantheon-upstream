@@ -163,12 +163,12 @@ class RegisterEventStep2 extends React.PureComponent {
     const total = this.getValuesTotal();
     // Must meet the minimum requirements.
     if (total <= 0) {
-      return 'You must register at least 1 attendee';
+      return 'You must register at least 1 attendee.';
     }
 
     // Must not exceed total capacity.
     if (this.isOverTotalCapacity(total)) {
-      return `This event has a total capacity of ${this.getCapacity()}`;
+      return `This event has a total capacity of ${this.getCapacity()}.`;
     }
 
     // Must not exceed waitlist capacity.
@@ -239,7 +239,7 @@ class RegisterEventStep2 extends React.PureComponent {
     if (this.getValuesTotal(values) <= 0) {
       this.setState({
         validationErrors: {
-          [this.props.segments[0].key]: 'You must register at least one person',
+          [this.props.segments[0].key]: 'You must register at least one person.',
         },
       });
     }
@@ -275,7 +275,7 @@ class RegisterEventStep2 extends React.PureComponent {
     if (segments.length <= 0) {
       return (
         <FormWrapper>
-          <p>Loading segments</p>
+          <p>Loading segments...</p>
         </FormWrapper>
       );
     }

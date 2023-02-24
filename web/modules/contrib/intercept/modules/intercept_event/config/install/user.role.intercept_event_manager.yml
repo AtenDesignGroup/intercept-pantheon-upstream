@@ -8,6 +8,7 @@ is_admin: null
 permissions:
   - 'access  management'
   - 'access  management page default'
+  - 'access equipment reservations export'
   - 'access event attendance tab'
   - 'access event registrations tab'
   - 'access management'
@@ -17,7 +18,7 @@ permissions:
   - 'access management page events'
   - 'access management page meetings_export'
   - 'access management page room_reservations'
-  - 'access management page room_reservations_export'
+  - 'access room reservations export'
   - 'access staff management'
   - 'access staff management page equipment_reservations'
   - 'access staff management page event_templates'

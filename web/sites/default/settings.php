@@ -766,6 +766,7 @@ $settings['entity_update_backup'] = TRUE;
  *      the site settings remain consistent.
  */
 include __DIR__ . "/settings.pantheon.php";
+
 /**
  * If there is a local settings file, then include it
  */

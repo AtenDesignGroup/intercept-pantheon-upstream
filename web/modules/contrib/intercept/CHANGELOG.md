@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta11] - 2023-02-24
+
+<h2>Sprint 51 Deployment</h2>
+
+- Added a new data export option for equipment reservation reporting
+- Ensured a new revision is recorded each time field changes happen on room reservations
+- Fixed a bug regarding form field focus for the room reservation form
+- Prevented customers from entering 0 attendees when creating a room reservation
+- Fixed a bug on the room reservation calendar that prevented drag and drop functionality from working correctly
+- Fixed a visual issue with focus outlines in the My Account menu
+
 ## [8.x-1.0-beta10] - 2023-01-27
 
 - Added "hosting location" field for online events

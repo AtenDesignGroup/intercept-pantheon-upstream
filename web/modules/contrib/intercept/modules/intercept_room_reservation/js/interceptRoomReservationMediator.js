@@ -224,8 +224,8 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
         const form = document.querySelector('form.room-reservation-form');
         if (form) {
           Drupal.behaviors.interceptUpdateRoomReservationForm.attach(form);
+          return;
         }
-        return;
       }
       currentEvent = id;
       currentAction = EDIT_ACTION;

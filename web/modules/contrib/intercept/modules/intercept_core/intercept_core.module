@@ -185,7 +185,7 @@ function intercept_core_user_load(array $entities) {
   // @todo This would be more efficient as a calculated field.
   $profile_storage = \Drupal::service('entity_type.manager')->getStorage('profile');
   $profiles = $profile_storage->loadByProperties([
-    'uid' => array_keys($entities),
+    'uid' => reset(array_keys($entities)),
     'status' => 1,
   ]);
   foreach ($entities as $entity) {

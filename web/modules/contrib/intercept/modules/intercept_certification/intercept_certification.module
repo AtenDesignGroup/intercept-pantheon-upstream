@@ -252,7 +252,7 @@ function intercept_certification_views_pre_view(ViewExecutable $view, $display_i
       'admin_label' => '',
       'empty' => TRUE,
       'tokenize' => FALSE,
-      'content' => '<h1 class="title">Certifications</h1>' .
+      'content' => '<h1 class="page-title">Certifications</h1>' .
       $link,
       'plugin_id' => 'text_custom',
     ];

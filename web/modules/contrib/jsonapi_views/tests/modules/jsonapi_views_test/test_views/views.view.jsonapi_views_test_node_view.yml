@@ -220,6 +220,7 @@ display:
           exposed: true
           expose:
             label: ID
+            field_identifier: nid
           entity_type: node
           entity_field: nid
           plugin_id: standard

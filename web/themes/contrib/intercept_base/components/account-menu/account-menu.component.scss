@@ -76,6 +76,19 @@
         color: $orange-50;
       }
     }
+
+    a {
+      &:focus,
+      &:active {
+        color: #4C4D4F;
+        margin-left: 3px;
+        padding: 3px;
+        outline-width: 3px;
+        outline-style: dashed;
+        outline-color: #008db1;
+        outline-color: rgba(#008db1, 0.6);
+      }
+    }
   }
 
   .menu--heading-group {

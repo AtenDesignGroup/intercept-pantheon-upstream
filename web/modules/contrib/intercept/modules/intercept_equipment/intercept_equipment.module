@@ -11,6 +11,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -266,6 +267,27 @@ function intercept_equipment_views_pre_view(ViewExecutable $view, $display_id, a
       $exposed_date['field_dates_value_1']['max'] = $date_future->format('m/d/Y');
       $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
+  }
+  elseif ($view->id() == 'intercept_export_equipment_reservations' && $display_id == 'page') {
+    // Build the link to download the CSV.
+    $request = \Drupal::request();
+    $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_export_equipment_reservations.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable['#attributes'] = ['class' => ['button', 'create-content-button']];
+    $link = \Drupal::service('renderer')->renderPlain($link_renderable);
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => '<h1 class="page-title">Export Equipment Reservations</h1>' .
+      $link,
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('page', 'header', 'area_text_custom', $options);
   }
 }
 

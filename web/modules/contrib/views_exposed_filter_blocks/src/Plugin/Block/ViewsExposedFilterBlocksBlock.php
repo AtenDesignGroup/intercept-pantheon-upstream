@@ -98,6 +98,10 @@ class ViewsExposedFilterBlocksBlock extends BlockBase {
         $form_state->set('rerender', NULL);
         $form = \Drupal::formBuilder()
           ->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
+        // Override form action URL in order to allow to place the exposed form block on a different page as the view results
+        if ($view->display_handler->getOption('link_display') == 'custom_url' && !empty($view->display_handler->getOption('link_url'))) {
+          $form['#action'] = $view->display_handler->getOption('link_url');
+        }
         return $form;
       }
       else {

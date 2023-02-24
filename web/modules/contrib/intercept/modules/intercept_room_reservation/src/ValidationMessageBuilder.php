@@ -196,20 +196,8 @@ class ValidationMessageBuilder {
     $markup = NULL;
     $validationMessages = [];
 
-    $field_attendee_count = $form_state->getValue('field_attendee_count');
-    if (isset($field_attendee_count[0]['value'])) {
-      $attendee_count = $field_attendee_count[0]['value'];
-
-      // Get the room value from the form_state.
-      $field_room = $form_state->getValue('field_room');
-      if (isset($field_room[0]['target_id'])) {
-        // Get the min and max capacity values from the room node.
-        $room_node = Node::load($field_room[0]['target_id']);
-        $field_capacity_min = $room_node->get('field_capacity_min')->getString();
-        $field_capacity_max = $room_node->get('field_capacity_max')->getString();
-        $validationMessages = $this->checkAttendeeCount($attendee_count, $field_capacity_min, $field_capacity_max);
-      }
-    }
+    $counts = $this->getAttendeeCounts($form_state);
+    $validationMessages = $this->checkAttendeeCount($counts['attendee_count'], $counts['field_capacity_min'], $counts['field_capacity_max']);
     if (!empty($validationMessages)) {
       $messages = [];
       foreach (array_filter($validationMessages) as $key => $validationMessage) {
@@ -223,6 +211,33 @@ class ValidationMessageBuilder {
     $response->addCommand($command);
 
     return $response;
+  }
+
+  /**
+   * Reusable function to get attendee counts from form state and room info.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current form state.
+   *
+   * @return array $counts
+   *   An array of counts for determining validation messages.
+   */
+  public function getAttendeeCounts(FormStateInterface $form_state) {
+    $counts = [];
+    $field_attendee_count = $form_state->getValue('field_attendee_count');
+    if (isset($field_attendee_count[0]['value'])) {
+      $counts['attendee_count'] = $field_attendee_count[0]['value'];
+
+      // Get the room value from the form_state.
+      $field_room = $form_state->getValue('field_room');
+      if (isset($field_room[0]['target_id'])) {
+        // Get the min and max capacity values from the room node.
+        $room_node = Node::load($field_room[0]['target_id']);
+        $counts['field_capacity_min'] = $room_node->get('field_capacity_min')->getString();
+        $counts['field_capacity_max'] = $room_node->get('field_capacity_max')->getString();
+      }
+    }
+    return $counts;
   }
 
   /**

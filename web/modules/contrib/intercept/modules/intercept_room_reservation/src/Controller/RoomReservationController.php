@@ -366,26 +366,27 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     ];
 
     $response = new AjaxResponse();
+    $action = $request->get('action');
 
-    // @todo: This is buggy. There are inconsistencies in how and when thos controller gets fired.
-    // In some cases, this is called if the user submits a ReservationStatusChangeForm after it has been
-    // injected with Ajax.
-    if ($request->getMethod() === 'POST') {
-      $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
-    }
-    else {
-      $action = $request->get('action');
+    switch ($action) {
+      case 'replace':
+        $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
+        $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
+        break;
 
-      switch ($action) {
-        case 'replace':
-          $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
-          $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
-          break;
+      case 'open':
+        $response->addCommand(new OpenOffCanvasDialogCommand('Edit Reservation', $build, $request->get('dialogOptions')));
+        break;
 
-        default:
-          $response->addCommand(new OpenOffCanvasDialogCommand('Edit Reservation', $build, $request->get('dialogOptions')));
-          break;
-      }
+      default:
+        // When clicking "Edit" from the room reservation details in the off-canvas context,
+        // action is NULL. There may be cases where action is NULL, but we are not in an off-canvas
+        // context, but I haven't identified one yet. If we do run into those cases, we'll need an alternative
+        // method to distinguish if the we should open an off-canvas dialog or replace the existing one.
+        // For now, we'll assume we need to replace the existing off-canvas dialog.
+        $response->addCommand(new SetDialogTitleCommand('#drupal-off-canvas', 'Edit Reservation'));
+        $response->addCommand(new HtmlCommand('#drupal-off-canvas', $build));
+        break;
     }
 
     return $response;

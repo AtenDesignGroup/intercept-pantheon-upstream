@@ -535,10 +535,10 @@ tbody + tbody {
 }
 
 :focus {
-  outline-width: 3px !important;
-  outline-style: dashed !important;
-  outline-color: #008db1 !important;
-  outline-color: rgba(#008db1, 0.6) !important;
+  outline-width: 3px;
+  outline-style: dashed;
+  outline-color: #008db1;
+  outline-color: rgba(#008db1, 0.6);
 }
 
 :active {

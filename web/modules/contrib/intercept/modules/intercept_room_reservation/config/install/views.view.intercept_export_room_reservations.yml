@@ -968,7 +968,7 @@ display:
         type: full
         options:
           offset: 0
-          items_per_page: 10
+          items_per_page: 25
           total_pages: null
           id: 0
           tags:
@@ -1088,7 +1088,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access management page room_reservations_export'
+          perm: 'access room reservations export'
       cache:
         type: tag
         options: {  }

@@ -284,6 +284,7 @@ function intercept_base_preprocess_form(&$variables) {
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
     case 'views-exposed-form-intercept-equipment-page':
+    case 'views-exposed-form-intercept-export-equipment-reservations-page':
     case 'views-exposed-form-intercept-export-room-reservations-page':
     case 'views-exposed-form-intercept-event-attendance-by-age-group-page':
     case 'views-exposed-form-intercept-event-attendance-embed':
@@ -373,14 +374,16 @@ function intercept_base_theme_suggestions_field_alter(array &$suggestions, array
 function intercept_base_theme_suggestions_fieldset_alter(array &$suggestions, array $variables) {
   if (isset($variables['element']['#id'])) {
     $date_ids = [
-    // Room reservations.
+      // Room reservations
       'edit-field-dates-value-wrapper',
-    // Events.
+      // Events
       'edit-field-date-time-value-wrapper',
-    // Equipment.
+      // Equipment
       'edit-field-dates-value-1-wrapper',
-    // attendance/scans.
+      // Attendance/scans
       'edit-attendance-date-wrapper',
+      // Meetings
+      'edit-date-range-wrapper',
     ];
     if (in_array($variables['element']['#id'], $date_ids) || strstr($variables['element']['#id'], 'edit-field-dates-value-wrapper')) {
       $suggestions[] = 'fieldset__views_exposed_form__dates';

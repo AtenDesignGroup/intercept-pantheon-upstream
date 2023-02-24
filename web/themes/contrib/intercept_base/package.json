@@ -7,7 +7,7 @@
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.2.0",
     "breakpoint-sass": "~2.6.1",
-    "browser-sync": "^2.11.1",
+    "browser-sync": "^2.27.11",
     "browserify": "^13.0.0",
     "browserify-shim": "^3.8.12",
     "errorify": "^0.3.1",

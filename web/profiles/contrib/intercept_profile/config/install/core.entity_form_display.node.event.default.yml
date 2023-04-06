@@ -30,6 +30,7 @@ dependencies:
     - field.field.node.event.field_presented_by_non_staff
     - field.field.node.event.field_presenter
     - field.field.node.event.field_room
+    - field.field.node.event.field_staff_presenter
     - field.field.node.event.field_text_content
     - field.field.node.event.field_text_intro
     - field.field.node.event.field_text_teaser
@@ -88,6 +89,7 @@ third_party_settings:
         - field_event_type_primary
         - field_event_audience
         - field_audience_primary
+        - field_staff_presenter
         - field_presenter
         - field_event_tags
       label: Metadata
@@ -126,7 +128,7 @@ content:
     third_party_settings: {  }
   field_add_to_cal:
     type: add_to_calendar_widget_type
-    weight: 22
+    weight: 23
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -163,7 +165,7 @@ content:
     third_party_settings: {  }
   field_event_designation:
     type: options_buttons
-    weight: 23
+    weight: 24
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -181,13 +183,13 @@ content:
     third_party_settings: {  }
   field_event_status:
     type: options_select
-    weight: 25
+    weight: 26
     region: content
     settings: {  }
     third_party_settings: {  }
   field_event_tags:
     type: options_select
-    weight: 19
+    weight: 20
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -245,7 +247,7 @@ content:
     third_party_settings: {  }
   field_presenter:
     type: existing_autocomplete_field_widget
-    weight: 18
+    weight: 19
     region: content
     settings:
       size: 60
@@ -257,6 +259,14 @@ content:
     weight: 14
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_staff_presenter:
+    type: string_textfield
+    weight: 18
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_text_content:
     type: text_textarea
@@ -284,7 +294,7 @@ content:
     third_party_settings: {  }
   field_waitlist_max:
     type: number
-    weight: 25
+    weight: 26
     region: content
     settings:
       placeholder: ''

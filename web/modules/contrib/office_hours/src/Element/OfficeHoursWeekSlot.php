@@ -21,11 +21,25 @@ class OfficeHoursWeekSlot extends OfficeHoursBaseSlot {
     // Update $element['#value'] with default data and prepare $element widget.
     parent::processOfficeHoursSlot($element, $form_state, $complete_form);
 
+    // Facilitate Weekday specific things, such as changing date.
+    $day = $element['#value']['day'];
+    $day_delta = $element['#day_delta'];
     $value = $element['#value'];
-    $day = $value['day'];
-    $day_delta = $element['#daydelta'];
-    $label = OfficeHoursDateHelper::getLabel('', $value, $day_delta);
+    $label = parent::getLabel('long', $value, $day_delta);
 
+    // Override (hide) the 'day' select-field, only showing the Weekday name.
+    $element['day'] = [
+      '#type' => 'hidden',
+      // Add a label/header/title, also for accessibility (a11y) screen readers.
+      '#title' => $label,
+      // '#title_display' => 'invisible',.
+      '#prefix' => $day_delta
+        ? "<div class='office-hours-more-label'>$label</div>"
+        : "<div class='office-hours-label'>$label</div>",
+      '#default_value' => $day,
+    ];
+
+    $element['#attributes']['class'][] = "office-hours-day-$day";
     if ($day_delta == 0) {
       // This is the first slot of the day.
     }
@@ -36,25 +50,10 @@ class OfficeHoursWeekSlot extends OfficeHoursBaseSlot {
     }
     else {
       // This is an empty following slot.
-      // Hide the slot and add Add-link, in case shown by js.
+      // Hide the slot and Add-link, in case shown by js.
       $element['#attributes']['class'][] = 'office-hours-hide';
       $element['#attributes']['class'][] = 'office-hours-more';
     }
-
-    // Override (hide) the 'day' select-field.
-    $element['day'] = [
-      // For accessibility (a11y) screen readers, a header/title is introduced.
-      '#title' => $label,
-      // '#type' => 'item', // #3273363.
-      '#type' => 'hidden',
-      '#prefix' => $day_delta
-        ? "<div class='office-hours-more-label'>$label</div>"
-        : "<div class='office-hours-label'>$label</div>",
-      '#default_value' => $day,
-      '#value' => $day,
-    ];
-
-    $element['#attributes']['class'][] = "office-hours-day-$day";
 
     return $element;
   }

@@ -2,7 +2,6 @@
 
 namespace Drupal\consumers;
 
-use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -26,13 +25,6 @@ class Negotiator {
   protected $requestStack;
 
   /**
-   * Protected entityRepository.
-   *
-   * @var \Drupal\Core\Entity\EntityRepositoryInterface
-   */
-  protected $entityRepository;
-
-  /**
    * The entity storage.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
@@ -49,9 +41,8 @@ class Negotiator {
   /**
    * Instantiates a new Negotiator object.
    */
-  public function __construct(RequestStack $request_stack, EntityRepositoryInterface $entity_repository) {
+  public function __construct(RequestStack $request_stack) {
     $this->requestStack = $request_stack;
-    $this->entityRepository = $entity_repository;
   }
 
   /**
@@ -68,19 +59,20 @@ class Negotiator {
   protected function doNegotiateFromRequest(Request $request) {
     // There are several ways to negotiate the consumer:
     // 1. Via a custom header.
-    $consumer_uuid = $request->headers->get('X-Consumer-ID');
-    if (!$consumer_uuid) {
+    $consumer_id = $request->headers->get('X-Consumer-ID');
+    if (!$consumer_id) {
       // 2. Via a query string parameter.
-      $consumer_uuid = $request->query->get('consumerId');
-      if (!$consumer_uuid && $request->query->has('_consumer_id')) {
+      $consumer_id = $request->query->get('consumerId');
+      if (!$consumer_id && $request->query->has('_consumer_id')) {
         $this->logger->warning('The "_consumer_id" query string parameter is deprecated and it will be removed in the next major version of the module, please use "consumerId" instead.');
-        $consumer_uuid = $request->query->get('_consumer_id');
+        $consumer_id = $request->query->get('_consumer_id');
       }
     }
-    if ($consumer_uuid) {
+    if ($consumer_id) {
       try {
+        $results = $this->storage->loadByProperties(['client_id' => $consumer_id]);
         /** @var \Drupal\consumers\Entity\ConsumerInterface $consumer */
-        $consumer = $this->entityRepository->loadEntityByUuid('consumer', $consumer_uuid);
+        $consumer = !empty($results) ? reset($results) : $results;
       }
       catch (EntityStorageException $exception) {
         watchdog_exception('consumers', $exception);
@@ -108,7 +100,7 @@ class Negotiator {
     // If the request is not provided, use the request from the stack.
     $request = $request ? $request : $this->requestStack->getCurrentRequest();
     $consumer = $this->doNegotiateFromRequest($request);
-    $request->attributes->set('consumer_uuid', $consumer->uuid());
+    $request->attributes->set('consumer_id', $consumer->getClientId());
     return $consumer;
   }
 

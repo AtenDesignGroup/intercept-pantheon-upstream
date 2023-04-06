@@ -1,7 +1,7 @@
 name: Intercept Profile
 type: profile
 description: 'The Intercept profile helps setup Drupal with the Intercept modules and theme.'
-core_version_requirement: ^8.9 || ^9.0
+core_version_requirement: ^9 || ^10
 distribution:
   name: Intercept Profile
 dependencies:
@@ -14,7 +14,7 @@ dependencies:
   - drupal:automated_cron
   - drupal:block
   - drupal:block_content
-  - drupal:ckeditor
+  - drupal:ckeditor5
   - drupal:config
   - drupal:contextual
   - drupal:datetime
@@ -30,7 +30,6 @@ dependencies:
   - drupal:path
   - drupal:page_cache
   - drupal:dynamic_page_cache
-  - drupal:rdf
   - drupal:taxonomy
   - drupal:toolbar
   - drupal:views

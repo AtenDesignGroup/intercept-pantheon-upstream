@@ -3,16 +3,53 @@
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\office_hours\OfficeHoursCacheHelper;
 use Drupal\office_hours\OfficeHoursDateHelper;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Abstract plugin implementation of the formatter.
  */
-abstract class OfficeHoursFormatterBase extends FormatterBase {
+abstract class OfficeHoursFormatterBase extends FormatterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * Entity type manager object.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  private $entityTypeManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['label'],
+      $configuration['view_mode'],
+      $configuration['third_party_settings'],
+      $container->get('entity_type.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -25,6 +62,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
       'grouped' => FALSE,
       'show_closed' => 'all',
       'closed_format' => 'Closed',
+      'all_day_format' => 'All day open',
       'separator' => [
         'days' => '<br />',
         'grouped_days' => ' - ',
@@ -105,7 +143,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
       '#default_value' => $this->getSetting('office_hours_first_day'),
     ];
     $element['day_format'] = [
-      '#title' => $this->t('Day notation'),
+      '#title' => $this->t('Weekday notation'),
       '#type' => 'select',
       '#options' => [
         'long' => $this->t('long'),
@@ -121,10 +159,10 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
       '#title' => $this->t('Time notation'),
       '#type' => 'select',
       '#options' => [
-        'G' => $this->t('24 hour time') . ' (9:00)', // D7: key = 0.
-        'H' => $this->t('24 hour time') . ' (09:00)', // D7: key = 2.
-        'g' => $this->t('12 hour time') . ' (9:00 am)', // D7: key = 1.
-        'h' => $this->t('12 hour time') . ' (09:00 am)', // D7: key = 1.
+        'G' => $this->t('24 hour time') . ' (9:00)',
+        'H' => $this->t('24 hour time') . ' (09:00)',
+        'g' => $this->t('12 hour time') . ' (9:00 am)',
+        'h' => $this->t('12 hour time') . ' (09:00 am)',
       ],
       '#default_value' => $settings['time_format'],
       '#required' => FALSE,
@@ -145,12 +183,26 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
       '#required' => FALSE,
     ];
     $element['closed_format'] = [
-      '#title' => $this->t('Empty days notation'),
+      '#title' => $this->t('Empty day notation'),
       '#type' => 'textfield',
       '#size' => 30,
       '#default_value' => $settings['closed_format'],
       '#required' => FALSE,
       '#description' => $this->t('Format of empty (closed) days.
+        String can be translated when the
+        <a href=":install">Interface Translation module</a> is installed.',
+        [
+          ':install' => Url::fromRoute('system.modules_list')->toString(),
+        ]
+      ),
+    ];
+    $element['all_day_format'] = [
+      '#title' => $this->t('All day notation'),
+      '#type' => 'textfield',
+      '#size' => 60,
+      '#default_value' => $settings['all_day_format'],
+      '#required' => FALSE,
+      '#description' => $this->t('Format for all-day-open days.
         String can be translated when the
         <a href=":install">Interface Translation module</a> is installed.',
         [
@@ -240,10 +292,8 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
         using the '(week) with exceptions' widget."),
     ];
     // Get the exception date formats.
-    // @todo Use $container->get('entity_type.manager').
-    $entity_type_manager = \Drupal::service('entity_type.manager');
-    $formats = $entity_type_manager->getStorage('date_format')->loadMultiple();
-    // Set select list options for the date format. @todo OptionsProviderInterface.
+    $formats = $this->entityTypeManager->getStorage('date_format')->loadMultiple();
+    // @todo Set date format options using OptionsProviderInterface.
     $options = [];
     foreach ($formats as $format) {
       $options[$format->id()] = $format->get('label');
@@ -251,7 +301,6 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
     $element['exceptions']['restrict_exceptions_to_num_days'] = [
       '#title' => $this->t('Restrict exceptions display to x days in future'),
       '#type' => 'number',
-      // '#default_value' => $settings['exceptions']['restrict_exceptions_to_num_days'],
       '#default_value' => $settings['exceptions']['restrict_exceptions_to_num_days'],
       '#min' => 0,
       '#max' => 99,
@@ -272,7 +321,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
     ];
     // @todo Move to field settings, since used in both Formatter and Widget.
     $element['exceptions']['title'] = [
-      '#title' => $this->t('Title for exceptions'),
+      '#title' => $this->t('Title for exceptions section'),
       '#type' => 'textfield',
       '#default_value' => $settings['exceptions']['title'],
       '#description' => $this->t('Leave empty to display no title between weekdays and exception days.'),
@@ -325,12 +374,12 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
     // @todo Return more info, like Date module does.
     $summary[] = $this->t('Display Office hours in different formats.');
 
-    $label = OfficeHoursDateHelper::getLabel($settings['exceptions']['date_format'], ['day' => strtotime('today midnight')]);
+    $label = OfficeHoursItem::formatLabel($settings, ['day' => strtotime('today midnight')]);
     $summary[] = $this->t("Show '@title' until @time days in the future.", [
-        '@time' => $settings['exceptions']['restrict_exceptions_to_num_days'],
-        '@date' => $settings['exceptions']['date_format'],
-        '@title' => $settings['exceptions']['title'] == '' ? $this->t('Exception days') : $this->t($settings['exceptions']['title']),
-      ]) . ' ' . $this->t("Example: $label");
+      '@time' => $settings['exceptions']['restrict_exceptions_to_num_days'],
+      '@date' => $settings['exceptions']['date_format'],
+      '@title' => $settings['exceptions']['title'] == '' ? $this->t('Exception days') : $this->t($settings['exceptions']['title']),
+    ]) . ' ' . $this->t("Example: $label");
 
     return $summary;
   }
@@ -340,7 +389,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
    *
    * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
    *   The office hours.
-   * @param $langcode
+   * @param string $langcode
    *   The required language code.
    * @param array $elements
    *   Elements.
@@ -355,10 +404,11 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
 
     $formatter = new OfficeHoursFormatterSchema(
       $this->pluginId, $this->pluginDefinition, $this->fieldDefinition,
-      $this->settings, $this->viewMode, $this->label, $this->thirdPartySettings);
+      $this->settings, $this->viewMode, $this->label, $this->thirdPartySettings, $this->entityTypeManager);
 
     $new_element = $formatter->viewElements($items, $langcode);
     $elements[] = $new_element[0];
+    unset($elements['#cache']);
     return $elements;
   }
 
@@ -367,7 +417,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
    *
    * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
    *   The office hours.
-   * @param $langcode
+   * @param string $langcode
    *   The required language code.
    * @param array $elements
    *   Elements.
@@ -383,9 +433,10 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
 
     $formatter = new OfficeHoursFormatterStatus(
       $this->pluginId, $this->pluginDefinition, $this->fieldDefinition,
-      $this->settings, $this->viewMode, $this->label, $this->thirdPartySettings);
+      $this->settings, $this->viewMode, $this->label, $this->thirdPartySettings, $this->entityTypeManager);
 
     $new_element = $formatter->viewElements($items, $langcode);
+    unset($new_element['#cache']);
 
     switch ($new_element['#position']) {
       case 'before':
@@ -404,6 +455,36 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getSetting($key) {
+    if ($key !== 'cache') {
+      return parent::getSetting($key);
+    }
+
+    // Determine if this entity display must be formatted.
+    // Return TRUE if render caching must be active.
+    // This is the case when a Status formatter (open/closed) is used.
+    // Also, on the entity itself, it must be checked wether
+    // Exception days are used. If so, then caching is also needed.
+    if ($this->settings['current_status']['position'] !== '') {
+      return TRUE;
+    }
+    switch ($this->settings['show_closed']) {
+      case 'all':
+      case 'open':
+      case 'none':
+        // These caches never expire, since they are always correct.
+        return FALSE;
+
+      case 'current':
+      case 'next':
+      default:
+        return TRUE;
+    }
+  }
+
+  /**
    * Add a ['#cache']['max-age'] attribute to $elements, if necessary.
    *
    * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
@@ -413,18 +494,30 @@ abstract class OfficeHoursFormatterBase extends FormatterBase {
    */
   protected function addCacheMaxAge(OfficeHoursItemListInterface $items, array &$elements) {
     $settings = $this->getSettings();
-    $third_party_settings = $this->getThirdPartySettings();
+    // $third_party_settings = $this->getThirdPartySettings();
+    // Take the 'open/closed' indicator, if set, since it is the lowest.
+    // Overwrite field settings for 'next' formatter'.
+    // Only in these cases, we need the formatted office hours.
+    // @todo Use $items, not $office_hours in cacheHelper->getCacheMaxAge().
+    $cache_setting = $this->getSetting('cache');
+    if ($cache_setting == TRUE || $items->hasExceptionDays()) {
+      if ($settings['current_status']['position'] !== '') {
+        $settings['show_closed'] = 'next';
+      }
+      $field_settings = $items->getFieldDefinition()->getSettings();
+      $office_hours = $items->getRows($settings, $field_settings, []);
 
-    $max_age = $items->getCacheTime($settings, $this->getFieldSettings(), $third_party_settings);
-    if ($max_age !== Cache::PERMANENT) {
-      $entity = $items->getEntity();
+      $cache_helper = new OfficeHoursCacheHelper($settings, $items, $office_hours);
 
-      $cache_tags = $entity->getEntityTypeId() . ':' . $entity->id();
-      $elements['#cache'] = [
-        'max-age' => $max_age,
-        // @see https://www.drupal.org/docs/drupal-apis/cache-api/cache-tags
-        'tags' => [$cache_tags],
-      ];
+      $max_age = $cache_helper->getCacheMaxAge();
+      if ($max_age !== Cache::PERMANENT) {
+        // @see https://www.drupal.org/docs/drupal-apis/cache-api
+        $elements['#cache'] = [
+          'max-age' => $max_age,
+          'tags' => $cache_helper->getCacheTags(),
+          // 'contexts' => $cache_helper->getCacheContexts(),
+        ];
+      }
     }
   }
 

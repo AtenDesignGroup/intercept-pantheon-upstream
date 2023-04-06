@@ -99,6 +99,19 @@
         {% if content.field_event_tags %}
           {{ content.field_event_tags }}
         {% endif %}
+        {% if user.hasPermission('analyze events') %}
+          {% if content.field_staff_presenter|render|striptags|trim %}
+            {{ content.field_staff_presenter }}
+          {% else %}
+            <div class="metadata">
+              <h4 class="metadata__title">Staff Presenter</h4>
+              <div class="metadata__content">
+                {{ node.getOwner.getDisplayName }}
+              </div>
+            </div>
+          {% endif %}
+          {{ content.field_presenter }}
+        {% endif %}
       </div>
     </div>
   </div>

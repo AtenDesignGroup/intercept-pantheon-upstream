@@ -29,6 +29,7 @@ dependencies:
     - field.field.node.event.field_presented_by_non_staff
     - field.field.node.event.field_presenter
     - field.field.node.event.field_room
+    - field.field.node.event.field_staff_presenter
     - field.field.node.event.field_text_content
     - field.field.node.event.field_text_intro
     - field.field.node.event.field_text_teaser
@@ -105,6 +106,7 @@ hidden:
   field_presented_by_non_staff: true
   field_presenter: true
   field_room: true
+  field_staff_presenter: true
   field_text_content: true
   field_text_intro: true
   field_text_teaser: true

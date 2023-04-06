@@ -1,7 +1,7 @@
 services:
   consumer.negotiator:
     class: Drupal\consumers\Negotiator
-    arguments: ['@request_stack', '@entity.repository']
+    arguments: ['@request_stack']
     calls:
       - [setLogger, ['@logger.channel.consumers']]
       - [setEntityStorage, ['@entity_type.manager']]

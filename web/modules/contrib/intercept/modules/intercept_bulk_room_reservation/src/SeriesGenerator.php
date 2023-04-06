@@ -101,10 +101,12 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     $dates = $logistics['dates'];
 
     // Return error/warning if end time is before start time.
-    $startTime = strtotime($input['field_date_time'][0]['start']['date'] . ' ' . $input['field_date_time'][0]['start']['time']);
-    $endTime = strtotime($input['field_date_time'][0]['end']['date'] . ' ' . $input['field_date_time'][0]['end']['time']);
-    if ($startTime > $endTime) {
-      \Drupal::messenger()->addWarning('It looks like you have entered a start time that is later than the end time. Please check your times and try again.');
+    if (count($input) > 0) { 
+      $startTime = strtotime($input['field_date_time'][0]['start']['date'] . ' ' . $input['field_date_time'][0]['start']['time']);
+      $endTime = strtotime($input['field_date_time'][0]['end']['date'] . ' ' . $input['field_date_time'][0]['end']['time']);
+      if ($startTime > $endTime) {
+        \Drupal::messenger()->addWarning('It looks like you have entered a start time that is later than the end time. Please check your times and try again.');
+      }
     }
 
     $utcTimeZone = new \DateTimeZone('UTC');
@@ -306,7 +308,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
         }
         break;
 
-      default:
+      case 'bulk_room_reservation':
         // If the $entity isn't a node, it's BulkRoomReservation.
         $utcTimeZone = new \DateTimeZone('UTC');
         $logistics['times'] = [

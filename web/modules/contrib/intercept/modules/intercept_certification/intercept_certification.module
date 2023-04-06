@@ -75,7 +75,7 @@ function intercept_certification_form_alter(&$form, FormStateInterface $form_sta
  *   The form state of the parent form.
  */
 function intercept_certification_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
-  if (isset($entity_form['#form_id']) && $entity_form['#form_id'] == 'user_customer_form' && $entity_form['#entity_type'] == 'profile') {
+  if (isset($entity_form['#id']) && $entity_form['#id'] == 'edit-customer-profile' && $entity_form['#entity_type'] == 'profile') {
     // Only staff are allowed to edit the Customer Information fields.
     $current_user = \Drupal::currentUser();
     $roles = $current_user->getRoles();

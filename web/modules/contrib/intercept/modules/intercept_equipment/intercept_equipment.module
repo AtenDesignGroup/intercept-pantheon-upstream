@@ -118,14 +118,29 @@ function intercept_equipment_mail($key, &$message, $params) {
         '@event_title' => $params['event_title'],
       ], $options);
       break;
+    case 'canceled':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = new TranslatableMarkup('Equipment Request Canceled - @equipment_title for @username', ['@username' => $params['username'], '@equipment_title' => $params['equipment_title']], $options);
+      $message['body'] = [];
+      $message['body'][] = new TranslatableMarkup("The following request was canceled:\n\n Contact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
+        '@email_address' => $params['email_address'],
+        '@username' => $params['username'],
+        '@equipment_title' => $params['equipment_title'],
+        '@reservation_start_date' => $params['reservation_start_date'],
+        '@reservation_end_date' => $params['reservation_end_date'],
+        '@location_title' => $params['location_title'],
+        '@room_title' => $params['room_title'],
+        '@event_title' => $params['event_title'],
+      ], $options);
+      break;
   }
 }
 
 /**
- * Implements hook_ENTITY_TYPE_insert().
+ * Reusable function to send emails.
  */
-function intercept_equipment_equipment_reservation_insert(EntityInterface $entity) {
-  // NOTIFICATIONS.
+function intercept_equipment_send_email($entity, $key) {
+
   // Get the "to" email address.
   $equipment_nid = $entity->get('field_equipment')->getValue();
   $equipment_node = Node::load($equipment_nid[0]['target_id']);
@@ -180,7 +195,6 @@ function intercept_equipment_equipment_reservation_insert(EntityInterface $entit
     // Send it!
     $mailManager = \Drupal::service('plugin.manager.mail');
     $module = 'intercept_equipment';
-    $key = 'created';
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $params = [
       'email_address' => $email,
@@ -198,7 +212,20 @@ function intercept_equipment_equipment_reservation_insert(EntityInterface $entit
       $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
     }
   }
+}
 
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function intercept_equipment_equipment_reservation_insert(EntityInterface $entity) {
+  intercept_equipment_send_email($entity, 'created');
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function intercept_equipment_equipment_reservation_delete(EntityInterface $entity) {
+  intercept_equipment_send_email($entity, 'canceled');
 }
 
 /**

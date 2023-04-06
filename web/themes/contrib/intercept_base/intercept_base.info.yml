@@ -2,8 +2,8 @@ name: Intercept Base
 type: theme
 description: Base theme for Intercept sites
 package: Intercept
-base theme: stable
-core_version_requirement: ^8 || ^9
+base theme: stable9
+core_version_requirement: ^9 || ^10
 
 regions:
   header: Header

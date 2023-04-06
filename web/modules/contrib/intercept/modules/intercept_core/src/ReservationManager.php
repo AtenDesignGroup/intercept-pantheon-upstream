@@ -232,10 +232,11 @@ class ReservationManager implements ReservationManagerInterface {
    *   The room reservations made by the current user.
    */
   public function currentUserReservations(AccountInterface $user) {
-    $reservations = $this->reservations('room', function ($query) use ($user) {
+    $date = new DrupalDateTime('now', 'UTC');
+    $formatted_date = $date->format('Y-m-d\TH:i:s');
+    $reservations = $this->reservations('room', function ($query) use ($user, $formatted_date) {
       $query->condition('field_user', $user->id(), '=');
-      $date = new DrupalDateTime('now', $this->dateUtility->getDefaultTimezone());
-      $query->condition('field_dates.end_value', $date->format('Y-m-d\TH:i:sP'), '>');
+      $query->condition('field_dates.end_value', $formatted_date, '>');
       $query->condition('field_status', ['requested', 'approved'], 'IN');
       $query->sort('field_dates.value', 'ASC');
     });
@@ -253,10 +254,11 @@ class ReservationManager implements ReservationManagerInterface {
    *   The room reservations made by the current user.
    */
   public function getUserReservations(User $user) {
-    $reservations = $this->reservations('room', function ($query) use ($user) {
+    $date = new DrupalDateTime('now', 'UTC');
+    $formatted_date = $date->format('Y-m-d\TH:i:s');
+    $reservations = $this->reservations('room', function ($query) use ($user, $formatted_date) {
       $query->condition('field_user', $user->id(), '=');
-      $date = new DrupalDateTime('now', $this->dateUtility->getDefaultTimezone());
-      $query->condition('field_dates.end_value', $date->format('Y-m-d\TH:i:sP'), '>');
+      $query->condition('field_dates.end_value', $formatted_date, '>');
       $query->condition('field_status', ['requested', 'approved'], 'IN');
       $query->sort('field_dates.value', 'ASC');
     });

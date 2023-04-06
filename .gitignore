@@ -70,5 +70,5 @@ drush/drushrc.local.php
 devel.settings.yml
 devel.toolbar.settings.yml
 system.menu.devel.yml
-# stage_file_proxy config?
-# mailog?
+
+/node_modules

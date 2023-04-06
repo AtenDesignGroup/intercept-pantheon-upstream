@@ -11,6 +11,7 @@ use Drupal\Core\Database\Database;
  * Re-saving data needed.
  *
  * @param mixed $sandbox
+ *   The sandbox variable.
  */
 function office_hours_update_8001(&$sandbox) {
   \Drupal::messenger()->addMessage(
@@ -22,6 +23,7 @@ function office_hours_update_8001(&$sandbox) {
  * Add 'comment' column.
  *
  * @param mixed $sandbox
+ *   The sandbox variable.
  */
 function office_hours_update_8003(&$sandbox) {
   $spec = [
@@ -58,7 +60,7 @@ function office_hours_update_8004(&$sandbox) {
 
   // Find all base storage fields.
   foreach ($config_factory->listAll('field.storage') as $field_storage_name) {
-    // Load the field conig object.
+    // Load the field config object.
     $field = $config_factory->getEditable($field_storage_name);
     // Grab the field type.
     $type = $field->get('type');

@@ -28,6 +28,7 @@ dependencies:
     - field.field.node.event.field_presented_by_non_staff
     - field.field.node.event.field_presenter
     - field.field.node.event.field_room
+    - field.field.node.event.field_staff_presenter
     - field.field.node.event.field_text_content
     - field.field.node.event.field_text_intro
     - field.field.node.event.field_text_teaser
@@ -50,7 +51,7 @@ content:
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 20
+    weight: 19
     region: content
   field_audience_primary:
     type: entity_reference_label
@@ -58,7 +59,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 22
+    weight: 21
     region: content
   field_capacity_max:
     type: number_integer
@@ -116,7 +117,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 28
+    weight: 27
     region: content
   field_event_audience:
     type: entity_reference_label
@@ -124,14 +125,14 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 14
+    weight: 13
     region: content
   field_event_designation:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 23
+    weight: 22
     region: content
   field_event_register_period:
     type: daterange_default
@@ -149,7 +150,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 12
+    weight: 11
     region: content
   field_event_tags:
     type: entity_reference_label
@@ -157,7 +158,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 15
+    weight: 14
     region: content
   field_event_type:
     type: entity_reference_label
@@ -165,7 +166,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 13
+    weight: 12
     region: content
   field_event_type_primary:
     type: entity_reference_label
@@ -173,7 +174,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 21
+    weight: 20
     region: content
   field_event_user_reg_max:
     type: number_integer
@@ -182,7 +183,7 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 26
+    weight: 25
     region: content
   field_featured:
     type: boolean
@@ -192,7 +193,7 @@ content:
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    weight: 18
+    weight: 17
     region: content
   field_has_waitlist:
     type: boolean
@@ -210,7 +211,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 29
+    weight: 28
     region: content
   field_location:
     type: entity_reference_label
@@ -218,7 +219,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 16
+    weight: 15
     region: content
   field_must_register:
     type: boolean
@@ -238,7 +239,7 @@ content:
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    weight: 25
+    weight: 24
     region: content
   field_presenter:
     type: string
@@ -246,7 +247,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 24
+    weight: 23
     region: content
   field_room:
     type: entity_reference_label
@@ -284,7 +285,7 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 19
+    weight: 18
     region: content
   flag_saved_event:
     settings: {  }
@@ -297,12 +298,12 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 17
+    weight: 16
     region: content
   links:
     settings: {  }
     third_party_settings: {  }
-    weight: 11
+    weight: 10
     region: content
 hidden:
   checkin_link: true
@@ -315,5 +316,6 @@ hidden:
   field_event_is_template: true
   field_event_status: true
   field_keywords: true
+  field_staff_presenter: true
   langcode: true
   search_api_excerpt: true

@@ -206,7 +206,7 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
           $conflict_date_time->setTimezone($siteTimeZone);
           $formatted_date = $conflict_date_time->format('m-d-Y');
 
-          $message = $room_node->label() . ' has a conflict with your series on ' . $formatted_date;
+          $message = $room_node->label() . ' has a conflict with your series on ' . $formatted_date . '.';
           \Drupal::messenger()->addWarning($message);
         }
         else {

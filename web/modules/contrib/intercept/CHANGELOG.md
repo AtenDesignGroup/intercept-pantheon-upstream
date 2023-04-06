@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta12] - 2023-04-06
+
+<h2>Sprint 52 Deployment</h2>
+
+- Added an equipment request cancellation email notification
+- Fixed issue with customer profile settings not appearing correctly in Intercept upstream
+- Created a way for staff to view event organizer details
+- Updated text reminder to customers to be timed at 24 hours before the event
+- Updated the “by calendar” version of the room reservation form to include the same description of refreshments that is on the “by room” version
+- Fixed a bug that prevented customers from making room reservations immediately after the ending of a reservation
+- Fixed PHP error related to tallies on events for HMCPL
+- Updated Intercept, Intercept Base theme, and Intercept Profile in preparation for Drupal 10
+
 ## [8.x-1.0-beta11] - 2023-02-24
 
 <h2>Sprint 51 Deployment</h2>

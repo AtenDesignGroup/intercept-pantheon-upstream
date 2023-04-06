@@ -127,7 +127,7 @@ sms:
     enabled: 1
     body: 'Just sending a reminder that you are registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_location], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a].'
     schedule:
-      interval: P3D
+      interval: P1D
   registration_sms_unwaitlisted:
     enabled: 1
     body: 'You are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_location], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a].'
@@ -139,10 +139,10 @@ sms:
     enabled: 1
     body: 'Just sending a reminder that your saved event [flagging:event-saved-title] is coming up on [flagging:event-saved-field-date-time].'
     schedule:
-      interval: P3D
+      interval: P1D
   saved_sms_registration_active:
     enabled: 1
     body: 'Registration is open for your saved event [flagging:event-saved-title] [flagging:event-saved-field-date-time]. [flagging:event-saved-url]'
   registration_sms_event_canceled:
     enabled: 1
-    body: 'Your upcoming event has been canceled - [event_registration:field_event:entity:title], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a]'
+    body: 'You have canceled your event registration - [event_registration:field_event:entity:title], [event_registration:field_event:entity:field_date_time:start_date:custom:m/d/y g:i a]'

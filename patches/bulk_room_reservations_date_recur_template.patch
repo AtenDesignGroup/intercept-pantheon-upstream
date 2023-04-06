@@ -1,9 +1,6 @@
-diff --git a/bulk_room_reservations_date_recur_template.patch b/bulk_room_reservations_date_recur_template.patch
-new file mode 100644
-index 0000000..e69de29
 diff --git a/templates/form/date-recur-modular-alpha-widget--bulk-room-reservation.html.twig b/templates/form/date-recur-modular-alpha-widget--bulk-room-reservation.html.twig
 new file mode 100644
-index 0000000..77b088c
+index 0000000..c38bcad
 --- /dev/null
 +++ b/templates/form/date-recur-modular-alpha-widget--bulk-room-reservation.html.twig
 @@ -0,0 +1,26 @@

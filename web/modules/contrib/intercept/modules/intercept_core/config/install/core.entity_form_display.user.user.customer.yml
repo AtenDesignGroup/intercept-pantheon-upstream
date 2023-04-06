@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.user.customer
+  module:
+    - user
+id: user.user.customer
+targetEntityType: user
+bundle: user
+mode: customer
+content:
+  customer_profile:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  account: true
+  contact: true
+  customer_profiles: true
+  langcode: true
+  language: true
+  path: true
+  timezone: true

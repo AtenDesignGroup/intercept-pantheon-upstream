@@ -3,7 +3,7 @@
 namespace Drupal\intercept_core\Event;
 
 use Drupal\Core\Entity\EntityInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Defines the entity status change event.

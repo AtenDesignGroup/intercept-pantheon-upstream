@@ -44,7 +44,7 @@ class EntityImageThumbnailUriField extends ComputedItemList {
       if (!file_exists($derivative_uri)) {
         $thumbnail_style->createDerivative($image_uri, $derivative_uri);
       }
-      return file_create_url($derivative_uri);
+      return \Drupal::service('file_url_generator')->generateAbsoluteString($derivative_uri);
     }
   }
 

@@ -29,6 +29,7 @@ dependencies:
     - field.field.node.event.field_presented_by_non_staff
     - field.field.node.event.field_presenter
     - field.field.node.event.field_room
+    - field.field.node.event.field_staff_presenter
     - field.field.node.event.field_text_content
     - field.field.node.event.field_text_intro
     - field.field.node.event.field_text_teaser
@@ -152,6 +153,14 @@ content:
     third_party_settings: {  }
     weight: 7
     region: content
+  field_presenter:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 18
+    region: content
   field_room:
     type: entity_reference_label
     label: above
@@ -159,6 +168,14 @@ content:
       link: true
     third_party_settings: {  }
     weight: 5
+    region: content
+  field_staff_presenter:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 27
     region: content
   field_text_content:
     type: text_default
@@ -185,6 +202,8 @@ content:
     settings:
       image_link: ''
       image_style: 4to3_740x556
+      image_loading:
+        attribute: lazy
     third_party_settings: {  }
     weight: 0
     region: content
@@ -205,7 +224,6 @@ hidden:
   field_hosting_location: true
   field_keywords: true
   field_presented_by_non_staff: true
-  field_presenter: true
   field_text_teaser: true
   field_waitlist_max: true
   langcode: true

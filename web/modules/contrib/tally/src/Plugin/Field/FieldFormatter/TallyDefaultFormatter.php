@@ -56,9 +56,10 @@ class TallyDefaultFormatter extends FormatterBase {
 
     foreach ($items as $delta => $item) {
       if (!empty($this->viewValue($item))) {
+        $title = $item->entity ? $item->entity->label() : '';
         $elements[$delta] = [
           '#type' => 'item',
-          '#title' => $item->entity->label(),
+          '#title' => $title,
           '#markup' => $this->viewValue($item),
         ];
       }

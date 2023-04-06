@@ -21,26 +21,63 @@ base_table: node_field_data
 base_field: nid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
+      fields:
+        title:
+          id: title
+          table: node_field_data
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: field
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            make_link: false
+            absolute: false
+            word_boundary: false
+            ellipsis: false
+            strip_tags: false
+            trim: false
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: true
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+      pager:
+        type: none
         options:
-          perm: 'access content'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
+          offset: 0
       exposed_form:
         type: bef
         options:
@@ -53,152 +90,115 @@ display:
           sort_desc_label: Desc
           input_required: false
           text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
           bef:
             general:
               autosubmit: false
               autosubmit_exclude_textfield: false
               autosubmit_hide: true
               input_required: false
-              text_input_required: 'Select any filter and click on Apply to see results'
-              text_input_required_format: basic_html
               allow_secondary: false
               secondary_label: 'Advanced options'
+              text_input_required: 'Select any filter and click on Apply to see results'
+              text_input_required_format: basic_html
             filter:
               field_location_target_id:
                 plugin_id: default
                 advanced:
-                  collapsible: false
-                  is_secondary: false
+                  sort_options: false
                   placeholder_text: ''
                   rewrite:
                     filter_rewrite_values: ''
-                  sort_options: false
+                  collapsible: false
+                  is_secondary: false
               field_capacity_min_value:
                 plugin_id: default
                 advanced:
-                  collapsible: false
-                  is_secondary: false
+                  sort_options: false
                   placeholder_text: ''
                   rewrite:
                     filter_rewrite_values: ''
-                  sort_options: false
+                  collapsible: false
+                  is_secondary: false
               field_capacity_max_value:
                 plugin_id: default
                 advanced:
-                  collapsible: false
-                  is_secondary: false
+                  sort_options: false
                   placeholder_text: ''
                   rewrite:
                     filter_rewrite_values: ''
-                  sort_options: false
+                  collapsible: false
+                  is_secondary: false
               field_room_type_target_id:
                 plugin_id: default
                 advanced:
-                  collapsible: false
-                  is_secondary: false
+                  sort_options: false
                   placeholder_text: ''
                   rewrite:
                     filter_rewrite_values: ''
-                  sort_options: false
+                  collapsible: false
+                  is_secondary: false
               field_staff_use_only_value:
                 plugin_id: default
                 advanced:
-                  collapsible: false
-                  is_secondary: false
+                  sort_options: false
                   placeholder_text: ''
                   rewrite:
                     filter_rewrite_values: "True|Staff\r\nFalse|Public"
-                  sort_options: false
-          text_input_required_format: basic_html
-      pager:
-        type: none
+                  collapsible: false
+                  is_secondary: false
+      access:
+        type: perm
         options:
-          offset: 0
-      style:
-        type: default
-        options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-      row:
-        type: 'entity:node'
-        options:
-          view_mode: teaser
-      fields:
+          perm: 'access content'
+      cache:
+        type: tag
+        options: {  }
+      empty: {  }
+      sorts:
         title:
           id: title
           table: node_field_data
           field: title
-          entity_type: node
-          entity_field: title
-          label: ''
-          alter:
-            alter_text: false
-            make_link: false
-            absolute: false
-            trim: false
-            word_boundary: false
-            ellipsis: false
-            strip_tags: false
-            html: false
-          hide_empty: false
-          empty_zero: false
-          settings:
-            link_to_entity: true
-          plugin_id: field
           relationship: none
           group_type: group
           admin_label: ''
-          exclude: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_alter_empty: true
-          click_sort_column: value
-          type: string
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
+          entity_type: node
+          entity_field: title
+          plugin_id: standard
+          order: ASC
+          expose:
+            label: ''
+            field_identifier: title
+          exposed: false
+      arguments: {  }
       filters:
         status:
-          value: '1'
+          id: status
           table: node_field_data
           field: status
-          plugin_id: boolean
           entity_type: node
           entity_field: status
-          id: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
           expose:
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
-          group: 1
         type:
           id: type
           table: node_field_data
           field: type
-          value:
-            room: room
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          value:
+            room: room
+          group: 1
           expose:
             operator_limit_selection: false
             operator_list: {  }
-          group: 1
         field_location_target_id:
           id: field_location_target_id
           table: node__field_location
@@ -206,8 +206,10 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: intercept_entity_reference
           operator: or
-          value: { }
+          value:
+            - '2792'
           group: 1
           exposed: true
           expose:
@@ -248,14 +250,13 @@ display:
             group_items: {  }
           reduce_duplicates: false
           handler: views
+          widget: select
+          list_max: 100
           handler_settings:
             view:
               view_name: intercept_locations
               display_name: branch_location_reference
               arguments: {  }
-          widget: select
-          list_max: 100
-          plugin_id: intercept_entity_reference
           handler_submit: 'Change handler'
         field_capacity_min_value:
           id: field_capacity_min_value
@@ -264,6 +265,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: numeric
           operator: '<='
           value:
             min: ''
@@ -294,9 +296,9 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            placeholder: ''
           is_grouped: false
           group_info:
             label: 'Min. Capacity (field_capacity_min)'
@@ -312,7 +314,6 @@ display:
               1: {  }
               2: {  }
               3: {  }
-          plugin_id: numeric
         field_capacity_max_value:
           id: field_capacity_max_value
           table: node__field_capacity_max
@@ -320,6 +321,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: numeric
           operator: '>='
           value:
             min: ''
@@ -350,9 +352,9 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -365,7 +367,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          plugin_id: numeric
         field_room_type_target_id:
           id: field_room_type_target_id
           table: node__field_room_type
@@ -373,6 +374,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: taxonomy_index_tid
           operator: or
           value: {  }
           group: 1
@@ -414,12 +416,11 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           reduce_duplicates: false
-          type: select
-          limit: true
           vid: room_type
+          type: select
           hierarchy: false
+          limit: true
           error_message: true
-          plugin_id: taxonomy_index_tid
         field_staff_use_only_value:
           id: field_staff_use_only_value
           table: node__field_staff_use_only
@@ -427,6 +428,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: boolean
           operator: '='
           value: All
           group: 1
@@ -474,7 +476,6 @@ display:
                 title: 'No'
                 operator: '='
                 value: '0'
-          plugin_id: boolean
         field_room_standard_equipment_value:
           id: field_room_standard_equipment_value
           table: node__field_room_standard_equipment
@@ -482,6 +483,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: string
           operator: contains
           value: ''
           group: 1
@@ -522,25 +524,28 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          plugin_id: string
-      sorts:
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          order: ASC
-          entity_type: node
-          entity_field: title
-          plugin_id: standard
-          relationship: none
-          group_type: group
-          admin_label: ''
-          exposed: false
-          expose:
-            label: ''
-      header: {  }
-      footer: {  }
-      empty: {  }
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      style:
+        type: default
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+      row:
+        type: 'entity:node'
+        options:
+          view_mode: teaser
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
       relationships:
         field_location:
           id: field_location
@@ -549,15 +554,12 @@ display:
           relationship: none
           group_type: group
           admin_label: location
-          required: true
           plugin_id: standard
-      arguments: {  }
-      display_extenders: {  }
+          required: true
       use_ajax: false
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
+      header: {  }
+      footer: {  }
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -569,16 +571,11 @@ display:
         - user.permissions
       tags: {  }
   embed_1:
-    display_plugin: embed
     id: embed_1
     display_title: Embed
+    display_plugin: embed
     position: 2
     display_options:
-      display_extenders: {  }
-      defaults:
-        filters: true
-        filter_groups: true
-        exposed_form: false
       exposed_form:
         type: basic
         options:
@@ -589,6 +586,11 @@ display:
           expose_sort_order: false
           sort_asc_label: Asc
           sort_desc_label: Desc
+      defaults:
+        exposed_form: false
+        filters: true
+        filter_groups: true
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -600,12 +602,11 @@ display:
         - user.permissions
       tags: {  }
   entity_reference_1:
-    display_plugin: entity_reference
     id: entity_reference_1
     display_title: 'Entity Reference'
+    display_plugin: entity_reference
     position: 2
     display_options:
-      display_extenders: {  }
       fields:
         title_1:
           id: title_1
@@ -614,6 +615,9 @@ display:
           relationship: field_location
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: field
           label: ''
           exclude: true
           alter:
@@ -669,9 +673,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: title
-          plugin_id: field
         field_location_abbreviation:
           id: field_location_abbreviation
           table: node__field_location_abbreviation
@@ -679,6 +680,7 @@ display:
           relationship: field_location
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: ''
           exclude: false
           alter:
@@ -734,7 +736,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         title:
           id: title
           table: node_field_data
@@ -742,6 +743,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: field
           label: ''
           exclude: false
           alter:
@@ -797,21 +801,47 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      sorts:
+        title:
+          id: title
+          table: node_field_data
+          field: title
+          relationship: field_location
+          group_type: group
+          admin_label: ''
           entity_type: node
           entity_field: title
-          plugin_id: field
-      defaults:
-        fields: false
-        filters: false
-        filter_groups: false
-        sorts: false
-        exposed_form: false
-      style:
-        type: entity_reference
-        options:
-          search_fields:
-            title: title
-            title_1: title_1
+          plugin_id: standard
+          order: ASC
+          expose:
+            label: ''
+            field_identifier: title
+          exposed: false
+        title_1:
+          id: title_1
+          table: node_field_data
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: standard
+          order: ASC
+          expose:
+            label: ''
+            field_identifier: title_1
+          exposed: false
       filters:
         type:
           id: type
@@ -820,6 +850,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
           operator: in
           value:
             room: room
@@ -852,9 +885,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
         status:
           id: status
           table: node_field_data
@@ -862,6 +892,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
           operator: '='
           value: '1'
           group: 1
@@ -892,41 +925,15 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: status
-          plugin_id: boolean
       filter_groups:
         operator: AND
         groups: {  }
-      sorts:
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          relationship: field_location
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: false
-          expose:
-            label: ''
-          entity_type: node
-          entity_field: title
-          plugin_id: standard
-        title_1:
-          id: title_1
-          table: node_field_data
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: false
-          expose:
-            label: ''
-          entity_type: node
-          entity_field: title
-          plugin_id: standard
+      style:
+        type: entity_reference
+        options:
+          search_fields:
+            title: title
+            title_1: title_1
       row:
         type: entity_reference
         options:
@@ -937,16 +944,13 @@ display:
             field_location_abbreviation: field_location_abbreviation
           separator: ':'
           hide_empty: false
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
+      defaults:
+        exposed_form: false
+        fields: false
+        sorts: false
+        filters: false
+        filter_groups: false
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -956,4 +960,363 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.field_location_abbreviation'
-        - extensions
+  rooms:
+    id: rooms
+    display_title: Page
+    display_plugin: page
+    position: 2
+    display_options:
+      title: 'Reservable Rooms'
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: false
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
+          bef:
+            general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
+              autosubmit_hide: false
+              input_required: false
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+              secondary_open: false
+            filter:
+              field_location_target_id:
+                plugin_id: default
+                advanced:
+                  sort_options: false
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              field_capacity_min_value:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  collapsible: false
+                  is_secondary: false
+              field_capacity_max_value:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  collapsible: false
+                  is_secondary: false
+              field_room_type_target_id:
+                plugin_id: default
+                advanced:
+                  sort_options: false
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+      filters:
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
+          expose:
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          value:
+            room: room
+          group: 1
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
+        field_location_target_id:
+          id: field_location_target_id
+          table: node__field_location
+          field: field_location_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: intercept_entity_reference
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_location_target_id_op
+            label: Location
+            description: ''
+            use_operator: false
+            operator: field_location_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: location
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              anonymous: anonymous
+              authenticated: authenticated
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_room_manager: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          handler: views
+          widget: select
+          list_max: 100
+          handler_settings:
+            view:
+              view_name: intercept_locations
+              display_name: branch_location_reference
+              arguments: {  }
+          handler_submit: 'Change handler'
+        field_capacity_min_value:
+          id: field_capacity_min_value
+          table: node__field_capacity_min
+          field: field_capacity_min_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '<='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_capacity_min_value_op
+            label: 'Min Capacity'
+            description: ''
+            use_operator: false
+            operator: field_capacity_min_value_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: min-capacity
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: 'Min. Capacity (field_capacity_min)'
+            description: null
+            identifier: field_capacity_min_value
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items:
+              1: {  }
+              2: {  }
+              3: {  }
+        field_capacity_max_value:
+          id: field_capacity_max_value
+          table: node__field_capacity_max
+          field: field_capacity_max_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_capacity_max_value_op
+            label: Capacity
+            description: ''
+            use_operator: false
+            operator: field_capacity_max_value_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: max-capacity
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        field_room_type_target_id:
+          id: field_room_type_target_id
+          table: node__field_room_type
+          field: field_room_type_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_room_type_target_id_op
+            label: 'Room Type'
+            description: ''
+            use_operator: false
+            operator: field_room_type_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: type
+            required: false
+            remember: true
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_equipment_reservation_manager: '0'
+              intercept_event_manager: '0'
+              intercept_event_organizer: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: room_type
+          type: select
+          hierarchy: false
+          limit: true
+          error_message: true
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      style:
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            title: title
+          default: '-1'
+          info:
+            title:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
+      row:
+        type: 'entity:node'
+        options:
+          view_mode: teaser
+      defaults:
+        title: false
+        use_ajax: false
+        exposed_form: false
+        style: false
+        row: false
+        filters: false
+        filter_groups: false
+      use_ajax: true
+      display_extenders:
+        jsonapi_views:
+          enabled: true
+      path: reserve-room/rooms
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - user
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }

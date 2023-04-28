@@ -66,6 +66,7 @@
     }
   },
   "prefer-stable": true,
+  "prefer-dist": true,
   "autoload": {
     "classmap": [
       "scripts/composer/ScriptHandler.php"
@@ -141,6 +142,9 @@
       },
       "drupal/smsframework": {
         "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"
+      },
+      "drupal/stories": {
+        "D10 compatibility": "https://www.drupal.org/files/issues/2023-04-18/3350002-d10-compatibility-2.patch"
       },
       "lordelph/php-sip2": {
         "Adds controller support for patrons and organizations": "https://www.drupal.org/files/issues/2021-12-10/3253888-php-sip2-module-integration.patch"

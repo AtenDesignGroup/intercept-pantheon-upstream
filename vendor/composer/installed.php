@@ -3,7 +3,7 @@
         'name' => 'atendesigngroup/intercept-pantheon-upstream',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '364b221a00e91877e96f9ffb665047bc054eb1d1',
+        'reference' => 'eadec44fb8bed559ef5fc562e366f0b49781f41f',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'atendesigngroup/intercept-pantheon-upstream' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '364b221a00e91877e96f9ffb665047bc054eb1d1',
+            'reference' => 'eadec44fb8bed559ef5fc562e366f0b49781f41f',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -5300,6 +5300,9 @@
                         "status": "not-covered",
                         "message": "Alpha releases are not covered by Drupal security advisories."
                     }
+                },
+                "patches_applied": {
+                    "D10 compatibility": "https://www.drupal.org/files/issues/2023-04-18/3350002-d10-compatibility-2.patch"
                 }
             },
             "installation-source": "dist",

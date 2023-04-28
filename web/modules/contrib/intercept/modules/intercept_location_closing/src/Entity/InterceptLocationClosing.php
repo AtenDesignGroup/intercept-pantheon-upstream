@@ -54,6 +54,7 @@ use Drupal\user\UserInterface;
  *     "edit-form" = "/admin/structure/intercept_location_closing/{intercept_location_closing}/edit",
  *     "delete-form" = "/admin/structure/intercept_location_closing/{intercept_location_closing}/delete",
  *     "collection" = "/admin/structure/intercept_location_closing",
+ *     "event-conflicts" = "/admin/structure/intercept_location_closing/{intercept_location_closing}/event-conflicts",
  *   },
  *   field_ui_base_route = "intercept_location_closing.settings"
  * )
@@ -106,6 +107,15 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
    */
   public function getLocations() {
     return $this->get('location')->referencedEntities();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLocationIds()
+  {
+    // Query for conflicting events so we can pass the nids to the view.
+    return array_column($this->get('location')->getValue(), 'target_id');
   }
 
   /**

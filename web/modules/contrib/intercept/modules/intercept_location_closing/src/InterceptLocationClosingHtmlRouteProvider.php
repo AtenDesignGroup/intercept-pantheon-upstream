@@ -25,6 +25,9 @@ class InterceptLocationClosingHtmlRouteProvider extends AdminHtmlRouteProvider {
     if ($settings_form_route = $this->getSettingsFormRoute($entity_type)) {
       $collection->add("$entity_type_id.settings", $settings_form_route);
     }
+    if ($event_conflict_route = $this->getEventConflictsRoute($entity_type)) {
+      $collection->add("entity.{$entity_type_id}.event_conflicts", $event_conflict_route);
+    }
 
     return $collection;
   }
@@ -53,4 +56,36 @@ class InterceptLocationClosingHtmlRouteProvider extends AdminHtmlRouteProvider {
     }
   }
 
+  /**
+   * Gets the event-conflict route.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getEventConflictsRoute(EntityTypeInterface $entity_type)
+  {
+    if ($entity_type->hasLinkTemplate('event-conflicts') && $entity_type->hasViewBuilderClass()) {
+      $entity_type_id = $entity_type->id();
+      $route = new Route($entity_type->getLinkTemplate('event-conflicts'));
+      $route
+        ->addDefaults([
+          '_entity_view' => "{$entity_type_id}.event_conflicts",
+          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
+        ])
+        ->setRequirement('_entity_access', "{$entity_type_id}.update")
+        ->setOption('parameters', [
+          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+        ]);
+
+      // Entity types with serial IDs can specify this in their route
+      // requirements, improving the matching process.
+      if ($this->getEntityTypeIdKeyType($entity_type) === 'integer') {
+        $route->setRequirement($entity_type_id, '\d+');
+      }
+      return $route;
+    }
+  }
 }

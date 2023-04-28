@@ -298,13 +298,40 @@ class ReserveRoomForm extends PureComponent {
           TransitionComponent={Transition}
           className="dialog dialog--fullscreen"
         >
-          <DialogTitle id="responsive-dialog-title">Terms of service</DialogTitle>
+          <DialogTitle id="responsive-dialog-title">Terms of Service</DialogTitle>
           <DialogContent>
             <DialogContentText>
               <span dangerouslySetInnerHTML={{ __html: agreementText }} />
             </DialogContentText>
           </DialogContent>
         </Dialog>
+      </React.Fragment>
+    );
+  }
+
+  agreementLabelRichland() {
+    return (
+      <React.Fragment>
+        <div id="terms">
+          <small>
+            <p><b>Please note all meetings are open to the public. Rooms will only be held for 30 minutes after the reservation start-time and then will be released for use by other customers.</b></p>
+            <p>I have read and agree to the <a onClick={this.onOpenAgreementDialog} role="link" tabIndex="0">Terms of Service</a>, including but not limited to Library spaces not being used for:<br />&nbsp;</p>
+          </small>
+          <Dialog
+            open={this.state.openAgreementDialog}
+            onCancel={this.onCloseAgreementDialog}
+            onClose={this.onCloseAgreementDialog}
+            TransitionComponent={Transition}
+            className="dialog dialog--fullscreen"
+          >
+            <DialogTitle id="responsive-dialog-title">Terms of Service</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                <span dangerouslySetInnerHTML={{ __html: agreementText }} />
+              </DialogContentText>
+            </DialogContent>
+          </Dialog>
+        </div>
       </React.Fragment>
     );
   }
@@ -474,7 +501,47 @@ class ReserveRoomForm extends PureComponent {
                     options={FIELD_PUBLICIZE_OPTIONS}
                   />
                 </div>
-                {agreementText && (
+                {agreementText && agreementText.includes('Richland') &&
+                  <div className="l--subsection">
+                    <h2 className="section-title section-title--secondary">Terms of Service</h2>
+                    {this.agreementLabelRichland()}
+                    <InputCheckbox
+                      label="Groups soliciting, selling, charging admission or asking for donations *"
+                      checked={values.agreementCustom1}
+                      onChange={() => this.toggleValue('agreementCustom1')}
+                      required
+                      value={values.agreementCustom1}
+                      name="agreementCustom1"
+                    />
+                    <InputCheckbox
+                      label="Conducting open call interviews, auditions or rehearsals *"
+                      checked={values.agreementCustom2}
+                      onChange={() => this.toggleValue('agreementCustom2')}
+                      required
+                      value={values.agreementCustom2}
+                      name="agreementCustom2"
+                    />
+                    <InputCheckbox
+                      label="Delivery of direct, hands-on healthcare and wellness services, including examinations, hands-on demos, or treatments *"
+                      checked={values.agreementCustom3}
+                      onChange={() => this.toggleValue('agreementCustom3')}
+                      required
+                      value={values.agreementCustom3}
+                      name="agreementCustom3"
+                    />
+                    <Button
+                      variant="contained"
+                      size="large"
+                      color="primary"
+                      type="submit"
+                      className="button button--primary"
+                      disabled={!this.state.canSubmit || hasConflict || !room || !values.agreementCustom1 || !values.agreementCustom2 || !values.agreementCustom3}
+                      >
+                      Next
+                    </Button>
+                  </div>
+                }
+                {agreementText && !agreementText.includes('Richland') &&
                   <div className="l--subsection">
                     <h2 className="section-title section-title--secondary">Terms of Service</h2>
                     <InputCheckbox
@@ -485,18 +552,18 @@ class ReserveRoomForm extends PureComponent {
                       value={values.agreement}
                       name="agreement"
                     />
+                    <Button
+                      variant="contained"
+                      size="large"
+                      color="primary"
+                      type="submit"
+                      className="button button--primary"
+                      disabled={!this.state.canSubmit || hasConflict || !room || !values.agreement}
+                      >
+                      Next
+                    </Button>
                   </div>
-                )}
-                <Button
-                  variant="contained"
-                  size="large"
-                  color="primary"
-                  type="submit"
-                  className="button button--primary"
-                  disabled={!this.state.canSubmit || hasConflict || !room || !values.agreement}
-                >
-                  Next
-                </Button>
+                }
               </div>
             </div>
           </div>
@@ -552,6 +619,9 @@ ReserveRoomForm.propTypes = {
   availabilityQuery: PropTypes.object.isRequired,
   values: PropTypes.shape({
     agreement: PropTypes.bool,
+    agreementCustom1: PropTypes.bool,
+    agreementCustom2: PropTypes.bool,
+    agreementCustom3: PropTypes.bool,
     attendees: PropTypes.number,
     groupName: PropTypes.string,
     meetingDetails: PropTypes.string,
@@ -578,6 +648,9 @@ ReserveRoomForm.defaultProps = {
   combinedValues: {},
   values: {
     agreement: true,
+    agreementCustom1: true,
+    agreementCustom2: true,
+    agreementCustom3: true,
     attendees: null,
     groupName: '',
     meetingPurpose: '',

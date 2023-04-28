@@ -389,6 +389,12 @@
     }
   }
 
+  h5 {
+    font-size: rem(14px);
+    font-weight: $fw-bold;
+    color: #4c4d4f;
+  }
+
   details.entity-content-form-revision-information,
   p {
     color: #333;

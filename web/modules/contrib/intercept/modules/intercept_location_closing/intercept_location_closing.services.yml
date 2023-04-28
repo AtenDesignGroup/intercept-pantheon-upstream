@@ -1,0 +1,4 @@
+services:
+  intercept_location_closing.query:
+    class: Drupal\intercept_location_closing\InterceptLocationClosingQuery
+    arguments: ['@entity_type.manager']

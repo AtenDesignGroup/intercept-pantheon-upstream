@@ -454,7 +454,7 @@ function intercept_bulk_room_reservation_intercept_room_reservation_dates_alter(
   if (strstr($current_path, '/bulk-room-reservation')) {
     if (\Drupal::moduleHandler()->moduleExists('intercept_location_closing')) {
       if ($location = $node->field_location->entity) {
-        if ($closings = intercept_location_closing_get_closing($location, $params['start'], $params['end'])) {
+        if ($closings = \Drupal::service('intercept_location_closing.query')->locationClosings($location, $params['start'], $params['end'])) {
           foreach ($closings as $closing_id) {
             $closing = \Drupal::service('entity_type.manager')->getStorage('intercept_location_closing')->load($closing_id);
             unset($dates[$closing->uuid()]);

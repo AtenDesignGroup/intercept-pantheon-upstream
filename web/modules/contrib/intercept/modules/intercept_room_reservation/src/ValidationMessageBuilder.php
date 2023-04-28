@@ -12,6 +12,7 @@ use Drupal\Core\Session\AccountProxy;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_core\ReservationManager;
+use Drupal\intercept_certification\Controller\CertificationController;
 use Drupal\intercept_ils\ILSManager;
 use Drupal\node\Entity\Node;
 
@@ -313,10 +314,10 @@ class ValidationMessageBuilder {
       // Get notes for this user.
       $notes = $patron->getNotes();
       if (isset($notes->NonBlockingStatusNotes) && !empty($notes->NonBlockingStatusNotes)) {
-        $messages['notes_non_blocking'] = 'Notes: ' . $this->nl2br2($notes->NonBlockingStatusNotes);
+        $messages['notes_non_blocking'] = '<em>Notes:</em> ' . $this->nl2br2($notes->NonBlockingStatusNotes);
       }
       if (isset($notes->BlockingStatusNotes) && !empty($notes->BlockingStatusNotes)) {
-        $messages['notes_blocking'] = 'BLOCKING NOTES: ' . $this->nl2br2($notes->BlockingStatusNotes);
+        $messages['notes_blocking'] = '<em>BLOCKING NOTES:</em> ' . $this->nl2br2($notes->BlockingStatusNotes);
       }
       // Check expiration date.
       if (method_exists($patron, 'circulateBlocksGet')) {
@@ -332,6 +333,11 @@ class ValidationMessageBuilder {
         //   $messages['debug'] = "This customer's account will expire on " . date('m-d-Y', $expiration_date) . ".";
         // }
       }
+    }
+    // Get the certification notes for this user.
+    $certificationNotes = CertificationController::getUserCertificationNotes($uid);
+    if (!empty($certificationNotes)) {
+      $messages['notes_certifications'] = '<p><em>Certification Notes:</em> ' . $this->nl2br2($certificationNotes) . '</p>';
     }
 
     return $messages;

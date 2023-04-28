@@ -134,6 +134,9 @@ class UserProfileForm extends ProfileForm {
       foreach (['field_first_name', 'field_middle_name', 'field_last_name'] as $field) {
         $entity_form[$field]['widget'][0]['#disabled'] = TRUE;
       }
+      foreach (['field_legal_first_name', 'field_legal_middle_name', 'field_legal_last_name'] as $field) {
+        $entity_form[$field]['widget'][0]['#disabled'] = TRUE;
+      }
       $this->populateAddress($patron, $entity_form['field_address']);
     }
     $entity_form['field_barcode']['widget']['#disabled'] = TRUE;
@@ -158,6 +161,15 @@ class UserProfileForm extends ProfileForm {
     }
     if ($patron->getLastName() != $profile->get('field_last_name')->getString()) {
       $form['field_last_name']['widget'][0]['value']['#default_value'] = $patron->getLastName();
+    }
+    if ($patron->getLegalFirstName() != $profile->get('field_legal_first_name')->getString()) {
+      $form['field_legal_first_name']['widget'][0]['value']['#default_value'] = $patron->getLegalFirstName();
+    }
+    if ($patron->getLegalMiddleName() != $profile->get('field_legal_middle_name')->getString()) {
+      $form['field_legal_middle_name']['widget'][0]['value']['#default_value'] = $patron->getLegalMiddleName();
+    }
+    if ($patron->getLegalLastName() != $profile->get('field_legal_last_name')->getString()) {
+      $form['field_legal_last_name']['widget'][0]['value']['#default_value'] = $patron->getLegalLastName();
     }
   }
 

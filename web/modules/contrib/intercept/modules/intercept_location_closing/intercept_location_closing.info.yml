@@ -7,3 +7,8 @@ dependencies:
   - drupal:datetime_range
   - office_hours:office_hours
   - intercept:intercept_location
+
+# Information added by Drupal.org packaging script on 2023-04-28
+version: '8.x-1.0-beta13'
+project: 'intercept'
+datestamp: 1682719426

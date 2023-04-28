@@ -16,3 +16,8 @@ dependencies:
   - intercept:intercept_location
   - tally:tally
   - votingapi:votingapi
+
+# Information added by Drupal.org packaging script on 2023-04-28
+version: '8.x-1.0-beta13'
+project: 'intercept'
+datestamp: 1682719426

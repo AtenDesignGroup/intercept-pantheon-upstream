@@ -186,7 +186,7 @@
     padding: 20px; }
   .ui-dialog .ui-dialog-content {
     padding: 0 1em;
-    color: var(--colorGinText); }
+    color: #4c4d4f; }
   .ui-dialog .ui-widget-content.ui-dialog-buttonpane {
     padding: 16px 24px;
     border-top: 1px solid var(--colorGinLayerBorder);

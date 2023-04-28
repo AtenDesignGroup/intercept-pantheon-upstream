@@ -59,6 +59,14 @@ interface InterceptLocationClosingInterface extends ContentEntityInterface, Enti
   public function getLocations();
 
   /**
+   * Gets the Location closing Location nids.
+   *
+   * @return array
+   *  The Location Node ids.
+   */
+  public function getLocationIds();
+
+  /**
    * Gets the Location closing visitor message.
    *
    * @return string

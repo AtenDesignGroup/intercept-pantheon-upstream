@@ -7,6 +7,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Url;
+use Drupal\user\Entity\User;
 use Drupal\intercept_certification\Entity\CertificationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -280,6 +281,22 @@ class CertificationController extends ControllerBase implements ContainerInjecti
     $certification = \Drupal::entityTypeManager()->getStorage('certification')
       ->create($values);
     $certification->save();
+  }
+
+  /**
+   * Get certification notes that exist for the given user.
+   *
+   * @param int $uid
+   *   The user id to check.
+   *
+   * @return string
+   *   The certification notes for a user.
+   */
+  public static function getUserCertificationNotes($uid) {
+    $user = User::load($uid);
+    $profile = \Drupal::entityTypeManager()->getStorage('profile')->loadByUser($user, 'customer');
+    $certification_notes = trim($profile->field_certification_notes->getString());
+    return $certification_notes;
   }
 
 }

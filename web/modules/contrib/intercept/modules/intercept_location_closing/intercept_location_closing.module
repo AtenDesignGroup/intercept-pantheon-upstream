@@ -5,7 +5,11 @@
  * Contains intercept_location_closing.module.
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**
@@ -21,6 +25,87 @@ function intercept_location_closing_help($route_name, RouteMatchInterface $route
       return $output;
 
     default:
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function intercept_location_closing_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) {
+  $operations = [];
+  if ($entity->getEntityTypeId() == 'intercept_location_closing') {
+    $operations['event_conflicts'] = [
+      'title' => t('Event Conflicts'),
+      'url' => $entity->toUrl('event-conflicts'),
+      'weight' => 50,
+    ];
+  }
+
+  return $operations;
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function intercept_location_closing_entity_extra_field_info() {
+  $extra = [];
+
+  // Add a view of events that occur during this closing period.
+  $extra['intercept_location_closing']['intercept_location_closing']['display']['event_conflicts'] = [
+    'label' => new TranslatableMarkup('Event Conflicts'),
+    'description' => new TranslatableMarkup('A view of events that occur during this closing period.'),
+    'weight' => 0,
+    'visible' => FALSE,
+  ];
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function intercept_location_closing_intercept_location_closing_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($display->getComponent('event_conflicts')) {
+    $event_ids = \Drupal::service('intercept_location_closing.query')->eventsConflictingWithClosing($entity);
+
+    $view_name = 'event_location_closing_conflicts';
+    $view = \Drupal\views\Views::getView($view_name);
+    $view->setDisplay('conflicts');
+
+    $view->setArguments([implode('+', $event_ids)]);
+    $view->execute();
+    // Render the view.
+    $build['event_conflicts'] = $view->preview();
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function intercept_location_closing_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $entity = $form_state->getFormObject()->getEntity();
+  $bundle = $entity->bundle();
+
+  if ($bundle == 'event') {
+    \Drupal::service('intercept_location_closing.query')->eventClosingConflictPrompt($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function intercept_location_closing_node_insert(EntityInterface $entity) {
+  if ($entity->bundle() == 'event') {
+    \Drupal::service('intercept_location_closing.query')->eventClosingConflictPrompt($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function intercept_location_closing_node_update(EntityInterface $entity) {
+  if ($entity->bundle() == 'event') {
+    \Drupal::service('intercept_location_closing.query')->eventClosingConflictPrompt($entity);
   }
 }
 
@@ -82,7 +167,7 @@ function intercept_location_closing_get_closing($location, $start, $end) {
  */
 function intercept_location_closing_intercept_room_reservation_dates_alter(&$dates, $params, $node) {
   if ($location = $node->field_location->entity) {
-    if ($closings = intercept_location_closing_get_closing($location, $params['start'], $params['end'])) {
+    if ($closings = \Drupal::service('intercept_location_closing.query')->locationClosings($location, $params['start'], $params['end'])) {
       foreach ($closings as $closing_id) {
         $closing = \Drupal::service('entity_type.manager')->getStorage('intercept_location_closing')->load($closing_id);
         $dates[$closing->uuid()] = [

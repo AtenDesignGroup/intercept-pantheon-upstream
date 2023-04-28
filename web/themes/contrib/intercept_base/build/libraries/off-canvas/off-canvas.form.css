@@ -314,6 +314,10 @@
     margin-bottom: 0; }
   #drupal-off-canvas .fieldset--options-group .description {
     margin-bottom: 0.5em; }
+  #drupal-off-canvas h5 {
+    font-size: 0.875rem;
+    font-weight: 900;
+    color: #4c4d4f; }
   #drupal-off-canvas details.entity-content-form-revision-information,
   #drupal-off-canvas p {
     color: #333;

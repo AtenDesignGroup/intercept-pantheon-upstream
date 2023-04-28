@@ -221,6 +221,9 @@ class ReserveRoomStep3 extends React.Component {
       'publicize',
       'groupName',
       'agreement',
+      'agreementCustom1',
+      'agreementCustom2',
+      'agreementCustom3',
       c.TYPE_MEETING_PURPOSE,
     ]);
     const hasConflict = this.hasConflict();

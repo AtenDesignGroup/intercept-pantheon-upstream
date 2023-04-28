@@ -13,6 +13,26 @@ use Drupal\Core\Form\FormStateInterface;
 class InterceptLocationClosingForm extends ContentEntityForm {
 
   /**
+   * @var \Drupal\intercept_location_closing\InterceptLocationClosingQuery
+   */
+  protected $locationClosingQuery;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create($container) {
+    $instance = new static(
+      $container->get('entity.repository'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time'),
+    );
+
+    $instance->locationClosingQuery = $container->get('intercept_location_closing.query');
+
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
@@ -47,6 +67,21 @@ class InterceptLocationClosingForm extends ContentEntityForm {
           '%label' => $entity->label(),
         ]));
     }
+
+    // Check for event conflicts.
+    $conflicts = $this->locationClosingQuery->eventsConflictingWithClosing($entity, TRUE);
+    if (!empty($conflicts)) {
+      $this->messenger()->addWarning(\Drupal::translation()->formatPlural(
+        count($conflicts),
+        'There is @count published event scheduled during this closing period. Please review the %link.',
+        'There are @count published events scheduled during this closing period. Please review the %link.',
+        [
+          '@count' => count($conflicts),
+          '%link' => $entity->toLink('list of conflicts', 'event-conflicts')->toString(),
+        ]
+      ));
+    }
+
     $form_state->setRedirect('entity.intercept_location_closing.canonical', ['intercept_location_closing' => $entity->id()]);
   }
 

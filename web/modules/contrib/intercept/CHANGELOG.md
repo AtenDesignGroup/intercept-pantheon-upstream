@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta13] - 2023-04-28
+
+<h2>Sprint 53 Deployment</h2>
+
+- Added warnings to event creators when creating events that take place during a library closing
+- Made it easier for staff who administer closings to see and administer events listed during closings
+- Fixed color of checkboxes on My Events
+- Updated green colors in room reservation screens to match green used throughout site
+- Updated the event form so that the teaser text is required
+- Updated customer search screen to display customer certification notes
+
 ## [8.x-1.0-beta12] - 2023-04-06
 
 <h2>Sprint 52 Deployment</h2>

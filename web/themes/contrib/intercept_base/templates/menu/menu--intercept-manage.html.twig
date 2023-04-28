@@ -34,13 +34,13 @@
     {% if menu_level == 0 %}
       {% for item in items %}
         {% if item.title == 'Events' %}
-          {% set fa_class = 'fa fa-calendar' %}
+          {% set fa_class = 'fas fa-calendar' %}
         {% elseif item.title == 'Rooms' %}
           {% set fa_class = 'fas fa-door-open' %}
         {% elseif item.title == 'Equipment' %}
           {% set fa_class = 'fas fa-tools' %}
         {% elseif item.title == 'Closings' %}
-          {% set fa_class = 'far fa-calendar-times' %}
+          {% set fa_class = 'fas fa-calendar-times' %}
         {% elseif item.title == 'Export Data' %}
           {% set fa_class = 'fas fa-file-export' %}
         {% elseif item.title == 'System Config' %}

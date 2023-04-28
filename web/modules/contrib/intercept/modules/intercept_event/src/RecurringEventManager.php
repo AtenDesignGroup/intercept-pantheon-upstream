@@ -166,13 +166,16 @@ class RecurringEventManager {
     $event_recurrence = $elements['inline_entity_form']['#default_value'];
     $node = $form_state->getFormObject()->getEntity();
 
-    if ($event_recurrence && $event_recurrence->event->entity != $node) {
-      // Hide inline entity form and add remove from recurrence.
-      $this->eventRecurrenceForm($elements, $form_state);
-    }
-    else {
-      // If this is the base event we let them add/edit their recurrence.
-      $this->eventRecurrenceBaseForm($elements, $form_state);
+    $rebuilding = $form_state->isRebuilding();
+    if (!$rebuilding && isset($event_recurrence->event)) {
+      if ($event_recurrence && $event_recurrence->event->entity != $node) {
+        // Hide inline entity form and add remove from recurrence.
+        $this->eventRecurrenceForm($elements, $form_state);
+      }
+      else {
+        // If this is the base event we let them add/edit their recurrence.
+        $this->eventRecurrenceBaseForm($elements, $form_state);
+      }
     }
   }
 

@@ -3,14 +3,15 @@
 namespace Drupal\Tests\twig_tweak\Functional;
 
 use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
+use Drupal\file\FileInterface;
+use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\TestFileCreationTrait;
 use Drupal\file\Entity\File;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\media\Entity\Media;
 use Drupal\responsive_image\Entity\ResponsiveImageStyle;
-use Drupal\Core\Render\Markup;
-use Drupal\Tests\BrowserTestBase;
-use Drupal\Tests\TestFileCreationTrait;
 use Drupal\user\Entity\Role;
 
 /**
@@ -18,7 +19,7 @@ use Drupal\user\Entity\Role;
  *
  * @group twig_tweak
  */
-class TwigTweakTest extends BrowserTestBase {
+final class TwigTweakTest extends BrowserTestBase {
 
   use TestFileCreationTrait;
 
@@ -30,7 +31,7 @@ class TwigTweakTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'twig_tweak',
     'twig_tweak_test',
     'views',
@@ -45,7 +46,7 @@ class TwigTweakTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $test_files = $this->getTestFiles('image');
@@ -53,14 +54,14 @@ class TwigTweakTest extends BrowserTestBase {
     $image_file = File::create([
       'uri' => $test_files[0]->uri,
       'uuid' => 'b2c22b6f-7bf8-4da4-9de5-316e93487518',
-      'status' => FILE_STATUS_PERMANENT,
+      'status' => FileInterface::STATUS_PERMANENT,
     ]);
     $image_file->save();
 
     $media_file = File::create([
       'uri' => $test_files[8]->uri,
       'uuid' => '5dd794d0-cb75-4130-9296-838aebc1fe74',
-      'status' => FILE_STATUS_PERMANENT,
+      'status' => FileInterface::STATUS_PERMANENT,
     ]);
     $media_file->save();
 
@@ -73,6 +74,7 @@ class TwigTweakTest extends BrowserTestBase {
 
     $node_values = [
       'title' => 'Alpha',
+      'uuid' => 'ad1b902a-344f-41d1-8c61-a69f0366dbfa',
       'field_image' => [
         'target_id' => $image_file->id(),
         'alt' => 'Alt text',
@@ -93,88 +95,88 @@ class TwigTweakTest extends BrowserTestBase {
       'breakpoint_group' => 'responsive_image',
     ])->save();
 
-    // Setup Russian.
+    // Setup Russian language.
     ConfigurableLanguage::createFromLangcode('ru')->save();
   }
 
   /**
    * Tests output produced by the Twig extension.
    */
-  public function testOutput() {
-    // Title block rendered through drupal_region() is cached by some reason.
-    \Drupal::service('cache_tags.invalidator')->invalidateTags(['block_view']);
-    $this->drupalGet('<front>');
+  public function testOutput(): void {
 
-    // -- Test default views display.
+    $this->drupalGet('twig-tweak-test');
+
+    // -- View (default display).
     $xpath = '//div[@class = "tt-view-default"]';
     $xpath .= '//div[contains(@class, "view-twig-tweak-test") and contains(@class, "view-display-id-default")]';
     $xpath .= '/div[@class = "view-content"]//ul[count(./li) = 3]/li';
-    $this->assertByXpath($xpath . '//a[contains(@href, "/node/1") and text() = "Alpha"]');
-    $this->assertByXpath($xpath . '//a[contains(@href, "/node/2") and text() = "Beta"]');
-    $this->assertByXpath($xpath . '//a[contains(@href, "/node/3") and text() = "Gamma"]');
+    $this->assertXpath($xpath . '//a[contains(@href, "/node/1") and text() = "Alpha"]');
+    $this->assertXpath($xpath . '//a[contains(@href, "/node/2") and text() = "Beta"]');
+    $this->assertXpath($xpath . '//a[contains(@href, "/node/3") and text() = "Gamma"]');
 
-    // -- Test page_1 view display.
+    // -- View (page_1 display).
     $xpath = '//div[@class = "tt-view-page_1"]';
     $xpath .= '//div[contains(@class, "view-twig-tweak-test") and contains(@class, "view-display-id-page_1")]';
     $xpath .= '/div[@class = "view-content"]//ul[count(./li) = 3]/li';
-    $this->assertByXpath($xpath . '//a[contains(@href, "/node/1") and text() = "Alpha"]');
-    $this->assertByXpath($xpath . '//a[contains(@href, "/node/2") and text() = "Beta"]');
-    $this->assertByXpath($xpath . '//a[contains(@href, "/node/3") and text() = "Gamma"]');
+    $this->assertXpath($xpath . '//a[contains(@href, "/node/1") and text() = "Alpha"]');
+    $this->assertXpath($xpath . '//a[contains(@href, "/node/2") and text() = "Beta"]');
+    $this->assertXpath($xpath . '//a[contains(@href, "/node/3") and text() = "Gamma"]');
 
-    // -- Test view argument.
+    // -- View with arguments.
     $xpath = '//div[@class = "tt-view-page_1-with-argument"]';
     $xpath .= '//div[contains(@class, "view-twig-tweak-test")]';
     $xpath .= '/div[@class = "view-content"]//ul[count(./li) = 1]/li';
-    $this->assertByXpath($xpath . '//a[contains(@href, "/node/1") and text() = "Alpha"]');
+    $this->assertXpath($xpath . '//a[contains(@href, "/node/1") and text() = "Alpha"]');
 
-    // -- Test view result.
+    // -- View result.
     $xpath = '//div[@class = "tt-view-result" and text() = 3]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test block.
+    // -- Block.
     $xpath = '//div[@class = "tt-block"]';
     $xpath .= '/img[contains(@src, "/core/themes/claro/logo.svg") and @alt="Home"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test block with wrapper.
+    // -- Block with wrapper.
     $xpath = '//div[@class = "tt-block-with-wrapper"]';
     $xpath .= '/div[@class = "block block-system block-system-branding-block"]';
     $xpath .= '/h2[text() = "Branding"]';
     $xpath .= '/following-sibling::a[img[contains(@src, "/core/themes/claro/logo.svg") and @alt="Home"]]';
     $xpath .= '/following-sibling::div[@class = "site-name"]/a';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test region.
+    // -- Region.
     $xpath = '//div[@class = "tt-region"]/div[@class = "region region-highlighted"]';
-    $xpath .= '/div[contains(@class, "block-system-powered-by-block")]';
-    $this->assertByXpath($xpath);
+    $xpath .= '/div[contains(@class, "block-system-powered-by-block")]/span[. = "Powered by Drupal"]';
+    $this->assertXpath($xpath);
 
-    // -- Test entity default view mode.
+    // -- Entity (default view mode).
     $xpath = '//div[@class = "tt-entity-default"]';
     $xpath .= '/article[contains(@class, "node") and not(contains(@class, "node--view-mode-teaser"))]';
     $xpath .= '/h2/a/span[text() = "Alpha"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test entity teaser view mode.
+    // -- Entity (teaser view mode).
     $xpath = '//div[@class = "tt-entity-teaser"]';
     $xpath .= '/article[contains(@class, "node") and contains(@class, "node--view-mode-teaser")]';
     $xpath .= '/h2/a/span[text() = "Alpha"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test loading entity from URL.
-    $xpath = '//div[@class = "tt-entity-from-url" and not(text())]';
-    $this->assertByXpath($xpath);
-    $this->drupalGet('/node/2');
-    $xpath = '//div[@class = "tt-entity-from-url"]';
+    // -- Entity by UUID.
+    $xpath = '//div[@class = "tt-entity-uuid"]';
     $xpath .= '/article[contains(@class, "node")]';
-    $xpath .= '/h2/a/span[text() = "Beta"]';
-    $this->assertByXpath($xpath);
+    $xpath .= '/h2/a/span[text() = "Alpha"]';
+    $this->assertXpath($xpath);
 
-    // -- Test access to entity add form.
+    // -- Entity by UUID (missing).
+    $xpath = '//div[@class = "tt-entity-uuid-missing" and . = ""]';
+    $this->assertXpath($xpath);
+
+    // -- Entity add form (unprivileged user).
     $xpath = '//div[@class = "tt-entity-add-form"]/form';
     $this->assertSession()->elementNotExists('xpath', $xpath);
 
-    // -- Test access to entity edit form.
+    // -- Entity edit form (unprivileged user).
     $xpath = '//div[@class = "tt-entity-edit-form"]/form';
     $this->assertSession()->elementNotExists('xpath', $xpath);
 
@@ -183,225 +185,258 @@ class TwigTweakTest extends BrowserTestBase {
     /** @var \Drupal\user\RoleInterface $role */
     $role = Role::load(Role::ANONYMOUS_ID);
     $this->grantPermissions($role, $permissions);
-    $this->drupalGet('/node/2');
+    $this->drupalGet($this->getUrl());
 
-    // -- Test entity add form.
+    // -- Entity add form.
     $xpath = '//div[@class = "tt-entity-add-form"]/form';
     $xpath .= '//input[@name = "title[0][value]" and @value = ""]';
     $xpath .= '/../../../../..//div/input[@type = "submit" and @value = "Save"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test entity edit form.
+    // -- Entity edit form.
     $xpath = '//div[@class = "tt-entity-edit-form"]/form';
     $xpath .= '//input[@name = "title[0][value]" and @value = "Alpha"]';
     $xpath .= '/../../../../..//div/input[@type = "submit" and @value = "Save"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test field.
+    // -- Field.
     $xpath = '//div[@class = "tt-field"]/div[contains(@class, "field--name-body")]/p[text() != ""]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test menu (default).
+    // -- Menu.
     $xpath = '//div[@class = "tt-menu-default"]/ul[@class = "menu"]/li/a[text() = "Link 1"]/../ul[@class = "menu"]/li/ul[@class = "menu"]/li/a[text() = "Link 3"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test menu (level).
+    // -- Menu with level option.
     $xpath = '//div[@class = "tt-menu-level"]/ul[@class = "menu"]/li/a[text() = "Link 2"]/../ul[@class = "menu"]/li/a[text() = "Link 3"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test menu (depth).
+    // -- Menu with depth option.
     $xpath = '//div[@class = "tt-menu-depth"]/ul[@class = "menu"]/li[not(ul)]/a[text() = "Link 1"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test form.
+    // -- Form.
     $xpath = '//div[@class = "tt-form"]/form[@class="system-cron-settings"]/input[@type = "submit" and @value = "Run cron"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test image by FID.
+    // -- Image by FID.
     $xpath = '//div[@class = "tt-image-by-fid"]/img[contains(@src, "/files/image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test image by URI.
+    // -- Image by URI.
     $xpath = '//div[@class = "tt-image-by-uri"]/img[contains(@src, "/files/image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test image by UUID.
+    // -- Image by UUID.
     $xpath = '//div[@class = "tt-image-by-uuid"]/img[contains(@src, "/files/image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test image with style.
+    // -- Image with style.
     $xpath = '//div[@class = "tt-image-with-style"]/img[contains(@src, "/files/styles/thumbnail/public/image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test image with responsive style.
+    // -- Image with responsive style.
     $xpath = '//div[@class = "tt-image-with-responsive-style"]/picture/img[contains(@src, "/files/image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test token.
+    // -- Token.
     $xpath = '//div[@class = "tt-token" and text() = "Drupal"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test token with context.
-    $xpath = '//div[@class = "tt-token-data" and text() = "Beta"]';
-    $this->assertByXpath($xpath);
+    // -- Token with context.
+    $xpath = '//div[@class = "tt-token-data" and text() = "Alpha"]';
+    $this->assertXpath($xpath);
 
-    // -- Test config.
+    // -- Config.
     $xpath = '//div[@class = "tt-config" and text() = "Anonymous"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test page title.
-    $xpath = '//div[@class = "tt-title" and text() = "Beta"]';
-    $this->assertByXpath($xpath);
+    // -- Page title.
+    $xpath = '//div[@class = "tt-title" and text() = "Twig Tweak Test"]';
+    $this->assertXpath($xpath);
 
-    // -- Test URL.
+    // -- URL.
     $url = Url::fromUserInput('/node/1', ['absolute' => TRUE])->toString();
     $xpath = sprintf('//div[@class = "tt-url"]/div[@data-case="default" and text() = "%s"]', $url);
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test URL (with langcode).
+    // -- URL with langcode.
     $url = str_replace('node/1', 'ru/node/1', $url);
     $xpath = sprintf('//div[@class = "tt-url"]/div[@data-case="with-langcode" and text() = "%s"]', $url);
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test link.
+    // -- Link.
     $url = Url::fromUserInput('/node/1/edit', ['absolute' => TRUE]);
     $link = Link::fromTextAndUrl('Edit', $url)->toString();
     $xpath = '//div[@class = "tt-link"]';
-    self::assertEquals($link, trim($this->xpath($xpath)[0]->getHtml()));
+    self::assertSame((string) $link, $this->xpath($xpath)[0]->getHtml());
 
-    // -- Test link with HTML.
+    // -- Link with HTML.
     $text = Markup::create('<b>Edit</b>');
     $url = Url::fromUserInput('/node/1/edit', ['absolute' => TRUE]);
     $link = Link::fromTextAndUrl($text, $url)->toString();
     $xpath = '//div[@class = "tt-link-html"]';
-    self::assertEquals($link, trim($this->xpath($xpath)[0]->getHtml()));
+    self::assertSame((string) $link, $this->xpath($xpath)[0]->getHtml());
 
-    // -- Test status messages.
+    // -- Status messages.
     $xpath = '//div[@class = "tt-messages"]//div[contains(@class, "messages--status") and contains(., "Hello world!")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test breadcrumb.
+    // -- Breadcrumb.
     $xpath = '//div[@class = "tt-breadcrumb"]/nav[@class = "breadcrumb"]/ol/li/a[text() = "Home"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test protected link.
+    // -- Protected link.
     $xpath = '//div[@class = "tt-link-access"]';
-    self::assertEquals('', trim($this->xpath($xpath)[0]->getHtml()));
+    self::assertSame('', $this->xpath($xpath)[0]->getHtml());
 
-    // -- Test token replacement.
+    // -- Token replacement.
     $xpath = '//div[@class = "tt-token-replace" and text() = "Site name: Drupal"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test contextual links.
+    // -- Contextual links.
     $xpath = '//div[@class="tt-contextual-links" and not(div[@data-contextual-id])]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
     /** @var \Drupal\user\RoleInterface $role */
     $role = Role::load(Role::ANONYMOUS_ID);
     $this->grantPermissions($role, ['access contextual links']);
     $this->drupalGet($this->getUrl());
     $xpath = '//div[@class="tt-contextual-links" and div[@data-contextual-id]]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test preg replacement.
+    // -- Replace (preg).
     $xpath = '//div[@class = "tt-preg-replace" and text() = "FOO-bar"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test image style.
+    // -- Image style.
     $xpath = '//div[@class = "tt-image-style" and contains(text(), "styles/thumbnail/public/images/ocean.jpg")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test transliteration.
+    // -- Transliterate.
     $xpath = '//div[@class = "tt-transliterate" and contains(text(), "Privet!")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test text format.
+    // -- Text format.
     $xpath = '//div[@class = "tt-check-markup"]';
-    self::assertEquals('<b>bold</b> strong', trim($this->xpath($xpath)[0]->getHtml()));
+    self::assertSame('<b>bold</b> strong', $this->xpath($xpath)[0]->getHtml());
 
     // -- Format size.
     $xpath = '//div[@class = "tt-format-size"]';
     self::assertSame('12.06 KB', $this->xpath($xpath)[0]->getHtml());
 
-    // -- Test truncation.
+    // -- Truncate.
     $xpath = '//div[@class = "tt-truncate" and text() = "Hello…"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test 'with'.
+    // -- 'with'.
     $xpath = '//div[@class = "tt-with"]/b[text() = "Example"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test nested 'with'.
+    // -- Nested 'with'.
     $xpath = '//div[@class = "tt-with-nested" and text() = "{alpha:{beta:{gamma:456}}}"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test 'children'.
+    // -- 'children'.
     $xpath = '//div[@class = "tt-children" and text() = "doremi"]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test entity view.
-    $xpath = '//div[@class = "tt-node-view"]/article[contains(@class, "node--view-mode-default")]/h2[a/span[text() = "Beta"]]';
+    // -- Entity view.
+    $xpath = '//div[@class = "tt-node-view"]/article[contains(@class, "node--view-mode-default")]/h2[a/span[text() = "Alpha"]]';
     $xpath .= '/following-sibling::div[@class = "node__content"]/div/p';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test Field list view.
-    $xpath = '//div[@class = "tt-field-list-view"]/span[contains(@class, "field--name-title") and text() = "Beta"]';
-    $this->assertByXpath($xpath);
+    // -- Field list view.
+    $xpath = '//div[@class = "tt-field-list-view"]/span[contains(@class, "field--name-title") and text() = "Alpha"]';
+    $this->assertXpath($xpath);
 
-    // -- Test field item view.
-    $xpath = '//div[@class = "tt-field-item-view" and text() = "Beta"]';
-    $this->assertByXpath($xpath);
+    // -- Field item view.
+    $xpath = '//div[@class = "tt-field-item-view" and text() = "Alpha"]';
+    $this->assertXpath($xpath);
 
-    // -- Test file URI from image field.
-    $this->drupalGet('/node/1');
+    // -- File URI from image field.
     $xpath = '//div[@class = "tt-file-uri-from-image-field" and contains(text(), "public://image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test file URI from a specific image field item.
+    // -- File URI from a specific image field item.
     $xpath = '//div[@class = "tt-file-uri-from-image-field-delta" and contains(text(), "public://image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test file URI from media field.
+    // -- File URI from media field.
     $xpath = '//div[@class = "tt-file-uri-from-media-field" and contains(text(), "public://image-1.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test image style from file URI from media field.
+    // -- Image style from File URI from media field.
     $xpath = '//div[@class = "tt-image-style-from-file-uri-from-media-field" and contains(text(), "styles/thumbnail/public/image-1.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test file URL from URI.
-    $xpath = '//div[@class = "tt-file-url-from-uri" and contains(text(), "/files/image-test.png")]';
-    $this->assertByXpath($xpath);
+    // -- File URL from URI (relative).
+    $xpath = '//div[@class = "tt-file-url-from-uri" and contains(text(), "/files/image-test.png") and not(contains(text(), "http://"))]';
+    $this->assertXpath($xpath);
 
-    // -- Test file URL from image field.
+    // -- File URL from URI (absolute).
+    $xpath = '//div[@class = "tt-file-url-from-uri-absolute" and contains(text(), "/files/image-test.png") and contains(text(), "http://")]';
+    $this->assertXpath($xpath);
+
+    // -- File URL from image field.
     $xpath = '//div[@class = "tt-file-url-from-image-field" and contains(text(), "/files/image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test file URL from a specific image field item.
+    // -- File URL from a specific image field item.
     $xpath = '//div[@class = "tt-file-url-from-image-field-delta" and contains(text(), "/files/image-test.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
 
-    // -- Test file URL from media field.
+    // -- File URL from media field.
     $xpath = '//div[@class = "tt-file-url-from-media-field" and contains(text(), "/files/image-1.png")]';
-    $this->assertByXpath($xpath);
+    $this->assertXpath($xpath);
+
+    // -- Entity URL (canonical).
+    $xpath = '//div[@class = "tt-entity-url" and contains(text(), "/node/1#test") and not(contains(text(), "http"))]';
+    $this->assertXpath($xpath);
+
+    // -- Entity URL (absolute).
+    $xpath = '//div[@class = "tt-entity-url-absolute" and contains(text(), "/node/1") and contains(text(), "http")]';
+    $this->assertXpath($xpath);
+
+    // -- Entity URL (edit form).
+    $xpath = '//div[@class = "tt-entity-url-edit-form" and contains(text(), "/node/1/edit")]';
+    $this->assertXpath($xpath);
+
+    // -- Entity Link (canonical).
+    $xpath = '//div[@class = "tt-entity-link"]/a[text() = "Alpha" and contains(@href, "/node/1")  and not(contains(@href, "http"))]';
+    $this->assertXpath($xpath);
+
+    // -- Entity Link (absolute).
+    $xpath = '//div[@class = "tt-entity-link-absolute"]/a[text() = "Example" and contains(@href, "/node/1") and contains(@href, "http")]';
+    $this->assertXpath($xpath);
+
+    // -- Entity Link (edit form).
+    $xpath = '//div[@class = "tt-entity-link-edit-form"]/a[text() = "Edit" and contains(@href, "/node/1/edit")]';
+    $this->assertXpath($xpath);
+
+    // -- Entity translation.
+    // This is just a smoke test because the node is not translatable.
+    $xpath = '//div[@class = "tt-translation" and contains(text(), "Alpha")]';
+    $this->assertXpath($xpath);
+
+    // -- Hook twig_tweak_functions_alter().
+    $xpath = '//div[@class = "tt-functions_alter" and text() = "-=bar=-"]';
+    $this->assertXpath($xpath);
+
+    // -- Hook twig_tweak_filters_alter().
+    $xpath = '//div[@class = "tt-filters_alter" and text() = "bar"]';
+    $this->assertXpath($xpath);
+
+    // -- Hook twig_tweak_tests_alter().
+    $xpath = '//div[@class = "tt-tests_alter" and text() = "Yes"]';
+    $this->assertXpath($xpath);
   }
 
   /**
-   * Checks that an element specified by a the xpath exists on the current page.
+   * Checks that an element specified by the xpath exists on the current page.
    */
-  public function assertByXpath($xpath) {
+  private function assertXpath(string $xpath): void {
     $this->assertSession()->elementExists('xpath', $xpath);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function initFrontPage() {
-    // Intentionally empty. The parent implementation does a request to the
-    // front page to init cookie. This causes some troubles in rendering
-    // attached Twig template because page content type is not created at that
-    // moment. We can skip this step since this test does not rely on any
-    // session data.
   }
 
 }

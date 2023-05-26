@@ -11,7 +11,6 @@ dependencies:
     - taxonomy.vocabulary.meeting_purpose
     - taxonomy.vocabulary.room_type
   module:
-    - better_exposed_filters
     - csv_serialization
     - datetime
     - datetime_range
@@ -986,10 +985,10 @@ display:
             offset_label: Offset
           quantity: 9
       exposed_form:
-        type: bef
+        type: basic
         options:
           submit_button: Apply
-          reset_button: true
+          reset_button: false
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
@@ -1194,7 +1193,7 @@ display:
           exposed: true
           expose:
             operator_id: field_dates_value_op
-            label: 'After Date'
+            label: 'Dates between'
             description: ''
             use_operator: false
             operator: field_dates_value_op
@@ -1206,13 +1205,14 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
               administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
+              anonymous: '0'
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
+              intercept_kiosk: '0'
+              intercept_registered_customer: '0'
+              intercept_room_manager: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             min_placeholder: ''
@@ -1248,7 +1248,7 @@ display:
           exposed: true
           expose:
             operator_id: field_dates_value_1_op
-            label: 'Before Date'
+            label: And
             description: ''
             use_operator: false
             operator: field_dates_value_1_op
@@ -1260,13 +1260,14 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
               administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
+              anonymous: '0'
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
+              intercept_kiosk: '0'
+              intercept_registered_customer: '0'
+              intercept_room_manager: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             min_placeholder: ''
@@ -1769,9 +1770,7 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      display_extenders:
-        jsonapi_views:
-          enabled: true
+      display_extenders: {  }
       path: account/manage/intercept-export-room-reservations
     cache_metadata:
       max-age: -1
@@ -1812,7 +1811,7 @@ display:
             id:
               alias: ''
               raw_output: false
-      display_extenders: { }
+      display_extenders: {  }
       path: data/export/room-reservations.csv
     cache_metadata:
       max-age: -1

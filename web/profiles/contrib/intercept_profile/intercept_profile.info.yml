@@ -7,7 +7,6 @@ distribution:
 dependencies:
   - admin_toolbar:admin_toolbar
   - components:components
-  - better_exposed_filters:better_exposed_filters
   - date_recur:date_recur
   - date_recur_modular:date_recur_modular
   - default_content:default_content
@@ -34,6 +33,7 @@ dependencies:
   - drupal:toolbar
   - drupal:views
   - drupal:views_ui
+  - date_popup:date_popup
   - entity_reference_revisions:entity_reference_revisions
   - gin_toolbar:gin_toolbar
   - intercept:intercept
@@ -45,10 +45,6 @@ dependencies:
   - intercept:intercept_location
   - intercept:intercept_location_closing
   - intercept_profile:intercept_profile_copyright
-  - jquery_ui:jquery_ui
-  - jquery_ui_datepicker:jquery_ui_datepicker
-  - jquery_ui_slider:jquery_ui_slider
-  - jquery_ui_touch_punch:jquery_ui_touch_punch
   - media_entity_slideshow:media_entity_slideshow
   - paragraphs:paragraphs
   - quick_node_clone:quick_node_clone
@@ -57,6 +53,7 @@ dependencies:
   - twig_tweak:twig_tweak (>=8.x-2.9)
   - twig_field_value:twig_field_value
   - view_user_email:view_user_email
+  - views_autosubmit:views_autosubmit
 themes:
   - gin
   - intercept_base

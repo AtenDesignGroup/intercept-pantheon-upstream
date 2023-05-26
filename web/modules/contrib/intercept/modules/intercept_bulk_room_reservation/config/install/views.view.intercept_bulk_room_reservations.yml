@@ -2,9 +2,9 @@ langcode: en
 status: true
 dependencies:
   module:
-    - better_exposed_filters
     - intercept_bulk_room_reservation
     - user
+    - views_autosubmit
 id: intercept_bulk_room_reservations
 label: 'Intercept Bulk Room Reservations'
 module: views
@@ -291,27 +291,16 @@ display:
             offset_label: Offset
           quantity: 9
       exposed_form:
-        type: bef
+        type: autosubmit
         options:
           submit_button: Apply
-          reset_button: true
+          reset_button: false
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
-          text_input_required: 'Select any filter and click on Apply to see results'
-          text_input_required_format: basic_html
-          bef:
-            general:
-              autosubmit: false
-              autosubmit_exclude_textfield: false
-              autosubmit_textfield_delay: 500
-              autosubmit_hide: false
-              input_required: false
-              allow_secondary: false
-              secondary_label: 'Advanced options'
-              secondary_open: false
+          autosubmit_hide: true
       access:
         type: perm
         options:
@@ -521,6 +510,7 @@ display:
           entity_field: uid
           plugin_id: standard
           required: false
+      use_ajax: true
       header:
         area_text_custom:
           id: area_text_custom
@@ -550,10 +540,7 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      display_extenders:
-        ajax_history: {  }
-        jsonapi_views:
-          enabled: true
+      display_extenders: {  }
       path: manage/bulk-room-reservations
     cache_metadata:
       max-age: -1

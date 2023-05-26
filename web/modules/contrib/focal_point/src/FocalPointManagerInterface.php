@@ -2,8 +2,8 @@
 
 namespace Drupal\focal_point;
 
-use Drupal\file\FileInterface;
 use Drupal\crop\CropInterface;
+use Drupal\file\FileInterface;
 
 /**
  * Defines an interface for focal point manager.
@@ -104,6 +104,6 @@ interface FocalPointManagerInterface {
    * @return \Drupal\crop\CropInterface
    *   Saved crop entity.
    */
-  public function saveCropEntity($x, $y, $width, $height, CropInterface $crop);
+  public function saveCropEntity(float $x, float $y, int $width, int $height, CropInterface $crop): CropInterface;
 
 }

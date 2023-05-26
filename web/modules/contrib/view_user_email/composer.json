@@ -1,8 +1,7 @@
 {
-    "name": "view_user_email",
+    "name": "drupal/view_user_email",
     "type": "drupal-module",
     "description": "Allow site administrator the ability to grant users of certain roles access to another users email address.",
-    "type": "drupal-module",
     "keywords": [
     ],
     "homepage": "https://www.drupal.org/project/view_user_email",
@@ -16,7 +15,7 @@
     ],
     "support": {
         "issues": "https://www.drupal.org/project/issues/view_user_email",
-        "source": "http://cgit.drupalcode.org/view_user_email",
+        "source": "http://cgit.drupalcode.org/view_user_email"
     },
     "require": {
         "drupal/core": "^8.0.0 || ^9"

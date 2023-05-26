@@ -5,8 +5,3 @@ core_version_requirement: ^8.9 || ^9
 package: 'Intercept'
 dependencies:
   - intercept_room_reservation
-
-# Information added by Drupal.org packaging script on 2023-04-28
-version: '8.x-1.0-beta13'
-project: 'intercept'
-datestamp: 1682719426

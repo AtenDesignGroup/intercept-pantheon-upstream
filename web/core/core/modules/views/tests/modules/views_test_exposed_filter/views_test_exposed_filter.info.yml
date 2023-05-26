@@ -1,0 +1,8 @@
+name: 'Views Test Exposed Filter'
+type: module
+description: 'Alters Views exposed filter form for testing AJAX callbacks.'
+package: Testing
+version: VERSION
+core_version_requirement: ^8 || ^9
+dependencies:
+  - drupal:views

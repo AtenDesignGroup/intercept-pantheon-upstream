@@ -11,7 +11,6 @@ description: ''
 tag: ''
 base_table: node_field_data
 base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -181,7 +180,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: twig-tweak-test
+      path: example
     cache_metadata:
       max-age: -1
       contexts:

@@ -19,8 +19,6 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
  *   },
  *   multiple_values = "FALSE",
  * )
- *
- * @todo Fix error with multiple OH fields with Exception days per bundle.
  */
 class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
 
@@ -87,13 +85,14 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
     if ($delta > 0) {
       return [];
     }
-
-    // Use season, or normal Weekdays (empty season).
-    $season = $this->getSeason();
+    // Add a helper for JS links (e.g., copy-link previousSelector) in widget.
+    static $day_index = 0;
 
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
     $items->filterEmptyItems();
 
+    // Use seasonal, or normal Weekdays (empty season).
+    $season = $this->getSeason();
     // Create an indexed two level array of time slots:
     // - First level are day numbers.
     // - Second level contains items arranged by $day_delta.
@@ -115,13 +114,16 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
     $days = OfficeHoursDateHelper::weekDaysOrdered(range(0, 6));
     $cardinality = $this->getFieldSetting('cardinality_per_day');
     foreach ($days as $day) {
+      $day_index = $day;
+
       for ($day_delta = 0; $day_delta < $cardinality; $day_delta++) {
         $item = $indexed_items[$day][$day_delta] ?? $items->appendItem(['day' => $day]);
         $default_value = $item->getValue();
         $elements[] = [
-          '#day_delta' => $day_delta,
           '#type' => 'office_hours_slot',
           '#default_value' => $default_value,
+          '#day_index' => $day_index,
+          '#day_delta' => $day_delta,
           // Add field settings, for usage in each Element.
           '#field_settings' => $this->getFieldSettings(),
           '#date_element_type' => $this->getSetting('date_element_type'),
@@ -130,8 +132,7 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
     }
 
     // Build multi element widget. Copy the description, etc. into the table.
-    // Use the more complex 'data' construct,
-    // to allow ExceptionsWeekWidget to add a 'colspan':
+    // Use the more complex 'data' construct for obsolete reasons.
     $header = OfficeHoursItem::getPropertyLabels('data', $this->getFieldSettings());
     $element['value'] = [
       '#type' => 'office_hours_table',
@@ -171,17 +172,6 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
       $values = reset($values)['value'];
     }
     $values = parent::massageFormValues($values, $form, $form_state);
-
-    // @todo Validate if empty season has non-empty days and v.v.
-    $season = $this->getSeason();
-    if (!$season->isEmpty()) {
-      // Handle seasonal day nr., E.g., 4 --> 104.
-      foreach ($values as $key => &$value) {
-        $value = $season->toTimeSlotArray($value);
-      }
-      // Add season header to weekdays, to be saved in database.
-      $values[] = $season->toTimeSlotArray();
-    }
 
     return $values;
   }

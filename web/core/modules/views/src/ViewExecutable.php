@@ -695,7 +695,7 @@ class ViewExecutable {
 
       $request = \Drupal::request();
       $triggered = $request->request->get('_triggering_element_name');
-      $this->exposed_input = $request->isMethod('post') && $triggered && $this->id() !== 'media_library' ? $request->request->all() : $request->query->all();
+      $this->exposed_input = $request->isMethod('post') && $triggered ? $request->request->all() : $request->query->all();
 
       // unset items that are definitely not our input:
       foreach (['page', 'q'] as $key) {

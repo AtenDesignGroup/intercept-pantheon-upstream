@@ -168,12 +168,12 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       'intercept_room_reservation_selector' => [
         '#markup' => '<div id="roomReservationSelectRoot">
             <div>
-              <h3>Reserve Room by Calendar</h3>
+              <h3>Reserve by Calendar</h3>
               <p>Browse by date to find available rooms.</p>
               <a href="/reserve-room/by-calendar" class="menu__link">Choose by Calendar</a>
             </div>
             <div>
-              <h3>Reserve Room by Room</h3>
+              <h3>Reserve by Room</h3>
               <p>Browse by room to find available dates.</p>
               <a href="/reserve-room/by-room" class="menu__link">Choose by Room</a>
             </div>

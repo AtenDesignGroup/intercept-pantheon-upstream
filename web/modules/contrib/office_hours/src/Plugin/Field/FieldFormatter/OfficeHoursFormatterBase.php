@@ -55,7 +55,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
    * {@inheritdoc}
    */
   public static function defaultSettings() {
-    return [
+    $default_settings = [
       'day_format' => 'long',
       'time_format' => 'G',
       'compress' => FALSE,
@@ -79,13 +79,29 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
         'restrict_exceptions_to_num_days' => 7,
         'date_format' => 'long',
         'title' => 'Exception hours',
+        'all_day_format' => 'All day open',
       ],
       'schema' => [
         'enabled' => FALSE,
       ],
       'timezone_field' => '',
       'office_hours_first_day' => '',
-    ] + parent::defaultSettings();
+    ];
+    return $default_settings + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function mergeDefaults() {
+    // Override parent, since that does not support sub-arrays.
+    if (isset($this->settings['exceptions'])) {
+      $this->settings['exceptions'] += static::defaultSettings()['exceptions'];
+    }
+    if (isset($this->settings['schema'])) {
+      $this->settings['schema'] += static::defaultSettings()['schema'];
+    }
+    parent::mergeDefaults();
   }
 
   /**
@@ -285,13 +301,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     ];
 
     $element['exceptions'] = [
-      '#title' => $this->t('Exception day handling'),
+      '#title' => $this->t('Exception days'),
       '#type' => 'details',
       '#open' => FALSE,
       '#description' => $this->t("Note: Exception days can only be entered
         using the '(week) with exceptions' widget."),
     ];
-    // Get the exception date formats.
+    // Get the exception day formats.
     $formats = $this->entityTypeManager->getStorage('date_format')->loadMultiple();
     // @todo Set date format options using OptionsProviderInterface.
     $options = [];
@@ -326,6 +342,20 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#default_value' => $settings['exceptions']['title'],
       '#description' => $this->t('Leave empty to display no title between weekdays and exception days.'),
       '#required' => FALSE,
+    ];
+    $element['exceptions']['all_day_format'] = [
+      '#title' => $this->t('All day notation for exceptions'),
+      '#type' => 'textfield',
+      '#size' => 60,
+      '#default_value' => $settings['exceptions']['all_day_format'],
+      '#required' => FALSE,
+      '#description' => $this->t('Format for all-day-open days.
+        String can be translated when the
+        <a href=":install">Interface Translation module</a> is installed.',
+        [
+          ':install' => Url::fromRoute('system.modules_list')->toString(),
+        ]
+      ),
     ];
 
     $element['schema'] = [
@@ -438,13 +468,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     $new_element = $formatter->viewElements($items, $langcode);
     unset($new_element['#cache']);
 
-    switch ($new_element['#position']) {
+    switch ($new_element[0]['#position']) {
       case 'before':
-        array_unshift($elements, $new_element);
+        array_unshift($elements, $new_element[0]);
         break;
 
       case'after':
-        array_push($elements, $new_element);
+        array_push($elements, $new_element[0]);
         break;
 
       default:
@@ -458,14 +488,16 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
    * {@inheritdoc}
    */
   public function getSetting($key) {
-    if ($key !== 'cache') {
+    if ($key !== 'display_status') {
       return parent::getSetting($key);
     }
 
     // Determine if this entity display must be formatted.
     // Return TRUE if render caching must be active.
-    // This is the case when a Status formatter (open/closed) is used.
-    // Also, on the entity itself, it must be checked wether
+    // This is the case when:
+    // - a Status formatter (open/closed) is used.
+    // - only the currently open day is displayed.
+    // Note: Also, on the entity itself, it must be checked whether
     // Exception days are used. If so, then caching is also needed.
     if ($this->settings['current_status']['position'] !== '') {
       return TRUE;
@@ -495,12 +527,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
   protected function addCacheMaxAge(OfficeHoursItemListInterface $items, array &$elements) {
     $settings = $this->getSettings();
     // $third_party_settings = $this->getThirdPartySettings();
+    //
     // Take the 'open/closed' indicator, if set, since it is the lowest.
     // Overwrite field settings for 'next' formatter'.
     // Only in these cases, we need the formatted office hours.
     // @todo Use $items, not $office_hours in cacheHelper->getCacheMaxAge().
-    $cache_setting = $this->getSetting('cache');
-    if ($cache_setting == TRUE || $items->hasExceptionDays()) {
+    $cache_needed = (bool) $this->getSetting('display_status');
+    if ($cache_needed || $items->hasExceptionDays()) {
       if ($settings['current_status']['position'] !== '') {
         $settings['show_closed'] = 'next';
       }

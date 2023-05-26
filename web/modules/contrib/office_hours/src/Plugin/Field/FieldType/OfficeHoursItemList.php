@@ -6,7 +6,6 @@ use Drupal\Core\Field\FieldItemList;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\office_hours\Event\OfficeHoursEvents;
 use Drupal\office_hours\Event\OfficeHoursUpdateEvent;
-use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\OfficeHoursFormatterTrait;
 use Drupal\office_hours\OfficeHoursSeason;
 
@@ -73,20 +72,32 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   /**
    * {@inheritdoc}
    *
-   * We will overwrite the functionality of the parent. We disable
-   * "Keys are renumbered to ensure 0-based sequential deltas."
-   * We DO want the keys to have the same number as the day number,
-   * to ensure easy sorting and handling in formatter and widget.
+   * Make user all (exception) days are in correct sort order,
+   * independent of database order, so formatter is correct.
+   * (Widget or other sources may store exceptions day in other sort order).
    */
   public function setValue($values, $notify = TRUE) {
-
     parent::setValue($values, $notify);
+    // Sort the database values by day number.
+    $this->sort();
 
     // Allow other modules to alter $values.
     if (FALSE) {
+      $values = $this->getValue();
       // @todo Disabled until #3063782 is resolved.
       $this->dispatchUpdateEvent(OfficeHoursEvents::OFFICE_HOURS_UPDATE, $values);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function sort() {
+    // Sort the transitions on state weight.
+    uasort($this->list, [
+      'Drupal\office_hours\Plugin\Field\FieldType\OfficehoursItemBase',
+      'sort',
+    ]);
   }
 
   /**

@@ -74,8 +74,8 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    * Determines whether the data structure is empty.
    *
    * @param array $value
-   *   The value of a time slot; day, start, end, comment.
-   *   The value 'day_delta' must be added in case of widgets and formatters.
+   *   The value of a time slot: day, all_day, start, end, comment.
+   *   A value 'day_delta' must be added in case of widgets and formatters.
    *   Example from HTML5 input, without comments enabled.
    *   @code
    *     array:3 [
@@ -105,14 +105,14 @@ class OfficeHoursItem extends OfficeHoursItemBase {
       return FALSE;
     }
 
-    // Check 'day_delta', to facilitate closed Exception days.
+    // Facilitate closed Exception days - first slots are never empty.
     if (OfficeHoursItem::isExceptionDay($value)) {
       switch ($value['day_delta'] ?? 0) {
         case 0:
           // First slot is never empty if an Exception day is set.
           // In this case, on that date, the entity is 'Closed'.
           // Note: day_delta is not set upon load, since not in database.
-          // In ExceptionsSlot(Widget), 'day_delta' is added explicitly.
+          // In ExceptionsSlot (Widget), 'day_delta' is added explicitly.
           // In Formatter ..?
           return FALSE;
 
@@ -136,7 +136,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
   }
 
   /**
-   * Returns whether the day number an Exception date.
+   * Returns whether the day number an Exception day.
    *
    * @param array $value
    *   The Office hours data structure, having 'day' as weekday
@@ -181,68 +181,82 @@ class OfficeHoursItem extends OfficeHoursItemBase {
   }
 
   /**
-   * Normalises the contents of the ItemValue after Widget input.
+   * Normalizes the contents of the Item.
    *
-   * @param array $value
+   * @param array|NULL $value
    *   The value of a time slot; day, start, end, comment.
    *
    * @return array
    *   The normalised value of a time slot.
    */
-  public static function massageFormValue(array &$value) {
-    $value['all_day'] = (bool) ($value['all_day'] ?? FALSE);
-    // Format to 'Hi' format, with leading zero (0900).
-    $value['starthours'] = OfficeHoursDateHelper::format($value['starthours'] ?? NULL, 'Hi');
-    $value['endhours'] = OfficeHoursDateHelper::format($value['endhours'] ?? NULL, 'Hi');
-
+  public static function formatValue(&$value) {
     $day = $value['day'] ?? NULL;
+
+    if ($day == OfficeHoursItem::EXCEPTION_DAY) {
+      // An ExceptionItem is created with ['day' => EXCEPTION_DAY,].
+      $day = NULL;
+      $value = [];
+    }
+
+    // Set default values for new, empty widget.
+    if ($day === NULL) {
+      return $value += [
+        'day' => '',
+        'all_day' => FALSE,
+        'starthours' => NULL,
+        'endhours' => NULL,
+        'comment' => '',
+      ];
+    }
+
+    // Handle day formatting.
     if ($day && !is_numeric($day)) {
       // When Form is displayed the first time, $day is an integer.
       // When 'Add exception' is pressed, $day is a string "yyyy-mm-dd".
-      $value['day'] = strtotime($day);
+      $day = (int) strtotime($day);
     }
-
-    return $value;
-  }
-
-  /**
-   * Normalizes the contents of the Item.
-   *
-   * @param array $value
-   *   The value of a time slot; day, start, end, comment.
-   *
-   * @return array
-   *   The normalised value of a time slot.
-   */
-  public static function formatValue(array &$value) {
-    $day = $value['day'] ?? NULL;
-    if ($day == OfficeHoursItem::EXCEPTION_DAY) {
-      // An ExceptionItem is created with ['day' => EXCEPTION_DAY,].
-      $value = [];
-      $day = NULL;
-    }
-
-    // Apply default value.
-    $value += [
-      'day' => '',
-      'all_day' => FALSE,
-      'starthours' => NULL,
-      'endhours' => NULL,
-      'comment' => '',
-    ];
-
-    if ($day === NULL) {
-      // Set default values for new, empty widget.
-      return $value;
-    }
-
-    if ($day !== '') {
+    elseif ($day !== '') {
       // Convert day number to integer to get '0' for Sunday, not 'false'.
       $day = (int) $day;
     }
 
-    $starthours = $value['starthours'];
-    $endhours = $value['endhours'];
+    // Handle exception day 'more' slots.
+    // The following should be in slot::valueCallback(),
+    // But the results are not propagated into the widget.
+    if ($value !== FALSE) {
+
+      // This function is called in a loop over widget items.
+      // Save the exception day for the first delta,
+      // then use it in the following delta's of a day.
+      static $day_delta = 0;
+      static $previous_day = NULL;
+
+      if ($previous_day === $day) {
+        $day_delta++;
+      }
+      // Note: in ideal implementation, this is only needed in valueCallback(),
+      // but values are not copied from slot to widget.
+      // Only need to widget-specific massaging of form values,
+      // All logical changes will be done in ItemList->setValue($values),
+      // where the formatValue() function will be called, also.
+      // Process Exception days with 'more slots'.
+      // This cannot be done in above form, since we parse $day over items.
+      // Process 'day_delta' first, to avoid problem in isExceptionDay().
+      elseif ($value['day'] == 'exception_day_delta') {
+          $day = $previous_day;
+          $day_delta++;
+      }
+      else {
+        $previous_day = $day;
+        $day_delta = 0;
+      }
+    }
+
+    $starthours = $value['starthours'] ?? NULL;
+    $endhours = $value['endhours'] ?? NULL;
+    // Format to 'Hi' format, with leading zero (0900).
+    $starthours = OfficeHoursDateHelper::format($starthours, 'Hi');
+    $endhours = OfficeHoursDateHelper::format($endhours, 'Hi');
     // Cast the time to integer, to avoid core's error
     // "This value should be of the correct primitive type."
     // This is needed for e.g., '0000' and '0030'.
@@ -250,7 +264,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
     $endhours = ($endhours === NULL) ? NULL : (int) $endhours;
 
     // Handle the all_day checkbox.
-    $all_day = $value['all_day'];
+    $all_day = (bool) ($value['all_day'] ?? FALSE);
     if ($all_day) {
       $starthours = $endhours = 0;
     }
@@ -261,10 +275,11 @@ class OfficeHoursItem extends OfficeHoursItemBase {
 
     $value = [
       'day' => $day,
-      'all_day' => $all_day ?? FALSE,
+      'day_delta' => $day_delta,
+      'all_day' => $all_day,
       'starthours' => $starthours,
       'endhours' => $endhours,
-      'comment' => $value['comment'],
+      'comment' => $value['comment'] ?? '',
     ];
 
     return $value;
@@ -286,7 +301,8 @@ class OfficeHoursItem extends OfficeHoursItemBase {
     $start = OfficeHoursDateHelper::format($this->starthours, $format, FALSE);
     $end = OfficeHoursDateHelper::format($this->endhours, $format, TRUE);
 
-    if (!mb_strlen($start) && !mb_strlen($end)) {
+    if (OfficeHoursDatetime::isEmpty($start)
+      && OfficeHoursDatetime::isEmpty($end)) {
       // Empty time fields.
       return '';
     }

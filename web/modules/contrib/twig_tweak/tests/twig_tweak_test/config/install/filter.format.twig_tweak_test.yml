@@ -1,7 +1,7 @@
 langcode: en
 status: true
-dependencies: {}
-name: Twig tweak test
+dependencies: {  }
+name: 'Twig tweak test'
 format: twig_tweak_test
 weight: 0
 filters:

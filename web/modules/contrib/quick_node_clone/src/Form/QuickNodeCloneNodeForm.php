@@ -2,8 +2,8 @@
 
 namespace Drupal\quick_node_clone\Form;
 
-use Drupal\node\NodeForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeForm;
 
 /**
  * Form controller for Quick Node Clone edit forms.

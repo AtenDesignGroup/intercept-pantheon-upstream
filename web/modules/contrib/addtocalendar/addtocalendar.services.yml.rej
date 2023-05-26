@@ -1,0 +1,9 @@
+--- addtocalendar.services.yml
++++ addtocalendar.services.yml
+@@ -1,5 +1,5 @@
+ services:
+   addtocalendar.apiwidget:
+     class: Drupal\addtocalendar\AddToCalendarApiWidget
+-    arguments: ['@config.factory']
++    arguments: ['@config.factory', '@renderer']
+ 

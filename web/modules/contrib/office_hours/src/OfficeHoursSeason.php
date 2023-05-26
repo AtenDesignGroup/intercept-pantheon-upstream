@@ -259,18 +259,22 @@ class OfficeHoursSeason {
    * @param string $pattern
    *   The string pattern for the date to be returned.
    *
-   * @return int|string
+   * @return string
    *   The formatted date.
    */
   public function getFromDate($pattern = '') {
-    $result = $this->from;
-    // No usage for season 0, normal weekdays.
-    if (is_numeric($result) && $pattern) {
-      if ($result > self::SEASON_MAX_DAY_NUMBER) {
-        $result = date($pattern, $result);
+    $day = $this->from;
+
+    if (is_numeric($day) && $pattern) {
+      // No usage for season 0, normal weekdays.
+      if ($day <= self::SEASON_MAX_DAY_NUMBER) {
+        return '';
       }
+      // @todo Use OfficeHoursDateHelper::getLabel($pattern, ['day' => $result]).
+      // return OfficeHoursDateHelper::getLabel($pattern, ['day' => $day]);
+      return \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
     }
-    return $result;
+    return $day;
   }
 
   /**
@@ -279,20 +283,22 @@ class OfficeHoursSeason {
    * @param string $pattern
    *   The string pattern for the date to be returned.
    *
-   * @return int|string
+   * @return string
    *   The formatted date.
    */
   public function getToDate($pattern = '') {
-    $result = $this->to;
+    $day = $this->to;
 
-    // No usage for season 0, normal weekdays.
-    if (is_numeric($result) && $pattern) {
-      if ($result > self::SEASON_MAX_DAY_NUMBER) {
-        // @todo Use OfficeHoursDateHelper::getLabel($pattern, ['day' => $result]).
-        $result = date($pattern, $result);
+    if (is_numeric($day) && $pattern) {
+      // No usage for season 0, normal weekdays.
+      if ($day <= self::SEASON_MAX_DAY_NUMBER) {
+        return '';
       }
+      // @todo Use OfficeHoursDateHelper::getLabel($pattern, ['day' => $result]).
+      // return OfficeHoursDateHelper::getLabel($pattern, ['day' => $day]);
+      return \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
     }
-    return $result;
+    return $day;
   }
 
 }

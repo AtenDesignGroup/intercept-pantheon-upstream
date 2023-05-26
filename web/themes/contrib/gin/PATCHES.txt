@@ -5,3 +5,7 @@ Adds template override for /bulk-room-reservation/add
 Source: patches/bulk_room_reservations_date_recur_template.patch
 
 
+Fixes publication options not appearing in sidebar when using event templates
+Source: patches/crl-1768_event_templates_sidebar.patch
+
+

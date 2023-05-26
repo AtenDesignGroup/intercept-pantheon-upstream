@@ -27,7 +27,7 @@ class QuickNodeCloneExcludeParagraphFieldsTest extends ParagraphsTestBase {
    *
    * @var array
    */
-  public static $modules = ['paragraphs', 'quick_node_clone'];
+  protected static $modules = ['paragraphs', 'quick_node_clone'];
 
   /**
    * {@inheritdoc}

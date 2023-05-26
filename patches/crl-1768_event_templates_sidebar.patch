@@ -1,0 +1,14 @@
+diff --git a/includes/html.theme b/includes/html.theme
+index 36c1bfc..ef48be9 100644
+--- a/includes/html.theme
++++ b/includes/html.theme
+@@ -39,6 +39,9 @@ function gin_preprocess_html(&$variables) {
+     if (\Drupal::classResolver(GinContentFormHelper::class)->isContentForm()) {
+       $variables['attributes']['class'][] = 'gin--edit-form';
+     }
++    if (isset($variables['node_type']) && $variables['node_type'] == 'event') {
++      $variables['attributes']['class'][] = 'gin--edit-form';
++    }
+ 
+     // Only add gin--classic-toolbar class if user has permission.
+     if (!\Drupal::currentUser()->hasPermission('access toolbar')) {

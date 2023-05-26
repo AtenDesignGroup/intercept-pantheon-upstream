@@ -8,6 +8,7 @@
 use Drupal\block\Entity\Block;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Utility\TableSort;
 use Drupal\user\Entity\User;
 
@@ -346,7 +347,7 @@ function intercept_base_preprocess_links__buttons(&$variables) {
 /**
  * Implements hook_form_alter().
  */
-function intercept_base_form_alter(array &$form, FormStateInterface $form_state) {
+function intercept_base_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   // Alter reservation status change forms.
   if (strpos($form['#id'], 'reservation-status-change-form') !== FALSE) {
     foreach ($form['actions'] as $key => $value) {
@@ -354,6 +355,24 @@ function intercept_base_form_alter(array &$form, FormStateInterface $form_state)
         $form['actions'][$key]['#attributes']['class'][] = 'button--outline';
       }
     }
+  }
+  intercept_base_attach_form_id($form, $form_id);
+}
+
+/**
+ * Attaches form id to all form elements.
+ *
+ * @param array $form
+ *   The form or form element which children should have form id attached.
+ * @param string $form_id
+ *   The form id attached to form elements.
+ */
+function intercept_base_attach_form_id(array &$form, $form_id) {
+  foreach (Element::children($form) as $child) {
+    if (!isset($form[$child]['#form_id'])) {
+      $form[$child]['#form_id'] = $form_id;
+    }
+    intercept_base_attach_form_id($form[$child], $form_id);
   }
 }
 
@@ -372,21 +391,20 @@ function intercept_base_theme_suggestions_field_alter(array &$suggestions, array
  * Implements hook_theme_suggestions_HOOK_alter() for fieldsets.
  */
 function intercept_base_theme_suggestions_fieldset_alter(array &$suggestions, array $variables) {
-  if (isset($variables['element']['#id'])) {
-    $date_ids = [
-      // Room reservations
-      'edit-field-dates-value-wrapper',
-      // Events
-      'edit-field-date-time-value-wrapper',
-      // Equipment
-      'edit-field-dates-value-1-wrapper',
-      // Attendance/scans
-      'edit-attendance-date-wrapper',
-      // Meetings
-      'edit-date-range-wrapper',
-    ];
-    if (in_array($variables['element']['#id'], $date_ids) || strstr($variables['element']['#id'], 'edit-field-dates-value-wrapper')) {
+  if (isset($variables['element']['#form_id']) && isset($variables['element']['#id'])) {
+    if ($variables['element']['#form_id'] == 'views_exposed_form' && strpos($variables['element']['#id'], 'date') !== FALSE) {
       $suggestions[] = 'fieldset__views_exposed_form__dates';
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_alter() for form containers.
+ */
+function intercept_base_theme_suggestions_container_alter(array &$suggestions, array &$variables) {
+  if (isset($variables['element']['#form_id']) && isset($variables['element']['#id'])) {
+    if ($variables['element']['#form_id'] == 'views_exposed_form' && strpos($variables['element']['#id'], 'date') !== FALSE) {
+      $suggestions[] = 'container__views_exposed_form__dates';
     }
   }
 }

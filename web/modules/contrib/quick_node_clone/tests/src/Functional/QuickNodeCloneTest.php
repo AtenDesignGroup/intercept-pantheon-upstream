@@ -21,7 +21,7 @@ class QuickNodeCloneTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['quick_node_clone'];
+  protected static $modules = ['quick_node_clone'];
 
   /**
    * A user with the 'Administer quick_node_clone' permission.

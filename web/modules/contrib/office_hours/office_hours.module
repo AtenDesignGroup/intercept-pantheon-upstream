@@ -34,7 +34,7 @@ function office_hours_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<li>' . t('using 1, 2 or even more <i>time blocks</i> per day;') . '</li>';
       $output .= '<li>' . t('a comment per time slot (E.g., <i>First friday of the month</i>);') . '</li>';
       $output .= '<li>' . t('links to easily copy or delete time slots;') . '</li>';
-      $output .= '<li>' . t('adding exceptions dates;') . '</li></ul>';
+      $output .= '<li>' . t('adding exception days;') . '</li></ul>';
       $output .= '<p>' . t('The formatter provides:') . '</p>';
       $output .= '<ul><li>' . t("an 'open now'/'closed now' indicator (formatter);") . '</li>';
       $output .= '<li>' . t('options to group days (E.g., <i>Mon-Fri 12:00-22:00</i>);') . '</li>';
@@ -73,12 +73,3 @@ function office_hours_form_field_storage_config_edit_form_alter(&$form, FormStat
 // function office_hours_office_hours_time_format_alter(string &$formatted_time) {
 //   // Only to test the alter hook in office_hours.api.php .
 // }
-
-/**
- * Implements hook_cron().
- *
- * Invalidate cache, to enable near--real-time caching for Anonymous users.
- */
-function office_hours_cron() {
-  OfficeHoursCacheHelper::doCron();
-}

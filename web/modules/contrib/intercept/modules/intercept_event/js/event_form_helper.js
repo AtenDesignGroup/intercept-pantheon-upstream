@@ -11,6 +11,7 @@
 Drupal.behaviors.eventFormHelper = {
   attach: function (context, settings) {
 
+    // When changing the start date, make the end date match.
     $('#edit-field-date-time-0-value-date', context).once().change(function() {
       var endDate = $('#edit-field-date-time-0-end-value-date');
       if ($(this).val() > endDate.val()) {

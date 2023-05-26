@@ -8,7 +8,7 @@ dependencies:
 id: claro_powered_by_drupal
 theme: claro
 region: highlighted
-weight: 20
+weight: 0
 provider: null
 plugin: system_powered_by_block
 settings:

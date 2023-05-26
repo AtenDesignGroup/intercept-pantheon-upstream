@@ -43,30 +43,8 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $values = parent::massageFormValues($values, $form, $form_state);
-
-    // Only need to widget specific massaging of form values,
-    // All logical changes will be done in ItemList->setValue($values),
-    // where the formatValue() function will be called, also.
-    $day = '';
     foreach ($values as &$value) {
-      OfficeHoursItem::massageFormValue($value);
-      // OfficeHoursItem::formatValue($value);.
-      //
-      // Process Exception days with 'more slots'.
-      // This cannot be done in above form, since we parse $day over Items.
-      if (OfficeHoursItem::isExceptionDay($value, TRUE)) {
-        if (!OfficeHoursItem::isValueEmpty($value)) {
-          // Copy Exception day number from delta 0 to 'more' slots,
-          // in case the user changed the date,
-          // and to avoid removing lines with day but empty hours.
-          if (isset($value['day_delta']) && $value['day_delta'] == 0) {
-            // Reset value, to be re-used for day_delta 1, 2, ...
-            $day = $value['day'];
-          }
-          $value['day'] = $day;
-        }
-      }
-
+      OfficeHoursItem::formatValue($value);
     }
     return $values;
   }

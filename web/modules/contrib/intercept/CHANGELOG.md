@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta14] - 2023-05-26
+
+<h2>Sprint 54 Deployment</h2>
+
+- Updated the "End date" field on the staff room reservation form to update automatically when the start date is updated
+- Fixed an issue on the staff events list where no events would appear if a single day was selected
+- Improved the visibility of room reservation conflict messages when staff are creating an event
+- Add more updates to prepare for the Drupal 10 upgrade
+- Fixed an issue with the publishing options not appearing in the sidebar when creating an event from a template
+- Fixed issues in printable sign-in sheets for events where canceled customer registrations were being shown and where guest registrations were not being shown
+
 ## [8.x-1.0-beta13] - 2023-04-28
 
 <h2>Sprint 53 Deployment</h2>

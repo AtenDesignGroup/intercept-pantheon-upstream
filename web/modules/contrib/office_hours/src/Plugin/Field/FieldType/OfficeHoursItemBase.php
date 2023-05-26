@@ -113,11 +113,6 @@ class OfficeHoursItemBase extends FieldItemBase {
 
     // Added for Widget.
     $properties['operations'][$parent] = t('Operations');
-    // Added for ExceptionsWidget.
-    if ($field_settings['day_delta'] ?? FALSE) {
-      $properties['day_delta']['data'] = t('Day delta');
-      $properties['day_delta']['class'] = 'hidden';
-    }
 
     // Added for FormatterTable.
     if (($field_settings['slots'] ?? FALSE)) {
@@ -204,6 +199,16 @@ class OfficeHoursItemBase extends FieldItemBase {
       '#description' => $description,
     ];
 
+    $element['element_type'] = [
+      '#type' => 'select',
+      '#title' => t('Time element type'),
+      '#description' => t('Select the widget type for selecting the time.'),
+      '#options' => [
+        'office_hours_datelist' => t('Select list'),
+        'office_hours_datetime' => t('HTML5 time input'),
+      ],
+      '#default_value' => $settings['element_type'],
+    ];
     // @todo D8 Move to widget settings. Align with DateTimeDatelistWidget.
     $element['time_format'] = [
       '#type' => 'select',
@@ -216,17 +221,9 @@ class OfficeHoursItemBase extends FieldItemBase {
       ],
       '#default_value' => $settings['time_format'],
       '#required' => FALSE,
-      '#description' => t('Format of the time in the widget.'),
-    ];
-    $element['element_type'] = [
-      '#type' => 'select',
-      '#title' => t('Time element type'),
-      '#description' => t('Select the widget type for selecting the time.'),
-      '#options' => [
-        'office_hours_datelist' => t('Select list'),
-        'office_hours_datetime' => t('HTML5 time input'),
-      ],
-      '#default_value' => $settings['element_type'],
+      // @todo Add #states to disable/hide/set value to 'H'.
+      '#description' => t('Format of the time in the widget.
+        Please note that HTML5 time input only supports 09:00 format'),
     ];
     // @todo D8 Align with DateTimeDatelistWidget.
     $element['increment'] = [
@@ -266,15 +263,15 @@ class OfficeHoursItemBase extends FieldItemBase {
     ];
     $element['exceptions'] = [
       '#type' => 'checkbox',
-      '#title' => t("Allow exception dates"),
+      '#title' => t("Allow exception days"),
       '#required' => FALSE,
       '#default_value' => $settings['exceptions'],
-      '#description' => t("Allows to register exception dates, like
+      '#description' => t("Allows to register exception days, like
         'Closed on Christmas'. This requires the Extended Weekday Widget."),
     ];
     $element['seasons'] = [
       '#type' => 'checkbox',
-      '#title' => t("Allow seasons (Work in progress - do not use on live sites.)"),
+      '#title' => t("Allow seasons"),
       '#required' => FALSE,
       '#default_value' => $settings['seasons'],
       '#description' => t("Allows to register weekly opening hours for seasons,
@@ -353,6 +350,22 @@ class OfficeHoursItemBase extends FieldItemBase {
     // parent::applyDefaultValue($notify);.
     $this->setValue([], $notify);
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function sort(OfficeHoursItem $a, OfficeHoursItem $b) {
+    // Sort the entities using the entity class's sort() method.
+    $a_day = $a->day;
+    $b_day = $b->day;
+    if ($a_day < $b_day) {
+      return -1;
+    }
+    if ($a_day > $b_day) {
+      return +1;
+    }
+    return 0;
   }
 
   /**

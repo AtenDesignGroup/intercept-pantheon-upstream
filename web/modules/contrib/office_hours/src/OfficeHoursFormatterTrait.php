@@ -102,7 +102,7 @@ trait OfficeHoursFormatterTrait {
       $item = $iterator->current();
       $value = $item->getValue();
       $day = $value['day'];
-      // This should already exist for weekdays, not for Exception dates.
+      // This should already exist for weekdays, not for Exception days.
       $office_hours[$day] = $office_hours[$day]
         ?? ['day' => $day] + $default_office_hours;
 
@@ -338,7 +338,7 @@ trait OfficeHoursFormatterTrait {
         $render_item = clone $item;
       }
 
-      // Format the label (weekday, exception date).
+      // Format the label (weekday, exception day).
       $render_item->set('day', $info['day'] ?? NULL, FALSE);
       $render_item->set('endday', $info['endday'] ?? NULL, FALSE);
       $render_item->set('comment', $item->comment ?? NULL, FALSE);
@@ -346,28 +346,27 @@ trait OfficeHoursFormatterTrait {
 
       // Format the slots.
       $all_day = NULL;
-      foreach ($info['slots'] as $index => &$slot_data) {
+      foreach ($info['slots'] as $day_delta => &$slot_data) {
         // Do not process additional slots in some cases.
-        if (($all_day |= $slot_data['all_day']) && $index > 0) {
+        if (($all_day |= $slot_data['all_day']) && $day_delta > 0) {
           // Additional slots are forbidden for all_day.
           // @todo Disable 'more slots' for all_day in JS.
           continue;
         };
 
-        $item = $info['items'][$index];
-        // $item->isEmpty() may say that Exception day is empty.
-        if ($item->isException() || !$item->isEmpty()) {
-          $render_item->set('starthours', $info['slots'][$index]['start'] ?? NULL, FALSE);
-          $render_item->set('endhours', $info['slots'][$index]['end'] ?? NULL, FALSE);
+        $item = $info['items'][$day_delta];
+        if (!$item->isEmpty()) {
+          $render_item->set('starthours', $info['slots'][$day_delta]['start'] ?? NULL, FALSE);
+          $render_item->set('endhours', $info['slots'][$day_delta]['end'] ?? NULL, FALSE);
           $formatted_slot = $render_item->formatTimeSlot($settings);
-
-          // Store the formatted slot in the slot itself.
-          $slot_data['formatted_slot'] = $formatted_slot;
-          // Store the arrays of formatted slots & comments in the day.
-          $info['formatted_slots'][] = $formatted_slot;
-          // Always add comment to keep aligned with time slot.
-          if (!$render_item->isSeasonHeader()) {
-            $info['comments'][] = $slot_data['comment'];
+          $comment = $slot_data['comment'];
+          if ($formatted_slot || $comment) {
+            // Store the formatted slot in the slot itself.
+            $slot_data['formatted_slot'] = $formatted_slot;
+            // Store the arrays of formatted slots & comments in the day.
+            $info['formatted_slots'][] = $formatted_slot;
+            // Always add comment to keep #columns aligned with time slot.
+            $info['comments'][] = $comment;
           }
         }
       }
@@ -378,23 +377,49 @@ trait OfficeHoursFormatterTrait {
         $info['formatted_slots'] = '';
       }
       elseif ($all_day) {
-        $info['formatted_slots']
-          = $this->t(Html::escape($settings['all_day_format']));
+        $info['formatted_slots'] = OfficeHoursItem::isExceptionDay($info)
+          ? $this->t(Html::escape($settings['exceptions']['all_day_format']))
+          : $this->t(Html::escape($settings['all_day_format']));
+      }
+//      elseif ($info['formatted_slots'] == [0 => '']
+  //      && $info['comments'] == [0 => '']) {
+    //    $info['formatted_slots'] = $this->t(Html::escape($settings['closed_format']));
+  //    }
+      elseif (empty($info['formatted_slots'])) {
+        $info['formatted_slots'] = $this->t(Html::escape($settings['closed_format']));
       }
       else {
-        $info['formatted_slots'] = empty($info['formatted_slots'])
-          ? $this->t(Html::escape($settings['closed_format']))
-          : implode($slot_separator, $info['formatted_slots']);
+        $info['formatted_slots'] = implode($slot_separator, $info['formatted_slots']);
       }
 
-      // Escape and Translate the comments.
-      $info['comments'] = array_map('Drupal\Component\Utility\Html::escape', $info['comments']);
+      // Process comments.
+      if ($render_item->isSeasonHeader()) {
+        $info['comments'] = [];
+      }
+      // Remove empty comment lines, to avoid separators.
+      foreach ($info['comments'] as $index => $comment_line) {
+        if ($comment_line == '') {
+          unset($info['comments'][$index]);
+        }
+      }
+      // Format and Translate comments.
       if ($field_settings['comment'] == 2) {
+        // Translatable comments in plain text, no HTML.
+        $info['comments'] = array_map('Drupal\Component\Utility\Html::escape', $info['comments']);
         $info['comments'] = array_map('t', $info['comments']);
       }
-      $info['comments'] = ($field_settings['comment'])
-          ? implode($slot_separator, $info['comments'])
-          : '';
+      elseif ($field_settings['comment'] == 1) {
+        // Allow comments with HTML, without translations.
+        // @todo Support translations.
+        $info['comments'] = array_map('Drupal\Component\Utility\Html::normalize', $info['comments']);
+      }
+      else {
+        // Comments are not allowed, but may have been entered somehow.
+        $info['comments'] = [];
+      }
+      // Concatenate the comment lines.
+      $info['comments'] = implode($slot_separator, $info['comments']);
+
     }
     return $office_hours;
   }
@@ -583,7 +608,8 @@ trait OfficeHoursFormatterTrait {
         // Exceptions settings are not set / submodule is disabled.
         return FALSE;
       }
-      // @todo This feels like isInSeason().
+      // @todo This feels like isInSeason(), or ItemBase::isInHorizon().
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursExceptionsItem $item */
       if ($item->isInRange(0, self::$horizon)) {
         return TRUE;
       }

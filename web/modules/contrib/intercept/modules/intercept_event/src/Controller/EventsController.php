@@ -834,7 +834,7 @@ class EventsController extends ControllerBase {
     $event = Node::load($node);
     $title = $event->getTitle();
     // Convert from stdObject to array.
-    $registrations = \Drupal::service('intercept_event.manager')->getEventRegistrations($event);
+    $registrations = \Drupal::service('intercept_event.manager')->getEventRegistrations($event, 'active');
     $arryResults = [];
     // Count multiple registrants from a single registration (children, spouses, etc.)
     $total_registrations = \Drupal::service('intercept_event.manager')->getEventActiveRegistrants($event);
@@ -871,9 +871,34 @@ class EventsController extends ControllerBase {
         }
         if (empty($names[$id]['name_last']) && empty($names[$id]['name_first'])) {
           $account = User::load($uid);
-          $names[$id]['name_last'] = $account->getUsername();
+          $names[$id]['name_last'] = $account->getAccountName();
         }
         $names[$id]['name_full'] = $names[$id]['name_last'] . ', ' . $names[$id]['name_first'];
+      }
+      else {
+        if ($registration->hasField('field_guest_name') && $guest_name = $registration->field_guest_name->value) {
+          $names[$id]['name_full'] = $guest_name;
+          $name_parts = explode(" ", $guest_name);
+          $names[$id]['name_first'] = $name_parts[0];
+          if (isset($name_parts[1]) && !empty($name_parts[1])) {
+            $names[$id]['name_last'] = $name_parts[1];
+          }
+        }
+        elseif ($registration->hasField('field_guest_name_first') && $registration->hasField('field_guest_name_last')) {
+          if ($registration->field_guest_name_first->value && $registration->field_guest_name_last->value) {
+            $names[$id]['name_full'] = $registration->field_guest_name_last->value . ', ' . $registration->field_guest_name_first->value;
+            $names[$id]['name_first'] = $registration->field_guest_name_first->value;
+            $names[$id]['name_last'] = $registration->field_guest_name_last->value;
+          }
+          elseif ($registration->field_guest_name_first->value) {
+            $names[$id]['name_full'] = $registration->field_guest_name_first->value;
+            $names[$id]['name_first'] = $registration->field_guest_name_first->value;
+          }
+          elseif ($registration->field_guest_name_last->value) {
+            $names[$id]['name_full'] = $registration->field_guest_name_last->value;
+            $names[$id]['name_last'] = $registration->field_guest_name_last->value;
+          }
+        }
       }
     }
 

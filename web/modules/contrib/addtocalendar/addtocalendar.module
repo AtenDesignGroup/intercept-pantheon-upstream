@@ -16,7 +16,7 @@ require 'includes/addtocalendar.build.inc';
 function addtocalendar_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.addtocalendar':
-      $output = file_get_contents(drupal_get_path('module', 'addtocalendar') . '/README.md');
+      $output = file_get_contents(\Drupal::service('extension.list.module')->getPath('addtocalendar') . '/README.md');
       return $output;
   }
 }

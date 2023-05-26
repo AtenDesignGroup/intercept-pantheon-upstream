@@ -1,8 +1,8 @@
 # Intercept Pantheon Upstream
-Pantheon upstream for Intercept. This will install [Drupal 8](https://drupal.org/project/drupal) with the [Intercept installation profile](https://drupal.org/project/intercept_profile) which includes the [Intercept modules](https://drupal.org/project/intercept) and the [Intercept theme](https://drupal.org/project/intercept_base).  This is the quickest way to get Intercept, its theme, and its dependencies up and running on Pantheon.
+Pantheon upstream for Intercept. This will install [Drupal](https://drupal.org/project/drupal) with the [Intercept installation profile](https://drupal.org/project/intercept_profile) which includes the [Intercept modules](https://drupal.org/project/intercept) and the [Intercept theme](https://drupal.org/project/intercept_base).  This is the quickest way to get Intercept, its theme, and its dependencies up and running on Pantheon.
 
 ## Why This Upstream Exists
-Custom upstreams are a convenient way to quickly install and evaluate a new instance of Drupal 8 using Intercept without needing to worry about server requirements, upgrades, or deployment scripts.  Updates to the upstream will automatically become available to your installation on the Pantheon dashboard.
+Custom upstreams are a convenient way to quickly install and evaluate a new instance of Drupal using Intercept without needing to worry about server requirements, upgrades, or deployment scripts.  Updates to the upstream will automatically become available to your installation on the Pantheon dashboard.
 
 ## Requirements
 This upstream requires that you have a Pantheon account and the ability to create a new site using an upstream.

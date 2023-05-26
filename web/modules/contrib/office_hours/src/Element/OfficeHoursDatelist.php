@@ -22,19 +22,14 @@ class OfficeHoursDatelist extends Datelist {
     $info = [
       '#input' => TRUE,
       '#tree' => TRUE,
-      '#element_validate' => [[static::class, 'validateOfficeHoursSlot']],
-      '#process' => [[static::class, 'processOfficeHoursSlot']],
+      '#element_validate' => [[static::class, 'validateOfficeHoursDatelist']],
+      '#process' => [[static::class, 'processOfficeHoursDatelist']],
       // @see Drupal\Core\Datetime\Element\Datelist.
       '#date_part_order' => ['year', 'month', 'day', 'hour', 'minute'],
-      // @see Drupal\Core\Datetime\Element\Datetime.
-      '#date_date_element' => 'none', // {'none'|'date'}
-      '#date_time_element' => 'time', // {'none'|'time'|'text'}
-      '#date_date_format' => 'none',
+      '#date_year_range' => '1900:2050',
+      '#date_timezone' => '+0000',
       // Callbacks, used to add a jQuery time picker or an 'all_day' checkbox.
       '#date_time_callbacks' => [],
-      '#date_year_range' => '1900:2050',
-      // @see Drupal\Core\Datetime\Element\DateElementBase.
-      '#date_timezone' => '+0000',
     ];
 
     // #process, #validate bottom-up.
@@ -110,7 +105,7 @@ class OfficeHoursDatelist extends Datelist {
    * @return array
    *   The screen element.
    */
-  public static function processOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
+  public static function processOfficeHoursDatelist(array &$element, FormStateInterface $form_state, array &$complete_form) {
     $element['hour']['#options'] = $element['#hour_options'];
     return $element;
   }
@@ -125,7 +120,7 @@ class OfficeHoursDatelist extends Datelist {
    * @param array $complete_form
    *   The complete form structure.
    */
-  public static function validateOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
+  public static function validateOfficeHoursDatelist(array &$element, FormStateInterface $form_state, array &$complete_form) {
     $input = $element['#value'];
 
     $value = '';

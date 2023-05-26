@@ -128,33 +128,29 @@ class OfficeHoursDateHelper extends DateHelper {
     // Be prepared for Datetime and Numeric input.
     // Numeric input set in validateOfficeHoursSlot().
     if (!isset($element)) {
-      return '';
-    }
-
-    // Normalize $element into a 4-digit time.
-    if (isset($element['time'])) {
-      // HTML5 time element.
-      // Return NULL or time string.
-      $time = $element['time'];
-    }
-    elseif (!isset($element['hour'])) {
-      $time = $element;
-    }
-    elseif (($element['hour'] !== '') || ($element['minute'] !== '')) {
-      $time = ((int) $element['hour']) * 100 + (int) $element['minute'];
-    }
-    else {
-      $time = '';
-    }
-
-    if (!mb_strlen($time)) {
       return NULL;
     }
 
-    // Do not format a seasonal start/end date, stored in start/end hours.
-    // This is for both formatting and for saving data.
-    if (OfficeHoursItem::isExceptionDay(['day' => $element])) {
-      return $element;
+    // Normalize $element into a 4-digit time.
+    if (is_array($element) && array_key_exists('time', $element)) {
+      // HTML5 datetime element.
+      // Return NULL or time string.
+      $time = $element['time'];
+    }
+    elseif (is_array($element) && array_key_exists('hour', $element)) {
+      // SelectList datelist element.
+      $time = '';
+      if (($element['hour'] !== '') || ($element['minute'] !== '')) {
+        $time = ((int) $element['hour']) * 100 + (int) $element['minute'];
+      }
+    }
+    else {
+      // String.
+      $time = $element;
+    }
+
+    if ($time === NULL || $time === '' ) {
+      return NULL;
     }
 
     // Normalize time to '09:00' format before creating DateTime object.
@@ -286,7 +282,8 @@ class OfficeHoursDateHelper extends DateHelper {
     $new_office_hours = [];
 
     // Do an initial re-sort on day number for Weekdays and Exception days.
-    ksort($office_hours);
+    // Removed. Already done at loading in OfficeHoursItemList::setValue().
+    // ksort($office_hours);
 
     // Fetch first day of week from field settings, if not given already.
     $first_day = OfficeHoursDateHelper::getFirstDay($first_day);

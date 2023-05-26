@@ -121,15 +121,9 @@ libraries-extend:
     - intercept_base/action-button
     - intercept_base/addtocalendar
 
-component-libraries:
-  intercept-base-components:
-    paths:
+components:
+  namespaces:
+    intercept-base-components:
       - components
-  intercept-base-icons:
-    paths:
+    intercept-base-icons:
       - images/icons
-
-# Information added by Drupal.org packaging script on 2023-04-28
-version: '8.x-1.0-beta13'
-project: 'intercept_base'
-datestamp: 1682719455

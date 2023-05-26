@@ -141,6 +141,8 @@
     @media (min-width: 62em) {
       .filters__inputs-inner #edit-field-user-0-message {
         font-size: 1rem; } }
+  .filters__inputs-inner #edit-uid--description {
+    display: none; }
   .filters__inputs-inner .ajax-progress-throbber {
     position: absolute;
     top: 50px; }

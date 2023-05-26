@@ -102,6 +102,23 @@ class OfficeHoursBaseSlot extends FormElement {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
+
+    if ($input !== FALSE) {
+      // Massage, normalize value after pressing Form button.
+      // $element is also updated via reference.
+      $input += ['day_delta' => $element['#day_delta']];
+      $input = OfficeHoursItem::formatValue($input);
+
+      return $input;
+    }
+
+    return NULL;
+  }
+
+  /**
    * Render API callback: Builds one OH-slot element.
    *
    * Build the form element. When creating a form using Form API #process,
@@ -118,14 +135,14 @@ class OfficeHoursBaseSlot extends FormElement {
    *   The enriched element, identical to first parameter.
    */
   public static function processOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
+
+    // The valueCallback() has populated the #value array.
+    $value = $element['#value'];
+    $day_delta = $element['#day_delta'];
+
     $field_settings = $element['#field_settings'];
     $time_format = $field_settings['time_format'];
 
-    // Massage, normalize value after pressing Form button.
-    // $element is updated via reference.
-    $value = OfficeHoursItem::massageFormValue($element['#value']);
-    // $value = OfficeHoursItem::formatValue($element['#value']);
-    $day_delta = $element['#day_delta'];
     // Prepare $element['#value'] for Form element/Widget.
     $element['day'] = [];
     $element['all_day'] = !$field_settings['all_day'] ? NULL : [
@@ -172,6 +189,26 @@ class OfficeHoursBaseSlot extends FormElement {
 
     $element['#attributes']['class'][] = 'form-item';
     $element['#attributes']['class'][] = 'office-hours-slot';
+    if ($day_delta == 0) {
+      // This is the first slot of the day.
+    }
+    elseif (!OfficeHoursItem::isValueEmpty($value + ['day_delta' => $day_delta])) {
+      // This is a following slot with contents.
+      // Display the slot and display Add-link.
+      $element['#attributes']['class'][] = 'office-hours-more';
+    }
+    else {
+      // This is an empty following slot.
+      // Hide the slot and Add-link, in case shown by js.
+      $element['#attributes']['class'][] = 'office-hours-hide';
+      $element['#attributes']['class'][] = 'office-hours-more';
+    }
+    // Add a helper for JS links (e.g., copy-link previousSelector) in widget.
+    $day_index = $element['#day_index'];
+    $element['#attributes']['class'][] = "office-hours-day-$day_index";
+    $element['#attributes']['office_hours_day'] = "$day_index";
+
+    $element['#attributes']['id'] = $element['#id'];
 
     return $element;
   }
@@ -197,20 +234,24 @@ class OfficeHoursBaseSlot extends FormElement {
     $error_text = '';
 
     // Return an array with starthours, endhours, comment.
-    $input_exists = FALSE;
-    $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
+    // Do not use NestedArray::getValue();
+    // It does not return formatted values from valueCallback().
+    // $input_exists = FALSE;
+    // $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
+    // The valueCallback() has populated the #value array.
+    $input = $element['#value'];
+    $day = $input['day'];
 
     // Avoid complex validation below. Remove comment, only in validation.
-    $input['comment'] = NULL;
     // No complex validation if empty.
-    if (OfficeHoursItem::isValueEmpty($input)) {
+    if (OfficeHoursItem::isValueEmpty(['comment' => NULL] + $input)) {
+      return;
+    }
+    // Also check for exception days. Extra test for analysis purposes.
+    if (OfficeHoursItem::isValueEmpty(['day' => '', 'comment' => NULL] + $input)) {
       return;
     }
 
-    // Massage, normalize value after pressing Form button.
-    // $element is updated via reference.
-    OfficeHoursItem::massageFormValue($input);
-    // OfficeHoursItem::formatValue($input);
     // Exception: end time 00:00 --> 24:00.
     $start = OfficeHoursDateHelper::format($input['starthours'], 'H:i', FALSE);
     $end = OfficeHoursDateHelper::format($input['endhours'], 'H:i', TRUE);
@@ -224,7 +265,13 @@ class OfficeHoursBaseSlot extends FormElement {
     $required_end = $validate_hours || $field_settings['required_end'] ?? FALSE;
     $all_day = $input['all_day'];
 
-    if (!$all_day && $required_start && empty($start)) {
+    $label = static::getLabel('long', $input);
+    if ($day !== 0 && !$day) {
+      $label = t('Day');;
+      $error_text = 'A day is required when hours are entered.';
+      $erroneous_element = &$element['day'];
+    }
+    elseif (!$all_day && $required_start && empty($start)) {
       $error_text = 'Opening hours must be set.';
       $erroneous_element = &$element['starthours'];
     }
@@ -232,26 +279,25 @@ class OfficeHoursBaseSlot extends FormElement {
       $error_text = 'Closing hours must be set.';
       $erroneous_element = &$element['endhours'];
     }
-    elseif ($validate_hours) {
+    elseif ($validate_hours && $end < $start) {
       // Both Start and End must be entered. That is validated above already.
-      if ($end < $start) {
-        $error_text = 'Closing hours are earlier than Opening hours.';
+      $error_text = 'Closing hours are earlier than Opening hours.';
+      $erroneous_element = &$element;
+    }
+    elseif ((!empty($limit_start) || !empty($limit_end))) {
+      $limit_start = (int) $field_settings['limit_start'];
+      $limit_end = (int) $field_settings['limit_end'];
+      $limit_start = OfficeHoursDateHelper::format($limit_start * 100, 'H:i', FALSE);
+      $limit_end = OfficeHoursDateHelper::format($limit_end * 100, 'H:i', TRUE);
+      if ($start && ($limit_start > $start)
+        || ($end && ($limit_end < $end))
+      ) {
+        $error_text = 'Hours are outside limits ( @start - @end ).';
         $erroneous_element = &$element;
-      }
-      elseif ((!empty($limit_start) || !empty($limit_end))) {
-        $limit_start = OfficeHoursDateHelper::format($field_settings['limit_start'] * 100, 'H:i', FALSE);
-        $limit_end = OfficeHoursDateHelper::format($field_settings['limit_end'] * 100, 'H:i', TRUE);
-        if ($start && ($limit_start > $start)
-          || ($end && ($limit_end < $end))
-        ) {
-          $error_text = 'Hours are outside limits ( @start - @end ).';
-          $erroneous_element = &$element;
-        }
       }
     }
 
     if ($error_text) {
-      $label = static::getLabel('long', $input);
       $error_text = $label
         . ': '
         . t($error_text,
@@ -290,7 +336,6 @@ class OfficeHoursBaseSlot extends FormElement {
    *   TRUE if the data structure is empty, FALSE otherwise.
    */
   public static function isEmpty($value) {
-
     return OfficeHoursItem::isValueEmpty($value);
   }
 

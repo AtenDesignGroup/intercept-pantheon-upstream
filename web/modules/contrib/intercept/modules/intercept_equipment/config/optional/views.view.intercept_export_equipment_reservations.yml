@@ -10,7 +10,6 @@ dependencies:
     - field.storage.equipment_reservation.field_user
     - taxonomy.vocabulary.equipment_type
   module:
-    - better_exposed_filters
     - datetime
     - datetime_range
     - intercept_core
@@ -568,7 +567,7 @@ display:
             offset_label: Offset
           quantity: 9
       exposed_form:
-        type: bef
+        type: basic
         options:
           submit_button: Apply
           reset_button: false
@@ -858,9 +857,7 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      display_extenders:
-        jsonapi_views:
-          enabled: true
+      display_extenders: {  }
       path: account/manage/intercept-export-equipment-reservations
     cache_metadata:
       max-age: -1
@@ -895,9 +892,7 @@ display:
             id:
               alias: ''
               raw_output: false
-      display_extenders:
-        jsonapi_views:
-          enabled: true
+      display_extenders: {  }
       path: data/export/equipment-reservations.csv
     cache_metadata:
       max-age: -1

@@ -35,20 +35,11 @@ function intercept_profile_install() {
   $permissions = [
     'access content',
     'create event_registration',
-    'view any audience taxonomy_term',
-    'view any disclaimer taxonomy_term',
-    'view any equipment_type taxonomy_term',
-    'view any evaluation_criteria taxonomy_term',
     'view any event content',
     'view any event_series content',
-    'view any event_type taxonomy_term',
     'view any location content',
-    'view any meeting_purpose taxonomy_term',
     'view any page content',
-    'view any population_segment taxonomy_term',
     'view any room content',
-    'view any room_type taxonomy_term',
-    'view any tag taxonomy_term',
     'view media',
   ];
   user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, $permissions);

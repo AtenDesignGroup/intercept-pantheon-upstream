@@ -3,6 +3,7 @@
 namespace Drupal\Tests\focal_point\Unit;
 
 use Drupal\crop\CropInterface;
+use Drupal\crop\CropStorageInterface;
 use Drupal\focal_point\FocalPointManager;
 use Drupal\Core\Entity\EntityTypeManager;
 

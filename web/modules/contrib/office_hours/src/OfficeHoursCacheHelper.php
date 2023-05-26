@@ -4,7 +4,6 @@ namespace Drupal\office_hours;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
-use Drupal\Core\Database\Database;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
@@ -35,7 +34,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
    * 2: invalidateTagsUsingRenderCache() using entity-specific tag;
    * 3: invalidateTagsUsingStateService();
    */
-  const INVALIDATE_MODE = 2;
+  const CACHE_INVALIDATION_MODE = 0;
 
   /**
    * The entity display repository.
@@ -78,6 +77,10 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
    * {@inheritdoc}
    */
   public function getCacheContexts() {
+    // Do not set caching for anonymous users.
+    if (\Drupal::currentUser()->isAnonymous()) {
+      // return ['session';
+    }
     return [];
   }
 
@@ -94,34 +97,38 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
 
     // Add a tag for the Entity itself,
     // and a tag for the hook_cron invalidation for anonymous users.
-    switch (self::INVALIDATE_MODE) {
-      case 0:
-      case 3:
-        return [
-          "$entity_type:$entity_id",
-        ];
-
+    switch (self::CACHE_INVALIDATION_MODE) {
       case 1:
         return [
           "$entity_type:$entity_id",
-          "office_hours_status",
+          "office_hours:field.status",
         ];
 
       case 2:
         return [
           "$entity_type:$entity_id",
-          "office_hours_status:$entity_type:$entity_id",
+          "office_hours:field.status:$entity_type:$entity_id",
         ];
 
+      default:
+        return [
+          "$entity_type:$entity_id",
+          "office_hours:field.status",
+        ];
     }
-    return [];
   }
 
   /**
    * {@inheritdoc}
+   *
+   * @see https://www.drupal.org/docs/drupal-apis/cache-api/cache-max-age
    */
   public function getCacheMaxAge() {
-    // @see https://www.drupal.org/docs/drupal-apis/cache-api/cache-max-age
+    // Do not set caching for anonymous users.
+    if (\Drupal::currentUser()->isAnonymous()) {
+      return 0;
+    }
+
     // @todo Add CacheMaxAge when entity has Exception days in/out of horizon.
     // If there are no open days, cache forever.
     if ($this->items->isEmpty()) {
@@ -222,165 +229,6 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
     $time_left -= $seconds;
 
     return $time_left;
-  }
-
-  /**
-   * Clear cache for Anonymous users.
-   *
-   * This is needed when the Formatter reports a 'status' (open/closed)
-   * or when an Exception date is listed in the future.
-   * Standard render cach is not refreshed for Anonymous users.
-   *
-   * Below are the options outlines. We will use option 2.
-   */
-  public static function doCron() {
-    $option = self::INVALIDATE_MODE;
-
-    switch ($option) {
-      case 0:
-        // Do nothing.
-        return;
-
-      case 1:
-        // Option 1: Just invalidate all Entities with a status formatter.
-        self::invalidateTags();
-        return;
-
-      case 2:
-        // Option 2: Mimicking DatabaseBackend~getMultiple(&$cids).
-        self::invalidateTagsUsingRenderCache();
-        return;
-
-      case 3:
-        self::invalidateTagsUsingStateService();
-        return;
-    }
-
-  }
-
-  /**
-   * Option 1: Just invalidate all Entities with a status formatter.
-   *
-   * A tag is added in OfficeHoursFormatterBase~addCacheMaxAge().
-   * If no status formatter is used, nothing is invalidated.
-   *
-   * @see https://www.drupal.org/docs/drupal-apis/cache-api/cache-tags#s-invalidating
-   * "Tagged cache items are invalidated via their tags, 
-   * using cache_tags.invalidator:invalidateTags()
-   * (or, when you cannot inject the cache_tags.invalidator service:
-   * Cache::invalidateTags()), which accepts a set of cache tags (string[])."
-   */
-  private static function invalidateTags() {
-    Cache::invalidateTags(['office_hours_status']);
-  }
-
-  /**
-   * Option 2: Mimicking DatabaseBackend~getMultiple(&$cids).
-   *
-   * Fetching $this->connection->query('
-   *   SELECT [cid], [expire], [tags]
-   *   FROM {' . $this->connection->escapeTable($this->bin)  . '}
-   *   WHERE [expire] less then REQUEST_TIME; .
-   */
-  private static function invalidateTagsUsingRenderCache() {
-    $bin = 'cache_render';
-    // $cache = \Drupal::cache('render');
-    $connection = Database::getConnection();
-
-    // Get all tags with pattern 'office_hours_status:$entity_type:$entity_id'.
-    $result = [];
-    try {
-      $now = strtotime('now');
-      $result = $connection->select($bin)
-        // Some fields are only needed for debugging.
-        // ->fields($bin, ['cid', 'expire', 'tags'])
-        ->fields($bin, ['tags'])
-        // This first condition is superfluous, but may be faster.
-        ->condition('expire', '-1', '<>')
-        ->condition('expire', $now, '<')
-        ->condition('tags', '%office_hours_status%', 'LIKE')
-        ->execute()
-        // ->fetchAllAssoc('cid')
-        ->fetchAllAssoc('tags');
-    }
-    catch (\Exception $e) {
-      throw $e;
-    }
-
-    foreach ($result as $tags => $data) {
-      $offset = strpos($tags, 'office_hours_status');
-      $tag = strstr(substr($tags, $offset), ' ', TRUE);
-      Cache::invalidateTags([$tag]);
-    }
-  }
-
-  /**
-   * Option 3: Invalidate only the entities with invalid status.
-   *
-   * @see https://www.drupal.org/project/office_hours/issues/3312511#comment-14814745
-   * This however will miss if entity has been open, closed and is open again.
-   */
-  private static function invalidateTagsUsingStateService() {
-    $state_service = \Drupal::state();
-
-    // Get a list of all fields.
-    $fieldMap = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('office_hours');
-    // Process all office_hours entities.
-    foreach ($fieldMap as $entity_type => $field_info) {
-      foreach ($field_info as $field_name => $field_details) {
-        // @todo Filter on Formatter settings in ViewMode.
-        foreach ($field_details['bundles'] as $bundle) {
-          $entityDisplayRepository = \Drupal::service('entity_display.repository');
-          $view_modes = $entityDisplayRepository->getViewModeOptionsByBundle($entity_type, $bundle);
-          foreach (array_keys($view_modes) as $view_mode) {
-            /** @var \Drupal\office_hours\Plugin\Field\FieldFormatter\OfficeHoursFormatterBase $formatter */
-            $formatter = \Drupal::service('entity_type.manager')
-              ->getStorage('entity_view_display')
-              ->load($entity_type . '.' . $bundle . '.' . $view_mode)
-              ->getRenderer($field_name);
-            if ($formatter) {
-              $cache_needed = $formatter->getSetting('cache');
-
-              // Find all office_hours entities and check the current status.
-              $entity_ids = \Drupal::entityQuery($entity_type)
-                ->condition('type', $bundle)
-                ->condition('status', 1)
-                ->accessCheck(FALSE)
-                ->execute();
-              foreach ($entity_ids as $entity_id) {
-                $entity = \Drupal::entityTypeManager()
-                  ->getStorage($entity_type)
-                  ->load($entity_id);
-
-                // Continue when the formatter needs caching
-                // or when entity has Exception days
-                // (since they can getin the past, or come into horizon).
-                if ($cache_needed ||
-                  $entity->$field_name->hasExceptionDays()) {
-
-                  // The following is not waterproof.
-                  // The entity can be open AGAIN, when an anonymous user
-                  // views the data, or cron runs.
-                  // We need Option 2, reading cache_render table.
-                  $state_service_key = "office_hours_status:$entity_type:$entity_id:$field_name";
-                  // Store the is_open boolean as an integer.
-                  $is_open = (int) $entity->$field_name->isOpen();
-                  $was_open = $state_service->get($state_service_key, -1);
-                  if ($was_open != $is_open) {
-                    // When status changes, store it and invalidate the cache.
-                    $state_service->set($state_service_key, $is_open);
-
-                    // @todo Invalidate Render Cache, but how to know $cid?
-                    $cid = $entity->getEntityTypeId() . ':' . $entity_id;
-                    Cache::invalidateTags([$cid]);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
   }
 
 }

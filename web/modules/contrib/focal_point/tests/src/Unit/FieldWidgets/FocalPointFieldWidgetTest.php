@@ -22,21 +22,21 @@ class FocalPointFieldWidgetTest extends UnitTestCase {
   /**
    * A simple form element for testing.
    *
-   * @var testElement
+   * @var array
    */
   protected $testElement;
 
   /**
    * A mock FormState object for testing.
    *
-   * @var \Drupal\Core\Form\FormStateInterface
+   * @var \PHPUnit\Framework\MockObject\MockObject
    */
   protected $testFormState;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create some mock objects.

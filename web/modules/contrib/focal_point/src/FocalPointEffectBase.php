@@ -95,7 +95,7 @@ abstract class FocalPointEffectBase extends ResizeImageEffect implements Contain
       $container->get('focal_point.manager'),
       $container->get('entity_type.manager')->getStorage('crop'),
       $container->get('config.factory')->get('focal_point.settings'),
-      \Drupal::request()
+      $container->get('request_stack')->getCurrentRequest()
     );
   }
 
@@ -195,10 +195,9 @@ abstract class FocalPointEffectBase extends ResizeImageEffect implements Contain
    * @return \Drupal\crop\CropInterface
    *   The crop.
    */
-  public function getCrop(ImageInterface $image) {
+  public function getCrop(ImageInterface $image): CropInterface {
     $crop_type = $this->focalPointConfig->get('crop_type');
 
-    /** @var \Drupal\crop\CropInterface $crop */
     if ($crop = Crop::findCrop($image->getSource(), $crop_type)) {
       // An existing crop has been found; set the size.
       $crop->setSize($this->configuration['width'], $this->configuration['height']);
@@ -367,7 +366,7 @@ abstract class FocalPointEffectBase extends ResizeImageEffect implements Contain
    * @return array
    *   An array with the keys 'x' and 'y'. Values are in pixels.
    */
-  protected function getOriginalFocalPoint(CropInterface $crop, FocalPointManager $focal_point_manager) {
+  protected function getOriginalFocalPoint(CropInterface $crop, FocalPointManager $focal_point_manager): array {
     $focal_point = $crop->position();
 
     // Check if we are generating a preview image. If so get the focal point
@@ -376,7 +375,7 @@ abstract class FocalPointEffectBase extends ResizeImageEffect implements Contain
     if (!is_null($preview_value)) {
       // @todo: should we check that preview_value is valid here? If it's invalid it gets converted to 0,0.
       $original_image_size = $this->getOriginalImageSize();
-      list($x, $y) = explode('x', $preview_value);
+      [$x, $y] = explode('x', $preview_value);
       $focal_point = $focal_point_manager->relativeToAbsolute($x, $y, $original_image_size['width'], $original_image_size['height']);
     }
 

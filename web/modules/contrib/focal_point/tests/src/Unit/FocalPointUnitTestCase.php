@@ -37,7 +37,7 @@ abstract class FocalPointUnitTestCase extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $crop_storage = $this->prophesize(CropStorageInterface::class);

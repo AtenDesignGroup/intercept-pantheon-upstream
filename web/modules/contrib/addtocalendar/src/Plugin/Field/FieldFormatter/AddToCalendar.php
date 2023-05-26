@@ -7,6 +7,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\addtocalendar\AddToCalendarApiWidget;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -41,6 +42,13 @@ class AddToCalendar extends FormatterBase implements ContainerFactoryPluginInter
   protected $token;
 
   /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -53,7 +61,8 @@ class AddToCalendar extends FormatterBase implements ContainerFactoryPluginInter
       $configuration['view_mode'],
       $configuration['third_party_settings'],
       $container->get('addtocalendar.apiwidget'),
-      $container->get('token')
+      $container->get('token'),
+      $container->get('renderer')
     );
   }
 
@@ -78,11 +87,20 @@ class AddToCalendar extends FormatterBase implements ContainerFactoryPluginInter
    *   AddToCalendarApi Widget service.
    * @param \Drupal\Core\Utility\Token $token
    *   Token service.
+   * @param \Drupal\Core\Render\RendererInterface|null $renderer
+   *   The renderer service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AddToCalendarApiWidget $add_to_calendar_api_widget, Token $token) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AddToCalendarApiWidget $add_to_calendar_api_widget, Token $token, RendererInterface $renderer = NULL) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->addToCalendarApiWidget = $add_to_calendar_api_widget;
     $this->token = $token;
+    if (is_null($renderer)) {
+      @trigger_error('Calling AddToCalendar::_construct() without the $renderer argument is deprecated and the argument will be required in a future release.', E_USER_DEPRECATED);
+      $this->renderer = \Drupal::service('renderer');
+    }
+    else {
+      $this->renderer = $renderer;
+    }
   }
 
   /**
@@ -168,7 +186,7 @@ class AddToCalendar extends FormatterBase implements ContainerFactoryPluginInter
 
       $service->setWidgetValues($config_values);
       $build = $service->generateWidget();
-      $return = render($build);
+      $return = $this->renderer->render($build);
     }
     else {
       $return = $this->fieldDefinition->getSetting('off_label');
@@ -214,14 +232,14 @@ class AddToCalendar extends FormatterBase implements ContainerFactoryPluginInter
       default:
         $field = $field_setting['field'];
         if (isset($options['use_raw_value']) && $options['use_raw_value']) {
-          $value = strip_tags($entity->{$field}->value);
-          if (isset($options['end_date']) && strip_tags($entity->{$field}->getFieldDefinition()->getType()) == 'daterange') {
-            $value = strip_tags($entity->{$field}->end_value);
+          $value = strip_tags($entity->{$field}->value ?? '');
+          if (isset($options['end_date']) && strip_tags($entity->{$field}->getFieldDefinition()->getType() ?? '') == 'daterange') {
+            $value = strip_tags($entity->{$field}->end_value ?? '');
           }
         }
         else {
           $value = $entity->get($field)->view(['label' => 'hidden']);
-          $value = strip_tags(render($value));
+          $value = strip_tags($this->renderer->render($value) ?? '');
         }
         break;
     }

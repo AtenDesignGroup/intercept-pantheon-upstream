@@ -19,11 +19,15 @@ class OfficeHoursListSlot extends OfficeHoursBaseSlot {
   public static function processOfficeHoursSlot(&$element, FormStateInterface $form_state, &$complete_form) {
     parent::processOfficeHoursSlot($element, $form_state, $complete_form);
 
+    // The valueCallback() has populated the #value array.
+    $value = $element['#value'];
+    $day = $element['#value']['day'];
+    $day_delta = $element['#day_delta'];
+    $label = parent::getLabel('long', $value, $day_delta);
+
     // Fetch titles.
     $field_settings = $element['#field_settings'];
     $labels = OfficeHoursItem::getPropertyLabels('#prefix', $field_settings);
-
-    $day = $element['#value']['day'];
 
     $element['day'] = [
       '#type' => 'select',

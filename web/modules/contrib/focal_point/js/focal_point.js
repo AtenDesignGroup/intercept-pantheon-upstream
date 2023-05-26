@@ -11,16 +11,16 @@
    */
   Drupal.behaviors.focalPointIndicator = {
     attach: function (context) {
-      $(".focal-point", context).once('focal-point-hide-field').each(function () {
-        var $wrapper = $(this).closest('.focal-point-wrapper');
+      once('focal-point-hide-field', '.focal-point', context).forEach(function(el) {
+        var $wrapper = $(el).closest('.focal-point-wrapper');
         // Add the "visually-hidden" class unless the focal point offset field
         // has an error. This will show the field for everyone when there is an
         // error and for non-sighted users no matter what. We add it the
         // form item to make sure the field is focusable while
         // the entire form item is hidden for sighted users.
-        if (!$(this).hasClass('error')) {
+        if (!$(el).hasClass('error')) {
           $wrapper.addClass('visually-hidden');
-          $(this).on('focus', function () {
+          $(el).on('focus', function () {
             $wrapper.removeClass('visually-hidden');
           }).on('blur', function () {
             $wrapper.addClass('visually-hidden');
@@ -28,12 +28,12 @@
         }
       });
 
-      $(".focal-point-indicator", context).once('focal-point-indicator').each(function () {
+      once('focal-point-hide-field', '.focal-point-indicator', context).forEach(function(el) {
         // Set some variables for the different pieces at play.
-        var $indicator = $(this);
-        var $img = $(this).siblings('img');
-        var $previewLink = $(this).siblings('.focal-point-preview-link');
-        var $field = $("." + $(this).attr('data-selector'));
+        var $indicator = $(el);
+        var $img = $(el).siblings('img');
+        var $previewLink = $(el).siblings('.focal-point-preview-link');
+        var $field = $("." + $(el).attr('data-selector'));
         var fp = new Drupal.FocalPoint($indicator, $img, $field, $previewLink);
 
         // Set the position of the indicator on image load and any time the

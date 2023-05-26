@@ -19,6 +19,8 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
  *   },
  *   multiple_values = "FALSE",
  * )
+ *
+ * @todo Fix error with multiple OH fields with Exception days per bundle.
  */
 class OfficeHoursExceptionsWidget extends OfficeHoursListWidget {
 
@@ -33,6 +35,9 @@ class OfficeHoursExceptionsWidget extends OfficeHoursListWidget {
     if ($delta > 0) {
       return [];
     }
+
+    // Add a helper for JS links (e.g., copy-link previousSelector) in widget.
+    static $day_index = 0;
 
     // Make form_state not cached since we will update it in ajax callback.
     $form_state->setCached(FALSE);
@@ -71,17 +76,19 @@ class OfficeHoursExceptionsWidget extends OfficeHoursListWidget {
     $elements = [];
     $cardinality = $this->getFieldSetting('cardinality_per_day');
     foreach ($indexed_items as $day => $indexed_item) {
-      for ($day_delta = 0; $day_delta < $cardinality; $day_delta++) {
+      $day_index++;
 
+      for ($day_delta = 0; $day_delta < $cardinality; $day_delta++) {
         $item = $indexed_items[$day][$day_delta] ?? $items->appendItem([
           'day' => OfficeHoursItem::EXCEPTION_DAY,
         ]);
         $default_value = $item->getValue();
         $day = $default_value['day'];
         $elements[] = [
-          '#day_delta' => $day_delta,
           '#type' => 'office_hours_exceptions_slot',
           '#default_value' => $default_value,
+          '#day_index' => $day_index,
+          '#day_delta' => $day_delta,
           // Add field settings, for usage in each Element.
           '#field_settings' => $this->getFieldSettings(),
           '#date_element_type' => $this->getSetting('date_element_type'),
@@ -102,7 +109,7 @@ class OfficeHoursExceptionsWidget extends OfficeHoursListWidget {
     // Build multi element widget. Copy the description, etc. into the table.
     // Use the more complex 'data' construct,
     // to allow ExceptionsWeekWidget to add a 'colspan':
-    $header = OfficeHoursItem::getPropertyLabels('data', $this->getFieldSettings() + ['day_delta' => 'hidden']);
+    $header = OfficeHoursItem::getPropertyLabels('data', $this->getFieldSettings());
 
     $element['value'] = [
       '#type' => 'office_hours_table',
@@ -165,4 +172,34 @@ class OfficeHoursExceptionsWidget extends OfficeHoursListWidget {
     return $element['value'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+    $values = parent::massageFormValues($values, $form, $form_state);
+    return $values;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Note: this is a static version of massageFormValues, used from the
+   * 'Widget of widgets' OfficeHoursComplexWeekWidget,
+   * since current widget is a ListWidget, not a WeekWidget subclass.
+   */
+  static public function _massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+    $values = $values['value'];
+
+    if (!is_array($values)) {
+      return $values = [];
+    }
+
+    // Only need to widget specific massaging of form values,
+    // All logical changes will be done in ItemList->setValue($values),
+    // where the formatValue() function will be called, also.
+    foreach ($values as &$value) {
+      OfficeHoursItem::formatValue($value);
+    }
+    return $values;
+  }
 }

@@ -169,6 +169,9 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $form['date']['min']['#attributes']['autocomplete'] = 'off';
     $form['date']['max']['#attributes']['autocomplete'] = 'off';
   }
+  elseif ($view->id() == 'intercept_export_room_reservations' && $view->current_display == 'page') {
+    // Changes to room reservation export filters will go here.
+  }
 
   // Room Reserve Staff Calendar View.
   if (in_array($form['#id'], [
@@ -478,33 +481,34 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
       // For each condition in condition group.
       foreach ($condition_group['conditions'] as &$condition) {
         if (isset($condition['field']) && strstr($condition['field'], 'field_dates_value')) {
-          $multi_date_reservation_or = $condition['field'];
+
+          // $multi_date_reservation_or = $condition['field'];
           // Run the query from the beginning of the start date
           // until the end of the end date.
           $condition['field'] = preg_replace("/(?<=BETWEEN DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "00:00:00')", $condition['field']);
           $condition['field'] = preg_replace("/(?<=AND DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND\)/", "23:59:59')", $condition['field']);
 
-          // We need to account for the user asking for a time period
-          // in the middle of a multi-day reservation.
-          preg_match("/BETWEEN DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}' \+ (INTERVAL [-+]?\d* SECOND)\).*AND DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})/", $multi_date_reservation_or, $matches);
-          // Need 3 captures from the original value of the condition.
-          // 1) Start date, 2) Interval and 3) end date
-          // Need # seconds exactly.
-          preg_match("/INTERVAL ([-+]?\d*) SECOND/", $matches[2], $matches_seconds);
-          if ($matches_seconds) {
-            if ($matches_seconds[1] < 0) {
-              // The number is negative.
-              $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') + abs($matches_seconds[1]));
-              $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') + abs($matches_seconds[1]));
-            }
-            else {
-              // The number is positive.
-              $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') - abs($matches_seconds[1]));
-              $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') - abs($matches_seconds[1]));
-            }
-            $multi_date_reservation_or = "DATE_FORMAT((room_reservation__field_dates.field_dates_value), '%Y-%m-%d\T%H:%i:%s') <= DATE_FORMAT(('" . $start_date . "'), '%Y-%m-%d\T%H:%i:%s') AND DATE_FORMAT((room_reservation__field_dates.field_dates_end_value), '%Y-%m-%d\T%H:%i:%s') >= DATE_FORMAT(('" . $end_date . "'), '%Y-%m-%d\T%H:%i:%s')";
-            $condition['field'] = '(' . $condition['field'] . ') OR (' . $multi_date_reservation_or . ')';
-          }
+          // // We need to account for the user asking for a time period
+          // // in the middle of a multi-day reservation.
+          // preg_match("/BETWEEN DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}' \+ (INTERVAL [-+]?\d* SECOND)\).*AND DATE_FORMAT\(\('(\d{4}-\d{2}-\d{2})/", $multi_date_reservation_or, $matches);
+          // // Need 3 captures from the original value of the condition.
+          // // 1) Start date, 2) Interval and 3) end date
+          // // Need # seconds exactly.
+          // preg_match("/INTERVAL ([-+]?\d*) SECOND/", $matches[2], $matches_seconds);
+          // if ($matches_seconds) {
+          //   if ($matches_seconds[1] < 0) {
+          //     // The number is negative.
+          //     $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') + abs($matches_seconds[1]));
+          //     $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') + abs($matches_seconds[1]));
+          //   }
+          //   else {
+          //     // The number is positive.
+          //     $start_date = date('Y-m-d\TH:i:s', strtotime($matches[1] . 'T00:00:00') - abs($matches_seconds[1]));
+          //     $end_date = date('Y-m-d\TH:i:s', strtotime($matches[3] . 'T00:00:00') - abs($matches_seconds[1]));
+          //   }
+          //   $multi_date_reservation_or = "DATE_FORMAT((room_reservation__field_dates.field_dates_value), '%Y-%m-%d\T%H:%i:%s') <= DATE_FORMAT(('" . $start_date . "'), '%Y-%m-%d\T%H:%i:%s') AND DATE_FORMAT((room_reservation__field_dates.field_dates_end_value), '%Y-%m-%d\T%H:%i:%s') >= DATE_FORMAT(('" . $end_date . "'), '%Y-%m-%d\T%H:%i:%s')";
+          //   $condition['field'] = '(' . $condition['field'] . ') OR (' . $multi_date_reservation_or . ')';
+          // }
         }
       }
     }
@@ -525,6 +529,28 @@ function intercept_room_reservation_views_query_alter(ViewExecutable $view, Quer
  * Implements hook_views_pre_view().
  */
 function intercept_room_reservation_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'intercept_export_room_reservations' && $display_id == 'page') {
+    // Build the link to download the CSV.
+    $request = \Drupal::request();
+    $link_renderable = Link::createFromRoute('Download CSV', 'view.intercept_export_room_reservations.rest_export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
+    $link_renderable['#attributes'] = ['class' => ['button', 'create-content-button']];
+    $link = \Drupal::service('renderer')->renderPlain($link_renderable);
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area_text_custom',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => '<h1 class="page-title">Export Room Reservations</h1>' .
+      $link,
+      'plugin_id' => 'text_custom',
+    ];
+    $view->setHandler('page', 'header', 'area_text_custom', $options);
+  }
+
   switch ($view->id()) {
     case 'intercept_room_reservations':
       switch ($display_id) {
@@ -533,20 +559,18 @@ function intercept_room_reservation_views_pre_view(ViewExecutable $view, $displa
           if (!isset($exposed_input['field_dates_value'])) {
             $date = new DateTime('now');
             $date_future = new DateTime('+6 months');
-            $exposed_date['field_dates_value']['min'] = $date->format('m/d/Y');
-            $exposed_date['field_dates_value']['max'] = $date_future->format('m/d/Y');
+            $exposed_date['field_dates_value']['min'] = $date->format('Y-m-d');
+            $exposed_date['field_dates_value']['max'] = $date_future->format('Y-m-d');
             $view->setExposedInput(array_merge($exposed_input, $exposed_date));
           }
 
           // Attach JS.
           $view->element['#attached']['library'][] = 'intercept_room_reservation/roomReservationList';
           break;
-
         default:
           break;
       }
       break;
-
     case 'intercept_rooms':
       switch ($display_id) {
         case 'default':

@@ -24,6 +24,8 @@
     }
   ],
   "require": {
-    "drupal/crop": "^1.0 || ^2.0"
+    "drupal/crop": "^2.3",
+    "drupal/jquery_ui": "^1.6",
+    "drupal/jquery_ui_draggable": "^2.0"
   }
 }

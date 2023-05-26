@@ -29,7 +29,6 @@ function focal_point_update_8001() {
  * Migrates legacy values to crop entities.
  */
 function focal_point_update_8002(&$sandbox) {
-  /** @var \Drupal\file\FileUsage\FileUsageInterface $file_usage */
   $file_storage = \Drupal::entityTypeManager()->getStorage('file');
   $crop_storage = \Drupal::entityTypeManager()->getStorage('crop');
   $crop_type = \Drupal::config('focal_point.settings')->get('crop_type');
@@ -53,8 +52,9 @@ function focal_point_update_8002(&$sandbox) {
     ->fetchAll();
 
   foreach ($focal_points as $focal_point) {
+    $fid = $focal_point->fid;
     /** @var \Drupal\file\FileInterface $file */
-    $file = $file_storage->load($focal_point->fid);
+    $file = $file_storage->load($fid);
 
     if (!is_null($file)) {
       $size = getimagesize($file->getFileUri());
@@ -76,7 +76,7 @@ function focal_point_update_8002(&$sandbox) {
     else {
       $sandbox['num_skipped']++;
     }
-    $sandbox['last_fid'] = $focal_point->fid;
+    $sandbox['last_fid'] = $fid;
   }
 
   $sandbox['#finished'] = $sandbox['total_items'] ? ($sandbox['num_processed'] + $sandbox['num_skipped']) / $sandbox['total_items'] : 1;

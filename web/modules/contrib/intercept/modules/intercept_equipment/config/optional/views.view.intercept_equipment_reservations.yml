@@ -9,13 +9,13 @@ dependencies:
     - field.storage.node.field_equipment_type
     - taxonomy.vocabulary.equipment_type
   module:
-    - better_exposed_filters
     - datetime
     - datetime_range
     - intercept_equipment
     - node
     - taxonomy
     - user
+    - views_autosubmit
 id: intercept_equipment_reservations
 label: 'Intercept Equipment Reservations'
 module: views
@@ -567,10 +567,10 @@ display:
             offset_label: Offset
           quantity: 9
       exposed_form:
-        type: bef
+        type: autosubmit
         options:
           submit_button: Apply
-          reset_button: true
+          reset_button: false
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
@@ -1082,7 +1082,7 @@ display:
           admin_label: User
           plugin_id: standard
           required: false
-      use_ajax: false
+      use_ajax: true
       header: {  }
       footer: {  }
       display_extenders: {  }
@@ -1107,7 +1107,7 @@ display:
     display_plugin: embed
     position: 1
     display_options:
-      display_extenders: { }
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:

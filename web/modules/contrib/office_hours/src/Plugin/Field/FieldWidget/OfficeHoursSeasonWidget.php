@@ -50,24 +50,32 @@ class OfficeHoursSeasonWidget extends OfficeHoursWeekWidget {
     // Get default column labels.
     $labels = OfficeHoursItem::getPropertyLabels('data', $this->getFieldSettings());
 
-    $season_date_format = 'Y-d-m'; // @todo Use proper date format
+    // @todo Use proper date format from field settings.
+    $season_date_format = 'd-M-Y';
+    // @todo Perhaps provide extra details following elements.
+    // details #description;
+    // container #description;
+    // container #prefix;
+    // container #title;
+    // name #prefix;
+    $name = $season->getName();
     $label = $season->label();
     $from = $season->getFromDate($season_date_format);
     $to = $season->getToDate($season_date_format);
     $element = [
       '#type' => 'details',
       '#open' => FALSE,
-      '#title' => "<i>$label</i>" . ($season->getName() ? " from $from to $to" : ''),
-      '#description' => $label . ' (details #description)',
+      '#title' => "<i>$label</i>" . ($name ? " from $from to $to" : ''),
+      // '#description' => $label . ' (details #description)',
     ] + $element;
 
     $element['season'] = [
       '#type' => 'container',
       // Add a label/header/title for accessibility (a11y) screen readers.
-      '#title' => $label . ' (#title)',
+      // '#title' => $label . ' (#title)',
       // '#title_display' => 'before', // {'before' | invisible'}.
-      '#description' => $label . ' (container #description)',
-      '#prefix' => "<b>$label (container #prefix)</b>",
+      // '#description' => $label . ' (container #description)',
+      // '#prefix' => "<b>$label (container #prefix)</b>",
       '#attributes' => [
         'class' => ['container-inline'],
       ],
@@ -81,29 +89,26 @@ class OfficeHoursSeasonWidget extends OfficeHoursWeekWidget {
       // Add a label/header/title for accessibility (a11y) screen readers.
       '#title' => $this->t('Season name'), // @todo read propertyLabels().
       // '#title_display' => 'before', // {'before' | invisible'}.
-      // '#prefix' => "<b>$title</b>",
+      // '#prefix' => "<b>$label</b>" . ' (name #prefix)',
       '#default_value' => $label,
-      '#size' => 12,
+      '#size' => 16,
       '#maxlength' => 40,
     ];
-    $label = $labels['from']['data'];
     $element['season']['from'] = [
       '#type' => 'date',
       // Add a label/header/title for accessibility (a11y) screen readers.
-      '#title' => $label,
+      '#title' => $labels['from']['data'],
       // '#title_display' => 'before', // {'before' | invisible'}.
       // '#prefix' => "<b>$label</b>",
-      // @todo Use proper format from field settings.
-      '#default_value' => $from,
+      '#default_value' => $season->getFromDate('Y-m-d'),
     ];
-    $label = $labels['to']['data'];
     $element['season']['to'] = [
       '#type' => 'date',
       // Add a label/header/title for accessibility (a11y) screen readers.
-      '#title' => $label,
+      '#title' => $labels['to']['data'],
       // '#title_display' => 'before', // {'before' | invisible'}.
       // '#prefix' => "<b>$label</b>",
-      '#default_value' => $to,
+      '#default_value' => $season->getToDate('Y-m-d'),
     ];
 
     return $element;
@@ -116,6 +121,18 @@ class OfficeHoursSeasonWidget extends OfficeHoursWeekWidget {
     // Rescue Season first, since it will be removed by parent::.
     $this->setSeason(new OfficeHoursSeason($values['season'] ?? 0));
     $values = parent::massageFormValues($values, $form, $form_state);
+
+    // @todo Validate if empty season has non-empty days and v.v.
+    $season = $this->getSeason();
+    if (!$season->isEmpty()) {
+      // Handle seasonal day nr., e.g., 4 --> 104.
+      foreach ($values as $key => &$value) {
+        $value = $season->toTimeSlotArray($value);
+      }
+      // Add season header to weekdays, to be saved in database.
+      $values[] = $season->toTimeSlotArray();
+    }
+
 
     return $values;
   }

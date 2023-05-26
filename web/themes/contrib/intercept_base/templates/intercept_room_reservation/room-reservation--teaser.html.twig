@@ -18,7 +18,7 @@
   }
 %}
 
-{% set image = drupal_entity('media', room.image_primary.0.target_id, 'teaser') %}
+{% set image = room.image_primary.isEmpty() ? null : drupal_entity('media', room.image_primary.0.target_id, 'teaser') %}
 
 {% block tags %}
   {% if content.field_attendee_count|field_value %}

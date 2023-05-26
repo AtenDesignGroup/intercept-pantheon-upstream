@@ -14,6 +14,7 @@ use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\file\FileInterface;
+use Drupal\crop\CropInterface;
 
 /**
  * Implements hook_help().
@@ -87,11 +88,13 @@ function focal_point_entity_update(EntityInterface $entity) {
             if (!$crop->get('x')->isEmpty() && !$crop->get('y')->isEmpty()) {
               $x = $crop->get('x')->value;
               $y = $crop->get('y')->value;
-              $focal_point_original = $focal_point_manager->absoluteToRelative($x, $y, $item->width, $item->height);
+              $width = $item->width ?? 0;
+              $height = $item->height ?? 0;
+              $focal_point_original = $focal_point_manager->absoluteToRelative($x, $y, $width, $height);
               $entity->{$field->getName()}->focal_point_original = join(',', $focal_point_original);
             }
           }
-          if ($focal_point) {
+          if ($focal_point && $item->width && $item->height) {
             list($x, $y) = explode(',', $focal_point);
             $focal_point_manager->saveCropEntity($x, $y, $item->width, $item->height, $crop);
           }

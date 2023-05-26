@@ -17,14 +17,11 @@ dependencies:
   - drupal:text
   - drupal:user
   - drupal:views
+  - date_popup:date_popup
   - entity:entity
   - externalauth:externalauth
   - focal_point:focal_point
   - intercept:intercept
   - intercept:intercept_ils
   - profile:profile
-
-# Information added by Drupal.org packaging script on 2023-04-28
-version: '8.x-1.0-beta13'
-project: 'intercept'
-datestamp: 1682719426
+  - views_autosubmit:views_autosubmit

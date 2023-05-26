@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * @file
  * Contains form for addtocalendar module.
@@ -8,10 +10,8 @@
 /**
  * Creates Settings form.
  *
- * @param $settings
- *   Third party Settings array.
- * @param $field_definition
- *   Field Definition of current field.
+ * @param $settings   Third party Settings array.
+ * @param $field_definition   Field Definition of current field.
  *
  * @return array
  */
@@ -87,7 +87,7 @@ function _addtocalendar_build_form($settings, $field_definition) {
     ],
   ];
 
-  if ($field_definition instanceof Drupal\Core\Field\BaseFieldDefinition) {
+  if ($field_definition instanceof BaseFieldDefinition) {
     $field_definition = $field_definition->getConfig($field_definition->getTargetBundle());
   }
 

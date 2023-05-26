@@ -36,7 +36,7 @@ class MediaLibraryIntegrationTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->drupalCreateContentType([
@@ -102,10 +102,13 @@ class MediaLibraryIntegrationTest extends WebDriverTestBase {
    */
   public function testFocalPointMediaField() {
     $page = $this->getSession()->getPage();
+    /** @var \Drupal\FunctionalJavascriptTests\JSWebAssert $assert_session */
     $assert_session = $this->assertSession();
 
     $files = $this->getTestFiles('image');
-    $path = $this->container->get('file_system')->realpath($files[0]->uri);
+    /** @var \Drupal\file\Entity\File $file */
+    $file = $files[0];
+    $path = $this->container->get('file_system')->realpath($file->uri);
     $this->assertNotEmpty($path);
 
     // Upload an image and ensure that a single Focal Point widget shows up.

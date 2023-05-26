@@ -1,9 +1,16 @@
 'use strict';
 
-(function updateElement($) {
+/**
+ * @todo check js file for new API.
+ * @see https://www.drupal.org/docs/drupal-apis/javascript-api/javascript-api-overview
+ */
+(function updateElement($, Drupal) {
   Drupal.behaviors.office_hours = {
     attach: function doUpdateElement(context, settings) {
-      // Traverses visible rows and applies even/odd classes.
+
+      /**
+       * Traverses visible rows and applies even/odd classes.
+       */
       function fixStriping() {
         $('tbody tr:visible', context).each(function setStriping(i) {
           if (i % 2 === 0) {
@@ -34,7 +41,9 @@
        */
       function showAddLink() {
         var nextTr;
+
         nextTr = $(this).closest('tr').next();
+
         $(this).hide();
         if (nextTr.is(':hidden')) {
           $(this).show();
@@ -44,93 +53,70 @@
       /**
        * Shows an office-hours-slot, when user clicks "Add more".
        * @param e
-       * @return {boolean}
        */
       function showTimeslot(e) {
         var $nextTr;
+
         e.preventDefault();
+
         // Hide the link, the user clicked upon.
         $(this).hide();
+
         // Show the next slot item, slowly.
         $nextTr = $(this).closest('tr').next();
         $nextTr.fadeIn('slow');
 
         fixStriping();
-        return false;
       }
 
-      // Hide every item above the max slots per day.
-      $('.office-hours-hide').hide();
-
-      // @todo #3322982 Create named function with parameter and re-use the code.
-      // @todo #3322982 When 'all_day' is set, the link 'Add time slot' must be hidden.
-      // When the document loads, look for checked 'all day'
-      // checkboxes, and disable the start and end times.
-      $(document).ready(function () {
-
-        // Loop through all the all day checkboxes that are checked.
-        $('[id*="all-day"]:checked').each(function (index) {
-
-          // Get the name of the checkbox, which will be mostly the
-          // same name for the start and end times.
-          var name = $(this).attr('name');
-
-          // Variable to store all the names of the start/end times.
-          var timeNames = [];
-
-          // Replace the [all_day] with the name used for the start
-          // and end times.
-          timeNames.push(name.replace('[all_day]', '[starthours][time]'));
-          timeNames.push(name.replace('[all_day]', '[starthours][hour]'));
-          timeNames.push(name.replace('[all_day]', '[starthours][minute]'));
-          timeNames.push(name.replace('[all_day]', '[endhours][time]'));
-          timeNames.push(name.replace('[all_day]', '[endhours][hour]'));
-          timeNames.push(name.replace('[all_day]', '[endhours][minute]'));
-
-          // Step through all the start/end time names and set to disabled.
-          timeNames.forEach(function (item) {
-            $('[name="' + item + '"').prop("disabled", true);
-          });
-        });
-      });
-
-      // If an 'all day' checkbox is clicked, set the time to either
-      // enabled or disabled.
-      $('[id*="all-day"]').bind('click', function (e) {
+      /**
+       * Enable/Disable the time input elements, depending on the all-day checkbox.
+       *
+       * @todo #3322982 When 'all_day' is set, the link 'Add time slot' must be hidden.
+       */
+      function setAllDayTimeslot() {
 
         // Get the name of the checkbox, which will be mostly the
         // same name for the start and end times.
         var name = $(this).attr('name');
 
+        // Determine the state of the all_day checkbox.
+        var isEnabled = $(this).is(':checked');
+
         // Variable to store all the names of the start/end times.
         var timeNames = [];
 
-        // Replace the [all_day] with the name used for the start
-        // and end times.
+        // Replace [all_day] with the names for start and end times.
+        // For HTML5 element.
         timeNames.push(name.replace('[all_day]', '[starthours][time]'));
+        timeNames.push(name.replace('[all_day]', '[endhours][time]'));
+        // For select list element.
         timeNames.push(name.replace('[all_day]', '[starthours][hour]'));
         timeNames.push(name.replace('[all_day]', '[starthours][minute]'));
-        timeNames.push(name.replace('[all_day]', '[endhours][time]'));
+        timeNames.push(name.replace('[all_day]', '[starthours][ampm]'));
         timeNames.push(name.replace('[all_day]', '[endhours][hour]'));
         timeNames.push(name.replace('[all_day]', '[endhours][minute]'));
+        timeNames.push(name.replace('[all_day]', '[endhours][ampm]'));
 
-        // Set the start and end time to enabled or disabled depending
-        // on if the all day checkbox is checked.
-        if ($(this).is(':checked')) {
+        // Enable/Disable the start and end time depending on all_day checkbox.
+        timeNames.forEach(function (item) {
+          $('[name="' + item + '"]').prop("disabled", isEnabled);
+        });
+      }
 
-          // Step through all the start/end times and set to disabled.
-          timeNames.forEach(function (item) {
-            $('[name="' + item + '"').prop("disabled", true);
-          });
-        }
-        else {
+      // Hide every item above the max slots per day.
+      $('.office-hours-hide').hide();
 
-          // Step through all the start/end times and set to not disabled.
-          timeNames.forEach(function (item) {
-            $('[name="' + item + '"').prop("disabled", false);
-          });
-        }
+      // When the document loads, look for checked 'all day'
+      // checkboxes, and disable the start and end times.
+      $(document).ready(function () {
+        // Loop through all the all day checkboxes that are checked.
+        $('[id*="all-day"]:checked').each(setAllDayTimeslot);
       });
+
+      // Attach a function to each all_day checkbox, to enable/disable the times
+      // when the checkbox is clicked.
+      $('[id*="all-day"]').bind('click', setAllDayTimeslot);
 
       // Attach a function to each Add-link to show the next slot if clicked upon.
       // Show the Add-link, except if the next time slot is hidden.
@@ -139,27 +125,32 @@
 
       fixStriping();
 
-      // Clear the content of this a, when user clicks "Clear/Remove".
+      // Clear the content of this timeslot, when user clicks "Clear/Remove".
       // Do this for both widgets.
       $('.office-hours-delete-link').bind('click', function deleteLink(e) {
+
+        // Clear the value from the element.
+        function clearValue() {
+          $(this).val($('#target').find('option:first').val());
+        }
+
         e.preventDefault();
-        // @todo #3322982 Clear the 'all day' checkbox, too.
+        // Clear the date (in Exception days).
+        $(this).parent().parent().find('.form-date').each(clearValue);
+        // Clear the all_day checkbox.
+        $(this).parent().parent().find('.form-checkbox').each(function deleteAllDayCheckbox() {
+          if ($(this).is(':checked')) {
+            // Trigger setAllDayTimeslot().
+            $(this).click();
+          }
+        });
         // Clear the hours, minutes in the select box.
-        $(this).parent().parent().find('.form-select').each(function deleteTimeInSelect() {
-          $(this).val($('#target').find('option:first').val());
-        });
+        $(this).parent().parent().find('.form-select').each(clearValue);
         // Clear the hours, minutes in the HTML5 time element.
-        $(this).parent().parent().find('.form-time').each(function deleteTimeInHtml5() {
-          $(this).val($('#target').find('option:first').val());
-        });
+        $(this).parent().parent().find('.form-time').each(clearValue);
         // Clear the comment.
-        $(this).parent().parent().find('.form-text').each(function deleteComment() {
-          $(this).val($('#target').find('option:first').val());
-        });
-        // Clear the date (in Exceptions Date).
-        $(this).parent().parent().find('.form-date').each(function deleteDate() {
-          $(this).val($('#target').find('option:first').val());
-        });
+        $(this).parent().parent().find('.form-text').each(clearValue);
+
         // Hide the link.
         $(this).hide();
       });
@@ -175,24 +166,24 @@
 
         e.preventDefault();
 
-        // Read current day; presume Week Widget, then check if List Widget is used.
-        currentDay = parseInt($(this).closest('tr').find('input')[0].value);
+        // Get current day using attribute, both for Week Widget and List Widget.
+        // @todo Use only attribute, not both attribute and class name.
+        currentDay = parseInt($(this).closest('tr').attr('office_hours_day'));
         if(Number.isNaN(currentDay)) {
-          // List widget.
-          currentDay = parseInt($(this).closest('div div').find('select')[0].value);
-          // Div's from current day.
-          currentSelector = $(this).closest('tr');
-          // Div's from previous day.
-          previousSelector = currentSelector.prev().hasClass('office-hours-hide') ? currentSelector.prev().prev() : currentSelector.prev();
+          // Basic List Widget.
+          currentDay = parseInt($(this).closest('fieldset').attr('office_hours_day'));
+        }
+        if(Number.isNaN(currentDay)) {
+            // Error.
         } else {
-          // Week widget.
+          // Week widget can have value 0 (sunday). List widget starts with value 1.
           previousDay = (currentDay == 0) ? currentDay + 6 : currentDay - 1;
 
           // Select current table.
           tbody = $(this).closest('tbody');
-          // Div's from current day.
+          // Get div's from current day using class name.
           currentSelector = tbody.find('.office-hours-day-' + currentDay);
-          // Div's from previous day.
+          // Get div's from previous day using class name.
           previousSelector = tbody.find('.office-hours-day-' + previousDay);
         }
 
@@ -200,6 +191,19 @@
         // Copy the comment.
         previousSelector.find('.form-text').each(function copyComment(index) {
           setTimeslot(currentSelector.find('.form-text').eq(index), $(this).val());
+        });
+        // do NOT copy the day/date in the select list/HTML5 date element (List widget).
+        previousSelector.find('.form-date').each(function copyDateInHtml5(index) {
+          // setTimeslot(currentSelector.find('.form-date').eq(index), $(this).val());
+        });
+        previousSelector.find('.form-checkbox').each(function copyAllDay(index) {
+          // Determine the state of the all_day checkbox.
+          var previousIsEnabled = $(this).is(':checked');
+          var currentIsEnabled = $(currentSelector.find('.form-checkbox').eq(index)).is(':checked');
+          if (previousIsEnabled !== currentIsEnabled) {
+            // Trigger setAllDayTimeslot().
+            $(currentSelector.find('.form-checkbox').eq(index)).click();
+          }
         });
         // Copy the hours, minutes in the select box.
         previousSelector.find('.form-select').each(function copyTimeInSelect(index) {
@@ -209,10 +213,6 @@
         previousSelector.find('.form-time').each(function copyTimeInHtml5(index) {
           setTimeslot(currentSelector.find('.form-time').eq(index), $(this).val());
         });
-        // Copy the day/date in the select list/HTML5 date element (List widget).
-        previousSelector.find('.form-date').each(function copyDateInHtml5(index) {
-          setTimeslot(currentSelector.find('.form-date').eq(index), $(this).val());
-        });
 
         // If needed, show each Add-link of the day, after "Copy previous day".
         currentSelector.find('.office-hours-add-link').each(showAddLink);
@@ -221,4 +221,4 @@
       });
     }
   };
-})(jQuery);
+})(jQuery, Drupal);

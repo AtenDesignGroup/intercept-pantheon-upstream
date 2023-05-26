@@ -1834,6 +1834,9 @@ tbody + tbody {
 /*
 * End: Overrides for multi-select dropdown, like the one on manage/room-reservations/list (reservation status).
 */
+.views-exposed-form input::-webkit-calendar-picker-indicator {
+  display: inline; }
+
 #scroll-to-top-wrapper {
   pointer-events: none;
   position: fixed;

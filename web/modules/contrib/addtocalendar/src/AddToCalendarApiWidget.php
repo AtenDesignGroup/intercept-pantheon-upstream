@@ -4,6 +4,7 @@ namespace Drupal\addtocalendar;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Render\RendererInterface;
 
 /**
  * Class AddToCalendarApiWidget.
@@ -22,6 +23,13 @@ class AddToCalendarApiWidget {
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
+
+  /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
 
   /**
    * Style.
@@ -117,7 +125,7 @@ class AddToCalendarApiWidget {
   /**
    * Constructs a new AddToCalendarApiWidget object.
    */
-  public function __construct(ConfigFactoryInterface $config_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, RendererInterface $renderer = NULL) {
 
     $this->atcStyle = 'blue';
     $this->atcDisplayText = 'Add to calendar';
@@ -145,6 +153,13 @@ class AddToCalendarApiWidget {
     $this->atcDataCalendars = $data_calendars;
     $this->timeZone = date_default_timezone_get();
 
+    if (is_null($renderer)) {
+      @trigger_error('Calling AddToCalendarApiWidget::_construct() without the $renderer argument is deprecated and the argument will be required in a future release.', E_USER_DEPRECATED);
+      $this->renderer = \Drupal::service('renderer');
+    }
+    else {
+      $this->renderer = $renderer;
+    }
   }
 
   /**
@@ -170,7 +185,7 @@ class AddToCalendarApiWidget {
 
     // Start building the renderable array.
     $build['addtocalendar'] = [];
-    $display_text = t('%text', ['%text' => $this->atcDisplayText]);
+    $display_text = t('@text', ['@text' => $this->atcDisplayText]);
     $build['addtocalendar_button'] = [
       '#type' => 'html_tag',
       '#tag' => 'a',
@@ -211,7 +226,7 @@ class AddToCalendarApiWidget {
     $build['addtocalendar'] = [
       '#type' => 'html_tag',
       '#tag' => 'span',
-      '#value' => render($build['addtocalendar_button']) . '<var class="atc_event">' . render($build['addtocalendar']) . '</var>',
+      '#value' => $this->renderer->render($build['addtocalendar_button']) . '<var class="atc_event">' . $this->renderer->render($build['addtocalendar']) . '</var>',
       '#attributes' => [
         'class' => [
           'addtocalendar',

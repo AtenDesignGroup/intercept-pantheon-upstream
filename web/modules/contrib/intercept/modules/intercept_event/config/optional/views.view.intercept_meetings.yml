@@ -7,15 +7,15 @@ dependencies:
     - field.storage.node.field_room
     - node.type.event
   module:
-    - better_exposed_filters
     - csv_serialization
     - datetime
-    - datetime_range
+    - intercept_event
     - node
     - options
     - rest
     - serialization
     - user
+    - views_autosubmit
 id: intercept_meetings
 label: 'Intercept Export Meetings'
 module: views
@@ -30,7 +30,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: Export Meetings
+      title: 'Export Meetings'
       fields:
         nid:
           id: nid
@@ -213,7 +213,7 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: daterange_custom
+          type: daterange_combined
           settings:
             timezone_override: ''
             date_format: n/j/Y
@@ -376,38 +376,16 @@ display:
             offset_label: Offset
           quantity: 9
       exposed_form:
-        type: bef
+        type: autosubmit
         options:
           submit_button: Apply
-          reset_button: true
+          reset_button: false
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
-          input_required: false
-          text_input_required: 'Select any filter and click on Apply to see results'
-          text_input_required_format: basic_html
-          bef:
-            general:
-              autosubmit: false
-              autosubmit_exclude_textfield: false
-              autosubmit_hide: false
-              input_required: false
-              allow_secondary: false
-              secondary_label: 'Advanced options'
-              text_input_required: 'Select any filter and click on Apply to see results'
-              text_input_required_format: basic_html
-            filter:
-              field_date_time_value:
-                plugin_id: bef_datepicker
-                advanced:
-                  sort_options: false
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  collapsible: false
-                  is_secondary: false
+          autosubmit_hide: true
       access:
         type: perm
         options:
@@ -415,7 +393,20 @@ display:
       cache:
         type: none
         options: {  }
-      empty: {  }
+      empty:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: 'No matching meetings were found.'
+            format: basic_html
+          tokenize: false
       sorts:
         created:
           id: created
@@ -515,7 +506,6 @@ display:
             min: ''
             max: ''
             value: ''
-            type: date
           group: 1
           exposed: true
           expose:
@@ -541,8 +531,6 @@ display:
               intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-            min_placeholder: 'Start date'
-            max_placeholder: 'End date'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -584,16 +572,19 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
               administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
+              anonymous: '0'
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
               intercept_event_organizer: '0'
+              intercept_kiosk: '0'
+              intercept_registered_customer: '0'
+              intercept_room_manager: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
-            placeholder: ''
+            placeholder: null
+            min_placeholder: null
+            max_placeholder: null
           is_grouped: false
           group_info:
             label: ''
@@ -606,6 +597,7 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+          type: date
       filter_groups:
         operator: AND
         groups:
@@ -695,14 +687,13 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_room'
-        - extensions
   page:
     id: page
     display_title: Page
     display_plugin: page
     position: 1
     display_options:
-      display_extenders: { }
+      display_extenders: {  }
       path: account/manage/intercept_meetings
     cache_metadata:
       max-age: -1
@@ -717,7 +708,6 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_room'
-        - extensions
   rest_export:
     id: rest_export
     display_title: 'REST export'
@@ -734,7 +724,7 @@ display:
           uses_fields: true
           formats:
             csv: csv
-      display_extenders: {}
+      display_extenders: {  }
       path: data/export/meetings.csv
     cache_metadata:
       max-age: -1
@@ -749,4 +739,3 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_room'
-        - extensions

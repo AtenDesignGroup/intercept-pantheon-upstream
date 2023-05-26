@@ -5,7 +5,6 @@ core_version_requirement: ^8.9 || ^9
 package: 'Intercept'
 dependencies:
   - addtocalendar:addtocalendar
-  - better_exposed_filters:better_exposed_filters
   - csv_serialization:csv_serialization
   - date_recur:date_recur
   - drupal:datetime_range
@@ -16,8 +15,3 @@ dependencies:
   - intercept:intercept_location
   - tally:tally
   - votingapi:votingapi
-
-# Information added by Drupal.org packaging script on 2023-04-28
-version: '8.x-1.0-beta13'
-project: 'intercept'
-datestamp: 1682719426

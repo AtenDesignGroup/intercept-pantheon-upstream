@@ -1,0 +1,19 @@
+{
+  "name": "drupal/views_autosubmit",
+  "type": "drupal-module",
+  "description": "Views exposed filter autosubmit for Drupal.",
+  "homepage": "https://www.drupal.org/project/views_autosubmit",
+  "minimum-stability": "dev",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Ivan Trokhanenko (i-trokhanenko)",
+      "homepage": "https://www.drupal.org/u/i-trokhanenko",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/views_autosubmit",
+    "source": "https://git.drupalcode.org/project/views_autosubmit"
+  }
+}

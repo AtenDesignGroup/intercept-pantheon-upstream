@@ -23,7 +23,7 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
   }
 
@@ -87,7 +87,7 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
 
     $effect = $this->getTestEffect($original_image);
 
-    $this->assertArrayEquals($original_image_dimensions, $effect->getOriginalImageSize());
+    $this->assertEquals($original_image_dimensions, $effect->getOriginalImageSize());
   }
 
   /**

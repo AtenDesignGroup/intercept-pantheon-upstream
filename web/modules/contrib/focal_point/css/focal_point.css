@@ -26,6 +26,7 @@
   display: block;
   direction: initial;
   text-align: center;
+  line-height: initial;
 }
 .focal-point-preview-link:before {
   content: "\1F50D";

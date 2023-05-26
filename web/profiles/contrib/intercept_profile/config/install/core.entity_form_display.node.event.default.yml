@@ -100,7 +100,7 @@ third_party_settings:
       format_settings:
         classes: ''
         id: ''
-        description: 'Select the location and room, then click “Create a room reservation” to see if it''s available.'
+        description: ''
         required_fields: false
 id: node.event.default
 targetEntityType: node

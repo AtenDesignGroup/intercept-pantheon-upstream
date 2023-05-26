@@ -7,7 +7,6 @@ dependencies:
     - node.type.event
     - votingapi.vote_type.evaluation
   module:
-    - better_exposed_filters
     - datetime
     - flag
     - intercept_event
@@ -24,116 +23,21 @@ base_table: node_field_data
 base_field: nid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'view referenced user event_attendance'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: true
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: bef
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-          input_required: false
-          text_input_required: 'Select any filter and click on Apply to see results'
-          bef:
-            general:
-              autosubmit: true
-              autosubmit_exclude_textfield: false
-              autosubmit_hide: true
-              input_required: false
-              text_input_required: 'Select any filter and click on Apply to see results'
-              text_input_required_format: basic_html
-              allow_secondary: false
-              secondary_label: 'Advanced options'
-            filter:
-              uid_current:
-                plugin_id: bef_single
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  sort_options: false
-              uid_current_1:
-                plugin_id: bef_single
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  sort_options: false
-              uid_current_2:
-                plugin_id: bef_single
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  sort_options: false
-              field_date_time_value:
-                plugin_id: default
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  sort_options: false
-          text_input_required_format: basic_html
-      pager:
-        type: some
-        options:
-          items_per_page: 1
-          offset: 0
-      style:
-        type: html_list
-        options:
-          row_class: list__item
-          default_row_class: false
-          uses_fields: false
-          type: ol
-          wrapper_class: list__wrapper
-          class: list--content
-      row:
-        type: 'entity:node'
-        options:
-          relationship: none
-          view_mode: evaluation_attendee
+      title: 'Saved Events'
       fields:
         title:
           id: title
           table: node_field_data
           field: title
-          settings:
-            link_to_entity: true
-          plugin_id: field
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: ''
           exclude: false
           alter:
@@ -177,6 +81,8 @@ display:
           hide_alter_empty: true
           click_sort_column: value
           type: string
+          settings:
+            link_to_entity: true
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -187,6 +93,85 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+      pager:
+        type: some
+        options:
+          offset: 0
+          items_per_page: 1
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'view referenced user event_attendance'
+      cache:
+        type: tag
+        options: {  }
+      empty:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: 'No recent events.'
+            format: basic_html
+          tokenize: false
+      sorts:
+        field_date_time_end_value:
+          id: field_date_time_end_value
+          table: node__field_date_time
+          field: field_date_time_end_value
+          plugin_id: datetime
+          expose:
+            field_identifier: field_date_time_end_value
+      arguments:
+        field_user_target_id:
+          id: field_user_target_id
+          table: event_registration__field_user
+          field: field_user_target_id
+          relationship: reverse__event_registration__field_event
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          default_action: default
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: false
+          title: ''
+          default_argument_type: current_user
+          default_argument_options: {  }
+          default_argument_skip_url: false
+          summary_options:
+            base_path: ''
+            count: true
+            override: false
+            items_per_page: 25
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: false
+          validate:
+            type: none
+            fail: 'not found'
+          validate_options: {  }
+          break_phrase: false
+          not: false
       filters:
         field_date_time_value:
           id: field_date_time_value
@@ -195,6 +180,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: datetime
           operator: '='
           value:
             min: ''
@@ -209,17 +195,17 @@ display:
             description: null
             use_operator: false
             operator: field_date_time_value_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: field_date_time_value
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
-            placeholder: null
             min_placeholder: null
             max_placeholder: null
-            operator_limit_selection: false
-            operator_list: {  }
+            placeholder: null
           is_grouped: true
           group_info:
             label: ''
@@ -236,32 +222,31 @@ display:
                 title: Past
                 operator: '<'
                 value:
-                  type: date
-                  value: now
                   min: ''
                   max: ''
+                  value: now
+                  type: date
               2:
                 title: Upcoming
                 operator: '>='
                 value:
-                  type: date
-                  value: now
                   min: ''
                   max: ''
-          plugin_id: datetime
+                  value: now
+                  type: date
         status:
-          value: '1'
+          id: status
           table: node_field_data
           field: status
-          plugin_id: boolean
           entity_type: node
           entity_field: status
-          id: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
           expose:
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
-          group: 1
         type:
           id: type
           table: node_field_data
@@ -269,6 +254,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
           operator: in
           value:
             event: event
@@ -280,6 +268,8 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
@@ -287,8 +277,6 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -301,290 +289,34 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
-        uid_current_6:
-          id: uid_current_6
-          table: users_field_data
-          field: uid_current
-          relationship: uid
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_4:
-          id: uid_current_4
-          table: users_field_data
-          field: uid_current
-          relationship: field_user
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_5:
-          id: uid_current_5
-          table: users_field_data
-          field: uid_current
-          relationship: field_user_1
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current:
-          id: uid_current
-          table: users_field_data
-          field: uid_current
-          relationship: field_user
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: All
-          group: 3
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Attended
-            description: ''
-            use_operator: false
-            operator: uid_current_op
-            identifier: attended
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_1:
-          id: uid_current_1
-          table: users_field_data
-          field: uid_current
-          relationship: field_user_1
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: All
-          group: 3
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Registered
-            description: ''
-            use_operator: false
-            operator: uid_current_1_op
-            identifier: registered
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_2:
-          id: uid_current_2
-          table: users_field_data
-          field: uid_current
-          relationship: uid
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: All
-          group: 3
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Saved
-            description: ''
-            use_operator: false
-            operator: uid_current_2_op
-            identifier: saved
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-      sorts:
-        field_date_time_end_value:
-          id: field_date_time_end_value
-          table: node__field_date_time
-          field: field_date_time_end_value
-          plugin_id: datetime
-      title: 'Saved Events'
-      header: {  }
-      footer: {  }
-      empty:
-        area:
-          id: area
-          table: views
-          field: area
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+          2: OR
+          3: AND
+      style:
+        type: html_list
+        options:
+          row_class: list__item
+          default_row_class: false
+          uses_fields: false
+          type: ol
+          wrapper_class: list__wrapper
+          class: list--content
+      row:
+        type: 'entity:node'
+        options:
           relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content:
-            value: 'No recent events.'
-            format: basic_html
-          plugin_id: text
+          view_mode: evaluation_attendee
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
       relationships:
         reverse__event_registration__field_event:
           id: reverse__event_registration__field_event
@@ -593,9 +325,9 @@ display:
           relationship: none
           group_type: group
           admin_label: 'Event registration'
-          required: false
           entity_type: node
           plugin_id: entity_reverse
+          required: false
         reverse__event_attendance__field_event:
           id: reverse__event_attendance__field_event
           table: node_field_data
@@ -603,9 +335,9 @@ display:
           relationship: none
           group_type: group
           admin_label: 'Event attendance'
-          required: false
           entity_type: node
           plugin_id: entity_reverse
+          required: false
         flag_relationship:
           id: flag_relationship
           table: node_field_data
@@ -613,40 +345,11 @@ display:
           relationship: none
           group_type: group
           admin_label: Flags
+          entity_type: node
+          plugin_id: flag_relationship
           required: false
           flag: saved_event
           user_scope: current
-          entity_type: node
-          plugin_id: flag_relationship
-        field_user:
-          id: field_user
-          table: event_attendance__field_user
-          field: field_user
-          relationship: reverse__event_attendance__field_event
-          group_type: group
-          admin_label: 'Event attendee'
-          required: false
-          plugin_id: standard
-        field_user_1:
-          id: field_user_1
-          table: event_registration__field_user
-          field: field_user
-          relationship: reverse__event_registration__field_event
-          group_type: group
-          admin_label: 'Event registrant'
-          required: false
-          plugin_id: standard
-        uid:
-          id: uid
-          table: flagging
-          field: uid
-          relationship: flag_relationship
-          group_type: group
-          admin_label: 'Saved event user'
-          required: false
-          entity_type: flagging
-          entity_field: uid
-          plugin_id: standard
         vote_relationship:
           id: vote_relationship
           table: node_field_data
@@ -654,20 +357,16 @@ display:
           relationship: none
           group_type: group
           admin_label: Votes
+          entity_type: node
+          plugin_id: vote_relationship
           required: false
           vote: evaluation
           user_scope: current
-          entity_type: node
-          plugin_id: vote_relationship
-      arguments: {  }
-      display_extenders: {  }
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
-          2: OR
-          3: AND
       use_ajax: true
+      group_by: true
+      header: {  }
+      footer: {  }
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -679,26 +378,41 @@ display:
         - user.permissions
       tags: {  }
   embed_recent_events:
-    display_plugin: embed
     id: embed_recent_events
     display_title: 'User recent events'
+    display_plugin: embed
     position: 2
     display_options:
-      display_extenders: {  }
+      empty: {  }
+      sorts:
+        field_date_time_end_value:
+          id: field_date_time_end_value
+          table: node__field_date_time
+          field: field_date_time_end_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: datetime
+          order: DESC
+          expose:
+            label: ''
+            field_identifier: field_date_time_end_value
+          exposed: false
+          granularity: second
       filters:
         status:
-          value: '1'
+          id: status
           table: node_field_data
           field: status
-          plugin_id: boolean
           entity_type: node
           entity_field: status
-          id: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
           expose:
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
-          group: 1
         type:
           id: type
           table: node_field_data
@@ -706,6 +420,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
           operator: in
           value:
             event: event
@@ -717,6 +434,8 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
@@ -724,8 +443,6 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -738,9 +455,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
         field_date_time_end_value:
           id: field_date_time_end_value
           table: node__field_date_time
@@ -748,6 +462,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: datetime
           operator: between
           value:
             min: '-2 weeks'
@@ -762,17 +477,17 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -785,7 +500,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          plugin_id: datetime
         value:
           id: value
           table: votingapi_vote
@@ -793,218 +507,14 @@ display:
           relationship: vote_relationship
           group_type: group
           admin_label: ''
-          operator: empty
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: ''
-            min_placeholder: ''
-            max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
           entity_type: vote
           entity_field: value
           plugin_id: numeric
-        uid_current_4:
-          id: uid_current_4
-          table: users_field_data
-          field: uid_current
-          relationship: field_user
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-      defaults:
-        filters: false
-        filter_groups: false
-        sorts: false
-        empty: false
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
-      sorts:
-        field_date_time_end_value:
-          id: field_date_time_end_value
-          table: node__field_date_time
-          field: field_date_time_end_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: DESC
-          exposed: false
-          expose:
-            label: ''
-          granularity: second
-          plugin_id: datetime
-      display_description: 'User dashboard recent events'
-      empty: {  }
-    cache_metadata:
-      max-age: -1
-      contexts:
-        - 'languages:language_content'
-        - 'languages:language_interface'
-        - user
-        - 'user.node_grants:view'
-        - user.permissions
-      tags: {  }
-  page:
-    display_plugin: page
-    id: page
-    display_title: 'User events'
-    position: 1
-    display_options:
-      display_extenders: {  }
-      display_description: 'User events tab'
-      filters:
-        status:
-          value: '1'
-          table: node_field_data
-          field: status
-          plugin_id: boolean
-          entity_type: node
-          entity_field: status
-          id: status
-          expose:
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          group: 1
-        field_date_time_value:
-          id: field_date_time_value
-          table: node__field_date_time
-          field: field_date_time_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: '='
+          operator: empty
           value:
             min: ''
             max: ''
             value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_date_time_value_op
-            label: 'Date &amp; Time (field_date_time)'
-            description: null
-            use_operator: false
-            operator: field_date_time_value_op
-            identifier: field_date_time_value
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-            placeholder: null
-            min_placeholder: null
-            max_placeholder: null
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: true
-          group_info:
-            label: ''
-            description: ''
-            identifier: field_date_time_value
-            optional: false
-            widget: radios
-            multiple: false
-            remember: false
-            default_group: '2'
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: Past
-                operator: '<'
-                value:
-                  type: date
-                  value: now
-                  min: ''
-                  max: ''
-              2:
-                title: Upcoming
-                operator: '>='
-                value:
-                  type: date
-                  value: now
-                  min: ''
-                  max: ''
-          plugin_id: datetime
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value:
-            event: event
           group: 1
           exposed: false
           expose:
@@ -1013,228 +523,17 @@ display:
             description: ''
             use_operator: false
             operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
             operator_limit_selection: false
             operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
-        field_event_designation_value:
-          id: field_event_designation_value
-          table: node__field_event_designation
-          field: field_event_designation_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: or
-          value:
-            events: events
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
             identifier: ''
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
-            reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          plugin_id: list_field
-        uid_current_4:
-          id: uid_current_4
-          table: users_field_data
-          field: uid_current
-          relationship: field_user
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_5:
-          id: uid_current_5
-          table: users_field_data
-          field: uid_current
-          relationship: field_user_1
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_6:
-          id: uid_current_6
-          table: users_field_data
-          field: uid_current
-          relationship: uid
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        status_2:
-          id: status_2
-          table: event_registration
-          field: status
-          relationship: reverse__event_registration__field_event
-          group_type: group
-          admin_label: ''
-          operator: empty
-          value: ''
-          group: 3
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
             placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1247,248 +546,23 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: event_registration
-          entity_field: status
-          plugin_id: string
-        status_1:
-          id: status_1
-          table: event_registration
-          field: status
-          relationship: reverse__event_registration__field_event
-          group_type: group
-          admin_label: ''
-          operator: '!='
-          value: canceled
-          group: 3
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: event_registration
-          entity_field: status
-          plugin_id: string
-        uid_current:
-          id: uid_current
-          table: users_field_data
-          field: uid_current
-          relationship: field_user
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: All
-          group: 4
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Attended
-            description: ''
-            use_operator: false
-            operator: uid_current_op
-            identifier: attended
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_1:
-          id: uid_current_1
-          table: users_field_data
-          field: uid_current
-          relationship: field_user_1
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: All
-          group: 4
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Registered
-            description: ''
-            use_operator: false
-            operator: uid_current_1_op
-            identifier: registered
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-        uid_current_2:
-          id: uid_current_2
-          table: users_field_data
-          field: uid_current
-          relationship: uid
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: All
-          group: 4
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Saved
-            description: ''
-            use_operator: false
-            operator: uid_current_2_op
-            identifier: saved
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_event_organizer: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: user
-          plugin_id: user_current
-      defaults:
-        filters: false
-        filter_groups: false
-        pager: false
-        sorts: false
-        group_by: false
       filter_groups:
         operator: AND
         groups:
           1: AND
-          2: OR
-          3: OR
-          4: OR
-      pager:
-        type: full
-        options:
-          items_per_page: 10
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: '‹ Previous'
-            next: 'Next ›'
-            first: '« First'
-            last: 'Last »'
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
-      sorts:
-        field_date_time_end_value:
-          id: field_date_time_end_value
-          table: node__field_date_time
-          field: field_date_time_end_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: false
-          expose:
-            label: ''
-          granularity: second
-          plugin_id: datetime
-      group_by: true
-      path: account/events
+      defaults:
+        empty: false
+        sorts: false
+        filters: false
+        filter_groups: false
+      display_description: 'User dashboard recent events'
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
-        - url.query_args
         - user
         - 'user.node_grants:view'
         - user.permissions

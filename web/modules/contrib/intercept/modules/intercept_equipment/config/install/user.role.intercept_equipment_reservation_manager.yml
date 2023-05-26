@@ -9,8 +9,6 @@ permissions:
   - 'access equipment_reservation overview'
   - 'access management'
   - 'access management page equipment_reservations'
-  - 'access staff management'
-  - 'access staff management page room_reservations'
   - 'add equipment reservation entities'
   - 'approve equipment_reservation'
   - 'bypass room reservation agreement'

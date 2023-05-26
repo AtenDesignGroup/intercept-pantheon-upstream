@@ -380,7 +380,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       '#type' => 'submit',
       '#value' => $this->t('Reload dropdown and set to custom'),
       '#ajax' => [
-        'callback' => [get_class($this), 'reloadRecurrenceDropdownCallback'],
+        'callback' => [$this, 'reloadRecurrenceDropdownCallback'],
         'event' => 'click',
         'progress' => 'fullscreen',
         'wrapper' => $dropdownWrapper,
@@ -401,7 +401,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       '#type' => 'button',
       '#value' => $this->t('Reload dropdown'),
       '#ajax' => [
-        'callback' => [get_class($this), 'reloadRecurrenceDropdownCallback'],
+        'callback' => [$this, 'reloadRecurrenceDropdownCallback'],
         'event' => 'click',
         'progress' => 'fullscreen',
         'wrapper' => $dropdownWrapper,

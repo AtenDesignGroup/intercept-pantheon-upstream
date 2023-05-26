@@ -32,12 +32,17 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
       // @todo Enable List widget for Exception days.
       return [];
     }
+
+    static $day_index = 0;
+    $day_index++;
+
     $default_value = $item->getValue();
     $element['value'] = [
-      '#day_delta' => 0,
       '#type' => 'office_hours_list',
       '#default_value' => $default_value,
-      // Wrap all of the select elements with a fieldset.
+      '#day_index' => $day_index,
+      '#day_delta' => 0,
+        // Wrap all of the select elements with a fieldset.
       '#theme_wrappers' => [
         'fieldset',
       ],

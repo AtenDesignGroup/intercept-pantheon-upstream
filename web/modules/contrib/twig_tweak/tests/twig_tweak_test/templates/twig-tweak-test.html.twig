@@ -1,9 +1,16 @@
 {% set image_attributes = {style: 'width: 30px; height 30px;'} %}
 <style>
+  main {
+    background-color: lightyellow;
+    padding: 15px;
+    border: double 3px darkgrey;
+  }
   .tt-test > div {
-    margin: 15px;
+    margin: 15px auto;
     padding: 10px;
     outline: solid 2px dodgerblue;
+    max-width: 1200px;
+    background-color: white;
   }
   .tt-test > div::before {
     content: attr(class);
@@ -26,7 +33,8 @@
   <div class="tt-region">{{ drupal_region('highlighted') }}</div>
   <div class="tt-entity-default">{{ drupal_entity('node', 1) }}</div>
   <div class="tt-entity-teaser">{{ drupal_entity('node', 1, 'teaser') }}</div>
-  <div class="tt-entity-from-url">{{ drupal_entity('node', view_mode='teaser') }}</div>
+  <div class="tt-entity-uuid">{{ drupal_entity('node', 'ad1b902a-344f-41d1-8c61-a69f0366dbfa') }}</div>
+  <div class="tt-entity-uuid-missing">{{ drupal_entity('node', 'zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz') }}</div>
   <div class="tt-entity-add-form">{{ drupal_entity_form('node', values={type: 'page'}) }}</div>
   <div class="tt-entity-edit-form">{{ drupal_entity_form('node', 1) }}</div>
   <div class="tt-field">{{ drupal_field('body', 'node', 1) }}</div>
@@ -52,12 +60,12 @@
   <div class="tt-messages">{{ drupal_messages() }}</div>
   <div class="tt-breadcrumb">{{ drupal_breadcrumb() }}</div>
   <div class="tt-link-access">{{ drupal_link('Administration', 'admin', {absolute: true}, true) }}</div>
-  <div class="tt-contextual-links">{{ contextual_links('node:node=1') }}</div>
-  <div class="tt-token-replace">{{ 'Site name: [site:name]' | token_replace }}</div>
-  <div class="tt-preg-replace">{{ 'FOO' | preg_replace('/(foo)/i', '$1-bar') }}</div>
-  <div class="tt-image-style">{{ 'public://images/ocean.jpg' | image_style('thumbnail') }}</div>
-  <div class="tt-transliterate">{{ 'Привет!' | transliterate('ru') }}</div>
-  <div class="tt-check-markup">{{ '<b>bold</b> <strong>strong</strong>' | check_markup('twig_tweak_test') }}</div>
+  <div class="tt-contextual-links">{{ drupal_contextual_links('node:node=1') }}</div>
+  <div class="tt-token-replace">{{ 'Site name: [site:name]'|token_replace }}</div>
+  <div class="tt-preg-replace">{{ 'FOO'|preg_replace('/(foo)/i', '$1-bar') }}</div>
+  <div class="tt-image-style">{{ 'public://images/ocean.jpg'|image_style('thumbnail') }}</div>
+  <div class="tt-transliterate">{{ 'Привет!'|transliterate('ru') }}</div>
+  <div class="tt-check-markup">{{ '<b>bold</b> <strong>strong</strong>'|check_markup('twig_tweak_test') }}</div>
   <div class="tt-format-size">{{ 12345|format_size() }}</div>
   <div class="tt-truncate">{{ 'Hello world!'|truncate(10, true, true) }}</div>
   <div class="tt-with">{{ {'#markup':'Example'}|with('#prefix', '<b>')|with('#suffix', '</b>') }}</div>
@@ -87,7 +95,18 @@
     <div class="tt-image-style-from-file-uri-from-media-field">{{ media_uri|image_style('thumbnail') }}</div>
   {% endif %}
   <div class="tt-file-url-from-uri">{{ 'public://image-test.png'|file_url }}</div>
+  <div class="tt-file-url-from-uri-absolute">{{ 'public://image-test.png'|file_url(false) }}</div>
   <div class="tt-file-url-from-image-field">{{ node.field_image|file_url }}</div>
   <div class="tt-file-url-from-image-field-delta">{{ node.field_image[0]|file_url }}</div>
   <div class="tt-file-url-from-media-field">{{ node.field_media|file_url }}</div>
+  <div class="tt-entity-url">{{ node|entity_url(options={fragment: 'test'}) }}</div>
+  <div class="tt-entity-url-absolute">{{ node|entity_url(options={absolute: true}) }}</div>
+  <div class="tt-entity-url-edit-form">{{ node|entity_url('edit-form') }}</div>
+  <div class="tt-entity-link">{{ node|entity_link }}</div>
+  <div class="tt-entity-link-absolute">{{ node|entity_link('Example', options={absolute: true}) }}</div>
+  <div class="tt-entity-link-edit-form">{{ node|entity_link('Edit', 'edit-form') }}</div>
+  <div class="tt-translation">{{ (node|translation).title.value }}</div>
+  <div class="tt-functions_alter">{{ foo('bar') }}</div>
+  <div class="tt-filters_alter">{{ 'foo'|bar }}</div>
+  <div class="tt-tests_alter">{{ 'ok' is ok ? 'Yes' : 'No' }}</div>
 </div>

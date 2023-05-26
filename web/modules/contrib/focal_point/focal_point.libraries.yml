@@ -7,8 +7,8 @@ drupal.focal_point:
       css/focal_point.css: {}
   dependencies:
     - core/jquery
-    - core/jquery.ui
-    - core/jquery.ui.draggable
+    - jquery_ui/core
+    - jquery_ui_draggable/draggable
     - core/drupal
 
 drupal.focal_point_preview:

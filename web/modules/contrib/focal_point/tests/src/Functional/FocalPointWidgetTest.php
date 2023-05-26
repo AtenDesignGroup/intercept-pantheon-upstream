@@ -30,7 +30,7 @@ class FocalPointWidgetTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create an article content type that we will use for testing.
@@ -60,18 +60,20 @@ class FocalPointWidgetTest extends BrowserTestBase {
 
     // Find images that match our field settings.
     $images = $this->getTestFiles('image');
+    /** @var \Drupal\file\Entity\File $image */
+    $image = $images[0];
 
     // Create a File entity for the initial image.
     $file = File::create([
-      'uri' => $images[0]->uri,
+      'uri' => $image->uri,
       'uid' => 0,
-      'status' => FILE_STATUS_PERMANENT,
     ]);
+    $file->setPermanent();
     $file->save();
 
     // Use the first valid image to create a new Node.
     $image_factory = $this->container->get('image.factory');
-    $image = $image_factory->get($images[0]->uri);
+    $image = $image_factory->get($image->uri);
 
     /** @var \Drupal\focal_point\FocalPointManagerInterface $focalPointManager */
     $focalPointManager = \Drupal::service('focal_point.manager');

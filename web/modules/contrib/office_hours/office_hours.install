@@ -76,3 +76,45 @@ function office_hours_update_8004(&$sandbox) {
     }
   }
 }
+
+/**
+ * Update database column description.
+ */
+function office_hours_update_8005(&$sandbox) {
+
+  /** @var \Drupal\Core\Database\Schema $schema */
+  $schema = Database::getConnection()->schema();
+
+  $fields = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('office_hours');
+  foreach ($fields as $entity_type => $entity_fields) {
+    foreach ($entity_fields as $field_name => $field_properties) {
+
+      $table_names = $schema->findTables("%$field_name%");
+      foreach ($table_names as $table_name) {
+
+        $column_name = $field_name . '_starthours';
+        if ($schema->fieldExists($table_name, $column_name)) {
+          $schema->changeField($table_name, $column_name, $column_name, [
+            'type' => 'int',
+            'description' => 'From',
+            'not null' => FALSE,
+          ]);
+        }
+        $column_name = $field_name . '_endhours';
+        if ($schema->fieldExists($table_name, $column_name)) {
+          $schema->changeField($table_name, $column_name, $column_name, [
+            'type' => 'int',
+            'description' => 'To',
+            'not null' => FALSE,
+          ]);
+        }
+
+      }
+
+      $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+      $field_storage_definition = $entity_definition_update_manager->getFieldStorageDefinition($field_name, $entity_type);
+      $entity_definition_update_manager->updateFieldStorageDefinition($field_storage_definition);
+    }
+  }
+
+}

@@ -13,8 +13,8 @@
     "source": "http://cgit.drupalcode.org/intercept_base"
   },
   "require": {
-    "drupal/components": "^2.4",
+    "drupal/components": "^3.0",
     "drupal/twig_field_value": "^2.0",
-    "drupal/twig_tweak": "^2.1"
+    "drupal/twig_tweak": "^3.2"
   }
 }

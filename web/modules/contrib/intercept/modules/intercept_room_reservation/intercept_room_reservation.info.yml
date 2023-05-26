@@ -4,15 +4,9 @@ description: 'Provides room reservation functionality for Intercept.'
 core_version_requirement: ^8.9 || ^9
 package: 'Intercept'
 dependencies:
-  - better_exposed_filters:better_exposed_filters
   - drupal:datetime_range
   - duration_field:duration_field
   - intercept:intercept_event
   - intercept:intercept_location
   - jsonapi_views:jsonapi_views
   - views_exposed_filter_blocks:views_exposed_filter_blocks
-
-# Information added by Drupal.org packaging script on 2023-04-28
-version: '8.x-1.0-beta13'
-project: 'intercept'
-datestamp: 1682719426

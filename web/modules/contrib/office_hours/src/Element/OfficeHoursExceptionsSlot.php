@@ -9,20 +9,19 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @FormElement("office_hours_exceptions_slot")
  */
-class OfficeHoursExceptionsSlot extends OfficeHoursWeekSlot {
+class OfficeHoursExceptionsSlot extends OfficeHoursListSlot {
 
   /**
    * {@inheritdoc}
    */
   public static function processOfficeHoursSlot(&$element, FormStateInterface $form_state, &$complete_form) {
 
-    // Update $element['#value'] with default data and prepare $element widget.
     parent::processOfficeHoursSlot($element, $form_state, $complete_form);
 
-    // Facilitate Exception day specific things, such as changing date.
+    // The valueCallback() has populated the #value array.
+    $value = $element['#value'];
     $day = $element['#value']['day'];
     $day_delta = $element['#day_delta'];
-    $value = $element['#value'];
     $label = parent::getLabel('l', $value, $day_delta);
 
     // Override the hidden (Week widget) or select (List widget)
@@ -35,16 +34,21 @@ class OfficeHoursExceptionsSlot extends OfficeHoursWeekSlot {
       '#prefix' => $day_delta
         ? "<div class='office-hours-more-label'>$label</div>"
         : "<div class='office-hours-label'>$label</div>",
-      // Format the numeric day number to Y-m-d format for the widget.
-      '#default_value' => (is_numeric($day)) ? date('Y-m-d', $day) : '',
+      '#default_value' => $day_delta
+        // Add 'day_delta' to facilitate changing and closing Exception days.
+        ? 'exception_day_delta'
+        // Format the numeric day number to Y-m-d format for the widget.
+        : ((is_numeric($day)) ? date('Y-m-d', $day) : ''),
     ];
-
-    // Add 'day_delta' to facilitate changing and closing Exception days.
-    // @todo This adds a loose column to the widget. Fix it, avoiding colspan.
-    $element['day_delta'] = [
-      '#type' => 'value', // 'hidden',
-      '#value' => $day_delta,
-    ];
+    if (isset($element['all_day'])) {
+      $element['all_day'] = [
+        '#type' => $day_delta ? 'hidden' : 'checkbox',
+        '#default_value' => $value['all_day'],
+      ];
+    }
+    if (isset($element['endhours'])) {
+      unset($element['endhours']['#prefix']);
+    }
 
     return $element;
   }

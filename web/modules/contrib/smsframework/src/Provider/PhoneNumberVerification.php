@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Provider;
 
 use Drupal\Component\Datetime\TimeInterface;
@@ -8,6 +10,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\sms\Direction;
 use Drupal\sms\Exception\PhoneNumberSettingsException;
@@ -192,8 +195,8 @@ class PhoneNumberVerification implements PhoneNumberVerificationInterface {
       $phone_number_settings = $this->getPhoneNumberSettingsForEntity($entity);
       $field_name = $phone_number_settings->getFieldName('phone_number');
       if (!empty($field_name)) {
-        $items_original = &$entity->original->{$field_name};
-        $items = &$entity->{$field_name};
+        $items_original = isset($entity->original) ? $entity->original->{$field_name} : NULL;
+        $items = $entity->{$field_name};
       }
     }
     catch (PhoneNumberSettingsException $e) {
@@ -207,7 +210,8 @@ class PhoneNumberVerification implements PhoneNumberVerificationInterface {
     }
 
     $numbers = [];
-    foreach ($items as &$item) {
+    assert($items instanceof FieldItemListInterface);
+    foreach ($items as $item) {
       $phone_number = $item->value;
       $numbers[] = $phone_number;
 

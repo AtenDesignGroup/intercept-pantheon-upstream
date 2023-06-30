@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel;
 
+use Drupal\field\FieldStorageConfigInterface;
 use Drupal\sms\Entity\PhoneNumberSettings;
+use Drupal\sms\Entity\PhoneNumberSettingsInterface;
 use Drupal\sms\Entity\PhoneNumberVerificationInterface;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\field\Entity\FieldConfig;
@@ -13,12 +17,12 @@ use Drupal\entity_test\Entity\EntityTest;
  *
  * @group SMS Framework
  */
-class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
+final class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
 
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'sms', 'sms_test_gateway', 'entity_test', 'user', 'field', 'telephone',
     'dynamic_entity_reference',
   ];
@@ -28,19 +32,19 @@ class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
    *
    * @var \Drupal\sms\Entity\PhoneNumberSettingsInterface
    */
-  protected $phoneNumberSettings;
+  private PhoneNumberSettingsInterface $phoneNumberSettings;
 
   /**
    * A telephone field for testing.
    *
    * @var \Drupal\field\FieldStorageConfigInterface
    */
-  protected $phoneField;
+  private FieldStorageConfigInterface $phoneField;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('sms_phone_number_verification');
@@ -77,7 +81,7 @@ class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
   /**
    * Test unverified verification which have not expired.
    */
-  public function testVerificationUnverifiedNotExpired() {
+  public function testVerificationUnverifiedNotExpired(): void {
     $this->getLastVerification()
       ->setStatus(FALSE)
       ->save();
@@ -88,7 +92,7 @@ class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
   /**
    * Test unverified verification which have expired are deleted.
    */
-  public function testVerificationUnverifiedExpired() {
+  public function testVerificationUnverifiedExpired(): void {
     $this->getLastVerification()
       ->setStatus(FALSE)
       ->set('created', 0)
@@ -100,7 +104,7 @@ class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
   /**
    * Test unverified verification which have expired do not purge field data.
    */
-  public function testVerificationUnverifiedExpiredNoPurgeFieldData() {
+  public function testVerificationUnverifiedExpiredNoPurgeFieldData(): void {
     $this->getLastVerification()
       ->setStatus(FALSE)
       ->set('created', 0)
@@ -113,7 +117,7 @@ class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
   /**
    * Test unverified verification which have expired purge field data.
    */
-  public function testVerificationUnverifiedExpiredPurgeFieldData() {
+  public function testVerificationUnverifiedExpiredPurgeFieldData(): void {
     $this->phoneNumberSettings
       ->setPurgeVerificationPhoneNumber(TRUE)
       ->save();
@@ -129,7 +133,7 @@ class SmsFrameworkVerificationMaintenanceTest extends SmsFrameworkKernelBase {
   /**
    * Test verified verification.
    */
-  public function testVerificationVerifiedExpired() {
+  public function testVerificationVerifiedExpired(): void {
     $this->getLastVerification()
       ->setStatus(TRUE)
       ->set('created', 0)

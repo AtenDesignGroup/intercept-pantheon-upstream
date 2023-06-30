@@ -1624,23 +1624,33 @@ tbody + tbody {
 .view__empty {
   margin: 2em 0 1em; }
 
+.view-intercept-rooms .views-row:not(:last-of-type),
 .view-intercept-event-series .views-row:not(:last-of-type) {
   margin-bottom: 3.09375rem; }
   @media (min-width: 48em) {
+    .view-intercept-rooms .views-row:not(:last-of-type),
     .view-intercept-event-series .views-row:not(:last-of-type) {
       margin-bottom: 6.1875rem; } }
   @media (min-width: 62em) {
+    .view-intercept-rooms .views-row:not(:last-of-type),
     .view-intercept-event-series .views-row:not(:last-of-type) {
       margin-bottom: 9.375rem; } }
   @media (min-width: 37.5em) {
+    .view-intercept-rooms .views-row:not(:last-of-type),
     .view-intercept-event-series .views-row:not(:last-of-type) {
       margin-bottom: 1.5625rem; } }
   @media (min-width: 37.5em) and (min-width: 48em) {
+    .view-intercept-rooms .views-row:not(:last-of-type),
     .view-intercept-event-series .views-row:not(:last-of-type) {
       margin-bottom: 2.0625rem; } }
   @media (min-width: 37.5em) and (min-width: 62em) {
+    .view-intercept-rooms .views-row:not(:last-of-type),
     .view-intercept-event-series .views-row:not(:last-of-type) {
       margin-bottom: 3.125rem; } }
+
+.view-intercept-rooms .views-row .action-button .button,
+.view-intercept-event-series .views-row .action-button .button {
+  width: 100%; }
 
 .align-left {
   margin: 0 1rem 1rem 0; }
@@ -1650,6 +1660,15 @@ tbody + tbody {
 
 .align-center {
   display: table; }
+
+figure.align-center.caption img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center; }
+
+figure.align-center.caption figcaption {
+  text-align: center; }
 
 .form__heading:not(:last-child) {
   margin-bottom: 0.9375rem; }
@@ -1767,6 +1786,9 @@ tbody + tbody {
 .input__label--file {
   position: static !important;
   display: block; }
+
+input[type="date"].use-native-picker::-webkit-calendar-picker-indicator {
+  display: initial; }
 
 /*
 * START: Overrides for multi-select dropdown, like the one on manage/room-reservations/list (reservation status).

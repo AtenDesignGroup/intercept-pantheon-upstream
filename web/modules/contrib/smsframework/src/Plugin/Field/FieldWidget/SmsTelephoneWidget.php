@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Datetime\TimeInterface;
@@ -15,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Plugin implementation of the 'sms_telephone' widget.
  *
  * @FieldWidget(
- *   id = "sms_telephone",
+ *   id = \Drupal\sms\Plugin\Field\FieldWidget\SmsTelephoneWidget::PLUGIN_ID,
  *   label = @Translation("SMS Framework Telephone"),
  *   field_types = {
  *     "telephone"
@@ -23,6 +25,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class SmsTelephoneWidget extends TelephoneDefaultWidget {
+
+  public const PLUGIN_ID = 'sms_telephone';
 
   /**
    * Time.

@@ -296,7 +296,7 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Authored by'))
-      ->setDescription(new TranslatableMarkup('The user ID of author of the Event Registration entity.'))
+      ->setDescription(new TranslatableMarkup('The author of the Event Registration entity.'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')

@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Bytes;
 use Drupal\Component\Utility\Environment;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\File\Event\FileUploadSanitizeNameEvent;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -76,9 +77,6 @@ class DropzoneJs extends FormElement {
       '#theme' => 'dropzonejs',
       '#theme_wrappers' => ['form_element'],
       '#tree' => TRUE,
-      '#attached' => [
-        'library' => ['dropzonejs/integration'],
-      ],
     ];
   }
 
@@ -86,6 +84,8 @@ class DropzoneJs extends FormElement {
    * Processes a dropzone upload element.
    */
   public static function processDropzoneJs(&$element, FormStateInterface $form_state, &$complete_form) {
+    // Generate url and collect metadata for CSRF token to be up to date.
+    $generated_url = Url::fromRoute('dropzonejs.upload')->toString(TRUE);
     $element['uploaded_files'] = [
       '#type' => 'hidden',
       // @todo Handle defaults.
@@ -93,9 +93,10 @@ class DropzoneJs extends FormElement {
       // If we send a url with a token through drupalSettings the placeholder
       // doesn't get replaced, because the actual scripts markup is not there
       // yet. So we pass this information through a data attribute.
-      '#attributes' => ['data-upload-path' => Url::fromRoute('dropzonejs.upload')->toString()],
+      '#attributes' => ['data-upload-path' => $generated_url->getGeneratedUrl()],
     ];
-
+    // Apply cacheable metadata to element.
+    $generated_url->applyTo($element);
     if (empty($element['#max_filesize'])) {
       $element['#max_filesize'] = Environment::getUploadMaxSize();
     }
@@ -127,8 +128,9 @@ class DropzoneJs extends FormElement {
    */
   public static function preRenderDropzoneJs(array $element) {
     // Convert the human size input to bytes, convert it to MB and round it.
-    $max_size = round(Bytes::toInt($element['#max_filesize']) / pow(Bytes::KILOBYTE, 2), 2);
+    $max_size = round(Bytes::toNumber($element['#max_filesize']) / pow(Bytes::KILOBYTE, 2), 2);
 
+    $element['#attached']['library'] = ['dropzonejs/integration'];
     $element['#attached']['drupalSettings']['dropzonejs'] = [
       'instances' => [
         // Configuration keys are matched with DropzoneJS configuration
@@ -153,6 +155,8 @@ class DropzoneJs extends FormElement {
       ];
       array_unshift($element['#attached']['library'], 'dropzonejs/exif-js');
     }
+
+    $element['#attached']['library'][] = 'dropzonejs/widget';
 
     static::setAttributes($element, ['dropzone-enable']);
     return $element;
@@ -180,7 +184,9 @@ class DropzoneJs extends FormElement {
           // security reasons. Because here we know the acceptable extensions
           // we can remove that extension and sanitize the filename.
           $name = self::fixTmpFilename($name);
-          $name = file_munge_filename($name, self::getValidExtensions($element));
+          $event = new FileUploadSanitizeNameEvent($name, self::getValidExtensions($element));
+          \Drupal::service('event_dispatcher')->dispatch($event);
+          $name = $event->getFilename();
 
           // Potentially we moved the file already, so let's check first whether
           // we still have to move.

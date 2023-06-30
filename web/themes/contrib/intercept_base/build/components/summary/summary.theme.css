@@ -3,13 +3,21 @@
 .summary_date-time {
   font-weight: bold; }
 
+.ui-widget-content a.summary__title-link,
 .summary__title-link {
   color: #130f13;
   text-decoration: none;
   -webkit-transition: color .2s ease-out;
   transition: color .2s ease-out;
   text-decoration: none; }
-  .summary__title-link:hover, .summary__title-link:focus {
+  .ui-widget-content a.summary__title-link:hover, .ui-widget-content a.summary__title-link:focus,
+  .summary__title-link:hover,
+  .summary__title-link:focus {
     color: #747481; }
-  .summary__title-link:active, .summary__title-link.active--trail {
+  .ui-widget-content a.summary__title-link:active, .ui-widget-content a.summary__title-link.active--trail,
+  .summary__title-link:active,
+  .summary__title-link.active--trail {
     color: #747481; }
+
+.ui-widget-content a.button {
+  color: #fff; }

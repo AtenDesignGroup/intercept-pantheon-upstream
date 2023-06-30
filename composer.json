@@ -17,7 +17,6 @@
     "composer/installers": "^1.9",
     "cweagans/composer-patches": "^1.7",
     "drupal/admin_toolbar": "^3.1.0",
-    "drupal/better_exposed_filters": "^6.0.3",
     "drupal/better_normalizers": "^1.0@beta",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
@@ -30,13 +29,8 @@
     "drupal/dropzonejs": "^2.3",
     "drupal/gin": "^3.0",
     "drupal/gin_toolbar": "^1.0@beta",
-    "drupal/intercept_base": "1.0-beta14",
-    "drupal/intercept": "1.0-beta14",
-    "drupal/intercept_profile": "1.x-dev",
-    "drupal/jquery_ui": "^1.4",
-    "drupal/jquery_ui_slider": "^2.0",
-    "drupal/jquery_ui_touch_punch": "^1.0",
-    "drupal/jquery_ui_datepicker": "^2.0",
+    "drupal/intercept_base": "1.0-beta15",
+    "drupal/intercept": "1.0-beta15",
     "drupal/jsonapi_extras": "^3.23",
     "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",
@@ -48,6 +42,8 @@
     "drupal/view_user_email": "^1.0.1",
     "drupal/views_autosubmit": "^1.5",
     "drupal/views_bulk_operations": "^4.0",
+    "drupal/views_filters_summary": "^2.0@alpha",
+    "drupal/views_infinite_scroll": "^2.0",
     "drush/drush": "^10",
     "lordelph/php-sip2": "^2.1",
     "pantheon-systems/drupal-integrations": "^9",
@@ -131,9 +127,6 @@
     "patches": {
       "drupal/addtocalendar": {
         "Fix configuration": "https://www.drupal.org/files/issues/2020-05-06/schema-add-to-calender-config-3092765-6.patch"
-      },
-      "drupal/better_exposed_filters": {
-        "Removes requirements for jquery_ui_touch_punch module": "patches/3210946-27.patch"
       },
       "drupal/core": {
         "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",

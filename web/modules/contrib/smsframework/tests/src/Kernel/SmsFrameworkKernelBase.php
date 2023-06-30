@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
@@ -15,7 +17,7 @@ abstract class SmsFrameworkKernelBase extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installConfig('sms');
   }

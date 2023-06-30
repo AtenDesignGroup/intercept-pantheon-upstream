@@ -22,12 +22,6 @@ event_recurrence.admin.structure.settings:
   route_name: event_recurrence.settings
   parent: intercept_core.admin_structure
 
-events.browse:
-  title: Events
-  description: 'Browse upcoming events'
-  route_name: intercept_event.events_controller_list
-  menu_name: main
-
 intercept_event.account.events:
   title: 'Events'
   route_name: intercept_event.account.events

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel;
 
 use Drupal\Core\Entity\EntityStorageException;
@@ -7,6 +9,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\sms\Entity\SmsDeliveryReport;
 use Drupal\sms\Entity\SmsDeliveryReportInterface;
 use Drupal\sms\Entity\SmsMessage;
+use Drupal\sms\Message\SmsDeliveryReportInterface as BaseSmsDeliveryReportInterface;
 use Drupal\sms\Message\SmsMessageReportStatus;
 use Drupal\Tests\sms\Functional\SmsFrameworkDeliveryReportTestTrait;
 use Drupal\Tests\sms\Functional\SmsFrameworkTestTrait;
@@ -17,7 +20,7 @@ use Drupal\Tests\sms\Functional\SmsFrameworkTestTrait;
  * @group SMS Framework
  * @coversDefaultClass \Drupal\sms\Entity\SmsDeliveryReport
  */
-class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
+final class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
 
   use SmsFrameworkTestTrait;
   // Remove 'test' prefix so it will not be run by test runner and override.
@@ -29,7 +32,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'sms',
     'sms_test_gateway',
@@ -41,7 +44,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('user');
@@ -53,7 +56,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function createDeliveryReport() {
+  protected function createDeliveryReport(): BaseSmsDeliveryReportInterface {
     return SmsDeliveryReport::create();
   }
 
@@ -63,7 +66,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
    * @covers ::getTimeQueued
    * @covers ::setTimeQueued
    */
-  public function testTimeQueued() {
+  public function testTimeQueued(): void {
     $report = $this->createDeliveryReport();
     $this->assertNull($report->getTimeQueued(), 'Default value is NULL');
 
@@ -90,7 +93,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
    * @covers ::getTimeDelivered
    * @covers ::setTimeDelivered
    */
-  public function testTimeDelivered() {
+  public function testTimeDelivered(): void {
     $report = $this->createDeliveryReport();
     $this->assertNull($report->getTimeQueued(), 'Default value is NULL');
 
@@ -116,7 +119,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
    *
    * @covers ::save
    */
-  public function testSaveAndRetrieveReport() {
+  public function testSaveAndRetrieveReport(): void {
     /** @var \Drupal\sms\Entity\SmsDeliveryReport $report */
     $report = $this->createDeliveryReport()
       ->setMessageId($this->randomMachineName())
@@ -135,7 +138,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
     $saved = $storage->loadByProperties([
       'recipient' => '1234567890',
     ]);
-    $this->assertEquals(1, count($saved));
+    $this->assertCount(1, $saved);
     $saved = reset($saved);
     $this->assertEquals($report->getRecipient(), $saved->getRecipient());
     $this->assertEquals($report->getMessageId(), $saved->getMessageId());
@@ -151,7 +154,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
    * @covers ::save
    * @covers ::preSave
    */
-  public function testSaveReportWithoutParent() {
+  public function testSaveReportWithoutParent(): void {
     $this->expectException(EntityStorageException::class);
     $this->expectExceptionMessage('No parent SMS message specified for SMS delivery report');
     /** @var \Drupal\sms\Entity\SmsMessageResult $result */
@@ -167,7 +170,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
   /**
    * Test saving of delivery report revisions.
    */
-  public function testReportRevisions() {
+  public function testReportRevisions(): void {
     $sms_message = SmsMessage::create();
     $sms_message->save();
 
@@ -199,7 +202,7 @@ class SmsFrameworkDeliveryReportEntityTest extends KernelTestBase {
    *
    * @covers ::getRevisionAtStatus
    */
-  public function testMultipleReportRevisions() {
+  public function testMultipleReportRevisions(): void {
     $sms_message = SmsMessage::create();
     $sms_message->save();
 

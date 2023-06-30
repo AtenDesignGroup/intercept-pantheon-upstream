@@ -3,6 +3,7 @@
 <aside {{ component.attributes('location', modifiers, attr) }}>
   {% if image %}
   <div class="location__image" style="background-image: url({{ image.src }});">
+    <span role="img" aria-label="{{ image.alt }}"></span>
   </div>
   {% endif %}
   <div class="location__content">

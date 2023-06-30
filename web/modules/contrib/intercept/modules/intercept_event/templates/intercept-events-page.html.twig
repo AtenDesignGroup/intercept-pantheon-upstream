@@ -1,0 +1,20 @@
+{#
+/**
+ * @file intercept-events-page.html.twig
+ * Default theme implementation for the Events list page.
+ *
+ * Available variables:
+ * - events_list: A view of events
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('intercept-event-list') }}>
+  <div class="l--offset">
+    {{intercept_view_switcher}}
+    {{events_list}}
+    {% block progress %}
+    <div id="event-progress-throbber" class="hidden page-spinner">{{'Loading'|t}}</div>
+    {% endblock %}
+  </div>
+</div>

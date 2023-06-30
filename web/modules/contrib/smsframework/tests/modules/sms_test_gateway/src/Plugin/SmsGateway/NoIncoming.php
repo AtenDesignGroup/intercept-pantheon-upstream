@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_test_gateway\Plugin\SmsGateway;
 
 use Drupal\sms\Plugin\SmsGatewayPluginBase;
@@ -13,7 +15,7 @@ use Drupal\sms\Message\SmsMessageInterface;
  *   label = @Translation("No Incoming"),
  * )
  */
-class NoIncoming extends SmsGatewayPluginBase {
+final class NoIncoming extends SmsGatewayPluginBase {
 
   /**
    * {@inheritdoc}

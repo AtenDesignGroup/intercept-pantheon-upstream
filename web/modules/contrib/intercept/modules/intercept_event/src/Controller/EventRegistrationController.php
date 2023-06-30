@@ -15,6 +15,7 @@ use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class EventRegistrationController.
@@ -239,6 +240,46 @@ class EventRegistrationController extends ControllerBase {
       return JsonResponse::create($registrations, 200);
     }
     return JsonResponse::create();
+  }
+
+  /**
+   * Allows customers to download an .ics calendar file for an event.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The event Node entity.
+   */
+  public function downloadIcs(NodeInterface $node) {
+
+    $event = $node;
+    $title = $event->getTitle();
+    $location = $event->get('field_location')->referencedEntities()[0]->getTitle();
+    $description = $event->get('field_text_teaser')->value;
+    $start_date = $event->get('field_date_time')->start_date;
+    $end_date = $event->get('field_date_time')->end_date;
+    $start_date = \Drupal::service('intercept_core.utility.dates')->getDrupalDate($start_date);
+    $end_date = \Drupal::service('intercept_core.utility.dates')->getDrupalDate($end_date);
+    $start_date_machine = \Drupal::service('intercept_core.utility.dates')->convertTimezone($start_date, 'UTC')->format('Ymd\THis\Z');
+    $end_date_machine = \Drupal::service('intercept_core.utility.dates')->convertTimezone($end_date, 'UTC')->format('Ymd\THis\Z');
+    $url = $GLOBALS['base_url'] . $event->path->alias;
+
+    $response = new Response();
+    $response->headers->set('Content-Type', 'text/calendar');
+    $output = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'BEGIN:VEVENT',
+      'URL:' . $url,
+      'DTSTART:' . $start_date_machine,
+      'DTEND:' . $end_date_machine,
+      'SUMMARY:' . $title,
+      'DESCRIPTION:' . $description,
+      'LOCATION:' . $location,
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ];
+    $output = implode("\n", $output);
+    $response->setContent($output);
+    return $response;
   }
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Plugin\SmsGateway;
 
 use Drupal\Component\Datetime\TimeInterface;
@@ -16,12 +18,14 @@ use Drupal\sms\Message\SmsMessageResult;
  * Defines a logger gateway for testing and debugging.
  *
  * @SmsGateway(
- *   id = "log",
+ *   id = \Drupal\sms\Plugin\SmsGateway\LogGateway::PLUGIN_ID,
  *   label = @Translation("Drupal log"),
  *   outgoing_message_max_recipients = -1,
  * )
  */
 class LogGateway extends SmsGatewayPluginBase implements ContainerFactoryPluginInterface {
+
+  public const PLUGIN_ID = 'log';
 
   /**
    * A logger instance.

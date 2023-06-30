@@ -1,0 +1,90 @@
+.fc table {
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.fc .fc-button {
+  font-size: .825rem;
+  font-weight: 600;
+  letter-spacing: 0.01;
+  text-transform: uppercase;
+  padding: .33em .75em; }
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  color: var(--fc-button-active-text-color); }
+
+.fc .fc-button-primary:not(:disabled):not(.fc-button-active):hover {
+  background-color: var(--fc-button-hover-bg-color);
+  color: var(--fc-button-hover-text-color);
+  border-color: var(--fc-button-hover-border-color); }
+
+.fc .fc-button-primary:disabled {
+  border-color: var(--fc-button-disabled-border-color); }
+
+@media (max-width: 61.9375em) {
+  .fc .fc-toolbar {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center; }
+  .fc .fc-toolbar-chunk:nth-child(2) {
+    width: 100%;
+    text-align: center;
+    margin-top: .5em;
+    margin-bottom: .5em; } }
+
+.fc .fc-toolbar-title {
+  font-size: 1.75rem; }
+
+.fullcalendar-block-dialog.ui-dialog {
+  max-width: min(-webkit-calc(100% - 40px), 1280px) !important;
+  max-width: min(calc(100% - 40px), 1280px) !important; }
+  .fullcalendar-block-dialog.ui-dialog .ui-dialog-titlebar {
+    background-color: transparent;
+    z-index: 101; }
+  .fullcalendar-block-dialog.ui-dialog .ui-dialog-title {
+    display: none; }
+  .fullcalendar-block-dialog.ui-dialog .ui-dialog-content {
+    margin-top: -10px; }
+  .fullcalendar-block-dialog.ui-dialog .summary {
+    margin-bottom: 20px; }
+  .fullcalendar-block-dialog.ui-dialog .summary__header {
+    margin-right: 40px; }
+
+.page-spinner {
+  width: 100%;
+  height: 6px;
+  background-color: #0288d1;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  -webkit-box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.85);
+          box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.85); }
+  .page-spinner:after {
+    content: '';
+    display: block;
+    height: 100%;
+    background-color: #D13400;
+    -webkit-animation: progress-animation 2s infinite ease-in-out;
+            animation: progress-animation 2s infinite ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; }
+
+@-webkit-keyframes progress-animation {
+  0% {
+    -webkit-transform: translateX(-100%);
+            transform: translateX(-100%); }
+  100% {
+    -webkit-transform: translateX(100%);
+            transform: translateX(100%); } }
+
+@keyframes progress-animation {
+  0% {
+    -webkit-transform: translateX(-100%);
+            transform: translateX(-100%); }
+  100% {
+    -webkit-transform: translateX(100%);
+            transform: translateX(100%); } }

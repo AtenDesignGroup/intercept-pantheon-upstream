@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_test_gateway\Plugin\SmsGateway;
 
 /**
@@ -12,12 +14,12 @@ namespace Drupal\sms_test_gateway\Plugin\SmsGateway;
  *   outgoing_message_max_recipients = 2,
  * )
  */
-class MemoryChunked extends Memory {
+final class MemoryChunked extends Memory {
 
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [];
   }
 

@@ -5,12 +5,14 @@ namespace Drupal\intercept_event\Controller;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Url;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Plugin\PluginManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\intercept_core\Utility\Dates;
@@ -20,9 +22,13 @@ use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
+use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Dompdf\Dompdf;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class EventsController.
@@ -93,6 +99,13 @@ class EventsController extends ControllerBase {
   protected $pluginId;
 
   /**
+   * Entity view builder.
+   *
+   * @var \Drupal\Core\Entity\EntityViewBuilderInterface
+   */
+  protected $viewBuilder;
+
+  /**
    * Constructs an EventsController object.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
@@ -112,7 +125,16 @@ class EventsController extends ControllerBase {
    * @param \Drupal\intercept_core\Utility\Dates $date_utility
    *   The Intercept dates utility.
    */
-  public function __construct(AccountProxyInterface $currentUser, EntityFieldManagerInterface $entity_field_manager, EntityTypeManagerInterface $entityTypeManager, EventEvaluationManager $evaluation_manager, SuggestedEventsProvider $suggested_events_provider, RendererInterface $renderer, Connection $connection, Dates $date_utility) {
+  public function __construct(
+    AccountProxyInterface $currentUser,
+    EntityFieldManagerInterface $entity_field_manager,
+    EntityTypeManagerInterface $entityTypeManager,
+    EventEvaluationManager $evaluation_manager,
+    SuggestedEventsProvider $suggested_events_provider,
+    RendererInterface $renderer,
+    Connection $connection,
+    Dates $date_utility
+  ) {
     $this->currentUser = $currentUser;
     $this->entityFieldManager = $entity_field_manager;
     $this->entityTypeManager = $entityTypeManager;
@@ -144,15 +166,19 @@ class EventsController extends ControllerBase {
       $container->get('intercept_event.suggested_events_provider'),
       $container->get('renderer'),
       $container->get('database'),
-      $container->get('intercept_core.utility.dates')
+      $container->get('intercept_core.utility.dates'),
     );
   }
 
   /**
    * List.
+   * @deprecated
+   *   This is the legacy React based event app. It has been replaced with a views implementation.
+   *   @see \Drupal\intercept_event\Controller\EventsController::viewsList()
+   *   @see \Drupal\intercept_event\Controller\EventsController::viewsCalendar()
    *
-   * @return string
-   *   Return a render array containing the events list block.
+   * @return array
+   *   A render array containing the events React app placeholder and attached assets.
    */
   public function list() {
     $suggested_events = $this->suggestedEventsProvider->getSuggestedEventIds();
@@ -176,6 +202,177 @@ class EventsController extends ControllerBase {
     ];
     $this->attachFieldSettings($build);
     return $build;
+  }
+
+  /**
+   * Views List.
+   *
+   * @return array
+   *   A render array containing the events list block.
+   */
+  public function viewsList() {
+    $suggested_events = $this->suggestedEventsProvider->getSuggestedEventIds();
+    $toggle_filter = \Drupal::config('intercept_event.list')->get('toggle_filter');
+    $intercept_view_switcher = $this->viewSwitcher();
+
+    $view = Views::getView('intercept_events');
+    $build = [
+      '#theme' => 'intercept_events_page',
+      '#intercept_view_switcher' => $intercept_view_switcher,
+      '#events_list' => $view->buildRenderable('list_page', []),
+      '#attached' => [
+        'drupalSettings' => [
+          'intercept' => [
+            'events' => [
+              'recommended' => $suggested_events,
+              'toggle_filter' => $toggle_filter,
+            ],
+          ],
+        ],
+        'library' => [
+          'intercept_core/filter_toggle',
+        ],
+      ],
+    ];
+    return $build;
+  }
+
+  /**
+   * Builds the views calendar exposed filter block.
+   *
+   * @return array
+   *   Return a render array containing the events calendar exposed filters.
+   */
+  protected function buildViewsCalendarFilterBlock() {
+    // Create an instance of the jsonapi_views_filter_block plugin
+    $filters_configuration = [
+      'label' => 'Filters',
+      'label_display' => '0',
+      'view_display' => 'intercept_events:events',
+    ];
+    $filters_block_plugin = \Drupal::service('plugin.manager.block')->createInstance('intercept_room_reservation_jsonapi_views_filter_block', $filters_configuration);
+    $filters = [
+      '#theme' => 'block',
+      '#attributes' => [
+        'class' => ['intercept-events-filter'],
+        'id' => 'intercept-events-filter',
+      ],
+      '#plugin_id' => $filters_block_plugin->getPluginId(),
+      '#base_plugin_id' => $filters_block_plugin->getBaseId(),
+      '#derivative_plugin_id' => $filters_block_plugin->getDerivativeId(),
+      '#configuration' => $filters_block_plugin->getConfiguration(),
+      'content' => $filters_block_plugin->build(),
+      '#id' => NULL,
+    ];
+
+    return $filters;
+  }
+
+  /**
+   * Views Calendar.
+   *
+   * @return array
+   *   A render array containing the events calendar block.
+   */
+  public function viewsCalendar(Request $request) {
+    if ($request->isXmlHttpRequest()) {
+      return $this->viewsCalendarAjax();
+    }
+
+    $suggested_events = $this->suggestedEventsProvider->getSuggestedEventIds();
+    $toggle_filter = \Drupal::config('intercept_event.list')->get('toggle_filter');
+    $intercept_view_switcher = $this->viewSwitcher();
+
+    $filters = $this->buildViewsCalendarFilterBlock();
+
+    // Create an instance of the fullcalendar_block plugin.
+    $calendar_configuration = [
+      'label' => 'Event Calendar',
+      'label_display' => '0',
+      'event_source' => '/jsonapi/views/intercept_events/events'
+    ];
+    $calendar_block_plugin = \Drupal::service('plugin.manager.block')->createInstance('fullcalendar_block', $calendar_configuration);
+    $calendar = [
+      '#theme' => 'block',
+      '#attributes' => [
+        'class' => ['intercept-events-calendar'],
+      ],
+      '#plugin_id' => $calendar_block_plugin->getPluginId(),
+      '#base_plugin_id' => $calendar_block_plugin->getBaseId(),
+      '#derivative_plugin_id' => $calendar_block_plugin->getDerivativeId(),
+      '#configuration' => $calendar_block_plugin->getConfiguration(),
+      'content' => $calendar_block_plugin->build(),
+      '#id' => NULL,
+    ];
+
+    $build = [
+      '#theme' => 'intercept_events_page',
+      '#intercept_view_switcher' => $intercept_view_switcher,
+      '#events_list' => [
+        'filters' => $filters,
+        'calendar' => $calendar,
+      ],
+      // Attach eventCalendar library.
+      '#attached' => [
+        'drupalSettings' => [
+          'intercept' => [
+            'events' => [
+              'recommended' => $suggested_events,
+              'toggle_filter' => $toggle_filter,
+            ],
+          ],
+        ],
+        'library' => [
+          'intercept_core/filter_toggle',
+          'intercept_event/eventCalendar',
+        ],
+      ],
+    ];
+    return $build;
+  }
+
+  /**
+   * Views Calendar Ajax.
+   *
+   * @return string
+   *   Return a render array containing the events list block.
+   */
+  public function viewsCalendarAjax() {
+    $filters = $this->buildViewsCalendarFilterBlock();
+
+    // Ajax request handling logic here.
+    // This method will be executed for Ajax requests.
+    $response = new AjaxResponse();
+    $response->addCommand(new ReplaceCommand('#intercept-events-filter', $filters));
+    return $response;
+  }
+
+  /**
+   * Builds the view switcher links that let us alternate between List/Calendar.
+   */
+  public function viewSwitcher() {
+
+    // Load the block plugin manager service.
+    $block_manager = \Drupal::service('plugin.manager.block');
+
+    // Load the view_switcher block plugin.
+    $block_id = 'intercept_view_switcher';
+    $links = [
+      0 => [
+        'title' => 'List',
+        'route' => 'intercept_event.events_controller_views_list'
+      ],
+      1 => [
+        'title' => 'Calendar',
+        'route' => 'intercept_event.events_controller_views_calendar'
+      ]
+    ];
+    $block = $block_manager->createInstance($block_id, ['links' => $links]);
+    $block_rendered = $block->build();
+    // Add the cache tags/contexts.
+    \Drupal::service('renderer')->addCacheableDependency($block_rendered, $block);
+
+    return $block_rendered;
   }
 
   /**
@@ -399,12 +596,12 @@ class EventsController extends ControllerBase {
   public function analysis(NodeInterface $node) {
     $event_uuid = $node->uuid();
     $event_nid = $node->id();
-    $view_builder = $this->entityTypeManager()->getViewBuilder('node');
+    $viewBuilder = $this->entityTypeManager()->getViewBuilder('node');
 
     return [
       '#theme' => 'node_event_analysis',
       '#content' => [
-        'header' => $view_builder->view($node, 'header'),
+        'header' => $viewBuilder->view($node, 'header'),
         'attendance' => [
           'title' => $this->t('Number of Attendees'),
           'form' => $this->entityFormBuilder()->getForm($node, 'attendance'),
@@ -427,6 +624,33 @@ class EventsController extends ControllerBase {
         ],
       ],
     ];
+  }
+
+
+  /**
+   * Event calendar display for use in modal popups.
+   */
+  public function calendar(NodeInterface $node) {
+    $date_item = $node->get('field_date_time')->getValue();
+    $start_date = $this->dateUtility->getDrupalDate($date_item[0]['value']);
+    $end_date = $this->dateUtility->getDrupalDate($date_item[0]['end_value']);
+
+    return [
+      '#theme' => 'node_event_calendar',
+      '#title' => $node->getTitle(),
+      '#subtitle' => $node->get('field_location')->entity->label(),
+      '#date' => $this->dateUtility->convertTimezone($start_date, 'default')->format("l, F j, Y"),
+      '#time' => $this->dateUtility->convertTimezone($start_date, 'default')->format("g:i a") . ' - ' . $this->dateUtility->convertTimezone($end_date, 'default')->format("g:i a"),
+      '#url' => $node->toUrl()->toString(),
+      '#body' => $node->get('field_text_teaser')->value,
+    ];
+  }
+
+  /**
+   * Callback to get event node title for use in page titles.
+   */
+  public function getTitle(NodeInterface $node) {
+    return $node->getTitle();
   }
 
   /**

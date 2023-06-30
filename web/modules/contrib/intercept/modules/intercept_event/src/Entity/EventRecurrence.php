@@ -305,7 +305,7 @@ class EventRecurrence extends RevisionableContentEntityBase implements EventRecu
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Created by'))
-      ->setDescription(new TranslatableMarkup('The user ID of author of the Event Recurrence entity.'))
+      ->setDescription(new TranslatableMarkup('The author of the Event Recurrence entity.'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')

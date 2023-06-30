@@ -12,6 +12,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\intercept_messages\Form\EventAttendanceMessagesSettings;
 use Drupal\intercept_messages\Form\EventRegistrationMessagesSettings;
 use Drupal\intercept_messages\Form\EventSavedMessagesSettings;
@@ -76,16 +77,20 @@ function intercept_messages_form_user_form_alter(array &$form, FormStateInterfac
 function intercept_messages_entity_insert(EntityInterface $entity) {
   $entity_type_id = $entity->getEntityTypeId();
   $bundle = $entity->bundle();
-  if (!in_array($entity_type_id, ['event_attendance', 'event_registration', 'flagging'])) {
+  if (!in_array($entity_type_id, ['event_attendance', 'event_registration', 'flagging', 'node'])) {
     return;
   }
   if ($entity_type_id == 'flagging' && $bundle != 'saved_event') {
     // The only type of flags we're worried about are saved events.
     return;
   }
+  if ($entity_type_id == 'node' && $bundle != 'event') {
+    // We do have a scheduled message for events but not other node types.
+    return;
+  }
   $templates = \Drupal::service('plugin.manager.intercept_message_template')->getDefinitionsByType($entity_type_id);
   $event_config = \Drupal::config('intercept_event.settings');
-  if ($event_config && is_array($event_config->get('email'))) {
+  if ($event_config && is_array($event_config->get('email')) && $bundle != 'event') {
     $filtered_messages = array_filter($event_config->get('email'), function ($message_id) use ($templates) {
       return in_array($message_id, array_column($templates, 'id'));
     }, ARRAY_FILTER_USE_KEY);
@@ -142,6 +147,21 @@ function intercept_messages_entity_insert(EntityInterface $entity) {
         }
         intercept_messages_schedule_message($plugin_id, $entity_type_id, $entity->id(), 0, $send_timestamp);
       }
+    }
+  }
+  elseif ($entity_type_id == 'node' && $bundle == 'event') {
+    // Schedule a message that will go to staff after an event to remind them
+    // to enter their number of attendees and note evaluating the event.
+
+    // When the node is created by the staff member schedule the email in
+    // advance of the end date.
+
+    // Email would need to be sent directly following the event end time.
+    $event_date = $entity->get('field_date_time')->end_date;
+    // Send the message 24 hours after the event ends.
+    $send_timestamp = $event_date->format('U') + 86400;
+    if ($send_timestamp >= time()) {
+      intercept_messages_schedule_message('event_staff_reminder', $entity_type_id, $entity->id(), 0, $send_timestamp);
     }
   }
 }
@@ -246,14 +266,31 @@ function intercept_messages_entity_update(EntityInterface $entity) {
       }
     }
   }
+  // If the event is edited, then update the scheduled staff reminder message.
+  if ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'event') {
+    // Find the new end time
+    $event_date = $entity->get('field_date_time')->end_date;
+    // Send the message 24 hours after the event ends.
+    $send_timestamp = $event_date->format('U') + 86400;
+    if ($send_timestamp >= time()) {
+      $messages = \Drupal::service('database')
+        ->update('intercept_messages_scheduled_message')
+        ->fields([
+          'send' => $send_timestamp,
+        ])
+        ->condition('entity_id', $entity->id())
+        ->condition('template_id', 'event_staff_reminder')
+        ->execute();
+    }
+  }
 }
 
 /**
  * Implements hook_entity_delete().
  */
 function intercept_messages_entity_delete(EntityInterface $entity) {
-  // The only type of flags we're worried about are saved events.
-  if ($entity->getEntityTypeId() == 'flagging' && $entity->bundle() == 'saved_event') {
+  // The only type of flags we're worried about are saved events or event nodes.
+  if (($entity->getEntityTypeId() == 'flagging' && $entity->bundle() == 'saved_event') || ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'event')) {
     // Delete existing event save reminder messages.
     $messages = \Drupal::service('database')
       ->select('intercept_messages_scheduled_message', 'm')
@@ -315,6 +352,43 @@ function intercept_messages_cron() {
           intercept_messages_delete_message($message->message_id);
         }
       }
+      elseif ($message->template_id == 'event_staff_reminder'  && $entity = \Drupal::entityTypeManager()->getStorage($message->entity_type)->load($message->entity_id)) {
+
+        // Email would be sent to the event organizer.
+        // If this field is empty, send email to staff presenter.
+        // NOTE: ^^ Can't do this because Staff presenter field is plain text.
+        $user = $entity->getOwner();
+        $email = $user->getEmail();
+        $uid = $user->id();
+        $name = $user->name->value;
+        $body = "";
+
+        // Try to see if there's a profile for this staff member.
+        $types = \Drupal::entityTypeManager()->getStorage('node_type')->loadMultiple();
+        if (isset($types['person'])) {
+          $query = \Drupal::entityQuery('node')
+            ->condition('status', 1)
+            ->condition('type', 'person')
+            ->condition('field_associated_user_account', $uid);
+          $nids = $query->execute();
+          if (!empty($nids)) {
+            $node = \Drupal::entityTypeManager()->getStorage('node')->load(array_pop($nids));
+            if (!empty($node)) {
+              $name = $node->get('field_text_first_name')->getValue();
+              $name = $name[0]['value'];
+            }
+          }
+          $body = "\r\n<br><br>Sincerely,\r\n<br><br>EventsandExperience_mg";
+          $body .= '@' . str_replace('staging-', '', str_replace('-site', 'library', str_replace('.pantheonsite.io', '.com', str_replace('.lndo.site', '.com', str_replace('/', '', str_replace('www', '', str_replace('https://', '', Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString())))))));
+        }
+
+        MessageSettingsHelper::mail($entity, $email, [
+          'mail_key' => 'event_staff_reminder',
+          'subject' => 'Reminder: Event Attendance and Feedback for [node:title]',
+          'body' => "Hello " . $name . ". We hope your program, [node:title] was a success! Don't forget to input your <a href=\"[site:url]event/" . $message->entity_id . "/analysis\">program attendance and feedback</a> on the website." . $body . "|Add Attendance and Feedback|[site:url]event/" . $message->entity_id . "/analysis",
+        ]);
+        intercept_messages_delete_message($message->message_id);
+      }
     }
   }
 }
@@ -339,12 +413,11 @@ function intercept_messages_mail($key, &$message, $params) {
   $message['from'] = \Drupal::config('system.site')->get('mail');
   $message['subject'] = $token_service->replace($context['subject'], $context['tokens']);
   $body = $token_service->replace($context['body'], $context['tokens']);
-  // Use the theme/Twig template for the body of the message.
   $renderable = [
     '#theme' => 'intercept_messages_email',
-    '#message' => $body,
+    '#message' => html_entity_decode($body),
   ];
-  $message['body'][] = \Drupal::service('renderer')->renderPlain($renderable);
+  $message['body'][] = \Drupal::service('renderer')->render($renderable);
 }
 
 /**

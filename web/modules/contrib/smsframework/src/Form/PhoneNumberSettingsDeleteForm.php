@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;

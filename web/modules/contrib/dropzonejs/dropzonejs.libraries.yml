@@ -21,8 +21,15 @@ integration:
   js:
     js/dropzone.integration.js: {}
   dependencies:
-    - core/jquery.once
+    - core/once
+    - core/jquery
     - core/drupal
     - core/drupalSettings
-    - core/underscore
     - dropzonejs/dropzonejs
+
+media_library:
+  version: VERSION
+  js:
+    js/dropzone.media_library.js: {}
+  dependencies:
+    - dropzonejs/integration

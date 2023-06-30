@@ -617,9 +617,6 @@
     "field_address": {
       "type": "object"
     },
-    "field_affiliated": {
-      "type": "boolean"
-    },
     "field_contact_number": {
       "type": "string"
     },

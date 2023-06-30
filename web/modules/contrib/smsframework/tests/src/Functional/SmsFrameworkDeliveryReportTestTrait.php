@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Functional;
 
 use Drupal\sms\Message\SmsDeliveryReportInterface;
@@ -15,7 +17,7 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @covers ::getMessageId
    * @covers ::setMessageId
    */
-  public function testMessageId() {
+  public function testMessageId(): void {
     $report = $this->createDeliveryReport();
     $this->assertEquals('', $report->getMessageId(), 'Default value is empty string');
 
@@ -32,7 +34,7 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @covers ::getRecipient
    * @covers ::setRecipient
    */
-  public function testRecipient() {
+  public function testRecipient(): void {
     $report = $this->createDeliveryReport();
     $this->assertEquals('', $report->getRecipient(), 'Default value is empty string');
 
@@ -49,7 +51,7 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @covers ::getStatus
    * @covers ::setStatus
    */
-  public function testStatus() {
+  public function testStatus(): void {
     $report = $this->createDeliveryReport();
     $this->assertNull($report->getStatus(), 'Default value is NULL');
 
@@ -66,7 +68,7 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @covers ::getStatusMessage
    * @covers ::setStatusMessage
    */
-  public function testStatusMessage() {
+  public function testStatusMessage(): void {
     $report = $this->createDeliveryReport();
     $this->assertEquals('', $report->getStatusMessage(), 'Default value is empty string');
 
@@ -83,7 +85,7 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @covers ::getStatusTime
    * @covers ::setStatusTime
    */
-  public function testStatusTime() {
+  public function testStatusTime(): void {
     $report = $this->createDeliveryReport();
     $this->assertNull($report->getStatusTime(), 'Default value is NULL');
 
@@ -100,7 +102,7 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @covers ::getTimeQueued
    * @covers ::setTimeQueued
    */
-  public function testTimeQueued() {
+  public function testTimeQueued(): void {
     $report = $this->createDeliveryReport();
     $this->assertNull($report->getTimeQueued(), 'Default value is NULL');
 
@@ -117,7 +119,7 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @covers ::getTimeDelivered
    * @covers ::setTimeDelivered
    */
-  public function testTimeDelivered() {
+  public function testTimeDelivered(): void {
     $report = $this->createDeliveryReport();
     $this->assertNull($report->getTimeDelivered(), 'Default value is NULL');
 
@@ -134,6 +136,6 @@ trait SmsFrameworkDeliveryReportTestTrait {
    * @return \Drupal\sms\Message\SmsDeliveryReportInterface
    *   A delivery report for testing.
    */
-  abstract protected function createDeliveryReport();
+  abstract protected function createDeliveryReport(): SmsDeliveryReportInterface;
 
 }

@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta15] - 2023-06-30
+
+<h2>Sprint 55 Deployment</h2>
+
+One of the biggest changes you'll notice in this release is the change to the events page. We've transitioned to a non-React version of the events page and calendar to make development changes easier to manage. Existing Intercept site admins may want to re-import the events view configuration from the intercept_events module directory in order to be sure that they have the latest changes in place for the events listing page and calendar.
+
+- Added "Add to Calendar" links in event registration confirmation emails
+- Added Certifications to My Account Room Reservations
+- Updated the field order on event edit form
+- Added improvements to help event creators create good alt text for images
+- Added character limit information to event title description
+- Added a reminder email for staff to enter event attendance once the event has ended
+- Removed Terms of Service Checkboxes for staff creating/editing room reservations
+- Updated the back end infrastructure of the events page to make development changes easier
+- Updated holiday closings staff listing to be sortable
+- Fixed error with “Today’s Hours” incorrectly displaying on location pages
+
 ## [8.x-1.0-beta14] - 2023-05-26
 
 <h2>Sprint 54 Deployment</h2>

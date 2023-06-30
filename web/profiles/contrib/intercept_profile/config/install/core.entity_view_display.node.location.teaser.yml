@@ -4,7 +4,6 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.location.field_address
-    - field.field.node.location.field_affiliated
     - field.field.node.location.field_branch_location
     - field.field.node.location.field_closed_for_renovations
     - field.field.node.location.field_contact_number
@@ -31,7 +30,6 @@ content:
     region: content
 hidden:
   field_address: true
-  field_affiliated: true
   field_branch_location: true
   field_closed_for_renovations: true
   field_contact_number: true

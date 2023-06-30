@@ -1,0 +1,24 @@
+.views-filters-summary .value {
+	display: inline-block;
+	font-weight: 500;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	margin-right: 0.5em;
+	margin-bottom: 6px;
+	padding: 0 1px 0 6px;
+	border: 1px solid #8C1515;
+}
+
+.views-filters-summary a.remove-filter {
+	border: none;
+  background-color: #ededed;
+  font-size: 18px;
+  padding: 1px 8px 0 8px;
+  margin-left: 4px;
+	color: #000;
+	vertical-align: middle;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+}

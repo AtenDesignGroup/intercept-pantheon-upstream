@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_sendtophone\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;

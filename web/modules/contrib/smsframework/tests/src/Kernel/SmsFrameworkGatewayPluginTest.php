@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel;
 
 use Drupal\sms\Entity\SmsMessage;
@@ -10,12 +12,12 @@ use Drupal\sms\Direction;
  *
  * @group SMS Framework
  */
-class SmsFrameworkGatewayPluginTest extends SmsFrameworkKernelBase {
+final class SmsFrameworkGatewayPluginTest extends SmsFrameworkKernelBase {
 
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'sms', 'sms_test', 'sms_test_gateway', 'field', 'telephone',
     'dynamic_entity_reference',
   ];
@@ -23,7 +25,7 @@ class SmsFrameworkGatewayPluginTest extends SmsFrameworkKernelBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('sms');
     $this->installEntitySchema('sms_result');
@@ -34,7 +36,7 @@ class SmsFrameworkGatewayPluginTest extends SmsFrameworkKernelBase {
   /**
    * Tests if incoming event is fired on a gateway plugin.
    */
-  public function testIncomingEvent() {
+  public function testIncomingEvent(): void {
     $gateway = $this->createMemoryGateway()
       ->setSkipQueue(TRUE);
     $gateway->save();

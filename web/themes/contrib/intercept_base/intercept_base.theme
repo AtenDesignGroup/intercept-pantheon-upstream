@@ -284,11 +284,13 @@ function intercept_base_preprocess_form(&$variables) {
     case 'views-exposed-form-intercept-customers-manage':
     case 'views-exposed-form-intercept-equipment-reservations-embed':
     case 'views-exposed-form-intercept-events-embed':
+    case 'views-exposed-form-intercept-events-events':
     case 'views-exposed-form-intercept-equipment-page':
     case 'views-exposed-form-intercept-export-equipment-reservations-page':
     case 'views-exposed-form-intercept-export-room-reservations-page':
     case 'views-exposed-form-intercept-event-attendance-by-age-group-page':
     case 'views-exposed-form-intercept-event-attendance-embed':
+    case 'views-exposed-form-intercept-events-list-page':
     case 'views-exposed-form-intercept-rooms-default':
     case 'views-exposed-form-intercept-room-reservations-page':
     case 'views-exposed-form-intercept-rooms-rooms':
@@ -395,6 +397,10 @@ function intercept_base_theme_suggestions_fieldset_alter(array &$suggestions, ar
     if ($variables['element']['#form_id'] == 'views_exposed_form' && strpos($variables['element']['#id'], 'date') !== FALSE) {
       $suggestions[] = 'fieldset__views_exposed_form__dates';
     }
+  }
+
+  if (isset($variables['element']['#id']) && strstr($variables['element']['#id'], 'edit-field-event-designation-value')) {
+    $suggestions[] = 'fieldset__inline_radios';
   }
 }
 

@@ -7,6 +7,7 @@ dependencies:
   - addtocalendar:addtocalendar
   - csv_serialization:csv_serialization
   - date_recur:date_recur
+  - date_popup:date_popup
   - drupal:datetime_range
   - drupal:field_ui
   - drupal:rest
@@ -14,4 +15,6 @@ dependencies:
   - flag:flag
   - intercept:intercept_location
   - tally:tally
+  - views_infinite_scroll:views_infinite_scroll
+  - views_filters_summary:views_filters_summary
   - votingapi:votingapi

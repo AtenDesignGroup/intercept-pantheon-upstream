@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_user\Form;
 
 use Drupal\Core\Messenger\MessengerInterface;
@@ -127,10 +129,10 @@ class AdminSettingsForm extends ConfigFormBase {
     unset($end_hours[0]);
     $end_hours[24] = $this->t('- End of day -');
 
-    $timestamp = strtotime('next Sunday');
+    $date = new \DateTime('next Sunday');
     for ($i = 0; $i < 7; $i++) {
       $row = ['#tree' => TRUE];
-      $day = strftime('%A', $timestamp);
+      $day = $date->format('l');
       $day_lower = strtolower($day);
 
       $row['day']['#plain_text'] = $day;
@@ -159,7 +161,7 @@ class AdminSettingsForm extends ConfigFormBase {
         ],
       ];
 
-      $timestamp = strtotime('+1 day', $timestamp);
+      $date->modify('+1 day');
       $form['active_hours']['days_container']['days'][$day_lower] = $row;
     }
 
@@ -407,7 +409,7 @@ class AdminSettingsForm extends ConfigFormBase {
 
       $regex = '/(' . implode('|', $regex_placeholder) . '+)/';
       $last_word_is_placeholder = FALSE;
-      foreach (preg_split($regex, $incoming_message, NULL, PREG_SPLIT_DELIM_CAPTURE) as $word) {
+      foreach (preg_split($regex, $incoming_message, -1, PREG_SPLIT_DELIM_CAPTURE) as $word) {
         if ($word === '') {
           continue;
         }

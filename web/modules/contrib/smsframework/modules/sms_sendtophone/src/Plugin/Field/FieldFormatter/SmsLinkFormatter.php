@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_sendtophone\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
@@ -10,12 +12,14 @@ use Drupal\Core\Url;
  * Defines a SMS field formatter.
  *
  * @FieldFormatter(
- *   id = "sms_link",
+ *   id = \Drupal\sms_sendtophone\Plugin\Field\FieldFormatter\SmsLinkFormatter::PLUGIN_ID,
  *   label = @Translation("SMS Link"),
  *   field_types = {"text"}
  * )
  */
 class SmsLinkFormatter extends FormatterBase {
+
+  public const PLUGIN_ID = 'sms_link';
 
   /**
    * {@inheritdoc}

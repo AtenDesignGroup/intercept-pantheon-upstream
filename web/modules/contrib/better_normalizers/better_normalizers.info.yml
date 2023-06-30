@@ -4,9 +4,9 @@ description: 'Improve the normalizers in core.'
 core_version_requirement: ^8.7.7 || ^9
 
 dependencies:
-  - drupal:hal (>=8.3.x)
+  - drupal:hal
 
-# Information added by Drupal.org packaging script on 2019-12-11
-version: '8.x-1.0-beta4'
+# Information added by Drupal.org packaging script on 2022-09-12
+version: '8.x-1.0-beta5'
 project: 'better_normalizers'
-datestamp: 1576069087
+datestamp: 1662971079

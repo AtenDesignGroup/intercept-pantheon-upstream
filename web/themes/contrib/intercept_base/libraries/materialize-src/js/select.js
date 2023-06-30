@@ -403,6 +403,14 @@
           this._keysSelected[key] = true;
         } else {
           $(option.optionEl).removeClass('selected');
+
+          // Adds indentation for exposed filters.
+          var text = $(option.optionEl).text();
+          if (text.substring(0, 1) === '-') {
+            // var new_text = text.substring(1); // Remove hyphen.
+            // $(option.optionEl).text(new_text);
+            $(option.optionEl).addClass('indented');
+          }
         }
       }
     }
@@ -419,6 +427,14 @@
         }
         let option = $(newOption);
         option.addClass('selected');
+
+        // Adds indentation for exposed filters.
+        var text = option.text();
+        if (text.substring(0, 1) === '-') {
+          // var new_text = text.substring(1); // Remove hyphen.
+          // option.text(new_text);
+          option.addClass('indented');
+        }
       }
     }
 

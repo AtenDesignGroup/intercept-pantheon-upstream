@@ -4,6 +4,7 @@
 <header {{ component.attributes('l--section content-header', modifiers, attr) }}>
   {% if image %}
     <div class="content-header__image" style="background-image: url({{ image }});">
+      <span role="img" aria-label="{{ image_alt }}"></span>
       {% if decorative %}
         <div role="presentation"></div>
         <div role="presentation"></div>

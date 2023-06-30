@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
@@ -47,7 +49,7 @@ interface SmsGatewayInterface extends ConfigEntityInterface {
   /**
    * Get the internal path where incoming messages are received.
    *
-   * @return string
+   * @return string|null
    *   The internal path where incoming messages are received.
    */
   public function getPushIncomingPath();
@@ -55,7 +57,7 @@ interface SmsGatewayInterface extends ConfigEntityInterface {
   /**
    * Set the internal path where incoming messages are received.
    *
-   * @param string $path
+   * @param string|null $path
    *   The internal path where incoming messages are received.
    *
    * @return $this
@@ -74,7 +76,7 @@ interface SmsGatewayInterface extends ConfigEntityInterface {
   /**
    * Get the internal path where pushed delivery reports can be received.
    *
-   * @return string
+   * @return string|null
    *   The internal path where pushed delivery reports can be received.
    */
   public function getPushReportPath();
@@ -82,7 +84,7 @@ interface SmsGatewayInterface extends ConfigEntityInterface {
   /**
    * Set the internal path where pushed delivery reports can be received.
    *
-   * @param string $path
+   * @param string|null $path
    *   The internal path where pushed delivery reports can be received.
    *
    * @return $this

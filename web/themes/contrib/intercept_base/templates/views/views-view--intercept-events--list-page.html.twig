@@ -1,0 +1,60 @@
+{% import '@intercept-base-components/more-link/more-link.twig' as more_link %}
+{%
+  set classes = [
+    'view',
+    'view-' ~ id|clean_class,
+    'view-id-' ~ id,
+    'view-display-id-' ~ display_id,
+    dom_id ? 'js-view-dom-id-' ~ dom_id,
+    'l__main',
+  ]
+%}
+<section{{ attributes.addClass(classes) }}>
+  {{ title_prefix }}
+  {{ title }}
+  {{ title_suffix }}
+  <header class="l--subsection">
+  {% block exposed %}
+  <div class="filters filters--3up">
+    {% include '@intercept_core/templates/intercept-filter-toggle.html.twig' with {
+      title: "Show Event Filters"
+    } %}
+    {{ exposed }}
+  </div>
+  {% endblock %}
+  {% if header %}
+    <footer>
+    {{ header }}
+    </footer>
+  {% endif %}
+  </header>
+
+  {{ attachment_before }}
+
+  {% if rows %}
+    <main class="view__content">
+      {{ rows }}
+    </main>
+  {% elseif empty %}
+    <main class="view__empty">
+      {{ empty }}
+    </main>
+  {% endif %}
+  {{ pager }}
+
+  {{ attachment_after }}
+  {% if more %}
+  {% include more_link with {
+    text: more['#title'],
+    url: more['#url']|render
+  } %}
+  {% endif %}
+
+  {% if footer %}
+    <footer>
+      {{ footer }}
+    </footer>
+  {% endif %}
+
+  {{ feed_icons }}
+</section>

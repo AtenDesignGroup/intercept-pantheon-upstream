@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Handle a received delivery report.

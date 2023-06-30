@@ -906,6 +906,10 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       return 'custom';
     }
 
+    if (count($helper->getExcluded()) > 0) {
+      return 'custom';
+    }
+
     $parts = array_filter($rule->getParts());
     $frequency = $rule->getFrequency();
     $interval = $parts['INTERVAL'] ?? 1;

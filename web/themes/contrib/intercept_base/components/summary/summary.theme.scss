@@ -6,7 +6,12 @@
   font-weight: bold;
 }
 
+.ui-widget-content a.summary__title-link,
 .summary__title-link {
   @include link--primary;
   text-decoration: none;
+}
+
+.ui-widget-content a.button {
+  color: #fff;
 }

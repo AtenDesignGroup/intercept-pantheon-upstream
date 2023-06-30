@@ -386,3 +386,14 @@ a.teaser__title {
     }
   }
 }
+
+.teaser--event {
+  .teaser__image {
+    aspect-ratio: auto;
+
+    img {
+      object-fit: cover;
+      min-height: none;
+    }
+  }
+}

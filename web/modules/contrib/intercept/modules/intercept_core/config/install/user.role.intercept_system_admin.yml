@@ -36,6 +36,7 @@ permissions:
   - 'add location closing entities'
   - 'administer bulk room reservation'
   - 'administer location closing entities'
+  - 'administer nodes'
   - 'administer permissions'
   - 'administer taxonomy'
   - 'administer users'

@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\MapDataDefinition;
 use Drupal\Core\Field\FieldItemBase;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 
 /**
  * Plugin implementation of the 'tablefield' field type.
@@ -177,6 +177,10 @@ class TablefieldItem extends FieldItemBase {
       }
       $values['rebuild']['rows'] = isset($values['value']) ? count($values['value']) : 0;
       $values['rebuild']['cols'] = isset($values['value'][0]) ? count($values['value'][0]) : 0;
+      // If the weight column was saved, don't include it in the count.
+      if (isset($values['value'][0]['weight'])) {
+        --$values['rebuild']['cols'];
+      }
     }
 
     if (isset($values['caption'])) {
@@ -186,15 +190,15 @@ class TablefieldItem extends FieldItemBase {
     // If "Lock defaults" is enabled the table needs sorting.
     $lock = $this->getFieldDefinition()->getSetting('lock_values');
     if ($lock) {
-      // Sort columns on key.
-      foreach ($values['value'] as $key => $value) {
-        if (is_array($value)) {
-          ksort($value);
-          $values['value'][$key] = $value;
+      if (!empty($values['value']) && is_array($values['value'])) {
+        // Sort columns on key.
+        foreach ($values['value'] as $key => $value) {
+          if (is_array($value)) {
+            ksort($value);
+            $values['value'][$key] = $value;
+          }
         }
-      }
-      // Sort rows on key.
-      if (is_array($values['value'])) {
+        // Sort rows on key.
         ksort($values['value']);
       }
     }

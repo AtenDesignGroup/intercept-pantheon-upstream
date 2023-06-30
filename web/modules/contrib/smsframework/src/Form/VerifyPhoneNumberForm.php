@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Form;
 
 use Drupal\Component\Datetime\TimeInterface;
@@ -88,7 +90,7 @@ class VerifyPhoneNumberForm extends FormBase {
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => t('Verify code'),
+      '#value' => $this->t('Verify code'),
       '#button_type' => 'primary',
     ];
 

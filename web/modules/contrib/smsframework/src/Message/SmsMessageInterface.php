@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Message;
 
 use Drupal\sms\Entity\SmsGatewayInterface;

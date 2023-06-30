@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Plugin\migrate\destination;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;

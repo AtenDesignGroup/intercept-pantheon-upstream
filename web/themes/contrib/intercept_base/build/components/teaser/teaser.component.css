@@ -402,3 +402,10 @@ a.teaser__title {
 @media (max-width: 37.4375em) {
   .teaser--reservation .teaser__image {
     display: none; } }
+
+.teaser--event .teaser__image {
+  aspect-ratio: auto; }
+  .teaser--event .teaser__image img {
+    -o-object-fit: cover;
+       object-fit: cover;
+    min-height: none; }

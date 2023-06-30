@@ -264,7 +264,6 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
       $room = $form_state->getValue('field_room');
       if (in_array('intercept_registered_customer', $roles)) {
         $form['field_room']['widget'][0]['target_id']['#attributes']['readonly'][] = 'readonly';
-
       }
       // The default value on the field needs to be requested,
       // but if a staff member is using the reservation add form
@@ -283,6 +282,7 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
       }
       $form_display = $form_state->getStorage()['form_display']->getMode();
       if ($form_display === 'customer_reserve') {
+        // Hide a few items for customers.
         if ($form['revision_log_message']) {
           $form['revision_log_message']['#type'] = 'hidden';
         }

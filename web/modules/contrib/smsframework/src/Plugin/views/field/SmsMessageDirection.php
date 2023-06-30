@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Plugin\views\field;
 
 use Drupal\views\Plugin\views\field\FieldPluginBase;
@@ -9,9 +11,11 @@ use Drupal\sms\Direction;
 /**
  * Field handler to show SMS message direction.
  *
- * @ViewsField("sms_message_direction")
+ * @ViewsField(\Drupal\sms\Plugin\views\field\SmsMessageDirection::PLUGIN_ID)
  */
 class SmsMessageDirection extends FieldPluginBase {
+
+  public const PLUGIN_ID = 'sms_message_direction';
 
   /**
    * {@inheritdoc}

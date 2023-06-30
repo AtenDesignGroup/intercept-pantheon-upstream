@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Plugin\SmsGateway;
 
 use Drupal\sms\Event\SmsMessageEvent;

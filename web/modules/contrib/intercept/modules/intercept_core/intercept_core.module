@@ -114,6 +114,12 @@ function intercept_core_theme() {
       ],
       'template' => 'intercept-view-switcher',
     ],
+    'intercept_filter_toggle' => [
+      'variables' => [
+        'title' => NULL,
+      ],
+      'template' => 'intercept-filter-toggle',
+    ],
   ];
 }
 

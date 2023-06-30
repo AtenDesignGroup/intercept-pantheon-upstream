@@ -3,7 +3,6 @@ status: true
 dependencies:
   config:
     - field.field.node.location.field_address
-    - field.field.node.location.field_affiliated
     - field.field.node.location.field_branch_location
     - field.field.node.location.field_closed_for_renovations
     - field.field.node.location.field_contact_number
@@ -38,16 +37,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: address_default
-    region: content
-  field_affiliated:
-    weight: 11
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    type: boolean
     region: content
   field_branch_location:
     weight: 15

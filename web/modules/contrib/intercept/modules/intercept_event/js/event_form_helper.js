@@ -79,6 +79,31 @@ Drupal.behaviors.eventFormHelper = {
       }
     });
 
+    // Check title vs. alt text on image.
+    var timer, delay = 500;
+    $('#edit-title-0-value, input[id^="edit-image-primary-form-0-field-media-image-0-alt"]', context).once().bind('keydown blur change', function(e) {
+      var _this = $(this);
+      clearTimeout(timer);
+      timer = setTimeout(function() {
+        console.log(_this.val());
+        var titleValue = $('#edit-title-0-value').val();
+        var altValue = $('input[id^="edit-image-primary-form-0-field-media-image-0-alt"]').val();
+        if (titleValue == altValue) {
+          // Give it focus and mark it as an error.
+          $('input[id^="edit-image-primary-form-0-field-media-image-0-alt"]').focus();
+          $('.form-item--image-primary-form-0-field-media-image-0-alt label').addClass('has-error').text('Alternative text (Must NOT be the same as your event title)');
+          $('.form-item--image-primary-form-0-field-media-image-0-alt input').addClass('error');
+          // alert('Your image alt text cannot be the same as your event title.');
+
+        }
+        else {
+          // Remove has-error class.
+          $('.form-item--image-primary-form-0-field-media-image-0-alt label').removeClass('has-error').text('Alternative text');
+          $('.form-item--image-primary-form-0-field-media-image-0-alt input').removeClass('error');
+        }
+      }, delay );
+    });
+
   },
 };
 

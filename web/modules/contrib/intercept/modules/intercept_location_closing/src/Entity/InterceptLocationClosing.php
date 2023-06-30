@@ -193,7 +193,7 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
 
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Authored by'))
-      ->setDescription(new TranslatableMarkup('The user ID of author of the Location Closing entity.'))
+      ->setDescription(new TranslatableMarkup('The author of the Location Closing entity.'))
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
       ->setDisplayOptions('view', [

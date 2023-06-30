@@ -1,0 +1,89 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - addtocalendar
+    - datetime_range
+    - intercept_location_closing
+    - user
+id: intercept_location_closing.intercept_location_closing.default
+targetEntityType: intercept_location_closing
+bundle: intercept_location_closing
+mode: default
+content:
+  date:
+    type: daterange_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: short
+      separator: to
+    third_party_settings:
+      addtocalendar:
+        addtocalendar_settings:
+          style: '0'
+          display_text: 'Add to Calendar'
+          atc_title:
+            field: token
+            tokenized: Title
+          atc_description:
+            field: token
+            tokenized: Description
+          atc_location:
+            field: token
+            tokenized: Location
+          atc_organizer:
+            field: token
+            tokenized: 'Richland Library'
+          atc_organizer_email:
+            field: token
+            tokenized: no-reply@richlandlibrary.com
+          atc_date_end:
+            field: token
+            tokenized: ''
+          atc_privacy: public
+          data_secure: auto
+          data_calendars:
+            iCalendar: 0
+            'Google Calendar': 0
+            Outlook: 0
+            'Outlook Online': 0
+            'Yahoo! Calendar': 0
+        addtocalendar_show: 0
+    weight: 3
+    region: content
+  location:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  message:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  user_id:
+    type: author
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden:
+  event_conflicts: true
+  langcode: true
+  search_api_excerpt: true

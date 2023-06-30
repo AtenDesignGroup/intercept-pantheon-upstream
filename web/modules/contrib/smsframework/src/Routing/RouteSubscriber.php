@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Routing;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -53,7 +55,7 @@ class RouteSubscriber implements ContainerInjectionInterface {
     // Phone number verification.
     $path_verify = $sms_settings->get('page.verify');
     // String length must include at least a slash + another character.
-    if (mb_strlen($path_verify) >= 2) {
+    if (isset($path_verify) && mb_strlen($path_verify) >= 2) {
       $collection->add('sms.phone.verify', new Route(
         $path_verify,
         [
@@ -70,7 +72,7 @@ class RouteSubscriber implements ContainerInjectionInterface {
     foreach (SmsGateway::loadMultiple() as $id => $gateway) {
       if ($gateway->supportsReportsPush()) {
         $path = $gateway->getPushReportPath();
-        if (mb_strlen($path) >= 2 && mb_substr($path, 0, 1) == '/') {
+        if (isset($path) && mb_strlen($path) >= 2 && mb_substr($path, 0, 1) == '/') {
           $route = (new Route($path))
             ->setDefault('_controller', '\Drupal\sms\DeliveryReportController::processDeliveryReport')
             ->setDefault('_sms_gateway_push_endpoint', $id)
@@ -81,7 +83,7 @@ class RouteSubscriber implements ContainerInjectionInterface {
 
       if ($gateway->autoCreateIncomingRoute()) {
         $path = $gateway->getPushIncomingPath();
-        if (mb_strlen($path) >= 2 && mb_substr($path, 0, 1) == '/') {
+        if (isset($path) && mb_strlen($path) >= 2 && mb_substr($path, 0, 1) == '/') {
           $parameters['sms_gateway']['type'] = 'entity:sms_gateway';
           $route = (new Route($path))
             ->setDefault('sms_gateway', $id)

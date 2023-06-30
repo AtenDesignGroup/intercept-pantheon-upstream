@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Provider;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -50,7 +52,7 @@ class PhoneNumberProvider implements PhoneNumberProviderInterface {
     $event = new SmsEntityPhoneNumber($entity, $verified);
     /** @var \Drupal\sms\Event\SmsEntityPhoneNumber $event */
     $event = $this->eventDispatcher
-      ->dispatch(SmsEvents::ENTITY_PHONE_NUMBERS, $event);
+      ->dispatch($event, SmsEvents::ENTITY_PHONE_NUMBERS);
     return $event->getPhoneNumbers();
   }
 

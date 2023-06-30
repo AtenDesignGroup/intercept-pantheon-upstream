@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\EventSubscriber;
 
 use Drupal\sms\Event\SmsDeliveryReportEvent;

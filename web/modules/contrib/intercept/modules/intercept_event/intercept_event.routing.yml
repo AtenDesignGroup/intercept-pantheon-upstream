@@ -1,10 +1,20 @@
-intercept_event.events_controller_list:
+intercept_event.events_controller_views_list:
   path: '/events'
   defaults:
-    _controller: '\Drupal\intercept_event\Controller\EventsController::list'
+    _controller: '\Drupal\intercept_event\Controller\EventsController::viewsList'
     _title: 'Events'
   requirements:
     _permission: 'access content'
+
+intercept_event.events_controller_views_calendar:
+  path: '/events-calendar'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventsController::viewsCalendar'
+    _title: 'Events'
+  requirements:
+    _permission: 'access content'
+  options:
+    _ajax_callback: '\Drupal\intercept_event\Controller\EventsController::viewsCalendarAjax'
 
 intercept_event.account.events:
   path: '/account/events'
@@ -44,6 +54,13 @@ entity.node.registrations:
   requirements:
     _custom_access: '\Drupal\intercept_event\Controller\EventsController::registrationsAccess'
 
+entity.node.ics:
+  path: '/event/{node}/download.ics'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventRegistrationController::downloadIcs'
+  requirements:
+    _permission: 'access content'
+
 entity.node.attendance:
   path: '/event/{node}/attendance'
   defaults:
@@ -60,6 +77,15 @@ entity.node.attendance_sheet:
     _permission: 'access event registrations tab'
   options:
     no_cache: 'TRUE'
+
+entity.node.calendar:
+  path: '/event/{node}/calendar'
+  defaults:
+    _controller: '\Drupal\intercept_event\Controller\EventsController::calendar'
+    _title_callback: '\Drupal\intercept_event\Controller\EventsController::getTitle'
+  requirements:
+    _entity_access: 'node.view'
+    _entity_bundle: 'event'
 
 entity.node.checkin:
   path: '/event/{node}/checkin/self'

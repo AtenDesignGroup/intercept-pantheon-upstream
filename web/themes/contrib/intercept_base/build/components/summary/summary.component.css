@@ -9,6 +9,15 @@
       .summary--card .summary__content {
         padding: 1.875rem; } }
 
+.summary--calendar--event .summary__content {
+  padding: 0.375rem; }
+  @media (min-width: 48em) {
+    .summary--calendar--event .summary__content {
+      padding: 0.495rem; } }
+  @media (min-width: 62em) {
+    .summary--calendar--event .summary__content {
+      padding: 0.75rem; } }
+
 * + .summary__main {
   margin-top: 30px; }
 

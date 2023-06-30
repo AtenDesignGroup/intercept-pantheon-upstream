@@ -1,0 +1,17 @@
+@import "_partials";
+
+.fc {
+  --fc-button-text-color: #4c4d4f;
+  --fc-button-bg-color: white;
+  --fc-button-border-color: #d3d8df;
+  --fc-button-hover-bg-color: white;
+  --fc-button-hover-text-color:  #{$clr-tertiary};
+  --fc-button-hover-border-color:  #{$clr-tertiary};
+  --fc-button-active-text-color: white;
+  --fc-button-active-bg-color:  #{$clr-tertiary};
+  --fc-button-active-border-color: #{$clr-tertiary};
+  --fc-button-disabled-border-color: #d3d8df;
+}
+.fc-event {
+  color: inherit;
+}

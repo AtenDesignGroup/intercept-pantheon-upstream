@@ -51,6 +51,12 @@
       </div>
       {% endif %}
 
+      {% if highlight %}
+      <div class="teaser__highlight">
+        {% include '@intercept-base-components/highlight/highlight.twig' with { text: highlight } only %}
+      </div>
+      {% endif %}
+
       {% if supertitle %}
       <span class="teaser__supertitle">{{ supertitle }}</span>
       {% endif %}

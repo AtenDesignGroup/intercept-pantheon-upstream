@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_sendtophone\Plugin\Filter;
 
 use Drupal\Core\Form\FormStateInterface;
@@ -12,7 +14,7 @@ use Drupal\filter\Plugin\FilterBase;
  * Provides a filter to align elements.
  *
  * @Filter(
- *   id = "filter_inline_sms",
+ *   id = \Drupal\sms_sendtophone\Plugin\Filter\FilterInlineSms::PLUGIN_ID,
  *   title = @Translation("Inline SMS"),
  *   description = @Translation("Highlights text between <code>[sms][/sms]</code> tags and appends a 'send to phone' button."),
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
@@ -26,6 +28,8 @@ use Drupal\filter\Plugin\FilterBase;
  */
 class FilterInlineSms extends FilterBase {
 
+  public const PLUGIN_ID = 'filter_inline_sms';
+
   /**
    * {@inheritdoc}
    */
@@ -35,7 +39,7 @@ class FilterInlineSms extends FilterBase {
 
     $type = ($this->settings['display'] == 'icon') ? 'icon' : 'text';
     foreach ($matches as $match) {
-      $text = str_replace($match[0], $this->theme($match[1], $type), $text);
+      $text = str_replace($match[0], (string) $this->theme($match[1], $type), $text);
     }
     return new FilterProcessResult($text);
   }
@@ -95,6 +99,8 @@ class FilterInlineSms extends FilterBase {
    * Themes the message using a text link.
    */
   protected function theme($text, $type = 'icon') {
+    /** @var \Drupal\Core\Extension\ExtensionPathResolver $extensionPathResolver */
+    $extensionPathResolver = \Drupal::service('extension.path.resolver');
     switch ($type) {
       case 'text':
         $markup = '(' . $this->settings['display_text'] . ')';
@@ -103,7 +109,7 @@ class FilterInlineSms extends FilterBase {
       case 'icon':
       default:
         if (!isset($this->settings["default_icon"]) || $this->settings["default_icon"] == 1) {
-          $icon_path = drupal_get_path('module', 'sms_sendtophone') . '/sms-send.gif';
+          $icon_path = $extensionPathResolver->getPath('module', 'sms_sendtophone') . '/sms-send.gif';
         }
         else {
           $icon_path = $this->settings["custom_icon_path"];
@@ -111,7 +117,7 @@ class FilterInlineSms extends FilterBase {
 
         $title = $this->t('Send the highlighted text via SMS.');
         $icon_path = base_path() . $icon_path;
-        // @todo: Figure out a better way to render the icon.
+        // @todo Figure out a better way to render the icon.
         $markup = Markup::create("<img src='$icon_path' alt='{$this->settings["display_text"]}' title='$title'/>");
         break;
 

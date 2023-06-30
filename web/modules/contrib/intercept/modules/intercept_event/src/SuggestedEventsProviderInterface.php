@@ -22,6 +22,17 @@ interface SuggestedEventsProviderInterface {
   public function getSuggestedEvents(AccountInterface $account = NULL);
 
   /**
+   * Gets all suggested event ids for an account.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user. Defaults to the current user.
+   *
+   * @return integer[]
+   *   An array of event ids.
+   */
+  public function getSuggestedEventIds(AccountInterface $account = NULL);
+
+  /**
    * Gets all suggested event entities for an event.
    *
    * @param \Drupal\Core\Entity\EntityInterface $event

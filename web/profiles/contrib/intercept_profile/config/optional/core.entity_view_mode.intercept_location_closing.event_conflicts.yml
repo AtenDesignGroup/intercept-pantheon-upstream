@@ -1,0 +1,10 @@
+uuid: 9f7d8e93-b6f9-470e-aaa4-7c591c1656f6
+langcode: en
+status: true
+dependencies:
+  module:
+    - intercept_location_closing
+id: intercept_location_closing.event_conflicts
+label: 'Event Conflicts'
+targetEntityType: intercept_location_closing
+cache: true

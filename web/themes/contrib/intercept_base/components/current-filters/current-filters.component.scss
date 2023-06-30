@@ -25,26 +25,26 @@
   @include fs(micro);
   align-items: center;
   background-color: $gray-80;
-  border: none;
+    border: none;
   border-radius: 0;
   box-sizing: border-box;
-  color: rgba(0, 0, 0, 0.87);
-  display: inline-flex;
+    color: rgba(0, 0, 0, 0.87);
+    display: inline-flex;
   font-weight: $fw-bold;
   height: 2.125em;
   justify-content: center;
-  outline: 0;
+    outline: 0;
   padding-left: .75em;
   padding-right: .75em;
   text-decoration: none;
-  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  vertical-align: middle;
-  white-space: nowrap;
-
-  &:hover,
-  &:focus {
-    background-color: $gray-60;
-  }
+    transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    vertical-align: middle;
+    white-space: nowrap;
+  
+    &:hover,
+    &:focus {
+      background-color: $gray-60;
+    }
 
   &:not(:last-child) {
     margin-right: .75em;
@@ -57,7 +57,7 @@
   > svg {
     margin-left: .5em;
     width: 8px;
-    height: 8px;
+      height: 8px;
   }
 }
 
@@ -69,7 +69,6 @@
   padding-right: 12px;
   text-overflow: ellipsis;
 }
-
 .current-filter .option-label {
   @include fs(micro);
   display: inline-block;
@@ -82,4 +81,19 @@
 
 .current-filter--embedded .option-chip {
   margin: .25em .25em .25em 0;
+}
+
+// Views filters summary removes svg markup from the twig template
+// so we need to add it via CSS here.
+.views-filters-summary {
+  .option-chip:after {
+    content: "";
+    display: inline-block;
+    background-image: inline-svg('<svg width="8" height="8" xmlns="http://www.w3.org/2000/svg"><g fill="#4C4D4F" fill-rule="evenodd"><path d="M.053 7l7-7 .893.894-7 7z"></path><path d="M7.054 7.893l-7-7L.947.002l7 7z"></path></g></svg>');
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 8px;
+    margin-left: .25em;
+    width: 8px;
+  }
 }

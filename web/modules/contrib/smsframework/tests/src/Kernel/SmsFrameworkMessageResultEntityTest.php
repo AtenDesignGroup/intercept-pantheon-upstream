@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel;
 
 use Drupal\Core\Entity\EntityStorageException;
@@ -7,6 +9,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\sms\Entity\SmsDeliveryReport;
 use Drupal\sms\Entity\SmsMessage;
 use Drupal\sms\Entity\SmsMessageResult;
+use Drupal\sms\Message\SmsMessageResultInterface;
 use Drupal\sms\Message\SmsMessageResultStatus;
 use Drupal\Tests\sms\Functional\SmsFrameworkMessageResultTestTrait;
 
@@ -16,14 +19,14 @@ use Drupal\Tests\sms\Functional\SmsFrameworkMessageResultTestTrait;
  * @group SMS Framework
  * @coversDefaultClass \Drupal\sms\Entity\SmsMessageResult
  */
-class SmsFrameworkMessageResultEntityTest extends KernelTestBase {
+final class SmsFrameworkMessageResultEntityTest extends KernelTestBase {
 
   use SmsFrameworkMessageResultTestTrait;
 
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'sms',
     'sms_test_gateway',
@@ -35,7 +38,7 @@ class SmsFrameworkMessageResultEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('user');
@@ -47,14 +50,14 @@ class SmsFrameworkMessageResultEntityTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function createMessageResult() {
+  protected function createMessageResult(): SmsMessageResultInterface {
     return SmsMessageResult::create();
   }
 
   /**
    * Tests saving and retrieval of complete entity.
    */
-  public function testSaveAndRetrieveResult() {
+  public function testSaveAndRetrieveResult(): void {
     /** @var \Drupal\sms\Entity\SmsMessageResult $result */
     $result = $this->createMessageResult()
       ->setCreditsUsed(rand(5, 10))
@@ -83,7 +86,7 @@ class SmsFrameworkMessageResultEntityTest extends KernelTestBase {
   /**
    * Tests saving a message result without a parent SMS message.
    */
-  public function testSaveResultWithoutParent() {
+  public function testSaveResultWithoutParent(): void {
     $this->expectException(EntityStorageException::class);
     $this->expectExceptionMessage('No parent SMS message specified for SMS message result');
     /** @var \Drupal\sms\Entity\SmsMessageResult $result */
@@ -101,7 +104,7 @@ class SmsFrameworkMessageResultEntityTest extends KernelTestBase {
    *
    * @covers ::getReports
    */
-  public function testGetReportsNoReport() {
+  public function testGetReportsNoReport(): void {
     $result = SmsMessageResult::create();
     $this->assertEquals([], $result->getReports());
   }

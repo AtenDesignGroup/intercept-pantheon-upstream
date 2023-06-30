@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel;
 
+use Drupal\Core\Routing\RouteProviderInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
@@ -9,12 +12,12 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  *
  * @group SMS Framework
  */
-class SmsFrameworkIncomingRouteTest extends SmsFrameworkKernelBase {
+final class SmsFrameworkIncomingRouteTest extends SmsFrameworkKernelBase {
 
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'system', 'sms', 'entity_test', 'user', 'field', 'telephone',
     'dynamic_entity_reference', 'sms_test_gateway', 'basic_auth',
   ];
@@ -24,19 +27,19 @@ class SmsFrameworkIncomingRouteTest extends SmsFrameworkKernelBase {
    *
    * @var \Drupal\Core\Routing\RouteProviderInterface
    */
-  protected $routeProvider;
+  private RouteProviderInterface $routeProvider;
 
   /**
    * An incoming gateway instance.
    *
    * @var \Drupal\sms\Entity\SmsGatewayInterface
    */
-  protected $incomingGateway;
+  private RouteProviderInterface $incomingGateway;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->routeProvider = $this->container->get('router.route_provider');
   }
@@ -44,7 +47,7 @@ class SmsFrameworkIncomingRouteTest extends SmsFrameworkKernelBase {
   /**
    * Tests route does not exist for gateway without incoming route.
    */
-  public function testIncomingRouteUnsupported() {
+  public function testIncomingRouteUnsupported(): void {
     $gateway = $this->createMemoryGateway(['plugin' => 'capabilities_default']);
     $this->expectException(RouteNotFoundException::class);
     $route = 'sms.incoming.receive.' . $gateway->id();
@@ -54,7 +57,7 @@ class SmsFrameworkIncomingRouteTest extends SmsFrameworkKernelBase {
   /**
    * Tests route exists for gateway with incoming route annotation.
    */
-  public function testIncomingRoute() {
+  public function testIncomingRoute(): void {
     $incoming_gateway = $this->createMemoryGateway(['plugin' => 'incoming']);
     $name = 'sms.incoming.receive.' . $incoming_gateway->id();
     $route = $this->routeProvider->getRouteByName($name);

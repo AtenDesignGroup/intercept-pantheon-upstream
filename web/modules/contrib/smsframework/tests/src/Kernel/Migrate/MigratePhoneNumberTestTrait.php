@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel\Migrate;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
@@ -23,7 +25,7 @@ trait MigratePhoneNumberTestTrait {
   /**
    * Tests migration of phone number settings based on legacy configuration.
    */
-  public function testPhoneSettingsMigration() {
+  public function testPhoneSettingsMigration(): void {
     $settings = PhoneNumberSettings::loadMultiple();
     $this->assertEquals([], $settings);
 
@@ -32,7 +34,7 @@ trait MigratePhoneNumberTestTrait {
 
     // Confirm new phone number settings is created.
     $settings = PhoneNumberSettings::loadMultiple();
-    $this->assertEquals(1, count($settings));
+    $this->assertCount(1, $settings);
     /** @var \Drupal\sms\Entity\PhoneNumberSettingsInterface $setting */
     $setting = reset($settings);
     $this->assertEquals(PhoneNumberSettingsPlugin::DEFAULT_VERIFICATION_MESSAGE, $setting->getVerificationMessage());
@@ -57,14 +59,14 @@ trait MigratePhoneNumberTestTrait {
   /**
    * Tests phone number migration with custom phone number verification message.
    */
-  public function testPhoneSettingsMigrationWithCustomVerificationMessage() {
+  public function testPhoneSettingsMigrationWithCustomVerificationMessage(): void {
     $this->loadFixture($this->confirmationMessageFixturePath());
 
     // Execute the phone number settings migration and confirm.
     $this->executeMigration('phone_number_settings');
 
     $settings = PhoneNumberSettings::loadMultiple();
-    $this->assertEquals(1, count($settings));
+    $this->assertCount(1, $settings);
     /** @var \Drupal\sms\Entity\PhoneNumberSettingsInterface $setting */
     $setting = reset($settings);
     $expected_message = 'This is a custom confirmation message from [site:name]. Confirmation code: [sms-message:verification-code]';
@@ -75,7 +77,7 @@ trait MigratePhoneNumberTestTrait {
   /**
    * Tests that the users' phone numbers verification status is migrated.
    */
-  public function testPhoneNumberMigration() {
+  public function testPhoneNumberMigration(): void {
     $this->loadFixture($this->smsUserFixtureFilePath());
 
     // Set up phone number verifications.
@@ -102,7 +104,7 @@ trait MigratePhoneNumberTestTrait {
   /**
    * Tests that conditions are reverted after rollback.
    */
-  public function testRollBack() {
+  public function testRollBack(): void {
     $this->loadFixture($this->smsUserFixtureFilePath());
     $this->installEntitySchema('sms');
     $this->installEntitySchema('sms_phone_number_verification');

@@ -68,7 +68,7 @@ function intercept_location_closing_intercept_location_closing_view(array &$buil
   if ($display->getComponent('event_conflicts')) {
     $event_ids = \Drupal::service('intercept_location_closing.query')->eventsConflictingWithClosing($entity);
 
-    $view_name = 'event_location_closing_conflicts';
+    $view_name = 'intercept_event_location_closing_conflicts';
     $view = \Drupal\views\Views::getView($view_name);
     $view->setDisplay('conflicts');
 

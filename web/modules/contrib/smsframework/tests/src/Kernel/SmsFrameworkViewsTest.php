@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Kernel;
 
+use Drupal\sms\Entity\SmsGatewayInterface;
+use Drupal\sms\Provider\SmsProviderInterface;
 use Drupal\Tests\sms\Functional\SmsFrameworkTestTrait;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
 use Drupal\views\Views;
@@ -17,14 +21,14 @@ use Drupal\sms\Direction;
  *
  * @group SMS Framework
  */
-class SmsFrameworkViewsTest extends ViewsKernelTestBase {
+final class SmsFrameworkViewsTest extends ViewsKernelTestBase {
 
   use SmsFrameworkTestTrait;
 
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user', 'sms', 'sms_test_gateway', 'sms_test_views', 'telephone',
     'dynamic_entity_reference', 'field',
   ];
@@ -41,14 +45,14 @@ class SmsFrameworkViewsTest extends ViewsKernelTestBase {
    *
    * @var \Drupal\sms\Provider\SmsProviderInterface
    */
-  protected $smsProvider;
+  private SmsProviderInterface $smsProvider;
 
   /**
    * A memory gateway.
    *
    * @var \Drupal\sms\Entity\SmsGatewayInterface
    */
-  protected $gateway;
+  private SmsGatewayInterface $gateway;
 
   /**
    * {@inheritdoc}
@@ -72,11 +76,14 @@ class SmsFrameworkViewsTest extends ViewsKernelTestBase {
   /**
    * Tests view of SMS entities with join to recipient table.
    */
-  public function testSms() {
+  public function testSms(): void {
     // Create a role and user which has permission to view the entity links
     // generated for 'gateway', 'sender_entity__target_id', and
     // 'recipient_entity__target_id' columns.
-    $role = Role::create(['id' => $this->randomMachineName()]);
+    $role = Role::create([
+      'id' => $this->randomMachineName(),
+      'label' => 'Test role',
+    ]);
     $role->grantPermission('access user profiles');
     $role->grantPermission('administer smsframework');
     $role->save();

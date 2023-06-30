@@ -39,11 +39,19 @@ eventAddToCalendar:
     - intercept_core/interceptCommon
     - intercept_core/interceptClient
 
+eventCalendar:
+  js:
+    js/event_calendar.js:
+      preprocess: true
+  dependencies:
+    - core/drupal
+    - fullcalendar_block/fullcalendar
+    - intercept_room_reservation/jsonApiViewsFilterBlock
+
 eventList:
   js:
     js/dist/eventList.js:
       preprocess: true
-    js/event_filter_toggle.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings

@@ -1,11 +1,11 @@
 name: Key test
-description: 'Key test module'
-core_version_requirement: ^8.8 || ~9.0
 type: module
+description: 'Key test module'
+package: Testing
 dependencies:
   - key:key
 
-# Information added by Drupal.org packaging script on 2021-10-12
-version: '8.x-1.15'
+# Information added by Drupal.org packaging script on 2023-01-21
+version: '8.x-1.17'
 project: 'key'
-datestamp: 1634075862
+datestamp: 1674343969

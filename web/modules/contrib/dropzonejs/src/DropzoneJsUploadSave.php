@@ -36,7 +36,7 @@ class DropzoneJsUploadSave implements DropzoneJsUploadSaveInterface {
   /**
    * Mime type guesser service.
    *
-   * @var \Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface
+   * @var \Symfony\Component\Mime\MimeTypesInterface
    */
   protected $mimeTypeGuesser;
 
@@ -94,7 +94,7 @@ class DropzoneJsUploadSave implements DropzoneJsUploadSaveInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager service.
-   * @param \Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface $mimetype_guesser
+   * @param \Symfony\Component\Mime\MimeTypesInterface $mimetype_guesser
    *   The mime type guesser service.
    * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   The file system service.
@@ -111,7 +111,7 @@ class DropzoneJsUploadSave implements DropzoneJsUploadSaveInterface {
    * @param \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $stream_wrapper_manager
    *   The stream wrapper manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, MimeTypeGuesserInterface $mimetype_guesser, FileSystemInterface $file_system, LoggerChannelFactoryInterface $logger_factory, RendererInterface $renderer, ConfigFactoryInterface $config_factory, Token $token, MessengerInterface $messenger, StreamWrapperManagerInterface $stream_wrapper_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, \Symfony\Component\Mime\MimeTypeGuesserInterface $mimetype_guesser, FileSystemInterface $file_system, LoggerChannelFactoryInterface $logger_factory, RendererInterface $renderer, ConfigFactoryInterface $config_factory, Token $token, MessengerInterface $messenger, StreamWrapperManagerInterface $stream_wrapper_manager) {
     $this->entityTypeManager = $entity_type_manager;
     $this->mimeTypeGuesser = $mimetype_guesser;
     $this->fileSystem = $file_system;
@@ -138,7 +138,7 @@ class DropzoneJsUploadSave implements DropzoneJsUploadSaveInterface {
       'filename' => $file_info->getFilename(),
       'uri' => $uri,
       'filesize' => $file_info->getSize(),
-      'filemime' => $this->mimeTypeGuesser->guess($uri),
+      'filemime' => $this->mimeTypeGuesser->guessMimeType($uri),
     ]);
 
     // Replace tokens. As the tokens might contain HTML we convert it to plain
@@ -170,23 +170,28 @@ class DropzoneJsUploadSave implements DropzoneJsUploadSaveInterface {
       return FALSE;
     }
 
-    // Prepare destination.
-    if (!$this->prepareDestination($file, $destination)) {
-      $this->messenger->addError($this->t('The file could not be uploaded because the destination %destination is invalid.', ['%destination' => $destination]));
-      return FALSE;
+    if (!empty($destination)) {
+      // Prepare destination.
+      if (!$this->prepareDestination($file, $destination)) {
+        $this->messenger->addError($this->t('The file could not be uploaded because the destination %destination is invalid.', ['%destination' => $destination]));
+        return FALSE;
+      }
+
+      // Move uploaded files from PHP's upload_tmp_dir to destination.
+      $move_result = $this->fileSystem->move($uri, $file->getFileUri());
+      if (!$move_result) {
+        $this->messenger->addError($this->t('File upload error. Could not move uploaded file.'));
+
+        $this->logger->notice('Upload error. Could not move uploaded file %file to destination %destination.', [
+          '%file' => $file->getFilename(),
+          '%destination' => $file->getFileUri(),
+        ]);
+        return FALSE;
+      }
+
+      // Set the permissions on the new file.
+      $this->fileSystem->chmod($file->getFileUri());
     }
-
-    // Move uploaded files from PHP's upload_tmp_dir to destination.
-    $move_result = $this->fileSystem->move($uri, $file->getFileUri());
-    if (!$move_result) {
-      $this->messenger->addError($this->t('File upload error. Could not move uploaded file.'));
-
-      $this->logger->notice('Upload error. Could not move uploaded file %file to destination %destination.', ['%file' => $file->getFilename(), '%destination' => $file->getFileUri()]);
-      return FALSE;
-    }
-
-    // Set the permissions on the new file.
-    $this->fileSystem->chmod($file->getFileUri());
 
     return $file;
   }

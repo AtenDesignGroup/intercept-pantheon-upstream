@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;

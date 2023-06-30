@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_user;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -119,7 +121,9 @@ class AccountRegistration implements AccountRegistrationInterface {
     $user->{$phone_field_name}[] = $sender_number;
 
     // Password.
-    $password = user_password();
+    /** @var \Drupal\Core\Password\PasswordGeneratorInterface $passwordGenerator */
+    $passwordGenerator = \Drupal::service('password_generator');
+    $password = $passwordGenerator->generate();
     $user->setPassword($password);
 
     $validate = $this->removeAcceptableViolations($user->validate());
@@ -181,7 +185,9 @@ class AccountRegistration implements AccountRegistrationInterface {
           $user->setEmail($matches['email'][0]);
         }
 
-        $password = (!empty($matches['password'][0]) && $contains_password) ? $matches['password'][0] : user_password();
+        /** @var \Drupal\Core\Password\PasswordGeneratorInterface $passwordGenerator */
+        $passwordGenerator = \Drupal::service('password_generator');
+        $password = (!empty($matches['password'][0]) && $contains_password) ? $matches['password'][0] : $passwordGenerator->generate();
         $user->setPassword($password);
 
         $validate = $this->removeAcceptableViolations($user->validate(), $incoming_form);
@@ -283,7 +289,7 @@ class AccountRegistration implements AccountRegistrationInterface {
     // e.g. for 'U [username] P [password], splits to:
     // 'U ', '[username]', ' P ', '[password]'.
     $regex = '/(' . implode('|', $regex_placeholders) . '+)/';
-    $words = preg_split($regex, $form_string, NULL, PREG_SPLIT_DELIM_CAPTURE);
+    $words = preg_split($regex, $form_string, -1, PREG_SPLIT_DELIM_CAPTURE);
 
     // Track if a placeholder was used, so subsequent usages create a named back
     // reference. This allows you to use placeholders more than once as a form

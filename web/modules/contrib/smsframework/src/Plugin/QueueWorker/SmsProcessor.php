@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Plugin\QueueWorker;
 
 use Drupal\Component\Datetime\TimeInterface;
@@ -14,12 +16,14 @@ use Drupal\sms\Direction;
  * Transmits SMS messages.
  *
  * @QueueWorker(
- *   id = "sms.messages",
+ *   id = \Drupal\sms\Plugin\QueueWorker\SmsProcessor::PLUGIN_ID,
  *   title = @Translation("SMS message processor"),
  *   cron = {"time" = 60}
  * )
  */
 class SmsProcessor extends QueueWorkerBase implements ContainerFactoryPluginInterface {
+
+  public const PLUGIN_ID = 'sms.messages';
 
   /**
    * The SMS provider.

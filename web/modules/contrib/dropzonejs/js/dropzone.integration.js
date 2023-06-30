@@ -15,7 +15,7 @@
     attach: function (context) {
       Dropzone.autoDiscover = false;
 
-      $('.dropzone-enable').each(function() {
+      $('.dropzone-enable', context).each(function () {
         var selector = $(this);
         selector.addClass('dropzone');
 
@@ -48,7 +48,7 @@
 
         // If DropzoneJS instance is already registered on Element. There is no
         // need to register it again.
-        if (selector.once('register-dropzonejs').length !== selector.length) {
+        if ($(once('register-dropzonejs', selector)).length !== selector.length) {
           return;
         }
 

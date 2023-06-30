@@ -224,7 +224,7 @@ class EventAttendance extends ContentEntityBase implements EventAttendanceInterf
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Recorded by'))
-      ->setDescription(new TranslatableMarkup('The user ID of author of the Event Attendance entity.'))
+      ->setDescription(new TranslatableMarkup('The author of the Event Attendance entity.'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')

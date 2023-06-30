@@ -27,8 +27,7 @@ class AgreeToTermsWidget extends BooleanCheckboxWidget {
   public static function isApplicable(FieldDefinitionInterface $field_definition) {
     $user = \Drupal::currentUser();
     $roles = $user->getRoles();
-    return in_array('intercept_registered_customer', $roles) && $field_definition->getTargetEntityTypeId() === 'room_reservation'
-           && $field_definition->getName() === 'field_agreement';
+    return in_array('intercept_registered_customer', $roles) && $field_definition->getTargetEntityTypeId() === 'room_reservation' && $field_definition->getName() === 'field_agreement';
   }
 
   /**

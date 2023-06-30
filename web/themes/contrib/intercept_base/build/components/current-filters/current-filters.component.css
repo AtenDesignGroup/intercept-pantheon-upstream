@@ -104,3 +104,13 @@
 
 .current-filter--embedded .option-chip {
   margin: .25em .25em .25em 0; }
+
+.views-filters-summary .option-chip:after {
+  content: "";
+  display: inline-block;
+  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%228%22%20height%3D%228%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%234C4D4F%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M.053%207l7-7%20.893.894-7%207z%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M7.054%207.893l-7-7L.947.002l7%207z%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 8px;
+  margin-left: .25em;
+  width: 8px; }

@@ -25,6 +25,8 @@
  * @see template_preprocess_block()
  */
 #}
+{{ attach_library('intercept_base/dialog') }}
+{{ attach_library('intercept_base/summary') }}
 <div{{ attributes.addClass('l--subsection') }}>
   {{ title_prefix }}
   {% if label %}
@@ -34,7 +36,8 @@
   {% block content %}
     <div class="filters">
       <h3 class="filters__heading">Filter</h3>
-      {{ content }}
+      {{ content|without('header') }}
     </div>
+    {{ content.header }}
   {% endblock %}
 </div>

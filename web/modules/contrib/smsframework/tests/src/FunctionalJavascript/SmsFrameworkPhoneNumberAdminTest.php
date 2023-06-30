@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\FunctionalJavascript;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\sms\Functional\SmsFrameworkTestTrait;
 
@@ -10,7 +13,7 @@ use Drupal\Tests\sms\Functional\SmsFrameworkTestTrait;
  *
  * @group SMS Framework
  */
-class SmsFrameworkPhoneNumberAdminTest extends WebDriverTestBase {
+final class SmsFrameworkPhoneNumberAdminTest extends WebDriverTestBase {
 
   use SmsFrameworkTestTrait;
 
@@ -22,19 +25,19 @@ class SmsFrameworkPhoneNumberAdminTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['sms', 'block', 'entity_test'];
+  protected static $modules = ['sms', 'block', 'entity_test'];
 
   /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->entityTypeManager = $this->container->get('entity_type.manager');
 
@@ -52,7 +55,7 @@ class SmsFrameworkPhoneNumberAdminTest extends WebDriverTestBase {
   /**
    * Test using existing fields for new phone number settings.
    */
-  public function testPhoneNumberFieldExisting() {
+  public function testPhoneNumberFieldExisting(): void {
     $field_storage = $this->entityTypeManager->getStorage('field_storage_config');
     $field_instance = $this->entityTypeManager->getStorage('field_config');
 

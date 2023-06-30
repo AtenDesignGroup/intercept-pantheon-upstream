@@ -1,0 +1,14 @@
+.fc {
+  --fc-button-text-color: #4c4d4f;
+  --fc-button-bg-color: white;
+  --fc-button-border-color: #d3d8df;
+  --fc-button-hover-bg-color: white;
+  --fc-button-hover-text-color: #D13400;
+  --fc-button-hover-border-color: #D13400;
+  --fc-button-active-text-color: white;
+  --fc-button-active-bg-color: #D13400;
+  --fc-button-active-border-color: #D13400;
+  --fc-button-disabled-border-color: #d3d8df; }
+
+.fc-event {
+  color: inherit; }

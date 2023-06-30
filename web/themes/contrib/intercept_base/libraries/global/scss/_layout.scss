@@ -409,6 +409,7 @@
 }
 
 // Event series
+.view-intercept-rooms,
 .view-intercept-event-series {
   .views-row {
     &:not(:last-of-type) {
@@ -418,5 +419,10 @@
         @include spacing(margin-bottom, normal);
       }
     }
+
+    .action-button .button {
+      width: 100%;
+    }
+
   }
 }

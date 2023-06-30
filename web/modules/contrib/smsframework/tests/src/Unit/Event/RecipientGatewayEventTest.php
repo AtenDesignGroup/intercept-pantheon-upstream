@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\sms\Unit\Event;
 
 use Drupal\Tests\UnitTestCase;
@@ -13,7 +15,7 @@ use Drupal\sms\Entity\SmsGatewayInterface;
  * @group SMS Framework
  * @coversDefaultClass \Drupal\sms\Event\RecipientGatewayEvent
  */
-class RecipientGatewayEventTest extends UnitTestCase {
+final class RecipientGatewayEventTest extends UnitTestCase {
 
   use SmsFrameworkTestTrait;
 
@@ -22,7 +24,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
    *
    * @covers ::getGatewaysSorted
    */
-  public function testSortFunction() {
+  public function testSortFunction(): void {
     $number = $this->randomPhoneNumbers()[0];
     $event = $this->createEvent($number);
 
@@ -41,7 +43,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
     $event->addGateway($gateway, 200);
 
     $sorted = $event->getGatewaysSorted();
-    $this->assertEquals(2, count($sorted));
+    $this->assertCount(2, $sorted);
     $this->assertEquals('gateway_second', $sorted[0]->id());
     $this->assertEquals('gateway_first', $sorted[1]->id());
   }
@@ -51,7 +53,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
    *
    * @covers ::getRecipient
    */
-  public function testRecipientConstructor() {
+  public function testRecipientConstructor(): void {
     $number = $this->randomPhoneNumbers()[0];
     $event = $this->createEvent($number);
     $this->assertEquals($number, $event->getRecipient(), 'Constructor recipient is set');
@@ -63,7 +65,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
    * @covers ::getRecipient
    * @covers ::setRecipient
    */
-  public function testRecipient() {
+  public function testRecipient(): void {
     $event = $this->createEvent($this->randomPhoneNumbers()[0]);
 
     $number = $this->randomPhoneNumbers()[0];
@@ -77,7 +79,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
    * @covers ::addGateway
    * @covers ::getGateways
    */
-  public function testGetGateways() {
+  public function testGetGateways(): void {
     $event = $this->createEvent($this->randomPhoneNumbers()[0]);
 
     $gateway = $this->createMock(SmsGatewayInterface::class);
@@ -106,7 +108,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
    *
    * @covers ::removeGateway
    */
-  public function testGatewayRemove() {
+  public function testGatewayRemove(): void {
     $event = $this->createEvent($this->randomPhoneNumbers()[0]);
 
     $gateway = $this->createMock(SmsGatewayInterface::class);
@@ -130,10 +132,10 @@ class RecipientGatewayEventTest extends UnitTestCase {
       ->willReturn('gateway_2');
     $event->addGateway($gateway, 600);
 
-    $this->assertEquals(3, count($event->getGateways()), 'There are three gateways.');
+    $this->assertCount(3, $event->getGateways(), 'There are three gateways.');
 
     $event->removeGateway('gateway_1', 400);
-    $this->assertEquals(2, count($event->getGateways()), 'One gateways was removed.');
+    $this->assertCount(2, $event->getGateways(), 'One gateways was removed.');
   }
 
   /**
@@ -141,7 +143,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
    *
    * @covers ::removeGateway
    */
-  public function testGatewayRemoveAllSameId() {
+  public function testGatewayRemoveAllSameId(): void {
     $event = $this->createEvent($this->randomPhoneNumbers()[0]);
 
     $gateway = $this->createMock(SmsGatewayInterface::class);
@@ -165,10 +167,10 @@ class RecipientGatewayEventTest extends UnitTestCase {
       ->willReturn('gateway_2');
     $event->addGateway($gateway, 600);
 
-    $this->assertEquals(3, count($event->getGateways()), 'There are three gateways.');
+    $this->assertCount(3, $event->getGateways(), 'There are three gateways.');
 
     $event->removeGateway('gateway_1');
-    $this->assertEquals(1, count($event->getGateways()), 'Two gateways were removed.');
+    $this->assertCount(1, $event->getGateways(), 'Two gateways were removed.');
   }
 
   /**
@@ -180,7 +182,7 @@ class RecipientGatewayEventTest extends UnitTestCase {
    * @return \Drupal\sms\Event\RecipientGatewayEvent
    *   A new recipient gateway event instance.
    */
-  public function createEvent($recipient) {
+  public function createEvent($recipient): RecipientGatewayEvent {
     return new RecipientGatewayEvent($recipient);
   }
 

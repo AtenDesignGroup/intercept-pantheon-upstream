@@ -22,6 +22,17 @@ delay_keyup:
     - core/jquery
     - core/drupal
 
+filter_toggle:
+  css:
+    component:
+      css/filter-toggle.css: {}
+  js:
+    js/filter_toggle.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery
+
 reservation_form_helper:
   js:
     js/reservation_form_helper.js: {}

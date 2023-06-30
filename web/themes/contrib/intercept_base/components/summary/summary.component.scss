@@ -8,6 +8,12 @@
   }
 }
 
+.summary--calendar--event {
+  .summary__content {
+    @include spacing(padding, compact);
+  }
+}
+
 * + .summary__main {
   margin-top: 30px;
 }

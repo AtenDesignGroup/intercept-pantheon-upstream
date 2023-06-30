@@ -440,7 +440,7 @@ abstract class ReservationBase extends RevisionableContentEntityBase implements 
 
     $fields['author'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Reserved by'))
-      ->setDescription(new TranslatableMarkup('The user ID of author of the @label entity.', [
+      ->setDescription(new TranslatableMarkup('The author of the @label entity.', [
         '@label' => $entity_type->getLabel(),
       ]))
       ->setRevisionable(TRUE)

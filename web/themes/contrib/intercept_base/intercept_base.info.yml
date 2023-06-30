@@ -39,10 +39,16 @@ libraries-override:
         # misc/dialog/off-canvas.tabledrag.css: build/libraries/off-canvas/off-canvas.tabledrag.css
         # misc/dialog/off-canvas.dropbutton.css: build/libraries/off-canvas/off-canvas.dropbutton.css
         # misc/dialog/off-canvas.layout.css: build/libraries/off-canvas/off-canvas.layout.css
+  views_filters_summary/views_filters_summary:
+    css:
+      theme:
+        css/views_filters_summary.css: false
 
 libraries-extend:
   core/drupal.dropbutton:
     - intercept_base/dropbutton
+  fullcalendar_block/libraries.fullcalendar:
+    - intercept_base/fullCalendar
   intercept_event/eventList:
     - intercept_base/action-button
     - intercept_base/current-filters
@@ -127,3 +133,8 @@ components:
       - components
     intercept-base-icons:
       - images/icons
+
+# Information added by Drupal.org packaging script on 2023-06-30
+version: '8.x-1.0-beta15'
+project: 'intercept_base'
+datestamp: 1688161695

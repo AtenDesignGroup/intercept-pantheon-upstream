@@ -2,7 +2,7 @@ email:
   registration_active:
     enabled: 1
     subject: 'You''re registered - [event_registration:field_event:entity:title]'
-    body: "Hello [event_registration:first-name],<br />\r\nYou are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a>"
+    body: "Hello [event_registration:first-name],<br />\r\nYou are now registered for [event_registration:field_event:entity:title] at [event_registration:field_event:entity:field_date_time].<br />\r\n<br />\r\n<a href=\"[site:url]account/events\">View My Events</a><br />\r\n<br />\r\n[event_registration:addtocalendar-links]"
     status_original:
       empty: empty
       canceled: canceled

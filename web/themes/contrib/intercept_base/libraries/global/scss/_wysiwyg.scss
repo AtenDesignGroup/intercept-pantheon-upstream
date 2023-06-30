@@ -16,3 +16,15 @@
 .align-center {
   display: table;
 }
+
+figure.align-center.caption {
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+  figcaption {
+    text-align: center;
+  }
+}

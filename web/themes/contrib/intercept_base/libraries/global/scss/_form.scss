@@ -117,6 +117,11 @@
   display: block;
 }
 
+// Materialize hides the date picker so it can implement its own.
+// This allows us to revert back to the native date picker.
+input[type="date"].use-native-picker::-webkit-calendar-picker-indicator {
+  display: initial;
+}
 
 /*
 * START: Overrides for multi-select dropdown, like the one on manage/room-reservations/list (reservation status).

@@ -58,6 +58,16 @@ filter-tips:
     theme:
       build/libraries/filter-tips/filter-tips.css: { preprocess: true }
 
+fullCalendar:
+  css:
+    base:
+      build/libraries/fullCalendar/fullCalendar.base.css: {}
+    theme:
+      build/libraries/fullCalendar/fullCalendar.print.css: {
+        media: print
+      }
+      build/libraries/fullCalendar/fullCalendar.theme.css: {}
+
 search_form:
   version: 1.0.x
   css:
@@ -557,6 +567,11 @@ view-switcher:
       build/components/view-switcher/view-switcher.component.css: {}
     theme:
       build/components/view-switcher/view-switcher.theme.css: {}
+  js:
+    js/view-switcher.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
 
 # Nav / Menu
 hoverIntent:

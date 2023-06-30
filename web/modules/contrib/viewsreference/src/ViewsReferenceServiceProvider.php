@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Definition;
 /**
  * Service Provider for Views Reference.
  */
-class ViewsReferenceServiceProvider extends ServiceProviderBase {
+class ViewsreferenceServiceProvider extends ServiceProviderBase {
 
   /**
    * {@inheritdoc}

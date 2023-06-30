@@ -1,5 +1,34 @@
 # Change Log
 
+### 4.3.1, 4.3.0 - 19 May 2023
+
+- Add an accessor to get selected fields from the formatter object. (#104)
+- Add convenience function FormatterOptions::fieldsContain() (#105)
+
+### 4.2.4 - 23 Feb 2023
+
+- Minor dynamic property fix for PHP 8.2.
+
+### 4.2.3 - 16 Oct 2022
+
+- Various PHP 8.1 compatibility fixes (warnings)
+
+### 4.2.2 - 13 Feb 2022
+
+- Allow dflydev/dot-access-data ^2 and ^3 (#98)
+
+### 4.2.1 - 29 Dec 2021
+
+- PHP 8.1
+
+### 4.2.0 - 27 Dec 2021
+
+- Symfony 6 support
+
+### 4.1.3 - 11 Mar 2021
+
+- No significant code changes, but removal of a method with a typo caused a b/c check failure.
+
 ### 4.1.2 - 10 Dec 2020
 
 - PHP 8

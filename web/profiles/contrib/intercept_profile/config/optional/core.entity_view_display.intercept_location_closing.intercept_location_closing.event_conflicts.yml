@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.intercept_location_closing.event_conflicts
+  module:
+    - intercept_location_closing
+id: intercept_location_closing.intercept_location_closing.event_conflicts
+targetEntityType: intercept_location_closing
+bundle: intercept_location_closing
+mode: event_conflicts
+content:
+  event_conflicts:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  date: true
+  langcode: true
+  location: true
+  message: true
+  search_api_excerpt: true
+  user_id: true

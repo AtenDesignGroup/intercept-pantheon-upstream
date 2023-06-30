@@ -44,7 +44,7 @@ function renderApp(root) {
   const items = services.split(', ').map((item) => {
     switch (item) {
       case 'iCalendar':
-        return { apple: 'Apple Calendar' };
+        return { apple: 'Apple or Outlook (.ics)' };
       case 'Google Calendar':
         return { google: 'Google' };
       case 'Outlook':

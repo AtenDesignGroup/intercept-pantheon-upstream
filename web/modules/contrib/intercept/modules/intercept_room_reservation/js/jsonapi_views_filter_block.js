@@ -22,7 +22,9 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
       $formBlocks.each(function(index, formBlock) {
         var view = formBlock.getAttribute('data-view-id');
         var display = formBlock.getAttribute('data-view-display');
-        var $form = $(formBlock).find('form');
+        var $form = formBlock.tagName === 'FORM'
+          ? $(formBlock)
+          : $(formBlock).find('form');
 
         var uri = buildUriFromFormBlock(formBlock);
         window.dispatchEvent(getUriEvent(view, display, uri));
@@ -33,7 +35,6 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
           var values = $form.serializeArray();
           var uri = buildUri(view, display, values);
           var queryUrl = buildUrlQuery(values);
-          console.log({queryUrl})
           window.history.pushState(null, '', queryUrl);
           window.dispatchEvent(getUriEvent(view, display, uri));
 
@@ -127,8 +128,6 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
       return '';
     }
 
-
-
     const activeFilters = formValues
       .filter(function (filter) {
         return filter.value !== '';
@@ -139,14 +138,14 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
 
         // Convert multi-value checkboxes from better-exposed-filters
         if (multiValueNameRegEx.test(filter.name)) {
-          return 'views-filter[' + filter.name.split('[')[0] + '][]=' + filter.value;
+          return 'views-filter[' + filter.name.split('[')[0] + '][]=' + encodeURIComponent(filter.value);
         }
         // Convert multi-value selects to the proper format
         else if (filter.name.slice(-2) == '[]') {
-          return 'views-filter[' + filter.name.slice(0, -2) + '][]=' + filter.value;
+          return 'views-filter[' + filter.name.slice(0, -2) + '][]=' + encodeURIComponent(filter.value);
         }
         else {
-          return 'views-filter[' + filter.name + ']=' + filter.value;
+          return 'views-filter[' + filter.name + ']=' + encodeURIComponent(filter.value);
         }
       })
 
@@ -169,6 +168,7 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
    *   A fully formed uri.
    */
   function buildUri(view, display, formValues) {
+
     const base = window.location.protocol + '//' + window.location.host;
     const namespace = 'jsonapi/views';
     const href = [base, namespace, view, display].join('/');
@@ -206,7 +206,9 @@ var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
    *   A fully formed uri.
    */
   function buildUriFromFormBlock(formBlock) {
-    var $form = $(formBlock).find('form');
+    var $form = formBlock.tagName === 'FORM'
+      ? $(formBlock)
+      : $(formBlock).find('form');
     var view = formBlock.getAttribute('data-view-id');
     var display = formBlock.getAttribute('data-view-display');
 

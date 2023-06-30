@@ -5,32 +5,34 @@
  * Defines common functionality for intercept_event.
  */
 
-use Drupal\Core\Url;
-use Drupal\Core\Link;
-use Drupal\Core\Cache\Cache;
-use Drupal\user\Entity\User;
-use Drupal\Core\Render\Markup;
-use Drupal\node\NodeInterface;
-use Drupal\views\ViewExecutable;
 use Drupal\Core\Access\AccessResult;
-use Drupal\pathauto\AliasUniquifier;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\TypedData\DataDefinition;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Component\Datetime\DateTimePlus;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Routing\LocalRedirectResponse;
-use Drupal\intercept_event\CheckinPeriodField;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\intercept_event\EventRegistrationField;
-use Drupal\views\Plugin\views\query\QueryPluginBase;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\intercept_core\EntityImageThumbnailUriField;
+use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\LocalRedirectResponse;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Url;
+use Drupal\Component\Datetime\DateTimePlus;
+use Drupal\node\NodeInterface;
+use Drupal\pathauto\AliasUniquifier;
+use Drupal\user\Entity\User;
+use Drupal\views\Plugin\views\filter\FilterPluginBase;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\intercept_core\EntityImageThumbnailUriField;
+use Drupal\intercept_event\CheckinPeriodField;
+use Drupal\intercept_event\EventRegistrationField;
 
 /**
  * Implements hook_help().
@@ -87,6 +89,17 @@ function intercept_event_theme() {
       'variables' => ['content' => NULL],
       'template' => 'node-event-analysis',
     ],
+    'node_event_calendar' => [
+      'variables' => [
+        'title' => NULL,
+        'subtitle' => NULL,
+        'date' => NULL,
+        'time' => NULL,
+        'url' => NULL,
+        'body' => NULL,
+      ],
+      'template' => 'node-event-calendar',
+    ],
     'node_event_registrations' => [
       'variables' => ['content' => NULL],
       'template' => 'node-event-registrations',
@@ -108,6 +121,13 @@ function intercept_event_theme() {
     'intercept_event_list' => [
       'variables' => [],
       'template' => 'intercept-event-list',
+    ],
+    'intercept_events_page' => [
+      'variables' => [
+        'intercept_view_switcher' => NULL,
+        'events_list' => NULL,
+      ],
+      'template' => 'intercept-events-page',
     ],
   ];
 }
@@ -190,6 +210,13 @@ function intercept_event_entity_extra_field_info() {
     'visible' => FALSE,
   ];
 
+  $extra['node']['event']['display']['recommended'] = [
+    'label' => new TranslatableMarkup('Recommended'),
+    'description' => new TranslatableMarkup('Adds a label to recommended events.'),
+    'weight' => 10,
+    'visible' => FALSE,
+  ];
+
   $extra['event_attendance']['event_attendance']['form']['event_summary'] = [
     'label' => new TranslatableMarkup('Event summary'),
     'description' => new TranslatableMarkup('View event summary information.'),
@@ -219,6 +246,22 @@ function intercept_event_entity_type_build(array &$entity_types) {
     ->setLinkTemplate('recurrence-form', '/node/{node}/recurrences')
     ->setFormClass('attendance', 'Drupal\intercept_event\Form\EventAttendanceEventsForm')
     ->setLinkTemplate('attendance-form', '/node/{node}/recurrences');
+}
+
+/**
+ * Alter the Fullcalendar block settings for a specific block.
+ *
+ * @param array $block_settings
+ *   The current fullcalendar block settings.
+ * @param array $block_content
+ *   The block render array.
+ * @param \Drupal\Core\Block\BlockPluginInterface $block
+ *   The current block instance.
+ */
+function intercept_event_fullcalendar_block_settings_alter(array &$block_settings, array &$block_content, BlockPluginInterface $block) {
+  $block_settings['calendar_options']['startParam'] = 'start';
+  $block_settings['calendar_options']['endParam'] = 'end';
+  $block_settings['calendar_options']['timeZone'] = date_default_timezone_get();
 }
 
 /**
@@ -584,6 +627,28 @@ function intercept_event_form_views_exposed_form_alter(&$form, FormStateInterfac
       ],
     ];
   }
+  elseif ($view->id() == 'intercept_events' && $view->current_display == 'list_page') {
+    // Reset date inputs to class to the date_start and date_end exposed form inputs.
+    if (isset($form['date_start'])) {
+      $form['date_start']['#attributes']['class'][] = 'use-native-picker';
+    }
+    if (isset($form['date_end'])) {
+      $form['date_end']['#attributes']['class'][] = 'use-native-picker';
+    }
+
+    $form['location']['#options'] = intercept_event_sort_locations();
+  }
+  elseif ($view->id() == 'intercept_events' && $view->current_display == 'events') {
+    // Reset date inputs to class to the date_start and date_end exposed form inputs.
+    if (isset($form['start'])) {
+      $form['start']['#type'] = 'hidden';
+    }
+    if (isset($form['end'])) {
+      $form['end']['#type'] = 'hidden';
+    }
+
+    $form['location']['#options'] = intercept_event_sort_locations();
+  }
   elseif ($view->id() == 'intercept_event_attendance' && $view->current_display == 'embed') {
     // Remove autocomplete from the form's date fields.
     $form['date_start']['#attributes']['autocomplete'] = 'off';
@@ -651,6 +716,13 @@ function intercept_event_field_widget_form_alter(&$element, FormStateInterface $
  */
 function intercept_event_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
   \Drupal::service('intercept_event.recurring_manager')->iefEntityFormAlter($entity_form, $form_state);
+
+  // Add validation function to check alt text,
+  // but only alter IEF for media entities.
+  if ($entity_form['#entity_type'] !== 'media') {
+    return;
+  }
+  $entity_form['#element_validate'][] = 'intercept_event_validate_alt';
 }
 
 /**
@@ -659,6 +731,7 @@ function intercept_event_inline_entity_form_entity_form_alter(&$entity_form, &$f
 function intercept_event_form_node_form_alter(&$form, FormStateInterface $form_state) {
   $node = $form_state->getFormObject()->getEntity();
   if ($node->bundle() == 'event') {
+    $form['title']['widget'][0]['value']['#description'] = t('Titles are limited to 255 characters.');
     \Drupal::service('intercept_event.manager')->nodeFormAlter($form, $form_state);
     if (!$node->isNew()) {
       \Drupal::service('intercept_event.manager')->nodeEditFormAlter($form, $form_state);
@@ -675,6 +748,25 @@ function intercept_event_form_node_form_alter(&$form, FormStateInterface $form_s
   }
   if ($form_state->getFormObject()->getEntity()->bundle() == 'event') {
     $form['#validate'][] = 'intercept_event_node_event_form_validate';
+  }
+}
+
+/**
+ * Validation function to check alt text on primary image field.
+ */
+function intercept_event_validate_alt(&$entity_form, &$form_state) {
+  $triggering_element = $form_state->getTriggeringElement();
+  if ($triggering_element['#name'] == 'ief-add-submit-image_primary-form') {
+    $entities = $form_state->getValue('image_primary');
+    // This will contain the fields of the new entity being inserted.
+    $entity_form_fields = $entities['form'][array_key_first($entities['form'])];
+    $alt = $entity_form_fields['field_media_image'][0]['alt'];
+
+    $values = $form_state->getValues();
+    $title = !empty($values['title']) ? $values['title'][0]['value'] : FALSE;
+    if (!empty($alt) && !empty($title) && $title == $alt) {
+      $form_state->setError($triggering_element, t('The alternate text for your image should not be exactly the same as your event title.'));
+    }
   }
 }
 
@@ -698,6 +790,33 @@ function intercept_event_node_view(array &$build, EntityInterface $entity, Entit
       $build['evaluation'] = $evaluation ? $evaluation->view() : $evaluation_manager->buildJsWidget($entity);
       $build['evaluation']['#cache']['contexts'][] = 'user';
     }
+  }
+
+  /**
+   * Add 'Recommended for You' label to recommended events.
+   */
+  if ($entity->bundle() == 'event' && $display->getComponent('recommended')) {
+    /** @var \Drupal\intercept_event\SuggestedEventsProviderInterface $suggested_events_provider */
+    $suggested_events_provider = Drupal::service('intercept_event.suggested_events_provider');
+    $suggested_events = $suggested_events_provider->getSuggestedEventIds();
+    $current_user = \Drupal::currentUser();
+    $profile_storage = \Drupal::service('entity_type.manager')->getStorage('profile');
+    $customer = $profile_storage->loadByUser($current_user, 'customer');
+
+    if (in_array($entity->id(), $suggested_events)) {
+      $build['recommended'] = [
+        '#markup' => new TranslatableMarkup('Recommended For You'),
+        '#cache' => [
+          'contexts' => ['user'],
+          'tags' => ['user:' . $current_user->id()]
+        ]
+      ];
+
+      if ($customer) {
+        $build['recommended']['#cache']['tags'][] = 'profile:' . $customer->id();
+      }
+    }
+
   }
 
   if ($entity->bundle() === 'event' && $entity->field_must_register->value === '1') {
@@ -959,6 +1078,65 @@ function intercept_event_jsonapi_event_registration_filter_access(EntityTypeInte
 }
 
 /**
+ * Implements hook_views_data().
+ */
+function intercept_event_views_data(): array {
+  $data['views']['intercept_event_views_filters_summary'] = [
+    'title' => t('Intercept Events Views exposed filters summary'),
+    'help' => t('Shows result summary with filters.'),
+    'area' => [
+      'id' => 'intercept_event_views_filters_summary',
+    ],
+  ];
+
+  return $data;
+}
+
+/**
+ * Implements hook_views_filters_summary_info_alter().
+ */
+function intercept_event_views_filters_summary_info_alter(array &$info, FilterPluginBase $filter) {
+  $view = $filter->view;
+  switch ($filter->getPluginId()) {
+    case 'datetime':
+      // We want to hide the date filters from the summary on the events calendar.
+      // They are not relevant to the calendar since the calendar navigation dictates
+      // the start and end times.
+      if ($view->id() == 'intercept_events' && $view->current_display == 'events') {
+        $info['value'] = [];
+      }
+      // Set filter value using the medium DateFormatter
+      else if ($time = strtotime($filter->value['value'])) {
+        $info['value'] = [
+          [
+            'id' => 0,
+            'raw' => $filter->value['value'],
+            'value' => \Drupal::service('date.formatter')->format(
+              $time,
+              'custom',
+              'F d, Y'
+            ),
+          ],
+        ];
+      }
+      break;
+    case 'intercept_entity_reference':
+      $values = [];
+      foreach ($filter->value as $index => $id) {
+        if (isset($filter->getValueOptions()[$id])) {
+          $values[] = [
+            'id' => $id,
+            'raw' => $id,
+            'value' => $filter->getValueOptions()[$id],
+          ];
+        }
+      }
+      $info['value'] = $values;
+      break;
+  }
+}
+
+/**
  * Implements hook_views_query_alter().
  */
 function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
@@ -1019,6 +1197,17 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
     $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
     $query->addGroupBy('node.nid');
   }
+  elseif ($view->id() == 'intercept_events' && $view->current_display == 'list_page') {
+    foreach ($query->where as &$condition_group) {
+      // For each condition in condition group.
+      foreach ($condition_group['conditions'] as &$condition) {
+        if (isset($condition['field']) && strstr($condition['field'], 'field_date_time') && strstr($condition['field'], '<=')) {
+          // Run the query until the end of the end date.
+          $condition['field'] = preg_replace("/(<= DATE_FORMAT\(\('\d{4}-\d{2}-\d{2}T)\d{2}:\d{2}:\d{2}' \+ INTERVAL [-+]?\d* SECOND/", '${1}23:59:59\'', $condition['field']);
+        }
+      }
+    }
+  }
   elseif ($view->id() == 'intercept_user_events' && $view->current_display == 'page') {
     // Fixes problem with the library designation (library events) filter being
     // incorrectly placed into filter/where group 0 even though it should be in
@@ -1036,6 +1225,50 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
 
   }
 }
+
+/**
+ * Implements hook_views_pre_build().
+ */
+function intercept_event_views_pre_build(ViewExecutable $view) {
+  // Ensure a default start and end time is set.
+  if ($view->id() == 'intercept_events' && $view->current_display == 'events') {
+    $exposed_input = $view->getExposedInput();
+    if (empty($exposed_input['start'])) {
+      // Set default start to the beginning of this week. Note relative weeks start on Monday, so we subtract a day for Sunday.
+      $default_value = empty($exposed_input['end'])
+        ? strtotime('midnight this week -1 day')
+        : strtotime('midnight ' . $exposed_input['end'] . ' -1 week');
+      $exposed_input['start'] = date('Y-m-d', $default_value);
+    }
+    if (empty($exposed_input['end'])) {
+      // Set default end to the start of next week. Note relative weeks start on Monday, so we subtract a day for Sunday.
+      $default_value = empty($exposed_input['start'])
+      ? strtotime('midnight next week -1 day')
+      : strtotime('midnight ' . $exposed_input['start'] . ' +1 week');
+      $exposed_input['end'] = date('Y-m-d', $default_value);
+    }
+    $view->setExposedInput($exposed_input);
+  }
+}
+
+/**
+ * Sanitize keywords
+ *
+ * @param $input
+ *   The keywords string to sanitize.
+ * @return string
+ */
+function intercept_event_sanitize_keywords($input) {
+  // Clean up the keywords string to remove punctuation & extra white space.
+  $keywords = urldecode($input);
+  $keywords = preg_replace('/[Rr]ésumé/', 'résumé resume', $keywords);
+  $keywords = preg_replace("/[^a-zA-Z 0-9\-]/", '', $keywords);
+  $keywords = preg_replace('/\s+/', ' ', $keywords);
+  $keywords = trim($keywords);
+
+  return $keywords;
+}
+
 
 /**
  * Implements hook_views_pre_view().
@@ -1138,15 +1371,63 @@ function intercept_event_views_pre_view(ViewExecutable $view, $display_id, array
       $view->setExposedInput(array_merge($exposed_input, $exposed_date));
     }
   }
-  elseif ($view->id() == 'intercept_events' && $view->current_display == 'embed') {
-    // Show future events by default.
-    $exposed_input = $view->getExposedInput();
-    if (!isset($exposed_input['field_date_time_value'])) {
-      $date = new DateTime('now');
-      $date_future = new DateTime('+3 months');
-      $exposed_date['field_date_time_value']['min'] = $date->format('Y-m-d');
-      $exposed_date['field_date_time_value']['max'] = $date_future->format('Y-m-d');
-      $view->setExposedInput(array_merge($exposed_input, $exposed_date));
+  elseif ($view->id() == 'intercept_events') {
+    switch ($view->current_display) {
+      case 'embed':
+        // Show future events by default.
+        $exposed_input = $view->getExposedInput();
+        if (!isset($exposed_input['field_date_time_value'])) {
+          $date = new DateTime('now');
+          $date_future = new DateTime('+3 months');
+          $exposed_date['field_date_time_value']['min'] = $date->format('Y-m-d');
+          $exposed_date['field_date_time_value']['max'] = $date_future->format('Y-m-d');
+          $view->setExposedInput(array_merge($exposed_input, $exposed_date));
+        }
+        break;
+      case 'list_page':
+        // Show future events by default.
+        $exposed_input = $view->getExposedInput();
+        $altered_input = [];
+
+        // If neither date_start nor date_end are set, set date_start to start of today.
+        if (!isset($exposed_input['date_start']) && !isset($exposed_input['date_end'])) {
+          $date_start = new DateTime('midnight today');
+          $altered_input['date_start'] = $date_start->format('Y-m-d');
+        }
+        // Else if date_start is not set but date_end is set date_start to start -3 months before date_end.
+        elseif (!isset($exposed_input['date_start']) && isset($exposed_input['date_end'])) {
+          $date_start = new DateTime($exposed_input['date_end']);
+          // Subtract 3 months from date_start
+          $date_start->sub(new DateInterval('P3M'));
+          $altered_input['date_start'] = $date_start->format('Y-m-d');
+        }
+        // Else if date_start comes after date_end unset date_end
+        elseif (isset($exposed_input['date_start']) && isset($exposed_input['date_end']) && $exposed_input['date_start'] > $exposed_input['date_end']) {
+          unset($exposed_input['date_end']);
+        }
+
+        // Sanitize keyword input.
+        if (!empty($exposed_input['keyword'])) {
+          $altered_input['keyword'] = intercept_event_sanitize_keywords($exposed_input['keyword']);
+        }
+
+        $view->setExposedInput(array_merge($exposed_input, $altered_input));
+        break;
+      case 'events':
+        // // Show future events by default.
+        $exposed_input = $view->getExposedInput();
+        $altered_input = [];
+
+        // Sanitize keyword input.
+        if (!empty($exposed_input['keyword'])) {
+          $altered_input['keyword'] = intercept_event_sanitize_keywords($exposed_input['keyword']);
+        }
+
+        $view->setExposedInput(array_merge($exposed_input, $altered_input));
+        break;
+
+      default:
+        break;
     }
   }
 }
@@ -1174,4 +1455,38 @@ function intercept_event_views_pre_render(ViewExecutable $view) {
       }
     }
   }
+}
+
+/**
+ * Sorts locations alphabetically. Returns an array of options.
+ */
+function intercept_event_sort_locations() {
+  // Sort locations field alphabetically.
+  $storage = Drupal::getContainer()->get('entity_type.manager')->getStorage('node');
+  $nids = $storage->getQuery();
+
+  // Gather published location nodes and sort by title.
+  $nids = $nids->condition('type', 'location')
+    ->condition('status', 1)
+    ->sort('title')
+    ->execute();
+
+  // If there are no nodes, move on.
+  if (!$nids) {
+    return FALSE;
+  }
+
+  // Start building out the options for our select list.
+  $options = [];
+  $nodes = $storage->loadMultiple($nids);
+
+  // Push titles into select list.
+  foreach ($nodes as $node) {
+    $title = $node->getTitle();
+    $id = $node->id();
+    $options[$id] = $title;
+  }
+
+  // Add the $options from above to our select list.
+  return $options;
 }

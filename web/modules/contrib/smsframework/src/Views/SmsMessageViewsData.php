@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms\Views;
 
+use Drupal\sms\Plugin\views\field\SmsMessageDirection;
 use Drupal\views\EntityViewsData;
 
 /**
@@ -16,7 +19,7 @@ class SmsMessageViewsData extends EntityViewsData {
     $data = parent::getViewsData();
 
     // Direction field.
-    $data['sms']['direction']['field']['id'] = 'sms_message_direction';
+    $data['sms']['direction']['field']['id'] = SmsMessageDirection::PLUGIN_ID;
 
     // Recipient phone numbers.
     $data['sms__recipient_phone_number']['table']['join'] = [

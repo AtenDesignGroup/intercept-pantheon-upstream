@@ -69,7 +69,9 @@ class Auth extends UserAuth {
       if ($user = user_load_by_name($username)) {
         $authmap = \Drupal::service('externalauth.authmap');
         $authdata = $authmap->getAuthdata($user->id(), $plugin_id);
-        $authdata_data = unserialize($authdata['data']);
+        if (is_array($authdata)) {
+          $authdata_data = unserialize($authdata['data']);
+        }
         if (empty($authdata_data)) {
           return FALSE;
         }

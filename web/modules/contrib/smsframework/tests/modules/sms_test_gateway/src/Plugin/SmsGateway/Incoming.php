@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\sms_test_gateway\Plugin\SmsGateway;
 
 use Drupal\sms\Message\SmsDeliveryReport;
@@ -24,7 +26,7 @@ use Drupal\sms\SmsProcessingResponse;
  *   incoming_route = TRUE,
  * )
  */
-class Incoming extends SmsGatewayPluginBase {
+final class Incoming extends SmsGatewayPluginBase {
 
   /**
    * {@inheritdoc}
@@ -45,7 +47,7 @@ class Incoming extends SmsGatewayPluginBase {
    * @return \Drupal\sms\SmsProcessingResponse
    *   A SMS processing response task.
    */
-  public function processIncoming(Request $request, SmsGatewayInterface $sms_gateway) {
+  public function processIncoming(Request $request, SmsGatewayInterface $sms_gateway): SmsProcessingResponse {
     $json = Json::decode($request->getContent());
     $raw_messages = $json['messages'];
 

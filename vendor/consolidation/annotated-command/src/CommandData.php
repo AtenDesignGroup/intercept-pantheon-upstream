@@ -101,7 +101,7 @@ class CommandData
     {
         // We cannot tell the difference between '--foo' (an option without
         // a value) and the absence of '--foo' when the option has an optional
-        // value, and the current vallue of the option is 'null' using only
+        // value, and the current value of the option is 'null' using only
         // the public methods of InputInterface. We'll try to figure out
         // which is which by other means here.
         $options = $this->getAdjustedOptions();
@@ -203,9 +203,9 @@ class CommandData
         // into the correct spot in the parameters list.
         if (!empty($this->parameterMap)) {
             $mappedArgs = [];
-            foreach ($this->parameterMap as $name => $isOption) {
-                if ($isOption) {
-                    $mappedArgs[$name] = $this->input->getOption($name);
+            foreach ($this->parameterMap as $name => $mappedName) {
+                if ($mappedName) {
+                    $mappedArgs[$name] = $this->input->getOption($mappedName);
                 } else {
                     $mappedArgs[$name] = array_shift($args);
                 }

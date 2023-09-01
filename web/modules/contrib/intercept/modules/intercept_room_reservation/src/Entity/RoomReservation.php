@@ -55,11 +55,12 @@ use Drupal\intercept_core\Field\Computed\MethodItemList;
  *   translatable = TRUE,
  *   admin_permission = "administer room reservation entities",
  *   constraints = {
- *     "NonOverlappingRoomReservation" = {},
+ *     "Eligibility" = {},
  *     "FutureReservation" = {},
  *     "LocationOpenHours" = {},
  *     "MaxCapacity" = {},
  *     "MinCapacity" = {},
+ *     "NonOverlappingRoomReservation" = {},
  *     "ReservationLimit" = {},
  *     "ReservationMaxDuration" = {},
  *     "StaffRoomPermissions" = {},

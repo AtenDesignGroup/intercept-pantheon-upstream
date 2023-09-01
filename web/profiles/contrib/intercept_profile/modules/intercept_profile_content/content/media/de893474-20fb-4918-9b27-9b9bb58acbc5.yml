@@ -1,0 +1,40 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: de893474-20fb-4918-9b27-9b9bb58acbc5
+  bundle: image
+  default_langcode: en
+  depends:
+    5fc09442-7f9c-4a92-91fc-26771b3a9453: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'Locations_Cooper_Covered Book Drop'
+  created:
+    -
+      value: 1532720890
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_caption:
+    -
+      value: "<p>In a hurry? Drop your items in our new covered book drop—rain or shine.</p>\r\n"
+      format: basic_html
+  field_media_image:
+    -
+      entity: 5fc09442-7f9c-4a92-91fc-26771b3a9453
+      alt: 'Cooper Book Drop'
+      title: ''
+      width: 1800
+      height: 1200

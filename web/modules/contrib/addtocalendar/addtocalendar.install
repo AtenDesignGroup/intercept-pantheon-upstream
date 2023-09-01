@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Update hooks, etc.
+ */
+
+/**
+ * #3092765: Re-save addtocalendar field config with new schema.
+ */
+function addtocalendar_update_9200() {
+  $fields = \Drupal::entityTypeManager()->getStorage('field_config')->loadByProperties(['field_type' => 'add_to_calendar_field']);
+  foreach ($fields as $field) {
+    $field->save();
+  }
+}

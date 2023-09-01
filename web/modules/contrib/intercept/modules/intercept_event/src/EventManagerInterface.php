@@ -171,7 +171,7 @@ interface EventManagerInterface {
   public function fillEventOpenCapacity(NodeInterface $node);
 
   /**
-   * Determines whether the user has attended an event.
+   * Determines whether the user has scanned into an event.
    *
    * @param \Drupal\node\NodeInterface $node
    *   The event node.
@@ -179,7 +179,7 @@ interface EventManagerInterface {
    *   (optional) The user account. Defaults to the current user.
    *
    * @return bool
-   *   Whether the user has attended the event.
+   *   Whether the user has scanned in at the event.
    */
   public function userHasAttended(NodeInterface $node, AccountInterface $user = NULL);
 

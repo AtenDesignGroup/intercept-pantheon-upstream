@@ -107,6 +107,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
     $node = $this->getEntity();
 
     $ids = $this->getStorage()->getQuery()
+      ->accessCheck(FALSE)
       ->condition('field_event', $node->id(), '=')
       ->condition('status', 'active', '=')
       ->execute();
@@ -282,6 +283,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
     $node = $this->getEntity();
 
     $ids = $this->getStorage()->getQuery()
+      ->accessCheck(FALSE)
       ->condition('field_event', $node->id(), '=')
       ->condition('status', 'waitlist', '=')
       ->execute();

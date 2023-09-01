@@ -2,13 +2,13 @@ roomReservationList:
   js:
     js/interceptRoomReservationList.js:
       preprocess: true
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/drupal
 
-manageRoomReservations:
-  js:
-    js/dist/roomReservationList.js:
-      preprocess: true
+upcomingRoomReservations:
   dependencies:
     - core/drupalSettings
     - intercept_core/babelHelpers
@@ -94,15 +94,19 @@ jsonApiViewsFilterBlock:
 room_reservation_form_helper:
   js:
     js/room_reservation_form_helper.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/jquery
-    - core/jquery.once
     - core/drupal
 
 reservation_for_me:
   js:
     js/reservation_for_me.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/jquery
-    - core/jquery.once
     - core/drupal

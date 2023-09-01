@@ -1,0 +1,46 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 7077d636-7f1a-4255-87d6-9275abcee1bd
+  bundle: equipment
+  default_langcode: en
+  depends:
+    6117b5ff-354f-4fb3-8b7a-e383564d6f0b: taxonomy_term
+    1a3e6f67-3ca3-4760-8e5e-dcf5249b4054: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Medium Projector'
+  created:
+    -
+      value: 1691780983
+  promote:
+    -
+      value: false
+  sticky:
+    -
+      value: false
+  path:
+    -
+      alias: /equipment/medium-projector
+      langcode: en
+      pathauto: 1
+  field_equipment_type:
+    -
+      entity: 6117b5ff-354f-4fb3-8b7a-e383564d6f0b
+  field_text_content:
+    -
+      value: '<p>Epson/EMP-X5</p><p>Good Condition</p>'
+      format: basic_html
+  image_primary:
+    -
+      entity: 1a3e6f67-3ca3-4760-8e5e-dcf5249b4054

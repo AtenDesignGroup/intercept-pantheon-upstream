@@ -122,6 +122,7 @@ class ReservationManager implements ReservationManagerInterface {
       return FALSE;
     }
     $reservations = $this->reservations('room', function ($query) use ($event) {
+      $query->accessCheck(TRUE);
       $query->condition('field_event', $event->id(), '=');
       $query->condition('field_status', ['canceled', 'denied'], 'NOT IN');
       $query->sort('field_dates.value', 'ASC');
@@ -146,6 +147,9 @@ class ReservationManager implements ReservationManagerInterface {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function createEventReservation(NodeInterface $event, array $params) {
+    if (is_null($event) || is_null($event->field_room->entity)) {
+      return;
+    }
     $values = [
       'field_event' => $event->id(),
       'field_room' => $event->field_room->entity->id(),
@@ -235,6 +239,7 @@ class ReservationManager implements ReservationManagerInterface {
     $date = new DrupalDateTime('now', 'UTC');
     $formatted_date = $date->format('Y-m-d\TH:i:s');
     $reservations = $this->reservations('room', function ($query) use ($user, $formatted_date) {
+      $query->accessCheck(TRUE);
       $query->condition('field_user', $user->id(), '=');
       $query->condition('field_dates.end_value', $formatted_date, '>');
       $query->condition('field_status', ['requested', 'approved'], 'IN');
@@ -257,6 +262,7 @@ class ReservationManager implements ReservationManagerInterface {
     $date = new DrupalDateTime('now', 'UTC');
     $formatted_date = $date->format('Y-m-d\TH:i:s');
     $reservations = $this->reservations('room', function ($query) use ($user, $formatted_date) {
+      $query->accessCheck(TRUE);
       $query->condition('field_user', $user->id(), '=');
       $query->condition('field_dates.end_value', $formatted_date, '>');
       $query->condition('field_status', ['requested', 'approved'], 'IN');
@@ -542,6 +548,7 @@ class ReservationManager implements ReservationManagerInterface {
    */
   public function roomReservationsByNode(array $params) {
     return $this->reservationsByNode('room', function ($query) use ($params) {
+      $query->accessCheck(TRUE);
       $start_date = $this->dateUtility->getDate($params['start']);
       $end_date = $this->dateUtility->getDate($params['end']);
       if (!empty($params['rooms'])) {
@@ -558,7 +565,7 @@ class ReservationManager implements ReservationManagerInterface {
       if (!empty($params['exclude'])) {
         $query->condition('id', $params['exclude'], 'NOT IN');
       }
-      $query->condition('field_status', ['canceled', 'denied'], 'NOT IN');
+      $query->condition('field_status', ['canceled', 'denied', 'archived'], 'NOT IN');
       $range = [$start_date->format(self::FORMAT), $end_date->format(self::FORMAT)];
       $query->condition($query->orConditionGroup()
         // Date start value is in between start / end params.
@@ -590,6 +597,7 @@ class ReservationManager implements ReservationManagerInterface {
   public function reservations($type, $exec = NULL) {
     $storage = $this->entityTypeManager->getStorage($type . '_reservation');
     $query = $storage->getQuery();
+    $query->accessCheck(TRUE);
     if (is_callable($exec)) {
       $exec($query);
     }
@@ -1233,6 +1241,7 @@ class ReservationManager implements ReservationManagerInterface {
    */
   public function getReservationsByUser($type, AccountInterface $user) {
     return $this->reservations($type, function ($query) use ($user) {
+      $query->accessCheck(TRUE);
       $orConditionGroup = $query->orConditionGroup();
       $orConditionGroup->condition('field_user', $user->id());
       $orConditionGroup->condition('author', $user->id());

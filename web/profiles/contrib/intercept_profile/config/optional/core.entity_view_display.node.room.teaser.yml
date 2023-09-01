@@ -23,8 +23,6 @@ dependencies:
   module:
     - text
     - user
-_core:
-  default_config_hash: zLoq20P5dd_3fKQwXDOg-pDBN1_DETl94pRh1FZJo_c
 id: node.room.teaser
 targetEntityType: node
 bundle: room

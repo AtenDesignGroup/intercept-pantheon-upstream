@@ -87,7 +87,7 @@ class FindARoom extends React.Component {
     const { rooms, onSelect } = this.props;
     const { filters } = this.state;
     const teaserProps = {
-      footer: roomProps => (<Button variant="contained" size="small" color="primary" className="button button--small button--primary"onClick={() => onSelect(roomProps.uuid)} >Reserve</Button>),
+      footer: roomProps => (<Button variant="contained" size="small" color="primary" className="button button--small button--primary" onClick={() => onSelect(roomProps.uuid)} >Reserve</Button>),
     };
 
     return (

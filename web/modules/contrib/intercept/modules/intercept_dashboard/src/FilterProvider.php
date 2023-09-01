@@ -5,10 +5,10 @@ namespace Drupal\intercept_dashboard;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\Core\Http\RequestStack;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Filter Provider service class.
@@ -22,7 +22,7 @@ class FilterProvider implements FilterProviderInterface {
   /**
    * Current request object.
    *
-   * @var \Drupal\Core\Http\RequestStack
+   * @var \Symfony\Component\HttpFoundation\RequestStack
    */
   protected $currentRequest;
 
@@ -77,6 +77,7 @@ class FilterProvider implements FilterProviderInterface {
       $options = [];
 
       $nids = $this->entityTypeManager->getStorage('node')->getQuery()
+        ->accessCheck(FALSE)
         ->condition('status', 1)
         ->condition('type', $bundle)
         ->sort('title', 'asc')

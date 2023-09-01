@@ -14,11 +14,14 @@ interface ExporterInterface {
    *   The entity type ID.
    * @param mixed $entity_id
    *   The entity ID to export.
+   * @param string|null $destination
+   *   (optional) A file name to write the exported entity into. File entities
+   *   also export their files into the same folder.
    *
    * @return string
-   *   The rendered export as hal.
+   *   The rendered export.
    */
-  public function exportContent($entity_type_id, $entity_id);
+  public function exportContent($entity_type_id, $entity_id, $destination = NULL);
 
   /**
    * Exports a single entity and all its referenced entity.
@@ -27,17 +30,23 @@ interface ExporterInterface {
    *   The entity type ID.
    * @param mixed $entity_id
    *   The entity ID to export.
+   * @param string|null $folder
+   *   (optional) A folder to write the exported entities into, grouped by
+   *   entity type. File entities also export their files into the same folder.
    *
    * @return string[][]
    *   The serialized entities keyed by entity type and UUID.
    */
-  public function exportContentWithReferences($entity_type_id, $entity_id);
+  public function exportContentWithReferences($entity_type_id, $entity_id, $folder = NULL);
 
   /**
    * Exports all of the content defined in a module's info file.
    *
    * @param string $module_name
    *   The name of the module.
+   * @param string|null $folder
+   *   (optional) A folder to write the exported entities into, grouped by
+   *   entity type. File entities also export their files into the same folder.
    *
    * @return string[][]
    *   The serialized entities keyed by entity type and UUID.
@@ -45,16 +54,6 @@ interface ExporterInterface {
    * @throws \InvalidArgumentException
    *   If any UUID is not found.
    */
-  public function exportModuleContent($module_name);
-
-  /**
-   * Writes an array of serialized entities to a given folder.
-   *
-   * @param string[][] $serialized_by_type
-   *   An array of serialized entities keyed by entity type and UUID.
-   * @param string $folder
-   *   The folder to write files into.
-   */
-  public function writeDefaultContent(array $serialized_by_type, $folder);
+  public function exportModuleContent($module_name, $folder = NULL);
 
 }

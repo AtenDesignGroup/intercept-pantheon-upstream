@@ -87,7 +87,7 @@ content:
     type: boolean
     label: inline
     settings:
-      format: default
+      format: yes-no
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
@@ -120,6 +120,8 @@ content:
     settings:
       image_link: ''
       image_style: medium
+      image_loading:
+        attribute: lazy
     third_party_settings: {  }
     weight: 0
     region: content

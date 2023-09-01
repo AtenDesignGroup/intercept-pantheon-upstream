@@ -474,9 +474,6 @@
     "field_waitlist_max": {
       "type": "integer"
     },
-    "field_evanced_id": {
-      "type": "string"
-    },
     "registration": {
       "type": "object"
     },
@@ -539,9 +536,6 @@
       "type": "relationship",
       "model": "node--room",
       "multiple": false
-    },
-    "field_event_designation": {
-      "type": "string"
     }
   },
   "node--event_series": {

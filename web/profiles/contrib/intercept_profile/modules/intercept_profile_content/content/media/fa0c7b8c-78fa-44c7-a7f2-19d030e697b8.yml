@@ -1,0 +1,50 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: fa0c7b8c-78fa-44c7-a7f2-19d030e697b8
+  bundle: slideshow
+  default_langcode: en
+  depends:
+    de893474-20fb-4918-9b27-9b9bb58acbc5: media
+    73af9f9d-f5fe-46c5-bd7d-6ac41241423d: media
+    e66453e5-cab9-4d32-a2ce-7b796e296f86: media
+    7aa8d2d3-a990-40f8-9111-ac82cdea95c3: media
+    cdf7ed47-4cba-441c-8388-0fc63b224b04: media
+    95d53ff2-e653-41cc-a5b6-415b35bd40b6: media
+    d801ae5d-d119-4996-a866-6d52de10c839: media
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: Locations_Slideshow_Cooper
+  created:
+    -
+      value: 1532721263
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_slideshow:
+    -
+      entity: de893474-20fb-4918-9b27-9b9bb58acbc5
+    -
+      entity: 73af9f9d-f5fe-46c5-bd7d-6ac41241423d
+    -
+      entity: e66453e5-cab9-4d32-a2ce-7b796e296f86
+    -
+      entity: 7aa8d2d3-a990-40f8-9111-ac82cdea95c3
+    -
+      entity: cdf7ed47-4cba-441c-8388-0fc63b224b04
+    -
+      entity: 95d53ff2-e653-41cc-a5b6-415b35bd40b6
+    -
+      entity: d801ae5d-d119-4996-a866-6d52de10c839

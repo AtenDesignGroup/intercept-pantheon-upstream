@@ -1,3 +1,6 @@
+{% if content.field_gallery is not empty %}
+  {{ attach_library('intercept_base/slideshow') }}
+{% endif %}
 <article{{ attributes.addClass(['page']) }}>
   <div class="l--sidebar-after">
     {% set primary_image = content.image_primary|render %}
@@ -15,10 +18,12 @@
       
       {# Primary Image #}
       {% set image = file_url(content.image_primary|field_target_entity.field_media_image.entity.uri.value|image_style('maximum')) %}
+      {% set image_alt = content.image_primary|field_target_entity.field_media_image.alt %}
 
       {# Content Header #}
       {% include '@intercept-base-components/content-header/content-header.twig' with {
         image: image,
+        image_alt: image_alt,
         title: label,
         decorative: header_type,
         description: content.field_text_intro,
@@ -62,7 +67,7 @@
         {% endif %}
         {% if content.field_virtual_tour[0] is not empty %}
         <div class="l--section">
-          <h4 class="features__heading">Virtual Tour</h4>  
+          <h2 class="features__heading">Virtual Tour</h2>  
           {{ content.field_virtual_tour }}
         </div>
         {% endif %}
@@ -87,5 +92,8 @@
     slides: content.field_gallery
   } only %}
   {% endif %}
+
+  {{ drupal_view('related_events', 'block_2', node.id) }}
+  {{ drupal_view('reserve_a_room', 'block_1', node.id) }}
   </div>
 </article>

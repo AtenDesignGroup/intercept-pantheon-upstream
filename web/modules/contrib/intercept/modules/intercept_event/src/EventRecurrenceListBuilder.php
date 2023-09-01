@@ -18,6 +18,7 @@ class EventRecurrenceListBuilder extends EntityListBuilder {
    */
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery()
+      ->accessCheck(FALSE)
       ->sort('changed', 'DESC');
 
     // Only add the pager if a limit is specified.

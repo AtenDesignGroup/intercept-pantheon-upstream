@@ -525,6 +525,36 @@ th {
   font-weight: $fw-bold;
 }
 
+.field {
+  th,
+  td {
+    padding: 1rem;
+
+    &:first-child {
+      padding: 1rem;
+    }
+
+    &:last-child {
+      padding: 1rem;
+    }
+  }
+
+  thead {
+    th,
+    td {
+      padding: 1rem;
+  
+      &:first-child {
+        padding: 1rem;
+      }
+  
+      &:last-child {
+        padding: 1rem;
+      }
+    }
+  }
+}
+
 caption {
   padding: 1rem;
 }

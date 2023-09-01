@@ -53,7 +53,7 @@ class EventCheckinPeriodController extends ControllerBase {
    */
   public function invalidateCheckinPeriods() {
 
-    return JsonResponse::create([
+    return new JsonResponse([
       'invalidated' => $this->checkinPeriodInvalidator->invalidateCheckinPeriods(),
     ]);
   }

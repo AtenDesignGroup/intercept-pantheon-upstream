@@ -113,6 +113,7 @@ class RemoveOverrideConfirmForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $roomReservationId = $this->getBulkRoomReservationId();
     $query = \Drupal::entityQuery('bulk_room_reservation')
+      ->accessCheck(FALSE)
       ->condition('field_overridden', $roomReservationId);
     $result = $query->execute();
     if (count($result)) {

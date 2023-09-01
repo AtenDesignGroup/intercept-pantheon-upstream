@@ -7,6 +7,7 @@ use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Serialization\Yaml;
+use Drupal\Core\Site\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -83,7 +84,7 @@ class UpdateConfigurationForm extends FormBase {
       '#required' => TRUE,
       '#title' => $this->t('Config source'),
       '#description' => $this->t('Select config source directory'),
-      '#options' => array_flip($GLOBALS['config_directories']),
+      '#options' => array_flip(['sync' => Settings::get('config_sync_directory')]),
     ];
     $form['backup'] = [
       '#type' => 'checkbox',
@@ -200,14 +201,6 @@ class UpdateConfigurationForm extends FormBase {
     }
     $dir_handle->close();
     return TRUE;
-  }
-
-  /**
-   * Get the path of the directory.
-   */
-  protected function getConfigDirectory($directory = 'sync') {
-    $config_directories = $GLOBALS['config_directories'][$directory];
-    return $config_directories;
   }
 
 }

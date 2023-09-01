@@ -59,8 +59,8 @@ class RoomReservationProvider implements RoomReservationProviderInterface {
       return [];
     }
     $query = $this->roomReservationStorage->getQuery()
-      ->condition('field_user', $account->id())
-      ->accessCheck(FALSE);
+      ->accessCheck(TRUE)
+      ->condition('field_user', $account->id());
     return $query->execute();
   }
 

@@ -90,6 +90,7 @@ class RoomListBuilder extends NodeListBuilder {
    */
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery()
+      ->accessCheck(TRUE)
       ->sort('field_location')
       ->condition('type', 'room', '=');
 

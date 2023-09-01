@@ -127,6 +127,7 @@ class RoomReservationListBuilder extends EntityListBuilder {
     }
     // Otherwise override EntityListBuilder::getEntityIds to change sort.
     $query = $this->getStorage()->getQuery()
+      ->accessCheck(TRUE)
       ->sort('created', 'DESC');
 
     // Only add the pager if a limit is specified.

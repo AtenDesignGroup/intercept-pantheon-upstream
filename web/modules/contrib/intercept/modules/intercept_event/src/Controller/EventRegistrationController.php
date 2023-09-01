@@ -208,12 +208,13 @@ class EventRegistrationController extends ControllerBase {
       $registrations = $this->entityTypeManager()
         ->getStorage('event_registration')
         ->getQuery()
+        ->accessCheck(TRUE)
         ->condition('field_event', $params['eventId'])
         ->condition('field_user', $params['uid'])
         ->execute();
-      return JsonResponse::create($registrations, 200);
+      return new JsonResponse($registrations, 200);
     }
-    return JsonResponse::create();
+    return new JsonResponse();
   }
 
   /**
@@ -234,12 +235,13 @@ class EventRegistrationController extends ControllerBase {
       $registrations = $this->entityTypeManager()
         ->getStorage('event_registration')
         ->getQuery()
+        ->accessCheck(TRUE)
         ->condition('field_event', $params['eventId'])
         ->condition('field_guest_email', $params['email'])
         ->execute();
-      return JsonResponse::create($registrations, 200);
+      return new JsonResponse($registrations, 200);
     }
-    return JsonResponse::create();
+    return new JsonResponse();
   }
 
   /**

@@ -6,8 +6,6 @@ dependencies:
   module:
     - date_recur_modular
     - intercept_event
-_core:
-  default_config_hash: TIcXyDwf9eGORE5LTXzC0vx0bxX2z_XBoR0UOCzhxoA
 id: event_recurrence.event_recurrence.default
 targetEntityType: event_recurrence
 bundle: event_recurrence

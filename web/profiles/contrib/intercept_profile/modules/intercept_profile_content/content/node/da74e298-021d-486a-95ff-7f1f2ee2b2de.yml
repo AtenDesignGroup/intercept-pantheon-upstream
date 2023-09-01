@@ -1,0 +1,145 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: da74e298-021d-486a-95ff-7f1f2ee2b2de
+  bundle: event
+  default_langcode: en
+  depends:
+    a8fd2344-84b4-401e-ae24-1bc7db8fe20d: taxonomy_term
+    10276290-1e5d-41db-b255-be74e09b2154: taxonomy_term
+    88c9168a-2699-46c9-a54b-0bc6383578f6: taxonomy_term
+    6be4fc28-bd6d-4ca2-9ec3-012ff5371141: taxonomy_term
+    57f1f316-091d-4e11-a156-a604b26eebfb: taxonomy_term
+    d6cbd673-97cd-4e42-90a5-7f1ce318efc5: taxonomy_term
+    4ed9432f-bf6c-49bb-87aa-6be4dec9f138: taxonomy_term
+    fb3eb21d-fec2-4a57-ba1b-cc8d5f473782: taxonomy_term
+    8def58f6-9a25-4266-b690-a4a8292f28a0: taxonomy_term
+    166dd0db-d65f-4db1-8450-3f9c670281e7: node
+    cdf7ed47-4cba-441c-8388-0fc63b224b04: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Watch Freely: Drive in Movie Night'
+  created:
+    -
+      value: 1691779943
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /event/2023-08-14/watch-freely-drive-movie-night
+      langcode: en
+      pathauto: 1
+  field_add_to_cal:
+    -
+      value: true
+  field_attendees:
+    -
+      entity: a8fd2344-84b4-401e-ae24-1bc7db8fe20d
+      count: 0
+    -
+      entity: 10276290-1e5d-41db-b255-be74e09b2154
+      count: 0
+    -
+      entity: 88c9168a-2699-46c9-a54b-0bc6383578f6
+      count: 0
+    -
+      entity: 6be4fc28-bd6d-4ca2-9ec3-012ff5371141
+      count: 0
+  field_audience_primary:
+    -
+      entity: 57f1f316-091d-4e11-a156-a604b26eebfb
+  field_date_time:
+    -
+      value: '2023-08-14T18:45:00'
+      end_value: '2023-08-14T19:45:00'
+  field_event_audience:
+    -
+      entity: 57f1f316-091d-4e11-a156-a604b26eebfb
+    -
+      entity: d6cbd673-97cd-4e42-90a5-7f1ce318efc5
+  field_event_is_template:
+    -
+      value: false
+  field_event_status:
+    -
+      value: scheduled
+  field_event_tags:
+    -
+      entity: 4ed9432f-bf6c-49bb-87aa-6be4dec9f138
+    -
+      entity: fb3eb21d-fec2-4a57-ba1b-cc8d5f473782
+  field_event_type:
+    -
+      entity: 8def58f6-9a25-4266-b690-a4a8292f28a0
+  field_event_type_primary:
+    -
+      entity: 8def58f6-9a25-4266-b690-a4a8292f28a0
+  field_event_user_reg_max:
+    -
+      value: 1
+  field_featured:
+    -
+      value: false
+  field_has_waitlist:
+    -
+      value: false
+  field_keywords:
+    -
+      value: 'Watch Freely Drive in Movie Night Join us as we watch the movie Cars and create our own cars out of cardboard pCome join us for a drive in movie Enjoy making your own cardboard car then sit back and enjoy a movie with some light refreshmentsppMovie CarsnbspppRating GppTime Length 1 hr 57 minsp Movies Families Young children 0-5 years Good for Groups Learning Activities for Children'
+  field_location:
+    -
+      entity: 166dd0db-d65f-4db1-8450-3f9c670281e7
+  field_must_register:
+    -
+      value: false
+  field_presented_by_non_staff:
+    -
+      value: false
+  field_text_content:
+    -
+      value: '<p>Come join us for a drive in movie! Enjoy making your own cardboard car then sit back and enjoy a movie with some light refreshments!</p><p>Movie: Cars&nbsp;</p><p>Rating: G</p><p>Time Length: 1 hr 57 mins</p>'
+      format: basic_html
+  field_text_teaser:
+    -
+      value: 'Join us as we watch the movie Cars and create our own cars out of cardboard!'
+      format: ''
+  field_waitlist_max:
+    -
+      value: 0
+  image_primary:
+    -
+      entity: cdf7ed47-4cba-441c-8388-0fc63b224b04
+  registration:
+    -
+      total: 0
+      total_waitlist: 0
+      remaining_registration: 0
+      remaining_waitlist: 0
+      status: open
+      status_user: ''
+  event_thumbnail:
+    -
+      thumbnail: 'https://interceptttest.lndo.site/sites/default/files/styles/4to3_740x556/public/2018-07/17_07_1690_edit_1.jpg.webp'
+  checkin_period:
+    -
+      start: '2023-08-14T18:15:00+00:00'
+      end: '2023-08-14T23:45:00+00:00'
+      status: open_pending
+      checkin_url: /event/4/checkin/self

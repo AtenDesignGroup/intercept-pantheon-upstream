@@ -101,8 +101,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     $this->eventRecurrence = $this->recurringEventManager->getBaseEventRecurrence($entity);
 
     $form = parent::buildForm($form, $form_state);
-
-    $form['#theme'] = 'event_recurrence_event_form';
+    $form['#attributes']['class'][] = 'l--offset l--section';
 
     $form['title'] = [
       '#type' => 'html_tag',
@@ -205,6 +204,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       }
     }
 
+    // Hide some form elements.
     $form['revision']['#access'] = FALSE;
     $form['revision_information']['#access'] = FALSE;
     $form['revision_log']['#access'] = FALSE;
@@ -215,11 +215,12 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   }
 
   /**
-   * Process callback for EventAttendanceEvents form.
+   * Process callback for EventRecurrenceEvents form.
    *
    * @see \Drupal\Core\Entity\EntityForm::form()
    */
   public function processNodeForm($element, FormStateInterface $form_state, $form) {
+    // Hide some unnecessary action buttons and elements from the form.
     if (!empty($element['actions']['template_create'])) {
       $element['actions']['template_create']['#access'] = FALSE;
     }
@@ -460,7 +461,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       '#type' => 'submit',
       '#value' => $this->t('Generate events'),
       '#submit' => $this->submitHandlers(['::generateEvents']),
-      '#access' => empty($this->eventRecurrence->getEvents()),
+      '#access' => empty($events),
     ];
 
     // Don't allow events to be regenerated if some have passed.
@@ -485,7 +486,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
         $actions['events_regenerate'] = [
           '#type' => 'submit',
           '#value' => $this->t('Re-generate events'),
-          // '#submit' => $this->submitHandlers(['::regenerateEvents']),
+          '#submit' => [], // Do nothing on submit. This button is disabled.
           '#access' => TRUE,
           '#attributes' => [
             'disabled' => 'disabled'
@@ -516,6 +517,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
       '#submit' => $this->submitHandlers(['::deleteEvents']),
       '#access' => !empty($events),
     ];
+    // Hide the normal SAVE and DELETE buttons that would otherwise appear.
     $actions['submit']['#access'] = FALSE;
     $actions['delete']['#access'] = FALSE;
 

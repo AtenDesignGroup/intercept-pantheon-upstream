@@ -1,0 +1,153 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 166dd0db-d65f-4db1-8450-3f9c670281e7
+  bundle: location
+  default_langcode: en
+  depends:
+    fa0c7b8c-78fa-44c7-a7f2-19d030e697b8: media
+    789bcfbf-13dc-425d-a012-88eccd2b6021: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'North Branch'
+  created:
+    -
+      value: 1691699310
+  promote:
+    -
+      value: false
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /north-branch
+      langcode: en
+      pathauto: 1
+  field_address:
+    -
+      langcode: ''
+      country_code: US
+      administrative_area: SC
+      locality: Eastover
+      dependent_locality: ''
+      postal_code: '29044'
+      sorting_code: ''
+      address_line1: '608 Main Street'
+      address_line2: ''
+  field_branch_location:
+    -
+      value: true
+  field_closed_for_renovations:
+    -
+      value: false
+  field_contact_number:
+    -
+      value: 803-555-1234
+  field_features:
+    -
+      value: "Children's Area"
+    -
+      value: 'General Use Computers'
+    -
+      value: 'Meeting Spaces'
+    -
+      value: Courtyard
+  field_gallery:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: db08fac6-5446-41ce-b7bd-7d3083e3ca1b
+          bundle: stories_slideshow
+          default_langcode: en
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1691773004
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          field_stories_alignment:
+            -
+              value: center
+          field_stories_slideshow:
+            -
+              entity: fa0c7b8c-78fa-44c7-a7f2-19d030e697b8
+  field_link_directions:
+    -
+      uri: 'https://maps.google.com/maps?q=608+Main+Street+Eastover+29044+SC&t=m&z=17'
+      title: ''
+      options: {  }
+  field_location_abbreviation:
+    -
+      value: 'N'
+  field_location_hours:
+    -
+      day: 1
+      all_day: false
+      starthours: 900
+      endhours: 2000
+      comment: ''
+    -
+      day: 2
+      all_day: false
+      starthours: 900
+      endhours: 2000
+      comment: ''
+    -
+      day: 3
+      all_day: false
+      starthours: 900
+      endhours: 2000
+      comment: ''
+    -
+      day: 4
+      all_day: false
+      starthours: 900
+      endhours: 2000
+      comment: ''
+    -
+      day: 5
+      all_day: false
+      starthours: 900
+      endhours: 2000
+      comment: ''
+    -
+      day: 6
+      all_day: false
+      starthours: 900
+      endhours: 2000
+      comment: ''
+  field_map_link:
+    -
+      uri: 'https://goo.gl/maps/SQRWcVz8qgD2'
+      title: ''
+      options: {  }
+  field_text_intro:
+    -
+      value: "<p>The North branch of the library sits in a picturesque neighborhood and serves over 50,000 of the county's residents each year.</p>"
+      format: basic_html
+  image_primary:
+    -
+      entity: 789bcfbf-13dc-425d-a012-88eccd2b6021

@@ -1,0 +1,69 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 0ebe3811-0a43-4020-8451-5e6934c4cd9b
+  bundle: event_type
+  default_langcode: en
+  depends:
+    722df3ba-783b-4b70-866b-f4aa7517d68b: taxonomy_term
+    d74e7b0f-cefa-4158-b2ed-29145adf46e6: taxonomy_term
+    7c881f89-748e-4760-ad84-6a991075fdf7: taxonomy_term
+    368456b4-f2d4-46e4-9beb-e4039795fd4e: taxonomy_term
+    df791128-071f-466f-87f7-c33037ebd9c4: taxonomy_term
+    2ce65b2b-2951-47d5-b07e-4fd4ec75c0ff: taxonomy_term
+    9ce94301-0da6-414f-8156-06b71dbf839a: taxonomy_term
+    ca9d7513-7eab-4801-b9f1-497868db3eca: taxonomy_term
+    17b370e8-a396-4a32-9938-0970fcafafb3: taxonomy_term
+    81ba7bb0-327d-4057-b1fd-30bd8a7a160d: taxonomy_term
+    d47088ca-26ad-4503-b022-aa4aa60464c9: taxonomy_term
+    c3d7e2ce-24fe-480f-8c96-c09c50785069: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: STEAM
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_evaluation_criteria_neg:
+    -
+      entity: 722df3ba-783b-4b70-866b-f4aa7517d68b
+    -
+      entity: d74e7b0f-cefa-4158-b2ed-29145adf46e6
+    -
+      entity: 7c881f89-748e-4760-ad84-6a991075fdf7
+    -
+      entity: 368456b4-f2d4-46e4-9beb-e4039795fd4e
+    -
+      entity: df791128-071f-466f-87f7-c33037ebd9c4
+    -
+      entity: 2ce65b2b-2951-47d5-b07e-4fd4ec75c0ff
+  field_evaluation_criteria_pos:
+    -
+      entity: 9ce94301-0da6-414f-8156-06b71dbf839a
+    -
+      entity: ca9d7513-7eab-4801-b9f1-497868db3eca
+    -
+      entity: 17b370e8-a396-4a32-9938-0970fcafafb3
+    -
+      entity: 81ba7bb0-327d-4057-b1fd-30bd8a7a160d
+    -
+      entity: d47088ca-26ad-4503-b022-aa4aa60464c9
+    -
+      entity: c3d7e2ce-24fe-480f-8c96-c09c50785069
+  field_examples:
+    -
+      value: 'Virtual Reality Explorers, Young Geniuses, STEAM Punks'

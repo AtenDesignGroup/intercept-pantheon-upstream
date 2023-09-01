@@ -101,6 +101,14 @@ interface ReservationInterface extends ContentEntityInterface, RevisionLogInterf
   public function getLocation();
 
   /**
+   * Gets the room entity associated with the reservation.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The room entity.
+   */
+  public function getRoom();
+
+  /**
    * Gets the list of available operations based on the current status.
    *
    * @return array

@@ -50,7 +50,7 @@
     "drupal/views_infinite_scroll": "^2.0",
     "drupal/votingapi": "^3.0@beta",
     "dompdf/dompdf": "^1.2.2",
-    "lordelph/php-sip2": "^2.0"
+    "lordelph/php-sip2": "^3.0"
   },
   "extra": {
     "patches": {

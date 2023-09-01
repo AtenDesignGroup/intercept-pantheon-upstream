@@ -35,7 +35,7 @@ class NumericReferenceFilter extends NumericFilter {
       $entity_type = $settings['target_type'];
       $bundles = $settings['handler_settings']['target_bundles'];
       $storage = \Drupal::service('entity_type.manager')->getStorage($entity_type);
-      $query = $storage->getQuery();
+      $query = $storage->getQuery()->accessCheck(TRUE);
       $ids = $query->condition('type', $bundles, 'IN')
         ->sort('title')
         ->condition('status', 1)

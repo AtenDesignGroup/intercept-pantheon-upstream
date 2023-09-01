@@ -60,6 +60,20 @@
       // Add the new rows to existing view.
       .append($newRows);
 
+	var $contentWrapper = view.$view.find(contentWrapperSelector);
+    $contentWrapper.append($newRows);
+    
+    var uniqueQueue = {};
+    $contentWrapper.find('> :not(.views-row)').each(function (n, item) {
+    	var $item = $(item);
+    	var uniqueId = $item.text().trim();
+    	if (typeof uniqueQueue[uniqueId] === "undefined") {
+    		uniqueQueue[uniqueId] = $item;
+   		} else {
+    		$item.remove();
+    	}
+    });
+
     // Replace the pager link with the new link and ajaxPageState values.
     $existingPager.replaceWith($newPager);
 
@@ -91,9 +105,6 @@
             $window.off(scrollEvent);
           }
         }, 200));
-        if (isLoadNeeded()) {
-          $window.trigger(scrollEvent);
-        }
       });
     },
     detach: function (context, settings, trigger) {

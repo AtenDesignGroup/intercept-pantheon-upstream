@@ -112,7 +112,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: '{{ field_dates_1|split(''-'')[1] }}'
+            text: "{% if field_dates_1|split('-')[1]|length > 0 %}{{ field_dates_1|split('-')[1] }}{% else %}{{ field_dates_1|split('-')[0] }}{% endif %}"
             make_link: false
             path: ''
             absolute: false

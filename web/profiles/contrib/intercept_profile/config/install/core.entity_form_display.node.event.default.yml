@@ -5,14 +5,13 @@ dependencies:
     - core.entity_form_mode.event_recurrence.events
     - core.entity_form_mode.media.simple
     - field.field.node.event.field_add_to_cal
+    - field.field.node.event.field_address
     - field.field.node.event.field_attendees
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
     - field.field.node.event.field_disclaimer
-    - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
-    - field.field.node.event.field_event_designation
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
@@ -21,6 +20,7 @@ dependencies:
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
     - field.field.node.event.field_event_user_reg_max
+    - field.field.node.event.field_external_location_name
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
     - field.field.node.event.field_hosting_location
@@ -38,6 +38,7 @@ dependencies:
     - field.field.node.event.image_primary
     - node.type.event
   module:
+    - address
     - addtocalendar
     - datetime_range
     - entity_browser_entity_form
@@ -59,7 +60,7 @@ third_party_settings:
       label: Registration
       region: content
       parent_name: ''
-      weight: 18
+      weight: 19
       format_type: fieldset
       format_settings:
         classes: ''
@@ -71,6 +72,8 @@ third_party_settings:
         - field_location
         - field_hosting_location
         - field_room
+        - field_external_location_name
+        - field_address
         - reservation
       label: Logistics
       region: content
@@ -128,13 +131,19 @@ content:
     third_party_settings: {  }
   field_add_to_cal:
     type: add_to_calendar_widget_type
-    weight: 22
+    weight: 23
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_address:
+    type: address_default
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }
   field_audience_primary:
     type: options_select
-    weight: 16
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -159,13 +168,7 @@ content:
     third_party_settings: {  }
   field_event_audience:
     type: options_select
-    weight: 17
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_event_designation:
-    type: options_buttons
-    weight: 23
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -177,7 +180,7 @@ content:
     third_party_settings: {  }
   field_event_series:
     type: options_select
-    weight: 19
+    weight: 20
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -189,13 +192,13 @@ content:
     third_party_settings: {  }
   field_event_tags:
     type: options_select
-    weight: 18
+    weight: 19
     region: content
     settings: {  }
     third_party_settings: {  }
   field_event_type:
     type: options_select
-    weight: 15
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -212,9 +215,17 @@ content:
     settings:
       placeholder: ''
     third_party_settings: {  }
+  field_external_location_name:
+    type: string_textfield
+    weight: 15
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_featured:
     type: boolean_checkbox
-    weight: 21
+    weight: 22
     region: content
     settings:
       display_label: true
@@ -247,7 +258,7 @@ content:
     third_party_settings: {  }
   field_presenter:
     type: existing_autocomplete_field_widget
-    weight: 21
+    weight: 22
     region: content
     settings:
       size: 60
@@ -262,7 +273,7 @@ content:
     third_party_settings: {  }
   field_staff_presenter:
     type: string_textfield
-    weight: 20
+    weight: 21
     region: content
     settings:
       size: 60
@@ -334,7 +345,7 @@ content:
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 25
+    weight: 26
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -344,7 +355,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   reservation:
-    weight: 15
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -374,13 +385,12 @@ content:
       placeholder: ''
     third_party_settings: {  }
   url_redirects:
-    weight: 20
+    weight: 21
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   field_attendees: true
-  field_evanced_id: true
   field_event_is_template: true
   field_keywords: true
   field_presented_by_non_staff: true

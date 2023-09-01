@@ -205,14 +205,16 @@ class ReserveRoomStep2 extends React.Component {
       }
       : this.getHours();
 
-      // Hide this step if:
-      // - the reservation status has not been checked
-      // - the user has exceeded their limit
-      // - the user has been blocked/barred
+    // Hide this step if:
+    // - the reservation status has not been checked
+    // - the user has exceeded their limit
+    // - the user has been blocked/barred
+    // - the user isn't eligible
 
     if (!userStatus.initialized || userStatus.loading ||
         userStatus.exceededLimit ||
-        window.drupalSettings.intercept.user.barred) {
+        window.drupalSettings.intercept.user.barred ||
+        window.drupalSettings.intercept.room_reservations.eligibility === 'none') {
       return null;
     }
 

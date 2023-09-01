@@ -1,0 +1,66 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 1d5dbd42-b938-4c94-84ad-908d295f31a7
+  bundle: event_type
+  default_langcode: en
+  depends:
+    20b01bd7-f12d-42a3-af79-57e467b23563: taxonomy_term
+    722df3ba-783b-4b70-866b-f4aa7517d68b: taxonomy_term
+    3f35fca7-dbb6-4d5a-b58a-b38390b68a97: taxonomy_term
+    ebcd8400-2fef-47bf-afdf-ff3db4824f30: taxonomy_term
+    d7bb0d12-54a3-4b02-b99a-bb86a918dd25: taxonomy_term
+    65a79687-5659-490d-8ac0-2bdf978d8ebe: taxonomy_term
+    55b0fa3a-cec4-49be-b02f-a0faab3d9fc8: taxonomy_term
+    46ab7721-b4df-49e0-8939-749253ae1930: taxonomy_term
+    a347f34c-4743-49f2-8b82-08d5c4488bd8: taxonomy_term
+    81ba7bb0-327d-4057-b1fd-30bd8a7a160d: taxonomy_term
+    d47088ca-26ad-4503-b022-aa4aa60464c9: taxonomy_term
+    c3d7e2ce-24fe-480f-8c96-c09c50785069: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Community Awareness'
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_evaluation_criteria_neg:
+    -
+      entity: 20b01bd7-f12d-42a3-af79-57e467b23563
+    -
+      entity: 722df3ba-783b-4b70-866b-f4aa7517d68b
+    -
+      entity: 3f35fca7-dbb6-4d5a-b58a-b38390b68a97
+    -
+      entity: ebcd8400-2fef-47bf-afdf-ff3db4824f30
+    -
+      entity: d7bb0d12-54a3-4b02-b99a-bb86a918dd25
+    -
+      entity: 65a79687-5659-490d-8ac0-2bdf978d8ebe
+  field_evaluation_criteria_pos:
+    -
+      entity: 55b0fa3a-cec4-49be-b02f-a0faab3d9fc8
+    -
+      entity: 46ab7721-b4df-49e0-8939-749253ae1930
+    -
+      entity: a347f34c-4743-49f2-8b82-08d5c4488bd8
+    -
+      entity: 81ba7bb0-327d-4057-b1fd-30bd8a7a160d
+    -
+      entity: d47088ca-26ad-4503-b022-aa4aa60464c9
+    -
+      entity: c3d7e2ce-24fe-480f-8c96-c09c50785069

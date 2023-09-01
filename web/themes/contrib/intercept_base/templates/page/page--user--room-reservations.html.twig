@@ -2,7 +2,7 @@
 
 {% block main %}
 <main role="main" class="l--section l--offset">
-
+  {{ intercept_view_switcher }}
   {% include '@intercept-base-components/page-title/page-title.twig' with {
     text: page['#title'],
     modifiers: ['ruled'],

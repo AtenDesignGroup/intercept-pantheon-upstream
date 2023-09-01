@@ -46,6 +46,7 @@ trait EventListBuilderTrait {
    */
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery()
+      ->accessCheck(TRUE)
       ->sort('created', 'DESC');
 
     if (!empty($this->getEvent())) {

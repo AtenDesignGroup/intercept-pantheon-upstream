@@ -109,7 +109,7 @@ class EventRegistrationEventForm extends ContentEntityForm {
     $values = $form_state->cleanValues()->getValues();
     // Set the field_user value from the ILS mapping before constraint validation.
     if (!empty($values['results'])) {
-      $user = \Drupal::service('intercept_ils.mapping_manager')->loadByBarcode($values['results']);
+      $user = \Drupal::service('intercept_ils.association_manager')->loadByBarcode($values['results']);
       if ($user) {
         $entity->field_user->setValue($user->id());
       }

@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 425b87e3-7f3e-479d-89fd-95c8b7a4fbc7
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 'Large Projector 2.jpg'
+  uri:
+    -
+      value: 'public://2023-08/Large Projector 2.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 403670
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1691781058

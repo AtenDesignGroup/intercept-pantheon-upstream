@@ -69,8 +69,6 @@ third_party_settings:
         description: ''
         required_fields: false
       label: 'Customer Information'
-_core:
-  default_config_hash: AihpJ157T8LWNvOE8bmWW4UHUO1w1UaG0mKHr-cMwDU
 id: profile.customer.customer
 targetEntityType: profile
 bundle: customer

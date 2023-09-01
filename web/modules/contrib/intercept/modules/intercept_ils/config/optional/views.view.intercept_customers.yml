@@ -15,8 +15,6 @@ dependencies:
     - profile
     - telephone
     - user
-_core:
-  default_config_hash: 7kCByILhEFqBK9eFmxHNVbEq2z3-pl-cwWjDnzLn67I
 id: intercept_customers
 label: 'Intercept Customers'
 module: user

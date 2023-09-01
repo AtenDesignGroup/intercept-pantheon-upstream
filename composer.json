@@ -16,27 +16,26 @@
   "require": {
     "composer/installers": "^1.9",
     "cweagans/composer-patches": "^1.7",
+    "drupal/addtocalendar": "^3.3",
     "drupal/admin_toolbar": "^3.1.0",
-    "drupal/better_normalizers": "^1.0@beta",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core-composer-scaffold": "9.5.9",
-    "drupal/core": "9.5.9",
+    "drupal/core-composer-scaffold": "10.1.2",
+    "drupal/core": "10.1.2",
     "drupal/date_popup": "^1.3",
     "drupal/date_recur": "^3.0",
     "drupal/date_recur_modular": "^3.1",
-    "drupal/default_content": "^1.0",
-    "drupal/dropzonejs": "^2.3",
+    "drupal/default_content": "2.0.0-alpha2",
     "drupal/gin": "^3.0",
     "drupal/gin_toolbar": "^1.0@beta",
-    "drupal/intercept_base": "1.0-beta15",
-    "drupal/intercept": "1.0-beta15",
+    "drupal/intercept_base": "1.0-beta17",
+    "drupal/intercept": "1.0-beta17",
     "drupal/jsonapi_extras": "^3.23",
     "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",
     "drupal/quick_node_clone": "^1.16",
     "drupal/smsframework": "^2",
-    "drupal/stories": "^2.0@alpha",
+    "drupal/stories": "^3.0@alpha",
     "drupal/video_embed_field": "^2.4",
     "drupal/view_unpublished": "^1.0",
     "drupal/view_user_email": "^1.0.1",
@@ -44,8 +43,9 @@
     "drupal/views_bulk_operations": "^4.0",
     "drupal/views_filters_summary": "^2.0@alpha",
     "drupal/views_infinite_scroll": "^2.0",
-    "drush/drush": "^10",
-    "lordelph/php-sip2": "^2.1",
+    "drush/drush": "^11",
+    "lordelph/php-sip2": "^3.0",
+    "mglaman/composer-drupal-lenient": "^1.0",
     "pantheon-systems/drupal-integrations": "^9",
     "pantheon-systems/quicksilver-pushback": "^2",
     "zaporylie/composer-drupal-optimizations": "^1.0"
@@ -60,6 +60,7 @@
       "composer/installers": true,
       "cweagans/composer-patches": true,
       "drupal/core-composer-scaffold": true,
+      "mglaman/composer-drupal-lenient": true,
       "zaporylie/composer-drupal-optimizations": true
     }
   },
@@ -125,12 +126,10 @@
       }
     },
     "patches": {
-      "drupal/addtocalendar": {
-        "Fix configuration": "https://www.drupal.org/files/issues/2020-05-06/schema-add-to-calender-config-3092765-6.patch"
-      },
       "drupal/core": {
         "Filtering on multiple relationships in JSON:API": "https://www.drupal.org/files/issues/2020-09-18/3022864-8.patch",
-        "Allows custom AJAX callbacks on Views exposed filters": "https://www.drupal.org/files/issues/2023-05-04/2842525-124.patch"
+        "Allows custom AJAX callbacks on Views exposed filters": "https://www.drupal.org/files/issues/2023-05-04/2842525-124.patch",
+        "3193348 Removes faulty exception related to permissions": "patches/3193348-removes-faulty-exception-related-to-permissions.patch"
       },
       "drupal/date_popup": {
         "Fixes bug with Undefined array key 'type'": "https://www.drupal.org/files/issues/2023-05-08/date_popup-3346222-5.patch"
@@ -138,22 +137,39 @@
       "drupal/date_recur_modular": {
         "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2020-04-01/3124197.patch"
       },
+      "drupal/default_content": {
+        "Handle exceptions during import": "https://www.drupal.org/files/issues/2022-09-20/3057880-16.patch"
+      },
       "drupal/gin": {
-        "Adds template override for /bulk-room-reservation/add": "patches/bulk_room_reservations_date_recur_template.patch",
         "Fixes publication options not appearing in sidebar when using event templates": "patches/crl-1768_event_templates_sidebar.patch"
       },
       "drupal/smsframework": {
         "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"
       },
       "drupal/stories": {
-        "D10 compatibility": "https://www.drupal.org/files/issues/2023-04-18/3350002-d10-compatibility-2.patch"
+        "Removes requirements for dropzonejs due to known issues on Pantheon.": "patches/stories-remove-dropzone.patch",
+        "Moves stories_media config back to install directory": "https://www.drupal.org/files/issues/2023-09-01/3384860-stories-media-move-config-to-install-4.patch"
       },
       "drupal/view_user_email": {
         "D10 compatibility": "https://www.drupal.org/files/issues/2023-05-15/view_user_email-d10-compatibility.patch"
       },
+      "drupal/views_filters_summary": {
+        "Issue #3345403: Remove link removes all filters": "https://git.drupalcode.org/project/views_filters_summary/-/merge_requests/14.patch",
+        "D10 compatibility": "https://git.drupalcode.org/project/views_filters_summary/-/merge_requests/15.patch"
+      },
+      "drupal/views_infinite_scroll": {
+        "Stops immediate autoloading": "https://www.drupal.org/files/issues/2021-06-30/stop-immediate-autoloading-3207098-8.patch",
+        "Support views grouping": "https://www.drupal.org/files/issues/2021-10-25/views_infinite_scroll-grouping-support-2813145-22.patch"
+      },
       "lordelph/php-sip2": {
         "Adds controller support for patrons and organizations": "https://www.drupal.org/files/issues/2021-12-10/3253888-php-sip2-module-integration.patch"
       }
+    },
+    "drupal-lenient": {
+      "allowed-list": [
+        "drupal/view_user_email",
+        "drupal/views_filters_summary"
+      ]
     }
   }
 }

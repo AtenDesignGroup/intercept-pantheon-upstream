@@ -67,6 +67,7 @@ function intercept_bulk_room_reservation_get_rooms_for_location(FormStateInterfa
   if (array_key_exists(1, $match)) {
     $nid = $match[1];
     $query = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('status', 1)
       ->condition('type', 'room')
       ->condition('field_location', $nid);
@@ -347,6 +348,7 @@ function intercept_bulk_room_reservation_room_reservation_presave(EntityInterfac
   }
 
   $query = \Drupal::entityQuery('bulk_room_reservation')
+    ->accessCheck(FALSE)
     ->condition('field_related_room_reservations', $entity->id(), 'IN');
   $result = $query->execute();
   if (!empty($result)) {
@@ -378,6 +380,7 @@ function intercept_bulk_room_reservation_room_reservation_presave(EntityInterfac
  */
 function intercept_bulk_room_reservation_room_reservation_predelete(EntityInterface $entity) {
   $query = \Drupal::entityQuery('bulk_room_reservation')
+    ->accessCheck(FALSE)
     ->condition('field_related_room_reservations', $entity->id(), 'IN');
   $result = $query->execute();
   if (!empty($result)) {
@@ -466,9 +469,9 @@ function intercept_bulk_room_reservation_intercept_room_reservation_dates_alter(
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
-function intercept_bulk_room_reservation_field_widget_date_recur_modular_alpha_form_alter(array &$elements, FormStateInterface $form_state, array $context) {
+function intercept_bulk_room_reservation_field_widget_single_element_date_recur_modular_alpha_form_alter(array &$elements, FormStateInterface $form_state, array $context) {
   // If this is part of a bulk room reservation, alter the field as
   // it is done in events module.
   $route = \Drupal::request()->attributes->get('_route');

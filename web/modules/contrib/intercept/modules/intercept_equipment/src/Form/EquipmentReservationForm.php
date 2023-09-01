@@ -214,6 +214,7 @@ class EquipmentReservationForm extends ContentEntityForm {
     $nid = $equipment_node->id();
     // Find all of the reservations.
     $query = \Drupal::entityQuery('equipment_reservation')
+      ->accessCheck(FALSE)
       ->condition('status', 1)
       ->condition('field_equipment', $nid);
     $er_ids = $query->execute();

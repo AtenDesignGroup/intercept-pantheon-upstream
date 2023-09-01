@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: f279afed-33cb-425a-bf75-4ecc58e9d88e
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 'A-V Sound System 3.jpg'
+  uri:
+    -
+      value: 'public://2023-08/A-V Sound System 3.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 60350
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1691781324

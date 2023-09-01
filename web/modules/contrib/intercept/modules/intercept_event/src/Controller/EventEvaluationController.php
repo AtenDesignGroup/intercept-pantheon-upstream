@@ -71,7 +71,7 @@ class EventEvaluationController extends ControllerBase {
     }
 
     if (!$events) {
-      return JsonResponse::create([], 200);
+      return new JsonResponse([], 200);
     }
     $result = [];
 
@@ -90,7 +90,7 @@ class EventEvaluationController extends ControllerBase {
         $result[$event->uuid()] += $analysis;
       }
     }
-    return JsonResponse::create($result, 200);
+    return new JsonResponse($result, 200);
   }
 
   /**
@@ -101,11 +101,11 @@ class EventEvaluationController extends ControllerBase {
     $post = Json::decode($request->getContent());
 
     if (!is_array($post) || !($evaluation = $this->getEvaluationFromPost($post))) {
-      return JsonResponse::create(['error' => 'Invalid data'], 200);
+      return new JsonResponse(['error' => 'Invalid data'], 200);
     }
 
     if (!$evaluation->access()->isAllowed()) {
-      return JsonResponse::create(['error' => 'Access denied'], 200);
+      return new JsonResponse(['error' => 'Access denied'], 200);
     }
 
     if ($method == 'DELETE') {
@@ -120,7 +120,7 @@ class EventEvaluationController extends ControllerBase {
     $result = [
       'message' => 'saved',
     ];
-    return JsonResponse::create($result, 200);
+    return new JsonResponse($result, 200);
   }
 
   /**

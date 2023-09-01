@@ -286,6 +286,10 @@
             transform: translateY(1.875rem); }
     #drupal-off-canvas .form-actions:not(.form-actions--operations) > * {
       margin: 0.46875rem; }
+  #drupal-off-canvas #room-reservation-status {
+    margin-bottom: 1.8rem; }
+  #drupal-off-canvas #room-reservation-operations {
+    margin-bottom: 0.8rem; }
   #drupal-off-canvas .field--type-daterange {
     padding: 0; }
     #drupal-off-canvas .field--type-daterange > fieldset {

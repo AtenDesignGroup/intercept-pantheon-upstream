@@ -33,29 +33,12 @@ class LocationListBuilder extends NodeListBuilder {
    * {@inheritdoc}
    */
   public function load() {
-    $entity_query = $this->storage->getQuery();
+    $entity_query = $this->storage->getQuery()->accessCheck(TRUE);
     $entity_query->condition('type', 'location');
     $header = $this->buildHeader();
     $entity_query->tableSort($header);
     $ids = $entity_query->execute();
     return $this->storage->loadMultiple($ids);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOperations(EntityInterface $entity) {
-    $operations = parent::getOperations($entity);
-    $operations['mapping'] = [
-      'title' => $this->t('Mapping'),
-      'url' => Url::fromRoute('intercept_location.organization_mapping_form', [
-        'node' => $entity->id(),
-      ]),
-      'query' => [
-        'destination' => Url::fromRoute('<current>')->toString(),
-      ],
-    ];
-    return $operations;
   }
 
 }

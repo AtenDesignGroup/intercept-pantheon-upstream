@@ -46,7 +46,8 @@ class InterceptLocationClosingQuery
   public function locationClosings(NodeInterface $location, $start, $end) {
     $closing_query = $this->entityTypeManager
       ->getStorage('intercept_location_closing')
-      ->getQuery();
+      ->getQuery()
+      ->accessCheck(TRUE);
     $date_group = $closing_query
       ->andConditionGroup()
       ->condition('date.value', $end, '<=')
@@ -55,7 +56,6 @@ class InterceptLocationClosingQuery
       ->condition('location', $location->id())
       ->condition('status', 1)
       ->condition($date_group)
-      ->accessCheck(FALSE)
       ->execute();
 
     return $closings;
@@ -99,7 +99,8 @@ class InterceptLocationClosingQuery
     $locations = $closing->getLocationIds();
     $query = $this->entityTypeManager
       ->getStorage('node')
-      ->getQuery();
+      ->getQuery()
+      ->accessCheck(TRUE);
 
     if ($onlyPublished) {
       $query->condition('status', 1);
@@ -112,7 +113,6 @@ class InterceptLocationClosingQuery
       ->condition('field_date_time', [$start, $end], 'BETWEEN')
       ->condition('field_date_time.end_value', [$start, $end], 'BETWEEN');
     $query->condition($date_group);
-    $query->accessCheck(FALSE);
     $events = $query->execute();
     return $events;
   }

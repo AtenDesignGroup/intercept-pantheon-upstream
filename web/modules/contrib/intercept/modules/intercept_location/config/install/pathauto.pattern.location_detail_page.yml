@@ -6,16 +6,15 @@ dependencies:
 id: location_detail_page
 label: 'Location - Detail Page'
 type: 'canonical_entities:node'
-pattern: 'location/[node:title]'
+pattern: 'locations/[node:title]'
 selection_criteria:
-  0e4a59d7-7c34-49ff-90ba-4e404f53dea2:
-    id: node_type
-    bundles:
-      location: location
+  f0a294a8-e9c4-4132-8897-bfe1f1730d83:
+    id: 'entity_bundle:node'
     negate: false
     context_mapping:
       node: node
-    uuid: 0e4a59d7-7c34-49ff-90ba-4e404f53dea2
+    bundles:
+      location: location
 selection_logic: and
 weight: -5
 relationships: {  }

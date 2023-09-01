@@ -27,7 +27,7 @@ class AddToCalendarWidgetType extends WidgetBase {
       '#type' => 'checkbox',
       '#default_value' => !empty($items[0]->value),
     ];
-    $element['value']['#title'] = 'Show add to calendar widget';
+    $element['value']['#title'] = $this->t('Show add to calendar widget');
     $element['value']['#title_display'] = 'after';
     return $element;
   }

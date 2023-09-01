@@ -9,13 +9,12 @@ type: 'canonical_entities:node'
 pattern: 'equipment/[node:title]'
 selection_criteria:
   aaec1623-6fc9-4bab-a66f-3b9c30c8a4ab:
-    id: node_type
-    bundles:
-      equipment: equipment
+    id: 'entity_bundle:node'
     negate: false
     context_mapping:
       node: node
-    uuid: aaec1623-6fc9-4bab-a66f-3b9c30c8a4ab
+    bundles:
+      equipment: equipment
 selection_logic: and
 weight: -5
 relationships: {  }

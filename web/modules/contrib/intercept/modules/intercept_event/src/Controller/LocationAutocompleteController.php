@@ -53,7 +53,7 @@ class LocationAutocompleteController extends ControllerBase {
 
     $input = Xss::filter($input);
 
-    $query = $this->nodeStorage->getQuery();
+    $query = $this->nodeStorage->getQuery()->accessCheck(TRUE);
     $group = $query
       ->orConditionGroup()
       ->condition('field_location_abbreviation', $input, 'CONTAINS')

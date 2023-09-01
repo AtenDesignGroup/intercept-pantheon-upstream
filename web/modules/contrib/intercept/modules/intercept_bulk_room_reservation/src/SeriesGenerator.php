@@ -64,6 +64,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
 
     // Get a list of room node ids.
     $query = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('status', 1)
       ->condition('type', 'room')
       ->condition('field_location', $locationNid);

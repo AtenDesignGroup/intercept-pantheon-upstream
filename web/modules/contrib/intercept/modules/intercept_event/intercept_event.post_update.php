@@ -16,6 +16,7 @@ function intercept_event_post_update_8001_add_status(&$sandbox) {
   // Initialize some variables during the first pass through.
   if (!isset($sandbox['total'])) {
     $query = $storage->getQuery()
+      ->accessCheck(TRUE)
       ->condition('type', 'event')
       ->condition('status', 1);
     $orGroup = $query->orConditionGroup()

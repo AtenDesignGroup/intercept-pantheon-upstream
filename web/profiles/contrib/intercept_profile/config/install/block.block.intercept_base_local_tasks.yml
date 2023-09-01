@@ -1,0 +1,29 @@
+uuid: d119a7f8-1fd9-4af5-a7b9-a9fee77e2b76
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+  theme:
+    - intercept_base
+id: intercept_base_local_tasks
+theme: intercept_base
+region: content
+weight: 0
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: Tabs
+  label_display: '0'
+  provider: core
+  primary: true
+  secondary: true
+visibility:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: true
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      event_series: event_series

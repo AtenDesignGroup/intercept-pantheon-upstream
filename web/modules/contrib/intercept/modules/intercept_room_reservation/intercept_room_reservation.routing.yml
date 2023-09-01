@@ -1,7 +1,7 @@
 entity.user.room_reservations:
   path: '/user/{user}/room-reservations'
   defaults:
-    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::manage'
+    _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::upcoming'
     _title: 'Room Reservations'
   requirements:
     node: \d+
@@ -116,6 +116,15 @@ intercept_room_reservation.account.room_reservations:
     _controller: '\Drupal\intercept_core\Controller\UserAccount::userRedirect'
     _title: 'Room Reservations'
     route_name: 'entity.user.room_reservations'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+intercept_room_reservation.account.room_reservations_past:
+  path: '/account/room-reservations-past'
+  defaults:
+    _controller: '\Drupal\intercept_core\Controller\UserAccount::userRedirect'
+    _title: 'Room Reservations'
+    route_name: 'view.intercept_room_reservations.page_1'
   requirements:
     _user_is_logged_in: 'TRUE'
 

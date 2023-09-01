@@ -1,0 +1,49 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 4c62a4e5-674f-4f9e-b556-7e54c67bcb7e
+  bundle: equipment
+  default_langcode: en
+  depends:
+    bb9a7b61-ab58-4661-8dd0-029bb108a756: taxonomy_term
+    67316e5a-0bf5-4011-96af-a0f80de03810: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'A/V Sound System'
+  created:
+    -
+      value: 1691781138
+  promote:
+    -
+      value: false
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /equipment/av-sound-system
+      langcode: en
+      pathauto: 1
+  field_equipment_type:
+    -
+      entity: bb9a7b61-ab58-4661-8dd0-029bb108a756
+  field_text_content:
+    -
+      value: '<p>Includes mixer, 2 speakers, speaker stands, mics, cables, and mic stands.</p><p>Please specify how may mics (wireless[up to 3] or wired[up to 2]) and mic stands (short[3] or tall[2]) you need for your event.</p><p>If you need Technology to come out and set the system up for you at a branch or off site location, please allow extra time in your reservation.</p>'
+      format: basic_html
+  image_primary:
+    -
+      entity: 67316e5a-0bf5-4011-96af-a0f80de03810

@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Prevent external js from being requested.
+ *
+ * Implements hook_library_info_alter().
+ */
+function addtocalendar_test_library_info_alter(&$libraries, $extension) {
+  if ($extension === 'addtocalendar') {
+    $libraries['base']['js'] = [];
+  }
+}

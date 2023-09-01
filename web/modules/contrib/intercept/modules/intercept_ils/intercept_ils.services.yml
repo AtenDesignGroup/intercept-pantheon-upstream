@@ -5,8 +5,8 @@ services:
     decorates: user.auth
     decoration_inner_name: intercept_ils.auth.user_auth
     arguments: ['@entity_type.manager', '@password', '@intercept_ils.auth.user_auth', '@externalauth.externalauth', '@externalauth.authmap', '@config.factory', '@plugin.manager.intercept_ils']
-  intercept_ils.mapping_manager:
-    class: Drupal\intercept_ils\MappingManager
+  intercept_ils.association_manager:
+    class: Drupal\intercept_ils\AssociationManager
     arguments: ['@entity_type.manager', '@config.factory', '@plugin.manager.intercept_ils']
   intercept_ils.settings:
     class: \Drupal\intercept_ils\Form\SettingsForm

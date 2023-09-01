@@ -1,0 +1,12 @@
+diff --git a/modules/stories_media/stories_media.info.yml b/modules/stories_media/stories_media.info.yml
+index e969130..12fcab1 100644
+--- a/modules/stories_media/stories_media.info.yml
++++ b/modules/stories_media/stories_media.info.yml
+@@ -4,7 +4,6 @@ package: Authoring
+ type: module
+ core_version_requirement: ^8 || ^9
+ dependencies:
+-  - dropzonejs:dropzonejs_eb_widget (>=8.x-2.x)
+   - entity_browser:entity_browser (>=8.x-2.x)
+   - entity_browser:entity_browser_entity_form (>=8.x-2.x)
+   - drupal:field

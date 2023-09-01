@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 8a7c73b0-a18e-4b83-947f-13c1f121f915
+  bundle: disclaimer
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Online Zoom Programs / Registration'
+  description:
+    -
+      value: '<p>Registration Information:</p><ul><li>This event is held via Zoom.</li><li>Click the registration button below to register.</li><li>The Zoom event link will be e-mailed to registrants the day of the event. If you don''t have a Richland Library card, <a href="/librarycard">click here to get a card</a> or register as a guest. A valid e-mail address is required to attend.</li></ul>'
+      format: basic_html
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0

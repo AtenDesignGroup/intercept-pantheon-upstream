@@ -1,0 +1,36 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 80ff87b0-b8e2-4b2d-95fc-7a78511ea388
+  bundle: event_series
+  default_langcode: en
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Computer Basics'
+  created:
+    -
+      value: 1691698897
+  promote:
+    -
+      value: false
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /event-series/computer-basics
+      langcode: en
+      pathauto: 1

@@ -45,6 +45,12 @@
       @include fs(label);
       color: $gray-30;
 
+      @include bp(large) {
+        background: url("/themes/contrib/intercept_base/images/dots/dots--vert_gray.svg") 0 0 repeat-y;
+        flex: 1 0 70%;
+        padding: 0 rem(30px);
+      }
+
       &__item {
         @include lh(0);
         padding-bottom: rem(20px);
@@ -71,6 +77,11 @@
       .office-hours__item:first-child .office-hours__item-label {
         font-weight: $fw-bold;
       }
+      
+      a:not([class]) {
+        /*@include button--arrow-green;*/
+        text-transform: uppercase;
+      }
     }
   }
 }
@@ -91,6 +102,40 @@
             background-position: center;
           }
         }
+      }
+    }
+  }
+}
+
+// Social media sharing icons on detail pages
+.content-details--with-sharing {
+  padding: percentage(1/16) percentage(1/16) 2.25% percentage(1/16);
+}
+.content-details-sharing {
+  background-color: $gray-80;
+  padding: 0 percentage(1/16) percentage(1/16) percentage(1/16);
+
+  .share {
+    float: left;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+  
+    @include bp(small) {
+      padding: 0.75rem 0.5rem 0.75rem 0;
+    }
+  }
+  .menu--social-media-menu {
+    justify-content: left;
+    padding: 0.75rem 0.5rem 0.75rem 0.5rem;
+  
+    a {
+      background-color: black;
+      filter: brightness(100);
+      mask-repeat: no-repeat;
+      -webkit-mask-position-y: center;
+  
+      &:hover {
+        // 4 or 8 digit hex color, or named color (like "red") required to make this work. Not sure why.
+        background-color: black;
       }
     }
   }

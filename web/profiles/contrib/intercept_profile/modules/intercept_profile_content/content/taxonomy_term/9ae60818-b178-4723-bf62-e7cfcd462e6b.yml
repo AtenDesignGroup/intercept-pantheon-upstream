@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 9ae60818-b178-4723-bf62-e7cfcd462e6b
+  bundle: disclaimer
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: COVID-19
+  description:
+    -
+      value: '<p><span>For your safety and ours, please stay home if you have COVID-19, if you have symptoms of COVID-19, if you are waiting for COVID-19 test results, or may have been exposed to someone with COVID-19.</span></p>'
+      format: basic_html
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0

@@ -1,0 +1,40 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: e66453e5-cab9-4d32-a2ce-7b796e296f86
+  bundle: image
+  default_langcode: en
+  depends:
+    83bafbff-5e82-40b2-afa6-f9b3ac1abe93: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: "Locations_Cooper_Children's Area"
+  created:
+    -
+      value: 1532720890
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_caption:
+    -
+      value: "<p>Inspire lifelong learning; get your kids ready for kindergarten; or build reading muscles in our expanded Children’s Area.</p>\r\n"
+      format: basic_html
+  field_media_image:
+    -
+      entity: 83bafbff-5e82-40b2-afa6-f9b3ac1abe93
+      alt: "Cooper Children's Area"
+      title: ''
+      width: 1800
+      height: 1200

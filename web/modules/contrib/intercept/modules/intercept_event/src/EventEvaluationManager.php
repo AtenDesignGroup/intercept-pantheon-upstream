@@ -223,7 +223,7 @@ class EventEvaluationManager {
   /**
    * Whether the user is allowed to evaluate the event or not.
    * Users should only be able to evaluate events they actually
-   * attended, registered for or saved.
+   * scanned into, registered for or saved.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The Event Node.
@@ -239,7 +239,7 @@ class EventEvaluationManager {
     if (!$this->currentUser->hasPermission('evaluate own events') && !$this->currentUser->hasPermission('evaluate any event')) {
       return FALSE;
     }
-    // Allow if attended.
+    // Allow if scanned into.
     if ($this->eventManager->userHasAttended($entity, $this->currentUser)) {
       return TRUE;
     }

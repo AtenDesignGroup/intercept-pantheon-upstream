@@ -1,0 +1,36 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 73af9f9d-f5fe-46c5-bd7d-6ac41241423d
+  bundle: image
+  default_langcode: en
+  depends:
+    232b12ff-25a7-4142-9b07-856b68de4a98: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: Locations_Cooper_Front
+  created:
+    -
+      value: 1532720890
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 232b12ff-25a7-4142-9b07-856b68de4a98
+      alt: 'Cooper Front'
+      title: ''
+      width: 1800
+      height: 1200

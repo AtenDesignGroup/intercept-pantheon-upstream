@@ -36,7 +36,7 @@ function intercept_profile_form_install_configure_form_alter(&$form, FormStateIn
     '#type' => 'checkboxes',
     '#title' => new TranslatableMarkup('Generate demo content'),
     '#options' => [
-      'intercept_profile_content' => new TranslatableMarkup('Locations, Rooms, Events, and Room Reservations'),
+      'intercept_profile_content' => new TranslatableMarkup('Locations, Rooms, and Events'),
       'intercept_profile_content_equipment' => new TranslatableMarkup('Equipment'),
     ],
   ];

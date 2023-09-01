@@ -33,8 +33,6 @@
   .filters__inputs-inner input,
   .filters__inputs-inner select {
     width: 100%; }
-  .filters__inputs-inner .select-wrapper .select-dropdown.multiple-select-dropdown {
-    max-height: 200px; }
   .filters__inputs-inner .form-actions {
     display: -webkit-box;
     display: -ms-flexbox;

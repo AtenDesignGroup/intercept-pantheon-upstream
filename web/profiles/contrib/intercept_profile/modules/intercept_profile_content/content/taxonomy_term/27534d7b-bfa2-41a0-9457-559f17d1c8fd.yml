@@ -1,0 +1,69 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 27534d7b-bfa2-41a0-9457-559f17d1c8fd
+  bundle: event_type
+  default_langcode: en
+  depends:
+    20b01bd7-f12d-42a3-af79-57e467b23563: taxonomy_term
+    722df3ba-783b-4b70-866b-f4aa7517d68b: taxonomy_term
+    7c881f89-748e-4760-ad84-6a991075fdf7: taxonomy_term
+    df791128-071f-466f-87f7-c33037ebd9c4: taxonomy_term
+    65a79687-5659-490d-8ac0-2bdf978d8ebe: taxonomy_term
+    b78afa66-aa21-40ec-b603-771c3b21dcb7: taxonomy_term
+    b198e151-eb92-4021-922a-34dbb545047f: taxonomy_term
+    ca9d7513-7eab-4801-b9f1-497868db3eca: taxonomy_term
+    55b0fa3a-cec4-49be-b02f-a0faab3d9fc8: taxonomy_term
+    46ab7721-b4df-49e0-8939-749253ae1930: taxonomy_term
+    81ba7bb0-327d-4057-b1fd-30bd8a7a160d: taxonomy_term
+    6771bd69-c7c2-4927-9877-a6379e1a40d1: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Reading and Writing Skills'
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_evaluation_criteria_neg:
+    -
+      entity: 20b01bd7-f12d-42a3-af79-57e467b23563
+    -
+      entity: 722df3ba-783b-4b70-866b-f4aa7517d68b
+    -
+      entity: 7c881f89-748e-4760-ad84-6a991075fdf7
+    -
+      entity: df791128-071f-466f-87f7-c33037ebd9c4
+    -
+      entity: 65a79687-5659-490d-8ac0-2bdf978d8ebe
+    -
+      entity: b78afa66-aa21-40ec-b603-771c3b21dcb7
+  field_evaluation_criteria_pos:
+    -
+      entity: b198e151-eb92-4021-922a-34dbb545047f
+    -
+      entity: ca9d7513-7eab-4801-b9f1-497868db3eca
+    -
+      entity: 55b0fa3a-cec4-49be-b02f-a0faab3d9fc8
+    -
+      entity: 46ab7721-b4df-49e0-8939-749253ae1930
+    -
+      entity: 81ba7bb0-327d-4057-b1fd-30bd8a7a160d
+    -
+      entity: 6771bd69-c7c2-4927-9877-a6379e1a40d1
+  field_examples:
+    -
+      value: 'NANOWRIMO, Read to a Dog, Emerging Readers'

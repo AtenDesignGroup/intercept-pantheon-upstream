@@ -376,7 +376,7 @@ class EventRegistration extends ContentEntityBase implements EventRegistrationIn
 
       // Get the event_dispatcher service and dispatch the event.
       $event_dispatcher = \Drupal::service('event_dispatcher');
-      $event_dispatcher->dispatch(EntityStatusChangeEvent::CHANGE, $status_event);
+      $event_dispatcher->dispatch($status_event, EntityStatusChangeEvent::CHANGE);
     }
 
     if ($this->getStatus() == 'canceled') {

@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 2667d147-0cdd-414d-bbcf-22e5d9c32768
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 'Sandalwood Photographer Eric Blake ColumbiaPics  (5 of 20).jpg'
+  uri:
+    -
+      value: 'public://2023-08/Sandalwood Photographer Eric Blake ColumbiaPics  (5 of 20).jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 16867056
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1691699373

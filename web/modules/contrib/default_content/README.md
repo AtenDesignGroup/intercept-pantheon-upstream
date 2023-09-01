@@ -14,7 +14,7 @@
 ## Introduction
 _A default content solution for Drupal 8_
 
-[Default Content][1] allows you to export content along with site configuration information. It does so by leveraging core's serialization and hal modules. It supports entity-references between content as well as files if you have File entity. Content export works with a set of drush commands (more on those below). Content import happens automatically as part of site installation. The import process scans all modules and imports any content found that is located in the expected file path and using the expected .json file structure. (See detailed information below)
+[Default Content][1] allows you to export content along with site configuration information. It supports entity-references between content as well as files if you have File entity. Content export works with a set of drush commands (more on those below). Content import happens automatically as part of site installation. The import process scans all modules and imports any content found that is located in the expected file path and using the expected .json file structure. (See detailed information below)
 
 ###  Features
 
@@ -34,9 +34,6 @@ _A default content solution for Drupal 8_
 
 ## Requirements
 * Drupal 8
-* core only
-  * [HAL (Hypertext Application Language) module][2] must be enabled
-  * [Serialization module][3] must be enabled
 
 ## Installation
 Install as you would normally install a contributed Drupal module. Visit:
@@ -44,7 +41,7 @@ https://www.drupal.org/docs/8/extending-drupal-8/installing-drupal-8-modules
 for further information.
 
 ## Configuration
-The module has no menu or modifiable settings. There is no configuration. When the default_content module is enabled, the core HAL and Serialization modules must also be enabled. If they are currently disabled, activating default_content will give you the option to enable them.
+The module has no menu or modifiable settings. There is no configuration. If they are currently disabled, activating default_content will give you the option to enable them.
 
 
 ## Usage
@@ -160,8 +157,5 @@ default_content:
 
 UI for easily exporting?
 
-[![Build Status](https://travis-ci.org/larowlan/default_content.svg?branch=8.x-1.x)](https://travis-ci.org/larowlan/default_content)
-
 [1]: https://www.drupal.org/project/default_content "Default Content"
-[2]: https://www.drupal.org/docs/8/core/modules/hal "HAL (Hypertext Application Language) module"
 [3]: https://www.drupal.org/docs/8/core/modules/serialization "Serialization module"

@@ -1,0 +1,29 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 8f04b60d-3f0d-44e4-9a86-5eb13ad3937c
+  bundle: audience
+  default_langcode: en
+  depends:
+    752e3a72-444e-4072-a75f-56a99976b9e4: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: '9-12 years'
+  weight:
+    -
+      value: 1
+  parent:
+    -
+      entity: 752e3a72-444e-4072-a75f-56a99976b9e4
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0

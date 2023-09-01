@@ -75,9 +75,9 @@ class EventAttendanceProvider implements EventAttendanceProviderInterface {
       return [];
     }
     $query = $this->eventAttendanceStorage->getQuery()
+      ->accessCheck(TRUE)
       ->condition('status', '1')
-      ->condition('field_user', $account->id())
-      ->accessCheck(FALSE);
+      ->condition('field_user', $account->id());
     return $query->execute();
   }
 

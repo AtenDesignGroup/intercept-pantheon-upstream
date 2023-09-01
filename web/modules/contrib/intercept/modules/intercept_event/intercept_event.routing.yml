@@ -91,7 +91,7 @@ entity.node.checkin:
   path: '/event/{node}/checkin/self'
   defaults:
     _controller: '\Drupal\intercept_event\Controller\EventAttendanceController::selfCheckinForm'
-    _title: 'Check-in'
+    _title: 'Check in'
   requirements:
     _entity_access: 'node.view'
     _entity_bundle: 'event'
@@ -100,7 +100,7 @@ entity.node.scan:
   path: '/event/{node}/checkin'
   defaults:
     _controller: '\Drupal\intercept_event\Controller\EventAttendanceController::scanForm'
-    _title: 'Check-in'
+    _title: 'Check in'
   requirements:
     _entity_access: 'node.scan'
     _entity_bundle: 'event'
@@ -109,7 +109,7 @@ entity.node.scan_guest:
   path: '/event/{node}/checkin/guest'
   defaults:
     _controller: '\Drupal\intercept_event\Controller\EventAttendanceController::scanGuestForm'
-    _title: 'Check-in'
+    _title: 'Check in'
   requirements:
     _entity_access: 'node.scan'
 

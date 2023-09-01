@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: f57a4775-a6b7-4d61-8d3f-68217ec85222
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 17_08_6109_Edit_1.jpg
+  uri:
+    -
+      value: 'public://2018-07/17_08_6109_Edit_1.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 1219585
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1532720241

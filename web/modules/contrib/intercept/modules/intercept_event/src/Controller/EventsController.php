@@ -200,7 +200,6 @@ class EventsController extends ControllerBase {
         ],
       ],
     ];
-    $this->attachFieldSettings($build);
     return $build;
   }
 
@@ -360,11 +359,15 @@ class EventsController extends ControllerBase {
     $links = [
       0 => [
         'title' => 'List',
-        'route' => 'intercept_event.events_controller_views_list'
+        'route' => 'intercept_event.events_controller_views_list',
+        'routeParameters' => [],
+        'options' => [],
       ],
       1 => [
         'title' => 'Calendar',
-        'route' => 'intercept_event.events_controller_views_calendar'
+        'route' => 'intercept_event.events_controller_views_calendar',
+        'routeParameters' => [],
+        'options' => [],
       ]
     ];
     $block = $block_manager->createInstance($block_id, ['links' => $links]);
@@ -398,6 +401,7 @@ class EventsController extends ControllerBase {
 
     // See if the current user is registered for this event.
     $query = $this->entityTypeManager->getStorage('event_registration')->getQuery()
+      ->accessCheck(TRUE)
       ->condition('field_user', $this->currentUser->Id())
       ->condition('status', 'active')
       ->condition('field_event', $node->Id());
@@ -482,18 +486,6 @@ class EventsController extends ControllerBase {
       $list_builder->setEvent($node);
     }
     return $list_builder;
-  }
-
-  /**
-   * Exposes certain field config to drupalSettings.
-   */
-  protected function attachFieldSettings(array &$build) {
-    // Load field_event_designation options.
-    $event_fields = $this->entityFieldManager->getFieldStorageDefinitions('node', 'event');
-    if (array_key_exists('field_event_designation', $event_fields)) {
-      $options = options_allowed_values($event_fields['field_event_designation']);
-      $build['#attached']['drupalSettings']['intercept']['events']['field_event_designation']['options'] = $options;
-    }
   }
 
   /**
@@ -970,8 +962,8 @@ class EventsController extends ControllerBase {
 
       $query = \Drupal::entityQuery('node');
       $query->condition('type', 'event')
+        ->accessCheck(FALSE)
         ->condition('status', 1)
-        ->condition('field_event_designation', 'events')
         ->condition('nid', $nids, 'IN')
         ->pager(30);
 

@@ -45,6 +45,7 @@ class RoomReservationCertificationChecker {
 
     // See if there is a certification entity for this room and user.
     $query = \Drupal::entityQuery('certification')
+      ->accessCheck(FALSE)
       ->condition('field_user', $uid)
       ->condition('field_room', $roomNid);
     $results = $query->execute();

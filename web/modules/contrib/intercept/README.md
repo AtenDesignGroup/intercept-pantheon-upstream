@@ -6179,12 +6179,6 @@ If your library is planning to display events and room reservations on digital s
 MAINTAINERS
 -----------
 
-Current maintainers:
-  * John Ferris (pixelwhip) - https://www.drupal.org/u/pixelwhip
-  * Mark W. Jarrell (attheshow) - https://www.drupal.org/u/attheshow
-  * Kay Thayer (kaythay) - https://www.drupal.org/u/kaythay
-  * Tyler Youngblood (tyleryoungblood) - https://www.drupal.org/u/tyleryoungblood
-
 This project has been sponsored by:
   * Richland Library (https://www.richlandlibrary.com)
   * Aten Design Group (https://atendesigngroup.com)

@@ -5,6 +5,98 @@
 // Classes to help apply layout
 //
 
+
+.l--page-wrapper > .l--page {
+  @include bp(small m-large) {
+    padding-bottom: rem(30px);
+  }
+}
+
+.l--page {
+  flex: none;
+  position: relative;
+  z-index: 1;
+}
+
+// Dotted Above
+.l--dotted {
+  @include spacing(padding-top, normal);
+  @include spacing(padding-bottom, normal);
+  position: relative;
+
+  &::before {
+    background: url('/themes/contrib/intercept_base/images/dots/dots--horiz.svg');
+    content: '';
+    height: 9px;
+    position: absolute;
+    width: 100%;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  .l--subsection > &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.l--dotted--thin {
+  &::before {
+    background: url('/themes/contrib/intercept_base/images/dots/dots--horiz_single-row.svg');
+    height: 3px;
+  }
+}
+
+// Dotted Below
+.l--dotted-below {
+  @include spacing(margin-bottom, normal);
+  @include spacing(padding-bottom, normal);
+  position: relative;
+
+  &::after {
+    background: url('/themes/contrib/intercept_base/images/dots/dots--horiz.svg');
+    content: '';
+    height: 9px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+}
+
+// Locations layout
+.view-locations {
+  .view__content {
+    width: 100%;
+  }
+
+  @include bp(smallish) {
+    .views-row {
+      display: flex;
+      flex-direction: column;
+      padding: rem(10px);
+      width: 50%;
+    }
+    .view__content {
+      align-content: stretch;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+  }
+  @include bp(x-large) {
+    .views-row {
+      padding: 0 0 50px 0;
+      width: calc(33.33% - 30px);
+    }
+  }
+}
+
 // Scrollable table
 .table-overflow-x-scroll .view__content {
   overflow-x: scroll;
@@ -410,7 +502,8 @@
 
 // Event series
 .view-intercept-rooms,
-.view-intercept-event-series {
+.view-intercept-event-series,
+.view-intercept-room-reservations {
   .views-row {
     &:not(:last-of-type) {
       @include spacing(margin-bottom, sparse);

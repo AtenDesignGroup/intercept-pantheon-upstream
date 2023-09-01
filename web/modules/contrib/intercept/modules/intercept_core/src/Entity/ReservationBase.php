@@ -136,6 +136,13 @@ abstract class ReservationBase extends RevisionableContentEntityBase implements 
   /**
    * {@inheritdoc}
    */
+  public function getRoom() {
+    return $this->get('field_room')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOriginalStatus() {
     return isset($this->original) ? $this->original->getStatus() : FALSE;
   }

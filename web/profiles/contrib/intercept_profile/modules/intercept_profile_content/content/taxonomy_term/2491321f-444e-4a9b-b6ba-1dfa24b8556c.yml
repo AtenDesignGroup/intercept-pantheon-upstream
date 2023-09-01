@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 2491321f-444e-4a9b-b6ba-1dfa24b8556c
+  bundle: tag
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: Genealogy
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0

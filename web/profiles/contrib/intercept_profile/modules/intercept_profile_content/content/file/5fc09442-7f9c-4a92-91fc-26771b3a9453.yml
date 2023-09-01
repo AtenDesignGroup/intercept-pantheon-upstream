@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 5fc09442-7f9c-4a92-91fc-26771b3a9453
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: _m3_1027_edit_1.jpg
+  uri:
+    -
+      value: 'public://2018-07/_m3_1027_edit_1.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 1323892
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1532720890

@@ -1,7 +1,7 @@
 name: 'Intercept Messages'
 type: module
 description: 'Provides message functionality for Intercept.'
-core_version_requirement: ^8.9 || ^9
+core_version_requirement: ^9 || ^10
 package: 'Intercept'
 dependencies:
   - intercept:intercept

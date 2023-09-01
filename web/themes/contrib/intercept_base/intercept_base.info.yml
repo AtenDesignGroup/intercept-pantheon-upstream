@@ -27,18 +27,22 @@ libraries-override:
   core/drupal.dialog.off_canvas:
     css:
       base:
-        misc/dialog/off-canvas.reset.css: false
-        misc/dialog/off-canvas.base.css: build/libraries/off-canvas/off-canvas.base.css
-        misc/dialog/off-canvas.theme.css: build/libraries/off-canvas/off-canvas.theme.css
+        misc/dialog/off-canvas/css/reset.css: false
+        misc/dialog/off-canvas/css/base.css: build/libraries/off-canvas/off-canvas.base.css
+        misc/dialog/off-canvas/css/theme.css: build/libraries/off-canvas/off-canvas.theme.css
+        # misc/dialog/off-canvas/css/utility.css: {}
       component:
-        # misc/dialog/off-canvas.motion.css: build/libraries/off-canvas/off-canvas.motion.css
-        misc/dialog/off-canvas.button.css: false
-        misc/dialog/off-canvas.form.css: build/libraries/off-canvas/off-canvas.form.css
-        # misc/dialog/off-canvas.table.css: build/libraries/off-canvas/off-canvas.table.css
-        # misc/dialog/off-canvas.details.css: build/libraries/off-canvas/off-canvas.details.css
-        # misc/dialog/off-canvas.tabledrag.css: build/libraries/off-canvas/off-canvas.tabledrag.css
-        # misc/dialog/off-canvas.dropbutton.css: build/libraries/off-canvas/off-canvas.dropbutton.css
-        # misc/dialog/off-canvas.layout.css: build/libraries/off-canvas/off-canvas.layout.css
+        misc/dialog/off-canvas/css/button.css: false
+        # misc/dialog/off-canvas/css/drupal.css: {}
+        misc/dialog/off-canvas/css/form.css: build/libraries/off-canvas/off-canvas.form.css
+        # misc/dialog/off-canvas/css/table.css: {}
+        # misc/dialog/off-canvas/css/details.css: {}
+        # misc/dialog/off-canvas/css/messages.css: {}
+        # misc/dialog/off-canvas/css/tabledrag.css: {}
+        # misc/dialog/off-canvas/css/throbber.css: {}
+        # misc/dialog/off-canvas/css/dropbutton.css: {}
+        misc/dialog/off-canvas/css/titlebar.css: false
+        # misc/dialog/off-canvas/css/wrapper.css: {}
   views_filters_summary/views_filters_summary:
     css:
       theme:
@@ -105,7 +109,7 @@ libraries-extend:
     - intercept_base/teaser
     - intercept_base/value-summary
     - intercept_base/view-switcher
-  intercept_room_reservation/manageRoomReservations:
+  intercept_room_reservation/upcomingRoomReservations:
     - intercept_base/current-filters
     - intercept_base/content-list
     - intercept_base/filters
@@ -133,8 +137,3 @@ components:
       - components
     intercept-base-icons:
       - images/icons
-
-# Information added by Drupal.org packaging script on 2023-06-30
-version: '8.x-1.0-beta15'
-project: 'intercept_base'
-datestamp: 1688161695

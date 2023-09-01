@@ -1,0 +1,36 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 67316e5a-0bf5-4011-96af-a0f80de03810
+  bundle: image
+  default_langcode: en
+  depends:
+    f279afed-33cb-425a-bf75-4ecc58e9d88e: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'AV Sound System'
+  created:
+    -
+      value: 1691781317
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_image:
+    -
+      entity: f279afed-33cb-425a-bf75-4ecc58e9d88e
+      alt: 'A V Sound System'
+      title: ''
+      width: 240
+      height: 320

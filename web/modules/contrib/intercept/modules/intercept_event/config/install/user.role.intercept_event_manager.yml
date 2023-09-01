@@ -14,7 +14,6 @@ permissions:
   - 'access management page event_attendance_export'
   - 'access management page event_templates'
   - 'access management page events'
-  - 'access management page meetings_export'
   - 'access management page room_reservations'
   - 'access room reservations export'
   - 'access stories_image_uploader entity browser pages'

@@ -22,7 +22,6 @@ permissions:
   - 'access management page location_closing_add'
   - 'access management page location_closings'
   - 'access management page locations_rooms'
-  - 'access management page meetings_export'
   - 'access management page room_reservation_configuration'
   - 'access management page room_reservations'
   - 'access room reservations export'

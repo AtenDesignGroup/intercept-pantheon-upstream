@@ -69,7 +69,7 @@ email:
       registration_user: registration_user
     user_email_other: ''
     schedule:
-      interval: P3D
+      interval: P1D
     user_settings_override: 0
   attendance_created:
     enabled: 1
@@ -88,7 +88,7 @@ email:
       user: user
     user_email_other: ''
     schedule:
-      interval: P3D
+      interval: P1D
   registration_event_canceled:
     enabled: 1
     subject: 'An upcoming event has been canceled - [event_registration:field_event:entity:title]'

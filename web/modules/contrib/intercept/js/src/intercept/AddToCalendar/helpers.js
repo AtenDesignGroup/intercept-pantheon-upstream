@@ -48,7 +48,7 @@ export default class helpers {
         calendarUrl += `&location=${encodeURIComponent(event.location)}`;
         calendarUrl += `&text=${encodeURIComponent(event.title)}`;
         calendarUrl += `&details=${encodeURIComponent(event.description)}`;
-        if (event.url) {
+        if (event.url && event.url.includes('/event')) {
           calendarUrl += encodeURIComponent(` <a href="${event.url}">View Event</a>`);
         }
         break;
@@ -70,7 +70,12 @@ export default class helpers {
         calendarUrl += `&enddt=${this.formatISO(event.endTime)}`;
         calendarUrl += `&subject=${encodeURIComponent(event.title)}`;
         calendarUrl += `&location=${encodeURIComponent(event.location)}`;
-        calendarUrl += `&body=${encodeURIComponent(`${event.description} ${event.url ? `View Event: ${event.url}` : ''}`)}`;
+        if (event.url.includes('/event')) {
+          calendarUrl += `&body=${encodeURIComponent(`${event.description} ${event.url ? `View Event: ${event.url}` : ''}`)}`;
+        }
+        else {
+          calendarUrl += `&body=${encodeURIComponent(`${event.description}`)}`;
+        }
         calendarUrl += '&allday=false';
         calendarUrl += `&uid=${this.getRandomKey()}`;
         calendarUrl += '&path=/calendar/view/Month';

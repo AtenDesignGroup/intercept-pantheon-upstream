@@ -3,14 +3,13 @@ status: true
 dependencies:
   config:
     - field.field.node.event.field_add_to_cal
+    - field.field.node.event.field_address
     - field.field.node.event.field_attendees
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
     - field.field.node.event.field_disclaimer
-    - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
-    - field.field.node.event.field_event_designation
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
@@ -19,6 +18,7 @@ dependencies:
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
     - field.field.node.event.field_event_user_reg_max
+    - field.field.node.event.field_external_location_name
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
     - field.field.node.event.field_hosting_location
@@ -36,6 +36,7 @@ dependencies:
     - field.field.node.event.image_primary
     - node.type.event
   module:
+    - address
     - datetime_range
     - options
     - tally
@@ -46,6 +47,13 @@ targetEntityType: node
 bundle: event
 mode: default
 content:
+  field_address:
+    type: address_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 30
+    region: content
   field_attendees:
     type: tally_default
     label: above
@@ -127,13 +135,6 @@ content:
     third_party_settings: {  }
     weight: 13
     region: content
-  field_event_designation:
-    type: list_default
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    weight: 22
-    region: content
   field_event_register_period:
     type: daterange_default
     label: above
@@ -184,6 +185,14 @@ content:
       prefix_suffix: true
     third_party_settings: {  }
     weight: 25
+    region: content
+  field_external_location_name:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 29
     region: content
   field_featured:
     type: boolean
@@ -312,10 +321,10 @@ hidden:
   evaluation_staff: true
   event_recurrence: true
   field_add_to_cal: true
-  field_evanced_id: true
   field_event_is_template: true
   field_event_status: true
   field_keywords: true
   field_staff_presenter: true
   langcode: true
+  recommended: true
   search_api_excerpt: true

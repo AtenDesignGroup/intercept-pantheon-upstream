@@ -5,8 +5,6 @@ dependencies:
     - field.storage.node.field_event_audience
     - node.type.event
     - taxonomy.vocabulary.audience
-_core:
-  default_config_hash: Xunb_FKu9dsbTZXShIlwHY3Rwd_li0cWus3AX_FBP-Y
 id: node.event.field_event_audience
 field_name: field_event_audience
 entity_type: node

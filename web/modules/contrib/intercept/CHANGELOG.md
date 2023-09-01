@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta17] - 2023-09-01
+
+<h2>Sprint 57 Deployment</h2>
+
+We had some issues with our post-deployment process at the end of July and ended up not sharing the Drupal 10 changes as expected. We've fixed a number of those bugs in this release and everything that was planned to be included in the previous release is now included in this release (see the 8.x-1.0-beta16 section in the Intercept module's CHANGELOG.md for more specifics). Here are the items we completed in beta17 specifically:
+
+- Staff and customers can now add room reservations to their calendars using the "Add to my Calendar" button which was previously available only on events
+- Added a new "past" tab to customer room reservations list so they can more easily rebook a room they've used in the past
+- Added new hooks to allow messaging and functionality to prevent customers from booking meeting spaces under children's library cards (dependent upon ILS module for gathering birthdates)
+- Updated the customer email reminder for events to be sent 24 hours before the event (previously it was 72 hours)
+- Updated room reservations in the “archived” status to not appear on customer & staff calendars
+- Standardized some terminology for "check-in", "scan in", and "check in"
+- Fixed some spacing issues on content pages
+- Fixed an issue where room reservation calendar filters could be cut off on smaller screens
+- Fixed a number of issues in the Intercept upstream including missing edit tabs at initial installation
+
+## [8.x-1.0-beta16] - 2023-07-28 - Canceled
+
+<h2>Sprint 56 Deployment</h2>
+
+- Updated to Drupal 10
+- Added the "Reserve Room" Button to "Room Details" pages for customers
+- Staff are now prompted to enter a location name and address when creating a "Community Event"
+- Fixed a visual bug on the website header when staff cancel a room reservation
+- Fixed data export issue with blank end dates on some room reservations
+- Fixed some visual issues found in our last design audit
+- Removed “event designation” field which is no longer in use
+
 ## [8.x-1.0-beta15] - 2023-06-30
 
 <h2>Sprint 55 Deployment</h2>

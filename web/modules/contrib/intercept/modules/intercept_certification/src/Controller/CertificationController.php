@@ -216,6 +216,7 @@ class CertificationController extends ControllerBase implements ContainerInjecti
    */
   public static function getCertificationRooms() {
     $query = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('status', 1)
       ->condition('type', 'room')
       ->condition('field_requires_certification', 1);
@@ -234,6 +235,7 @@ class CertificationController extends ControllerBase implements ContainerInjecti
    */
   public static function getUserCertifications($uid) {
     $query = \Drupal::entityQuery('certification')
+      ->accessCheck(FALSE)
       ->condition('field_user', $uid);
     $result = $query->execute();
     return $result;
@@ -250,6 +252,7 @@ class CertificationController extends ControllerBase implements ContainerInjecti
   public static function deleteCertification($uid, $room_id) {
     // Find the certification id.
     $query = \Drupal::entityQuery('certification')
+      ->accessCheck(FALSE)
       ->condition('field_user', $uid)
       ->condition('field_room', $room_id);
     $result = $query->execute();

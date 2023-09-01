@@ -117,7 +117,8 @@ function intercept_location_closing_preprocess_intercept_event_list(&$variables)
   $first_day = new \DateTime('first day of january this year');
   $closing_query = \Drupal::service('entity_type.manager')
     ->getStorage('intercept_location_closing')
-    ->getQuery();
+    ->getQuery()
+    ->accessCheck(TRUE);
   $closings = $closing_query
     ->condition('status', 1)
     ->condition('date.value', $first_day->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>=')
@@ -148,7 +149,8 @@ function intercept_location_closing_preprocess_intercept_event_list(&$variables)
 function intercept_location_closing_get_closing($location, $start, $end) {
   $closing_query = \Drupal::service('entity_type.manager')
     ->getStorage('intercept_location_closing')
-    ->getQuery();
+    ->getQuery()
+    ->accessCheck(TRUE);
   $date_group = $closing_query
     ->andConditionGroup()
     ->condition('date.value', $end, '<=')

@@ -78,9 +78,9 @@ class UserAccount extends ControllerBase {
     $params = $this->getParams($request);
     $user = FALSE;
     if (!empty($params['barcode'])) {
-      $user = \Drupal::service('intercept_ils.mapping_manager')->loadByBarcode($params['barcode']);
+      $user = \Drupal::service('intercept_ils.association_manager')->loadByBarcode($params['barcode']);
     }
-    return JsonResponse::create(!empty($user) ? [
+    return new JsonResponse(!empty($user) ? [
       'uuid' => $user->uuid(),
       'name' => $user->full_name,
     ] : [], 200);
@@ -102,9 +102,9 @@ class UserAccount extends ControllerBase {
       foreach ($search as &$result) {
         $result['email'] = Obfuscate::email($result['email']);
       }
-      return JsonResponse::create($search, 200);
+      return new JsonResponse($search, 200);
     }
-    return JsonResponse::create();
+    return new JsonResponse();
   }
 
   /**
@@ -122,11 +122,12 @@ class UserAccount extends ControllerBase {
       $user = $this->entityTypeManager()
         ->getStorage('user')
         ->getQuery()
+        ->accessCheck(TRUE)
         ->condition('mail', $params['email'])
         ->execute();
-      return JsonResponse::create($user, 200);
+      return new JsonResponse($user, 200);
     }
-    return JsonResponse::create();
+    return new JsonResponse();
   }
 
 }

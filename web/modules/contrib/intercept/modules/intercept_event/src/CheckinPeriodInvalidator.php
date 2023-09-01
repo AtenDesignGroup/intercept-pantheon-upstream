@@ -127,6 +127,7 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
     $query = $this->entityTypeManager
       ->getStorage('node')
       ->getQuery()
+      ->accessCheck(TRUE)
       ->condition('type', 'event')
       ->condition('status', '1');
 
@@ -238,6 +239,7 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
       $query = $this->entityTypeManager
         ->getStorage('node')
         ->getQuery()
+        ->accessCheck(TRUE)
         ->condition('type', 'event')
         ->condition('status', '1');
 

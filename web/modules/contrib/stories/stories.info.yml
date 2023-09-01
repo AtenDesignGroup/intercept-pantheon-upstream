@@ -17,7 +17,7 @@ dependencies:
   - tablefield:tablefield
   - viewsreference:viewsreference
 
-# Information added by Drupal.org packaging script on 2021-03-18
-version: '8.x-2.0-alpha7'
+# Information added by Drupal.org packaging script on 2023-06-02
+version: '3.0.0-alpha1'
 project: 'stories'
-datestamp: 1616083628
+datestamp: 1685742678

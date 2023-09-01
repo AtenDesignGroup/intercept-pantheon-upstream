@@ -1,0 +1,30 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 65a79687-5659-490d-8ac0-2bdf978d8ebe
+  bundle: evaluation_criteria
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: Uncomfortable
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 1
+  field_evaluation:
+    -
+      value: -1

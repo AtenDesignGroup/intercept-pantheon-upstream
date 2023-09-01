@@ -124,6 +124,14 @@ class ViewSwitcher extends BlockBase implements ContainerFactoryPluginInterface 
       '#theme' => 'intercept_view_switcher',
     ];
     $build['#links'] = $this->configuration['links'];
+    foreach ($build['#links'] as $key => $value) {
+      if (!isset($value['routeParameters'])) {
+        $build['#links'][$key]['routeParameters'] = [];
+      }
+      if (!isset($value['options'])) {
+        $build['#links'][$key]['options'] = [];
+      }
+    }
     return $build;
   }
 

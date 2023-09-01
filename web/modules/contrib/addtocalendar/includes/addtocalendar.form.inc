@@ -135,7 +135,7 @@ function _addtocalendar_build_form($settings, $field_definition) {
       'public' => t('Public'),
       'private' => t('Private'),
     ],
-    '#description' => t('Use public for free access to event information from any places. User private if the event is closed to public access.'),
+    '#description' => t('Use "Public" for free access to event information from any places. Use "Private" if the event is closed to public access.'),
     '#default_value' => !empty($settings['addtocalendar_settings']['atc_privacy']) ? $settings['addtocalendar_settings']['atc_privacy'] : 'public',
   ];
   $element['addtocalendar_settings']['data_secure'] = [

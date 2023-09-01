@@ -1,0 +1,29 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 083818d2-d03e-4843-8c3f-fab3b037f7f6
+  bundle: audience
+  default_langcode: en
+  depends:
+    c6d95925-3394-4482-9b6a-07bfdc2a4eb3: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: Parents
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      entity: c6d95925-3394-4482-9b6a-07bfdc2a4eb3
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0

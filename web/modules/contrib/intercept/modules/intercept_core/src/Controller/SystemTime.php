@@ -19,7 +19,7 @@ class SystemTime extends ControllerBase {
    */
   public function response() {
     $date = new DrupalDateTime();
-    $response = JsonResponse::create(200);
+    $response = new JsonResponse(200);
     $response->setData(['timestamp' => $date->format('U')]);
     return $response;
   }

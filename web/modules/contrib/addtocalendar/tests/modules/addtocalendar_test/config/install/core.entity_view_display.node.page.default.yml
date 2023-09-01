@@ -1,0 +1,66 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.page.body
+    - field.field.node.page.field_addtocalendar
+    - field.field.node.page.field_date
+    - node.type.page
+  module:
+    - addtocalendar
+    - datetime
+    - user
+id: node.page.default
+targetEntityType: node
+bundle: page
+mode: default
+content:
+  field_addtocalendar:
+    type: add_to_calendar
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_date:
+    type: datetime_plain
+    label: above
+    weight: 1
+    region: content
+    settings:
+      timezone_override: ''
+    third_party_settings:
+      addtocalendar:
+        addtocalendar_show: 1
+        addtocalendar_settings:
+          style: '0'
+          display_text: 'Add to Calendar'
+          atc_title:
+            field: title
+            tokenized: Title
+          atc_description:
+            field: body
+            tokenized: Description
+          atc_location:
+            field: token
+            tokenized: 'The Internet'
+          atc_organizer:
+            field: token
+            tokenized: '[site:name]'
+          atc_organizer_email:
+            field: token
+            tokenized: '[node:title]'
+          atc_date_end:
+            field: token
+            tokenized: ''
+          atc_privacy: public
+          data_secure: auto
+          data_calendars:
+            'Google Calendar': 'Google Calendar'
+            Outlook: Outlook
+            iCalendar: '0'
+            'Outlook Online': '0'
+            'Yahoo! Calendar': '0'
+hidden:
+  body: true
+  links: true

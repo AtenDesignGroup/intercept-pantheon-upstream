@@ -6,18 +6,23 @@
           {{ content.messages }}
         </div>
       {% endif %}
-      <div class="l--subsection">
+      <div class="l--subsection" id="room-reservation-status">
         {{ content.field_status }}
       </div>
+      {% if edit_link %}
+        <div class="form-actions--operations" id="room-reservation-operations">
+          {{ edit_link }}
+        </div>
+      {% endif %}
+      {% if addtocalendar %}
+        <div class="form-actions--operations" id="room-reservation-addtocalendar">
+          {{ addtocalendar }}
+        </div>
+      {% endif %}
 
       {% if content %}
         <div class="l--subsection">
           <h2>{{'Reservation Details'|t}}</h2>
-          {% if edit_link %}
-            <div class="form-actions--operations">
-              {{ edit_link }}
-            </div>
-          {% endif %}
           {{ content|without('field_status', 'field_user', 'field_guest', 'messages') }}
         </div>
       {% endif %}

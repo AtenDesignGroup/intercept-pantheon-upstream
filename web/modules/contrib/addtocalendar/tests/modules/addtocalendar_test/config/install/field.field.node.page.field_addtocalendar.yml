@@ -1,0 +1,54 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_addtocalendar
+    - node.type.page
+  module:
+    - addtocalendar
+id: node.page.field_addtocalendar
+field_name: field_addtocalendar
+entity_type: node
+bundle: page
+label: addtocalendar
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'Add to Calendar'
+  off_label: 'Add to Calendar Disabled'
+  addtocalendar_show: 1
+  addtocalendar_settings:
+    style: '0'
+    atc_title:
+      field: title
+      tokenized: Title
+    atc_description:
+      field: body
+      tokenized: Description
+    atc_location:
+      field: token
+      tokenized: 'The Internet'
+    atc_organizer:
+      field: token
+      tokenized: '[site:name]'
+    atc_organizer_email:
+      field: token
+      tokenized: '[node:title]'
+    atc_date_start:
+      field: field_date
+      tokenized: ''
+    atc_date_end:
+      field: token
+      tokenized: ''
+    atc_privacy: public
+    data_secure: auto
+    data_calendars:
+      'Google Calendar': 'Google Calendar'
+      Outlook: Outlook
+      iCalendar: '0'
+      'Outlook Online': '0'
+      'Yahoo! Calendar': '0'
+field_type: add_to_calendar_field

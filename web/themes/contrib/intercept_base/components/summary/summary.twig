@@ -1,5 +1,6 @@
 {% import '@intercept-base-components/component.twig' as component %}
 {{ attach_library('intercept_base/summary') }}
+{{ attach_library('intercept_base/action-button') }}
 
 <article {{ component.attributes('summary', modifiers, attr) }}>
   {% if image %}
@@ -38,7 +39,7 @@
     {% if content %}
       <div class="summary__content">
         {% if room %}
-          {% if certified %}
+          {% if is_certified %}
             <div class="user-is-certified">
               <p>You are currently certified to work independently in this space.</p>
             </div>
@@ -52,6 +53,10 @@
           {{ content|without('field_text_teaser') }}
         {% else %}
           {{ content }}
+        {% endif %}
+        {# Reserve button #}
+        {% if reservation_link %}
+          {{ reservation_link }}
         {% endif %}
       </div>
     {% endif %}

@@ -7,13 +7,12 @@ use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\InfoParserInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\Session\AccountSwitcherInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\default_content\Event\DefaultContentEvents;
 use Drupal\default_content\Event\ExportEvent;
-use Drupal\hal\LinkManager\LinkManagerInterface;
+use Drupal\default_content\Normalizer\ContentEntityNormalizerInterface;
+use Drupal\user\UserInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * A service for handling import of default content.
@@ -21,20 +20,6 @@ use Symfony\Component\Serializer\Serializer;
  * @todo throw useful exceptions
  */
 class Exporter implements ExporterInterface {
-
-  /**
-   * Defines relation domain URI for entity links.
-   *
-   * @var string
-   */
-  protected $linkDomain;
-
-  /**
-   * The serializer service.
-   *
-   * @var \Symfony\Component\Serializer\Serializer
-   */
-  protected $serializer;
 
   /**
    * The entity type manager.
@@ -65,13 +50,6 @@ class Exporter implements ExporterInterface {
   protected $infoParser;
 
   /**
-   * The link manager service.
-   *
-   * @var \Drupal\hal\LinkManager\LinkManagerInterface
-   */
-  protected $linkManager;
-
-  /**
    * The event dispatcher.
    *
    * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
@@ -79,60 +57,51 @@ class Exporter implements ExporterInterface {
   protected $eventDispatcher;
 
   /**
-   * The account switcher.
+   * The content file storage.
    *
-   * @var \Drupal\Core\Session\AccountSwitcherInterface
+   * @var \Drupal\default_content\ContentFileStorageInterface
    */
-  protected $accountSwitcher;
+  protected $contentFileStorage;
 
   /**
-   * The filesystem service.
+   * The YAML normalizer.
    *
-   * @var \Drupal\Core\File\FileSystemInterface
+   * @var \Drupal\default_content\Normalizer\ContentEntityNormalizer
    */
-  protected $fileSystem;
+  protected $contentEntityNormalizer;
 
   /**
    * Constructs the default content manager.
    *
-   * @param \Symfony\Component\Serializer\Serializer $serializer
-   *   The serializer service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
    *   The entity repository service.
-   * @param \Drupal\hal\LinkManager\LinkManagerInterface $link_manager
-   *   The link manager service.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Drupal\Core\Extension\InfoParserInterface $info_parser
    *   The info file parser.
-   * @param string $link_domain
-   *   Defines relation domain URI for entity links.
-   * @param \Drupal\Core\Session\AccountSwitcherInterface $account_switcher
-   *   The account switcher.
-   * @param \Drupal\Core\File\FileSystemInterface $file_system
-   *   The filesystem service.
+   * @param \Drupal\default_content\ContentFileStorageInterface $content_file_storage
+   *   The content file storage service.
+   * @param \Drupal\default_content\Normalizer\ContentEntityNormalizerInterface $content_entity_normaler
+   *   The content entity normalizer.
    */
-  public function __construct(Serializer $serializer, EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, LinkManagerInterface $link_manager, EventDispatcherInterface $event_dispatcher, ModuleHandlerInterface $module_handler, InfoParserInterface $info_parser, $link_domain, AccountSwitcherInterface $account_switcher, FileSystemInterface $file_system) {
-    $this->serializer = $serializer;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, EventDispatcherInterface $event_dispatcher, ModuleHandlerInterface $module_handler, InfoParserInterface $info_parser, ContentFileStorageInterface $content_file_storage, ContentEntityNormalizerInterface $content_entity_normaler) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityRepository = $entity_repository;
-    $this->linkManager = $link_manager;
     $this->eventDispatcher = $event_dispatcher;
     $this->moduleHandler = $module_handler;
     $this->infoParser = $info_parser;
-    $this->linkDomain = $link_domain;
-    $this->accountSwitcher = $account_switcher;
-    $this->fileSystem = $file_system;
+    $this->contentFileStorage = $content_file_storage;
+    $this->contentEntityNormalizer = $content_entity_normaler;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function exportContent($entity_type_id, $entity_id) {
+  public function exportContent($entity_type_id, $entity_id, $destination = NULL) {
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
     $entity = $storage->load($entity_id);
 
@@ -143,20 +112,13 @@ class Exporter implements ExporterInterface {
       throw new \InvalidArgumentException(sprintf('Entity "%s" with ID "%s" is not a content entity', $entity_type_id, $entity_id));
     }
 
-    if ($this->isCli()) {
-      $root_user = $this->entityTypeManager->getStorage('user')->load(1);
-      $this->accountSwitcher->switchTo($root_user);
+    $normalized = $this->contentEntityNormalizer->normalize($entity);
+    $return = Yaml::encode($normalized);
+    if ($destination) {
+      $folder = dirname(dirname($destination));
+      $this->contentFileStorage->writeEntity($folder, $return, $entity, basename($destination));
     }
-    $this->linkManager->setLinkDomain($this->linkDomain);
-
-    $return = $this->serializer->serialize($entity, 'hal_json', ['json_encode_options' => JSON_PRETTY_PRINT]);
-    $this->eventDispatcher->dispatch(DefaultContentEvents::EXPORT, new ExportEvent($entity));
-
-    // Reset the link domain and the current user, if needed.
-    $this->linkManager->setLinkDomain(FALSE);
-    if ($this->isCli()) {
-      $this->accountSwitcher->switchBack();
-    }
+    $this->eventDispatcher->dispatch(new ExportEvent($entity), DefaultContentEvents::EXPORT);
 
     return $return;
   }
@@ -164,7 +126,7 @@ class Exporter implements ExporterInterface {
   /**
    * {@inheritdoc}
    */
-  public function exportContentWithReferences($entity_type_id, $entity_id) {
+  public function exportContentWithReferences($entity_type_id, $entity_id, $folder = NULL) {
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
     $entity = $storage->load($entity_id);
 
@@ -177,23 +139,16 @@ class Exporter implements ExporterInterface {
 
     $entities = [$entity->uuid() => $entity];
     $entities = $this->getEntityReferencesRecursive($entity, 0, $entities);
-
-    if ($this->isCli()) {
-      $root_user = $this->entityTypeManager->getStorage('user')->load(1);
-      $this->accountSwitcher->switchTo($root_user);
-    }
-    $this->linkManager->setLinkDomain($this->linkDomain);
-
     // Serialize all entities and key them by entity TYPE and uuid.
     $serialized_entities_per_type = [];
     foreach ($entities as $entity) {
-      $serialized_entities_per_type[$entity->getEntityTypeId()][$entity->uuid()] = $this->serializer->serialize($entity, 'hal_json', ['json_encode_options' => JSON_PRETTY_PRINT]);
-    }
+      $normalized = $this->contentEntityNormalizer->normalize($entity);
+      $encoded = Yaml::encode($normalized);
+      $serialized_entities_per_type[$entity->getEntityTypeId()][$entity->uuid()] = $encoded;
 
-    // Reset the link domain and the current user, if needed.
-    $this->linkManager->setLinkDomain(FALSE);
-    if ($this->isCli()) {
-      $this->accountSwitcher->switchBack();
+      if ($folder) {
+        $this->contentFileStorage->writeEntity($folder, $encoded, $entity);
+      }
     }
 
     return $serialized_entities_per_type;
@@ -202,7 +157,7 @@ class Exporter implements ExporterInterface {
   /**
    * {@inheritdoc}
    */
-  public function exportModuleContent($module_name) {
+  public function exportModuleContent($module_name, $folder = NULL) {
     $info_file = $this->moduleHandler->getModule($module_name)->getPathname();
     $info = $this->infoParser->parse($info_file);
     $exported_content = [];
@@ -216,47 +171,13 @@ class Exporter implements ExporterInterface {
           throw new \InvalidArgumentException(sprintf('Entity "%s" with UUID "%s" does not exist', $entity_type, $uuid));
         }
         $exported_content[$entity_type][$uuid] = $this->exportContent($entity_type, $entity->id());
+
+        if ($folder) {
+          $this->contentFileStorage->writeEntity($folder, $exported_content[$entity_type][$uuid], $entity);
+        }
       }
     }
     return $exported_content;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function writeDefaultContent(array $serialized_by_type, $folder) {
-    foreach ($serialized_by_type as $entity_type => $serialized_entities) {
-      // Ensure that the folder per entity type exists.
-      $entity_type_folder = "$folder/$entity_type";
-      $this->prepareDirectory($entity_type_folder);
-      foreach ($serialized_entities as $uuid => $serialized_entity) {
-        $this->putFile($entity_type_folder, $uuid, $serialized_entity);
-      }
-    }
-  }
-
-  /**
-   * Helper for ::writeDefaultContent to wrap file_prepare_directory().
-   *
-   * @param string $path
-   *   Content directory + entity directory to prepare.
-   */
-  protected function prepareDirectory($path) {
-    $this->fileSystem->prepareDirectory($path, FileSystemInterface::CREATE_DIRECTORY);
-  }
-
-  /**
-   * Helper for ::writeDefaultContent to wrap file_put_contents.
-   *
-   * @param string $path
-   *   Content directory + entity directory to which to write the file.
-   * @param string $uuid
-   *   Entity UUID, to be used as filename.
-   * @param string $serialized_entity
-   *   The serialized entity to write.
-   */
-  protected function putFile($path, $uuid, $serialized_entity) {
-    file_put_contents($path . '/' . $uuid . '.json', $serialized_entity);
   }
 
   /**
@@ -284,13 +205,25 @@ class Exporter implements ExporterInterface {
       if (!($dependent_entity instanceof ContentEntityInterface)) {
         continue;
       }
+
+      // Do not export user 0 or 1.
+      if ($dependent_entity instanceof UserInterface && \in_array($dependent_entity->id(), [0, 1])) {
+        continue;
+      }
+
       // Using UUID to keep dependencies unique to prevent recursion.
       $key = $dependent_entity->uuid();
       if (isset($indexed_dependencies[$key])) {
         // Do not add already indexed dependencies.
         continue;
       }
-      $indexed_dependencies[$key] = $dependent_entity;
+
+      // Do not export composite entity types directly but include their
+      // children.
+      if (!$dependent_entity->getEntityType()->get('entity_revision_parent_type_field')) {
+        $indexed_dependencies[$key] = $dependent_entity;
+      }
+
       // Build in some support against infinite recursion.
       if ($depth < 6) {
         // @todo Make $depth configurable.
@@ -299,15 +232,6 @@ class Exporter implements ExporterInterface {
     }
 
     return $indexed_dependencies;
-  }
-
-  /**
-   * Returns whether the current PHP process runs on CLI.
-   *
-   * @return bool
-   */
-  protected function isCli() {
-    return PHP_SAPI === 'cli';
   }
 
 }

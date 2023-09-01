@@ -38,7 +38,7 @@ update any event evaluation:
   title: 'Update any event evaluations'
 
 evaluate own events:
-  title: 'Evaluate events that a user has attended, registered for, or saved'
+  title: 'Evaluate events that a user has scanned into, registered for, or saved'
 
 evaluate any event:
   title: 'Evaluate any event'

@@ -34,6 +34,34 @@ function intercept_base_preprocess_page(&$variables) {
   if ($route_name == 'intercept_core.management.default') {
     $variables['#attached']['library'][] = 'intercept_base/more-link';
   }
+  // For the user room reservations page, we need to add a switcher to that.
+  elseif (in_array($route_name, ['view.intercept_room_reservations.page_1', 'entity.user.room_reservations'])) {
+
+    // Load the block plugin manager service.
+    $block_manager = \Drupal::service('plugin.manager.block');
+
+    // Load the view_switcher block plugin.
+    $block_id = 'intercept_view_switcher';
+    $links = [
+      0 => [
+        'title' => 'Current',
+        'route' => 'entity.user.room_reservations',
+        'routeParameters' => ['user' => \Drupal::currentUser()->id()],
+        'options' => [],
+      ],
+      1 => [
+        'title' => 'Past',
+        'route' => 'view.intercept_room_reservations.page_1',
+        'routeParameters' => ['user' => \Drupal::currentUser()->id()],
+        'options' => [],
+      ]
+    ];
+    $block = $block_manager->createInstance($block_id, ['links' => $links]);
+    $block_rendered = $block->build();
+    // Add the cache tags/contexts.
+    \Drupal::service('renderer')->addCacheableDependency($block_rendered, $block);
+    $variables['intercept_view_switcher'] = $block_rendered;
+  }
 
   _intercept_base_add_logo($variables);
 
@@ -398,10 +426,6 @@ function intercept_base_theme_suggestions_fieldset_alter(array &$suggestions, ar
       $suggestions[] = 'fieldset__views_exposed_form__dates';
     }
   }
-
-  if (isset($variables['element']['#id']) && strstr($variables['element']['#id'], 'edit-field-event-designation-value')) {
-    $suggestions[] = 'fieldset__inline_radios';
-  }
 }
 
 /**
@@ -662,6 +686,10 @@ function intercept_base_theme_suggestions_page_alter(array &$suggestions, array 
 
     $suggestions[] = 'page__' . $content_type;
   }
+  // Use the same template for both current and past room reservations pages.
+  if (in_array('page__user__room_reservations_past', $suggestions)) {
+    $suggestions[] = 'page__user__room_reservations';
+  }
 }
 
 /**
@@ -738,8 +766,8 @@ function intercept_base_theme_suggestions_user_alter(array &$suggestions, array 
 function intercept_base_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
   $id = $variables['view']->id();
   $display = $variables['view']->current_display;
-  $suggestions[] = 'views_view--' . $id;
-  $suggestions[] = 'views_view--' . $id . '--' . $display;
+  $suggestions[] = 'views_view__' . $id;
+  $suggestions[] = 'views_view__' . $id . '__' . $display;
 }
 
 /**
@@ -748,8 +776,8 @@ function intercept_base_theme_suggestions_views_view_alter(array &$suggestions, 
 function intercept_base_theme_suggestions_views_view_unformatted_alter(array &$suggestions, array $variables) {
   $id = $variables['view']->id();
   $display = $variables['view']->current_display;
-  $suggestions[] = 'views_view_unformatted--' . $id;
-  $suggestions[] = 'views_view_unformatted--' . $id . '--' . $display;
+  $suggestions[] = 'views_view_unformatted__' . $id;
+  $suggestions[] = 'views_view_unformatted__' . $id . '__' . $display;
 }
 
 /**

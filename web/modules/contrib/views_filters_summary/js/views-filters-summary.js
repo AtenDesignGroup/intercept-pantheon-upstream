@@ -4,7 +4,7 @@
     attach: function (context) {
 
       /**
-       * Reset form input to an empty value/default state.
+       * Reset all form inputs to an empty value/default state.
        */
       function reset(selector) {
         $(selector).find(':input').each(function () {
@@ -25,15 +25,67 @@
       }
 
       /**
-       * Click the views exposed form submit button or reload the page if
-       * filters existed in the URL.
+       * Remove a specific filter from the views exposed filters.
+       *
+       * @param {Event} MouseEvent
+       *   The click event.
        */
-      function clickHandler() {
+      function onRemoveClick(event) {
+        event.preventDefault();
+        const [selector, value] = $(this).data('removeSelector').split(':');
+
+        // If there are filters in the URL, remove the specific key value pair
+        // and refresh the page.
+        if (window.location.search.length > 0) {
+          const url = new URL(window.location);
+          // Remove the single value selector.
+          url.searchParams.delete(selector);
+          // Remove the multi value selector, then add back in the ones that don't match the value.
+          const multiValueParams = url.searchParams.getAll(`${selector}[]`);
+          url.searchParams.delete(`${selector}[]`);
+          multiValueParams.forEach((param) => {
+            if (param !== value) {
+              url.searchParams.append(`${selector}[]`, param);
+            }
+          });
+          window.location = url.toString();
+        }
+        // Else, clear the specific input and submit the form.
+        else {
+          const $input = $(`[name^="${selector}"]`);
+
+          if ($input !== undefined) {
+            if ($input.is('input')) {
+              switch ($input.attr('type')) {
+                case 'radio':
+                case 'checkbox':
+                  $input.filter(`[value="${value}"]`).prop('checked', false);
+                  break;
+                default:
+                  $input.val('');
+                  break;
+              }
+            } else {
+              $input.children(`[value="${value}"]`).prop('selected', false);
+            }
+            $('.views-exposed-form input[type="submit"]:nth-child(1)').trigger('click');
+          }
+        }
+      }
+
+      /**
+       * Reset all views exposed form filters.
+       *
+       * @param {Event} MouseEvent
+       *   The click event.
+       */
+      function onResetClick(event) {
+        event.preventDefault();
         let uri = window.location.toString();
 
-        if (uri.indexOf("?") > 0) {
+        if (window.location.search) {
           let base_url = uri.substring(0, uri.indexOf("?"));
-          window.history.replaceState({}, document.title, base_url);
+          window.history.pushState({}, "", base_url);
           window.location.reload();
         } else {
           reset('form[id^="views-exposed-form"]');
@@ -42,38 +94,10 @@
       }
 
       /**
-       * Remove a specific filter from the views exposed filters.
+       * Bind the remove and reset click events.
        */
-      $('.views-filters-summary a.remove-filter', context).one('click', function (event) {
-        event.preventDefault();
-        let [selector, value] = $(this).data('removeSelector').split(':');
-        let $input = $(`[name^="${selector}"]`);
-
-        if ($input !== undefined) {
-          if ($input.is('input')) {
-            switch ($input.attr('type')) {
-              case 'radio':
-              case 'checkbox':
-                $input.filter(`[value="${value}"]`).prop('checked', false);
-                break;
-              default:
-                $input.val('');
-                break;
-            }
-          } else {
-            $input.children(`[value="${value}"]`).prop('selected', false);
-          }
-          clickHandler()
-        }
-      });
-
-      /**
-       * Reset all views exposed form filters.
-       */
-      $('.views-filters-summary a.reset', context).one('click', function (event) {
-        event.preventDefault();
-        clickHandler()
-      });
+      $('.views-filters-summary a.remove-filter', context).one('click', onRemoveClick);
+      $('.views-filters-summary a.reset', context).one('click', onResetClick);
     },
   };
 })(jQuery, Drupal, window);

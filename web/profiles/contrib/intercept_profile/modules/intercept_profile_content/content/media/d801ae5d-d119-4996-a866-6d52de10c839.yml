@@ -1,0 +1,40 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: d801ae5d-d119-4996-a866-6d52de10c839
+  bundle: image
+  default_langcode: en
+  depends:
+    89f183d1-b5c8-420b-9c30-6b01e227d8f4: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'Locations_Cooper_General Use Computers'
+  created:
+    -
+      value: 1532720890
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_caption:
+    -
+      value: "<p>Enhance technology skills, conduct research or browse the web. Computers are reserved on a first-come, first-served basis.</p>\r\n"
+      format: basic_html
+  field_media_image:
+    -
+      entity: 89f183d1-b5c8-420b-9c30-6b01e227d8f4
+      alt: 'Cooper Computers'
+      title: ''
+      width: 1800
+      height: 1225

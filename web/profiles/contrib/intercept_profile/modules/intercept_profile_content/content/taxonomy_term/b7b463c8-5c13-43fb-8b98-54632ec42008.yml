@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: b7b463c8-5c13-43fb-8b98-54632ec42008
+  bundle: room_type
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: Studio
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0

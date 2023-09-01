@@ -9,3 +9,7 @@ Allows custom AJAX callbacks on Views exposed filters
 Source: https://www.drupal.org/files/issues/2023-05-04/2842525-124.patch
 
 
+3193348 Removes faulty exception related to permissions
+Source: patches/3193348-removes-faulty-exception-related-to-permissions.patch
+
+

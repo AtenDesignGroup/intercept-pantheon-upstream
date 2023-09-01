@@ -1,0 +1,30 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 4df73f2d-9c13-498e-b233-4b0f9bd7b07e
+  bundle: meeting_purpose
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: Other
+  weight:
+    -
+      value: 8
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_requires_explanation:
+    -
+      value: false

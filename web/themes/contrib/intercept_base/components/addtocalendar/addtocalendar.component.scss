@@ -92,3 +92,25 @@
     text-decoration: none;
   }
 }
+
+.teaser__footer {
+
+  @include bp(large) {
+    .room-reservation-addtocalendar {
+      text-align: left;
+    }
+  }
+
+  .react-add-to-calendar__button {
+    &:before {
+      margin-right: 2rem;
+    }
+  }
+
+  .react-add-to-calendar__dropdown {
+  
+    > ul:not([class]) > li > a {
+      @include fs(nano);
+    }
+  }
+}

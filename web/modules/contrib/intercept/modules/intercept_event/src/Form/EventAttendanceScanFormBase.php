@@ -137,7 +137,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
    *   The Drupal user, or FALSE;
    */
   protected function createAttendee($barcode) {
-    $user = \Drupal::service('intercept_ils.mapping_manager')->loadByBarcode($barcode);
+    $user = \Drupal::service('intercept_ils.association_manager')->loadByBarcode($barcode);
     return $user;
   }
 

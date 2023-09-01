@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 6bfe472a-0bde-484e-95e8-be77e62a6620
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 17_07_1690_edit_1.jpg
+  uri:
+    -
+      value: 'public://2018-07/17_07_1690_edit_1.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 659746
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1532720890

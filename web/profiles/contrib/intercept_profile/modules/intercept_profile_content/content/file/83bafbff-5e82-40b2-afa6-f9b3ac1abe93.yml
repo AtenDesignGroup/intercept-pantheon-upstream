@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 83bafbff-5e82-40b2-afa6-f9b3ac1abe93
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: _m3_1169_edit_1.jpg
+  uri:
+    -
+      value: 'public://2018-07/_m3_1169_edit_1.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 770853
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1532720890

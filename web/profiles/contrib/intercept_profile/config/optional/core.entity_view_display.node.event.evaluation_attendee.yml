@@ -4,14 +4,13 @@ dependencies:
   config:
     - core.entity_view_mode.node.evaluation_attendee
     - field.field.node.event.field_add_to_cal
+    - field.field.node.event.field_address
     - field.field.node.event.field_attendees
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
     - field.field.node.event.field_disclaimer
-    - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
-    - field.field.node.event.field_event_designation
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
@@ -20,6 +19,7 @@ dependencies:
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
     - field.field.node.event.field_event_user_reg_max
+    - field.field.node.event.field_external_location_name
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
     - field.field.node.event.field_hosting_location
@@ -125,12 +125,11 @@ hidden:
   evaluation_staff: true
   event_recurrence: true
   field_add_to_cal: true
+  field_address: true
   field_attendees: true
   field_audience_primary: true
   field_capacity_max: true
   field_disclaimer: true
-  field_evanced_id: true
-  field_event_designation: true
   field_event_is_template: true
   field_event_register_period: true
   field_event_series: true
@@ -138,6 +137,7 @@ hidden:
   field_event_tags: true
   field_event_type_primary: true
   field_event_user_reg_max: true
+  field_external_location_name: true
   field_featured: true
   field_has_waitlist: true
   field_hosting_location: true
@@ -152,4 +152,5 @@ hidden:
   flag_saved_event: true
   langcode: true
   rate_vote_widget: true
+  recommended: true
   search_api_excerpt: true

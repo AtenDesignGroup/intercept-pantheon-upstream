@@ -1,7 +1,7 @@
 type: module
 name: Views Exposed Filters Summary
 description: Plugin to display summary of selected exposed filters in header or footer area of a view.
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^8.8 || ^9 || ^10
 php: 7.2
 package: Views
 dependencies:

@@ -54,14 +54,11 @@ function default_content_drush_command() {
  *   The entity ID to export.
  */
 function drush_default_content_export($entity_type_id, $entity_id) {
-  /** @var \Drupal\default_content\DefaultContentExporterInterface $exporter */
+  /** @var \Drupal\default_content\ExporterInterface $exporter */
   $exporter = \Drupal::service('default_content.exporter');
-  $export = $exporter->exportContent($entity_type_id, $entity_id);
+  $export = $exporter->exportContent($entity_type_id, $entity_id, drush_get_option('file'));
 
-  if ($file = drush_get_option('file')) {
-    file_put_contents($file, $export);
-  }
-  else {
+  if (!drush_get_option('file')) {
     drush_print($export);
   }
 }
@@ -75,7 +72,7 @@ function drush_default_content_export($entity_type_id, $entity_id) {
  *   (Optional) The entity ID to export or all entities will be exported.
  */
 function drush_default_content_export_references($entity_type_id, $entity_id = NULL) {
-  /** @var \Drupal\default_content\DefaultContentExporterInterface $exporter */
+  /** @var \Drupal\default_content\ExporterInterface $exporter */
   $exporter = \Drupal::service('default_content.exporter');
 
   $folder = drush_get_option('folder', '.');
@@ -87,8 +84,7 @@ function drush_default_content_export_references($entity_type_id, $entity_id = N
   }
   // @todo Add paging.
   foreach ($entities as $entity_id) {
-    $serialized_by_type = $exporter->exportContentWithReferences($entity_type_id, $entity_id);
-    $exporter->writeDefaultContent($serialized_by_type, $folder);
+    $exporter->exportContentWithReferences($entity_type_id, $entity_id, $folder);
   }
 }
 
@@ -99,11 +95,10 @@ function drush_default_content_export_references($entity_type_id, $entity_id = N
  *   The module name to export.
  */
 function drush_default_content_export_module($module_name) {
-  /** @var \Drupal\default_content\DefaultContentExporterInterface $exporter */
+  /** @var \Drupal\default_content\ExporterInterface $exporter */
   $exporter = \Drupal::service('default_content.exporter');
-  $serialized_by_type = $exporter->exportModuleContent($module_name);
   $module_folder = \Drupal::moduleHandler()
     ->getModule($module_name)
     ->getPath() . '/content';
-  $exporter->writeDefaultContent($serialized_by_type, $module_folder);
+  $exporter->exportModuleContent($module_name, $module_folder);
 }

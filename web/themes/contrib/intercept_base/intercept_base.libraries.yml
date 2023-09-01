@@ -271,10 +271,12 @@ header:
   js:
     build/components/header/header.js: {}
     build/components/header/headerDeviceContext.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/drupal
     - core/jquery
-    - core/jquery.once
     - intercept_base/hoverIntent
     - intercept_base/toggle
 
@@ -285,10 +287,12 @@ header-desktop:
       build/components/header-desktop/header-desktop.component.css: {}
   js:
     build/components/header-desktop/header-desktop.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/drupal
     - core/jquery
-    - core/jquery.once
     - intercept_base/hoverIntent
     - intercept_base/tabbed
 
@@ -299,10 +303,12 @@ header-mobile:
       build/components/header-mobile/header-mobile.component.css: {}
   js:
     build/components/header-mobile/header-mobile.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/drupal
     - core/jquery
-    - core/jquery.once
     - intercept_base/hoverIntent
     - intercept_base/tabbed
 
@@ -383,9 +389,11 @@ main-menu:
       build/components/main-menu/main-menu.component.css: {}
   js:
     build/components/main-menu/main-menu.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/jquery
-    - core/jquery.once
     - intercept_base/tabbed
 
 # Media
@@ -569,9 +577,11 @@ view-switcher:
       build/components/view-switcher/view-switcher.theme.css: {}
   js:
     js/view-switcher.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/jquery
-    - core/jquery.once
 
 # Nav / Menu
 hoverIntent:

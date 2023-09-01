@@ -2,7 +2,7 @@
 
 namespace Drupal\default_content\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Drupal\Component\EventDispatcher\Event;
 
 /**
  * Defines event fired when content is imported.

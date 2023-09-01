@@ -1,0 +1,186 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.intercept_listing
+    - field.field.node.event.field_add_to_cal
+    - field.field.node.event.field_address
+    - field.field.node.event.field_attendees
+    - field.field.node.event.field_audience_primary
+    - field.field.node.event.field_capacity_max
+    - field.field.node.event.field_date_time
+    - field.field.node.event.field_disclaimer
+    - field.field.node.event.field_event_audience
+    - field.field.node.event.field_event_is_template
+    - field.field.node.event.field_event_register_period
+    - field.field.node.event.field_event_series
+    - field.field.node.event.field_event_status
+    - field.field.node.event.field_event_tags
+    - field.field.node.event.field_event_type
+    - field.field.node.event.field_event_type_primary
+    - field.field.node.event.field_event_user_reg_max
+    - field.field.node.event.field_external_location_name
+    - field.field.node.event.field_featured
+    - field.field.node.event.field_has_waitlist
+    - field.field.node.event.field_hosting_location
+    - field.field.node.event.field_keywords
+    - field.field.node.event.field_location
+    - field.field.node.event.field_must_register
+    - field.field.node.event.field_presented_by_non_staff
+    - field.field.node.event.field_presenter
+    - field.field.node.event.field_room
+    - field.field.node.event.field_staff_presenter
+    - field.field.node.event.field_text_content
+    - field.field.node.event.field_text_intro
+    - field.field.node.event.field_text_teaser
+    - field.field.node.event.field_waitlist_max
+    - field.field.node.event.image_primary
+    - image.style.4to3_740x556
+    - node.type.event
+  module:
+    - addtocalendar
+    - datetime_range
+    - media
+    - user
+id: node.event.intercept_listing
+targetEntityType: node
+bundle: event
+mode: intercept_listing
+content:
+  field_date_time:
+    type: daterange_default
+    label: hidden
+    settings:
+      timezone_override: ''
+      format_type: event_date
+      separator: '-'
+    third_party_settings:
+      addtocalendar:
+        addtocalendar_settings:
+          style: blue
+          display_text: 'Add to Calendar'
+          atc_title:
+            field: token
+            tokenized: Title
+          atc_description:
+            field: token
+            tokenized: Description
+          atc_location:
+            field: token
+            tokenized: Location
+          atc_organizer:
+            field: token
+            tokenized: 'Richland Library'
+          atc_organizer_email:
+            field: token
+            tokenized: no-reply@richlandlibrary.com
+          atc_date_end:
+            field: token
+            tokenized: ''
+          atc_privacy: public
+          data_secure: auto
+          data_calendars:
+            iCalendar: 0
+            'Google Calendar': 0
+            Outlook: 0
+            'Outlook Online': 0
+            'Yahoo! Calendar': 0
+        addtocalendar_show: 0
+    weight: 1
+    region: content
+  field_event_audience:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_event_type:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_location:
+    type: entity_reference_label
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_text_teaser:
+    type: basic_string
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  flag_saved_event:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  image_primary:
+    type: media_thumbnail
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: 4to3_740x556
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  is_recommended:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  recommended:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 9
+    region: content
+hidden:
+  checkin_link: true
+  evaluation_attendee_default: true
+  evaluation_attendee_js: true
+  evaluation_staff: true
+  event_recurrence: true
+  field_add_to_cal: true
+  field_address: true
+  field_attendees: true
+  field_audience_primary: true
+  field_capacity_max: true
+  field_disclaimer: true
+  field_event_is_template: true
+  field_event_register_period: true
+  field_event_series: true
+  field_event_status: true
+  field_event_tags: true
+  field_event_type_primary: true
+  field_event_user_reg_max: true
+  field_external_location_name: true
+  field_featured: true
+  field_has_waitlist: true
+  field_hosting_location: true
+  field_keywords: true
+  field_must_register: true
+  field_presented_by_non_staff: true
+  field_presenter: true
+  field_room: true
+  field_staff_presenter: true
+  field_text_content: true
+  field_text_intro: true
+  field_waitlist_max: true
+  langcode: true
+  search_api_excerpt: true

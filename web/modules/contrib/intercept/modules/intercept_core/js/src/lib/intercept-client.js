@@ -8290,7 +8290,6 @@ let schema = {
     field_text_intro: { type: 'object' },
     field_text_teaser: { type: 'string' },
     field_waitlist_max: { type: 'integer' },
-    field_evanced_id: { type: 'string' },
     registration: { type: 'object' },
     type: {
       type: 'relationship',
@@ -8453,4 +8452,4 @@ let index = {
 };
 
 export default index;
-// # sourceMappingURL=intercept-client.js.map
+// # sourceURL=intercept-client.js.map

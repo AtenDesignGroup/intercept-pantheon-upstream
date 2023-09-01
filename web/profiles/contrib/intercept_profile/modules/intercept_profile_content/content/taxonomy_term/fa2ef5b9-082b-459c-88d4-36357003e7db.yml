@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: fa2ef5b9-082b-459c-88d4-36357003e7db
+  bundle: tag
+  default_langcode: en
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Learning Activities for Adults'
+  description:
+    -
+      value: "<h4><strong>Create your own Summer Learning Challenge this year! </strong></h4>\r\n\r\n<p>All of the activities listed below have been created to help adults learn, create and share.&nbsp;Earn a point towards your Summer Learning Challenge for each activity you complete.&nbsp;</p>\r\n"
+      format: basic_html
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 1

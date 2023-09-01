@@ -1,0 +1,40 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: cdf7ed47-4cba-441c-8388-0fc63b224b04
+  bundle: image
+  default_langcode: en
+  depends:
+    6bfe472a-0bde-484e-95e8-be77e62a6620: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: Locations_Cooper_Makerspace
+  created:
+    -
+      value: 1532720890
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_caption:
+    -
+      value: "<p>Teens and adults can tinker, experiment and create with tools in both guided and open lab sessions.</p>\r\n"
+      format: basic_html
+  field_media_image:
+    -
+      entity: 6bfe472a-0bde-484e-95e8-be77e62a6620
+      alt: 'Cooper Makerspace'
+      title: ''
+      width: 1800
+      height: 1200

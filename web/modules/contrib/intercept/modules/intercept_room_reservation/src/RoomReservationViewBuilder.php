@@ -11,6 +11,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Theme\Registry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -102,17 +104,33 @@ class RoomReservationViewBuilder extends EntityViewBuilder {
     }
 
     if ($display->getComponent('action_button')) {
-      $build['action_button'] = [
-        '#type' => 'container',
-        '#attributes' => [
-          'class' => 'js--room-reservation-action',
-          'data-reservation-uuid' => $room_reservation->uuid(),
-          'data-status' => $room_reservation->field_status->value,
-        ],
-        '#attached' => [
-          'library' => ['intercept_room_reservation/roomReservationActionButton', 'intercept_core/moment'],
-        ],
-      ];
+      $end_date = strtotime($build['field_dates'][0]['end_date']['#attributes']['datetime']);
+      if (strtotime('now') <= $end_date) { // Current room reservations
+        $build['action_button'] = [
+          '#type' => 'container',
+          '#attributes' => [
+            'class' => 'js--room-reservation-action',
+            'data-reservation-uuid' => $room_reservation->uuid(),
+            'data-status' => $room_reservation->field_status->value,
+          ],
+          '#attached' => [
+            'library' => ['intercept_room_reservation/roomReservationActionButton', 'intercept_core/moment'],
+          ],
+        ];
+      }
+      else { // Past room reservations
+        $build['action_button'] = [
+          '#markup' => Link::createFromRoute('Rebook', 'intercept_room_reservation.reserve_room', [
+            // 'location' => $room_reservation->getLocation()->uuid(),
+            'room' => $room_reservation->getRoom()->uuid(),
+            'step' => '1',
+          ], [
+            'attributes' => [
+              'class' => ['button button-action button--primary action-button__button action-button__button--outlined action-button__button--small'],
+            ],
+          ])->toString()
+        ];
+      }
     }
   }
 

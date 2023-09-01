@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.intercept_listing
+label: 'Intercept Listing'
+targetEntityType: node
+cache: true

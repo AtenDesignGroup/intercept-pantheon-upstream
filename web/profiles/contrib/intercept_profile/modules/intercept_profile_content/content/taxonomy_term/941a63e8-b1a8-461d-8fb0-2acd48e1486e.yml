@@ -1,0 +1,66 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 941a63e8-b1a8-461d-8fb0-2acd48e1486e
+  bundle: event_type
+  default_langcode: en
+  depends:
+    7494b38c-6e5d-4164-80b8-c8043a40470a: taxonomy_term
+    722df3ba-783b-4b70-866b-f4aa7517d68b: taxonomy_term
+    368456b4-f2d4-46e4-9beb-e4039795fd4e: taxonomy_term
+    df791128-071f-466f-87f7-c33037ebd9c4: taxonomy_term
+    b78afa66-aa21-40ec-b603-771c3b21dcb7: taxonomy_term
+    2ce65b2b-2951-47d5-b07e-4fd4ec75c0ff: taxonomy_term
+    ca9d7513-7eab-4801-b9f1-497868db3eca: taxonomy_term
+    a347f34c-4743-49f2-8b82-08d5c4488bd8: taxonomy_term
+    70399bd2-bec5-49d3-a95a-e9e0bb28b6d1: taxonomy_term
+    f8c38bed-310b-4915-adf5-4e6fa4a92f3a: taxonomy_term
+    81ba7bb0-327d-4057-b1fd-30bd8a7a160d: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Computers and Technology'
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_evaluation_criteria_neg:
+    -
+      entity: 7494b38c-6e5d-4164-80b8-c8043a40470a
+    -
+      entity: 722df3ba-783b-4b70-866b-f4aa7517d68b
+    -
+      entity: 368456b4-f2d4-46e4-9beb-e4039795fd4e
+    -
+      entity: df791128-071f-466f-87f7-c33037ebd9c4
+    -
+      entity: b78afa66-aa21-40ec-b603-771c3b21dcb7
+    -
+      entity: 2ce65b2b-2951-47d5-b07e-4fd4ec75c0ff
+  field_evaluation_criteria_pos:
+    -
+      entity: ca9d7513-7eab-4801-b9f1-497868db3eca
+    -
+      entity: a347f34c-4743-49f2-8b82-08d5c4488bd8
+    -
+      entity: 70399bd2-bec5-49d3-a95a-e9e0bb28b6d1
+    -
+      entity: f8c38bed-310b-4915-adf5-4e6fa4a92f3a
+    -
+      entity: 81ba7bb0-327d-4057-b1fd-30bd8a7a160d
+  field_examples:
+    -
+      value: 'Computer classes, eReady classes, Code Camp'

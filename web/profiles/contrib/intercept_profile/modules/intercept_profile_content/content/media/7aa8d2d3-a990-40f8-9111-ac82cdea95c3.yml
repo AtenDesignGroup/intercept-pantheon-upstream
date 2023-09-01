@@ -1,0 +1,40 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 7aa8d2d3-a990-40f8-9111-ac82cdea95c3
+  bundle: image
+  default_langcode: en
+  depends:
+    6630ef00-7651-40b5-9d68-67758037fa7a: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'Locations_Cooper_Reading Room'
+  created:
+    -
+      value: 1532720890
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_caption:
+    -
+      value: "<p>Step away from the hustle and bustle, and enjoy the serenity of our quiet reading and study refuge.<br />\r\n&nbsp;</p>\r\n"
+      format: basic_html
+  field_media_image:
+    -
+      entity: 6630ef00-7651-40b5-9d68-67758037fa7a
+      alt: 'Cooper Reading Room'
+      title: ''
+      width: 1800
+      height: 1200

@@ -4,14 +4,13 @@ dependencies:
   config:
     - core.entity_view_mode.node.full
     - field.field.node.event.field_add_to_cal
+    - field.field.node.event.field_address
     - field.field.node.event.field_attendees
     - field.field.node.event.field_audience_primary
     - field.field.node.event.field_capacity_max
     - field.field.node.event.field_date_time
     - field.field.node.event.field_disclaimer
-    - field.field.node.event.field_evanced_id
     - field.field.node.event.field_event_audience
-    - field.field.node.event.field_event_designation
     - field.field.node.event.field_event_is_template
     - field.field.node.event.field_event_register_period
     - field.field.node.event.field_event_series
@@ -20,6 +19,7 @@ dependencies:
     - field.field.node.event.field_event_type
     - field.field.node.event.field_event_type_primary
     - field.field.node.event.field_event_user_reg_max
+    - field.field.node.event.field_external_location_name
     - field.field.node.event.field_featured
     - field.field.node.event.field_has_waitlist
     - field.field.node.event.field_hosting_location
@@ -38,6 +38,7 @@ dependencies:
     - image.style.4to3_740x556
     - node.type.event
   module:
+    - address
     - addtocalendar
     - datetime_range
     - media
@@ -51,7 +52,7 @@ content:
   checkin_link:
     settings: {  }
     third_party_settings: {  }
-    weight: 16
+    weight: 18
     region: content
   evaluation_attendee_js:
     settings: {  }
@@ -63,7 +64,14 @@ content:
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    weight: 15
+    weight: 17
+    region: content
+  field_address:
+    type: address_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 16
     region: content
   field_capacity_max:
     type: number_integer
@@ -91,7 +99,7 @@ content:
       view_mode: default
       link: true
     third_party_settings: {  }
-    weight: 17
+    weight: 19
     region: content
   field_event_audience:
     type: entity_reference_label
@@ -135,6 +143,14 @@ content:
     third_party_settings: {  }
     weight: 10
     region: content
+  field_external_location_name:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 15
+    region: content
   field_location:
     type: entity_reference_label
     label: hidden
@@ -159,7 +175,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 18
+    weight: 20
     region: content
   field_room:
     type: entity_reference_label
@@ -175,7 +191,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 27
+    weight: 21
     region: content
   field_text_content:
     type: text_default
@@ -213,8 +229,6 @@ hidden:
   event_recurrence: true
   field_attendees: true
   field_audience_primary: true
-  field_evanced_id: true
-  field_event_designation: true
   field_event_is_template: true
   field_event_status: true
   field_event_type_primary: true
@@ -228,4 +242,5 @@ hidden:
   field_waitlist_max: true
   langcode: true
   links: true
+  recommended: true
   search_api_excerpt: true

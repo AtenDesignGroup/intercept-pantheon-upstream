@@ -1,0 +1,36 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 789bcfbf-13dc-425d-a012-88eccd2b6021
+  bundle: image
+  default_langcode: en
+  depends:
+    2667d147-0cdd-414d-bbcf-22e5d9c32768: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'North Branch Exterior'
+  created:
+    -
+      value: 1691699338
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 2667d147-0cdd-414d-bbcf-22e5d9c32768
+      alt: 'North Branch Exterior'
+      title: ''
+      width: 5472
+      height: 3648

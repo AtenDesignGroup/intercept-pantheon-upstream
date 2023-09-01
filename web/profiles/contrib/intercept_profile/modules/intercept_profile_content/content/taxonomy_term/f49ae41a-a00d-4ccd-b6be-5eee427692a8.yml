@@ -1,0 +1,69 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: f49ae41a-a00d-4ccd-b6be-5eee427692a8
+  bundle: event_type
+  default_langcode: en
+  depends:
+    20b01bd7-f12d-42a3-af79-57e467b23563: taxonomy_term
+    7c881f89-748e-4760-ad84-6a991075fdf7: taxonomy_term
+    df791128-071f-466f-87f7-c33037ebd9c4: taxonomy_term
+    ea7a5b80-77f7-4497-8013-9403d1924d95: taxonomy_term
+    d7bb0d12-54a3-4b02-b99a-bb86a918dd25: taxonomy_term
+    65a79687-5659-490d-8ac0-2bdf978d8ebe: taxonomy_term
+    b198e151-eb92-4021-922a-34dbb545047f: taxonomy_term
+    60a6dd8c-6b41-4770-ba25-f3a833544219: taxonomy_term
+    8b21a6e8-9160-4039-ad85-13e9a4effe00: taxonomy_term
+    46ab7721-b4df-49e0-8939-749253ae1930: taxonomy_term
+    abdd3c7e-55c9-425a-a79f-1e2a63f6d169: taxonomy_term
+    c3d7e2ce-24fe-480f-8c96-c09c50785069: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Live Performance'
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_evaluation_criteria_neg:
+    -
+      entity: 20b01bd7-f12d-42a3-af79-57e467b23563
+    -
+      entity: 7c881f89-748e-4760-ad84-6a991075fdf7
+    -
+      entity: df791128-071f-466f-87f7-c33037ebd9c4
+    -
+      entity: ea7a5b80-77f7-4497-8013-9403d1924d95
+    -
+      entity: d7bb0d12-54a3-4b02-b99a-bb86a918dd25
+    -
+      entity: 65a79687-5659-490d-8ac0-2bdf978d8ebe
+  field_evaluation_criteria_pos:
+    -
+      entity: b198e151-eb92-4021-922a-34dbb545047f
+    -
+      entity: 60a6dd8c-6b41-4770-ba25-f3a833544219
+    -
+      entity: 8b21a6e8-9160-4039-ad85-13e9a4effe00
+    -
+      entity: 46ab7721-b4df-49e0-8939-749253ae1930
+    -
+      entity: abdd3c7e-55c9-425a-a79f-1e2a63f6d169
+    -
+      entity: c3d7e2ce-24fe-480f-8c96-c09c50785069
+  field_examples:
+    -
+      value: 'Live music, plays, Screendoor Storytelling'

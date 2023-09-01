@@ -4,6 +4,12 @@ All notable changes to `php-sip2` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## 3.0.0 - 2023-06-13
+
+### Changed
+- Updated composer.json to require php8 and psr/log v3. This version can be included in codebases which 
+  are also using psr/log v3, such as Drupal 10. This addresses https://github.com/lordelph/php-sip2/issues/5
+
 ## 2.1.1 - 2022-05-09
 
 ### Changed

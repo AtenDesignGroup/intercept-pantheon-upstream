@@ -23,7 +23,7 @@ class DefaultContentTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['taxonomy', 'hal', 'default_content'];
+  protected static $modules = ['taxonomy', 'hal', 'default_content'];
 
   /**
    * {@inheritdoc}
@@ -33,7 +33,7 @@ class DefaultContentTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // Create user 2 with the correct UUID.
     User::create([
@@ -70,7 +70,7 @@ class DefaultContentTest extends BrowserTestBase {
     $extensions['module'] = module_config_sort($extensions['module']);
     $sync->write('core.extension', $extensions);
     // Slightly hacky but we need the config from the test module too.
-    $module_storage = new FileStorage(drupal_get_path('module', 'default_content_test') . '/config/install');
+    $module_storage = new FileStorage(\Drupal::service('extension.list.module')->getPath('default_content_test') . '/config/install');
     foreach ($module_storage->listAll() as $name) {
       $sync->write($name, $module_storage->read($name));
     }
@@ -101,10 +101,10 @@ class DefaultContentTest extends BrowserTestBase {
 
     $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadMultiple();
     $term = reset($terms);
-    $this->assertTrue(!empty($term));
+    $this->assertNotEmpty($term);
     $this->assertEquals($term->name->value, 'A tag');
     $term_id = $node->field_tags->target_id;
-    $this->assertTrue(!empty($term_id), 'Term reference populated');
+    $this->assertNotEmpty($term_id);
   }
 
 }

@@ -203,7 +203,7 @@ class EventAttendanceController extends ControllerBase {
         if (!$this->eventAttendanceProvider->getEventAttendance($node->id())) {
           $this->createAttendance($node->id(), $this->currentUser()->id());
         }
-        $this->messenger()->addMessage($this->t("You're all checked in! Enjoy the event"), MessengerInterface::TYPE_STATUS);
+        $this->messenger()->addMessage($this->t("You're all checked in! Enjoy the event."), MessengerInterface::TYPE_STATUS);
         break;
 
       case 'open_pending':
@@ -215,11 +215,11 @@ class EventAttendanceController extends ControllerBase {
         break;
 
       case 'closed':
-        $this->messenger()->addMessage($this->t("We're sorry. The check-in period is closed"), MessengerInterface::TYPE_ERROR);
+        $this->messenger()->addMessage($this->t("We're sorry. The check-in period is closed."), MessengerInterface::TYPE_ERROR);
         break;
 
       default:
-        $this->messenger()->addMessage($this->t("Unable to check-in for this event"), MessengerInterface::TYPE_ERROR);
+        $this->messenger()->addMessage($this->t("Unable to check in for this event."), MessengerInterface::TYPE_ERROR);
         break;
 
     }

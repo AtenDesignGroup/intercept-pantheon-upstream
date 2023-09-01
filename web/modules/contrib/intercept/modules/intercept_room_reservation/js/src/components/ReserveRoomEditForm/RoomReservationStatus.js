@@ -6,7 +6,7 @@ import EntityStatus from 'intercept/EntityStatus';
 const c = interceptClient.constants;
 
 const messages = {
-  default: 'The status of the reservation is unknown',
+  default: 'The status of the reservation is unknown.',
   dirty: {
     requested: 'Requesting reservation',
     approved: 'Approving reservation',
@@ -20,16 +20,16 @@ const messages = {
     canceled: 'Canceling reservation',
   },
   saved: {
-    requested: 'This reservation has been requested',
-    approved: 'This reservation has been approved',
-    denied: 'This reservation has been denied',
-    canceled: 'This reservation has been canceled',
+    requested: 'This reservation has been requested.',
+    approved: 'This reservation has been approved.',
+    denied: 'This reservation has been denied.',
+    canceled: 'This reservation has been canceled.',
   },
   error: {
-    requested: 'An error occurred while requesting this reservation',
-    approved: 'An error occurred while approving this reservation',
-    denied: 'An error occurred while denying this reservation',
-    canceled: 'An error occurred while canceling this reservation',
+    requested: 'An error occurred while requesting this reservation.',
+    approved: 'An error occurred while approving this reservation.',
+    denied: 'An error occurred while denying this reservation.',
+    canceled: 'An error occurred while canceling this reservation.',
   },
 };
 

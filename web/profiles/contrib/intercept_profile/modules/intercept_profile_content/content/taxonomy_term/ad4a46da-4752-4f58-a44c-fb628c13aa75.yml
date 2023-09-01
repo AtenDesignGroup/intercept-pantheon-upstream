@@ -1,0 +1,66 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: ad4a46da-4752-4f58-a44c-fb628c13aa75
+  bundle: event_type
+  default_langcode: en
+  depends:
+    722df3ba-783b-4b70-866b-f4aa7517d68b: taxonomy_term
+    7c881f89-748e-4760-ad84-6a991075fdf7: taxonomy_term
+    368456b4-f2d4-46e4-9beb-e4039795fd4e: taxonomy_term
+    df791128-071f-466f-87f7-c33037ebd9c4: taxonomy_term
+    d7bb0d12-54a3-4b02-b99a-bb86a918dd25: taxonomy_term
+    b78afa66-aa21-40ec-b603-771c3b21dcb7: taxonomy_term
+    b198e151-eb92-4021-922a-34dbb545047f: taxonomy_term
+    9ce94301-0da6-414f-8156-06b71dbf839a: taxonomy_term
+    ca9d7513-7eab-4801-b9f1-497868db3eca: taxonomy_term
+    a347f34c-4743-49f2-8b82-08d5c4488bd8: taxonomy_term
+    f8c38bed-310b-4915-adf5-4e6fa4a92f3a: taxonomy_term
+    d47088ca-26ad-4503-b022-aa4aa60464c9: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Arts, Crafts and Hobbies'
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 1
+  field_evaluation_criteria_neg:
+    -
+      entity: 722df3ba-783b-4b70-866b-f4aa7517d68b
+    -
+      entity: 7c881f89-748e-4760-ad84-6a991075fdf7
+    -
+      entity: 368456b4-f2d4-46e4-9beb-e4039795fd4e
+    -
+      entity: df791128-071f-466f-87f7-c33037ebd9c4
+    -
+      entity: d7bb0d12-54a3-4b02-b99a-bb86a918dd25
+    -
+      entity: b78afa66-aa21-40ec-b603-771c3b21dcb7
+  field_evaluation_criteria_pos:
+    -
+      entity: b198e151-eb92-4021-922a-34dbb545047f
+    -
+      entity: 9ce94301-0da6-414f-8156-06b71dbf839a
+    -
+      entity: ca9d7513-7eab-4801-b9f1-497868db3eca
+    -
+      entity: a347f34c-4743-49f2-8b82-08d5c4488bd8
+    -
+      entity: f8c38bed-310b-4915-adf5-4e6fa4a92f3a
+    -
+      entity: d47088ca-26ad-4503-b022-aa4aa60464c9

@@ -1,0 +1,66 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 321c0a5d-f02b-4267-a4d2-e39f635d8072
+  bundle: event_type
+  default_langcode: en
+  depends:
+    d74e7b0f-cefa-4158-b2ed-29145adf46e6: taxonomy_term
+    d6e0c15d-d1fc-49b1-89f8-3eda73446c1d: taxonomy_term
+    368456b4-f2d4-46e4-9beb-e4039795fd4e: taxonomy_term
+    ebcd8400-2fef-47bf-afdf-ff3db4824f30: taxonomy_term
+    df791128-071f-466f-87f7-c33037ebd9c4: taxonomy_term
+    b78afa66-aa21-40ec-b603-771c3b21dcb7: taxonomy_term
+    ca9d7513-7eab-4801-b9f1-497868db3eca: taxonomy_term
+    a347f34c-4743-49f2-8b82-08d5c4488bd8: taxonomy_term
+    70399bd2-bec5-49d3-a95a-e9e0bb28b6d1: taxonomy_term
+    81ba7bb0-327d-4057-b1fd-30bd8a7a160d: taxonomy_term
+    d47088ca-26ad-4503-b022-aa4aa60464c9: taxonomy_term
+    c3d7e2ce-24fe-480f-8c96-c09c50785069: taxonomy_term
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Business and Careers'
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_evaluation_criteria_neg:
+    -
+      entity: d74e7b0f-cefa-4158-b2ed-29145adf46e6
+    -
+      entity: d6e0c15d-d1fc-49b1-89f8-3eda73446c1d
+    -
+      entity: 368456b4-f2d4-46e4-9beb-e4039795fd4e
+    -
+      entity: ebcd8400-2fef-47bf-afdf-ff3db4824f30
+    -
+      entity: df791128-071f-466f-87f7-c33037ebd9c4
+    -
+      entity: b78afa66-aa21-40ec-b603-771c3b21dcb7
+  field_evaluation_criteria_pos:
+    -
+      entity: ca9d7513-7eab-4801-b9f1-497868db3eca
+    -
+      entity: a347f34c-4743-49f2-8b82-08d5c4488bd8
+    -
+      entity: 70399bd2-bec5-49d3-a95a-e9e0bb28b6d1
+    -
+      entity: 81ba7bb0-327d-4057-b1fd-30bd8a7a160d
+    -
+      entity: d47088ca-26ad-4503-b022-aa4aa60464c9
+    -
+      entity: c3d7e2ce-24fe-480f-8c96-c09c50785069

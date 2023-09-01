@@ -88,7 +88,7 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
   public function getSuggestedEventIds(AccountInterface $account = NULL) {
     $event_ids = [];
 
-    // Get user's attended, registered, and saved events.
+    // Get user's scanned in, registered, and saved events.
     $past_event_ids = $this->getUserAttendedEventIds() + $this->getUserRegisteredEventIds() + $this->getUserSavedEvents();
     // Figure out the event types and locations of the past $nids.
     $past_events = $this->eventStorage->loadMultiple($past_event_ids);
@@ -111,9 +111,9 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
 
     // RECOMMENDATIONS.
     $customer = $this->profileStorage->loadByUser($this->currentUser, 'customer');
-    $query = $this->futureEventsQuery();
+    $query = $this->futureEventsQuery()->accessCheck(FALSE);
 
-    // Exclude attended, saved, and registered events.
+    // Exclude scanned in, saved, and registered events.
     if (count($past_event_ids) > 0) {
       $query->condition('nid', $past_event_ids, 'NOT IN');
     }
@@ -202,9 +202,9 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
     $query = new SuggestedEventsQuery($node, 'AND', \Drupal::service('database'), ['Drupal\Core\Entity\Query\Sql']);
 
     $query->condition('type', 'event', '=')
+      ->accessCheck(FALSE)
       ->condition('field_date_time', $current_date->format('c'), '>=')
       ->condition('status', 1, '=')
-      ->condition('field_event_designation', 'events', '=')
       ->range(0, 100);
     $event_fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', 'event');
     if (array_key_exists('field_event_status', $event_fields)) {
@@ -214,12 +214,12 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
   }
 
   /**
-   * Gets the user's attended events.
+   * Gets the user's scanned in events.
    *
    * @todo Refactor again.
    *
    * @return array
-   *   An array of user's attended event nids.
+   *   An array of user's scanned in event nids.
    */
   protected function getUserAttendedEventIds() {
     $attendances = array_filter($this->eventAttendanceProvider->getEventAttendances(), function ($attendance) {
@@ -260,6 +260,7 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
     // Get nodes flagged by current user.
     $flagStorage = $this->entityTypeManager->getStorage('flagging');
     $flag_ids = $flagStorage->getQuery()
+      ->accessCheck(FALSE)
       ->condition('flag_id', 'saved_event')
       ->condition('uid', $this->currentUser->id())
       ->condition('created', strtotime('-1 year'), '>')

@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/* eslint-disable */
+import Drupal from 'Drupal';
+import { Button } from '@material-ui/core';
+/* eslint-enable */
+
 const SummaryImage = (props) => {
   const img = <img src={props.image} alt={props.alt} />;
 
@@ -53,6 +58,8 @@ const Summary = (props) => {
     uuid,
   } = props;
   const classes = `summary ${modifiers.map(mod => `summary--${mod}`).join(' ')}`;
+  const params = new URLSearchParams(window.location.search);
+  const room = params.get('roomDetail') || '';
 
   function createMarkup(value) {
     return { __html: value };
@@ -80,6 +87,17 @@ const Summary = (props) => {
         {body && <div className="summary__body" dangerouslySetInnerHTML={createMarkup(body)} />}
         {label && <p className="summary__label">{label}</p>}
         {props.children}
+        <div class="action-button">
+          <Button
+            href={"/reserve-room/by-room?room=" + room + "&step=1"}
+            className="button button--primary action-button__button"
+            size={'small'}
+            variant={'contained'}
+            color={'primary'}
+          >
+            {Drupal.t('Reserve')}
+          </Button>
+        </div>
       </div>
       {footer && <div className="summary__footer">{footer(props)}</div>}
     </article>

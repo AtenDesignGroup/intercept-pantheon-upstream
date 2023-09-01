@@ -243,13 +243,12 @@ function intercept_equipment_form_views_exposed_form_alter(&$form, FormStateInte
     // See: https://atendesigngroup.com/blog/drupal-8-views-entity-reference-exposed-filter-select-list
     // Query nodes.
     $storage = Drupal::getContainer()->get('entity_type.manager')->getStorage('node');
-    $nids = $storage->getQuery();
-
-    // Gather published location nodes and sort by title.
-    $nids = $nids->condition('type', 'location')
-      ->condition('status', 1)
-      ->sort('title')
-      ->execute();
+    $query = \Drupal::entityQuery('node')
+    ->accessCheck(FALSE)
+    ->condition('status', 1)
+    ->condition('type', 'location')
+    ->sort('title');
+    $nids = $query->execute();
 
     // If there are no nodes, move on.
     if (!$nids) {

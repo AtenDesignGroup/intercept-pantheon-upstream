@@ -1,7 +1,7 @@
 {% include '@intercept-base-components/view-switcher/view-switcher.twig' with {
   links: [
-    { text: links[0].title|t, href: url(links[0].route)},
-    { text: links[1].title|t, href: url(links[1].route)},
+    { text: links[0].title|t, href: url(links[0].route, links[0].routeParameters, links[0].options)},
+    { text: links[1].title|t, href: url(links[1].route, links[1].routeParameters, links[1].options)},
   ],
   attr: {
     class: 'js-user-events-switcher'

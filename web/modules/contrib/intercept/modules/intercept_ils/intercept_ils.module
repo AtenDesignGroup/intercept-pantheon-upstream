@@ -27,31 +27,6 @@ function intercept_ils_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Implements hook_entity_bundle_field_info().
- */
-function intercept_ils_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
-  $fields = [];
-
-  if ($entity_type->id() == 'node' && $bundle == 'location') {
-    $fields['ils'] = BaseFieldDefinition::create('ils_mapping')
-      ->setLabel(new TranslatableMarkup('ILS Mapping'))
-      ->setComputed(TRUE)
-      ->setCardinality(1)
-      ->setDefaultValue(FALSE);
-  }
-
-  if ($entity_type->id() == 'user') {
-    $fields['ils'] = BaseFieldDefinition::create('ils_mapping')
-      ->setLabel(new TranslatableMarkup('ILS Mapping'))
-      ->setComputed(TRUE)
-      ->setCardinality(1)
-      ->setDefaultValue(FALSE);
-  }
-
-  return $fields;
-}
-
-/**
  * Implements hook_page_attachments().
  */
 function intercept_ils_page_attachments(array &$attachments) {

@@ -1,6 +1,9 @@
 event_form_helper:
   js:
     js/event_form_helper.js: {}
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/jquery
     - core/drupal

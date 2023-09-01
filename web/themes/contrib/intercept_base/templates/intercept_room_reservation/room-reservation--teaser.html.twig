@@ -72,5 +72,10 @@
  <footer class="teaser__footer">
   {{ content.action_button }}
   {{ content.operations }}
+  {% if addtocalendar %}
+    <div class="form-actions--operations room-reservation-addtocalendar">
+      {{ addtocalendar }}
+    </div>
+  {% endif %}
  </footer>
 {% endblock %}

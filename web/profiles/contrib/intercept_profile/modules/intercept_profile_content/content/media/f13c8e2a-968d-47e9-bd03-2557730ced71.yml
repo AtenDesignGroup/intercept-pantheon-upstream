@@ -1,0 +1,39 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: f13c8e2a-968d-47e9-bd03-2557730ced71
+  bundle: image
+  default_langcode: en
+  depends:
+    44b6cd7a-9eae-4a6c-8d0e-7403ae4bd0f4: file
+default:
+  revision_user:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'East Branch'
+  created:
+    -
+      value: 1691699191
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 44b6cd7a-9eae-4a6c-8d0e-7403ae4bd0f4
+      alt: 'East branch exterior'
+      title: ''
+      width: 3000
+      height: 2000

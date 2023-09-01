@@ -3,14 +3,17 @@
 {% set image_url = content.image_primary|field_target_entity.field_media_image.entity.uri.value %}
 {% if image_url %}
   {% set image = file_url(content.image_primary|field_target_entity.field_media_image.entity.uri.value|image_style('4to3_740x556')) %}
+  {% set image_alt = content.image_primary|field_target_entity.field_media_image.alt %}
 {% else %}
   {% set image = null %}
+  {% set image_alt = null %}
 {% endif %}
 {% if node.id %}
   {% set url = url('entity.node.canonical', {'node': node.id}, {'absolute': TRUE}) %}
 {% else %}
   {% set url = null %}
 {% endif %}
+{% set external_location_name = content.field_external_location_name|render %}
 
 <article{{ attributes.addClass(['article']) }}>
   <div class="l--sidebar-after">
@@ -18,6 +21,7 @@
       {% include '@intercept-base-components/content-header/content-header.twig' with {
         title: label|field_value,
         image: image,
+        image_alt: image_alt,
         type: 'Event'|t,
         supertitle: location.label,
         date: {
@@ -77,6 +81,18 @@
             address: drupal_field('field_address', 'node', location.nid.value)|field_value,
             phone: drupal_field('field_contact_number', 'node', location.nid.value)|field_value,
             map_link: drupal_field('field_map_link', 'node', location.nid.value)|field_raw('uri')
+          } %}
+        </div>
+        {% elseif content.field_location and external_location_name %}
+        <div class="l--section">
+          {% include '@intercept-base-components/location/location.twig' with {
+            title: content.field_external_location_name,
+            image: {
+              src: file_url(location.image_primary.entity.field_media_image.entity.uri.value|image_style('4to3_740x556')),
+              alt: location.image_primary.entity.field_media_image.alt
+            },
+            address: content.field_address|field_value,
+            map_link: 'https://www.google.com/maps?q=' ~ content.field_address|field_value[0]['address_line1']['#value']|replace({' ': '+'}) ~ '+' ~ content.field_address|field_value[0]['locality']['#value'] ~ '+' ~ content.field_address|field_value[0]['postal_code']['#value'] ~ '&t=m&z=17'
           } %}
         </div>
         {% endif %}

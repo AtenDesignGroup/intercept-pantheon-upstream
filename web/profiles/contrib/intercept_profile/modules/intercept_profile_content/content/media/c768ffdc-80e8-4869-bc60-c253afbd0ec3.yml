@@ -1,0 +1,36 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: c768ffdc-80e8-4869-bc60-c253afbd0ec3
+  bundle: image
+  default_langcode: en
+  depends:
+    f57a4775-a6b7-4d61-8d3f-68217ec85222: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'Locations_Cooper Primary'
+  created:
+    -
+      value: 1532720737
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_image:
+    -
+      entity: f57a4775-a6b7-4d61-8d3f-68217ec85222
+      alt: Cooper
+      title: ''
+      width: 1800
+      height: 1200

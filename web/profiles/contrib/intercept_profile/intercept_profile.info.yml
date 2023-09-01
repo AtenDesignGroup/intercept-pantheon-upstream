@@ -37,6 +37,7 @@ dependencies:
   - entity_reference_revisions:entity_reference_revisions
   - gin_toolbar:gin_toolbar
   - intercept:intercept
+  - intercept:intercept_core
   - intercept:intercept_certification
   - intercept:intercept_event
   - intercept:intercept_guest

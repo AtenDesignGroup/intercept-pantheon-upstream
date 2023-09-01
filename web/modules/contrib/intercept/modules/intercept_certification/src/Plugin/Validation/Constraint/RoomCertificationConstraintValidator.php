@@ -28,6 +28,7 @@ class RoomCertificationConstraintValidator extends StaffRoomPermissionsConstrain
     if ($room->field_requires_certification->value === '1' && !$user->hasPermission('bypass room certification constraints')) {
       // Query to see if this user is certified for this room.
       $query = \Drupal::entityQuery('certification')
+        ->accessCheck(FALSE)
         ->condition('field_room', $room->id())
         ->condition('status', '1')
         ->condition('field_user', $user->id());

@@ -4,14 +4,18 @@ namespace Drupal\default_content;
 
 use Drupal\Component\Graph\Graph;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Session\AccountSwitcherInterface;
 use Drupal\default_content\Event\DefaultContentEvents;
 use Drupal\default_content\Event\ImportEvent;
-use Drupal\hal\LinkManager\LinkManagerInterface;
+use Drupal\default_content\Normalizer\ContentEntityNormalizerInterface;
+use Drupal\file\FileInterface;
 use Drupal\user\EntityOwnerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * A service for handling import of default content.
@@ -24,13 +28,30 @@ class Importer implements ImporterInterface {
    * Defines relation domain URI for entity links.
    *
    * @var string
+   *
+   * @deprecated in default_content:2.0.0-alpha2 and is removed from
+   *   default_content:3.0.0.
+   *
+   * @see https://www.drupal.org/node/3296226
    */
   protected $linkDomain;
+
+  /**
+   * The default_content logger.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  private $logger;
 
   /**
    * The serializer service.
    *
    * @var \Symfony\Component\Serializer\Serializer
+   *
+   * @deprecated in default_content:2.0.0-alpha2 and is removed from
+   *   default_content:3.0.0.
+   *
+   * @see https://www.drupal.org/node/3296226
    */
   protected $serializer;
 
@@ -59,6 +80,11 @@ class Importer implements ImporterInterface {
    * The link manager service.
    *
    * @var \Drupal\hal\LinkManager\LinkManagerInterface
+   *
+   * @deprecated in default_content:2.0.0-alpha2 and is removed from
+   *   default_content:3.0.0.
+   *
+   * @see https://www.drupal.org/node/3296226
    */
   protected $linkManager;
 
@@ -70,11 +96,11 @@ class Importer implements ImporterInterface {
   protected $eventDispatcher;
 
   /**
-   * The file system scanner.
+   * The content file storage.
    *
-   * @var \Drupal\default_content\ScannerInterface
+   * @var \Drupal\default_content\ContentFileStorageInterface
    */
-  protected $scanner;
+  protected $contentFileStorage;
 
   /**
    * The account switcher.
@@ -84,31 +110,58 @@ class Importer implements ImporterInterface {
   protected $accountSwitcher;
 
   /**
+   * The YAML normalizer.
+   *
+   * @var \Drupal\default_content\Normalizer\ContentEntityNormalizer
+   */
+  protected $contentEntityNormalizer;
+
+  /**
+   * List of HAL-JSON serialized files.
+   *
+   * @var string[]
+   *
+   * @deprecated in default_content:2.0.0-alpha2 and is removed from
+   *   default_content:3.0.0.
+   *
+   * @see https://www.drupal.org/node/3296226
+   */
+  protected $halJsonSerializedFiles = [];
+
+  /**
    * Constructs the default content manager.
    *
-   * @param \Symfony\Component\Serializer\Serializer $serializer
-   *   The serializer service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
-   * @param \Drupal\hal\LinkManager\LinkManagerInterface $link_manager
-   *   The link manager service.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
-   * @param \Drupal\default_content\ScannerInterface $scanner
+   * @param \Drupal\default_content\ContentFileStorageInterface $content_file_storage
    *   The file scanner.
    * @param string $link_domain
-   *   Defines relation domain URI for entity links.
+   *   (deprecated) Defines relation domain URI for entity links. The $link_domain parameter is deprecated in default_content:2.0.0-alpha2 and is removed from default_content:3.0.0.
    * @param \Drupal\Core\Session\AccountSwitcherInterface $account_switcher
    *   The account switcher.
+   * @param \Drupal\default_content\Normalizer\ContentEntityNormalizerInterface $content_entity_normaler
+   *   The YAML normalizer.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger.
+   *
+   * @see https://www.drupal.org/node/3296226
    */
-  public function __construct(Serializer $serializer, EntityTypeManagerInterface $entity_type_manager, LinkManagerInterface $link_manager, EventDispatcherInterface $event_dispatcher, ScannerInterface $scanner, $link_domain, AccountSwitcherInterface $account_switcher) {
-    $this->serializer = $serializer;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager,
+                              EventDispatcherInterface $event_dispatcher,
+                              ContentFileStorageInterface $content_file_storage,
+                              AccountSwitcherInterface $account_switcher,
+                              ContentEntityNormalizerInterface $content_entity_normaler,
+                              $link_domain,
+                              LoggerInterface $logger = NULL) {
     $this->entityTypeManager = $entity_type_manager;
-    $this->linkManager = $link_manager;
     $this->eventDispatcher = $event_dispatcher;
-    $this->scanner = $scanner;
-    $this->linkDomain = $link_domain;
+    $this->contentFileStorage = $content_file_storage;
     $this->accountSwitcher = $account_switcher;
+    $this->contentEntityNormalizer = $content_entity_normaler;
+    $this->linkDomain = $link_domain;
+    $this->logger = $logger;
   }
 
   /**
@@ -116,7 +169,7 @@ class Importer implements ImporterInterface {
    */
   public function importContent($module) {
     $created = [];
-    $folder = drupal_get_path('module', $module) . "/content";
+    $folder = \Drupal::service('extension.list.module')->getPath($module) . "/content";
 
     if (file_exists($folder)) {
       $root_user = $this->entityTypeManager->getStorage('user')->load(1);
@@ -131,22 +184,33 @@ class Importer implements ImporterInterface {
         if (!file_exists($folder . '/' . $entity_type_id)) {
           continue;
         }
-        $files = $this->scanner->scan($folder . '/' . $entity_type_id);
-        // Default content uses drupal.org as domain.
-        // @todo Make this use a uri like default-content:.
-        $this->linkManager->setLinkDomain($this->linkDomain);
+        $files = $this->contentFileStorage->scan($folder . '/' . $entity_type_id);
+
         // Parse all of the files and sort them in order of dependency.
         foreach ($files as $file) {
           $contents = $this->parseFile($file);
+
+          $extension = pathinfo($file->uri, PATHINFO_EXTENSION);
+
           // Decode the file contents.
-          $decoded = $this->serializer->decode($contents, 'hal_json');
-          // Get the link to this entity.
-          $item_uuid = $decoded['uuid'][0]['value'];
+          if ($extension == 'json') {
+            $this->checkHalJsonImport($file->uri);
+            $decoded = $this->serializer->decode($contents, 'hal_json');
+            // Get the link to this entity.
+            $item_uuid = $decoded['uuid'][0]['value'];
+          }
+          else {
+            $decoded = Yaml::decode($contents);
+            // Get the UUID to this entity.
+            $item_uuid = $decoded['_meta']['uuid'];
+          }
 
           // Throw an exception when this UUID already exists.
           if (isset($file_map[$item_uuid])) {
-            // Reset link domain.
-            $this->linkManager->setLinkDomain(FALSE);
+            if ($this->linkManager) {
+              // Reset link domain.
+              $this->linkManager->setLinkDomain(FALSE);
+            }
             throw new \Exception(sprintf('Default content with uuid "%s" exists twice: "%s" "%s"', $item_uuid, $file_map[$item_uuid]->uri, $file->uri));
           }
 
@@ -157,19 +221,39 @@ class Importer implements ImporterInterface {
           // Create a vertex for the graph.
           $vertex = $this->getVertex($item_uuid);
           $this->graph[$vertex->id]['edges'] = [];
-          if (empty($decoded['_embedded'])) {
-            // No dependencies to resolve.
-            continue;
+          if ($extension == 'json') {
+            if (empty($decoded['_embedded'])) {
+              // No dependencies to resolve.
+              continue;
+            }
+            // Here we need to resolve our dependencies:
+            foreach ($decoded['_embedded'] as $embedded) {
+              foreach ($embedded as $item) {
+                $uuid = $item['uuid'][0]['value'];
+                $edge = $this->getVertex($uuid);
+                $this->graph[$vertex->id]['edges'][$edge->id] = TRUE;
+              }
+            }
           }
-          // Here we need to resolve our dependencies:
-          foreach ($decoded['_embedded'] as $embedded) {
-            foreach ($embedded as $item) {
-              $uuid = $item['uuid'][0]['value'];
+          else {
+            if (empty($decoded['_meta']['depends'])) {
+              // No dependencies to resolve.
+              continue;
+            }
+            // Here we need to resolve our dependencies:
+            foreach (array_keys($decoded['_meta']['depends']) as $uuid) {
               $edge = $this->getVertex($uuid);
               $this->graph[$vertex->id]['edges'][$edge->id] = TRUE;
             }
           }
         }
+      }
+
+      if ($this->halJsonSerializedFiles) {
+        // Make the order predictable for tests.
+        sort($this->halJsonSerializedFiles);
+
+        \Drupal::logger('default_content')->warning('Importing entities from files serialized with hal_json is deprecated in default_content:2.0.0-alpha2 and is removed from default_content:3.0.0. The following files were serialized using hal_json serialization: @files. Import all entities and re-export them as YAML files. See https://www.drupal.org/node/3296226', ['@files' => implode(', ', $this->halJsonSerializedFiles)]);
       }
 
       // @todo what if no dependencies?
@@ -180,23 +264,59 @@ class Importer implements ImporterInterface {
           $entity_type_id = $file->entity_type_id;
           $class = $this->entityTypeManager->getDefinition($entity_type_id)->getClass();
           $contents = $this->parseFile($file);
-          $entity = $this->serializer->deserialize($contents, $class, 'hal_json', ['request_method' => 'POST']);
+          $extension = pathinfo($file->uri, PATHINFO_EXTENSION);
+          if ($extension == 'json') {
+            $entity = $this->serializer->deserialize($contents, $class, 'hal_json', ['request_method' => 'POST']);
+          }
+          else {
+            $entity = $this->contentEntityNormalizer->denormalize(Yaml::decode($contents));
+          }
+
           $entity->enforceIsNew(TRUE);
           // Ensure that the entity is not owned by the anonymous user.
           if ($entity instanceof EntityOwnerInterface && empty($entity->getOwnerId())) {
             $entity->setOwner($root_user);
           }
-          $entity->save();
-          $created[$entity->uuid()] = $entity;
+
+          // If a file exists in the same folder, copy it to the designed
+          // target URI.
+          if ($entity instanceof FileInterface) {
+            $file_source = \dirname($file->uri) . '/' . $entity->getFilename();
+            if (\file_exists($file_source)) {
+              $target_directory = dirname($entity->getFileUri());
+              \Drupal::service('file_system')->prepareDirectory($target_directory, FileSystemInterface::CREATE_DIRECTORY);
+              $new_uri = \Drupal::service('file_system')->copy($file_source, $entity->getFileUri());
+              $entity->setFileUri($new_uri);
+            }
+          }
+
+          try {
+            $entity->save();
+
+            $created[$entity->uuid()] = $entity;
+          }
+          catch (EntityStorageException $e) {
+            $saved_entity_log_info = [
+              '@type' => $entity->getEntityTypeId(),
+              '@bundle' => $entity->bundle(),
+              '@id' => $entity->id(),
+              '@file' => $file->name,
+              '@exception' => $e->getMessage(),
+            ];
+            $this->logger->error('Entity @type/@bundle, ID: @id, File: @file, Exception: @exception', $saved_entity_log_info);
+          }
         }
       }
-      $this->eventDispatcher->dispatch(DefaultContentEvents::IMPORT, new ImportEvent($created, $module));
+      $this->eventDispatcher->dispatch(new ImportEvent($created, $module), DefaultContentEvents::IMPORT);
       $this->accountSwitcher->switchBack();
     }
     // Reset the tree.
     $this->resetTree();
-    // Reset link domain.
-    $this->linkManager->setLinkDomain(FALSE);
+
+    if ($this->linkManager) {
+      // Reset link domain.
+      $this->linkManager->setLinkDomain(FALSE);
+    }
     return $created;
   }
 
@@ -253,6 +373,42 @@ class Importer implements ImporterInterface {
       $this->vertexes[$item_link] = (object) ['id' => $item_link];
     }
     return $this->vertexes[$item_link];
+  }
+
+  /**
+   * Performs, once, several tasks when importing HAL-JSON serialized files.
+   *
+   * @param string $file_uri
+   *   The JSON file.
+   *
+   * @deprecated in default_content:2.0.0-alpha2 and is removed from
+   *   default_content:3.0.0.
+   *
+   * @see https://www.drupal.org/node/3296226
+   */
+  private function checkHalJsonImport(string $file_uri): void {
+    // Collect such files to be used in deprecation message.
+    $this->halJsonSerializedFiles[] = $file_uri;
+
+    // Only do this once.
+    static $processed = FALSE;
+    if (!$processed) {
+      $module_handler = \Drupal::moduleHandler();
+      if (!$module_handler->moduleExists('serialization')) {
+        throw new \Exception('To import hal_json files, the serialization module must be enabled. This is deprecated and will be removed in default_content:3.0.0. See https://www.drupal.org/node/3296226');
+      }
+      if (!$module_handler->moduleExists('hal')) {
+        throw new \Exception('To import hal_json files, the hal module must be enabled. This is deprecated and will be removed in default_content:3.0.0. See https://www.drupal.org/node/3296226');
+      }
+      $this->serializer = \Drupal::service('serializer');
+      $this->linkManager = \Drupal::service('hal.link_manager');
+      $this->linkDomain = $this->linkDomain ?: 'http://drupal.org';
+
+      // Default content uses drupal.org as domain.
+      $this->linkManager->setLinkDomain($this->linkDomain);
+
+      $processed = TRUE;
+    }
   }
 
 }

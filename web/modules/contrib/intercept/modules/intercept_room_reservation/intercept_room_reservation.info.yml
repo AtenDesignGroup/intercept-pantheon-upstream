@@ -1,7 +1,7 @@
 name: 'Intercept Room Reservation'
 type: module
 description: 'Provides room reservation functionality for Intercept.'
-core_version_requirement: ^8.9 || ^9
+core_version_requirement: ^9 || ^10
 package: 'Intercept'
 dependencies:
   - drupal:datetime_range

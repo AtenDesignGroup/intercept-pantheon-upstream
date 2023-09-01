@@ -130,13 +130,12 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
 
     // Change the locations field to be a dropdown.
     $storage = Drupal::getContainer()->get('entity_type.manager')->getStorage('node');
-    $nids = $storage->getQuery();
-
-    // Gather published location nodes and sort by title.
-    $nids = $nids->condition('type', 'location')
+    $query = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('status', 1)
-      ->sort('title')
-      ->execute();
+      ->condition('type', 'location')
+      ->sort('title');
+    $nids = $query->execute();
 
     // If there are no nodes, move on.
     if (!$nids) {
@@ -223,6 +222,7 @@ function intercept_room_reservation_page_attachments(array &$page) {
   $roles = $current_user->getRoles();
   if (in_array('intercept_registered_customer', $roles) && \Drupal::moduleHandler()->moduleExists('intercept_certification')) {
     $entity_ids = \Drupal::entityQuery('certification')
+      ->accessCheck(FALSE)
       ->condition('field_user', $current_user->id())
       ->execute();
     $certs = \Drupal::entityTypeManager()
@@ -246,6 +246,11 @@ function intercept_room_reservation_page_attachments(array &$page) {
       'refreshments_text' => strip_tags($refreshments_text['value']),
     ];
   }
+
+  // Allow other modules to attach settings using a new hook:
+  // hook_intercept_room_reservation_settings_alter().
+  \Drupal::moduleHandler()->invokeAll('intercept_room_reservation_settings_alter', [&$page]);
+
 }
 
 /**
@@ -300,9 +305,9 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function intercept_room_reservation_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function intercept_room_reservation_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   // Removes the text format options from field_refreshments_description.
   $map = [
     'field_refreshments_description' => ['basic_html'],
@@ -368,6 +373,48 @@ function template_preprocess_room_reservation(array &$variables) {
     ];
     $variables['edit_link'] = $edit_link;
   }
+
+  // Add to my Calendar
+  $data_calendars = [
+    'Google Calendar',
+    'Outlook Online',
+    'iCalendar',
+    'Yahoo! Calendar',
+  ];
+  $service = \Drupal::service('addtocalendar.apiwidget');
+  $room = $room_reservation->get('field_room')->entity;
+  $room_name = $room->label();
+  $location_name = $room->get('field_location')->entity->label();
+  $title = $room_name . ' Reservation';
+  $location = $room_name . ', ' . $location_name;
+  $start_date_value = $room_reservation->get('field_dates')->value;
+  $end_date_value = $room_reservation->get('field_dates')->end_value;
+  $start_date = \DateTime::createFromFormat('Y-m-d\TH:i:s', $start_date_value)->format('Ymd\THis\Z');
+  $end_date = \DateTime::createFromFormat('Y-m-d\TH:i:s', $end_date_value)->format('Ymd\THis\Z');
+  $reservationManager = \Drupal::service('intercept_core.reservation.manager');
+  $blocked_dates = @$reservationManager->getBlockedDates([$room_reservation], [], $room);
+  $message = $blocked_dates[0]['message'];
+  if (!empty($message)) {
+    $title = $message;
+  }
+  $config_values = [
+    'atcStyle' => 'none',
+    'atcDisplayText' => 'Add to my Calendar',
+    'atcTitle' => $title,
+    'atcDescription' => '',
+    'atcLocation' => $location,
+    'atcDateStart' => $start_date,
+    'atcDateEnd' => $end_date,
+    'atcPrivacy' => 'public',
+    'atcDataSecure' => 'auto',
+    'atcDataCalendars' => $data_calendars,
+  ];
+  $service->setWidgetValues($config_values);
+   // Only show this on future reservations.
+  if (strtotime($end_date_value) > strtotime('now')) {
+    $variables['addtocalendar'] = \Drupal::service('renderer')->render($service->generateWidget());
+  }
+
 }
 
 /**
@@ -627,13 +674,15 @@ function intercept_room_reservation_status_values(FieldStorageDefinitionInterfac
  * Implements hook_preprocess node().
  */
 function intercept_room_reservation_preprocess_node(&$variables) {
-  if ($variables['node']->getType() === 'room') {
+  $node = $variables['node'];
+  if ($node->getType() === 'room') {
     $variables['is_certified'] = FALSE;
     $view_mode = $variables['view_mode'];
     if ($view_mode === 'off_canvas') {
-      $nid = $variables['node']->id();
+      $nid = $node->id();
       $current_uid = \Drupal::currentUser()->id();
       $query = \Drupal::entityQuery('certification')
+        ->accessCheck(FALSE)
         ->condition('field_user', $current_uid)
         ->condition('field_room', $nid);
       $entity_ids = $query->execute();
@@ -642,8 +691,93 @@ function intercept_room_reservation_preprocess_node(&$variables) {
       if ($certification) {
         $variables['is_certified'] = TRUE;
       }
+      $room = $nid;
+      $uid = $current_uid;
+      if ($room && $uid) {
+
+        // If intercept_certification is installed, see if the current user is
+        // certified to reserve this room.
+        $moduleHandler = \Drupal::moduleHandler();
+        $userIsCertified = TRUE;
+        if ($moduleHandler->moduleExists('intercept_certification')) {
+          $userIsCertified = (!empty($room)) ? \Drupal::service('intercept_room_reservation.certification_checker')->userIsCertified($uid, $room) : TRUE;
+        }
+
+        if (empty($userCanReserveRoom) && !empty($room)) {
+          $node = \Drupal::entityTypeManager()->getStorage('node')->load($room);
+          // Check permissions to reserve this room.
+          $userCanReserveRoom = userCanReserveRoom($node, $userIsCertified);
+        }
+        if ($userCanReserveRoom == TRUE) {
+          $variables['reservation_link'] = Link::createFromRoute('Reserve', 'entity.room_reservation.add_form', [
+              'room' => $node->id(),
+            ], [
+            'attributes' => [
+              'class' => ['button button-action button--primary action-button__button action-button__button--outlined action-button__button--small use-ajax'],
+              'data-dialog-type' => 'dialog',
+              'data-dialog-options' => '{"width": "400"}',
+              'data-dialog-renderer' => 'off_canvas',
+            ],
+          ]);
+        }
+      }
+
+      if (empty($uid)) {
+        $variables['reservation_link'] = Link::createFromRoute('Reserve', 'user.login', [
+          'destination' => Url::fromRoute('intercept_room_reservation.reserve_room_calendar')->toString(),
+        ], [
+          'attributes' => [
+            'class' => ['button button-action button--primary action-button__button action-button__button--outlined action-button__button--small'],
+          ],
+        ]);
+      }
+      
     }
   }
+}
+
+/**
+ * Mimics userCanReserveRoom function from RoomReserveApp Step 1 (JS)
+ */
+function userCanReserveRoom($node, $userIsCertifiedForRoom) {
+  $current_user = \Drupal::currentUser();
+  $roles = $current_user->getRoles();
+  $userIsManager = $userIsStaff = FALSE;
+  if (in_array('intercept_event_manager', $roles) || in_array('intercept_event_organizer', $roles) || in_array('intercept_system_admin', $roles) || in_array('intercept_room_manager', $roles)) {
+    $userIsManager = TRUE;
+  }
+  if (in_array('intercept_staff', $roles)) {
+    $userIsStaff = TRUE;
+  }
+  // Is the room reservable online?
+  $reservable = (bool) $node->get('field_reservable_online')->value;
+  // Requires certification?
+  $moduleHandler = \Drupal::moduleHandler();
+  if ($moduleHandler->moduleExists('intercept_certification')) {
+    $mustCertify = (bool) $node->get('field_requires_certification')->value;
+  }
+  else {
+    $mustCertify = FALSE;
+  }
+  // A user can reserve this room if...
+  // they are a manager OR...
+  if ($userIsManager == TRUE) {
+    return TRUE;
+  }
+  // The room is reservable and they are staff OR...
+  if ($reservable && $userIsStaff) {
+    return TRUE;
+  }
+  // ...the room is reservable, requires certification and they are certified OR...
+  if ($reservable && $mustCertify && $userIsCertifiedForRoom) {
+    return TRUE;
+  }
+  // ...the room is reservable and does not require certification.
+  if ($reservable && !$mustCertify) {
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 /**
@@ -656,4 +790,13 @@ function intercept_room_reservation_entity_bundle_field_info_alter(&$fields, Ent
       $fields['field_capacity_max']->addConstraint('MaxCapacity', []);
     }
   }
+}
+
+/**
+ * Implements hook_intercept_room_reservation_settings_alter().
+ */
+function intercept_room_reservation_intercept_room_reservation_settings_alter(&$build) {
+  // Here we'll set eligibility to all, but other modules can override this.
+  $build['#attached']['drupalSettings']['intercept']['room_reservations']['eligibility_text'] = '';
+  $build['#attached']['drupalSettings']['intercept']['room_reservations']['eligibility'] = 'all';
 }

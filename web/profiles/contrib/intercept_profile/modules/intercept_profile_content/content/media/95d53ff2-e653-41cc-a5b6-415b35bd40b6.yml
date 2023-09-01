@@ -1,0 +1,40 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 95d53ff2-e653-41cc-a5b6-415b35bd40b6
+  bundle: image
+  default_langcode: en
+  depends:
+    8f84a79e-a7f0-4099-a33c-3c8c6da7388c: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: 'Locations_Cooper_Living Room'
+  created:
+    -
+      value: 1532720890
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: en
+      pathauto: 0
+  field_media_caption:
+    -
+      value: "<p>Connect with friends and neighbors or grab a newspaper to stay up-to-date with news from around the world.</p>\r\n"
+      format: basic_html
+  field_media_image:
+    -
+      entity: 8f84a79e-a7f0-4099-a33c-3c8c6da7388c
+      alt: 'Cooper Living Room'
+      title: ''
+      width: 1800
+      height: 1200

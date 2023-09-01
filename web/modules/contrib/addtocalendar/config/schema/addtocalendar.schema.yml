@@ -44,70 +44,67 @@ addtocalendar_setting:
       type: string
       label: 'Static/Tokenized Content'
 
-field.field_settings.add_to_calendar_field:
+addtocalendar_settings:
   type: mapping
+  mapping:
+    addtocalendar_show:
+      type: string
+      label: 'Show Add to Calendar'
+    style:
+      type: string
+      label: 'Select Style'
+    display_text:
+      type: text
+      label: 'Display Text'
+      translatable: true
+    atc_title:
+      type: addtocalendar_setting
+    atc_description:
+      type: addtocalendar_setting
+    atc_location:
+      type: addtocalendar_setting
+    atc_organizer:
+      type: addtocalendar_setting
+    atc_organizer_email:
+      type: addtocalendar_setting
+    atc_date_start:
+      type: addtocalendar_setting
+    atc_date_end:
+      type: addtocalendar_setting
+    atc_privacy:
+      type: string
+      label: 'Privacy of the event'
+    data_secure:
+      type: string
+      label: 'Security level'
+    data_calendars:
+      type: mapping
+      mapping:
+        Google Calendar:
+          type: string
+          label: 'Google Calendar'
+        Outlook Online:
+          type: string
+          label: 'Outlook Online'
+        iCalendar:
+          type: string
+          label: 'iCalendar'
+        Outlook:
+          type: string
+          label: 'Outlook'
+        Yahoo! Calendar:
+          type: string
+          label: 'Yahoo! Calendar'
+
+field.field_settings.add_to_calendar_field:
+  type: field.field_settings.boolean
   label: 'Add to calendar field settings'
   mapping:
-    on_label:
-      type: label
-      label: 'On label'
-    off_label:
-      type: label
-      label: 'Off label'
     addtocalendar_show:
       type: integer
       label: 'Show Add to Calendar'
     addtocalendar_settings:
-      type: mapping
-      mapping:
-        addtocalendar_show:
-          type: string
-          label: 'Show Add to Calendar'
-        style:
-          type: string
-          label: 'Select Style'
-        display_text:
-          type: text
-          label: 'Display Text'
-          translatable: true
-        atc_title:
-          type: addtocalendar_setting
-        atc_description:
-          type: addtocalendar_setting
-        atc_location:
-          type: addtocalendar_setting
-        atc_organizer:
-          type: addtocalendar_setting
-        atc_organizer_email:
-          type: addtocalendar_setting
-        atc_date_start:
-          type: addtocalendar_setting
-        atc_date_end:
-          type: addtocalendar_setting
-        atc_privacy:
-          type: string
-          label: 'Privacy of the event'
-        data_secure:
-          type: string
-          label: 'Security level'
-        data_calendars:
-          type: mapping
-          mapping:
-            Google Calendar:
-              type: string
-              label: 'Google Calendar'
-            Outlook Online:
-              type: string
-              label: 'Outlook Online'
-            iCalendar:
-              type: string
-              label: 'iCalendar'
-            Outlook:
-              type: string
-              label: 'Outlook'
-            Yahoo! Calendar:
-              type: string
-              label: 'Yahoo! Calendar'
+      type: addtocalendar_settings
 
 field.value.add_to_calendar_field:
   type: mapping
@@ -116,3 +113,12 @@ field.value.add_to_calendar_field:
     value:
       type: string
       label: 'Show Add to Calendar'
+
+field.formatter.third_party.addtocalendar:
+  type: mapping
+  mapping:
+    addtocalendar_show:
+      type: integer
+      label: 'Show Add to Calendar'
+    addtocalendar_settings:
+      type: addtocalendar_settings

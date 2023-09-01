@@ -1,0 +1,27 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 44b6cd7a-9eae-4a6c-8d0e-7403ae4bd0f4
+  default_langcode: en
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: locations_slideshow_blythewood_1.jpg
+  uri:
+    -
+      value: 'public://2023-08/locations_slideshow_blythewood_1.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 2398694
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1691699230

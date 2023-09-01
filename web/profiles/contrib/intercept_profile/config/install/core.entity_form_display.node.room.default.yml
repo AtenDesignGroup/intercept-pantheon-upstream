@@ -27,8 +27,6 @@ dependencies:
     - path
     - telephone
     - text
-_core:
-  default_config_hash: fC4f479qYDVJGbyY0m-mujctfI1J8_z4Ud1a7qjCqDQ
 id: node.room.default
 targetEntityType: node
 bundle: room

@@ -146,6 +146,12 @@ class EventManager implements EventManagerInterface {
     $form['field_location']['widget']['#ajax'] = [
       'callback' => [$this, 'fieldRoomAjaxCallback'],
       'wrapper' => 'event-node-field-room-ajax-wrapper',
+      'disable-refocus' => TRUE,
+      'event' => 'change',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t('Updating list of rooms...'),
+      ],
     ];
     if (!$location = $form_state->getValue('field_location')) {
       $location = $form['field_location']['widget']['#default_value'];
@@ -172,24 +178,26 @@ class EventManager implements EventManagerInterface {
     $form['field_room']['#prefix'] = '<div id="event-node-field-room-ajax-wrapper">';
     $form['field_room']['#suffix'] = '</div>';
 
-    $meeting_required_state = [
-      'required' => [
-        ':input[name="field_event_designation"]' => [
-          'value' => 'events',
-        ],
-      ],
-    ];
-    $form['field_event_type']['widget']['#states'] = $meeting_required_state;
-    $form['field_event_type_primary']['widget']['#states'] = $meeting_required_state;
-    $form['field_event_audience']['widget']['#states'] = $meeting_required_state;
-    $form['field_audience_primary']['widget']['#states'] = $meeting_required_state;
   }
 
   /**
    * Ajax form callback to re-populate the room field element.
    */
   public function fieldRoomAjaxCallback(&$form, $form_state) {
-    return $form['field_room'];
+    // Get the form_state for the location field and see if it's one of our
+    // internal/branch locations.
+    $selected_location = $form_state->getValue('field_location')[0]['target_id'];
+    $internal_locations = $this->getBranchLocations(TRUE);
+    // If it is, then let's return the normal field with the
+    // filtered list of room options.
+    if (in_array($selected_location, $internal_locations)) {
+      return $form['field_room'];
+    }
+    else {
+      // There are no rooms for this location.
+      // Let's effectively hide the room field.
+      return ['#markup' => ''];
+    }
   }
 
   /**
@@ -286,7 +294,7 @@ class EventManager implements EventManagerInterface {
   public function createAttendee(UserInterface $user = NULL, Request $request) {
     $response = NULL;
     if ($barcode = $this->getRequestData($request, 'barcode')) {
-      $user = \Drupal::service('intercept_ils.mapping_manager')->loadByBarcode($barcode);
+      $user = \Drupal::service('intercept_ils.association_manager')->loadByBarcode($barcode);
       if ($user) {
         $jsonapi = \Drupal::service('jsonapi_extras.entity.to_jsonapi');
         $response = $jsonapi->normalize($user);
@@ -369,6 +377,30 @@ class EventManager implements EventManagerInterface {
   }
 
   /**
+   * Get the list of all locations that are "branch" locations.
+   *
+   * @param bool $branch_location
+   *   Whether you're looking for branch locations (or the opposite).
+   * 
+   * @return array
+   *   An array of location ids.
+   */
+  public function getBranchLocations($branch_location = TRUE) {
+    $storage = $this->entityTypeManager->getStorage('node');
+    $query = $storage->getQuery()->accessCheck(TRUE);
+    $query->condition('type', 'location', '=');
+    if ($branch_location) {
+      $query->condition('field_branch_location', '1', '=');
+    }
+    else {
+      $query->condition('field_branch_location', '0', '=');
+    }
+    $query->condition('status', '1', '=');
+    $location_ids = $query->execute();
+    return $location_ids;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getEventRegistrations(NodeInterface $node, $status = '') {
@@ -378,6 +410,7 @@ class EventManager implements EventManagerInterface {
     $event_registration_storage = $this->entityTypeManager->getStorage('event_registration');
     $query = $event_registration_storage
       ->getQuery()
+      ->accessCheck(TRUE)
       ->condition('field_event.target_id', $node->id())
       ->sort('created', 'ASC');
     if ($status) {
@@ -474,10 +507,10 @@ class EventManager implements EventManagerInterface {
    */
   protected function jsonResponse(array $data) {
     if (isset($data['errors']) && !empty($data['errors'])) {
-      return JsonResponse::create($data['errors'], 400);
+      return new JsonResponse($data['errors'], 400);
     }
 
-    return JsonResponse::create($data['response'], 200);
+    return new JsonResponse($data['response'], 200);
   }
 
   /**

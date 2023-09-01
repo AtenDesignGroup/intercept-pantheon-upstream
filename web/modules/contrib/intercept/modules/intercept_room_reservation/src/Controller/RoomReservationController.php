@@ -400,14 +400,13 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
    * @return array
    *   Page callback for user/{user}/reservations.
    */
-  public function manage(UserInterface $user) {
+  public function upcoming(UserInterface $user) {
     $build = [];
 
-    $build['#attached']['library'][] = 'intercept_room_reservation/manageRoomReservations';
+    $build['#attached']['library'][] = 'intercept_room_reservation/upcomingRoomReservations';
     $this->attachDrupalSettings($build);
 
     $build['#markup'] = '';
-    $build['intercept_room_reserve']['#markup'] = '<div id="roomReservationsRoot"></div>';
 
     $build['upcoming_room_reservations'] = [
       '#type' => 'view',
@@ -581,7 +580,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       'exceededLimit' => $this->reservationManager->userExceededReservationLimit($this->currentUser()),
     ];
 
-    return JsonResponse::create($result, 200);
+    return new JsonResponse($result, 200);
   }
 
   /**
@@ -634,7 +633,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   public function reserveRoom(Request $request) {
     $decode = \Drupal::service('serializer')->encode($request->getContent(), 'json');
     if (!array_key_exists('data', $decode)) {
-      return JsonResponse::create();
+      return new JsonResponse();
     }
     $dates = $decode['data']['attributes']['field_dates'];
     $room = $decode['data']['relationships']['field_room']['data']['id'];
@@ -648,7 +647,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     $availability[$room]['uuid'] = $room;
 
     if ($availability[$room]['has_reservation_conflict']) {
-      return JsonResponse::create([
+      return new JsonResponse([
         'message' => $this->t('Has reservation conflict'),
         'conflicting_reservation' => $availability[$room],
         'error' => TRUE,
@@ -696,7 +695,7 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       ]);
     }
 
-    return JsonResponse::create($result, 200);
+    return new JsonResponse($result, 200);
   }
 
 
@@ -782,6 +781,10 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
 
     // Attach general room_reservation user barred status settings.
     $build['#attached']['drupalSettings']['intercept']['user']['barred'] =  $this->evaluateCustomerBarred();
+
+    // Allow other modules to attach settings using a new hook:
+    // hook_intercept_room_reservation_settings_alter().
+    \Drupal::moduleHandler()->invokeAll('intercept_room_reservation_settings_alter', [&$build]);
 
   }
 

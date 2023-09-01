@@ -38,16 +38,13 @@ class DefaultContentCommands extends DrushCommands {
    *   The ID of the entity to export.
    *
    * @command default-content:export
-   * @option file Write out the exported content to a file instead of stdout.
+   * @option file Write out the exported content to a file (must end with .yml) instead of stdout.
    * @aliases dce
    */
   public function contentExport($entity_type_id, $entity_id, $options = ['file' => NULL]) {
-    $export = $this->defaultContentExporter->exportContent($entity_type_id, $entity_id);
+    $export = $this->defaultContentExporter->exportContent($entity_type_id, $entity_id, $options['file']);
 
-    if ($file = $options['file']) {
-      file_put_contents($file, $export);
-    }
-    else {
+    if (!$options['file']) {
       $this->output()->write($export);
     }
   }
@@ -67,15 +64,14 @@ class DefaultContentCommands extends DrushCommands {
   public function contentExportReferences($entity_type_id, $entity_id = NULL, $options = ['folder' => NULL]) {
     $folder = $options['folder'];
     if (is_null($entity_id)) {
-      $entities = \Drupal::entityQuery($entity_type_id)->execute();
+      $entities = \Drupal::entityQuery($entity_type_id)->accessCheck(FALSE)->execute();
     }
     else {
       $entities = [$entity_id];
     }
     // @todo Add paging.
     foreach ($entities as $entity_id) {
-      $serialized_by_type = $this->defaultContentExporter->exportContentWithReferences($entity_type_id, $entity_id);
-      $this->defaultContentExporter->writeDefaultContent($serialized_by_type, $folder);
+      $this->defaultContentExporter->exportContentWithReferences($entity_type_id, $entity_id, $folder);
     }
   }
 
@@ -89,11 +85,10 @@ class DefaultContentCommands extends DrushCommands {
    * @aliases dcem
    */
   public function contentExportModule($module) {
-    $serialized_by_type = $this->defaultContentExporter->exportModuleContent($module);
     $module_folder = \Drupal::moduleHandler()
       ->getModule($module)
       ->getPath() . '/content';
-    $this->defaultContentExporter->writeDefaultContent($serialized_by_type, $module_folder);
+    $this->defaultContentExporter->exportModuleContent($module, $module_folder);
   }
 
 }

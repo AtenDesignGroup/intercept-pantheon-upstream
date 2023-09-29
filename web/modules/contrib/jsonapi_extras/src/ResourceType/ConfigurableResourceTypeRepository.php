@@ -3,12 +3,11 @@
 namespace Drupal\jsonapi_extras\ResourceType;
 
 use Drupal\Component\Plugin\Exception\PluginException;
-use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerManager;
-use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Provides a repository of JSON:API configurable resource types.
@@ -82,14 +81,10 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
   public function __construct(...$arguments) {
     parent::__construct(...$arguments);
 
-    // This is needed, as the property is added in Drupal 8.8 and it is not
-    // yet present in 8.7 or the contrib version of JSON:API at the time.
-    if (property_exists($this, 'cacheTags')) {
-      $this->cacheTags = array_merge($this->cacheTags, [
-        'config:jsonapi_extras.settings',
-        'config:jsonapi_resource_config_list',
-      ]);
-    }
+    $this->cacheTags = array_merge($this->cacheTags, [
+      'config:jsonapi_extras.settings',
+      'config:jsonapi_resource_config_list',
+    ]);
   }
 
   /**
@@ -175,8 +170,7 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
     );
     try {
       $resource_configs = $this->getResourceConfigs();
-      return isset($resource_configs[$resource_config_id]) ?
-        $resource_configs[$resource_config_id] :
+      return $resource_configs[$resource_config_id] ??
         $null_resource;
     }
     catch (PluginException $e) {
@@ -196,7 +190,7 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
     if (!static::$resourceConfigs) {
       $resource_config_ids = [];
       foreach ($this->getEntityTypeBundleTuples() as $tuple) {
-        list($entity_type_id, $bundle) = $tuple;
+        [$entity_type_id, $bundle] = $tuple;
         $resource_config_ids[] = static::buildResourceConfigId(
           $entity_type_id,
           $bundle
@@ -246,89 +240,9 @@ class ConfigurableResourceTypeRepository extends ResourceTypeRepository {
       return $resource_types[$type_name];
     }
 
-    if (strpos($type_name, '--') !== FALSE) {
-      list($entity_type_id, $bundle) = explode('--', $type_name);
+    if (strpos($type_name ?? '', '--') !== FALSE) {
+      [$entity_type_id, $bundle] = explode('--', $type_name);
       return static::lookupResourceType($resource_types, $entity_type_id, $bundle);
-    }
-
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo Remove this code when Drupal 8 support is dropped
-   */
-  protected function getRelatableResourceTypesFromFieldDefinition(FieldDefinitionInterface $field_definition, array $resource_types) {
-    $item_definition = $field_definition->getItemDefinition();
-    $entity_type_id = $item_definition->getSetting('target_type');
-    $handler_settings = $item_definition->getSetting('handler_settings');
-    $target_bundles = empty($handler_settings['target_bundles']) ? $this->getAllBundlesForEntityType(
-      $entity_type_id
-    ) : $handler_settings['target_bundles'];
-    $relatable_resource_types = [];
-
-    foreach ($target_bundles as $target_bundle) {
-      if ($resource_type = static::lookupResourceType(
-        $resource_types,
-        $entity_type_id,
-        $target_bundle
-      )) {
-        $relatable_resource_types[] = $resource_type;
-      }
-      else {
-        trigger_error(
-          sprintf(
-            'The "%s" at "%s:%s" references the "%s:%s" entity type that does not exist. Please take action.',
-            $field_definition->getName(),
-            $field_definition->getTargetEntityTypeId(),
-            $field_definition->getTargetBundle(),
-            $entity_type_id,
-            $target_bundle
-          ),
-          E_USER_WARNING
-        );
-      }
-    }
-
-    return $relatable_resource_types;
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo Remove this code when Drupal 8 support is dropped
-   */
-  protected function getAllBundlesForEntityType($entity_type_id) {
-    // Ensure all keys are strings, because numeric values are allowed
-    // as bundle names and "array_keys()" will cast "42" to 42.
-    return array_map('strval', array_keys($this->entityTypeBundleInfo->getBundleInfo($entity_type_id)));
-  }
-
-  /**
-   * Lookups resource type by the internal and public identifiers.
-   *
-   * @param \Drupal\jsonapi\ResourceType\ResourceType[] $resource_types
-   *   The list of resource types to do a lookup.
-   * @param string $entity_type_id
-   *   The entity type of a seekable resource.
-   * @param string $bundle
-   *   The entity bundle of a seekable resource.
-   *
-   * @return \Drupal\jsonapi\ResourceType\ResourceType|null
-   *   The resource type or NULL if it cannot be found.
-   *
-   * @todo Remove this code when Drupal 8 support is dropped
-   */
-  protected static function lookupResourceType(array $resource_types, $entity_type_id, $bundle) {
-    if (isset($resource_types["$entity_type_id--$bundle"])) {
-      return $resource_types["$entity_type_id--$bundle"];
-    }
-
-    foreach ($resource_types as $resource_type) {
-      if ($resource_type->getEntityTypeId() === $entity_type_id && $resource_type->getBundle() === $bundle) {
-        return $resource_type;
-      }
     }
 
     return NULL;

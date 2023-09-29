@@ -17,8 +17,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class JsonApiBuildSubscriber implements EventSubscriberInterface {
 
   /**
+   * The extra's resource repository.
+   *
    * @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceTypeRepository
-   *  The extra's resource repository
    */
   private $repository;
 
@@ -40,7 +41,7 @@ class JsonApiBuildSubscriber implements EventSubscriberInterface {
   public function __construct(ConfigurableResourceTypeRepository $repository, ConfigFactoryInterface $configFactory = NULL) {
     $this->repository = $repository;
     if ($configFactory === NULL) {
-      @trigger_error('Calling ' . __METHOD__ . ' without the $configFactory argument is deprecated in jsonapi_extras:8.x-3.x and will be required in jsonapi_extras:8.x-4.x. See https://www.drupal.org/node/3242191', E_USER_DEPRECATED);
+      @trigger_error('Calling ' . __METHOD__ . ' without the $configFactory argument is deprecated in jsonapi_extras:8.x-3.20 and will be required in jsonapi_extras:8.x-4.0. See https://www.drupal.org/node/3242191', E_USER_DEPRECATED);
       $configFactory = \Drupal::configFactory();
     }
     $this->configFactory = $configFactory;

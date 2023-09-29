@@ -1,0 +1,51 @@
+block.settings.fullcalendar_block:
+  type: block_settings
+  label: 'FullCalendar block'
+  mapping:
+    event_source:
+      type: string
+      label: 'Event source URL'
+    initial_view:
+      type: string
+      label: 'Initial View'
+    header_start:
+      type: string
+      label: 'Start of the header toolbar'
+    header_center:
+      type: string
+      label: 'Center of the header toolbar'
+    header_end:
+      type: string
+      label: 'End of the header toolbar'
+    open_dialog:
+      type: 'fullcalendar_block_dialog_type.[%parent.open_dialog]'
+      # label: 'Open in a new tab/dialog'
+    dialog_width:
+      type: integer
+      label: 'Dialog width'
+    plugins:
+      type: sequence
+      label: 'Plugins'
+      sequence:
+        type: string
+        label: 'Plugin'
+    advanced:
+      # Translatable text so that you can easily have a different configuration
+      # per site.
+      # @see config_translation_config_schema_info_alter()
+      type: text
+      label: 'Advanced settings.'
+    advanced_drupal:
+      type: text
+      label: 'Advanced Drupal settings'
+
+# The dialog types.
+fullcalendar_block_dialog_type.0:
+  type: integer
+  label: 'Open in a new tab'
+fullcalendar_block_dialog_type.1:
+  type: integer
+  label: 'Open in a dialog'
+fullcalendar_block_dialog_type.2:
+  type: integer
+  label: 'Open in current tab'

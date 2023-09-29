@@ -2,13 +2,13 @@
 
 namespace Drupal\jsonapi_extras\EventSubscriber;
 
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\DrupalKernelInterface;
 use Drupal\Core\Routing\RouteBuilderInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -29,6 +29,13 @@ class ConfigSubscriber implements EventSubscriberInterface {
    * @var \Drupal\Core\Routing\RouteBuilderInterface
    */
   protected $routeBuilder;
+
+  /**
+   * The route builder.
+   *
+   * @var Drupal\Core\Routing\RouteBuilder
+   */
+  protected $service;
 
   /**
    * Constructs a ConfigSubscriber object.
@@ -53,6 +60,7 @@ class ConfigSubscriber implements EventSubscriberInterface {
     $container = \Drupal::getContainer();
     // It is problematic to rebuild the container during the installation.
     $should_process = $container->getParameter('kernel.environment') !== 'install'
+      && (!$container->hasParameter('jsonapi_extras.base_path_override_disabled') || !$container->getParameter('jsonapi_extras.base_path_override_disabled'))
       && $event->getConfig()->getName() === 'jsonapi_extras.settings';
     if ($should_process) {
       // @see \Drupal\jsonapi_extras\JsonapiExtrasServiceProvider::alter()

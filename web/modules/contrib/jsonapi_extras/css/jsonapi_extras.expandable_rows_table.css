@@ -8,8 +8,8 @@
 }
 
 .toggle-expanded span {
-  color: #000;
   display: inline-block;
+  color: #000;
 }
 
 .toggle-expanded {

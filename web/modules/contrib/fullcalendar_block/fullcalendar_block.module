@@ -1,0 +1,112 @@
+<?php
+
+/**
+ * @file
+ * Contains Fullcalendar block module functions.
+ */
+
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function fullcalendar_block_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the fullcalendar_block module.
+    case 'help.page.fullcalendar_block':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('FullCalendar Block module creates a block to display a calendar. The calendar is powered by FullCalendar 5 and can be configured using the module block settings. The block, named FullCalendar block, accepts event sources in the form of a JSON feed URL. This URL can be either a relative or absolute link. If the event source is a Drupal view, a relative link may be used.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fullcalendar_block_theme($existing, $type, $theme, $path) {
+  return [
+    'fullcalendar_block' => [
+      'variables' => [
+        'block_index' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for fullcalendar_block templates.
+ *
+ * Default template: fullcalendar-block.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - block_index: The block index.
+ */
+function template_preprocess_fullcalendar_block(array &$variables) {
+  $variables['attributes']['class'][] = 'fullcalendar-block';
+  $variables['attributes']['data-calendar-block-index'] = $variables['block_index'];
+}
+
+/**
+ * Implements hook_library_info_alter().
+ */
+function fullcalendar_block_library_info_alter(&$libraries, $extension) {
+  if ($extension === 'fullcalendar_block') {
+    /*
+     * Provide an easy way for developers to switch to non-minified assets
+     * during dev by specifying the following in the settings.php:
+     * @code
+     * $settings['fullcalendar_block.dev_mode'] = TRUE;
+     * @endcode
+     */
+    $dev_mode = Settings::get('fullcalendar_block.dev_mode', FALSE);
+    foreach ($libraries as &$library) {
+      foreach (['css.theme', 'js'] as $component) {
+        $component_path = explode('.', $component);
+        $updated_libraries = [];
+        foreach ((array) NestedArray::getValue($library, $component_path, $key_exists) as $asset_key => $asset_config) {
+          $using_cdn = FALSE;
+          if (!empty($library['cdn']['url'])) {
+            // Handle the CDN management.
+            if (!is_file(DRUPAL_ROOT . $asset_key)) {
+              // The local asset doesn't exist. Use the CDN version.
+              $path = explode('/', $asset_key);
+              // Remove the preceding library paths.
+              array_splice($path, 0, 3);
+              $plugin_path = rtrim($library['cdn']['url'], '/');
+              $plugin_path .= '@' . $library['version'] . '/';
+              $plugin_path .= implode('/', $path);
+              $asset_key = $plugin_path;
+              $using_cdn = TRUE;
+            }
+          }
+          if ($dev_mode) {
+            // External libraries to use unminimized versions for.
+            // Handle the management of the dev dependencies.
+            if (empty($asset_config['no_min']) && ($new_asset_key = preg_replace('/\.min\.(css|js)$/', '.$1', $asset_key)) !== $asset_key) {
+              if (basename($new_asset_key) === 'moment.js') {
+                // Strip out the "/min/" from the path if it is just the
+                // moment.js file.
+                $new_asset_key = str_replace('/min/', '/', $new_asset_key);
+              }
+              if ($using_cdn || is_file(DRUPAL_ROOT . $new_asset_key)) {
+                // The supposed file exists or it's a CDN. Use it.
+                $asset_key = $new_asset_key;
+                $asset_config['minified'] = FALSE;
+              }
+            }
+          }
+          $updated_libraries[$asset_key] = $asset_config;
+        }
+        if ($key_exists) {
+          NestedArray::setValue($library, $component_path, $updated_libraries);
+        }
+      }
+    }
+  }
+}

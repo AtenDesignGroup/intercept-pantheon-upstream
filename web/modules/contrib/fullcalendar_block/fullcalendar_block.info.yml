@@ -1,0 +1,14 @@
+name: FullCalendar Block
+type: module
+description: 'Provide the ability to present contents in a calendar block rendered by FullCalendar JS.'
+package: Block
+core_version_requirement: ^9 || ^10
+
+dependencies:
+  - drupal:block
+  - drupal:datetime
+
+# Information added by Drupal.org packaging script on 2023-04-17
+version: '1.0.4'
+project: 'fullcalendar_block'
+datestamp: 1681750250

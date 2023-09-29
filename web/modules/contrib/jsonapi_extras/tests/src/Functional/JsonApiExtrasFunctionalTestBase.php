@@ -6,7 +6,6 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
-use Drupal\user\Entity\Role;
 
 /**
  * Provides helper methods for the JSON API Extras module's functional tests.
@@ -63,7 +62,10 @@ abstract class JsonApiExtrasFunctionalTestBase extends JsonApiFunctionalTestBase
     static::overrideResources();
     $this->resetAll();
     $role = $this->user->get('roles')[0]->entity;
-    $this->grantPermissions($role, ['administer nodes', 'administer site configuration']);
+    $this->grantPermissions(
+        $role,
+        ['administer nodes', 'administer site configuration']
+    );
   }
 
   /**

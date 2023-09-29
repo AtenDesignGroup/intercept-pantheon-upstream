@@ -12,6 +12,16 @@
   --fc-button-active-border-color: #{$clr-tertiary};
   --fc-button-disabled-border-color: #d3d8df;
 }
+.fc-h-event .fc-event-main,
 .fc-event {
   color: inherit;
+}
+.fc-daygrid-block-event .fc-event-title {
+  font-weight: 700;
+  padding-left: 10px;
+}
+.fc-timeGridWeek-view .fc-event-main-frame,
+.fc-timeGridDay-view .fc-event-main-frame {
+  color: $clr-text;
+  font-weight: 700;
 }

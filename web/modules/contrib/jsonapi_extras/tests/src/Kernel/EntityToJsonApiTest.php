@@ -53,16 +53,22 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   ];
 
   /**
+   * Node type.
+   *
    * @var \Drupal\node\Entity\NodeType
    */
   private $nodeType;
 
   /**
+   * Vocabulary.
+   *
    * @var \Drupal\taxonomy\Entity\Vocabulary
    */
   private $vocabulary;
 
   /**
+   * Node.
+   *
    * @var \Drupal\node\Entity\Node
    */
   private $node;
@@ -103,6 +109,8 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
   protected $file;
 
   /**
+   * Role.
+   *
    * @var \Drupal\user\RoleInterface
    */
   protected $role;
@@ -243,15 +251,14 @@ class EntityToJsonApiTest extends JsonapiKernelTestBase {
     array_walk(
       $entities,
       function ($data) {
-        list($entity, $include_fields, $expected_includes) = $data;
+        [$entity, $include_fields, $expected_includes] = $data;
         $this->assertEntity($entity, $include_fields, $expected_includes);
       }
     );
   }
 
   /**
-   * Test if the request by jsonapi_extras.entity.to_jsonapi doesn't linger on
-   * the request stack.
+   * Test if the request doesn't linger on the request stack.
    *
    * @see https://www.drupal.org/project/jsonapi_extras/issues/3135950
    * @see https://www.drupal.org/project/jsonapi_extras/issues/3124805

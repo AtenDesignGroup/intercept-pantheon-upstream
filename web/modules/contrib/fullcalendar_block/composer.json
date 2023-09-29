@@ -1,0 +1,38 @@
+{
+  "name": "drupal/fullcalendar_block",
+  "type": "drupal-module",
+  "description": "Provide a block for calendar powered by FullCalendar JS.",
+  "keywords": ["Drupal"],
+  "license": "MIT",
+  "homepage": "http://drupal.org/project/fullcalendar_block",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Mingsong Hu",
+      "homepage": "https://www.drupal.org/u/mingsong",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "http://drupal.org/project/issues/fullcalendar_block",
+    "source": "http://cgit.drupalcode.org/fullcalendar_block"
+  },
+  "suggest": {
+    "zodiacmedia/drupal-libraries-installer": "This Composer plugin will help you easily install Drupal libraries locally."
+  },
+  "extra": {
+    "drupal-libraries": {
+      "DOMPurify": "https://registry.npmjs.org/dompurify/-/dompurify-2.4.5.tgz",
+      "drupal-fullcalendar": "https://registry.npmjs.org/fullcalendar/-/fullcalendar-5.11.4.tgz",
+      "moment": "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz",
+      "rrule": {
+        "url": "https://registry.npmjs.org/rrule/-/rrule-2.7.1.tgz",
+        "ignore": [
+          "dist/esm/demo"
+        ]
+      },
+      "fullcalendar-rrule": "https://registry.npmjs.org/@fullcalendar/rrule/-/rrule-5.11.4.tgz",
+      "fullcalendar-moment": "https://registry.npmjs.org/@fullcalendar/moment/-/moment-5.11.4.tgz"
+    }
+  }
+}

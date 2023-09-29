@@ -1,5 +1,18 @@
+// Import Partials
+@import "_partials";
+
 .fc {
   .fc-button {
     display: none;
+  }
+}
+
+.intercept-events-calendar {
+  @include fs(body);
+  
+  th,
+  td,
+  .fc-daygrid-event {
+    @include fs(body);
   }
 }

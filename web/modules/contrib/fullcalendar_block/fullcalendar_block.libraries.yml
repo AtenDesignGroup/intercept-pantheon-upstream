@@ -1,0 +1,98 @@
+libraries.fullcalendar:
+  remote: https://fullcalendar.io/
+  version: '5.11.4'
+  license:
+    name: MIT
+    url: https://github.com/fullcalendar/fullcalendar/blob/master/LICENSE.txt
+    gpl-compatible: true
+  cdn:
+    url: https://unpkg.com/fullcalendar # https://unpkg.com/browse/fullcalendar/
+  css:
+    theme:
+      /libraries/drupal-fullcalendar/main.min.css: { minified: true }
+  js:
+    /libraries/drupal-fullcalendar/main.min.js: { minified: true }
+    /libraries/drupal-fullcalendar/locales-all.min.js: { minified: true }
+
+libraries.moment:
+  remote: https://github.com/moment/moment
+  version: '2.29.4'
+  license:
+    name: MIT
+    url: https://github.com/moment/moment/blob/develop/LICENSE
+    gpl-compatible: true
+  cdn:
+    url: https://unpkg.com/moment # https://unpkg.com/browse/moment/
+  js:
+    /libraries/moment/min/moment-with-locales.min.js: { minified: true }
+
+libraries.rrule:
+  remote: https://github.com/jakubroztocil/rrule
+  version: '2.7.1'
+  license:
+    name: BSD-3-Clause
+    url: https://github.com/jakubroztocil/rrule/blob/master/LICENCE
+    gpl-compatible: true
+  cdn:
+    url: https://unpkg.com/rrule # https://unpkg.com/browse/rrule/
+  js:
+    /libraries/rrule/dist/es5/rrule.min.js: { minified: true }
+
+# https://fullcalendar.io/docs/moment-plugin
+libraries.fullcalendar_moment:
+  remote: https://fullcalendar.io/docs/moment-plugin
+  version: '5.11.4'
+  license:
+    name: MIT
+    url: https://github.com/fullcalendar/fullcalendar/blob/master/LICENSE.txt
+    gpl-compatible: true
+  cdn:
+    url: https://unpkg.com/@fullcalendar/moment # https://unpkg.com/browse/@fullcalendar/moment/
+  js:
+    /libraries/fullcalendar-moment/main.global.min.js: { minified: true }
+  dependencies:
+    - fullcalendar_block/libraries.moment
+    - fullcalendar_block/libraries.fullcalendar
+
+# https://fullcalendar.io/docs/rrule-plugin
+libraries.fullcalendar_rrule:
+  remote: https://fullcalendar.io/docs/rrule-plugin
+  version: '5.11.4'
+  license:
+    name: MIT
+    url: https://github.com/fullcalendar/fullcalendar/blob/master/LICENSE.txt
+    gpl-compatible: true
+  cdn:
+    url: https://unpkg.com/@fullcalendar/rrule # https://unpkg.com/browse/@fullcalendar/rrule/
+  js:
+    /libraries/fullcalendar-rrule/main.global.min.js: { minified: true }
+  dependencies:
+    - fullcalendar_block/libraries.rrule
+    - fullcalendar_block/libraries.fullcalendar
+
+libraries.dompurify:
+  remote: https://github.com/cure53/DOMPurify
+  version: '2.4.5'
+  license:
+    name: MPL-2.0 OR Apache-2.0
+    url: https://github.com/cure53/DOMPurify/blob/main/LICENSE
+    gpl-compatible: true
+  cdn:
+    url: https://unpkg.com/dompurify # https://unpkg.com/browse/dompurify/
+  js:
+    /libraries/DOMPurify/dist/purify.min.js: { minified: true }
+
+fullcalendar:
+  css:
+    theme:
+      css/fullcalendar_block.css: { }
+  js:
+    js/fullcalendar_block.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/once
+    - core/drupalSettings
+    - core/drupal.dialog
+    - core/drupal.dialog.ajax
+    - fullcalendar_block/libraries.fullcalendar

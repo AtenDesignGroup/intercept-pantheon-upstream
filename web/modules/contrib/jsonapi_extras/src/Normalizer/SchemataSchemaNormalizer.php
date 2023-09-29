@@ -62,7 +62,8 @@ class SchemataSchemaNormalizer extends SchemataJsonSchemaSchemataSchemaNormalize
       foreach ($properties as $fieldname => $schema) {
         if ($enhancer = $resource_type->getFieldEnhancer($resource_type->getFieldByPublicName($fieldname)->getInternalName())) {
           $root[$property_type]['properties'][$fieldname] = array_merge(
-            array_intersect_key($root[$property_type]['properties'][$fieldname], array_flip(['title', 'description'])),
+            array_intersect_key($root[$property_type]['properties'][$fieldname],
+            array_flip(['title', 'description'])),
             $enhancer->getOutputJsonSchema()
           );
         }

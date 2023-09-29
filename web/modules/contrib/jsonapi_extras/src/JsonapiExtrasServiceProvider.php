@@ -20,7 +20,13 @@ class JsonapiExtrasServiceProvider extends ServiceProviderBase {
       ->read('jsonapi_extras.settings');
 
     if ($settings !== FALSE) {
-      $container->setParameter('jsonapi.base_path', '/' . $settings['path_prefix']);
+      if ($container->getParameter('jsonapi.base_path') !== '/jsonapi') {
+        $container->setParameter('jsonapi_extras.base_path_override_disabled', TRUE);
+      }
+      else {
+        $container->setParameter('jsonapi.base_path', '/' . $settings['path_prefix']);
+        $container->setParameter('jsonapi_extras.base_path_override_disabled', FALSE);
+      }
     }
 
     // Enable normalizers in the "src-impostor-normalizers" directory to be

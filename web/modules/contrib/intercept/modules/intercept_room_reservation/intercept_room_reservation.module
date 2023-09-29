@@ -171,6 +171,10 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
   elseif ($view->id() == 'intercept_export_room_reservations' && $view->current_display == 'page') {
     // Changes to room reservation export filters will go here.
   }
+  elseif ($view->id() == 'intercept_rooms' && $view->current_display == 'default') {
+    $form['staff_use']['#options'][1] = 'Staff';
+    $form['staff_use']['#options'][0] = 'Public';
+  }
 
   // Room Reserve Staff Calendar View.
   if (in_array($form['#id'], [

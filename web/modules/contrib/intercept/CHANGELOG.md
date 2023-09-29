@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta18] - 2023-09-01
+
+<h2>Sprint 58 Deployment</h2>
+
+- Customers and staff can now see events color-coded by their primary audience on the printable event calendar (requires using a subtheme of intercept_base, overriding the intercept_base/fullCalendar theme library, and therein defining colors per audience).
+- Clarified the "Usage" filter under the calendar view of Room Reservations
+- Began research & development on reworking customer feedback options. This redesigned feature is planned to become available in Q4.
+- Room Reservation Entry - Moved the Status field to a more logical position.
+- Fixed an issue with group name being mistakenly required the customer re-edits an existing room reservation.
+
 ## [8.x-1.0-beta17] - 2023-09-01
 
 <h2>Sprint 57 Deployment</h2>

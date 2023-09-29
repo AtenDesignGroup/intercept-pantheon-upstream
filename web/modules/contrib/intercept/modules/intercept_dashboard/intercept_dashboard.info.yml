@@ -8,3 +8,8 @@ dependencies:
   - intercept_event
   - charts
   - charts_chartjs
+
+# Information added by Drupal.org packaging script on 2023-09-29
+version: '8.x-1.0-beta18'
+project: 'intercept'
+datestamp: 1696002561

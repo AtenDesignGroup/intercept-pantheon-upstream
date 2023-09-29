@@ -13,7 +13,6 @@ use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
-use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 use Symfony\Component\Routing\Route;
 
@@ -125,7 +124,10 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     static::overrideResources();
     $this->resetAll();
     $role = $this->user->get('roles')[0]->entity;
-    $this->grantPermissions($role, ['administer nodes', 'administer site configuration']);
+    $this->grantPermissions(
+        $role,
+        ['administer nodes', 'administer site configuration']
+    );
   }
 
   /**
@@ -141,7 +143,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
   }
 
   /**
-   *
+   * Test overwriting a field with another field.
    */
   public function testOverwriteFieldWithOtherField() {
     $this->createDefaultContent(1, 1, FALSE, TRUE, static::IS_NOT_MULTILINGUAL);
@@ -157,6 +159,9 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $this->assertEquals($this->nodes[0]->field_text_moved_new->value, $output['data'][0]['attributes']['field_text_moved']['value']);
   }
 
+  /**
+   * Test sorting on an overwritten field.
+   */
   public function testSortOverwrittenField() {
     $this->createDefaultContent(2, 1, FALSE, TRUE, static::IS_NOT_MULTILINGUAL);
 
@@ -187,8 +192,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
   /**
    * Tests that resource type fields can be aliased per resource type.
    *
-   * @see Core jsonapi module how the state code below works:
-   * Drupal\jsonapi_test_resource_type_building\EventSubscriber\ResourceTypeBuildEventSubscriber
+   * @see Drupal\jsonapi_test_resource_type_building\EventSubscriber\ResourceTypeBuildEventSubscriber
    *
    * @todo Create a test similar to this
    */
@@ -675,7 +679,7 @@ class JsonApiExtrasFunctionalTest extends JsonApiFunctionalTestBase {
     $row = $this->assertSession()->elementExists('css', sprintf('#jsonapi-disabled-resources-list table tr:contains("%s")', 'taxonomy_term--' . $vocabulary->id()));
     $this->assertSession()->elementExists('named', ['link', 'Revert'], $row);
 
-    // Add another vocabulary
+    // Add another vocabulary.
     $vocabulary2 = Vocabulary::create([
       'name' => $this->randomMachineName(),
       'vid' => mb_strtolower($this->randomMachineName()),

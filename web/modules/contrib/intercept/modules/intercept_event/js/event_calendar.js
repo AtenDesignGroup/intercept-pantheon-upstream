@@ -7,7 +7,7 @@
  * Provides functionality for event calendar.
  */
 
-(function ineterceptEventCalendar($, Drupal, once, drupalSettings) {
+(function interceptEventCalendar($, Drupal, once, drupalSettings) {
   if (!Drupal.fullcalendar_block) {
     return;
   }
@@ -58,12 +58,13 @@
     const url = new URL(filterUrl);
     url.searchParams.set('views-filter[start]', dates.start);
     url.searchParams.set('views-filter[end]', dates.end);
-    url.searchParams.set('fields[node--event]', 'title,field_date_time,drupal_internal__nid');
+    url.searchParams.set('fields[node--event]', 'title,field_date_time,drupal_internal__nid,field_audience_primary');
     return url.toString();
   }
 
   /**
    * Transforms JSON API event data to FullCalendar event data.
+   * See: https://fullcalendar.io/docs/event-object
    */
   function eventDataTransform(eventData) {
     return {
@@ -73,6 +74,7 @@
       end: eventData.attributes.field_date_time.end_value,
       url: `/event/${eventData.attributes.drupal_internal__nid}/calendar`,
       allDay: eventData.attributes.field_date_time.value.split('T')[0] !== eventData.attributes.field_date_time.end_value.split('T')[0],
+      classNames: ['field-audience-primary-' + eventData.relationships.field_audience_primary.data.meta.drupal_internal__target_id],
     };
   }
 

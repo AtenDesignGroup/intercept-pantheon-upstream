@@ -74,12 +74,12 @@ class EntityResource extends JsonApiEntityResourse {
 
     $filters = array_merge(
       $default_filter,
-      $request->query->get('filter', [])
+      $request->query->all('filter')
     );
 
     $sort = [];
     if ($request->query->has('sort')) {
-      $sort = Sort::createFromQueryParameter($request->query->get('sort'))->fields();
+      $sort = Sort::createFromQueryParameter($request->query->all()['sort'])->fields();
     }
     $sorting = array_merge($default_sorting, $sort);
 
@@ -171,7 +171,7 @@ class EntityResource extends JsonApiEntityResourse {
       );
       throw new \LengthException($message);
     }
-    return isset($relatable_resource_types[0]) ? $relatable_resource_types[0] : NULL;
+    return $relatable_resource_types[0] ?? NULL;
   }
 
   /**

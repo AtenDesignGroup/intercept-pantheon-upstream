@@ -61,10 +61,9 @@ class FieldItemNormalizer extends JsonApiNormalizerDecoratorBase {
     $cacheability = CacheableMetadata::createFromObject($normalized_output)
       ->addCacheTags(['config:jsonapi_resource_config_list']);
     // Apply any enhancements necessary.
-    $context = new Context([
-      'field_item_object' => $object,
-      CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cacheability,
-    ]);
+    $context = new Context($context);
+    $context->offsetSet('field_item_object', $object);
+    $context->offsetSet(CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY, $cacheability);
     $processed = $enhancer->undoTransform(
       $normalized_output->getNormalization(),
       $context

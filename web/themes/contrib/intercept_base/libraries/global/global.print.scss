@@ -69,11 +69,11 @@ h1 {
   margin: 0;
   padding: 0 !important;
 
-  &:not(:last-child) {
+  /* &:not(:last-child) {
     &:after {
       content: ","
     }
-  }
+  } */
 
   > svg {
     display: none;
@@ -220,7 +220,7 @@ h1 {
 }
 
 .current-filter .option-chip {
-  @include fs(x-small);
+  @include fs(body);
   align-items: center;
   padding: 0;
 

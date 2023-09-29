@@ -5,8 +5,8 @@ namespace Drupal\jsonapi_extras\Plugin\jsonapi\FieldEnhancer;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Shaper\Util\Context;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Perform additional manipulations to JSON fields.

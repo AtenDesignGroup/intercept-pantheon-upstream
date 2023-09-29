@@ -137,3 +137,8 @@ components:
       - components
     intercept-base-icons:
       - images/icons
+
+# Information added by Drupal.org packaging script on 2023-09-29
+version: '8.x-1.0-beta18'
+project: 'intercept_base'
+datestamp: 1696002584

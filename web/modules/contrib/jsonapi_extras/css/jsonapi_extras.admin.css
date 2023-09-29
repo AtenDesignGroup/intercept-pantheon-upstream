@@ -1,9 +1,9 @@
 span.label {
-  background-color: #e0e0d8;
-  border-radius: 5px;
-  color: #333;
-  font-weight: normal;
   padding: 2px 5px;
+  color: #333;
+  border-radius: 5px;
+  background-color: #e0e0d8;
+  font-weight: normal;
 }
 
 span.label--overwritten {
@@ -11,8 +11,8 @@ span.label--overwritten {
 }
 
 span.label--status {
-  background-color: #27ae60;
   color: white;
+  background-color: #27ae60;
 }
 
 span.label--status--disabled {

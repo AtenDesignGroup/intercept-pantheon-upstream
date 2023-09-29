@@ -65,10 +65,9 @@ class ResourceIdentifierNormalizer extends JsonApiNormalizerDecoratorBase {
     $cacheability = CacheableMetadata::createFromObject($normalized_output)
       ->addCacheTags(['config:jsonapi_resource_config_list']);
     // Apply any enhancements necessary.
-    $context = new Context([
-      'field_resource_identifier' => $field,
-      CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cacheability,
-    ]);
+    $context = new Context($context);
+    $context->offsetSet('field_resource_identifier', $field);
+    $context->offsetSet(CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY, $cacheability);
     $transformed = $enhancer->undoTransform(
       $normalized_output->getNormalization(),
       $context

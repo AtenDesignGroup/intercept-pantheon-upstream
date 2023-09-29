@@ -40,10 +40,11 @@
     transition: transform .2s ease-out;
     transition: transform .2s ease-out, -webkit-transform .2s ease-out;
     vertical-align: text-bottom;
-    white-space: nowrap; }
-    .save-link__star svg {
+    white-space: nowrap;
+    /*svg {
       height: auto;
-      width: 1.875em; }
+      width: 1.875em;
+    }*/ }
   .save-link + .ajax-progress {
     line-height: 1;
     position: absolute;

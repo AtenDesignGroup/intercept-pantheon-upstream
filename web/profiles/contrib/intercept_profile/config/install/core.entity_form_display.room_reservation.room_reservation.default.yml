@@ -7,6 +7,7 @@ dependencies:
     - field.field.room_reservation.room_reservation.field_dates
     - field.field.room_reservation.room_reservation.field_event
     - field.field.room_reservation.room_reservation.field_group_name
+    - field.field.room_reservation.room_reservation.field_guest
     - field.field.room_reservation.room_reservation.field_meeting_purpose
     - field.field.room_reservation.room_reservation.field_meeting_purpose_details
     - field.field.room_reservation.room_reservation.field_publicize
@@ -16,7 +17,7 @@ dependencies:
     - field.field.room_reservation.room_reservation.field_status
     - field.field.room_reservation.room_reservation.field_user
   module:
-    - datetime_range
+    - inline_entity_form
     - intercept_room_reservation
     - text
 id: room_reservation.room_reservation.default
@@ -26,118 +27,119 @@ mode: default
 content:
   author:
     type: entity_reference_autocomplete
-    weight: 11
+    weight: 13
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
-  field_agreement:
-    weight: 26
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_attendee_count:
-    weight: 4
+    type: number
+    weight: 5
+    region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
-    type: number
-    region: content
   field_dates:
+    type: intercept_room_date_availability
     weight: 1
-    settings: {  }
-    third_party_settings: {  }
-    type: daterange_default
     region: content
+    settings:
+      time_type: '12'
+    third_party_settings: {  }
   field_event:
     type: entity_reference_autocomplete
     weight: 12
     region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
   field_group_name:
-    weight: 5
+    type: string_textfield
+    weight: 6
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
+  field_guest:
+    type: inline_entity_form_simple
+    weight: 4
     region: content
+    settings:
+      form_mode: default
+      override_labels: false
+      label_singular: ''
+      label_plural: ''
+      collapsible: false
+      collapsed: false
+      revision: true
+    third_party_settings: {  }
   field_meeting_purpose:
+    type: options_select
     weight: 7
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_meeting_purpose_details:
+    type: string_textfield
     weight: 8
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_publicize:
-    weight: 27
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
+    type: options_buttons
+    weight: 11
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_refreshments:
+    type: options_buttons
     weight: 9
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_refreshments_description:
+    type: text_textarea
     weight: 10
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_room:
+    type: entity_reference_autocomplete
     weight: 0
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_status:
+    type: options_select
     weight: 2
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_user:
+    type: entity_reference_autocomplete
     weight: 3
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   name:
     type: string_textfield
     weight: -4
@@ -146,17 +148,26 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  notes:
+    type: string_textarea
+    weight: 14
+    region: content
+    settings:
+      rows: 4
+      placeholder: ''
+    third_party_settings: {  }
   user_id:
     type: entity_reference_autocomplete
     weight: 0
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
 hidden:
-  image: true
+  field_agreement: true
+  langcode: true
   location: true
   room_location: true

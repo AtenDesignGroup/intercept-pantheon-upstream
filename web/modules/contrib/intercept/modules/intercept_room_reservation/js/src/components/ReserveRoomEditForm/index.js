@@ -591,7 +591,6 @@ class ReserveRoomEditForm extends PureComponent {
                   value={values.groupName}
                   name="groupName"
                   helperText={'Help others find you by name.'}
-                  required={!utils.userIsStaff()}
                 />
                 <SelectResource
                   type={c.TYPE_MEETING_PURPOSE}

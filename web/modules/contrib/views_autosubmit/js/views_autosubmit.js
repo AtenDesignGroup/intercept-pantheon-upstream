@@ -15,10 +15,9 @@ Drupal.behaviors.ViewsAutoSubmit = {
     }
 
     // the change event bubbles so we only need to bind it to the outer form
-    $('form.views-auto-submit-full-form, .views-auto-submit-full-form form', context)
+    $(once('views-auto-submit', 'form.views-auto-submit-full-form, .views-auto-submit-full-form form', context))
       .add('.views-auto-submit', context)
       .filter('form, select, input:not(:text, :submit)')
-      .once('views-auto-submit')
       .change(function (e) {
         // don't trigger on text change for full-form.
         if ($(e.target).is(':not(:text, :submit)')) {
@@ -45,8 +44,9 @@ Drupal.behaviors.ViewsAutoSubmit = {
       27  // esc
     ];
     // Don't wait for change event on textfields.
-    $('.views-auto-submit-full-form input:text, input:text.views-auto-submit', context)
-      .once('views-auto-submit').each(function() {
+    $(once('views-auto-submit', $(context)
+      .find('.views-auto-submit-full-form input:text, input:text.views-auto-submit')))
+      .each(function() {
         // Each text input element has his own timeout.
         var timeoutID = 0;
         $(this)

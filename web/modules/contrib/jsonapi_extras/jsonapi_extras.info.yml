@@ -7,7 +7,7 @@ configure: jsonapi_extras.settings
 dependencies:
   - drupal:jsonapi
 
-# Information added by Drupal.org packaging script on 2022-11-25
-version: '8.x-3.23'
+# Information added by Drupal.org packaging script on 2023-09-11
+version: '8.x-3.24'
 project: 'jsonapi_extras'
-datestamp: 1669374480
+datestamp: 1694442799

@@ -151,7 +151,7 @@ class JsonapiResourceConfigForm extends EntityForm {
         // We can't build the form without an entity type and bundle.
         throw new \InvalidArgumentException('Unable to load entity type or bundle for the overrides form.');
       }
-      list($entity_type_id, $bundle) = explode('--', $resource_id);
+      [$entity_type_id, $bundle] = explode('--', $resource_id);
       $form['#title'] = $this->t('Edit %label resource config', ['%label' => $resource_id]);
     }
 

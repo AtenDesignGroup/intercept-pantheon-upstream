@@ -3,11 +3,11 @@
 namespace Drupal\jsonapi_extras\ResourceType;
 
 use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerManager;
-use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Defines a configurable resource type.

@@ -4,5 +4,5 @@ autosubmit:
     js/views_autosubmit.js: {}
   dependencies:
     - core/jquery
-    - core/jquery.once
+    - core/once
     - core/drupal

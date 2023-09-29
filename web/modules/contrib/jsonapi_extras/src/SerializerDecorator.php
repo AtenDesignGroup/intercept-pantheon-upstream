@@ -2,12 +2,12 @@
 
 namespace Drupal\jsonapi_extras;
 
-use Symfony\Component\Serializer\SerializerInterface;
+use Drupal\jsonapi\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Drupal\jsonapi\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * A decorated JSON:API serializer, with lazily initialized fallback serializer.

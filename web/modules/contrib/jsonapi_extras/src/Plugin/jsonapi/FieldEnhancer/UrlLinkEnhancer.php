@@ -141,8 +141,18 @@ class UrlLinkEnhancer extends ResourceFieldEnhancerBase implements ContainerFact
       'type' => 'object',
       'properties' => [
         'uri' => ['type' => 'string'],
-        'title' => ['type' => 'string'],
-        'options' => ['type' => 'array'],
+        'title' => [
+          'anyOf' => [
+            ['type' => 'null'],
+            ['type' => 'string'],
+          ],
+        ],
+        'options' => [
+          'anyOf' => [
+            ['type' => 'array'],
+            ['type' => 'object'],
+          ],
+        ],
         'url' => ['type' => 'string'],
       ],
     ];

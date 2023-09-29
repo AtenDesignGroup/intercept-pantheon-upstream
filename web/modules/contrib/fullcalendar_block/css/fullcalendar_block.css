@@ -1,0 +1,4 @@
+/* Allow AJAX dialogs to be resizable */
+.fullcalendar-block-dialog #drupal-modal {
+  margin: 1px;
+}

@@ -46,9 +46,12 @@ h1 {
 .option-chip {
   background-color: transparent !important;
   margin: 0;
-  padding: 0 !important; }
-  .option-chip:not(:last-child):after {
-    content: ","; }
+  padding: 0 !important;
+  /* &:not(:last-child) {
+    &:after {
+      content: ","
+    }
+  } */ }
   .option-chip > svg {
     display: none; }
 
@@ -150,17 +153,17 @@ h1 {
   margin-right: .5em; }
 
 .current-filter .option-chip {
-  font-size: 0.65278rem;
+  font-size: 0.80556rem;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
   padding: 0; }
   @media (min-width: 48em) {
     .current-filter .option-chip {
-      font-size: 0.83333rem; } }
+      font-size: 1.04167rem; } }
   @media (min-width: 62em) {
     .current-filter .option-chip {
-      font-size: 1rem; } }
+      font-size: 1.25rem; } }
   .current-filter .option-chip > span {
     padding: 0; }
   .current-filter .option-chip > svg {

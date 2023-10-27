@@ -4,6 +4,14 @@ office_hours_formatter:
     theme:
       css/office_hours.css: {}
 
+office_hours_formatter_status_update:
+  version: VERSION
+  js:
+    js/office_hours_status_update.js: {}
+  dependencies:
+    - core/once
+    - core/drupalSettings
+
 office_hours_widget:
   version: VERSION
   css:

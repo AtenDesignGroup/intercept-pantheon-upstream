@@ -58,19 +58,11 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
   protected $items = NULL;
 
   /**
-   * An array of formatted office_hours, according to formatter.
-   *
-   * @var array
-   */
-  protected $officeHours = [];
-
-  /**
    * Constructs a CacheHelper object.
    */
-  public function __construct(array $formatter_settings, OfficeHoursItemListInterface $items, array $office_hours) {
+  public function __construct(array $formatter_settings, OfficeHoursItemListInterface $items) {
     $this->formatterSettings = $formatter_settings;
     $this->items = $items;
-    $this->officeHours = $office_hours;
   }
 
   /**
@@ -124,10 +116,6 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
    * @see https://www.drupal.org/docs/drupal-apis/cache-api/cache-max-age
    */
   public function getCacheMaxAge() {
-    // Do not set caching for anonymous users.
-    if (\Drupal::currentUser()->isAnonymous()) {
-      return 0;
-    }
 
     // @todo Add CacheMaxAge when entity has Exception days in/out of horizon.
     // If there are no open days, cache forever.
@@ -135,9 +123,10 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
       return Cache::PERMANENT;
     }
 
-    $date = new DrupalDateTime('now');
+    $time = $this->items->getRequestTime();
+    $date = DrupalDateTime::createFromTimestamp($time);
     $today = $date->format('w');
-    $now = $date->format('Hi');
+    $now = (int) $date->format('Hi');
     $seconds = $date->format('s');
     $next_time = '0000';
     $add_days = 0;
@@ -153,34 +142,44 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
 
       case 'current':
         // Cache expires at midnight. (Is this timezone proof?)
-        /*
         $next_time = '0000';
         $add_days = 1;
         break;
-         */
-        return strtotime('tomorrow midnight') - strtotime('now');
 
       case 'next':
         // Get the first (and only) day of the list.
         // Make sure we only receive 1 day, only to calculate the cache.
-        $office_hours = $this->officeHours;
-        $next_day = array_shift($office_hours);
-        if (!$next_day) {
+        $currentSlot = $this->items->getCurrentSlot($time);
+        if ($currentSlot) {
+          $office_hours[] = $currentSlot->getValue();
+        }
+        else {
+          // Get next slot.
+          $next_day = $this->items->getNextDay($time);
+          foreach ($this->items->getValue() as $item) {
+            if ($item['day'] == $next_day) {
+              $office_hours[] = $item;
+              // Do no break here. It could be a closed slot from earlier today.
+            }
+          }
+        }
+        if (!$office_hours) {
           return Cache::PERMANENT;
         }
 
         // Get the difference in hours/minutes
         // between 'now' and next open/closing time.
         $first_time_slot_found = FALSE;
-        foreach ($next_day['slots'] as $slot) {
-          $start = $slot['start'];
-          $end = $slot['end'];
+        foreach ($office_hours as $slot) {
+          $day = $slot['day'];
+          $start = $slot['starthours'];
+          $end = $slot['endhours'];
 
-          if ($next_day['day'] != $today) {
+          if ($day != $today) {
             // We will open tomorrow or later.
             $next_time = $start;
             $seven = OfficeHoursDateHelper::DAYS_PER_WEEK;
-            $add_days = ($next_day['day'] - $today + $seven) % $seven;
+            $add_days = ($day - $today + $seven) % $seven;
             break;
           }
           elseif ($start > $now) {
@@ -219,10 +218,32 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
         return Cache::PERMANENT;
     }
 
+    // Cache is not PERMANENT.
+    // Do not set limited time caching for anonymous users.
+    if (\Drupal::currentUser()->isAnonymous()) {
+      // The Internal Page Cache module handles page cache for anonymous users.
+      // It should be used for small/medium websites
+      // when external page cache is not available.
+      // However, it caches a page always, which is unwanted for office_hours,
+      // where the open/closed status can change any minute.
+      // Setting the max-age to 0 prevents the caching.
+      //
+      // Note: this is a workaround. IMO the page_cache module is flawed.
+      // @see https://www.drupal.org/project/office_hours/issues/3351280
+      // where js callback is implemented, to re-read the field each call.
+      // @see https://www.drupal.org/project/drupal/issues/2835068
+      if (\Drupal::moduleHandler()->moduleExists('page_cache')) {
+        return 0;
+      }
+    }
+
     // Set to 0 to avoid php error if time field is not set.
     $next_time = is_numeric($next_time) ? $next_time : '0000';
     // Calculate the remaining cache time.
     $time_left = $add_days * 24 * 3600;
+    $next_time = OfficeHoursDateHelper::format($next_time, 'Hi');
+    $now = OfficeHoursDateHelper::format($now, 'Hi');
+
     $time_left += ((int) substr($next_time, 0, 2) - (int) substr($now, 0, 2)) * 3600;
     $time_left += ((int) substr($next_time, 2, 2) - (int) substr($now, 2, 2)) * 60;
     // Correct for the current minute.

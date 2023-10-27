@@ -31,6 +31,33 @@ class OfficeHoursDateHelper extends DateHelper {
   const DATE_STORAGE_FORMAT = 'Y-m-d';
 
   /**
+   * Gets today's weekday number.
+   *
+   * Wrapper function to centralize all Date/Time functions into this class.
+   * Weekday number is converted to integer to get '0' for Sunday, not 'false'.
+   *
+   * @param int $day
+   *   Weekday, Season day or Exception date (Unix timestamp).
+   *
+   * @return int
+   *   Returns the weekday number(0=Sun, 6=Sat).
+   */
+  public static function getWeekday($day) {
+    if ($day < OfficeHoursItem::SEASON_DAY) {
+      // Regular weekday.
+      return $day;
+    }
+    elseif ($day < OfficeHoursItem::EXCEPTION_DAY) {
+      // Seasonal Weekday: 200...206 -> 0..6 .
+      return $day % OfficeHoursSeason::SEASON_ID_FACTOR;
+    }
+    else {
+      // Exception date, Unix timestamp.
+      return (int) idate('w', $day);
+    }
+  }
+
+  /**
    * Gets the day number of first day of the week.
    *
    * @param string $first_day
@@ -47,7 +74,7 @@ class OfficeHoursDateHelper extends DateHelper {
   }
 
   /**
-   * Helper function to get the proper format_date() format from the settings.
+   * Gets the proper format_date() format from the settings.
    *
    * For formatting options, see http://www.php.net/manual/en/function.date.php.
    *
@@ -83,34 +110,13 @@ class OfficeHoursDateHelper extends DateHelper {
   }
 
   /**
-   * Pads date parts with zeros.
-   *
-   * Helper function for a task that is often required when working with dates.
-   * Copied from DateTimePlus::datePad($value, $size) method.
-   *
-   * @param int $value
-   *   The value to pad.
-   * @param int $size
-   *   (optional) Size expected, usually 2 or 4. Defaults to 2.
-   *
-   * @return string
-   *   The padded value.
-   *
-   * @deprecated. Replaced with OfficeHoursDateHelper::format($value, $format)
-   *
-   * @see OfficeHoursDateHelper::format
-   */
-  public static function datePad($value, $size = 2) {
-    return sprintf("%0" . $size . "d", $value);
-  }
-
-  /**
-   * Helper function to convert a time to a given format.
+   * Converts a time to a given format.
    *
    * There are too many similar functions:
+   *  - \Drupal::service('date.formatter')->format();
+   *  - DrupalDateTime->format()
    *  - OfficeHoursDateHelper::format();
-   *  - OfficeHoursDateTime::get() (deprecated);
-   *  - OfficeHoursItem, which requires an object;
+   *  - OfficeHoursItem::format();
    *  - OfficeHoursWidgetBase::massageFormValues();
    *
    * For formatting options:
@@ -148,7 +154,7 @@ class OfficeHoursDateHelper extends DateHelper {
       // SelectList datelist element.
       $time = '';
       if (($element['hour'] !== '') || ($element['minute'] !== '')) {
-        if (isset($element['ampm']) && $element['ampm'] === 'pm') {
+        if (($element['ampm'] ?? '') === 'pm') {
           $element['hour'] += 12;
         }
         $time = ((int) $element['hour']) * 100 + (int) $element['minute'];
@@ -164,19 +170,34 @@ class OfficeHoursDateHelper extends DateHelper {
     }
 
     // Normalize time to '09:00' format before creating DateTime object.
-    if (!strstr($time, ':')) {
-      $time = substr('0000' . $time, -4);
-      $hour = substr($time, 0, -2);
-      $min = substr($time, -2);
-      $time = $hour . ':' . $min;
+    if ($time > 2400) {
+      // A Unix datetimestamp.
+      $date = DrupalDateTime::createFromTimestamp($time);
+    }
+    elseif (!strstr($time, ':')) {
+      try {
+        $time = substr('0000' . $time, -4);
+        $date = DrupalDateTime::createFromFormat('Hi', $time);
+      }
+      catch (\Exception $e) {
+        $time = substr('0000' . $time, -4);
+        $hour = substr($time, 0, -2);
+        $min = substr($time, -2);
+        $time = $hour . ':' . $min;
+        $date = new DrupalDateTime($time);
+      }
+    }
+    else {
+      $date = new DrupalDateTime($time);
     }
 
-    $date = new DrupalDateTime($time);
     $formatted_time = $date->format($time_format);
     // Format the 24-hr end time from 0 to 24:00/2400 using a trick.
-    if ($is_end_time && $time == '00:00' && !$date->format('G')) {
-      $date->setTime(23, 00);
-      $formatted_time = str_replace('23', '24', $date->format($time_format), $count);
+    if ($is_end_time && strpbrk($time_format, 'GH')) {
+      if ($date->format('Hi') === '0000') {
+        $date->setTime(23, 00);
+        $formatted_time = str_replace('23', '24', $date->format($time_format), $count);
+      }
     }
 
     return $formatted_time;
@@ -278,8 +299,7 @@ class OfficeHoursDateHelper extends DateHelper {
     }
     if ($day !== NULL) {
       // Handle Regular/Seasonal Weekdays: $day 200...206 -> 0..6 .
-      $day = OfficeHoursSeason::getWeekday($day);
-
+      $day = OfficeHoursDateHelper::getWeekday($day);
       return $days[$day];
     }
     return $days;
@@ -334,12 +354,12 @@ class OfficeHoursDateHelper extends DateHelper {
     }
 
     $day = $value['day'];
-    if ($day === '' || $day === NULL) {
+    if ($day === '' || $day === NULL || $day < 0) {
       // A new Exception slot.
       // @todo Value deteriorates in ExceptionsSlot::validate().
       $label = '';
     }
-    elseif (OfficeHoursItem::isExceptionDay($value)) {
+    elseif (OfficeHoursDateHelper::isExceptionDay($day)) {
       if ($pattern == 'l') {
         // Convert date into weekday in widget.
         $label = \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
@@ -350,7 +370,7 @@ class OfficeHoursDateHelper extends DateHelper {
         $label = str_replace(' - 00:00', '', $label);
       }
     }
-    elseif (OfficeHoursSeason::isSeasonHeader($value)) {
+    elseif (OfficeHoursSeason::isSeasonHeader($day)) {
       // Handle Season header dates.
       // This is an error. Use $item->getlabel() instead,
       // and make sure the class is OK.
@@ -358,7 +378,7 @@ class OfficeHoursDateHelper extends DateHelper {
       $label = $value['slots'][0]['comment'];
     }
     else {
-      // The day number is a weekday number + Season ID.
+      // The day number is a weekday number + optional Season ID.
       $label = OfficeHoursDateHelper::weekDaysByFormat($pattern, $day);
     }
 
@@ -366,10 +386,46 @@ class OfficeHoursDateHelper extends DateHelper {
   }
 
   /**
+   * Returns whether the day number is an Exception day.
+   *
+   * @param $day
+   *   The Office hours 'day' element as weekday
+   *   (using date_api as key (0=Sun, 6=Sat)) or Exception day date.
+   * @param bool $include_empty_day
+   *   Set to TRUE if the 'add Exception' empty day is also an Exception day.
+   *
+   * @return bool
+   *   True if the day_number is a date (unix timestamp).
+   */
+  public static function isExceptionDay($day, $include_empty_day = FALSE)
+  {
+    // Do NOT convert to integer, since day may be empty.
+    if ($include_empty_day && $day === '') {
+      return TRUE;
+    }
+    return (is_numeric($day) && $day >= OfficeHoursItem::EXCEPTION_DAY);
+  }
+
+  /**
+   * Determines whether the item is a seasonal or a regular Weekday.
+   *
+   * @param $day
+   *   The Office hours 'day' element as weekday
+   *   (using date_api as key (0=Sun, 6=Sat)) or Exception day date.
+   *
+   * @return bool
+   *   True if the day_number is a seasonal weekday (100 to 100....7).
+   */
+  public static function isSeasonDay($day) {
+    return ($day > OfficeHoursItem::SEASON_DAY
+      && $day < OfficeHoursItem::EXCEPTION_DAY);
+  }
+
+
+  /**
    * Creates a date object from an array of date parts.
    *
-   * Wrapper function to centralize all Date/Time functions
-   * into DateHelper class.
+   * Wrapper function to centralize all Date/Time functions into this class.
    *
    * @param array $date_parts
    *   Date parts for datetime.

@@ -11,7 +11,9 @@ use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
  *
  * @FeedsTarget(
  *   id = "office_hours_feeds_target",
- *   field_types = {"office_hours"}
+ *   field_types = {
+ *     "office_hours",
+ *   },
  * )
  */
 class OfficeHours extends FieldTargetBase {

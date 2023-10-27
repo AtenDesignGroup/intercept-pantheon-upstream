@@ -3,6 +3,7 @@
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\office_hours\OfficeHoursDateHelper;
 
 /**
  * Plugin implementation of the 'office_hours' field type.
@@ -73,40 +74,69 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
   /**
    * {@inheritdoc}
    */
-  public function isException() {
+  public function isExceptionDay() {
     return TRUE;
   }
 
   /**
-   * Returns if a timestamp is in date range of x days to the future.
-   *
-   * Prerequisite: $item->isException() must be TRUE.
-   *
-   * @param int $from
-   *   The days into the past/future we want to check the timestamp against.
-   * @param int $to
-   *   The days into the future we want to check the timestamp against.
-   *
-   * @return bool
-   *   TRUE if the timestamp is in range.
-   *   TRUE if $rangeInDays has a negative value.
+   * {@inheritdoc}
    */
   public function isInRange($from, $to) {
-    if ($to <= 0) {
+    if ($to < $from) {
+      // @todo Error. Raise try/catch exception.
+      return FALSE;
+    }
+
+    if ($to < 0) {
+      // @todo Undefined result. Raise try/catch exception.
       return TRUE;
     }
 
-    // @todo Allow other values then 0.
-    $day = $this->getValue()['day'];
-    if ($day < strtotime('today midnight')) {
+    if ($to == 0) {
+      // All exceptions are OK.
+      return TRUE;
+    }
+
+    $yesterday = strtotime('yesterday midnight');
+    $today = strtotime('today midnight');
+    $day = $this->day;
+    $time = $this->parent->getRequestTime();
+
+    if (OfficeHoursDateHelper::isExceptionDay($to)) {
+      // $from-$to are calendar dates.
+      // 'Hi' format, with leading zero (0900).
+      $now = (int) OfficeHoursDateHelper::format($time, 'Hi');
+
+      if ($day == $yesterday) {
+        // We were open yesterday evening, check if we are still open.
+        $slot = $this->getValue();
+        $day = $slot['day'];
+        $start = (int) $slot['starthours'];
+        $end = (int) $slot['endhours'];
+        if ($start >= $end && $end > $now) {
+          return TRUE;
+        }
+        return FALSE;
+      }
+      elseif ($day < $yesterday) {
+        return FALSE;
+      } else {
+        // @todo Undefined result. Raise try/catch exception.
+        // There is no use case (yet) fopr Dates in the future.
+        return TRUE;
+      }
+    }
+    else {
+      // $from-$to is a range, e.g., 0..7 days.
+      // Time slots from yesterday with endhours after midnight are included.
+      $minTime = $today + ($from - 1) * 24 * 60 * 60;
+      $maxTime = $today + $to * 24 * 60 * 60;
+      if ($day >= $minTime && $day <= $maxTime) {
+        return TRUE;
+      }
       return FALSE;
     }
 
-    $maxTime = time() + $to * 24 * 60 * 60;
-    if ($day > $maxTime) {
-      return FALSE;
-    }
-    return TRUE;
   }
 
 }

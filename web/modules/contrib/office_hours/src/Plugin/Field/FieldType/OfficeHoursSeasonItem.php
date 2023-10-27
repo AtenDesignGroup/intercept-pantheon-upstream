@@ -50,4 +50,17 @@ class OfficeHoursSeasonItem extends OfficeHoursItem {
     return parent::getLabel($settings);
   }
 
+   /**
+   * {@inheritdoc}
+   */
+  public function isInRange($from, $to) {
+    if ($this->isSeasonDay()) {
+      $season = $this->parent->getSeasons()[$this->getSeasonId()];
+      $minTime = $season->getFromDate();
+      $maxTime = $season->getToDate();
+      return ($from >= $minTime && $to <= $maxTime);
+    }
+    return FALSE;
+  }
+
 }

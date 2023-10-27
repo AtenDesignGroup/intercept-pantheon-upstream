@@ -146,6 +146,7 @@ class OfficeHoursItemTest extends FieldKernelTestBase {
       // Normal day with 1 time slot.
       [
         'day' => '0',
+        'day_delta' => '0',
         'all_day' => FALSE,
         'starthours' => '1430',
         'endhours' => '2000',
@@ -201,17 +202,17 @@ class OfficeHoursItemTest extends FieldKernelTestBase {
     $index = 1;
     $test_value = $entity->$field_name->get($index)->getValue();
     $test_value = implode('/', $test_value);
-    $this->assertEquals('1/1/0/0/', $test_value);
+    $this->assertEquals('1/0/1/0/0/', $test_value);
     // 'all_day' is not checked, user sets 00:00-00:00.
     $index = 2;
     $test_value = $entity->$field_name->get($index)->getValue();
     $test_value = implode('/', $test_value);
-    $this->assertEquals('2/1/0/0/', $test_value);
+    $this->assertEquals('2/0/1/0/0/', $test_value);
     // Weekday without hours, with comment.
     $index = 3;
     $test_value = $entity->$field_name->get($index)->getValue();
     $test_value = implode('/', $test_value);
-    $this->assertEquals('3////An empty weekday with comment', $test_value);
+    $this->assertEquals('3/0////An empty weekday with comment', $test_value);
     // Weekday without hours, without comment. This is not stored.
     $index = 4;
     $test_value = $entity->$field_name->get($index);

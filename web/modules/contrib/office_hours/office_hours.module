@@ -8,7 +8,6 @@
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\office_hours\OfficeHoursCacheHelper;
 
 // Add theme.api.php hooks.
 \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme');

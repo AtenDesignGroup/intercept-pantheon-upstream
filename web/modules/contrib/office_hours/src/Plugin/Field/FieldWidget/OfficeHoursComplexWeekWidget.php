@@ -132,13 +132,13 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
     foreach ($values as $field_type => $widgets) {
       foreach ($widgets as $id => $widget_values) {
         switch ($field_type) {
-            case 'office_hours':
-              $widget_values = OfficeHoursWeekWidget::massageFormValues($widget_values, $form, $form_state);
-              break;
+          case 'office_hours':
+            $widget_values = OfficeHoursWeekWidget::massageFormValues($widget_values, $form, $form_state);
+            break;
 
-            case 'office_hours_exceptions':
-              $widget_values = OfficeHoursExceptionsWidget::_massageFormValues($widget_values, $form, $form_state);
-              break;
+          case 'office_hours_exceptions':
+            $widget_values = OfficeHoursExceptionsWidget::_massageFormValues($widget_values, $form, $form_state);
+            break;
 
           case 'office_hours_season':
             $widget_values = OfficeHoursSeasonWidget::massageFormValues($widget_values, $form, $form_state);

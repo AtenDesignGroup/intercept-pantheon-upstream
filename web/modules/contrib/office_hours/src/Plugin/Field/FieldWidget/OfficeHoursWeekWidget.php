@@ -102,7 +102,7 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
       $value = $item->getValue();
       $day = $value['day'];
       if ($season->isInSeason($day)) {
-        $day = $season->getWeekday($day);
+        $day = $item->getWeekday();
         $value['day'] = $day;
         $item->setValue($value);
         $indexed_items[$day][] = $item;

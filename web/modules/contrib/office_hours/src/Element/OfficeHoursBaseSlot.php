@@ -48,20 +48,18 @@ class OfficeHoursBaseSlot extends FormElement {
 
     // Show a 'Clear this line' js-link to each element.
     // Use text 'Remove', which has lots of translations.
-    $operations['delete'] = [];
-    if (!OfficeHoursItem::isValueEmpty($value)) {
-      $operations['delete'] = [
-        '#type' => 'link',
-        '#title' => t('Remove'),
-        '#weight' => 12,
-        // Add dummy URL - will be catch-ed by js.
-        '#url' => Url::fromRoute('<front>'),
-        '#suffix' => $suffix,
-        '#attributes' => [
-          'class' => ['office-hours-delete-link', 'office-hours-link'],
-        ],
-      ];
-    }
+    // Show this link always, even if empty, to allow not-committed entries.
+    $operations['delete'] = [
+      '#type' => 'link',
+      '#title' => t('Remove'),
+      '#weight' => 12,
+      // Add dummy URL - will be catch-ed by js.
+      '#url' => Url::fromRoute('<front>'),
+      '#suffix' => $suffix,
+      '#attributes' => [
+        'class' => ['office-hours-delete-link', 'office-hours-link'],
+      ],
+    ];
 
     // Add 'Copy' link to first slot of each day.
     // First day copies from last day.
@@ -105,11 +103,11 @@ class OfficeHoursBaseSlot extends FormElement {
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
 
-    if ($input !== FALSE) {
+    if ($input ?? FALSE) {
       // Massage, normalize value after pressing Form button.
       // $element is also updated via reference.
       $input += ['day_delta' => $element['#day_delta']];
-      $input = OfficeHoursItem::formatValue($input);
+      $input = OfficeHoursItem::format($input);
 
       return $input;
     }
@@ -234,7 +232,6 @@ class OfficeHoursBaseSlot extends FormElement {
     // It does not return formatted values from valueCallback().
     // The valueCallback() has populated the #value array.
     $input = $element['#value'] ?? [];
-    $day = $input['day'];
 
     // Avoid complex validation below. Remove comment, only in validation.
     // No complex validation if empty.
@@ -246,6 +243,7 @@ class OfficeHoursBaseSlot extends FormElement {
       return;
     }
 
+    $day = $input['day'];
     $field_settings = $element['#field_settings'];
     $date_helper = new OfficeHoursDateHelper();
 

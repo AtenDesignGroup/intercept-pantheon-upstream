@@ -13,7 +13,7 @@ use Drupal\Core\Field\FieldItemListInterface;
  *   label = @Translation("Plain text"),
  *   field_types = {
  *     "office_hours",
- *   }
+ *   },
  * )
  */
 class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
@@ -60,7 +60,7 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
       '#office_hours_field' => $items,
       // Pass formatting options to twig theming.
       '#is_open' => $items->isOpen(),
-      '#item_separator' => Xss::filter($settings['separator']['days'], ['br']),
+      '#item_separator' => Xss::filter($settings['separator']['days'], ['br', 'hr', 'span', 'div']),
       '#slot_separator' => $settings['separator']['more_hours'],
       '#attributes' => [
         'class' => ['office-hours'],
@@ -76,9 +76,12 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
     $elements = $this->addSchemaFormatter($items, $langcode, $elements);
     $elements = $this->addStatusFormatter($items, $langcode, $elements);
 
+    // Enable dynamic field update in office_hours_status_update.js.
+    // Since Field cache does not work properly for Anonymous users.
+    $elements = $this->attachStatusUpdateJS($items, $langcode, $elements);
     // Add a ['#cache']['max-age'] attribute to $elements.
     // Note: This invalidates a previous Cache in Status Formatter.
-    $this->addCacheMaxAge($items, $elements);
+    $elements = $this->addCacheData($items, $elements);
 
     return $elements;
   }

@@ -1057,11 +1057,15 @@ class ReservationManager implements ReservationManagerInterface {
    */
   protected function timeToDate($time, \DateTime $base_date) {
     // Then just convert that time to a full date using the date part specified.
-    // Make sure it's 4 digits.
     if ($time instanceof DrupalDateTime) {
       $time = $time->format('Hi');
     }
-    $time = OfficeHoursDateHelper::datePad($time, 4);
+    $time = OfficeHoursDateHelper::format($time, 'Hi');
+
+    // Make sure it's 4 digits.
+    if (strlen($time) < 4) {
+      $time = str_pad($time, 4, '0', STR_PAD_LEFT);
+    }
     // Parse to be in the format for a date format.
     if (!strstr($time, ':')) {
       $time = substr('0000' . $time, -4);

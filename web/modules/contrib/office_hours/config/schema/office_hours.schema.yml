@@ -172,3 +172,7 @@ field.value.office_hours:
     comment:
       type: text
       label: 'Comment'
+
+views.filter.office_hours_is_open:
+  type: views.filter.in_operator
+  label: 'Office hours open/closed status filter'

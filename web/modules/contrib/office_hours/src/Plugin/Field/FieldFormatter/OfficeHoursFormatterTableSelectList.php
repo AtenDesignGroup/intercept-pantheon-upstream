@@ -3,6 +3,7 @@
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
@@ -13,7 +14,7 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
  *   label = @Translation("Table Select list"),
  *   field_types = {
  *     "office_hours",
- *   }
+ *   },
  * )
  */
 class OfficeHoursFormatterTableSelectList extends OfficeHoursFormatterTable {
@@ -34,7 +35,7 @@ class OfficeHoursFormatterTableSelectList extends OfficeHoursFormatterTable {
   public function viewElements(FieldItemListInterface $items, $langcode) {
 
     // Activate the current_status position. It might be off in Field UI.
-    // This is needed for correct addCacheMaxAge().
+    // This is needed for correct addCacheData().
     $this->settings['current_status']['position'] = 'before';
 
     $elements = parent::viewElements($items, $langcode);
@@ -90,12 +91,13 @@ class OfficeHoursFormatterTableSelectList extends OfficeHoursFormatterTable {
     $settings = $this->getSettings();
 
     // Use the 'open_text' and 'current' slot to set the title.
-    $current_item = $items->getCurrent();
+    $current_item = $items->getCurrentSlot();
     if ($current_item) {
       // Get details from currently open slot.
       $item = $hours_formatter['#office_hours'][$current_item->getValue()['day']];
       $formatted_slots = $item['formatted_slots'];
-      $label = $item['label'];
+      // There might be some confusion with yesterday after midnight.
+      $label = OfficeHoursItem::formatLabel($settings, ['day' => $current_item->getWeekday()]);
       $status_text = $this->t($settings['current_status']['open_text']);
       $title = $status_text . ' ' . $label . ' ' . $formatted_slots;
     }

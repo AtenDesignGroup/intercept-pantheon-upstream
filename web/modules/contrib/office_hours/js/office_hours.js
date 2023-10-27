@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @todo check js file for new API.
  * @see https://www.drupal.org/docs/drupal-apis/javascript-api/javascript-api-overview
@@ -75,7 +73,6 @@
        * @todo #3322982 When 'all_day' is set, the link 'Add time slot' must be hidden.
        */
       function setAllDayTimeslot() {
-
         // Get the name of the checkbox, which will be mostly the
         // same name for the start and end times.
         var name = $(this).attr('name');
@@ -100,7 +97,7 @@
 
         // Enable/Disable the start and end time depending on all_day checkbox.
         timeNames.forEach(function (item) {
-          $('[name="' + item + '"]').prop("disabled", isEnabled);
+          $('[name="' + item + '"]').prop('disabled', isEnabled);
         });
       }
 
@@ -128,7 +125,6 @@
       // Clear the content of this timeslot, when user clicks "Clear/Remove".
       // Do this for both widgets.
       $('.office-hours-delete-link').bind('click', function deleteLink(e) {
-
         // Clear the value from the element.
         function clearValue() {
           $(this).val($('#target').find('option:first').val());
@@ -150,9 +146,6 @@
         $(this).parent().parent().find('.form-time').each(clearValue);
         // Clear the comment.
         $(this).parent().parent().find('.form-text').each(clearValue);
-
-        // Hide the link.
-        $(this).hide();
       });
 
       // Copy values from previous day, when user clicks "Copy previous day".
@@ -168,13 +161,13 @@
 
         // Get current day using attribute, both for Week Widget and List Widget.
         // @todo Use only attribute, not both attribute and class name.
-        currentDay = parseInt($(this).closest('tr').attr('office_hours_day'));
-        if(Number.isNaN(currentDay)) {
+        currentDay = parseInt($(this, 10).closest('tr').attr('office_hours_day'));
+        if (Number.isNaN(currentDay)) {
           // Basic List Widget.
-          currentDay = parseInt($(this).closest('fieldset').attr('office_hours_day'));
+          currentDay = parseInt($(this, 10).closest('fieldset').attr('office_hours_day'));
         }
-        if(Number.isNaN(currentDay)) {
-            // Error.
+        if (Number.isNaN(currentDay)) {
+          // Error.
         } else {
           // Week widget can have value 0 (sunday). List widget starts with value 1.
           previousDay = (currentDay == 0) ? currentDay + 6 : currentDay - 1;
@@ -216,9 +209,7 @@
 
         // If needed, show each Add-link of the day, after "Copy previous day".
         currentSelector.find('.office-hours-add-link').each(showAddLink);
-        // @todo If needed, show each Remove/Delete-link of the day.
-        currentSelector.find('.office-hours-delete-link').each(showAddLink);
       });
-    }
+    },
   };
 })(jQuery, Drupal);

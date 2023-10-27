@@ -70,7 +70,7 @@ materialIcons:
     gpl-compatible: true
   css:
     theme:
-      https://fonts.googleapis.com/icon?family=Material+Icons: { type: external, minified: true }
+      css/material-icons.css: { minified: true }
 
 babelHelpers:
   js:

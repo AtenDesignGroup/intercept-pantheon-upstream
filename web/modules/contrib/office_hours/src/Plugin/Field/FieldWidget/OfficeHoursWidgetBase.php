@@ -44,7 +44,7 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $values = parent::massageFormValues($values, $form, $form_state);
     foreach ($values as &$value) {
-      OfficeHoursItem::formatValue($value);
+      OfficeHoursItem::format($value);
     }
     return $values;
   }

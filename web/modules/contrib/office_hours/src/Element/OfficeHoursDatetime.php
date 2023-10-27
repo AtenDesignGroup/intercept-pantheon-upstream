@@ -86,11 +86,14 @@ class OfficeHoursDatetime extends Datetime {
     // Fix the convention: minutes vs. seconds.
     $element['time']['#attributes']['step'] = $increment * 60;
     // Add a more precise hover text.
-    $element['time']['#attributes']['title'] = t('Time, with an increment of @step minutes (e.g. @format)', [
-      '@step' => $increment,
-      '@format' => $time_example,
-    ]);
-
+    $element['time']['#attributes']['title'] = \Drupal::translation()->formatPlural(
+      $increment,
+      'Time, with an increment of one minute (e.g. @format)',
+      'Time, with an increment of @count minutes (e.g. @format)',
+      [
+        '@count' => $increment,
+        '@format' => $time_example,
+      ]);
     return $element;
   }
 
@@ -123,7 +126,7 @@ class OfficeHoursDatetime extends Datetime {
       $now = new DrupalDateTime("now + $step minutes");
       $time_format = 'H:i';
 
-      $next_time = floor($now->format('Hi') / $step) * $step;
+      $next_time = (int) floor($now->format('Hi') / $step) * $step;
       $officeHoursTimeExample = OfficeHoursDateHelper::format($next_time, $time_format);
     }
     return $officeHoursTimeExample;
@@ -132,23 +135,6 @@ class OfficeHoursDatetime extends Datetime {
   /**
    * Mimic Core/TypedData/ComplexDataInterface.
    */
-
-  /**
-   * Returns the data from a widget.
-   *
-   * @param mixed $element
-   *   A string or array for time.
-   * @param string $format
-   *   Required time format.
-   *
-   * @return string
-   *   Return value.
-   *
-   * @deprecated@see in 8.x-1.5 and replaced by OfficeHoursDateHelper::format().
-   */
-  public static function get($element, $format = 'Hi') {
-    return OfficeHoursDateHelper::format($element, $format);
-  }
 
   /**
    * Determines whether the data structure is empty.

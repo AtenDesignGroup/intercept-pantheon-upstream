@@ -191,6 +191,7 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
     },
 
     onAddRoomReservation: function (event) {
+      console.log('onAddRoomReservation', event);
       currentValues = event.detail;
       shouldUpdateFormValues = true;
 
@@ -215,6 +216,7 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
     },
 
     onChangeRoomReservation: function (event) {
+      console.log('onChangeRoomReservation', event);
       const id = event.detail.drupal_internal__id;
       currentValues = event.detail;
       shouldUpdateFormValues = true;

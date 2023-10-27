@@ -54,21 +54,21 @@ class OfficeHoursItemBase extends FieldItemBase {
     $properties['day'] = DataDefinition::create('integer')
       ->setLabel($labels['day']['data'])
       // ->setRequired(TRUE) // @todo Set required.
-      ->setDescription("Stores the day of the week's numeric representation (0=Sun, 6=Sat)");
+      ->setDescription("Stores the day of the week's numeric representation (0=Sun, 6=Sat).");
     $properties['all_day'] = DataDefinition::create('boolean')
       ->setLabel($labels['all_day']['data'])
       // ->setComputed(TRUE) // Setting this generates an error in formatter.
       ->setDescription("Indicator that display whether the entity is open 24 hours on this day.");
     $properties['starthours'] = DataDefinition::create('integer')
       ->setLabel($labels['from']['data'])
-      ->setDescription("Stores the start hours value");
+      ->setDescription("Stores the start hours value.");
     $properties['endhours'] = DataDefinition::create('integer')
       ->setLabel($labels['to']['data'])
-      ->setDescription("Stores the end hours value");
+      ->setDescription("Stores the end hours value.");
     $properties['comment'] = DataDefinition::create('string')
       ->setLabel($labels['comment']['data'])
       ->addConstraint('Length', ['max' => 255])
-      ->setDescription("Stores the comment");
+      ->setDescription("Stores the comment.");
 
     return $properties;
   }
@@ -336,18 +336,6 @@ class OfficeHoursItemBase extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
-  public function getValue() {
-    $value = parent::getValue();
-
-    if (!$value) {
-      $this->applyDefaultValue();
-    }
-    return $value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function applyDefaultValue($notify = TRUE) {
     // Apply the default value of all properties.
     // parent::applyDefaultValue($notify);.
@@ -368,6 +356,23 @@ class OfficeHoursItemBase extends FieldItemBase {
     if ($a_day > $b_day) {
       return +1;
     }
+
+    // Same day, so compare starthours.
+    if ($a->starthours < $b->starthours) {
+      return -1;
+    }
+    if ($a->starthours > $b->starthours) {
+      return +1;
+    }
+
+    // Same day and starthours, so compare endhours.
+    if ($a->endhours < $b->endhours) {
+      return -1;
+    }
+    if ($a->endhours > $b->endhours) {
+      return +1;
+    }
+
     return 0;
   }
 

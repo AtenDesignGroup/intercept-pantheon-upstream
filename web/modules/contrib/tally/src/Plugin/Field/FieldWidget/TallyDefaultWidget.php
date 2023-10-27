@@ -90,10 +90,15 @@ class TallyDefaultWidget extends OptionsWidgetBase {
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
-    $item = $this->getItemValues($items, $delta);
+    if (!$item = $this->getFieldItemDataObject($items, $delta)) {
+      return [];
+    }
     $element['count'] = [
       '#type' => 'number',
       '#default_value' => $item->count,
+      '#attributes' => [
+        'class' => ['js-tally-input'],
+      ],
     ];
     $placeholder = $this->getSetting('placeholder');
     if (isset($placeholder) && $placeholder != "") {
@@ -150,6 +155,7 @@ class TallyDefaultWidget extends OptionsWidgetBase {
         '#type' => 'number',
         '#attributes' => [
           'disabled' => 'disabled',
+          'class' => ['js-tally-total'],
         ],
       ],
       'label' => [
@@ -168,23 +174,36 @@ class TallyDefaultWidget extends OptionsWidgetBase {
    * @param int $delta
    *   The order of this item in the array of sub-elements (0, 1, 2, etc.).
    *
-   * @return object
+   * @return object|null
    *   An object of item values.
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
-  protected function getItemValues(FieldItemListInterface $items, $delta) {
-    $values = $this->getOptions($items->getEntity());
-    while ($delta > 0) {
-      $delta--;
-      next($values);
+  private function getFieldItemDataObject(FieldItemListInterface $items, $delta) {
+    if ($this->deltaExceedsOptionCount($items, $delta)) {
+      return NULL;
     }
-    $item = $this->getItemCount($items, key($values));
+    $options = $this->getOptions($items->getEntity());
+    $this->setArrayInternalPointer($options, $delta);
+    $option_target_id = key($options);
+    $option_label = current($options);
     return (object) [
-      'id' => key($values),
-      'count' => $item ? $item->getValue()['count'] : NULL,
-      'label' => current($values),
+      'id' => $option_target_id,
+      'count' => $this->getItemCount($items, $option_target_id),
+      'label' => $option_label,
     ];
+  }
+
+  private function deltaExceedsOptionCount(FieldItemListInterface $items, $delta) {
+    $values = $this->getOptions($items->getEntity());
+    return $delta >= count($values);
+  }
+
+  private function setArrayInternalPointer(array &$array, $pointer) {
+    while ($pointer > 0) {
+      $pointer--;
+      next($array);
+    }
   }
 
   /**
@@ -195,8 +214,8 @@ class TallyDefaultWidget extends OptionsWidgetBase {
    * @param int $target_id
    *   The entity target ID.
    *
-   * @return \Drupal\Core\TypedData\TypedDataInterface|null
-   *   The item at the specified position in this list, or NULL.
+   * @return int|null
+   *   The count integer at the specified position in this list, or NULL.
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
@@ -205,7 +224,8 @@ class TallyDefaultWidget extends OptionsWidgetBase {
     if (($id = array_search($target_id, $ids)) === FALSE) {
       return NULL;
     }
-    return $items->get($id);
+    $item = $items->get($id);
+    return $item ? $item->getValue()['count'] : NULL;
   }
 
   /**

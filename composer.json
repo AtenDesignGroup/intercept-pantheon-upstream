@@ -29,7 +29,7 @@
     "drupal/gin": "^3.0",
     "drupal/gin_toolbar": "^1.0@beta",
     "drupal/intercept_base": "1.0-beta18",
-    "drupal/intercept": "1.0-beta18",
+    "drupal/intercept": "1.0-beta19",
     "drupal/jsonapi_extras": "^3.23",
     "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",

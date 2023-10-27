@@ -301,7 +301,7 @@ class ReserveRoomDateForm extends PureComponent {
         >
           <div className="l--subsection">
             <h4 className="section-title--secondary">Choose a Time</h4>
-            
+
             <div className="form-item">
               <InputDate
                 handleChange={this.onDateChange}

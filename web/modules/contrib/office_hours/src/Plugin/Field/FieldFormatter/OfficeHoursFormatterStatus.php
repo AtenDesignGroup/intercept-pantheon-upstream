@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   field_types = {
  *     "office_hours",
  *     "office_hours_status",
- *   }
+ *   },
  * )
  */
 class OfficeHoursFormatterStatus extends OfficeHoursFormatterBase {
@@ -62,9 +62,12 @@ class OfficeHoursFormatterStatus extends OfficeHoursFormatterBase {
       '#position' => $this->settings['current_status']['position'],
     ];
 
+    // Enable dynamic field update in office_hours_status_update.js.
+    // Since Field cache does not work properly for Anonymous users.
+    $elements = $this->attachStatusUpdateJS($items, $langcode, $elements);
     // Add a ['#cache']['max-age'] attribute to $elements.
     // Note: This invalidates a previous Cache in Status Formatter.
-    $this->addCacheMaxAge($items, $elements);
+    $elements = $this->addCacheData($items, $elements);
 
     return $elements;
   }

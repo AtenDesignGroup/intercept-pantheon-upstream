@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta19] - 2023-10-27
+
+<h2>Sprint 59 Deployment</h2>
+
+- Added an automatic data refresh feature to the room reservation calendar
+- Updated the "reserve by room" feature to keep the currently-selected filters when a customer logs in
+- Updated the "reserve by room" feature to take anonymous users straight to log in page when they click green "Reserve" button
+- Fixed a bug where some website requests could result in errors when JavaScript was involved (related to Material Icons library)
+- 3393035: Replace calls to deprecated method OfficeHoursDateHelper::datePad()
+
 ## [8.x-1.0-beta18] - 2023-09-01
 
 <h2>Sprint 58 Deployment</h2>

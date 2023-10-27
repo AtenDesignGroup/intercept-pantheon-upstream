@@ -26,7 +26,7 @@ dependencies:
   - profile:profile
   - views_autosubmit:views_autosubmit
 
-# Information added by Drupal.org packaging script on 2023-09-29
-version: '8.x-1.0-beta18'
+# Information added by Drupal.org packaging script on 2023-10-27
+version: '8.x-1.0-beta19'
 project: 'intercept'
-datestamp: 1696002561
+datestamp: 1698420208

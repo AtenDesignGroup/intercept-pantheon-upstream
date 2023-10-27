@@ -28,13 +28,13 @@ You can configure the formatter as follows:
 - Add the field to an entity/node;
 - Select the 'Office hours' formatter;
 - Set the formatter details at
-  `/admin/structure/types/manage/NODE_TYPE/display/VIEW_MODE;`
+  '/admin/structure/types/manage/NODE_TYPE/display/VIEW_MODE;'
 or
 - Add the field to a view;
 - Select the 'Office hours' formatter;
 - Check the formatter settings of the field;
 
-## FORMATTING THE HOURS 
+## FORMATTING THE HOURS
 
 Using the customizable separators in the formatter settings, you can format
 the hours any way you want.
@@ -45,22 +45,22 @@ the hours any way you want.
      2:10:00:18:00,3:10:00:18:00,4:10:00:18:00,
      5:10:00:18:00,6:10:00:18:00,7:12:00:20:00
 
-## FORMATTING THE HOURS - ALTER HOOKS 
+## FORMATTING THE HOURS - ALTER HOOKS
 
 Alter_hooks are introduced and documented in office_hours.api.php:
- - ` hook_office_hours_time_format_alter(string &$formatted_time)` (v8.x-1.7)
+ - 'hook_office_hours_time_format_alter(string &$formatted_time)' (v8.x-1.7)
    allowing to change the time format, and/or insert a translatable text,
    in order to change the formatted hours to your organization's needs.
- - `hook_office_hours_current_time_alter(int &$time, $entity)` (v8.x-1.7)
+ - 'hook_office_hours_current_time_alter(int &$time, $entity)' (v8.x-1.7)
    allowing to change the 'current' (user) time,
    in order to change the isOpen indicator (and Current day formatter).
 
-## USING VIEWS - FIELDS 
+## USING VIEWS - FIELDS
 
 Add the Field to any Views display, as you are used to do.
-- To show only 1 day per row in a Views display: 
+- To show only 1 day per row in a Views display:
   - add the field to your View,
-  - open the `MULTIPLE FIELD SETTINGS` section,
+  - open the 'MULTIPLE FIELD SETTINGS' section,
   - uncheck the option 'Display all values in the same row',
   - make also sure you display 'all' values.
      (only valid if you have upgraded from 1.1 version.)
@@ -68,22 +68,24 @@ Add the Field to any Views display, as you are used to do.
 ## USING VIEWS - FILTER CRITERIA
 
 Only default (out-of-the-box) Views functionality is provided.
-- To show only the entities that have a office hours: 
+- To show only the entities that have a office hours:
   - add the filter criterion 'Content: Office hours (field_office_hours:day)',
   - set the filter option 'Operator' to 'is not empty',
-- To show only the entities that have office hours for e.g., Friday: 
+- To show only the entities that have office hours for e.g., Friday:
   - add the filter criterion 'Content: Office hours (field_office_hours:day)',
   - set the filter option 'Operator' to 'is equal to',
   - set the filter option 'Value' to '5',
      or leave 'Value' empty and set 'Expose operator' to YES.
-- To show only the entities that are open NOW: This is not possible, yet.
+- To show only the entities that are open NOW:
+  - add the filter criterion 'Content: Office hours (OfficeHours2 (field_office_hours:status)',
+  - choose any of the statusses Open, temporarily closed, permanently closed.
 
-## USING VIEWS - SORT CRITERIA 
+## USING VIEWS - SORT CRITERIA
 
 Only default (out-of-the-box) Views functionality is provided.
 - To sort the time slots per day, add the 'day' sort criterion.
 
-## USING VIEWS - CREATE A BLOCK PER NODE/entity
+## USING VIEWS - CREATE A BLOCK PER NODE/ENTITY
 
 Suppose you want to show the Office hours on a node page,
 but NOT on the page itself,
@@ -103,13 +105,13 @@ but rather in a separate block, follow these instructions:
  -- Set 'Action to take if filter value does not validate' to 'Hide View';
  - Tweak the other settings as you like.
 
-2. Now, configure your new Block under `/admin/structure/block/manage/` : 
+2. Now, configure your new Block under '/admin/structure/block/manage/' :
  - Set the Block title, and the Region settings;
- - Under PAGES, set `'Show block on specific pages'`
-   to `'Only the listed pages'` and `'node/*';`
+ - Under PAGES, set ''Show block on specific pages''
+   to ''Only the listed pages'' and ''node/*';'
    You might want to add more pages, if you use other non-node entity types.
  - Tweak the other settings as you like.
- You'll need to tune the block for the following cases: 
+ You'll need to tune the block for the following cases:
  - A user accesses the node page, but 'Access denied';
  - A node is unpublished;
 
@@ -117,13 +119,40 @@ but rather in a separate block, follow these instructions:
   AND in the block. That's once too often.
 
 3. So, modify the 'View mode' of your Content type under
-  ` /admin/structure/types/manage/<MY_CONTENT_TYPE>/display`
- - Select`MANAGE DISPLAY;`
+  '/admin/structure/types/manage/<MY_CONTENT_TYPE>/display'
+ - Select'MANAGE DISPLAY;'
  - Select or create a View mode.
- - Select the `Office_hours,` and set the Format to `'Hidden'`;
+ - Select the 'Office_hours,' and set the Format to 'Hidden';
  - Save the data, end enjoy the result!
 
-## D7: IMPORTING WITH FEEDS MODULE 
+## USING VIEWS - CREATE VIEW WITH PLAIN TEXT OPENING HOURS PER ROW
+
+The following recipe works for generating a csv file with plain text data.
+This can be used to generate a Google Places upload csv file:
+- create a view;
+- under Fields, add fields Title, ID, office_hours, and other fields
+- under Format/Format/Format, set to 'Unformatted list' of 'Fields'
+- under Format/Format/Settings, unset 'Add views row classes'
+- under Format/Show, set to 'Fields',
+- Under Format/Show/Settings, set 'Provide default field wrapper elements',
+  to be able to set all fields to 'Inline', adding ';' as a separator;
+  Then, unset 'Provide default field wrapper elements'.
+  See #2715015: inline fields + field wrapper elements: UI unexpected behavior
+- under Fields, set Office_hours formatter to 'plain text'.
+  Set the days separator to ';', removing the default line break.
+  Set other formatting options.
+
+Now, for all fields, set Views options to make the View as clean as possible:
+- unset Link label to the referenced entity
+- unset Style settings / Add default classes
+- set Rewrite results / Strip HTML tags
+- set Rewrite results / Remove whitespace (if needed)
+- ...
+
+This should give the required result for a csv export.
+The module Views_data_export can be used to generate a file in batch mode.
+
+## D7: IMPORTING WITH FEEDS MODULE
 
 To import data with the Feeds module, the following columns can be used:
 - day;
@@ -144,10 +173,10 @@ nid;weekday;Hours_1;Hours_2
 2383;Monday;11:00 - 18:01;
 2383;Tuesday;10:00 - 12:00;13:15-17.45
 
-## D8: Migrating from external source 
+## D8: Migrating from external source
 Create a migrate process plugin that returns an array like this:
 
-```
+'''
   [
     [1] => [
       [day] => 1
@@ -185,21 +214,21 @@ Create a migrate process plugin that returns an array like this:
       [endhours] => 2100
     ]
   ]
-```
+'''
 Note that the array key doesn't matter, but that day 0 = Sunday.
 If you have multiple slots per day,
 just add a new entry with the same the [day] value.
 
-In your migration yml, you can do something like this: 
+In your migration yml, you can do something like this:
 
   field_opening_hours:
-  ```
+  '''
     -
       plugin: opening_hours
       source: opening_hours
     -
       plugin: office_hours_field_plugin
-  ```
+  '''
 
 where the office_hours_field_plugin is supplied by this office_hours module.
 

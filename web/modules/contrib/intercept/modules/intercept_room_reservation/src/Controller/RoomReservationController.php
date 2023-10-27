@@ -18,6 +18,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Ajax\SetDialogTitleCommand;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Ajax\OpenOffCanvasDialogCommand;
+use Drupal\Core\Cache\CacheableJsonResponse;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,6 +30,7 @@ use Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel;
 use Drupal\intercept_room_reservation\Entity\RoomReservation;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\intercept_core\ReservationManager;
 use Drupal\intercept_room_reservation\Entity\RoomReservationInterface;
 use Drupal\intercept_room_reservation\Form\RoomReservationAvailabilityForm;
 
@@ -695,9 +698,27 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
       ]);
     }
 
-    return new JsonResponse($result, 200);
+    $response = new JsonResponse($result, 200);
+    return $response;
   }
 
+  /**
+   * API callback for checking when the the room reservation list was last invalidated.
+   *
+   * Front-end clients can poll this endpoint to determine if the
+   * room reservation availability needs to be refreshed.
+   *
+   * @return CacheableJsonResponse
+   *  A JSON response with the timestamp of the last time the room reservation cache was invalidated.
+   */
+  public function refreshedOn() {
+    $timestamp = \Drupal::time()->getRequestTime();
+    $response = new CacheableJsonResponse([
+      'refreshed' =>  $timestamp,
+    ], 200);
+    $response->addCacheableDependency((new CacheableMetadata())->addCacheTags(['room_reservation_list']));
+    return $response;
+  }
 
   /**
    * Attaches room_reservation related configuration to drupalSettings for client-side use.

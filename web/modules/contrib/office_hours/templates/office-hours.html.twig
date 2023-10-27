@@ -1,4 +1,5 @@
 {% set classes = "office-hours office-hours-status--" ~ (is_open ? "open" : "closed") %}
+{% apply spaceless %}
 <div{{ attributes.addClass(classes) }}>
   {% for item in items %}
     <div class="office-hours__item">
@@ -15,3 +16,4 @@
     </div>
   {% endfor %}
 </div>
+{% endapply %}

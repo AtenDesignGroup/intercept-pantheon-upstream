@@ -3,18 +3,16 @@
 namespace Drupal\office_hours\Event;
 
 /**
- * Defines events for the office_hours module.
+ * Office hours events.
+ *
+ * @package Drupal\office_hours\Event
  *
  * @see \Drupal\Core\Config\ConfigCrudEvent
  */
 final class OfficeHoursEvents {
 
   /**
-   * Name of the event fired when a new incident is reported.
-   *
-   * This event allows modules to perform an action whenever a new incident is
-   * reported via the incident report form. The event listener method receives a
-   * \Drupal\events_example\Event\IncidentReportEvent instance.
+   * Event dispatched when Office hours of an entity have changed.
    *
    * @Event
    *

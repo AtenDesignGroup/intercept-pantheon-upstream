@@ -8,6 +8,7 @@ use Drupal\office_hours\Element\OfficeHoursDatetime;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 use Drupal\Tests\UnitTestCase;
+use Drupal\Core\Language\LanguageManagerInterface;
 
 /**
  * Tests the new entity API for the office_hours field type.
@@ -20,13 +21,6 @@ use Drupal\Tests\UnitTestCase;
 class OfficeHoursDatetimeUnitTest extends UnitTestCase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  protected static $modules = ['office_hours'];
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -34,10 +28,10 @@ class OfficeHoursDatetimeUnitTest extends UnitTestCase {
 
     $container = new ContainerBuilder();
 
-    $languageManager = $this->createMock('\Drupal\Core\Language\LanguageManagerInterface');
-    $languageManager->expects($this->any())
+    $languageManager = $this->createMock(LanguageManagerInterface::class);
+    $languageManager
       ->method('getCurrentLanguage')
-      ->will($this->returnValue(new Language(['id' => 'en'])));
+      ->willReturn(new Language(['id' => 'en']));
 
     $container->set('language_manager', $languageManager);
     \Drupal::setContainer($container);
@@ -46,7 +40,7 @@ class OfficeHoursDatetimeUnitTest extends UnitTestCase {
   /**
    * Tests using entity fields of the datetime field type.
    */
-  public function testDateTimeIsEmpty() {
+  public function testDateTimeIsEmpty(): void {
 
     // Test hours.
     $this::assertTrue(OfficeHoursDatetime::isEmpty(NULL), 'Test NULL is empty.');
@@ -84,7 +78,7 @@ class OfficeHoursDatetimeUnitTest extends UnitTestCase {
    *
    * @dataProvider providerGetEndTimes
    */
-  public function testEndTimeFormat($raw, $format, $formatted) {
+  public function testEndTimeFormat($raw, $format, $formatted): void {
     $this->assertEquals($formatted, OfficeHoursDateHelper::format($raw, $format, TRUE));
   }
 
@@ -94,7 +88,7 @@ class OfficeHoursDatetimeUnitTest extends UnitTestCase {
    * @return array
    *   A list of test cases.
    */
-  public function providerGetEndTimes() {
+  public function providerGetEndTimes(): array {
     return [
       "midnight1" => ['00:00', 'G', '24'],
       "midnight2" => ['00:00', 'H:i', '24:00'],

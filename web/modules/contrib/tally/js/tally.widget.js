@@ -12,22 +12,21 @@
     attach: function (context, settings) {
 
       // If the user changes the counts, let's update the "Total" on the fly.
-      // .input-field is a div wrapper around each input.
-      // .form-number is a class on each input that we're summing.
-      $('.js-tally-container .input-field').on('input', '.form-number:enabled', function() {
-        var totalSum = 0;
-        $('.js-tally-container  .input-field .form-number:enabled').each(function() {
-          var inputVal = $(this).val();
-          if ($.isNumeric(inputVal)) {
-            totalSum += parseFloat(inputVal);
-          }
+      $('.js-tally-container').once('js-tally-attached').each(function() {
+        var $container = $(this);
+        $container.on('input', '.js-tally-input', function() {
+          var totalSum = 0;
+          $('.js-tally-input', $container).each(function() {
+            var inputVal = $(this).val();
+            if ($.isNumeric(inputVal)) {
+              totalSum += parseFloat(inputVal);
+            }
+          });
+          $('.js-tally-total', $container).val(totalSum);
         });
-        // The one that's disabled is the displayed total value.
-        $('.js-tally-container .input-field .form-number:disabled').val(totalSum);
       });
 
     }
   };
-  
+
   })(jQuery, Drupal);
-  

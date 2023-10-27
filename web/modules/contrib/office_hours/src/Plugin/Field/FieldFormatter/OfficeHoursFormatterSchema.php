@@ -13,7 +13,7 @@ use Drupal\Core\Field\FieldItemListInterface;
  * @FieldFormatter(
  *   id = "office_hours_schema_org",
  *   label = @Translation("openingHours support from schema.org"),
- *   field_types = {}
+ *   field_types = {},
  * )
  */
 class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {

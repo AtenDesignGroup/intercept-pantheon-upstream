@@ -277,7 +277,7 @@ class ReserveRoomStep1 extends React.Component {
       if (!isManager && !get(room, 'data.attributes.field_reservable_online')) {
         return false;
       }
-      if (rooms[id]['has_max_duration_conflict']) {
+      if (rooms?.id?.['has_max_duration_conflict']) {
         return false;
       }
       // If the room is not returned from the availabilty request, lets assume it's available;
@@ -338,8 +338,16 @@ class ReserveRoomStep1 extends React.Component {
   };
 
   handleRoomSelect = (value) => {
+    // Update the application state in the url.
     this.props.onChangeRoom(value);
     this.props.onChangeStep(1);
+
+    // If user is not logged in, redirect to login page with
+    // the updated url as the destination query.
+    if (window.drupalSettings.user.uid === 0) {
+      const destination = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location = `/user/login?destination=${destination}`;
+    }
   };
 
   handleFilterChange = (values) => {

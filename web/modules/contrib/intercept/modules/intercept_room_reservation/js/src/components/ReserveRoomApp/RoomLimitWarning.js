@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 
 class RoomLimitWarning extends React.PureComponent {
   render() {
-    const { userStatus } = this.props;
+    const { userStatus, query } = this.props;
     let message = '';
-
-    const getDestination = () => encodeURIComponent(window.location.pathname + window.location.search);
 
     if ((!userStatus.exceededLimit || !userStatus.initialized) && window.drupalSettings.intercept.user.barred === false && (!window.drupalSettings.intercept.room_reservations.eligibility || window.drupalSettings.intercept.room_reservations.eligibility === 'all' || window.drupalSettings.intercept.room_reservations.eligibility === 'study')) {
       return null;
     }
+
+    const destination = encodeURIComponent(window.location.pathname + query);
 
     if (window.drupalSettings.user.uid === 0) {
       message = (
@@ -18,7 +18,7 @@ class RoomLimitWarning extends React.PureComponent {
           You must be logged in to reserve rooms.{' '}
           <a
             className="value-summary__footer-link"
-            href={`/user/login?destination=${getDestination()}`}
+            href={`/user/login?destination=${destination}`}
           >
             Log in now
           </a>
@@ -66,10 +66,12 @@ class RoomLimitWarning extends React.PureComponent {
 RoomLimitWarning.propTypes = {
   userStatus: PropTypes.object.isRequired,
   level: PropTypes.string,
+  query: PropTypes.string,
 };
 
 RoomLimitWarning.defaultProps = {
   level: 'error',
+  query: '',
 };
 
 export default RoomLimitWarning;

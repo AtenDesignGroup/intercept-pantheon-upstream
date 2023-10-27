@@ -3,9 +3,12 @@
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\TypedData\DataDefinitionInterface;
+use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\office_hours\Event\OfficeHoursEvents;
 use Drupal\office_hours\Event\OfficeHoursUpdateEvent;
+use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\OfficeHoursFormatterTrait;
 use Drupal\office_hours\OfficeHoursSeason;
 
@@ -16,6 +19,15 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
 
   use OfficeHoursFormatterTrait {
     getRows as getFieldRows;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(DataDefinitionInterface $definition, $name = NULL, TypedDataInterface $parent = NULL)
+  {
+    parent::__construct($definition, $name, $parent);
+    $this->dateHelper = new OfficeHoursDateHelper;
   }
 
   /**
@@ -35,7 +47,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
       // Empty Item from List Widget (or added item via AddMore button?).
       $item = parent::createItem($offset, $value);
     }
-    elseif (OfficeHoursItem::isExceptionDay($value)) {
+    elseif (OfficeHoursDateHelper::isExceptionDay($day)) {
       // Use quasi Factory pattern to create Exception day item.
       $field_type = 'office_hours_exceptions';
       $field_definition = $this->getFieldDefinition($field_type);
@@ -47,7 +59,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
       $item = $this->typedDataManager->createInstance("field_item:$field_type", $configuration);
       $item->setValue($value);
     }
-    elseif (OfficeHoursItem::isSeasonDay($value)) {
+    elseif (OfficeHoursDateHelper::isSeasonDay($day)) {
       // Add (seasonal) Weekday Item.
       // Copied from FieldTypePluginManager->createInstance().
       $field_type = 'office_hours_season';
@@ -72,7 +84,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   /**
    * {@inheritdoc}
    *
-   * Make user all (exception) days are in correct sort order,
+   * Make sure all (exception) days are in correct sort order,
    * independent of database order, so formatter is correct.
    * (Widget or other sources may store exceptions day in other sort order).
    */
@@ -109,7 +121,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    *   An array of values of the field items, or NULL to unset the field.
    *   Can be changed by EventSubscribers.
    *
-   * @return \Drupal\sms\Event\SmsMessageEvent
+   * @return \Drupal\office_hours\Event\OfficeHoursUpdateEvent
    *   The dispatched event.
    */
   protected function dispatchUpdateEvent($event_name, &$value) {

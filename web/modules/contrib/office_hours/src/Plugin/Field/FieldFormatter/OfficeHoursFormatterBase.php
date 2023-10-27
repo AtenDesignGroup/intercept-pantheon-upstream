@@ -9,6 +9,7 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\office_hours\Controller\StatusUpdateController;
 use Drupal\office_hours\OfficeHoursCacheHelper;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
@@ -243,7 +244,9 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#type' => 'textfield',
       '#size' => 10,
       '#default_value' => $settings['separator']['days'],
-      '#description' => $this->t('This separator will be placed between the days. Use &#39&ltbr&gt&#39 to show each day on a new line.'),
+      '#description' => $this->t("This separator will be placed between the days.
+        Use &#39&ltbr&gt&#39 or &#39&lthr&gt&#39 to show each day on a new line.
+        &#39&ltdiv&gt&#39 or &#39&ltspan&gt&#39 are accepted, too."),
     ];
     $element['separator']['grouped_days'] = [
       '#type' => 'textfield',
@@ -325,7 +328,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#type' => 'number',
       '#default_value' => $settings['exceptions']['restrict_exceptions_to_num_days'],
       '#min' => 0,
-      '#max' => 99,
+      '#max' => 999,
       '#step' => 1,
       '#description' => $this->t("To enable Exception days, set a non-zero number (to be used in the formatter) and select an 'Exceptions' widget."),
       '#required' => TRUE,
@@ -491,13 +494,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
   }
 
   /**
-   * {@inheritdoc}
+   * isStatusCacheNeeded
+   *
+   * @param  OfficeHoursItemListInterface $items
+   *
+   * @return boolean
    */
-  public function getSetting($key) {
-    if ($key !== 'display_status') {
-      return parent::getSetting($key);
-    }
-
+  protected function isStatusCacheNeeded(OfficeHoursItemListInterface $items) {
     // Determine if this entity display must be formatted.
     // Return TRUE if render caching must be active.
     // This is the case when:
@@ -508,18 +511,26 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     if ($this->settings['current_status']['position'] !== '') {
       return TRUE;
     }
-    switch ($this->settings['show_closed']) {
-      case 'all':
-      case 'open':
-      case 'none':
-        // These caches never expire, since they are always correct.
-        return FALSE;
 
+    switch ($this->settings['show_closed']) {
       case 'current':
       case 'next':
-      default:
         return TRUE;
+
+        case 'all':
+      case 'open':
+      case 'none':
+      default:
+        // These caches never expire, since they are always correct.
+        break;
+
     }
+
+    if ($items->hasExceptionDays()) {
+      return TRUE;
+    }
+
+    return FALSE;
   }
 
   /**
@@ -530,24 +541,14 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
    * @param array $elements
    *   The list of formatters.
    */
-  protected function addCacheMaxAge(OfficeHoursItemListInterface $items, array &$elements) {
-    $settings = $this->getSettings();
-    // $third_party_settings = $this->getThirdPartySettings();
-    //
+  protected function addCacheData(OfficeHoursItemListInterface $items, array $elements) {
     // Take the 'open/closed' indicator, if set, since it is the lowest.
     // Overwrite field settings for 'next' formatter'.
     // Only in these cases, we need the formatted office hours.
-    // @todo Use $items, not $office_hours in cacheHelper->getCacheMaxAge().
-    $cache_needed = (bool) $this->getSetting('display_status');
-    if ($cache_needed || $items->hasExceptionDays()) {
-      if ($settings['current_status']['position'] !== '') {
-        $settings['show_closed'] = 'next';
-      }
-      $field_settings = $items->getFieldDefinition()->getSettings();
-      $office_hours = $items->getRows($settings, $field_settings, []);
-
-      $cache_helper = new OfficeHoursCacheHelper($settings, $items, $office_hours);
-
+    if ($this->isStatusCacheNeeded($items)) {
+      $formatter_settings = $this->getSettings();
+      // $third_party_settings = $this->getThirdPartySettings();
+      $cache_helper = new OfficeHoursCacheHelper($formatter_settings, $items);
       $max_age = $cache_helper->getCacheMaxAge();
       if ($max_age !== Cache::PERMANENT) {
         // @see https://www.drupal.org/docs/drupal-apis/cache-api
@@ -558,6 +559,36 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
         ];
       }
     }
+    return $elements;
+  }
+
+  /**
+   * Enable dynamic field update in office_hours_status_update.js.
+   *
+   * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
+   *   The office hours.
+   * @param string $langcode
+   *   The required language code.
+   * @param array $elements
+   *   Elements.
+   *
+   * @return array
+   *   A formatter element.
+   */
+  protected function attachStatusUpdateJS(OfficeHoursItemListInterface $items, $langcode, array $elements) {
+    // Note: when changing this, also test the Views StatusFilter.
+    if (!\Drupal::currentUser()->isAnonymous()) {
+      // Field cache should work properly for non-anonymous users.
+      return $elements;
+    }
+
+    if (!$this->isStatusCacheNeeded($items)) {
+      return $elements;
+    }
+
+    $elements = StatusUpdateController::attachStatusUpdateJS($items, $langcode, $this->viewMode, $elements);
+
+    return $elements;
   }
 
 }

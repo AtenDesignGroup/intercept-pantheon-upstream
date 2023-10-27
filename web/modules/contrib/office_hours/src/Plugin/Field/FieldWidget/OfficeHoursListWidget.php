@@ -28,7 +28,7 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
     $item = $items[$delta];
     // On fieldSettings page admin/structure/types/manage/<TYPE>/fields/<FIELD>,
     // $delta may be 0 for an empty list, so $item does not exist.
-    if (!$item || $item->isException()) {
+    if (!$item || $item->isExceptionDay()) {
       // @todo Enable List widget for Exception days.
       return [];
     }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -12,10 +12,11 @@ import map from 'lodash/map';
 import Calendar from './ReservationCalendar';
 import RoomsContext from '../context/RoomsContext';
 import GroupsContext from '../context/GroupsContext';
-import useEventListener from '../hooks/useEventListener';
 import withAvailability from './../../ReserveRoomApp/withAvailability';
 import withUserStatus from './../../ReserveRoomApp/withUserStatus';
 import RoomLimitWarning from './../../ReserveRoomApp/RoomLimitWarning';
+import useAvailabilityRefresh from '../hooks/useAvailabiltyRefresh';
+import useEventListener from '../hooks/useEventListener';
 
 const { constants, api, select, utils } = interceptClient;
 const c = constants;
@@ -28,7 +29,9 @@ const SAVE_ROOM_RESERVATION_ERROR = 'intercept:saveRoomReservationError';
 const CHANGE_ROOM_RESERVATION = 'intercept:changeRoomReservation';
 const CLOSE_ROOM_RESERVATION = 'intercept:closeRoomReservation';
 const REFRESH_ROOM_RESERVATION = 'intercept:updateRoomReservation';
-var saveRoomReservationSuccess = 'intercept:saveRoomReservationSuccess';
+const saveRoomReservationSuccess = 'intercept:saveRoomReservationSuccess';
+
+const POLL_INTERVAL = 5000;
 
 const getResourceGroupFromLocation = (location, getHours) => ({
   id: location.data.id,
@@ -209,7 +212,7 @@ const RoomReservationScheduler = ({
   const { rooms } = useContext(RoomsContext);
   const { setGroups } = useContext(GroupsContext);
 
-  const doFetchBlockedTime = () => {
+  const doFetchBlockedTime = useCallback(() => {
     const roomIds = rooms.map(room => room.id);
     const tz = utils.getUserTimezone();
     const day = moment.tz(date, tz);
@@ -220,7 +223,7 @@ const RoomReservationScheduler = ({
       start,
       end,
     });
-  };
+  }, [rooms, date]);
 
   const [
     selectedEvent,
@@ -378,6 +381,18 @@ const RoomReservationScheduler = ({
   useEventListener(CLOSE_ROOM_RESERVATION, () => {
     setSelectedEvent(null);
   });
+
+  //
+  // Poll for availability changes.
+  // This keeps the calendar up to date with
+  // changes made by other users.
+  //
+  useAvailabilityRefresh(() => {
+    // Avoid overloading the system by only fetching if we are filtering by rooms.
+    if (rooms.length > 0) {
+      doFetchBlockedTime();
+    }
+  }, POLL_INTERVAL);
 
   return (<div>
     <RoomLimitWarning userStatus={userStatus} />

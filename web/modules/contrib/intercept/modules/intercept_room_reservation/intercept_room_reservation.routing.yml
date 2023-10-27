@@ -152,6 +152,14 @@ intercept_room_reservation.api.availability:
   requirements:
     _access: 'TRUE'
 
+intercept_room_reservation.api.availability.refreshed_on:
+  path: '/api/rooms/availability/refreshed-on'
+  methods: [GET]
+  defaults:
+    _controller: 'Drupal\intercept_room_reservation\Controller\RoomReservationController::refreshedOn'
+  requirements:
+    _access: 'TRUE'
+
 intercept_room_reservation.reservation.version_history:
   path: '/manage/room-reservations/{room_reservation}/version-history'
   defaults:

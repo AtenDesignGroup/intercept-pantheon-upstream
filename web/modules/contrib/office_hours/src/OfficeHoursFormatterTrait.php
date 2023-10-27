@@ -5,6 +5,7 @@ namespace Drupal\office_hours;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
  * Factors out OfficeHoursItemList->getItems()->getRows().
@@ -18,7 +19,7 @@ trait OfficeHoursFormatterTrait {
    *
    * @var int
    */
-  protected $nextDay = NULL;
+  public $nextDay = NULL;
 
   /**
    * An array of items, keyed by UNIX timestamp, representing the current slot, if any.
@@ -26,6 +27,13 @@ trait OfficeHoursFormatterTrait {
    * @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemBase[]
    */
   protected $currentSlot = [];
+
+  /**
+   * The DateHelper.
+   *
+   * @var \Drupal\office_hours\OfficeHoursDateHelper
+   */
+  protected $dateHelper = NULL;
 
   /**
    * Returns the items of a field.
@@ -55,7 +63,7 @@ trait OfficeHoursFormatterTrait {
 
     // Initialize the 'next' and 'current' slots for later usage,
     // before cloning or removing excessive exception days.
-    $current_item = $this->getCurrent($time);
+    $current_item = $this->getCurrentSlot($time);
     // Clone the Item list, since the following code will change the items,
     // while custom installations need complete $items in theme preprocessing.
     $itemList = clone $this;
@@ -67,22 +75,22 @@ trait OfficeHoursFormatterTrait {
       'day' => NULL,
       'endday' => NULL,
       'is_current' => FALSE,
-      'is_next' => FALSE,
+      'is_next_day' => FALSE,
       'slots' => [],
       'formatted_slots' => [],
       'comments' => [],
     ];
     // Create 7 empty weekdays, using date_api as key (0=Sun, 6=Sat).
-    $weekdays = OfficeHoursDateHelper::weekDays(TRUE);
+    $weekdays = $this->dateHelper->weekDays(TRUE);
     // Reorder weekdays to match the first day of the week.
-    $weekdays = OfficeHoursDateHelper::weekDaysOrdered($weekdays, $settings['office_hours_first_day']);
+    $weekdays = $this->dateHelper->weekDaysOrdered($weekdays, $settings['office_hours_first_day']);
     // Get a list of seasons from the items.
     $seasons = $itemList->getSeasons($add_weekdays_as_season = TRUE, $add_new_season = FALSE);
 
     foreach ($seasons as $id => $season) {
       // First, add season header. But not for regular 'season'.
       if ($season->id()) {
-        $day = OfficeHoursSeason::SEASON_DAY;
+        $day = OfficeHoursItem::SEASON_DAY;
         $office_hours[$day + $id] = ['day' => $day + $id] + $default_office_hours;
       }
       // Then, add season days.
@@ -102,7 +110,7 @@ trait OfficeHoursFormatterTrait {
 
     // Move items to $office_hours.
     $iterator = $itemList->getIterator();
-    while ($iterator->valid()) {
+    for ($iterator->rewind(); $iterator->valid(); $iterator->next()) {
       $item = $iterator->current();
       $value = $item->getValue();
       $day = $value['day'];
@@ -120,8 +128,6 @@ trait OfficeHoursFormatterTrait {
       ];
       // Add item, in order to use code using OO Item, not $value.
       $office_hours[$day]['items'][] = $item;
-
-      $iterator->next();
     }
 
     // Mark the current time slot.
@@ -129,8 +135,9 @@ trait OfficeHoursFormatterTrait {
       $day = $current_item->getValue()['day'];
       $office_hours[$day]['is_current'] = TRUE;
     }
-    if ($itemList->nextDay !== NULL) {
-      $office_hours[$itemList->nextDay]['is_next'] = TRUE;
+    $next_day = $itemList->getNextDay($time);
+    if ($next_day !== NULL) {
+      $office_hours[$next_day]['is_next_day'] = TRUE;
     }
 
     /*
@@ -219,20 +226,20 @@ trait OfficeHoursFormatterTrait {
     $previous_key = -100;
     $previous_day = ['slots' => 'dummy'];
 
-    foreach ($office_hours as $key => &$day) {
+    foreach ($office_hours as $key => &$info) {
       // @todo Enable groupDays() for Exception days.
-      if (!OfficeHoursItem::isExceptionDay($day)) {
+       if (!OfficeHoursDateHelper::isExceptionDay($info['day'])) {
 
-        if ($day['slots'] == $previous_day['slots']) {
-          $day['endday'] = $day['day'];
-          $day['day'] = $previous_day['day'];
-          $day['is_current'] = $day['is_current'] || $previous_day['is_current'];
-          $day['is_next'] = $day['is_next'] || $previous_day['is_next'];
+        if ($info['slots'] == $previous_day['slots']) {
+          $info['endday'] = $info['day'];
+          $info['day'] = $previous_day['day'];
+          $info['is_current'] = $info['is_current'] || $previous_day['is_current'];
+          $info['is_next_day'] = $info['is_next_day'] || $previous_day['is_next_day'];
           unset($office_hours[(int) $previous_key]);
         }
       }
       $previous_key = (int) $key;
-      $previous_day = $day;
+      $previous_day = $info;
     }
 
     return $office_hours;
@@ -273,7 +280,7 @@ trait OfficeHoursFormatterTrait {
   protected function keepNextDay(array $office_hours) {
     $result = [];
     foreach ($office_hours as $key => $info) {
-      if ($info['is_current'] || $info['is_next']) {
+      if ($info['is_current'] || $info['is_next_day']) {
         $result[$key] = $info;
       }
     }
@@ -294,15 +301,13 @@ trait OfficeHoursFormatterTrait {
   protected function keepCurrentDay(array $office_hours, int $time) {
     $result = [];
 
-    // Get day_number (0=Sun, 6=Sat).
-    // Convert weekday number to integer to get '0' for Sunday, not 'false'.
-    $today = (int) idate('w', $time);
+    $weekday = $this->dateHelper->getWeekday($time);
 
     // Loop through all items.
     // Keep the current one.
     foreach ($office_hours as $info) {
-      if ($info['day'] == $today) {
-        $result[$today] = $info;
+      if ($info['day'] == $weekday) {
+        $result[$weekday] = $info;
       }
     }
     return $result;
@@ -381,7 +386,7 @@ trait OfficeHoursFormatterTrait {
         $info['formatted_slots'] = '';
       }
       elseif ($all_day) {
-        $info['formatted_slots'] = OfficeHoursItem::isExceptionDay($info)
+        $info['formatted_slots'] = OfficeHoursDateHelper::isExceptionDay($info['day'])
           ? $this->t(Html::escape($settings['exceptions']['all_day_format']))
           : $this->t(Html::escape($settings['all_day_format']));
       }
@@ -427,26 +432,65 @@ trait OfficeHoursFormatterTrait {
   /**
    * {@inheritdoc}
    */
-  public function getCurrent(int $time = 0) {
+  public function getCurrentSlot(int $time = 0) {
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
 
     // Get the current time. May be adapted for User Timezone.
     $time = $this->getRequestTime($time);
 
-    if (array_key_exists($time, $this->currentSlot)) {
+    if ($this->currentSlot[$time] ?? FALSE) {
       return $this->currentSlot[$time];
     }
 
-    // Convert day number to integer to get '0' for Sunday, not 'false'.
-    $today = (int) idate('w', $time); // Get day_number (0=Sun, 6=Sat).
-    $now = date('Hi', $time); // 'Hi' format, with leading zero (0900).
-
-    $next_day = NULL;
-    $current_slot = FALSE;
+    $this->currentSlot[$time] = FALSE;
+    $yesterday = strtotime('yesterday midnight');
+    $today = strtotime('today midnight');
 
     $iterator = $this->getIterator();
-    while ($iterator->valid()) {
+    for ($iterator->rewind(); $iterator->valid(); $iterator->next()) {
       $item = $iterator->current();
+
+      if ($item->isExceptionDay() || $item->isSeasonDay()) {
+        if (!$item->isInRange($today, $today)) {
+          // Do not use this day. We always have a weekday fallback.
+          continue;
+        }
+      }
+
+      if ($item->isOpen($time)) {
+        $this->currentSlot[$time] = $item;
+        // Do not stop the loop here, since $current_slot
+        // (weekday) can be overridden by following season and exception.
+      }
+    }
+
+    return $this->currentSlot[$time];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNextDay(int $time = 0)
+  {
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
+
+    // Get the current time. May be adapted for User Timezone.
+    $time = $this->getRequestTime($time);
+
+    if ($this->nextDay[$time] ?? FALSE) {
+      return $this->nextDay[$time];
+    }
+
+    $weekday = $this->dateHelper->getWeekday($time);
+    // 'Hi' format, with leading zero (0900).
+    $now = $this->dateHelper->format($time, 'Hi');
+
+    $next_day = NULL;
+
+    $iterator = $this->getIterator();
+    for ($iterator->rewind(); $iterator->valid(); $iterator->next()) {
+      $item = $iterator->current();
+
       $slot = $item->getValue();
       $day = (int) $slot['day'];
       $start = (int) $slot['starthours'];
@@ -454,30 +498,14 @@ trait OfficeHoursFormatterTrait {
 
       // Initialize to first day of (next) week, in case we're closed
       // the rest of the week. This works for any first_day.
-      if ($day <= $today) {
+      if ($day <= $weekday) {
         if (!isset($first_day_next_week) || ($day < $first_day_next_week)) {
           $first_day_next_week = $day;
         }
       }
 
-      // Check for Weekdays ($today) and for Exception days ('midnight').
-      if ($day == $today - 1 || ($day == $today + 6) ||
-        ($day == strtotime('yesterday midnight'))) {
-        // We were open yesterday evening, check if we are still open.
-        if ($start >= $end && $end > $now) {
-          $current_slot = $item;
-        }
-      }
-
-      elseif (($day == $today) ||
-        ($day == strtotime('today midnight'))) {
-
-        if ($item->isException()) {
-          // This exception overwrites the regular weekday.
-          // Let us first unset the weekday, then re-evaluate the exception.
-          $current_slot = NULL;
-        }
-
+      $day = $item->getWeekday();
+      if ($day == $weekday) {
         if (($slot['starthours'] === NULL) && ($slot['endhours'] === NULL)) {
           // We are closed all day.
           // (Do not use $start and $end, which are integers.)
@@ -491,25 +519,17 @@ trait OfficeHoursFormatterTrait {
         }
         else {
           $next_day = $day;
-          // We were open today, check if we are still open.
-          if (($start > $end) // We are open until after midnight.
-            || ($end == 0) // We are open until midnight (24:00 or empty).
-            || ($start == $end && !is_null($start)) // We are open 24hrs per day.
-            || (($start < $end) && ($end > $now)) // We are open, normal time slot.
-          ) {
-            // We are open.
-            $current_slot = $item;
-          }
         }
       }
-      elseif ($day > $today) {
-        if ($item->isException()) {
+      elseif ($day > $weekday) {
+        if ($item->isExceptionDay()) {
           // @todo #3307517 Add 'next' support for Exception day.
+          // @todo #3307517 Add 'next' support for Seasonal day.
         }
         elseif ($next_day === NULL) {
           $next_day = $day;
         }
-        elseif ($next_day < $today) {
+        elseif ($next_day < $weekday) {
           $next_day = $day;
         }
         else {
@@ -520,17 +540,14 @@ trait OfficeHoursFormatterTrait {
         // Just for analysis.
       }
 
-      $iterator->next();
     }
 
     if (!isset($next_day) && isset($first_day_next_week)) {
       $next_day = $first_day_next_week;
     }
 
-    $this->nextDay = $next_day;
-    $this->currentSlot[$time] = $current_slot;
-
-    return $this->currentSlot[$time];
+    $this->nextDay[$time] = $next_day;
+    return $this->nextDay[$time];
   }
 
   /**
@@ -558,16 +575,34 @@ trait OfficeHoursFormatterTrait {
   }
 
   /**
+   * Create an array of exception days keyed by date.
+   *
+   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursExceptionsItem[]
+   *   A keyed array of exception days keyed by date.
+   */
+  public function getExceptionDays() {
+    $exception_days = [];
+
+    foreach ($this->list as $item) {
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+      if ($item->isExceptionDay()) {
+        $day = $item->getValue()['day'];
+        $exception_days[$day][] = $item;
+      }
+    }
+
+    return $exception_days;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function hasExceptionDays() {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-
     $exception_exists = FALSE;
+
     // Check if an exception day exists in the table.
-    foreach ($this->getValue() as $value) {
-      $is_exception_day = OfficeHoursItem::isExceptionDay($value);
+    foreach ($this->list as $item) {
+      $is_exception_day = $item->isExceptionDay();
       $exception_exists |= $is_exception_day;
     }
 
@@ -578,7 +613,7 @@ trait OfficeHoursFormatterTrait {
    * {@inheritdoc}
    */
   public function isOpen(int $time = 0) {
-    $current_item = $this->getCurrent($time);
+    $current_item = $this->getCurrentSlot($time);
     return (bool) $current_item;
   }
 
@@ -605,14 +640,13 @@ trait OfficeHoursFormatterTrait {
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
 
     $this->filter(function (OfficeHoursItem $item) {
-      if (!$item->isException()) {
+      if (!$item->isExceptionDay()) {
         return TRUE;
       }
       if (self::$horizon == 0) {
         // Exceptions settings are not set / submodule is disabled.
         return FALSE;
       }
-      // @todo This feels like isInSeason(), or ItemBase::isInHorizon().
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursExceptionsItem $item */
       if ($item->isInRange(0, self::$horizon)) {
         return TRUE;

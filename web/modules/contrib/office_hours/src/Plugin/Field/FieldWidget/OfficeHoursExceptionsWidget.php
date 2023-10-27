@@ -51,7 +51,7 @@ class OfficeHoursExceptionsWidget extends OfficeHoursListWidget {
     $indexed_items = [];
     foreach ($items as $item) {
       // Skip Weekdays.
-      if ($item->isException()) {
+      if ($item->isExceptionDay()) {
         $day = $item->getValue()['day'];
         $indexed_items[$day][] = $item;
       }
@@ -196,9 +196,9 @@ class OfficeHoursExceptionsWidget extends OfficeHoursListWidget {
 
     // Only need to widget specific massaging of form values,
     // All logical changes will be done in ItemList->setValue($values),
-    // where the formatValue() function will be called, also.
+    // where the format() function will be called, also.
     foreach ($values as &$value) {
-      OfficeHoursItem::formatValue($value);
+      OfficeHoursItem::format($value);
     }
     return $values;
   }

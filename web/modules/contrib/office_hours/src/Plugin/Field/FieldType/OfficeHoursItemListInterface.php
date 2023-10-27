@@ -61,7 +61,6 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
   /**
    * Get the current slot and the next day from the Office hours.
    *
-   * - Variable $this->nextDay is set to day number.
    * - Attribute 'current' is set on the active slot.
    * - Variable $this->currentSlot is set to slot data.
    * - Variable $this->currentSlot is returned.
@@ -72,7 +71,7 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    * @return null|\Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem
    *   The current slot data, if any.
    */
-  public function getCurrent(int $time = 0);
+  public function getCurrentSlot(int $time = 0);
 
   /**
    * Determines if the Entity has Exception days.

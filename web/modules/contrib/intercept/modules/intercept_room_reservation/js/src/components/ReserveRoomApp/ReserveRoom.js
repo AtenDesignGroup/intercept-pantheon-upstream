@@ -384,7 +384,7 @@ class ReserveRoom extends React.Component {
             }}
             values={this.state.formValues}
           />
-          <RoomLimitWarning userStatus={userStatus} />
+          <RoomLimitWarning userStatus={userStatus} query={window.location.search} />
         </div>
         <div className="l__main">
           <div className="l__primary">{steps[currentStep]}</div>

@@ -1,0 +1,6 @@
+office_hours.status_update:
+  path: '/office_hours/status_update/{entity_type}/{entity_id}/{field_name}/{langcode}/{view_mode}'
+  defaults:
+    _controller: '\Drupal\office_hours\Controller\StatusUpdateController::updateStatus'
+  requirements:
+    _permission: 'access content'

@@ -43,23 +43,6 @@ class OfficeHoursSeason {
   const SEASON_ID_FACTOR = 100;
 
   /**
-   * An indicator to create a Seasonal day.
-   *
-   * Usage: $items->appendItem(['day' => OfficeHoursItem::EXCEPTION_DAY]).
-   * Also used for SeasonHeader: $day = SeasonId + SEASON_DAY;
-   *
-   * @var int
-   */
-  const SEASON_DAY = 9;
-
-  /**
-   * The maximum day number for Seasonal weekdays.
-   *
-   * @var int
-   */
-  const SEASON_MAX_DAY_NUMBER = 1000000000;
-
-  /**
    * The default name, label, for a new season.
    *
    * @var string
@@ -117,8 +100,6 @@ class OfficeHoursSeason {
     if (!is_numeric($this->to)) {
       $this->to = strtotime($this->to);
     }
-
-    return $this;
   }
 
   /**
@@ -156,7 +137,7 @@ class OfficeHoursSeason {
       // From and To are Unix timestamps.
       // Solution: assign it the special day number 9 + Season ID.
       $value = [
-        'day' => OfficeHoursSeason::SEASON_DAY + $this->id,
+        'day' => OfficeHoursItem::SEASON_DAY + $this->id,
         'all_day' => FALSE,
         'starthours' => $this->from,
         'endhours' => $this->to,
@@ -164,19 +145,6 @@ class OfficeHoursSeason {
       ];
     }
     return $value;
-  }
-
-  /**
-   * Manipulates $day to enable Seasonal Weekdays: 200...206 -> 0..6 .
-   *
-   * @param int $day
-   *   A day number.
-   *
-   * @return int
-   *   A weekday number [0..6]
-   */
-  public static function getWeekday(int $day) {
-    return $day % static::SEASON_ID_FACTOR;
   }
 
   /**
@@ -204,26 +172,32 @@ class OfficeHoursSeason {
    *   TRUE if the date belongs to this season.
    */
   public function isInSeason(int $day) {
-    return ($day >= $this->id
-      && $day < OfficeHoursSeason::SEASON_DAY + $this->id);
+    if ($day < OfficeHoursDateHelper::isExceptionDay($day)) {
+      return ($day >= $this->getFromDate() && $day <= $this->getToDate());
+    }
+    else {
+      return ($day >= $this->id
+        && $day < $this->id + OfficeHoursItem::SEASON_DAY);
+    }
   }
 
   /**
    * Determines whether the item is a season header.
    *
-   * @param array $value
-   *   The item values.
+  * @param $day
+   *   The Office hours 'day' element as weekday
+   *   (using date_api as key (0=Sun, 6=Sat)), season day or Exception date.
    *
    * @return int
    *   0 if the Item is a regular Weekday, E.g., 1..9 -> 0.
    *   season_id if a seasonal weekday, E.g., 301..309 -> 100..100.
    */
-  public static function isSeasonHeader(array $value) {
-    $day = (int) $value['day'];
+  public static function isSeasonHeader($day) {
+    $day = (int) $day;
     if ($day === 0) {
       return FALSE;
     }
-    return ($day % OfficeHoursSeason::SEASON_ID_FACTOR) == OfficeHoursSeason::SEASON_DAY;
+    return ($day % OfficeHoursSeason::SEASON_ID_FACTOR) == OfficeHoursItem::SEASON_DAY;
   }
 
   /**
@@ -266,7 +240,7 @@ class OfficeHoursSeason {
    * @param string $pattern
    *   The string pattern for the date to be returned.
    *
-   * @return string
+   * @return string|int
    *   The formatted date.
    */
   public function getFromDate($pattern = '') {
@@ -274,7 +248,7 @@ class OfficeHoursSeason {
 
     if (is_numeric($day) && $pattern) {
       // No usage for season 0, normal weekdays.
-      if ($day <= self::SEASON_MAX_DAY_NUMBER) {
+      if ($day <= OfficeHoursItem::SEASON_MAX_DAY_NUMBER) {
         return '';
       }
       // @todo Use OfficeHoursDateHelper::getLabel($pattern, ['day' => $result]).
@@ -298,7 +272,7 @@ class OfficeHoursSeason {
 
     if (is_numeric($day) && $pattern) {
       // No usage for season 0, normal weekdays.
-      if ($day <= self::SEASON_MAX_DAY_NUMBER) {
+      if ($day <= OfficeHoursItem::SEASON_MAX_DAY_NUMBER) {
         return '';
       }
       // @todo Use OfficeHoursDateHelper::getLabel($pattern, ['day' => $result]).

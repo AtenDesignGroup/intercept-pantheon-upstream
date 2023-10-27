@@ -3,8 +3,8 @@
  * Contains jsonapi_views_filter_block.js.
  */
 
-var URI_CHANGE_EVENT_TYPE = 'jsonApiViewsUriChange';
-var DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
+const URI_CHANGE_EVENT_TYPE = 'jsonApiViewsUriChange';
+const DATA_CHANGE_EVENT_TYPE = 'jsonApiViewsDataChange';
 
 (function ($, Drupal) {
 

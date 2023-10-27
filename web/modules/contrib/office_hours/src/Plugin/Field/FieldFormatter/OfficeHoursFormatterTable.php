@@ -3,6 +3,7 @@
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\office_hours\OfficeHoursSeason;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /**
@@ -82,8 +83,17 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
         $table_rows[$delta]['data']['label'] = [
           'data' => ['#markup' => $item['label']],
           'class' => ['office-hours__item-label'],
-          'header' => !$isCommentEnabled, // Switch 'Day' between <th> and <tr>.
+          // Switch 'Day' between <th> and <tr>.
+          'header' => !$isCommentEnabled,
         ];
+
+        if (
+          OfficeHoursSeason::isSeasonHeader($item['day']) ||
+          $item['day'] == OfficeHoursItem::EXCEPTION_DAY
+        ) {
+          $table_rows[$delta]['data']['label']['class'][0] = 'office-hours__exceptions-label';
+        }
+
       }
       if ($isTimeSlotEnabled) {
         $table_rows[$delta]['data']['slots'] = [

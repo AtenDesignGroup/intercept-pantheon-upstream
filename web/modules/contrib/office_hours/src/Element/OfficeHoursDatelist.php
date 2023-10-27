@@ -22,7 +22,6 @@ class OfficeHoursDatelist extends Datelist {
     $info = [
       '#input' => TRUE,
       '#tree' => TRUE,
-      '#element_validate' => [[static::class, 'validateOfficeHoursDatelist']],
       // @see Drupal\Core\Datetime\Element\Datelist.
       '#date_part_order' => ['hour', 'minute', 'ampm'],
       '#date_year_range' => '1900:2050',
@@ -30,9 +29,6 @@ class OfficeHoursDatelist extends Datelist {
       // @todo Add Timezone.
       '#date_timezone' => '+0000',
     ];
-
-    // #process, #validate bottom-up.
-    $info['#element_validate'] = array_merge($parent_info['#element_validate'], $info['#element_validate']);
 
     return $info + $parent_info;
   }
@@ -118,7 +114,7 @@ class OfficeHoursDatelist extends Datelist {
   }
 
   /**
-   * Validate the hours selector element.
+   * Validate the hours selector element. This overrides parent function.
    *
    * @param array $element
    *   The form element to process.
@@ -127,16 +123,33 @@ class OfficeHoursDatelist extends Datelist {
    * @param array $complete_form
    *   The complete form structure.
    */
-  public static function validateOfficeHoursDatelist(array &$element, FormStateInterface $form_state, array &$complete_form) {
+  public static function validateDatelist(&$element, FormStateInterface $form_state, &$complete_form) {
+    // This overrides parent::validateDatelist($element, $form_state, $complete_form);
     $input = $element['#value'];
+    $value = NULL;
 
-    $value = '';
-    if (isset($input['object']) && $input['object']) {
+    // @todo Get proper title.
+    $title = static::getElementTitle($element, $complete_form);
+
+    $is_empty = empty($input['hour']) && empty($input['minute']) && (!isset($element['#date_part_order']['ampm']) || empty($input['ampm']));
+    $all_empty = static::checkEmptyInputs($input, $element['#date_part_order']);
+
+    // If there's empty input, set it to empty.
+    if ($is_empty) {
+      $form_state->setValueForElement($element, NULL);
+    }
+    elseif (!empty($all_empty)) {
+      foreach ($all_empty as $value) {
+        $form_state->setError($element, t('The %field time is incomplete.', ['%field' => $title]));
+        $form_state->setError($element[$value], t('A value must be selected for %part.', ['%part' => $value]));
+      }
+    }
+    else {
       $value = (string) $input['object']->format('Gi');
       // Set value for usage in OfficeHoursBaseSlot::validateOfficeHoursSlot().
       $element['#value'] = $value;
+      $form_state->setValueForElement($element, $value);
     }
-    $form_state->setValueForElement($element, $value);
   }
 
 }

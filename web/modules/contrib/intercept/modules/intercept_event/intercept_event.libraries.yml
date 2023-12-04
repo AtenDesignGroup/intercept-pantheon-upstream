@@ -65,7 +65,6 @@ eventList:
     - intercept_core/interceptCommon
     - intercept_core/interceptTheme
     - intercept_core/bigCalendar
-    - intercept_core/materialIcons
 
 eventRegister:
   js:
@@ -80,7 +79,6 @@ eventRegister:
     - intercept_core/interceptClient
     - intercept_core/interceptCommon
     - intercept_core/interceptTheme
-    - intercept_core/materialIcons
 
 eventRegisterButton:
   js:

@@ -20,10 +20,16 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       stories_slideshow: stories_slideshow
+    negate: 0
     target_bundles_drag_drop:
+      button:
+        weight: 15
+        enabled: false
+      image_with_caption_credit:
+        weight: 16
+        enabled: false
       stories_block:
         weight: 12
         enabled: false
@@ -33,14 +39,8 @@ settings:
       stories_curated_content:
         weight: 14
         enabled: false
-      button:
-        weight: 15
-        enabled: false
       stories_image:
         weight: 15
-        enabled: false
-      image_with_caption_credit:
-        weight: 16
         enabled: false
       stories_link_list:
         weight: 16
@@ -49,8 +49,8 @@ settings:
         weight: 17
         enabled: false
       stories_slideshow:
-        enabled: true
         weight: 18
+        enabled: true
       stories_table:
         weight: 19
         enabled: false

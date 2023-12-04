@@ -20,16 +20,16 @@
     "drupal/admin_toolbar": "^3.1.0",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core-composer-scaffold": "10.1.4",
-    "drupal/core": "10.1.4",
+    "drupal/core-composer-scaffold": "10.1.6",
+    "drupal/core": "10.1.6",
     "drupal/date_popup": "^1.3",
     "drupal/date_recur": "^3.0",
     "drupal/date_recur_modular": "^3.1",
     "drupal/default_content": "2.0.0-alpha2",
     "drupal/gin": "^3.0",
     "drupal/gin_toolbar": "^1.0@beta",
-    "drupal/intercept_base": "1.0-beta18",
-    "drupal/intercept": "1.0-beta19",
+    "drupal/intercept_base": "1.0-beta20",
+    "drupal/intercept": "1.0-beta20",
     "drupal/jsonapi_extras": "^3.23",
     "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",
@@ -41,7 +41,7 @@
     "drupal/view_user_email": "^1.0.1",
     "drupal/views_autosubmit": "^1.5",
     "drupal/views_bulk_operations": "^4.0",
-    "drupal/views_filters_summary": "2.0.0-alpha2",
+    "drupal/views_filters_summary": "2.0.0-alpha3",
     "drupal/views_infinite_scroll": "^2.0",
     "drush/drush": "^11",
     "lordelph/php-sip2": "^3.0",
@@ -154,8 +154,7 @@
         "D10 compatibility": "https://www.drupal.org/files/issues/2023-05-15/view_user_email-d10-compatibility.patch"
       },
       "drupal/views_filters_summary": {
-        "Issue #3345403: Remove link removes all filters": "https://git.drupalcode.org/project/views_filters_summary/-/merge_requests/14.patch",
-        "D10 compatibility": "https://git.drupalcode.org/project/views_filters_summary/-/merge_requests/15.patch"
+        "Issue #3345403: Remove link removes all filters": "https://www.drupal.org/files/issues/2023-11-02/views_filters_summary-fix-remove-link-3345403-8.patch"
       },
       "drupal/views_infinite_scroll": {
         "Stops immediate autoloading": "https://www.drupal.org/files/issues/2021-06-30/stop-immediate-autoloading-3207098-8.patch",
@@ -167,8 +166,7 @@
     },
     "drupal-lenient": {
       "allowed-list": [
-        "drupal/view_user_email",
-        "drupal/views_filters_summary"
+        "drupal/view_user_email"
       ]
     }
   }

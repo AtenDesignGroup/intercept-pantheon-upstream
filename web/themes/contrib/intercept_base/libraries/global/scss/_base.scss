@@ -314,7 +314,7 @@ fieldset {
 }
 
 button,
-input[type='submit'],
+input[type='submit']:not(.unstyled):not(.js-hide),
 .button {
   @include fs(medium);
   background-color: $clr-primary;
@@ -576,7 +576,7 @@ tbody + tbody {
 }
 
 .ajax-progress {
-  display: inline;
+  display: inline !important;
   padding: 0;
 
   .throbber {

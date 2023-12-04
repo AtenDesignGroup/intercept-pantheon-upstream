@@ -1,0 +1,11 @@
+# @file config/schema/tally.views.schema.yml
+#
+# Schema for the views plugins.
+
+views.filter.tally_filter:
+  type: views_filter
+  label: 'Tally Filter'
+
+views.filter_value.tally_filter:
+  type: views.filter_value.numeric
+  label: 'Tally Filter'

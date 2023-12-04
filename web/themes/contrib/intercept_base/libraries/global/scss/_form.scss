@@ -69,10 +69,12 @@
 // User Login Form
 //
 
-.user-login-form {
+.user-login-form,
+.openid-connect-login-form {
   max-width: 25em;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 1em;
 
   label {
     display: block;

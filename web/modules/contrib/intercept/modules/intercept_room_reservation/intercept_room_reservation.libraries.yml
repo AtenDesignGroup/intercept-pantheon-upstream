@@ -31,7 +31,6 @@ reserveRoom:
     - intercept_core/interceptCommon
     - intercept_core/interceptTheme
     - intercept_core/bigCalendar
-    - intercept_core/materialIcons
 
 roomReservationActionButton:
   js:
@@ -65,7 +64,6 @@ roomReservationScheduler:
     - intercept_core/interceptTheme
     - intercept_core/bigCalendar
     - intercept_core/bigCalendarDnd
-    - intercept_core/materialIcons
     - intercept_room_reservation/roomReservationMediator
 
 roomReservationMediator:

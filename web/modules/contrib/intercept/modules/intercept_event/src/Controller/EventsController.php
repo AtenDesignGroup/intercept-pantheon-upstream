@@ -402,22 +402,24 @@ class EventsController extends ControllerBase {
     // See if the current user is registered for this event.
     $query = $this->entityTypeManager->getStorage('event_registration')->getQuery()
       ->accessCheck(TRUE)
-      ->condition('field_user', $this->currentUser->Id())
+      ->condition('field_user', $this->currentUser->id())
       ->condition('status', 'active')
-      ->condition('field_event', $node->Id());
+      ->condition('field_event', $node->id());
     $results = $query->execute();
 
-    $accessResult = !empty($results) ? AccessResult::allowed() : AccessResult::forbidden();
+    $accessResult = empty($results) ? AccessResult::allowed() : AccessResult::forbidden();
+    $test_registration_status = $node->registration->status;
 
     switch ($node->registration->status) {
+      case 'open':
+        return $accessResult;
       case 'expired':
       case 'closed':
-        return $accessResult;
-
       case 'full':
       case 'open_pending':
         return AccessResult::forbidden();
     }
+    // Add a hook to allow other modules to alter access.
     $access = $this->moduleHandler()->invokeAll('event_registration_event_create_access', [$node]);
     if (!empty($access)) {
       $result = array_shift($access);
@@ -425,6 +427,7 @@ class EventsController extends ControllerBase {
         return AccessResult::forbidden();
       }
     }
+    
     return AccessResult::allowed();
   }
 

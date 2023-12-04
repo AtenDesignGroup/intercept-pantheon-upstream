@@ -69,7 +69,7 @@ class NonOverlappingReservationConstraintValidator extends ConstraintValidator i
     if (!$owner->hasPermission('bypass room reservation overlap constraints') || $entity->__get('warning')) {
       $dates = $entity->field_dates->getValue();
       $room = $entity->field_room->entity;
-      if (empty($dates) || empty($room) || empty($dates[0]['value']['time']) || empty($dates[0]['end_value']['time'])) {
+      if (empty($dates) || empty($room) || empty($dates[0]['value']) || empty($dates[0]['end_value'])) {
         return;
       }
 
@@ -88,7 +88,11 @@ class NonOverlappingReservationConstraintValidator extends ConstraintValidator i
       $existing_reservations = $this->reservationManager->roomReservationsByNode($params);
       $reservations = !empty($existing_reservations[$room->uuid()]) ? $existing_reservations[$room->uuid()] : [];
       $blocked_dates = $this->reservationManager->getBlockedDates($reservations, $params, $room);
-      if ($this->reservationManager->hasReservationConflict($blocked_dates, $params)) {
+
+      // We should only care about conflicts if the reservation is of a certain status. Otherwise a user
+      // may not be able to cancel their own reservations in case of an existing conflict.
+      $conflicting_statuses = ['requested', 'approved'];
+      if ($this->reservationManager->hasReservationConflict($blocked_dates, $params) && in_array($entity->field_status->value, $conflicting_statuses)) {
         $this->context->addViolation($constraint->errorMessage);
       }
     }

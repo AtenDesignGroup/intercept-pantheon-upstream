@@ -21,14 +21,8 @@ class AggregateField extends EntityField {
    */
   public function multiple_options_form(&$form, FormStateInterface $form_state) {
     parent::multiple_options_form($form, $form_state);
-    $form['multi_type']['#options']['count'] = $this->t('Simple aggregate count');
+    $form['multi_type']['#options']['count'] = $this->t('Simple count');
     $form['multi_type']['#options']['individual'] = $this->t('Individual count per item');
-
-
-    foreach (['limit', 'offset', 'reversed', 'first_last'] as $element_suffix) {
-      $form["delta_{$element_suffix}"]['#states']['visible'][':input[name="options[group_rows]"]'] = ['checked' => TRUE];
-      $form["delta_{$element_suffix}"]['#states']['invisible'][':input[name="options[multi_type]"]'] = ['value' => 'count'];
-    }
   }
 
   /**
@@ -83,56 +77,41 @@ class AggregateField extends EntityField {
       return NULL;
     }
 
+    $values = [];
     if ($this->options['multi_type'] == 'individual') {
       if ($this->options['delta_limit'] == 1) {
         // Just show 1 value as specified.
         $offset = $this->options['delta_offset'];
-        $value = $field_item_list->get($offset) ? $field_item_list->get($offset)->count : NULL;
+        $values = $field_item_list->get($offset) ? $field_item_list->get($offset)->count : NULL;
       }
       else {
         // Show all of the values in one column together.
-        $value_array = [];
         foreach ($field_item_list as $field_item) {
           $term = Term::load($field_item->target_id);
           $term_name = $term->getName();
-          $count = $field_item->count ?: 0;
-          $value_array[] = $term_name . ': ' . $count;
+          $count = $field_item->count ? $field_item->count : 0;
+          $values[] = $term_name . ': ' . $count;
         }
-        $value = implode('; ', $value_array);
+        $values = implode('; ', $values);
       }
-      return $value;
     }
     elseif ($this->options['multi_type'] == 'count') {
       // It's a "count" instead of individual.
-      $value_array = [];
       foreach ($field_item_list as $field_item) {
         /** @var \Drupal\Core\Field\FieldItemInterface $field_item */
-        if (empty($field_item->count)) {
+        if (is_null($field_item->count)) {
           continue;
         }
-        $value_array[] = $field_item->count;
+        $values[] = $field_item->count;
       }
-      if (count($value_array) > 0) {
-        $value = array_sum($value_array);
+      if (empty($values)) {
+        $values = '-';
       }
       else {
-        $value = '-';
+        $values = array_sum($values);
       }
-      return $value;
     }
-
-    return parent::getValue($values, 'count');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function render(ResultRow $values) {
-    $value = $this->getValue($values);
-    if (is_array($value)) {
-      return $this->renderItems($value);
-    }
-    return $this->sanitizeValue($value);
+    return $values;
   }
 
   /**
@@ -141,4 +120,5 @@ class AggregateField extends EntityField {
   protected function allowAdvancedRender() {
     return FALSE;
   }
+
 }

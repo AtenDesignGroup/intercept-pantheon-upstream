@@ -17,3 +17,38 @@ h1.page-title--reversed {
     }
   }
 }
+
+h1.page-title {
+  color: $blue-80;
+
+  .path-frontpage & {
+    display: none;
+  }
+}
+
+.page-title--ruled {
+  @include spacing(margin-bottom, tight);
+  @include spacing(padding-bottom, tight);
+  position: relative;
+
+  &::after {
+    background: url("/themes/contrib/intercept_base/images/dots/dots--horiz.svg");
+    content: "";
+    height: 9px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+}
+
+h1.page-title--secondary {
+  color: $gray-20;
+
+  &:not(:last-child) {
+    margin-bottom: rem(24px);
+  }
+}

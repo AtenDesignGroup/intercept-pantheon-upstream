@@ -23,3 +23,21 @@ function tally_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
+
+/**
+ * Implements hook_views_data().
+ */
+function tally_views_data() {
+  $data = [];
+
+  $data['node']['tally_filter'] = [
+    'title' => t('Tally Filter'),
+    'filter' => [
+      'title' => t('Tally Filter'),
+      'field' => 'id',
+      'id' => 'tally_filter',
+    ],
+  ];
+
+  return $data;
+}

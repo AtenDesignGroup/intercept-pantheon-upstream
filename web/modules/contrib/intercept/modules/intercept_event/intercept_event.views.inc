@@ -37,6 +37,19 @@ function intercept_event_views_data_alter(&$data) {
     ],
   ];
 
+  // $data['node_field_data']['event_attendees_count'] = [
+  //   'group' => new TranslatableMarkup('Intercept'),
+  //   'title' => new TranslatableMarkup('Event attendees (headcount)'),
+  //   'help' => new TranslatableMarkup('The number of headcount attendees for an event.'),
+  //   'field' => [
+  //     'id' => 'event_attendees_count',
+  //   ],
+  //   'sort' => [
+  //   // Points to custom Numeric.php sort handler.
+  //     'id' => 'event_count_numeric',
+  //   ],
+  // ];
+
   // @todo Create this definition for all entity types and create a
   // votingapi ticket.
   $entity_type_manager = \Drupal::service('entity_type.manager');

@@ -522,7 +522,7 @@ fieldset {
   max-width: 100%; }
 
 button,
-input[type='submit'],
+input[type='submit']:not(.unstyled):not(.js-hide),
 .button {
   font-size: 0.88194rem;
   background-color: #0288d1;
@@ -541,24 +541,24 @@ input[type='submit'],
   transition: all 0.2s ease-in-out; }
   @media (min-width: 48em) {
     button,
-    input[type='submit'],
+    input[type='submit']:not(.unstyled):not(.js-hide),
     .button {
       font-size: 1.14583rem; } }
   @media (min-width: 62em) {
     button,
-    input[type='submit'],
+    input[type='submit']:not(.unstyled):not(.js-hide),
     .button {
       font-size: 1.5rem; } }
   button:hover,
-  input[type='submit']:hover,
+  input[type='submit']:not(.unstyled):not(.js-hide):hover,
   .button:hover {
     background-color: #039be5; }
   button:active,
-  input[type='submit']:active,
+  input[type='submit']:not(.unstyled):not(.js-hide):active,
   .button:active {
     background-color: #03a9f4; }
   button[disabled],
-  input[type='submit'][disabled],
+  input[type='submit']:not(.unstyled):not(.js-hide)[disabled],
   .button[disabled] {
     background-color: #d3d8df; }
 
@@ -766,7 +766,7 @@ tbody + tbody {
   outline: 0; }
 
 .ajax-progress {
-  display: inline;
+  display: inline !important;
   padding: 0; }
   .ajax-progress .throbber {
     padding: 1px 7px 2px 7px; }
@@ -1784,6 +1784,48 @@ body .ui-dialog {
 .view-intercept-room-reservations .views-row .action-button .button {
   width: 100%; }
 
+#roomReservationSelectRoot {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row; }
+  @media (max-width: 47.9375em) {
+    #roomReservationSelectRoot {
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: column;
+              flex-direction: column; } }
+  #roomReservationSelectRoot div {
+    margin-right: 100px; }
+  #roomReservationSelectRoot .menu__link {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
+    background-color: #51832f;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 1rem;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    height: 100%;
+    max-height: 55px;
+    margin: 0 auto 1rem auto;
+    text-align: center;
+    width: 300px;
+    vertical-align: bottom;
+    padding: 20px 0; }
+    #roomReservationSelectRoot .menu__link:hover {
+      background-color: #4c752c; }
+
 .align-left {
   margin: 0 1rem 1rem 0; }
 
@@ -1879,21 +1921,27 @@ figure.align-center.caption figcaption {
   display: -ms-flexbox;
   display: flex; }
 
-.user-login-form {
+.user-login-form,
+.openid-connect-login-form {
   max-width: 25em;
   margin-left: auto;
-  margin-right: auto; }
-  .user-login-form label {
+  margin-right: auto;
+  margin-bottom: 1em; }
+  .user-login-form label,
+  .openid-connect-login-form label {
     display: block;
     font-weight: 900; }
-  .user-login-form .description {
+  .user-login-form .description,
+  .openid-connect-login-form .description {
     font-size: 0.65278rem;
     font-style: italic; }
     @media (min-width: 48em) {
-      .user-login-form .description {
+      .user-login-form .description,
+      .openid-connect-login-form .description {
         font-size: 0.83333rem; } }
     @media (min-width: 62em) {
-      .user-login-form .description {
+      .user-login-form .description,
+      .openid-connect-login-form .description {
         font-size: 1rem; } }
 
 .action-links {

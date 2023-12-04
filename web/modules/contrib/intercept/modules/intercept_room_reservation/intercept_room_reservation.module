@@ -416,7 +416,8 @@ function template_preprocess_room_reservation(array &$variables) {
   $service->setWidgetValues($config_values);
    // Only show this on future reservations.
   if (strtotime($end_date_value) > strtotime('now')) {
-    $variables['addtocalendar'] = \Drupal::service('renderer')->render($service->generateWidget());
+    $add_to_calendar_widget = $service->generateWidget();
+    $variables['addtocalendar'] = \Drupal::service('renderer')->render($add_to_calendar_widget);
   }
 
 }
@@ -735,7 +736,7 @@ function intercept_room_reservation_preprocess_node(&$variables) {
           ],
         ]);
       }
-      
+
     }
   }
 }

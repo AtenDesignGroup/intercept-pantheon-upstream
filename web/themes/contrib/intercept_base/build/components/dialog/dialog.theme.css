@@ -66,7 +66,7 @@
   /* Ensure that long titles do not overlap the close button. */
   font-size: 1.25rem;
   font-weight: 900;
-  line-height: 1;
+  line-height: 1.2;
   margin: 0;
   max-width: none;
   /* Push the text away from the icon. */

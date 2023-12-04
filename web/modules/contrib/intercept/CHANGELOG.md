@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta20] - 2023-12-04
+
+- Staff events listing - Added a new event filter for no attendance recorded
+- Staff events listing - Updated attendance numbers to show the difference between programs with 0 and null attendance
+- Fixed a bug where study room reservations were not being automatically approved after customer edits
+- Fixed a couple of room reservations double booking scenarios
+- Fixed a warning that could sometimes appear when viewing room reservations
+- Fixed display issue on loading icon when used in off-canvas room reservation dialogue
+- Fixed display issue on room reservation calendar titles being cut off slightly when viewing room details
+- Fixed an issue in the Intercept upstream where users were unable to reserve rooms by calendar easily
+
 ## [8.x-1.0-beta19] - 2023-10-27
 
 <h2>Sprint 59 Deployment</h2>

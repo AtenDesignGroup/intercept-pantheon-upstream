@@ -25,6 +25,15 @@
       }
 
       /**
+       * Check if the views exposed form uses AJAX.
+       * @returns {boolean|jQuery|*}
+       */
+      function usesAjax() {
+        return $('.views-filters-summary', context)
+          .hasClass('views-filters-summary--use-ajax');
+      }
+
+      /**
        * Remove a specific filter from the views exposed filters.
        *
        * @param {Event} MouseEvent
@@ -40,9 +49,10 @@
           const url = new URL(window.location);
           // Remove the single value selector.
           url.searchParams.delete(selector);
+          // Remove keyed element.
+          url.searchParams.delete(`${selector}[${value}]`);
           // Remove the multi value selector, then add back in the ones that don't match the value.
           const multiValueParams = url.searchParams.getAll(`${selector}[]`);
-          url.searchParams.delete(`${selector}[]`);
           multiValueParams.forEach((param) => {
             if (param !== value) {
               url.searchParams.append(`${selector}[]`, param);
@@ -82,7 +92,6 @@
       function onResetClick(event) {
         event.preventDefault();
         let uri = window.location.toString();
-
         if (window.location.search) {
           let base_url = uri.substring(0, uri.indexOf("?"));
           window.history.pushState({}, "", base_url);

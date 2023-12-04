@@ -32,51 +32,49 @@ bundle: location
 mode: default
 content:
   field_address:
-    weight: 1
+    type: address_default
     label: visually_hidden
     settings: {  }
     third_party_settings: {  }
-    type: address_default
+    weight: 1
     region: content
   field_branch_location:
-    weight: 15
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 15
     region: content
   field_contact_number:
-    weight: 2
+    type: string
     label: visually_hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
   field_features:
-    weight: 5
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 5
     region: content
   field_gallery:
     type: entity_reference_revisions_entity_view
-    weight: 8
-    region: content
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 8
+    region: content
   field_link_directions:
     type: link
-    weight: 3
-    region: content
     label: visually_hidden
     settings:
       trim_length: 80
@@ -85,24 +83,27 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
+    weight: 3
+    region: content
   field_location_abbreviation:
-    weight: 17
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 17
     region: content
   field_location_hours:
-    weight: 4
+    type: office_hours
     label: visually_hidden
     settings:
-      show_closed: all
-      office_hours_first_day: ''
       day_format: short
       time_format: g
+      compress: false
       grouped: true
+      show_closed: all
       closed_format: Closed
+      all_day_format: 'All day open'
       separator:
         days: '<br />'
         grouped_days: –
@@ -113,15 +114,20 @@ content:
         position: ''
         open_text: 'Currently open!'
         closed_text: 'Currently closed'
-      schema:
-        enabled: '1'
-      compress: false
+      exceptions:
+        title: 'Exception hours'
+        restrict_exceptions_to_num_days: 7
+        date_format: long
+        all_day_format: 'All day open'
       timezone_field: ''
+      office_hours_first_day: ''
+      schema:
+        enabled: true
     third_party_settings: {  }
-    type: office_hours
+    weight: 4
     region: content
   field_map_link:
-    weight: 9
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -130,43 +136,41 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 9
     region: content
   field_text_content:
-    weight: 10
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 10
     region: content
   field_text_intro:
-    weight: 0
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 0
     region: content
   field_virtual_tour:
-    weight: 18
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
-    region: content
-  flag_subscribe_node:
-    weight: 10
-    settings: {  }
-    third_party_settings: {  }
+    weight: 18
     region: content
   image_primary:
-    weight: 13
+    type: media_thumbnail
     label: hidden
     settings:
-      image_style: maximum
       image_link: ''
+      image_style: maximum
+      image_loading:
+        attribute: lazy
     third_party_settings: {  }
-    type: media_thumbnail
+    weight: 13
     region: content
 hidden:
   field_closed_for_renovations: true
+  langcode: true
   links: true

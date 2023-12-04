@@ -451,6 +451,7 @@ class ViewsFiltersSummary extends Result {
         '#theme' => 'views_filters_summary',
         '#summary' => $summary,
         '#options' => [
+          'use_ajax' => $this->view->ajaxEnabled(),
           'show_label' => $this->options['show_labels'],
           'show_remove_link' => $this->options['show_remove_link'],
           'show_reset_link' => $this->options['show_reset_link'],
@@ -539,6 +540,7 @@ class ViewsFiltersSummary extends Result {
 
     if (is_array($info['value'])) {
       switch ($filter->getPluginId()) {
+        case 'search_api_term':
         case 'taxonomy_index_tid':
         case 'taxonomy_index_tid_depth':
           $values = [];

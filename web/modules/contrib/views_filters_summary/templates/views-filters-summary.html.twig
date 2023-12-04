@@ -1,3 +1,4 @@
+
 {#
 /**
  * @file
@@ -17,8 +18,15 @@
  *      - value: The value of the filter.
  */
 #}
-{% spaceless %}
-  <div class="views-filters-summary">
+
+
+{% set classes = [
+  'views-filters-summary',
+  options.use_ajax ? 'views-filters-summary--use-ajax'
+] %}
+
+{% apply spaceless %}
+  <div{{ attributes.addClass(classes) }}>
     {% if summary and options.filters_summary.prefix %}
       <span class="prefix">
         {{ options.filters_summary.prefix }}
@@ -61,4 +69,4 @@
       </a>
     {% endif %}
   </div>
-{% endspaceless %}
+{% endapply %}

@@ -61,17 +61,6 @@ moment:
     https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.38/moment-timezone-with-data-10-year-range.js:
       external: true
 
-materialIcons:
-  remote: https://fonts.googleapis.com
-  version: 3.0.1
-  license:
-    name: Apache 2.0
-    url: https://raw.githubusercontent.com/google/material-design-icons/master/LICENSE
-    gpl-compatible: true
-  css:
-    theme:
-      css/material-icons.css: { minified: true }
-
 babelHelpers:
   js:
     js/dist/babelHelpers.js:
@@ -104,7 +93,6 @@ interceptClient:
     - intercept_core/babelHelpers
     - intercept_core/react
     - intercept_core/interceptTheme
-    - intercept_core/materialIcons
 
 interceptTheme:
   js:

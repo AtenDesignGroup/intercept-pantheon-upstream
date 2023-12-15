@@ -71,4 +71,4 @@ devel.settings.yml
 devel.toolbar.settings.yml
 system.menu.devel.yml
 
-/node_modules
+node_modules

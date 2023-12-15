@@ -18,14 +18,14 @@ d3:
   js:
     /libraries/d3/d3.min.js: {  }
 billboard:
-  remote: 'https://naver.github.io/billboard.js/release/3.7.5/dist/billboard.min.js'
-  version: 3.7.5
+  remote: 'https://naver.github.io/billboard.js/release/3.10.3/dist/billboard.min.js'
+  version: 3.10.3
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
     gpl-compatible: true
   cdn:
-    /libraries/billboard/: https://naver.github.io/billboard.js/release/3.7.5/
+    /libraries/billboard/: https://naver.github.io/billboard.js/release/3.10.3/
   css:
     theme:
       /libraries/billboard/dist/billboard.min.css: {  }

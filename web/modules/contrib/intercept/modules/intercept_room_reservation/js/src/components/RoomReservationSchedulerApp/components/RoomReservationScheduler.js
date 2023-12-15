@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -113,6 +113,38 @@ function getAddRoomReservationEvent(reservation, resources) {
 }
 
 /**
+ * Creates an Intercept ADD reservation event to be dispatched
+ *
+ * @param {Object} reservation
+ *   Room reservation id.
+ * @param {[Object]} resources
+ *   An array of available resources.
+ * @return {CustomEvent}
+ *   A Custom Event object.
+ */
+function getAddRoomReservationEventFromUrl(resource, startTime, endTime) {
+  const tz = utils.getUserTimezone();
+  const start = moment(startTime).tz(tz);
+  const end = moment(endTime).tz(tz);
+
+  const event = new CustomEvent(ADD_ROOM_RESERVATION, {
+    detail: {
+      resource,
+      end: {
+        date: end.format('YYYY-MM-DD'),
+        time: end.format('HH:mm:ss'),
+      },
+      start: {
+        date: start.format('YYYY-MM-DD'),
+        time: start.format('HH:mm:ss'),
+      },
+    },
+  });
+
+  return event;
+}
+
+/**
  * Creates an Intercept CHANGE reservation event to be dispatched
  *
  * @param {Object} reservation
@@ -202,8 +234,14 @@ const RoomReservationScheduler = ({
   fetchAvailability,
   fetchLocations,
   fetchUserStatus,
+  room,
+  start,
+  end,
   userStatus,
   onChangeDate,
+  onChangeEnd,
+  onChangeRoom,
+  onChangeStart,
   onChangeView,
   purgeReservations,
   locations,
@@ -264,6 +302,31 @@ const RoomReservationScheduler = ({
   const resources = getResourcesFromRooms(rooms, getLocationHours);
   const events = getEventsFromAvailability(availability);
 
+  useEffect(() => {
+    if (resources.length === 0 || !room || !start || !end) {
+      return;
+    }
+    const resource = resources.find(item => item.id === room);
+    if (resource) {
+      setSelectedEvent({
+        title: '',
+        start,
+        end,
+        resourceId: room,
+        isEditable: true,
+      });
+      window.dispatchEvent(getAddRoomReservationEventFromUrl(resource, start, end));
+    }
+  }, [rooms]);
+
+  // Scroll the selected reservation into view.
+  useLayoutEffect(() => {
+    const selected = document.querySelector('.rbc-selected');
+    if (selected && selected.scrollIntoViewIfNeeded) {
+      selected.scrollIntoViewIfNeeded();
+    }
+  }, [selectedEvent]);
+
   const onDoubleClickEvent = (event) => {
     if (event.drupal_internal__id) {
       window.dispatchEvent(getEditRoomReservationEvent(event.drupal_internal__id));
@@ -281,13 +344,19 @@ const RoomReservationScheduler = ({
   };
 
   const onSelectSlot = (event) => {
+    const startTime = moment(event.start).tz(utils.getUserTimezone()).format();
+    const endTime = moment(event.end).tz(utils.getUserTimezone()).format();
+
     setSelectedEvent({
       title: '',
-      start: moment(event.start).tz(utils.getUserTimezone()).format(),
-      end: moment(event.end).tz(utils.getUserTimezone()).format(),
+      start: startTime,
+      end: endTime,
       resourceId: event.resourceId,
       isEditable: true,
     });
+    onChangeRoom(event.resourceId);
+    onChangeEnd(endTime);
+    onChangeStart(startTime);
     window.dispatchEvent(getAddRoomReservationEvent(event, resources));
   };
 
@@ -311,12 +380,16 @@ const RoomReservationScheduler = ({
       title: '',
     };
 
+    // Get the uuid of the selected room.
+    const resource = rooms.find(item => item.attributes.drupal_internal__nid === Number(values.room));
+    const resourceId = resource ? resource.id : null;
+
     // Apply the updated values to the stored event if found.
     setSelectedEvent({
       ...event,
       start: moment(values.start).tz(utils.getUserTimezone()).format(),
       end: moment(values.end).tz(utils.getUserTimezone()).format(),
-      resourceId: values.room,
+      resourceId,
     });
   };
 
@@ -350,6 +423,10 @@ const RoomReservationScheduler = ({
   };
 
   const onSelectEvent = (event) => {
+    onChangeRoom(null);
+    onChangeEnd(null);
+    onChangeStart(null);
+
     if (event.drupal_internal__id) {
       setSelectedEvent(event);
       window.dispatchEvent(getSelectRoomReservationEvent(event.drupal_internal__id));
@@ -379,6 +456,9 @@ const RoomReservationScheduler = ({
   );
 
   useEventListener(CLOSE_ROOM_RESERVATION, () => {
+    onChangeRoom(null);
+    onChangeEnd(null);
+    onChangeStart(null);
     setSelectedEvent(null);
   });
 
@@ -427,6 +507,9 @@ RoomReservationScheduler.propTypes = {
   fetchUser: PropTypes.func.isRequired,
   fetchUserStatus: PropTypes.func.isRequired,
   onChangeDate: PropTypes.func.isRequired,
+  onChangeEnd: PropTypes.func.isRequired,
+  onChangeRoom: PropTypes.func.isRequired,
+  onChangeStart: PropTypes.func.isRequired,
   onChangeView: PropTypes.func.isRequired,
   purgeReservations: PropTypes.func.isRequired,
   date: PropTypes.instanceOf(Date),

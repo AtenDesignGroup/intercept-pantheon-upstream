@@ -27,6 +27,8 @@ const ATTENDEES = 'attendees';
 const TIME = 'time';
 const DURATION = 'duration';
 const NOW = 'now';
+const START = 'start';
+const END = 'end';
 
 const removeFalseyProps = obj => pickBy(obj, prop => prop);
 
@@ -41,53 +43,15 @@ const decodeDate = (value) => {
   // Convert the date object to the start of the User's timezone day, in local time.
   const output = utils.convertDateFromLocal(date, utils.getUserTimezone());
   return output;
-}
+};
 
 const encodeDate = (value) => {
   return moment(value)
     .format('YYYY-MM-DD') || null;
-}
-
-const encodeFilters = (value) => {
-  const filters = removeFalseyProps({
-    location: encodeArray(value[c.TYPE_LOCATION], ','),
-    type: encodeArray(value[c.TYPE_ROOM_TYPE], ','),
-    attendees: encode(UrlQueryParamTypes.number, value[ATTENDEES]),
-    [c.DATE]: !value[c.DATE] ? null : utils.getDayTimeStamp(value[c.DATE]),
-    [TIME]: encodeString(value.time),
-    [DURATION]: encodeString(value.duration),
-    [c.KEYWORD]: encodeString(value.keyword),
-    [NOW]: encodeBoolean(value[NOW]),
-  });
-  return encodeObject(filters, ':', '_');
 };
 
-const decodeFilters = (values) => {
-  if (!values) {
-    return {
-      [c.TYPE_LOCATION]: [],
-      [c.TYPE_ROOM_TYPE]: [],
-      // [ATTENDEES]: decode(UrlQueryParamTypes.number, value.attendees),
-      [c.DATE]: null,
-      [c.KEYWORD]: '',
-      // [TIME]: decodeString(value.time),
-      // [DURATION]: decodeString(value.duration),
-      // [NOW]: decodeBoolean(value[NOW]),
-    };
-  }
-  const value = decodeObject(values, ':', '_');
-  const filters = {
-    [c.TYPE_LOCATION]: decodeArray(value.location, ',') || [],
-    [c.TYPE_ROOM_TYPE]: decodeArray(value.type, ',') || [],
-    [ATTENDEES]: decode(UrlQueryParamTypes.number, value.attendees),
-    [c.DATE]: value[c.DATE] ? utils.getDateFromDayTimeStamp(value[c.DATE]) : null,
-    [c.KEYWORD]: decodeString(value.keyword),
-    [TIME]: decodeString(value.time),
-    [DURATION]: decodeString(value.duration),
-    [NOW]: decodeBoolean(value[NOW]),
-  };
-  return filters;
-};
+const encodeMultiValueExposedFilter = value => encodeArray(value, '[]') || [];
+const decodeMultiValueExposedFilter = value => decodeArray(value, '[]') || [];
 
 // Items for URL
 // - view
@@ -100,7 +64,7 @@ const decodeFilters = (values) => {
 const urlPropsQueryConfig = {
   // Active View
   view: { type: UrlQueryParamTypes.string },
-  // Active Date
+  // Active Calendar Date
   date: {
     type: {
       decode: decodeDate,
@@ -111,16 +75,25 @@ const urlPropsQueryConfig = {
   room: { type: UrlQueryParamTypes.string },
   // Room Detail
   roomDetail: { type: UrlQueryParamTypes.string },
+  // Location exposed filter.
+  location: { type: {
+    decode: decodeMultiValueExposedFilter,
+    encode: encodeMultiValueExposedFilter,
+  } },
+  // Type exposed filter.
+  type: { type: {
+    decode: decodeMultiValueExposedFilter,
+    encode: encodeMultiValueExposedFilter,
+  } },
+  'max-capacity': { type: UrlQueryParamTypes.number },
+  // Selected Start Time
+  [START]: { type: UrlQueryParamTypes.string },
+  // Selected End Time
+  [END]: { type: UrlQueryParamTypes.string },
   // Detail View
   detail: { type: UrlQueryParamTypes.boolean },
   // Event
   event: { type: UrlQueryParamTypes.string },
-  filters: {
-    type: {
-      decode: decodeFilters,
-      encode: encodeFilters,
-    },
-  },
 };
 
 const connectQueryParams = component =>

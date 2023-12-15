@@ -273,6 +273,26 @@ class ReservationManager implements ReservationManagerInterface {
   }
 
   /**
+   * Gets the last room reservation made for a user.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The user to check.
+   *
+   * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface|null
+   *   The last room reservation made for a user if there is one.
+   */
+  public function getUserLastMadeReservation(AccountInterface $user) {
+    $reservations = \Drupal::entityQuery('room_reservation')
+      ->condition('field_user', $user->id())
+      ->sort('created', 'DESC')
+      ->range(0, 1)
+      ->accessCheck(FALSE)
+      ->execute();
+
+    return empty($last_reservation) ? reset($reservations) : NULL;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function duration(string $start, string $end) {

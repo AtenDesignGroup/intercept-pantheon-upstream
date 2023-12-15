@@ -623,6 +623,7 @@ const SchedulerView = (props) => {
                               key={resource.id}
                               className="scheduler__row scheduler__row--resource"
                               style={{ height: styledResources[resource.id].height }}
+                              data-resource-id={resource.id}
                             >
                               <td>
                                 {resource.title}

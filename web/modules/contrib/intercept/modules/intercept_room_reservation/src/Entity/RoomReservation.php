@@ -275,10 +275,10 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
    */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
+    $current_user = \Drupal::currentUser();
 
-    $this->setDefaultStatus();
-    
     if ($this->isNew()) {
+      $this->setDefaultStatus();
       // If they've signed the agreement, remove it from their session.
       if (\Drupal::service('current_user')->isAnonymous()) {
         return;
@@ -290,6 +290,10 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
           $this->field_agreement->setValue(1);
         }
       }
+    }
+    // Don't set the default status for staff. They may be editing the status.
+    elseif ($current_user->hasPermission('bypass room reservation agreement') == FALSE) {
+      $this->setDefaultStatus();
     }
 
   }

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta21] - 2023-12-15
+
+- Updated room reservation calendar to keep the selected times when a user logs in
+- Updated room reservation calendar to automatically filter to location of last reservation for logged in customers
+- Fixed an issue where staff could accidentally enter negative number of attendees for an event
+- Fixed an issue where staff were unable to change a reservation from Approved to Requested status
+
 ## [8.x-1.0-beta20] - 2023-12-04
 
 - Staff events listing - Added a new event filter for no attendance recorded

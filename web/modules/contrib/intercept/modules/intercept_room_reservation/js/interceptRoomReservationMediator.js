@@ -182,6 +182,51 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
       });
     },
 
+    /**
+     * Merge the current exposed filter values into the current url.
+     *
+     * This is only necessarry because the exposed filter values in the url
+     * will get overwritten as the user interacts with the React app.
+     * Therefore we need to make sure the url contains the latest form values
+     * when setting the destination for the login redirect.
+     */
+    mergeViewsExposedFilterSearchParams: function (searchParams) {
+      const formValues = Drupal.behaviors.interceptRoomReservationMediator.getViewsExposedFilterFormValues();
+      // Remove all existing exposed filter values before appending new ones.
+      // We need to append instead of replace because the url may contain
+      // multi-value exposed filters.
+      formValues.forEach((item) => {
+        searchParams.delete(item.name);
+      });
+      formValues.forEach((item) => {
+        searchParams.append(item.name, item.value);
+      });
+      return searchParams;
+    },
+
+    /**
+     * Get the current exposed filter values from the views exposed filter form.
+     *
+     * @return {array}
+     *  An array of objects containing the name and value of each exposed filter.
+     */
+    getViewsExposedFilterFormValues: function () {
+      const $formBlock = $('.views-exposed-form[data-view-id="intercept_rooms"][data-view-display="rooms"] form');
+      if ($formBlock.length > 0) {
+        return $formBlock.serializeArray();
+      }
+      return [];
+    },
+
+    /**
+     * Get the destination url for the redirect after login.
+     */
+    getRedirectDestination: function () {
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams = Drupal.behaviors.interceptRoomReservationMediator.mergeViewsExposedFilterSearchParams(currentUrl.searchParams);
+      return encodeURIComponent(currentUrl.pathname + currentUrl.search);
+    },
+
     onCloseDialog: function () {
       currentEvent = null;
       currentAction = null;
@@ -191,16 +236,11 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
     },
 
     onAddRoomReservation: function (event) {
-      console.log('onAddRoomReservation', event);
       currentValues = event.detail;
       shouldUpdateFormValues = true;
-
       currentAction = EDIT_ACTION;
       if (!drupalSettings.user || (drupalSettings.user && drupalSettings.user.uid === 0)) {
-        const path = window.location.pathname;
-        const search = window.location.search;
-        const destination = encodeURIComponent(path + search);
-
+        const destination = Drupal.behaviors.interceptRoomReservationMediator.getRedirectDestination();
         window.location.href = `/user/login?destination=${destination}`;
       }
       else {
@@ -216,7 +256,6 @@ const OFF_CANVAS_RESIZE_INTERVAL = 30;
     },
 
     onChangeRoomReservation: function (event) {
-      console.log('onChangeRoomReservation', event);
       const id = event.detail.drupal_internal__id;
       currentValues = event.detail;
       shouldUpdateFormValues = true;

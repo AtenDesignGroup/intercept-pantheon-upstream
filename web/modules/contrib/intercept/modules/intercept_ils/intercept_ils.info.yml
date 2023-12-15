@@ -7,7 +7,7 @@ dependencies:
   - externalauth:externalauth
   - profile:profile
 
-# Information added by Drupal.org packaging script on 2023-12-04
-version: '8.x-1.0-beta20'
+# Information added by Drupal.org packaging script on 2023-12-15
+version: '8.x-1.0-beta21'
 project: 'intercept'
-datestamp: 1701721031
+datestamp: 1702665766

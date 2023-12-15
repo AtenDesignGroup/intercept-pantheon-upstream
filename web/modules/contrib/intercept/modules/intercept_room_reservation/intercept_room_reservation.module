@@ -175,6 +175,29 @@ function intercept_room_reservation_form_views_exposed_form_alter(&$form, FormSt
     $form['staff_use']['#options'][1] = 'Staff';
     $form['staff_use']['#options'][0] = 'Public';
   }
+  elseif ($view->id() == 'intercept_rooms' && $view->current_display == 'rooms') {
+    $user = \Drupal::currentUser();
+
+    // Check if the current user is logged in and is a customer.
+    if ($user->isAuthenticated() && in_array('intercept_registered_customer', $user->getRoles()) ) {
+
+      // Set the default value for the exposed filter.
+      if (isset($form['location']) && empty($form_state->getUserInput()['location'])) {
+        // Get the location of the user's last reservation made and set that as the default.
+        $room_reservation_manager = \Drupal::service('intercept_core.reservation.manager');
+        $last_reservation = $room_reservation_manager->getUserLastMadeReservation($user);
+
+        if (!empty($last_reservation)) {
+          $last_reservation = \Drupal::entityTypeManager()->getStorage('room_reservation')->load($last_reservation);
+          $last_reservation_location = $last_reservation->get('field_room')->entity->get('field_location')->entity->id();
+          // Make sure this location is still an available option in the exposed filter.
+          if (isset($form['location']['#options'][$last_reservation_location])) {
+            $form_state->setUserInput(['location' => [$last_reservation_location]]);
+          }
+        }
+      }
+    }
+  }
 
   // Room Reserve Staff Calendar View.
   if (in_array($form['#id'], [

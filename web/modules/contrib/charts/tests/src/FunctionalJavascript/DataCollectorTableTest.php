@@ -3,10 +3,10 @@
 namespace Drupal\Tests\charts\FunctionalJavascript;
 
 use Drupal\charts_test\Form\DataCollectorTableTestForm;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\charts\Traits\ConfigUpdateTrait;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Tests the data collector table element.

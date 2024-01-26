@@ -319,7 +319,7 @@ class EventRegistrationField extends ComputedItemList implements CacheableDepend
     $waitlisted = $this->getTotalWaitlist();
     $waitlist_capacity = $this->waitlistCapacity();
 
-    return $waitlist_capacity - $waitlisted;
+    return $this->waitlistCapacity() <= 0 ? 0 : $waitlist_capacity - $waitlisted;
   }
 
   /**

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta22] - 2024-01-26
+
+ - Fixed an issue on the room reservation calendar where staff were sometimes unable to update guest reservation information
+ - Fixed an issue on Reserve By Room where invalid warnings could appear regarding the chosen time slot
+ - Fixed a date discrepancy on the Events listing page
+ - 3412547: Added a check for query parameters for sorting past events
+ - 3412543: Fixed an issue where event registration waitlist capacity could sometimes display a negative number
+ - Fixed an error in equipment reservations when the piece of equipment is missing a primary image
+
+
 ## [8.x-1.0-beta21] - 2023-12-15
 
 - Updated room reservation calendar to keep the selected times when a user logs in

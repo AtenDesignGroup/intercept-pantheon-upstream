@@ -1,0 +1,66 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.intercept_guest.intercept_guest.field_email
+    - field.field.intercept_guest.intercept_guest.field_first_name
+    - field.field.intercept_guest.intercept_guest.field_last_name
+    - field.field.intercept_guest.intercept_guest.field_organization
+    - field.field.intercept_guest.intercept_guest.field_phone
+  module:
+    - intercept_guest
+    - telephone
+    - user
+id: intercept_guest.intercept_guest.default
+targetEntityType: intercept_guest
+bundle: intercept_guest
+mode: default
+content:
+  field_email:
+    type: email_mailto
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_first_name:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -2
+    region: content
+  field_last_name:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -1
+    region: content
+  field_organization:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_phone:
+    type: telephone_link
+    label: inline
+    settings:
+      title: ''
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  user_id:
+    type: author
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: -3
+    region: content
+hidden:
+  search_api_excerpt: true

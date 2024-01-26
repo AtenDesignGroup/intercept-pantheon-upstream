@@ -123,7 +123,7 @@ class ChartDataCollectorTable extends FormElement {
       '#header' => [],
       '#responsive' => FALSE,
       '#attributes' => [
-        'class' => 'data-collector-table',
+        'class' => ['data-collector-table'],
       ],
     ];
 

@@ -1635,6 +1635,7 @@ function template_preprocess_field_multiple_value_form(&$variables) {
         'colspan' => 2,
         'class' => ['field-label'],
       ],
+      [],
       t('Order', [], ['context' => 'Sort order']),
     ];
     $rows = [];
@@ -1662,9 +1663,17 @@ function template_preprocess_field_multiple_value_form(&$variables) {
       $delta_element = $item['_weight'];
       unset($item['_weight']);
 
+      // Render actions in a separate column.
+      $actions = [];
+      if (isset($item['_actions'])) {
+        $actions = $item['_actions'];
+        unset($item['_actions']);
+      }
+
       $cells = [
         ['data' => '', 'class' => ['field-multiple-drag']],
         ['data' => $item],
+        ['data' => $actions],
         ['data' => $delta_element, 'class' => ['delta-order']],
       ];
       $rows[] = [

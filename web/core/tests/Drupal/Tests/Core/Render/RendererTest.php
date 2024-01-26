@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Render;
 
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
@@ -822,7 +825,6 @@ class RendererTest extends RendererTestBase {
    * @covers ::doRender
    * @covers \Drupal\Core\Render\RenderCache::get
    * @covers \Drupal\Core\Render\RenderCache::set
-   * @covers \Drupal\Core\Render\RenderCache::createCacheID
    *
    * @dataProvider providerRenderCache
    */
@@ -864,7 +866,7 @@ class RendererTest extends RendererTestBase {
     $this->assertEquals($expected_tags, $element['#cache']['tags'], 'Cache tags were collected from the element and its subchild.');
 
     // The cache item also has a 'rendered' cache tag.
-    $cache_item = $this->cacheFactory->get('render')->get('render_cache_test:en:stark');
+    $cache_item = $this->cacheFactory->get('render')->get(['render_cache_test'], CacheableMetadata::createFromRenderArray($element));
     $this->assertSame(Cache::mergeTags($expected_tags, ['rendered']), $cache_item->tags);
   }
 
@@ -873,7 +875,6 @@ class RendererTest extends RendererTestBase {
    * @covers ::doRender
    * @covers \Drupal\Core\Render\RenderCache::get
    * @covers \Drupal\Core\Render\RenderCache::set
-   * @covers \Drupal\Core\Render\RenderCache::createCacheID
    *
    * @dataProvider providerTestRenderCacheMaxAge
    */
@@ -890,7 +891,7 @@ class RendererTest extends RendererTestBase {
     ];
     $this->renderer->renderRoot($element);
 
-    $cache_item = $this->cacheFactory->get('render')->get('render_cache_test:en:stark');
+    $cache_item = $this->cacheFactory->get('render')->get(['render_cache_test'], CacheableMetadata::createFromRenderArray($element));
     if (!$is_render_cached) {
       $this->assertFalse($cache_item);
     }
@@ -918,7 +919,6 @@ class RendererTest extends RendererTestBase {
    * @covers ::doRender
    * @covers \Drupal\Core\Render\RenderCache::get
    * @covers \Drupal\Core\Render\RenderCache::set
-   * @covers \Drupal\Core\Render\RenderCache::createCacheID
    * @covers \Drupal\Core\Render\RenderCache::getCacheableRenderArray
    *
    * @dataProvider providerTestRenderCacheProperties
@@ -943,7 +943,7 @@ class RendererTest extends RendererTestBase {
     $this->renderer->renderRoot($element);
 
     $cache = $this->cacheFactory->get('render');
-    $data = $cache->get('render_cache_test:en:stark')->data;
+    $data = $cache->get(['render_cache_test'], CacheableMetadata::createFromRenderArray($element))->data;
 
     // Check that parent markup is ignored when caching children's markup.
     $this->assertEquals($data['#markup'] === '', (bool) Element::children($data));

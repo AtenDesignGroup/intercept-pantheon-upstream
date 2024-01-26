@@ -553,9 +553,11 @@ function intercept_event_preprocess_views_view(&$variables) {
 function intercept_event_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
   $row = $variables['row'];
-  if ($view->id() == 'intercept_event_templates' && $view->current_display == 'embed') {
-    if ($variables['field']->field == 'title') {
-      $title = $variables['field']->getValue($row);
+  $field = $variables['field'];
+  $display = $view->current_display;
+  if ($view->id() == 'intercept_event_templates' && $display == 'embed') {
+    if ($field == 'title') {
+      $title = $field->getValue($row);
       if ($title) {
         $current_user = \Drupal::currentUser();
         $user = User::load($current_user->id());
@@ -565,6 +567,14 @@ function intercept_event_preprocess_views_view_field(&$variables) {
         $nid = $variables['row']->nid;
         $variables['output'] = Markup::create('<a href="/node/' . $nid . '">' . $variables['output'] . '</a>');
       }
+    }
+  }
+  elseif ($view->id() == 'intercept_events' && $display == 'list_page') {
+    if ($field->field == 'field_date_time') {
+      $time = $field->getValue($row);
+      $date = \Drupal::service('intercept_core.utility.dates')->getDrupalDate($time);
+      $date = \Drupal::service('intercept_core.utility.dates')->convertTimezone($date, 'default')->format('l, F d, Y');
+      $variables['output'] = ['#markup' => $date];
     }
   }
 }
@@ -1233,9 +1243,11 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
     $query->where[0]['type'] = 'OR';
 
     $query_params = \Drupal::request()->query->all();
-    if ($query_params['field_date_time_value'] == 1) {
-      // Past events under My Account need to be sorted DESC instead of ASC.
-      $query->orderby[0]['direction'] = 'DESC';
+    if ($query_params) {
+      if ($query_params['field_date_time_value'] == 1) {
+        // Past events under My Account need to be sorted DESC instead of ASC.
+        $query->orderby[0]['direction'] = 'DESC';
+      }
     }
 
   }

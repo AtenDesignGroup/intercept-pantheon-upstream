@@ -1,0 +1,13 @@
+diff --git a/core/misc/dialog/off-canvas/js/off-canvas.js b/core/misc/dialog/off-canvas/js/off-canvas.js
+index a85f3522ab..1c74d1bd1c 100644
+--- a/core/misc/dialog/off-canvas/js/off-canvas.js
++++ b/core/misc/dialog/off-canvas/js/off-canvas.js
+@@ -52,7 +52,7 @@
+      *   True this is currently an off-canvas dialog.
+      */
+     isOffCanvas($element) {
+-      return $element[0].id === 'drupal-off-canvas';
++      return $element.is('#drupal-off-canvas');
+     },
+ 
+     /**

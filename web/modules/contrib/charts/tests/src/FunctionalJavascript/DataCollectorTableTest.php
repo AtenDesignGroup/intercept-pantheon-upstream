@@ -274,7 +274,7 @@ class DataCollectorTableTest extends WebDriverTestBase {
     /** @var \Behat\Mink\Element\NodeElement[] $inputs */
     foreach ($inputs as $input) {
       $value = rand(0, count($inputs));
-      $input->setValue($value);
+      $input->setValue((string) $value);
     }
     return $inputs;
   }

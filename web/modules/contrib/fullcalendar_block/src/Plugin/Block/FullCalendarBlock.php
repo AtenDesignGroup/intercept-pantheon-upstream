@@ -2,16 +2,19 @@
 
 namespace Drupal\fullcalendar_block\Plugin\Block;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Serialization\Exception\InvalidDataTypeException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Ajax\AjaxHelperTrait;
+use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Url;
-use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -56,6 +59,27 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
   protected $moduleHandler;
 
   /**
+   * The entity manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The token service.
+   *
+   * @var \Drupal\Core\Utility\Token
+   */
+  protected $token;
+
+  /**
+   * The Request Stack service.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -64,6 +88,9 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
     $instance->configFactory = $container->get('config.factory');
     $instance->languageManager = $container->get('language_manager');
     $instance->moduleHandler = $container->get('module_handler');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->token = $container->get('token');
+    $instance->requestStack = $container->get('request_stack');
 
     return $instance;
   }
@@ -74,6 +101,7 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
   public function defaultConfiguration() {
     return [
       'event_source' => '',
+      'use_token' => FALSE,
       'initial_view' => 'dayGridMonth',
       'header_start' => 'prev,next today',
       'header_center' => 'title',
@@ -185,6 +213,31 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
       '#default_value' => $config['event_source'],
       '#required' => TRUE,
     ];
+
+    $form['use_token'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable tokens'),
+      '#description' => $this->t('Enable the use of tokens for the event source URL'),
+      '#default_value' => $config['use_token'],
+    ];
+    // Token support.
+    if ($this->moduleHandler->moduleExists('token')) {
+      $form['tokens'] = [
+        '#title' => $this->t('Tokens (for the event source URL only)'),
+        '#type' => 'container',
+        '#states' => [
+          'invisible' => [
+            'input[name="settings[use_token]"]' => ['checked' => FALSE],
+          ],
+        ],
+      ];
+      $form['tokens']['help'] = [
+        '#theme' => 'token_tree_link',
+        '#token_types' => 'all',
+        '#global_types' => TRUE,
+        '#dialog' => TRUE,
+      ];
+    }
 
     $form['initial_view'] = [
       '#type' => 'textfield',
@@ -351,6 +404,7 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
     parent::blockSubmit($form, $form_state);
     $values = $form_state->getValues();
     $this->configuration['event_source'] = $values['event_source'];
+    $this->configuration['use_token'] = (bool) $values['use_token'];
     $this->configuration['initial_view'] = $values['initial_view'];
     $this->configuration['header_start'] = $values['header_toolbar']['header_start'];
     $this->configuration['header_center'] = $values['header_toolbar']['header_center'];
@@ -457,6 +511,9 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
    *   The URL with the appropriate base prefix applied.
    */
   protected function resolveEventUrl($event_url) {
+    if ($this->configuration['use_token']) {
+      $event_url = $this->resolveUrlTokens($event_url);
+    }
     if ($event_url && $event_url[0] === '/' && !UrlHelper::isExternal($event_url)) {
       if (!file_exists(DRUPAL_ROOT . $event_url)) {
         // Not a static file, resolve the relative path as normal.
@@ -464,6 +521,38 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
       }
     }
     return $event_url;
+  }
+
+  /**
+   * Replace the tokens within the URL.
+   */
+  protected function resolveUrlTokens($event_url) {
+    $types = [];
+    foreach ($this->requestStack->getCurrentRequest()->attributes as $attribute_name => $attribute_value) {
+      if ($attribute_value instanceof EntityInterface) {
+        $types[$attribute_value->getEntityTypeId()] = $attribute_value;
+      }
+      elseif (is_string($attribute_value) || is_numeric($attribute_value)) {
+        // If there's no param enhancer applied, attempt to load the entity from
+        // its entity storage. e.g. on node previews.
+        try {
+          $entity_type_storage = $this->entityTypeManager->getStorage($attribute_name);
+          $entity = $entity_type_storage->load($attribute_value);
+          if ($entity instanceof EntityInterface) {
+            $types[$entity->getEntityTypeId()] = $entity;
+          }
+        }
+        catch (InvalidPluginDefinitionException | PluginNotFoundException $ignore) {
+        }
+      }
+    }
+
+    return $this->token->replace($event_url, $types, [
+      // Don't clear in case there's special post-processing necessary that
+      // exists outside the normal token API.
+      'clear' => FALSE,
+      'langcode' => $this->languageManager->getCurrentLanguage()->getId(),
+    ]);
   }
 
   /**

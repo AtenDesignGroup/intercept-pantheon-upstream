@@ -5,6 +5,9 @@ block.settings.fullcalendar_block:
     event_source:
       type: string
       label: 'Event source URL'
+    use_token:
+      type: boolean
+      label: 'Use tokens on the event source URL'
     initial_view:
       type: string
       label: 'Initial View'

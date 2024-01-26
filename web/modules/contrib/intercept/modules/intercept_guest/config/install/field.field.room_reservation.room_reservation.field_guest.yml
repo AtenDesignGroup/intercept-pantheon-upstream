@@ -10,7 +10,7 @@ field_name: field_guest
 entity_type: room_reservation
 bundle: room_reservation
 label: Guest
-description: 'If this room reservation is for a guest, select that guest here.'
+description: ''
 required: false
 translatable: false
 default_value: {  }

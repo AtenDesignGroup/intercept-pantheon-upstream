@@ -36,25 +36,21 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactoryPluginInterface {
 
   /**
+   * {@inheritdoc}
+   */
+  protected $usesFields = TRUE;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $usesRowPlugin = TRUE;
+
+  /**
    * The config factory service.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected ConfigFactoryInterface $configFactory;
-
-  /**
-   * Fields.
-   *
-   * @var \Drupal\views\Plugin\views\style\StylePluginBase
-   */
-  protected $usesFields = TRUE;
-
-  /**
-   * RowPlugin.
-   *
-   * @var \Drupal\views\Plugin\views\style\StylePluginBase
-   */
-  protected $usesRowPlugin = TRUE;
 
   /**
    * The chart manager service.
@@ -178,7 +174,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
       // the field is an entity reference.
       $form['grouping'][0]['field']['#ajax'] = [
         'wrapper' => $settings_wrapper,
-        'callback' => [get_called_class(), 'groupingChartSettingsAjaxCallback'],
+        'callback' => [static::class, 'groupingChartSettingsAjaxCallback'],
       ];
     }
     if (isset($form['grouping'][1])) {
@@ -204,7 +200,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
    * {@inheritdoc}
    */
   public function validateOptionsForm(&$form, FormStateInterface $form_state) {
-    parent::buildOptionsForm($form, $form_state);
+    parent::validateOptionsForm($form, $form_state);
 
     if (!$form_state->hasValue(['style_options', 'chart_settings'])) {
       return;

@@ -13,3 +13,11 @@ Source: https://www.drupal.org/files/issues/2023-05-04/2842525-124.patch
 Source: patches/3193348-removes-faulty-exception-related-to-permissions.patch
 
 
+3238849 Fixing JS error on room reservation calendar
+Source: patches/3238849-fix-js-error-room-reservation-calendar.patch
+
+
+3416398 Fixes regression on form states detection
+Source: https://www.drupal.org/files/issues/2024-01-25/3416398-1.patch
+
+

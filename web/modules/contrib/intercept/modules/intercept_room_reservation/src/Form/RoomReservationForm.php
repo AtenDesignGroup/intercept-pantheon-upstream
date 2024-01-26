@@ -446,7 +446,7 @@ class RoomReservationForm extends ContentEntityForm {
       return $response;
     }
 
-    // Otherwise replace the contents of the dialog with a the room reservation display.
+    // Otherwise replace the contents of the dialog with the room reservation display.
     $view_mode = 'off_canvas';
     $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($entity_id);
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);

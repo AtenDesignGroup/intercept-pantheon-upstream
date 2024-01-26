@@ -17,8 +17,9 @@
     })|replace({'am':'a.m.'})|replace({'pm':'p.m.'})|replace({':00':''})
   }
 %}
-
-{% set image = drupal_entity('media', equipment.image_primary.0.target_id, 'teaser') %}
+{% if equipment.image_primary.0.target_id %}
+  {% set image = drupal_entity('media', equipment.image_primary.0.target_id, 'teaser') %}
+{% endif %}
 
 {% block tags %}
   {% if content.field_location|field_value %}

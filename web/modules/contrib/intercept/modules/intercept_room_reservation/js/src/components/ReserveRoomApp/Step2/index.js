@@ -37,6 +37,7 @@ class ReserveRoomStep2 extends React.Component {
   }
 
   componentDidMount() {
+    // Set the initial values of the form.
     this.props.onChange(this.getDefaultValues());
     // Fetch room availability if necessary.
     if (this.props.room) {

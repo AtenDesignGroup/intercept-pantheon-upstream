@@ -141,6 +141,7 @@ function charts_post_update_00_update_charts_version_3_to_latest_settings_struct
 function charts_post_update_resave_views_to_account_calculated_library_dependencies(&$sandbox) {
   $view_storage = \Drupal::entityTypeManager()->getStorage('view');
   $view_ids = $view_storage->getQuery()
+    ->accessCheck(FALSE)
     ->condition('display.*.display_options.style.type', 'chart', '=')
     ->execute();
   $labels = [];

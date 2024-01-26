@@ -19,12 +19,13 @@ use Attribute;
 final class MapCell
 {
     /**
-     * @param ?class-string $cast
+     * @param class-string|string|null $cast
      */
     public function __construct(
         public readonly string|int|null $column = null,
         public readonly ?string $cast = null,
-        public readonly array $options = []
+        public readonly array $options = [],
+        public readonly bool $ignore = false,
     ) {
     }
 }

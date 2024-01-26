@@ -31,6 +31,15 @@ const c = constants;
 
 const SHOW_CLOSED = 'showClosed';
 
+/**
+ * Matches the time of the original date to the reference date.
+ *
+ * @param {Date} original - The original date.
+ * @param {Date} ref - The reference date.
+ *
+ * @returns {Date} - The original date with its time set to the time of the reference date.
+ *  If either original or ref is not a Date instance, ref is returned.
+ */
 const matchTime = (original, ref) => {
   if (ref instanceof Date === false || original instanceof Date === false) {
     return ref;
@@ -43,10 +52,18 @@ const matchTime = (original, ref) => {
   output.setMilliseconds(ref.getMilliseconds());
   return output;
 };
-const matchDate = (original, ref) => matchTime(ref, original);
 
-const purposeRequiresExplanation = meetingPurpose =>
-  meetingPurpose && meetingPurpose.data.attributes.field_requires_explanation;
+/**
+ * Matches the date of the original date to the reference date,
+ *  while maintaining the time of day.
+ *
+ * @param {Date} original - The original date.
+ * @param {Date} ref - The reference date.
+ *
+ * @returns {Date} - The original date with its date set to the date of the reference date.
+ *   This is the inverse of the matchTime function.
+ */
+const matchDate = (original, ref) => matchTime(ref, original);
 
 addValidationRule('isRequired', (values, value) => value !== '');
 addValidationRule('isPositive', (values, value) => value > 0);

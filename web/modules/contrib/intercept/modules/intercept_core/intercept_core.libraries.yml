@@ -70,6 +70,9 @@ pickadate:
   js:
     libraries/pickadate/pickadate.js:
       preprocess: true
+    https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
+      external: true
+      minified: true
   dependencies:
     - core/jquery
     - core/drupal

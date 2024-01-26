@@ -228,9 +228,9 @@ class SelectTime extends React.Component {
           <Autocomplete
             className="select-filter__menu"
             id={inputId}
-            defaultValue={
+            value={
               value === null || !value
-                ? ''
+                ? null
                 : options.filter(option => option.key === value).shift()
             }
             getOptionLabel={option => option.value || ''}
@@ -238,7 +238,21 @@ class SelectTime extends React.Component {
             onChange={this.handleChange}
             onClose={() => this.setState({ autocompleteIsOpen: false })}
             onOpen={() => this.setState({ autocompleteIsOpen: true })}
-            getOptionSelected={(option, val) => option.key === val}
+            getOptionSelected={(option, val) => {
+              if (val === null || typeof val === 'undefined') {
+                return false;
+              }
+
+              if (typeof val === 'string') {
+                return option.key === val;
+              }
+
+              if (typeof val.key === 'string') {
+                return option.key === val.key;
+              }
+
+              return false;
+            }}
             getOptionDisabled={option => option.disabled}
             renderOption={option => (
               <MenuItem

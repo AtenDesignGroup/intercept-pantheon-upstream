@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.intercept_guest.field_first_name
+  module:
+    - intercept_guest
+id: intercept_guest.intercept_guest.field_first_name
+field_name: field_first_name
+entity_type: intercept_guest
+bundle: intercept_guest
+label: 'First name'
+description: 'Enter the guest''s first name.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

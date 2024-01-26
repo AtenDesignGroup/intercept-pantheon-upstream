@@ -61,15 +61,16 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
     '#weight' => 2,
   ];
 
-  if ($default === 'guest') {
+  if ($default[0] === 'guest') {
     // Update the reservation entity's user to be the guest user.
     $config = \Drupal::config('intercept_guest.settings');
-    $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '101';
-    $form['field_user']['widget'][0]['target_id']['#default_value'] = $guest_uid;
+    $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '1';
+    $guest_user = \Drupal\user\Entity\User::load($guest_uid);
+    $form['field_user']['widget'][0]['target_id']['#default_value'] = $guest_user;
     $form_state->setValue('field_user', [0 => ['target_id' => $guest_uid]]);
   }
 
-  // Use form api's #states system to hide/show make required/optional
+  // Use form API's #states system to hide/show make required/optional
   // field_user and field_guest.
   $form['field_user']['#states'] = [
     'invisible' => [
@@ -111,7 +112,7 @@ function intercept_guest_form_room_reservation_form_alter(&$form, FormStateInter
 
   $form['guest_information']['info'] = [
     '#type' => 'item',
-    '#markup' => '<h2>' . t('Guest Information') . '</h2><p>' . t('All guest fields are required **') . '</p>',
+    '#markup' => '<h2>' . t('Guest Information') . '</h2><p>' . t('All guest fields are required. *') . '</p>',
   ];
 
   // Add a validate callback.
@@ -145,7 +146,7 @@ function intercept_guest_reservation_form_validate($form, FormStateInterface &$f
     case 'guest':
       // Update the reservation entity's user to be the guest user.
       $config = \Drupal::config('intercept_guest.settings');
-      $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '101';
+      $guest_uid = (!empty($config->get('guest_user'))) ? $config->get('guest_user') : '1';
       $form_state->setValue('field_user', [0 => ['target_id' => $guest_uid]]);
   }
 }

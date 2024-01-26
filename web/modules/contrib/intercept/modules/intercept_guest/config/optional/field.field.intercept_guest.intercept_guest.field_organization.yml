@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.intercept_guest.field_organization
+  module:
+    - intercept_guest
+id: intercept_guest.intercept_guest.field_organization
+field_name: field_organization
+entity_type: intercept_guest
+bundle: intercept_guest
+label: Organization
+description: 'Enter the guest''s organization, if applicable.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

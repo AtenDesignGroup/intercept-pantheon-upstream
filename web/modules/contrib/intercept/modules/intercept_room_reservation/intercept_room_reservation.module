@@ -532,21 +532,6 @@ function intercept_room_reservation_entity_form_display_alter(EntityFormDisplayI
   }
 }
 
-// /**
-//  * Implements hook_entity_field_access().
-//  */
-// function intercept_room_reservation_entity_field_access($operation, \Drupal\Core\Field\FieldDefinitionInterface $field_definition, \Drupal\Core\Session\AccountInterface $account, \Drupal\Core\Field\FieldItemListInterface $items = NULL) {
-//   if ($field_definition->getTargetEntityTypeId() !== 'room_reservation') {
-//     return AccessResult::neutral();
-//   }
-// switch ($field_definition->getName()) {
-//     case 'field_guest':
-//       return AccessResult::allowedIfHasPermission($account, 'update any room_reservation');.
-// default:
-//       return AccessResult::neutral();
-//   }
-// }
-
 /**
  * Implements hook_views_query_alter().
  */

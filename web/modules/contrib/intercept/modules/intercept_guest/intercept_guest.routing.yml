@@ -1,11 +1,3 @@
-intercept_guest.example:
-  path: '/intercept-guest/example'
-  defaults:
-    _title: 'Example'
-    _controller: '\Drupal\intercept_guest\Controller\InterceptGuestController::build'
-  requirements:
-    _permission: 'access content'
-
 intercept_guest.settings:
   path: '/admin/structure/intercept/intercept-guest'
   defaults:

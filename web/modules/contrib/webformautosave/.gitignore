@@ -1,0 +1,68 @@
+# OS generated files #
+######################
+ehthumbs.db
+._*
+.DS_Store
+Thumbs.db
+.buildpath
+.cache
+.project
+.settings
+.tmproj
+nbproject
+*.sublime-project
+*.sublime-workspace
+
+# Folders #
+###########
+.hg
+.svn
+.CVS
+.idea
+.ddev
+
+# Numerous always-ignore extensions #
+#####################################
+*.diff
+*.err
+*.orig
+*.log
+*.rej
+*.swo
+*.swp
+*.vi
+*~
+*.sass-cache
+*.patch
+*.map
+
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.mysql
+
+# Gitlab CI Files #
+###################
+.editorconfig
+.gitattributes
+.gitlab-ci-local
+composer.lock
+expand_composer_json.php
+junit.xml
+symlink_project.php
+vendor
+web
+.prettierignore
+.prettierrc.json

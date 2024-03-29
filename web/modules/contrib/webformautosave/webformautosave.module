@@ -1,0 +1,253 @@
+<?php
+
+/**
+ * @file
+ * Contains webformautosave.module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\webform\WebformInterface;
+use Drupal\webform\WebformSubmissionStorageInterface;
+
+/**
+ * Implements hook_help().
+ */
+function webformautosave_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the webformautosave module.
+    case 'help.page.webformautosave':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('This module enables an auto-save option on webforms that saves whenever an input is changed.') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_webform_third_party_settings_form_alter().
+ */
+function webformautosave_webform_third_party_settings_form_alter(array &$form, FormStateInterface $form_state) {
+  /** @var \Drupal\webform\WebformInterface $webform */
+  $webform = $form_state->getFormObject()->getEntity();
+
+  $form['third_party_settings']['webformautosave'] = [
+    '#type' => 'details',
+    '#title' => t('Webform auto-save settings'),
+    '#open' => TRUE,
+  ];
+  $form['third_party_settings']['webformautosave']['auto_save'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Automatically save submission drafts when an input changes.'),
+    '#default_value' => $webform->getThirdPartySetting('webformautosave', 'auto_save'),
+  ];
+  $form['third_party_settings']['webformautosave']['auto_save_time'] = [
+    '#type' => 'number',
+    '#title' => t('Number of milliseconds to wait before triggering the autosave.'),
+    '#description' => t('Set to a higher value if optimistic locking is enabled'),
+    '#default_value' => !empty($webform->getThirdPartySetting('webformautosave', 'auto_save_time')) ? $webform->getThirdPartySetting('webformautosave', 'auto_save_time') : 5000,
+    '#states' => [
+      'visible' => [
+        [':input[name="third_party_settings[webformautosave][auto_save]"]' => ['checked' => TRUE]],
+      ],
+    ],
+  ];
+  $form['third_party_settings']['webformautosave']['optimistic_locking'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Use an optimistic locking strategy to prevent multiple users from saving/editing the same submission at the same time.'),
+    '#default_value' => $webform->getThirdPartySetting('webformautosave', 'optimistic_locking'),
+    '#description' => t('Set the autosave wait time to a higher value if optimistic locking is enabled'),
+  ];
+}
+
+/**
+ * Implements hook_webform_submission_form_alter() for all webforms.
+ */
+function webformautosave_webform_submission_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\webform\WebformSubmissionForm $form_object */
+  $form_object = $form_state->getFormObject();
+  /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+  $webform_submission = $form_object->getEntity();
+  $webform = $webform_submission->getWebform();
+  /** @var \Drupal\webformautosave\AutosaveHelper $autosave_helper */
+  $autosave_helper = Drupal::service('webformautosave.helper');
+  // Check to see if autosave is enabled.
+  try {
+    $autosave_enabled = $autosave_helper->enableAutosave($webform, $webform_submission);
+  }
+  catch (\Exception $e) {
+    $autosave_enabled = FALSE;
+  }
+  // Get the autosave settings.
+  $autosave_time = $webform->getThirdPartySetting('webformautosave', 'auto_save_time');
+  $optimistic_locking = $webform->getThirdPartySetting('webformautosave', 'optimistic_locking');
+
+  // Auto create draft if purging is enabled, and it has not been created yet.
+  $draft_enabled = ($webform->getSetting('draft') === WebformInterface::DRAFT_AUTHENTICATED && Drupal::currentUser()->isAuthenticated())
+    || $webform->getSetting('draft') === WebformInterface::DRAFT_ALL;
+  $purge_enabled = $webform->getSetting('purge') === WebformSubmissionStorageInterface::PURGE_DRAFT
+    || $webform->getSetting('purge') === WebformSubmissionStorageInterface::PURGE_ALL;
+
+  // Save an initial draft to use.
+  if ($webform_submission->isNew() && $autosave_enabled && $draft_enabled && $purge_enabled) {
+    $webform_submission->set('in_draft', TRUE);
+    $webform_submission->save();
+  }
+
+  // Actions to perform if auto-save is enabled and a submission id exists.
+  if ($autosave_enabled && !empty($webform_submission->id())) {
+    $unique_id = Html::getUniqueId('webform-autosave-hidden-container');
+    // Add a hidden container for our draft submit button.
+    $form['webformautosave_hidden_container'] = [
+      '#type' => 'container',
+      '#weight' => -99,
+      // Only process the container and prevent .form-actions from being added
+      // which force submit buttons to be rendered in dialogs.
+      // @see \Drupal\Core\Render\Element\Actions
+      // @see Drupal.behaviors.dialog.prepareDialogButtons
+      '#process' => [
+        ['\Drupal\Core\Render\Element\Actions', 'processContainer'],
+      ],
+      '#attributes' => [
+        'id' => $unique_id,
+        'class' => [
+          'visually-hidden',
+          'webformautosave-trigger--wrapper',
+        ],
+      ],
+    ];
+    // Add a button that triggers a draft submission via ajax.
+    $form['webformautosave_hidden_container']['webformautosave_hidden_save_draft'] = [
+      '#type' => 'submit',
+      '#value' => t('Autosave Trigger'),
+      '#validate' => ['::draft'],
+      '#submit' => ['::submitForm', '::save'],
+      '#attributes' => [
+        'formnovalidate' => 'formnovalidate',
+        'class' => ['webform-button--draft'],
+        'tabindex' => -1,
+        'disabled' => 'disabled',
+        'data-autosave-trigger' => 'submit',
+      ],
+      '#ajax' => [
+        'wrapper' => $unique_id,
+        'callback' => 'webformautosave_ajax_handler',
+        'event' => 'click',
+      ],
+    ];
+
+    // Attach our library and settings to the form.
+    $form['#attached']['library'][] = 'webformautosave/webformautosave';
+    $form['#attached']['drupalSettings']['webformautosave'] = [
+      'forms' => [
+        // Build out our settings array.
+        $webform->id() => [
+          'autosaveTime' => !empty($autosave_time) ? $autosave_time : 5000,
+        ],
+      ],
+    ];
+  }
+  $form['#attributes']['data-webform-id'] = $webform->id();
+
+  // Add the optimistic locking validation if needed.
+  if ($optimistic_locking && !empty($webform_submission->id())) {
+    // Set a unique stored timestamp.
+    if ($log = $autosave_helper->getCurrentSubmissionLog($webform_submission)) {
+      $form_state->set('optimistic_timestamp_' . $webform_submission->getToken(), $log->timestamp);
+    }
+    $form['#validate'][] = 'webformautosave_optimistic_locking_validate';
+  }
+}
+
+/**
+ * An ajax handler for the webformautosave draft submit.
+ */
+function webformautosave_ajax_handler(array &$form, FormStateInterface $form_state) {
+  $triggering_element = $form_state->getTriggeringElement();
+  return $form[$triggering_element['#array_parents'][0]];
+}
+
+/**
+ * Validation handler for forms with optimistic locking enabled.
+ *
+ * @param array $form
+ *   An associative array containing the structure of the form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The current state of the form.
+ */
+function webformautosave_optimistic_locking_validate(array $form, FormStateInterface $form_state) {
+  // Load the submission.
+  /** @var \Drupal\webform\WebformSubmissionForm $form_object */
+  $form_object = $form_state->getFormObject();
+  /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+  $webform_submission = $form_object->getEntity();
+  /** @var \Drupal\webformautosave\AutosaveHelper $autosave_helper */
+  $autosave_helper = \Drupal::service('webformautosave.helper');
+  // Get the time we have stored.
+  $stored_time = $form_state->get('optimistic_timestamp_' . $webform_submission->getToken());
+  // Get our current log object.
+  $log = $autosave_helper->getCurrentSubmissionLog($webform_submission);
+  $last_change_time = $log->timestamp;
+  // Check if the form has been changed.
+  if (isset($stored_time) && $last_change_time > $stored_time) {
+    /** @var \Drupal\webformautosave\AutosaveHelper $autosave_helper */
+    $autosave_helper = Drupal::service('webformautosave.helper');
+    // Build our submission URL.
+    $submission_url = $autosave_helper->getSubmissionUrl($webform_submission);
+    $first_field = $autosave_helper->getFirstWebformField($webform_submission);
+    // Inform the user that another user is changing the form.
+    $form_state->setErrorByName($first_field, t('The content has been modified by another user, or you have already submitted modifications. As a result, you must <a href="@url">reload the data on this form</a> before you may proceed.', [
+      '@url' => $submission_url->toString(),
+    ]));
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for webform entities.
+ */
+function webformautosave_webform_presave(WebformInterface $webform) {
+  // Get webform auto-save settings.
+  $auto_save = $webform->getThirdPartySetting('webformautosave', 'auto_save');
+  $optimistic_locking = $webform->getThirdPartySetting('webformautosave', 'optimistic_locking');
+  // Set the default optimistic locking settings.
+  if ($optimistic_locking) {
+    // Get submission_log settings.
+    $submission_log = $webform->getSetting('submission_log');
+    // Set the submission log if it is not yet set.
+    if (!$submission_log) {
+      $webform->setSetting('submission_log', 1);
+    }
+  }
+  // Set default auto-save settings for both checkboxes.
+  if ($optimistic_locking || $auto_save) {
+    // Set an appropriate default purge setting.
+    if ($purge_setting = $webform->getSetting('purge')) {
+      switch ($purge_setting) {
+        // We need to make sure drafts are purged as well.
+        case WebformSubmissionStorageInterface::PURGE_COMPLETED:
+          $purge = WebformSubmissionStorageInterface::PURGE_ALL;
+          break;
+
+        default:
+          $purge = WebformSubmissionStorageInterface::PURGE_DRAFT;
+          break;
+      }
+    }
+    else {
+      $purge = WebformSubmissionStorageInterface::PURGE_DRAFT;
+    }
+    // Enable the draft save if not already set.
+    $draft_setting = $webform->getSetting('draft');
+    if ($draft_setting == WebformInterface::DRAFT_NONE) {
+      $webform->setSetting('draft', WebformInterface::DRAFT_ALL);
+    }
+    // Set purge status to prevent clutter in the db.
+    if ($purge_setting == WebformSubmissionStorageInterface::PURGE_NONE) {
+      $webform->setSetting('purge', $purge);
+    }
+    // Add a purge time frame if not set.
+    if (empty($webform->getSetting('purge_days'))) {
+      $webform->setSetting('purge_days', 182);
+    }
+  }
+}

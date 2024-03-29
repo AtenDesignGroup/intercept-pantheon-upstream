@@ -1,0 +1,26 @@
+{
+    "name": "drupal/webformautosave",
+    "type": "drupal-module",
+    "description": "Allows for an auto-saving and optimistic locking on webform submissions",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "drupal/webform": "^6.0"
+    },
+    "homepage": "https://drupal.org/project/webformautosave",
+    "authors": [
+        {
+            "name": "Ryan McVeigh (rymcveigh)",
+            "homepage": "https://www.drupal.org/u/rymcveigh",
+            "role": "Maintainer"
+        },
+        {
+            "name": "Contributors",
+            "homepage": "https://www.drupal.org/node/3100720/committers",
+            "role": "Contributor"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/webformautosave",
+        "source": "https://git.drupalcode.org/project/webformautosave"
+    }
+}

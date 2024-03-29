@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the webformautosave module.
+ */
+
+use Drupal\user\Entity\Role;
+
+/**
+ * Enable webform_submission_logger and decrease the weight of webformautosave.
+ */
+function webformautosave_update_8001() {
+  // Ensure our module weighs less than webform.
+  module_set_weight('webformautosave', -10);
+  $moduleHandler = \Drupal::service('module_handler');
+  // Check if webform_submission_log is enabled.
+  if (!$moduleHandler->moduleExists('webform_submission_log')) {
+    // Enable webform_submission_logger.
+    \Drupal::service('module_installer')
+      ->install(['webform_submission_log'], TRUE);
+  }
+}
+
+/**
+ * Remove REST rest endpoints and permissions.
+ */
+function webformautosave_update_8002() {
+  // Remove old permissions.
+  $old_permissions = [
+    'restful get webformautosave_submission',
+    'restful patch webformautosave_submission',
+    'restful post webformautosave_submit',
+  ];
+  $role_ids = array_keys(Role::loadMultiple());
+  foreach ($role_ids as $role_id) {
+    user_role_revoke_permissions($role_id, $old_permissions);
+  }
+
+  // Remove old config.
+  $old_config_names = [
+    'rest.resource.webformautosave_submission',
+    'rest.resource.webformautosave_submit',
+  ];
+  $config_factory = Drupal::configFactory();
+  foreach ($old_config_names as $old_config_name) {
+    if ($rest_settings = $config_factory->getEditable($old_config_name)) {
+      $rest_settings->delete();
+    }
+  }
+}

@@ -1,0 +1,26 @@
+webform.admin_settings.third_party.webformautosave:
+  type: mapping
+  label: 'Webform Autosave third party settings'
+  mapping:
+    auto_save:
+      type: boolean
+      label: 'Automatically save submission drafts when an input changes.'
+    auto_save_time:
+      type: integer
+      label: 'Number of milliseconds to wait before triggering the autosave.'
+    optimistic_locking:
+      type: boolean
+      label: 'Use an optimistic locking strategy to prevent multiple users from saving/editing the same submission at the same time.'
+webform.settings.third_party.webformautosave:
+  type: mapping
+  label: 'Webform Autosave third party settings'
+  mapping:
+    auto_save:
+      type: boolean
+      label: 'Automatically save submission drafts when an input changes.'
+    auto_save_time:
+      type: integer
+      label: 'Number of milliseconds to wait before triggering the autosave.'
+    optimistic_locking:
+      type: boolean
+      label: 'Use an optimistic locking strategy to prevent multiple users from saving/editing the same submission at the same time.'

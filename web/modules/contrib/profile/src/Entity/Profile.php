@@ -144,7 +144,7 @@ class Profile extends EditorialContentEntityBase implements ProfileInterface {
     if (!$this->get('data')->isEmpty()) {
       $data = $this->get('data')->first()->getValue();
     }
-    return isset($data[$key]) ? $data[$key] : $default;
+    return $data[$key] ?? $default;
   }
 
   /**

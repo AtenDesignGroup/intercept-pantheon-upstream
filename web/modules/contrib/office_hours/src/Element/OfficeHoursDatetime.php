@@ -101,16 +101,8 @@ class OfficeHoursDatetime extends Datetime {
    * {@inheritdoc}
    */
   public static function validateDatetime(&$element, FormStateInterface $form_state, &$complete_form) {
-    /*
-    // Get the 'time' sub-array.
-    $input_exists = FALSE;
-    $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
-    // Generate the 'object' sub-array.
-    $input = static::valueCallback($element, $input, $form_state);
-
-    // Continue with default processing.
-    // parent::validateDatetime($element, $form_state, $complete_form);
-     */
+    // This function must exist, but can remain empty,
+    // since no additional validations are needed.
   }
 
   /**

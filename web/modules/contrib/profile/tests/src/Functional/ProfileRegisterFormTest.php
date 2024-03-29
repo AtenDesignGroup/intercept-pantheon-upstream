@@ -42,7 +42,7 @@ class ProfileRegisterFormTest extends ProfileTestBase {
       'pass[pass1]' => $pass_raw,
       'pass[pass2]' => $pass_raw,
     ];
-    $this->submitForm($edit, t('Create new account'));
+    $this->submitForm($edit, 'Create new account');
 
     $this->assertSession()->pageTextContains(new FormattableMarkup('@name field is required.', ['@name' => $this->field->getLabel()]));
     $this->assertSession()->pageTextContains(new FormattableMarkup('The email address @email is already taken.', ['@email' => $this->adminUser->getEmail()]));
@@ -50,7 +50,7 @@ class ProfileRegisterFormTest extends ProfileTestBase {
     // Verify that we can register.
     $edit['mail'] = $this->randomMachineName() . '@example.com';
     $edit[$id . "_profiles[0][entity][$field_name][0][value]"] = $this->randomMachineName();
-    $this->submitForm($edit, t('Create new account'));
+    $this->submitForm($edit, 'Create new account');
     $this->assertSession()->pageTextContains(new FormattableMarkup('Registration successful. You are now logged in.', []));
 
     $new_user = user_load_by_name($name);

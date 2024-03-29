@@ -8,6 +8,19 @@ namespace Drupal\intercept_dashboard;
 interface FilterProviderInterface {
 
   /**
+   * Constructs the base query to select events based on
+   * the provided filter values.
+   *
+   * @param array $filtersToExclude
+   *  An array of filter keys to exclude from the query.
+   *  These are useful when excluding certain query conditions
+   *  in order to determine a list of possible values in the result set.
+   *
+   * @return \Drupal\Core\Database\Query\Select query
+   */
+  public function getBaseQuery(array $filtersToExclude = []);
+
+  /**
    * Retrieve a list of filter options for taxonomy relationships.
    *
    * @param string $vocabulary

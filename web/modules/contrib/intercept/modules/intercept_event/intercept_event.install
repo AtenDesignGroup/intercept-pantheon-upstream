@@ -5,10 +5,84 @@
  * Update hooks.
  */
 
+use Drupal\webform\Entity\Webform;
+use Drupal\webform\WebformSubmissionForm;
+
 /**
  * Add status of "scheduled" to future published events and templates.
  */
 function intercept_event_update_8001(&$sandbox) {
   // See: intercept_event_post_update_8001_add_status()
   // This is a placeholder to trigger the post update via drush.
+}
+
+/**
+ * Process all past customer event evaluations and move them into webform submissions.
+ */
+function intercept_event_update_8002() {
+  // We need a migration process that will convert legacy positive/negative
+  // feedback for events into the new webform-based submission feedback.
+
+  // 1) Find past evaluations.
+  $database = \Drupal::database();
+  $query = $database->select('votingapi_vote', 'v');
+  $query->condition('type', 'evaluation');
+  $query->addField('v', 'entity_id', 'nid');
+  $query->addField('v', 'value');
+  $query->addField('v', 'user_id', 'uid');
+  $result = $query->execute()->fetchAll();
+  foreach ($result as $row) {
+    $nid = $row->nid;
+    $value = $row->value;
+    $uid = $row->uid;
+
+    // 2) Recreate each as a webform submission programmatically. See:
+    // https://www.drupal.org/docs/contributed-modules/webform/webform-cookbook/how-to-programmatically-create-and-update-a-submission
+    $how_did_the_event_go_value = 'Like';
+    if ($value == '0') {
+      $how_did_the_event_go_value = 'Dislike';
+    }
+    $values = [
+      'webform_id' => 'intercept_event_feedback',
+      'entity_type' => 'node',
+      'entity_id' => $nid,
+      'in_draft' => FALSE,
+      'uid' => $uid,
+      'langcode' => 'en',
+      // 'token' => 'pgmJREX2l4geg2RGFp0p78Qdfm1ksLxe6IlZ-mN9GZI',
+      // 'uri' => '/webform/my_webform/api',
+      'remote_addr' => '',
+      'data' => [
+        'how_did_the_event_go' => $how_did_the_event_go_value,
+        // 'checkboxes_field' => [
+        //   'Option 1',
+        //   'Option 2',
+        //   'Option 3',
+        // ],
+        // 'integer_field' => 10,
+        // 'radio_field' => 'Mail',
+        // 'email' => 'myemail@mydomain.com',
+      ],
+    ];
+
+    // Check webform is open.
+    $webform = Webform::load($values['webform_id']);
+    $is_open = WebformSubmissionForm::isOpen($webform);
+
+    if ($is_open === TRUE) {
+      // Validate submission.
+      $errors = WebformSubmissionForm::validateFormValues($values);
+
+      // Check there are no validation errors.
+      if (!empty($errors)) {
+        $debug = true;
+        \Drupal::logger('intercept_event')->error('Error while attempting to create webform submission via automatic updates: @exception', ['@exception' => implode($errors)]);
+      }
+      else {
+        // Submit values and get submission ID.
+        $webform_submission = WebformSubmissionForm::submitFormValues($values);
+        // print '<h1>Successful submission id: ' . $webform_submission->id() . '</h1>';
+      }
+    } // End creating webform submissions programmatically.
+  }
 }

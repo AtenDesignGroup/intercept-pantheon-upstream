@@ -1,0 +1,20 @@
+{{ attach_library('intercept_base/call-prompt') }}
+<article{{ attributes.addclass(['article']) }}>
+
+  <header class="article__header l--offset">
+      {{ title_prefix }}
+      {% include '@intercept-base-components/page-title/page-title.twig' with {
+    text: label
+  } only %}
+      {{ title_suffix }}
+      {{ drupal_block('system_breadcrumb_block') }}
+  </header>
+
+  <div class="l--1-col l--offset">
+      <div class="l__primary">
+        {% if content %}
+            {{ content }}
+        {% endif %}
+      </div>
+  </div>
+</article>

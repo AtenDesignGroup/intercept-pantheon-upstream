@@ -31,6 +31,80 @@ class OfficeHoursSeasonHeader extends FormElement {
   }
 
   /**
+   * Gets this list element's default operations.
+   *
+   * @param \Drupal\office_hours\OfficeHoursSeason $season
+   *   The entity the operations are for.
+   *
+   * @return array
+   *   The array structure is identical to the return value of
+   *   self::getOperations().
+   */
+  public static function getDefaultOperations(OfficeHoursSeason $season) {
+    // @todo Add better seasonal add, copy, delete JS-links.
+    $operations = [];
+
+    // For 'link', add dummy URL - it will be catch-ed by js.
+    // $url = Url::fromRoute('<front>');
+    $url = '';
+    $suffix = ' ';
+
+    // Add a 'Delete this season' element.
+    // Use text 'Remove', which has lots of translations.
+    // Show this link always, even if empty, to allow not-committed entries.
+    // Set in OfficeHoursSeasonHeader, parsed in OfficeHoursSeasonWidget.
+    $operations['delete'] = [
+      '#type' => 'checkbox',
+      // '#type' => 'link',
+      // Add a label/header/title for accessibility (a11y) screen readers.
+      '#title' => t('Remove upon save'),
+      '#title_display' => 'after', // {'before', 'after', ' invisible' }
+      '#required' => FALSE,
+      '#weight' => 12,
+      '#url' => $url,
+      '#suffix' => $suffix,
+      '#attributes' => [
+        'class' => ['js-office-hours-season-delete-link', 'office-hours-link'],
+      ],
+    ];
+
+    // @todo Add 'Copy' JS-link. (Removed in last line.)
+    $operations['copy'] = [
+      // '#type' => 'checkbox',
+      '#type' => 'link',
+      // Add a label/header/title for accessibility (a11y) screen readers.
+      '#title' => t('Copy season'),
+      '#title_display' => 'after', // {'before', 'after', ' invisible' }
+      '#required' => FALSE,
+      '#weight' => 16,
+      '#url' => $url,
+      '#suffix' => $suffix,
+      '#attributes' => [
+        'class' => ['js-office-hours-season-copy-link', 'office-hours-link'],
+      ],
+    ];
+    unset($operations['copy']);
+
+    return $operations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
+    if ($input ?? FALSE) {
+      // Massage, normalize value after pressing Form button.
+      // $element is also updated via reference.
+      /** @var \Drupal\office_hours\OfficeHoursSeason $item */
+      $item = $element['#default_value'];
+      $item->setValue($input);
+      return $item;
+    }
+
+    return NULL;
+  }
+
+  /**
    * Render API callback: Builds one OH-slot element.
    *
    * Build the form element. When creating a form using Form API #process,
@@ -49,23 +123,22 @@ class OfficeHoursSeasonHeader extends FormElement {
   public static function process(array &$element, FormStateInterface $form_state, array &$complete_form) {
 
     // The valueCallback() has populated the #value array.
-    $value = $element['#season'];
     /** @var \Drupal\office_hours\OfficeHoursSeason $season */
-    $season = $value;
+    $season = $element['#value'];
     $season_id = $season->id();
 
+    // Add standardized labels to time slot element.
     $field_settings = $element['#field_settings'];
-
-    // Get default column labels.
     $labels = OfficeHoursItem::getPropertyLabels('data', $field_settings + ['season' => TRUE]);
 
-    // @todo Perhaps provide extra details following elements.
+    // @todo Perhaps provide extra details in following elements.
     // details #description;
     // container #description;
     // container #prefix;
     // container #title;
     // name #prefix;
     $label = $season->label();
+    $name = $season->getName();
 
     // Prepare $element['#value'] for Form element/Widget.
     $element['day'] = [];
@@ -75,11 +148,13 @@ class OfficeHoursSeasonHeader extends FormElement {
     ];
     $element['name'] = [
       '#type' => 'textfield',
+      '#required' => TRUE,
       // Add a label/header/title for accessibility (a11y) screen readers.
       '#title' => $labels['season']['data'],
       // '#title_display' => 'before', // {'before' | invisible'}.
       // '#prefix' => "<b>" . $labels['season']['data'] . "</b>",
-      '#default_value' => $label,
+      // Use the untranslated $name, here, not the translated $label.
+      '#default_value' => $name,
       '#size' => 16,
       '#maxlength' => 40,
     ];
@@ -107,18 +182,11 @@ class OfficeHoursSeasonHeader extends FormElement {
       '#default_value' => $season->getToDate(OfficeHoursDateHelper::DATE_STORAGE_FORMAT),
     ];
 
-    // @todo Add seasonal add, copy, delete links.
-    /*
+    // @todo Add better seasonal add, copy, delete JS-links.
     // Copied from EntityListBuilder::buildOperations().
-    $dummy_element = [
-    '#value' => $season->toArray() + ['day' => 0, 'day_delta' => 1],
-    '#day_delta' => 0,
-    '#field_settings' =>$field_settings,
-    ];
     $element['operations'] = [
-    'data' => OfficeHoursBaseSlot::getDefaultOperations($dummy_element),
+      'data' => self::getDefaultOperations($season),
     ];
-     */
 
     $element['#attributes']['class'][] = 'form-item';
     $element['#attributes']['class'][] = 'office-hours-slot';
@@ -152,21 +220,21 @@ class OfficeHoursSeasonHeader extends FormElement {
     // Do not use NestedArray::getValue();
     // It does not return formatted values from valueCallback().
     // The valueCallback() has populated the #value array.
-    $input = $element['#value'];
-    if (empty($input)) {
-      // Empty season dates will be cleared later.
-      return;
-    }
-    $name = $input['name'];
-    if ($name == '' || $name == t(OfficeHoursSeason::SEASON_DEFAULT_NAME)) {
+    /** @var \Drupal\office_hours\OfficeHoursSeason $season */
+    $season = $element['#value'];
+    if ($season->isEmpty()) {
       // Empty season dates will be cleared later.
       return;
     }
 
-    $start = $input['from'];
-    $end = $input['to'];
-    if (empty($start)) {
-      $error_text = 'A starting date must be set for the season.';
+    $start = $season->getFromDate();
+    $end = $season->getToDate();
+    if (empty($start) && empty($end)) {
+      $error_text = 'A start date and end date must be set for the season.';
+      $erroneous_element = &$element;
+    }
+    elseif (empty($start)) {
+      $error_text = 'A start date must be set for the season.';
       $erroneous_element = &$element['from'];
     }
     elseif (empty($end)) {
@@ -175,7 +243,7 @@ class OfficeHoursSeasonHeader extends FormElement {
     }
     elseif ($end < $start) {
       // Both Start and End must be entered. That is validated above already.
-      $error_text = 'Seasonal End date must be later then starting date.';
+      $error_text = 'Seasonal end date must be later then start date.';
       $erroneous_element = &$element;
     }
 
@@ -183,34 +251,6 @@ class OfficeHoursSeasonHeader extends FormElement {
       $error_text = t($error_text);
       $form_state->setError($erroneous_element, $error_text);
     }
-  }
-
-  /**
-   * Returns the translated label of a Weekday/Exception day, e.g., 'tuesday'.
-   *
-   * @param string $pattern
-   *   The day/date formatting pattern.
-   * @param array $value
-   *   An Office hours value structure.
-   * @param int $day_delta
-   *   An optional day_delta.
-   *
-   * @return bool|string
-   *   The formatted day label, e.g., 'tuesday'.
-   */
-  public static function getLabel(string $pattern, array $value, $day_delta = 0) {
-    $label = OfficeHoursDateHelper::getLabel($pattern, $value, $day_delta);
-    return $label;
-  }
-
-  /**
-   * Determines whether the data structure is empty.
-   *
-   * @return bool
-   *   TRUE if the data structure is empty, FALSE otherwise.
-   */
-  public static function isEmpty($value) {
-    return OfficeHoursItem::isValueEmpty($value);
   }
 
 }

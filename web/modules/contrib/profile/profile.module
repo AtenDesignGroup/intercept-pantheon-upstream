@@ -6,20 +6,20 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Render\Element;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\profile\Plugin\Field\ProfileEntityFieldItemList;
-use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\profile\Entity\ProfileType;
-use Drupal\field\FieldConfigInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\field\FieldConfigInterface;
+use Drupal\profile\Entity\ProfileType;
+use Drupal\profile\Plugin\Field\ProfileEntityFieldItemList;
 
 /**
  * Implements hook_help().
@@ -292,4 +292,88 @@ function profile_entity_base_field_info(EntityTypeInterface $entity_type) {
     }
     return $fields;
   }
+}
+
+/**
+ * Implements hook_migration_plugins_alter().
+ */
+function profile_migration_plugins_alter(array &$migrations) {
+  /** @var \Drupal\migrate\Plugin\MigrationPluginManager $migration_plugin_manager */
+  $migration_plugin_manager = \Drupal::service('plugin.manager.migration');
+  /** @var \Drupal\migrate\Plugin\MigrateSourcePluginManager $source_plugin_manager */
+  $source_plugin_manager = \Drupal::service('plugin.manager.migrate.source');
+
+  foreach ($migrations as $key => &$migration) {
+    $migration_stub = $migration_plugin_manager->createStubMigration($migration);
+    $configuration = $migration['source'];
+    $source = $source_plugin_manager->createInstance($migration['source']['plugin'], $configuration, $migration_stub);
+
+    foreach (['entity_type', 'targetEntityType'] as $entity_type) {
+      if (isset($migration['process'][$entity_type])) {
+        _profile_migration_entity_type_adjust($migration, $entity_type);
+        $migration['migration_dependencies']['optional']['d7_profile2_type'] = 'd7_profile2_type';
+      }
+    }
+  }
+}
+
+/**
+ * Map profile2 fields to 'profile'.
+ *
+ * @param array $migration
+ *   Thei migration to process.
+ * @param string $destination
+ *   The process destination.
+ */
+function _profile_migration_entity_type_adjust(array &$migration, string $destination) {
+  if (!_profile_migration_prepare_process($migration['process'], $destination)) {
+    return;
+  }
+
+  $entity_type_process = &$migration['process'][$destination];
+  $entity_type_process['profile'] = [
+    'plugin' => 'static_map',
+    'map' => [
+      'profile2' => 'profile',
+    ],
+    'bypass' => TRUE,
+  ];
+}
+
+/**
+ * Prepare process array for adding another process elements.
+ *
+ * @param mixed $process
+ *   The process array.
+ *
+ * @return bool
+ *   Whether the processing is successful.
+ *
+ * @throws \Exception
+ */
+function _profile_migration_prepare_process(&$process, string $index): bool {
+  if (!isset($process[$index])) {
+    return FALSE;
+  }
+
+  $p = &$process[$index];
+
+  // Try to play with other modules altering this, and don't replace it
+  // outright unless it's unchanged.
+  if (is_string($p)) {
+    $p = [
+      [
+        'plugin' => 'get',
+        'source' => $p,
+      ],
+    ];
+  }
+  elseif (isset($p['plugin'])) {
+    $p = [$p];
+  }
+  elseif (!is_array($p)) {
+    throw new \Exception(sprintf('Unknown process element type: %s.', print_r($p, TRUE)));
+  }
+
+  return TRUE;
 }

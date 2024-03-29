@@ -8,7 +8,6 @@
       if (p.length == 1) b[p[0]] = "";
       else b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
     }
-    console.log( b );
     return b;
   }
 
@@ -40,6 +39,24 @@
           .trigger("change");
       }
     );
+
+    // Wrap each image select with an extra span tag for use in CSS.
+    $('img.image_picker_image').wrap('<span class="MuiIconButton-label"></span>');
+    // Add some legacy classes.
+    $('.image_picker_selector').addClass('MuiFormGroup-root evaluation__widget-inputs');
+    $('.evaluation .thumbnail').addClass('MuiButtonBase-root MuiIconButton-root jss1 MuiRadio-root evaluation__radio-icon jss2');
+    $('.evaluation .thumbnail.selected').addClass(' Mui-checked evaluation__radio-icon--checked');
+    $('.webform-image-select').change(function() {
+      $('.evaluation .thumbnail').each(function() {
+        if (!$(this).hasClass('selected')) {
+          $(this).removeClass('Mui-checked evaluation__radio-icon--checked');
+        }
+        else {
+          $(this).addClass('Mui-checked evaluation__radio-icon--checked');
+        }
+      });
+    });
+
   });
 
   Drupal.behaviors.userEventSetActiveLink = {

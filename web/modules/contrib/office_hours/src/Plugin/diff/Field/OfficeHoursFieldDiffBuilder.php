@@ -29,7 +29,7 @@ class OfficeHoursFieldDiffBuilder extends FieldDiffBuilderBase {
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
     $items->filterEmptyItems();
     foreach ($items as $key => $item) {
-      $label = $item->getLabel(['day_format' => 'long']);
+      $label = $item->label(['day_format' => 'long']);
       $result[$key][] =
         $label
         . ': ' . OfficeHoursDateHelper::format($item->getValue()['starthours'], 'H:i')

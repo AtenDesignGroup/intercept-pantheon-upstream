@@ -1,6 +1,7 @@
 services:
-  office_hours_subscriber.default:
-    class: Drupal\office_hours\EventSubscriber\OfficeHoursUpdateSubscriber
-    arguments: []
-    tags:
-      - { name: event_subscriber }
+# The following service must be subclassed and instantiated in a custom module.
+#  office_hours_subscriber.default:
+#    class: Drupal\office_hours\EventSubscriber\OfficeHoursEventSubscriber
+#    arguments: []
+#    tags:
+#      - { name: event_subscriber }

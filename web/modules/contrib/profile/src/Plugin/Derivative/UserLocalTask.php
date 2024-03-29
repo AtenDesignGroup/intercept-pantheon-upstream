@@ -3,7 +3,6 @@
 namespace Drupal\profile\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -20,25 +19,12 @@ class UserLocalTask extends DeriverBase implements ContainerDeriverInterface {
   protected $entityTypeManager;
 
   /**
-   * Constructs a new UserLocalTask.
-   *
-   * @param string $base_plugin_definition
-   *   The base plugin definition.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   */
-  public function __construct($base_plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
-    $this->entityTypeManager = $entity_type_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, $base_plugin_definition) {
-    return new static(
-      $base_plugin_definition,
-      $container->get('entity_type.manager')
-    );
+  public static function create(ContainerInterface $container, $base_plugin_id) {
+    $instance = new self();
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    return $instance;
   }
 
   /**

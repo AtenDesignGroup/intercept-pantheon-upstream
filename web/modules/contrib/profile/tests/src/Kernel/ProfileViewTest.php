@@ -5,8 +5,8 @@ namespace Drupal\Tests\profile\Kernel;
 use Drupal\profile\ProfileTestTrait;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
 use Drupal\user\Entity\User;
-use Drupal\views\Views;
 use Drupal\views\Tests\ViewTestData;
+use Drupal\views\Views;
 
 /**
  * Tests profile integration with Views.

@@ -28,6 +28,43 @@ class DashboardEventFilters extends FormBase {
   protected $filterProvider;
 
   /**
+   * Empty options array.
+   * Used to provide a default empty option for select elements.
+   *
+   * @var array
+   */
+  protected $emptyOptions = [
+    '- no options -' => [],
+  ];
+
+  /**
+   * Normalizes the options array.
+   */
+  protected function normalizeOptions($possibleOptions, $availableOptions, $selectedOptions = []) {
+    // Merge possible options with currently selected options.
+    // This is to ensure that the form element is populated with
+    // the currently selected options and they are enabled.
+    $entities = array_merge($availableOptions, $selectedOptions ?? []);
+
+    // Get id => label pairs for the currently enabled options.
+    foreach ($entities as $id) {
+      if (isset($possibleOptions[$id])) {
+        $enabledOptions[$id] = $possibleOptions[$id];
+      }
+    }
+
+    if (!empty($enabledOptions)) {
+      // Alphabetize the options.
+      asort($enabledOptions);
+    } else {
+      // If no options are enabled, use the empty options array.
+      $enabledOptions = $this->emptyOptions;
+    }
+
+    return $enabledOptions;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
@@ -163,12 +200,23 @@ class DashboardEventFilters extends FormBase {
    */
   public function getAudienceFilter($name, $params) {
     $options = $this->filterProvider->getRelatedTermOptions('audience');
+    $enabledOptions = [];
+
+    // Query for available options based the events result set.
+    $query = $this->filterProvider->getBaseQuery(['audience']);
+    $query->leftJoin('node__field_audience_primary', 'audience', 'n.nid = audience.entity_id');
+    $query->fields('audience', ['field_audience_primary_target_id']);
+    $query->distinct();
+    $result = $query->execute();
+    $availableOptions = $result->fetchCol();
+
+    $enabledOptions = $this->normalizeOptions($options, $availableOptions, $params[$name] ?? []);
 
     return [
       '#type' => 'select',
       '#title' => $this->t('Audience'),
       '#default_value' => $params[$name] ?? [],
-      '#options' => $options,
+      '#options' => $enabledOptions,
       '#multiple' => TRUE,
       '#required' => FALSE,
     ];
@@ -185,13 +233,25 @@ class DashboardEventFilters extends FormBase {
    * @return array Render Array
    */
   public function getEventTypeFilter($name, $params) {
+    // Get all possible options.
     $options = $this->filterProvider->getRelatedTermOptions('event_type');
+    $enabledOptions = [];
+
+    // Query for available options based the events result set.
+    $query = $this->filterProvider->getBaseQuery(['type']);
+    $query->leftJoin('node__field_event_type_primary', 'event_type', 'n.nid = event_type.entity_id');
+    $query->fields('event_type', ['field_event_type_primary_target_id']);
+    $query->distinct();
+    $result = $query->execute();
+    $availableOptions = $result->fetchCol();
+
+    $enabledOptions = $this->normalizeOptions($options, $availableOptions, $params[$name] ?? []);
 
     return [
       '#type' => 'select',
       '#title' => $this->t('Event Type'),
       '#default_value' => $params[$name] ?? [],
-      '#options' => $options,
+      '#options' => $enabledOptions,
       '#multiple' => TRUE,
       '#required' => FALSE,
     ];
@@ -208,21 +268,26 @@ class DashboardEventFilters extends FormBase {
    * @return array Render Array
    */
   public function getTagFilter($name, $params) {
-    $options = [];
+    // Get all possible options.
+    $options = $this->filterProvider->getRelatedTermOptions('tag');
+    $enabledOptions = [];
 
-    /** @var \Drupal\taxonomy\TermStorageInterface $termStorage */
-    $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
-    $terms = $termStorage->loadTree('tag');
+    // Query for available options based the events result set.
+    $query = $this->filterProvider->getBaseQuery(['tags']);
+    $query->leftJoin('node__field_event_tags', 'event_tags', 'n.nid = event_tags.entity_id');
+    $query->isNotNull('event_tags.entity_id');
+    $query->fields('event_tags', ['field_event_tags_target_id']);
+    $query->distinct();
+    $result = $query->execute();
+    $availableOptions = $result->fetchCol();
 
-    foreach ($terms as $term) {
-      $options[$term->tid] = $term->name;
-    }
+    $enabledOptions = $this->normalizeOptions($options, $availableOptions, $params[$name] ?? []);
 
     return [
       '#type' => 'select',
       '#title' => $this->t('Tag'),
       '#default_value' => $params[$name] ?? [],
-      '#options' => $options,
+      '#options' => $enabledOptions,
       '#multiple' => TRUE,
       '#required' => FALSE,
     ];
@@ -239,13 +304,25 @@ class DashboardEventFilters extends FormBase {
    * @return array Render Array
    */
   public function getLocationFilter($name, $params) {
+    // Get all possible options.
     $options = $this->filterProvider->getRelatedContentOptions('location');
+    $enabledOptions = [];
+
+    // Query for available options based the events result set.
+    $query = $this->filterProvider->getBaseQuery(['location']);
+    $query->leftJoin('node__field_location', 'location', 'n.nid = location.entity_id');
+    $query->fields('location', ['field_location_target_id']);
+    $query->distinct();
+    $result = $query->execute();
+    $availableOptions = $result->fetchCol();
+
+    $enabledOptions = $this->normalizeOptions($options, $availableOptions, $params[$name] ?? []);
 
     return [
       '#type' => 'select',
       '#title' => $this->t('Location'),
       '#default_value' => $params[$name] ?? [],
-      '#options' => $options,
+      '#options' => $enabledOptions,
       '#multiple' => TRUE,
       '#required' => FALSE,
     ];
@@ -262,13 +339,25 @@ class DashboardEventFilters extends FormBase {
    * @return array Render Array
    */
   public function getEventSeriesFilter($name, $params) {
+    // Get all possible options.
     $options = $this->filterProvider->getRelatedContentOptions('event_series');
+    $enabledOptions = [];
+
+    // Query for available options based the events result set.
+    $query = $this->filterProvider->getBaseQuery(['event_series']);
+    $query->leftJoin('node__field_event_series', 'event_series', 'n.nid = event_series.entity_id');
+    $query->fields('event_series', ['field_event_series_target_id']);
+    $query->distinct();
+    $result = $query->execute();
+    $availableOptions = $result->fetchCol();
+
+    $enabledOptions = $this->normalizeOptions($options, $availableOptions, $params[$name] ?? []);
 
     return [
       '#type' => 'select',
       '#title' => $this->t('Event Series'),
       '#default_value' => $params[$name] ?? [],
-      '#options' => $options,
+      '#options' => $enabledOptions,
       '#multiple' => TRUE,
       '#required' => FALSE,
     ];

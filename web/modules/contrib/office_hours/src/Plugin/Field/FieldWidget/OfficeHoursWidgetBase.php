@@ -2,11 +2,14 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\office_hours\OfficeHoursSeason;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base class for the 'office_hours_*' widgets.
@@ -14,11 +17,45 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 abstract class OfficeHoursWidgetBase extends WidgetBase {
 
   /**
+   * A warning.
+   */
+  const MESSAGE_TYPE = MessengerInterface::TYPE_WARNING;
+
+  /**
    * The season data. Can only be changed in SeasonWidget, not WeekWidget.
    *
    * @var \Drupal\office_hours\OfficeHoursSeason
    */
   protected $season;
+
+  /**
+   * The Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MessengerInterface $messenger) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
+    $this->messenger = $messenger;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['third_party_settings'],
+      $container->get('messenger')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -42,11 +79,22 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+    // Remove the 'value' of the 'add more' button.
+    unset($values['add_more']);
+
     $values = parent::massageFormValues($values, $form, $form_state);
-    foreach ($values as &$value) {
-      OfficeHoursItem::format($value);
-    }
+
     return $values;
+  }
+
+  /**
+   * Returns the protected field definition.
+   *
+   * @return \Drupal\Core\Field\FieldDefinitionInterface
+   *   The wrapped field definition.
+   */
+  public function getFieldDefinition() {
+    return $this->fieldDefinition;
   }
 
   /**
@@ -67,12 +115,57 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
    * @param \Drupal\office_hours\OfficeHoursSeason $season
    *   The season.
    *
-   * @return \Drupal\office_hours\Plugin\Field\FieldWidget\OfficeHoursSeasonWidget
+   * @return \Drupal\office_hours\Plugin\Field\FieldWidget\OfficeHoursWidgetBase
    *   The widget object itself.
    */
-  public function setSeason(OfficeHoursSeason $season) {
+  public function setSeason(OfficeHoursSeason $season = NULL) {
     $this->season = $season;
     return $this;
+  }
+
+  /**
+   * Adds a message to the user, when widget does not support items.
+   *
+   * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item
+   *   An OfficeHoursItem.
+   */
+  protected function addMessage(OfficeHoursItem $item) {
+
+    // First, set a general message. It will not be repeated on screen.
+    // Then, add a date-specific message.
+    $message1 = $this->t('This widget does not support seasons and exceptions.
+       Please inform your administrator.
+       Your data will be lost when saving this form.');
+
+    $settings['day_format'] = 'long';
+    $label = $item->label($settings);
+
+    switch (TRUE) {
+      case $item->isSeasonHeader():
+        $message2 = $this->t(
+          'Season %label is removed from the list.',
+          ['%label' => $label]
+        );
+        break;
+
+      case $item->isSeasonDay():
+        // Weekdays are OK. No message.
+        return;
+
+      case $item->isWeekDay():
+        // Season days are already catched with the season header.
+        return;
+
+      case $item->isExceptionDay():
+        $message2 = $this->t(
+          'Exception %label is removed from the list.',
+          ['%label' => $label]
+        );
+        break;
+    }
+
+    $this->messenger->addMessage($message1, self::MESSAGE_TYPE);
+    $this->messenger->addMessage($message2, self::MESSAGE_TYPE);
   }
 
 }

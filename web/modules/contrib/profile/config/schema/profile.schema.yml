@@ -34,8 +34,8 @@ field.field.*.*.*.third_party.profile:
   label: 'Profile private'
   mapping:
     profile_private:
-        type: boolean
-        label: 'Whether this field is private or not.'
+      type: boolean
+      label: 'Whether this field is private or not.'
 
 field.widget.settings.profile_form:
   type: mapping

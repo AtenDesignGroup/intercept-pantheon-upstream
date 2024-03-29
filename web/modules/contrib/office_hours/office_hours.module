@@ -5,9 +5,9 @@
  * Creates a field and widget for inserting working or office hours per day.
  */
 
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemBase;
 
 // Add theme.api.php hooks.
 \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme');
@@ -25,7 +25,7 @@ function office_hours_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<h4>' . t('Functionalities') . '</h4>';
       $output .= '<p>' . t('The module defines 2 widgets:') . '</p>';
       $output .= '<ul><li>' . t('<strong>Week</strong> widget shows all days of the week;') . '</li>';
-      $output .= '<li>' . t('<strong>List</strong> widget allows to add a timeslot day by day.') . '</li></ul>';
+      $output .= '<li>' . t('<strong>List</strong> widget allows to add a time slot day by day.') . '</li></ul>';
       $output .= '<p>' . t('The widget provides:') . '</p>';
       $output .= '<ul><li>' . t('<i>allowed hours</i> restrictions;') . '</li>';
       $output .= '<li>' . t('input validation;') . '</li>';
@@ -54,21 +54,23 @@ function office_hours_help($route_name, RouteMatchInterface $route_match) {
  * Changes the Field_storage settings form to assure unlimited cardinality.
  */
 function office_hours_form_field_storage_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $entity_type = $form_state->getFormObject()->getEntity()->getType();
-  if ($entity_type == 'office_hours') {
-    $form['cardinality_container']['cardinality'] = [
-      '#options' => [FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED => t('Unlimited')],
-      '#default_value' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
-      '#description' => '<p>' . t("This is unlimited by this field's nature.
-        See 'Number of slots' for limiting the number of slots per day."),
-    ]
-    + $form['cardinality_container']['cardinality'];
+  // admin/structure/types/manage/ctoh2/fields/TYPE/storage
+  $field_type = $form_state->getFormObject()->getEntity()->getType();
+  if ($field_type == 'office_hours') {
+    OfficeHoursItemBase::storageSettingsFormAlter($form, $form_state, $form_id);
   }
 }
 
 /**
  * Implements hook_office_hours_time_format_alter().
  */
-// function office_hours_office_hours_time_format_alter(string &$formatted_time) {
-//   // Only to test the alter hook in office_hours.api.php .
-// }
+function office_hours_office_hours_time_format_alter(string &$formatted_time) {
+  // Only to test the alter hook in office_hours.api.php .
+}
+
+/**
+ * Implements hook_office_hours_current_time_alter().
+ */
+function office_hours_office_hours_current_time_alter(int &$time, $entity) {
+  // Only to test the alter hook in office_hours.api.php .
+}

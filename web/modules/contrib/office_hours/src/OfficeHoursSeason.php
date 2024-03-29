@@ -2,6 +2,9 @@
 
 namespace Drupal\office_hours;
 
+// The following are not used, but left for testing below issue.
+// @see https://www.drupal.org/project/office_hours/issues/339905
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
@@ -10,6 +13,9 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
  */
 class OfficeHoursSeason {
   // @todo Extends Map {.
+  // use DependencySerializationTrait;
+  // use StringTranslationTrait;
+
   /**
    * The Season ID.
    *
@@ -49,15 +55,13 @@ class OfficeHoursSeason {
    */
   const SEASON_DEFAULT_NAME = 'New season';
 
-  use StringTranslationTrait;
-
   /**
    * OfficeHoursSeason constructor.
    *
-   * @param int $var
-   *   or: The season ID (100, 200, ...)
-   *   or: An OfficeHours Item, read from database.
-   *   or: a Season, to be cloned.
+   * @param int|\Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $var
+   *   either The season ID (100, 200, ...)
+   *   or an OfficeHours Item, read from database.
+   *   or a Season, to be cloned.
    * @param string $name
    *   The season name.
    * @param int $from
@@ -66,33 +70,39 @@ class OfficeHoursSeason {
    *   The end date of the season (unix timestamp).
    */
   public function __construct($var = 0, $name = '', $from = 0, $to = 0) {
-    if (is_array($var)) {
-      $this->id = $var['id'];
-      $this->name = $var['name'];
-      $this->from = $var['from'];
-      $this->to = $var['to'];
+
+    switch (TRUE) {
+      case is_array($var):
+        $this->setValue($var);
+        break;
+
+      case $var instanceof OfficeHoursSeason:
+        /** @var \Drupal\office_hours\OfficeHoursSeason $var */
+        $this->id = $var->id();
+        $this->name = $var->getName();
+        $this->from = $var->getFromDate();
+        $this->to = $var->getToDate();
+        break;
+
+      case $var instanceof OfficeHoursItem:
+        /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $var */
+        $this->id = $var->getSeasonId();
+        $this->setValue($var->getValue());
+        break;
+
+      default:
+        $id = $var;
+        $this->id = $id;
+        $this->name = $name;
+        $this->from = $from;
+        // If season ID is 0, then end-weekday = 6 for regular weekdays.
+        $this->to = ($id) ? $to : $this->to;
+        break;
+
     }
-    elseif ($var instanceof OfficeHoursSeason) {
-      /** @var \Drupal\office_hours\OfficeHoursSeason $var */
-      $this->id = $var->id();
-      $this->name = $var->getName();
-      $this->from = $var->getFromDate();
-      $this->to = $var->getToDate();
-    }
-    elseif ($var instanceof OfficeHoursItem) {
-      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $var */
-      $this->id = $var->getSeasonId();
-      $this->name = $var->getValue()['comment'];
-      $this->from = $var->getValue()['starthours'];
-      $this->to = $var->getValue()['endhours'];
-    }
-    else {
-      $id = $var;
-      $this->id = $id;
-      $this->name = $name;
-      $this->from = $from;
-      // If season ID is 0, then end-weekday = 6 for regular weekdays.
-      $this->to = ($id) ? $to : $this->to;
+
+    if ($this->id && $this->name == '') {
+      $this->name = $this::SEASON_DEFAULT_NAME;
     }
     if (!is_numeric($this->from)) {
       $this->from = strtotime($this->from);
@@ -100,51 +110,62 @@ class OfficeHoursSeason {
     if (!is_numeric($this->to)) {
       $this->to = strtotime($this->to);
     }
+
   }
 
   /**
-   * {@inheritdoc}
+   * Returns the submitted and sanitized season values.
+   *
+   * @return array
+   *   An associative array of values, compatible with time slot.
    */
-  public function toArray() {
+  public function getValues(): array {
     $values = [];
-    foreach ($this as $name => $property) {
-      $values[$name] = $property;
+    foreach ($this as $key => $property) {
+      $values[$key] = $property;
     }
+    // Add values to return the season header as time slot.
+    // From and To are Unix timestamps.
+    // Solution: assign it the special day number 9 + Season ID.
+    $values += [
+      'day' => OfficeHoursItem::SEASON_DAY_MIN + $this->id,
+      'all_day' => FALSE,
+      'starthours' => $this->from,
+      'endhours' => $this->to,
+      'comment' => $this->name,
+    ];
+
     return $values;
   }
 
   /**
-   * Creates a date object from an array of date parts.
+   * Overrides \Drupal\Core\TypedData\TypedData::setValue().
    *
-   * @param array $value
-   *   The Time slot to be manipulated, or
-   *   Empty, if the season data must be encoded as time slot.
-   *
-   * @return array
-   *   An array, formatted as a time slot.
+   * @param array|null $values
+   *   An array of property values.
+   * @param bool $notify
+   *   (optional) Whether to notify the parent object of the change. Defaults to
+   *   TRUE. If a property is updated from a parent object, set it to FALSE to
+   *   avoid being notified again.
    */
-  public function toTimeSlotArray(array $value = []) {
+  public function setValue($values, $notify = TRUE) {
+    $this->id = $values['id'] ?? $this->id;
+    $this->name = $values['name'] ?? $this->name;
+    $this->from = $values['from'] ?? $this->from;
+    $this->to = $values['to'] ?? $this->to;
+    // Values from OfficeHoursItem.
+    $this->name = $values['comment'] ?? $this->name;
+    $this->from = $values['starthours'] ?? $this->from;
+    $this->to = $values['endhours'] ?? $this->to;
 
-    if ($value) {
-      // Return the manipulated time slot.
-      // In order to save the time slot in the database,
-      // we need to have a unique day_number.
-      // Solution: add the season ID (100, 200, ...) to the day (0..6).
-      $value['day'] += $this->id;
+    // When Form is displayed the first time, date is an integer.
+    // When 'Add exception' is pressed, date is a string "yyyy-mm-dd".
+    if (!is_numeric($this->from)) {
+      $this->from = (int) strtotime($this->from);
     }
-    else {
-      // Return the season header as time slot.
-      // From and To are Unix timestamps.
-      // Solution: assign it the special day number 9 + Season ID.
-      $value = [
-        'day' => OfficeHoursItem::SEASON_DAY + $this->id,
-        'all_day' => FALSE,
-        'starthours' => $this->from,
-        'endhours' => $this->to,
-        'comment' => $this->name,
-      ];
+    if (!is_numeric($this->to)) {
+      $this->to = (int) strtotime($this->to);
     }
-    return $value;
   }
 
   /**
@@ -157,47 +178,42 @@ class OfficeHoursSeason {
     if ($this->id() == 0) {
       return TRUE;
     }
-    return (!$this->from
-      && ($this->name == ''
-      || $this->name == $this->t($this::SEASON_DEFAULT_NAME)));
+    return (($this->name == OfficeHoursSeason::SEASON_DEFAULT_NAME) && !$this->from);
   }
 
   /**
-   * Filter to determine if a date belongs to this season.
+   * Returns if a season is in a given date range.
    *
-   * @param int $day
-   *   A unix timestamp.
+   * @param int $from
+   *   The start date of the date range.
+   * @param int $to
+   *   The duration (0..7) or end date (timestamp).
    *
    * @return bool
-   *   TRUE if the date belongs to this season.
+   *   TRUE if the given time period is in range, else FALSE.
    */
-  public function isInSeason(int $day) {
-    if ($day < OfficeHoursDateHelper::isExceptionDay($day)) {
-      return ($day >= $this->getFromDate() && $day <= $this->getToDate());
-    }
-    else {
-      return ($day >= $this->id
-        && $day < $this->id + OfficeHoursItem::SEASON_DAY);
-    }
-  }
+  public function isInRange(int $from, int $to = 0): bool {
+    $is_in_range = TRUE;
 
-  /**
-   * Determines whether the item is a season header.
-   *
-  * @param $day
-   *   The Office hours 'day' element as weekday
-   *   (using date_api as key (0=Sun, 6=Sat)), season day or Exception date.
-   *
-   * @return int
-   *   0 if the Item is a regular Weekday, E.g., 1..9 -> 0.
-   *   season_id if a seasonal weekday, E.g., 301..309 -> 100..100.
-   */
-  public static function isSeasonHeader($day) {
-    $day = (int) $day;
-    if ($day === 0) {
-      return FALSE;
+    if ($from == 0 && $to == 0) {
+      return $is_in_range;
     }
-    return ($day % OfficeHoursSeason::SEASON_ID_FACTOR) == OfficeHoursItem::SEASON_DAY;
+
+    // Change duration to end date.
+    if ($from > OfficeHoursItem::SEASON_DAY_MIN
+    && $to < 365) {
+      $to = strtotime("+$to day", $from);
+    }
+
+    $season = $this;
+    if ($season->id()) {
+      $minDate = $season->getFromDate();
+      $maxDate = $season->getToDate();
+      // Season days. Weekdays are always in range.
+      $is_in_range = ($minDate <= $to && $maxDate >= $from);
+    }
+
+    return $is_in_range;
   }
 
   /**
@@ -213,15 +229,25 @@ class OfficeHoursSeason {
   /**
    * Returns the translated Season Name.
    *
-   * @return string
+   * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
    *   The name.
    */
   public function label() {
-    if ($this->name) {
-      // @todo Translate?
-      return $this->name;
-    }
-    return $this->t($this::SEASON_DEFAULT_NAME);
+    // @todo Translate?
+    // But if so, avoidLogicException Ajax error, by adding:
+    // use DependencySerializationTrait;
+    // use StringTranslationTrait;
+    // Test by:
+    // Enable locale module 'User interface translation.
+    // Enable both exceptions and season in widget.
+    // Edit with non-english page /nl/node/8/edit .
+    // Click 'Add Exception' button.
+    // Check if an empty exception is added.
+    // @see https://www.drupal.org/project/office_hours/issues/339905
+    // return $this->name;
+    // return t($this->name);
+    // return $this->t($this->name);
+    return $this->name;
   }
 
   /**
@@ -245,17 +271,7 @@ class OfficeHoursSeason {
    */
   public function getFromDate($pattern = '') {
     $day = $this->from;
-
-    if (is_numeric($day) && $pattern) {
-      // No usage for season 0, normal weekdays.
-      if ($day <= OfficeHoursItem::SEASON_MAX_DAY_NUMBER) {
-        return '';
-      }
-      // @todo Use OfficeHoursDateHelper::getLabel($pattern, ['day' => $result]).
-      // return OfficeHoursDateHelper::getLabel($pattern, ['day' => $day]);
-      return \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
-    }
-    return $day;
+    return $this->formatDate($pattern, $day);
   }
 
   /**
@@ -269,17 +285,46 @@ class OfficeHoursSeason {
    */
   public function getToDate($pattern = '') {
     $day = $this->to;
+    return $this->formatDate($pattern, $day);
+  }
 
+  /**
+   * Returns the translated label of a Weekday/Exception day, e.g., 'tuesday'.
+   *
+   * @param string $pattern
+   *   The day/date formatting pattern.
+   * @param int $day
+   *   A day number or unix time stamp.
+   *
+   * @return string
+   *   The formatted day label, e.g., 'tuesday'.
+   */
+  private function formatDate(string $pattern, int $day) : string {
     if (is_numeric($day) && $pattern) {
       // No usage for season 0, normal weekdays.
-      if ($day <= OfficeHoursItem::SEASON_MAX_DAY_NUMBER) {
+      if ($day <= OfficeHoursItem::SEASON_DAY_MAX) {
         return '';
       }
-      // @todo Use OfficeHoursDateHelper::getLabel($pattern, ['day' => $result]).
-      // return OfficeHoursDateHelper::getLabel($pattern, ['day' => $day]);
+      // @todo Return OfficeHoursDateHelper::format($pattern, ['day' => $result]).
       return \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
     }
     return $day;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function sort(OfficeHoursSeason $a, OfficeHoursSeason $b) {
+    // Sort the entities using the entity class's sort() method.
+    $a_date = $a->getFromDate();
+    $b_date = $b->getFromDate();
+    if ($a_date < $b_date) {
+      return -1;
+    }
+    if ($a_date > $b_date) {
+      return +1;
+    }
+    return 0;
   }
 
 }

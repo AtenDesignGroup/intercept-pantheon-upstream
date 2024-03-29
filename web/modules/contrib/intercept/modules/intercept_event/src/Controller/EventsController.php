@@ -26,9 +26,9 @@ use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Dompdf\Dompdf;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Dompdf\Dompdf;
 
 /**
  * Class EventsController.
@@ -168,39 +168,6 @@ class EventsController extends ControllerBase {
       $container->get('database'),
       $container->get('intercept_core.utility.dates'),
     );
-  }
-
-  /**
-   * List.
-   * @deprecated
-   *   This is the legacy React based event app. It has been replaced with a views implementation.
-   *   @see \Drupal\intercept_event\Controller\EventsController::viewsList()
-   *   @see \Drupal\intercept_event\Controller\EventsController::viewsCalendar()
-   *
-   * @return array
-   *   A render array containing the events React app placeholder and attached assets.
-   */
-  public function list() {
-    $suggested_events = $this->suggestedEventsProvider->getSuggestedEventIds();
-    $toggle_filter = \Drupal::config('intercept_event.list')->get('toggle_filter');
-
-    $build = [
-      '#theme' => 'intercept_event_list',
-      '#attached' => [
-        'drupalSettings' => [
-          'intercept' => [
-            'events' => [
-              'recommended' => $suggested_events,
-              'toggle_filter' => $toggle_filter,
-            ],
-          ],
-        ],
-        'library' => [
-          'intercept_event/eventList',
-        ],
-      ],
-    ];
-    return $build;
   }
 
   /**
@@ -427,7 +394,7 @@ class EventsController extends ControllerBase {
         return AccessResult::forbidden();
       }
     }
-    
+
     return AccessResult::allowed();
   }
 
@@ -611,12 +578,6 @@ class EventsController extends ControllerBase {
             'library' => ['intercept_event/eventAttendanceList'],
           ],
         ],
-        'customer_evaluations' => [
-          '#markup' => '<div class="js-event-evaluations--attendee" data-event-uuid="' . $event_uuid . '" data-event-nid="' . $event_nid . '"></div>',
-          '#attached' => [
-            'library' => ['intercept_event/eventCustomerEvaluations'],
-          ],
-        ],
       ],
     ];
   }
@@ -773,49 +734,27 @@ class EventsController extends ControllerBase {
     // Build rows first. We need to get a count to include in the header markup.
     $rows = [];
 
-    // Positive/negative taxonomy terms
-    // Get the primary event type for this event (term).
-    // should be Lifeskills (194)
-    $event_type_primary = $node->get('field_event_type_primary')->target_id;
-    // Get the positive/negative terms that are associated that term.
-    $term = Term::load($event_type_primary);
-
-    // Get the term names and ids for display.
-    $positives = $negatives = [];
-    $positive_terms = $term->get('field_evaluation_criteria_pos')->referencedEntities();
-    foreach($positive_terms as $positive) {
-      $positives[] = [
-        'id' => $positive->id(),
-        'name' => $positive->getName(),
-        'count' => 0
-      ];
-    }
-    $negative_terms = $term->get('field_evaluation_criteria_neg')->referencedEntities();
-    foreach($negative_terms as $negative) {
-      $negatives[] = [
-        'id' => $negative->id(),
-        'name' => $negative->getName(),
-        'count' => 0
-      ];
-    }
-
     // Sums
     $percentage_positive = 0;
     $percentage_negative = 0;
-    $query = $this->connection->select('votingapi_vote', 'v');
-    $query->condition('type', 'evaluation');
+    $query = $this->connection->select('webform_submission', 'ws');
+    $query->addField('ws', 'entity_id');
+    $query->innerJoin('webform_submission_data', 'wsd', 'ws.sid = wsd.sid');
+    $query->condition('ws.webform_id', 'intercept_event_feedback');
+    $query->condition('name', 'how_did_the_event_go');
     $query->condition('entity_id', $node->id());
-    $query->addExpression('SUM(value=1) / COUNT(value) * 100', 'percent_positive_customer_evaluations');
-    $query->addExpression('SUM(value=0) / COUNT(value) * 100', 'percent_negative_customer_evaluations');
+    $query->addExpression('SUM(value = \'Like\') / COUNT(value) * 100', 'percent_positive_customer_evaluations');
+    $query->addExpression('SUM(value = \'Dislike\') / COUNT(value) * 100', 'percent_negative_customer_evaluations');
     $result = $query->execute()->fetchAll();
     if (count($result) > 0) {
       foreach ($result as $value) {
-        $percentage_positive = $value->percent_positive_customer_evaluations;$percentage_negative = $value->percent_negative_customer_evaluations;
+        $percentage_positive = $value->percent_positive_customer_evaluations;
+        $percentage_negative = $value->percent_negative_customer_evaluations;
       }
     }
     $rows[] = [
       [
-        'data' => new FormattableMarkup('<div   class="feedback__wrapper">
+        'data' => new FormattableMarkup('<div class="feedback__wrapper">
           <span class="feedback feedback--positive"><span class="feedback__icon"></span> <b>@positive% Positive</b></span>
           </div>', [
             '@positive' => number_format($percentage_positive, 0),
@@ -824,7 +763,7 @@ class EventsController extends ControllerBase {
         'colspan' => 2
       ],
       [
-        'data' => new FormattableMarkup('<div   class="feedback__wrapper">
+        'data' => new FormattableMarkup('<div class="feedback__wrapper">
           <span class="feedback feedback--negative"><span class="feedback__icon"></span> <b>@negative% Negative</b></span>
           </div>', [
             '@negative' => number_format  ($percentage_negative, 0),
@@ -834,45 +773,127 @@ class EventsController extends ControllerBase {
       ]
     ];
 
-    // Individual evaluations
-    $query = $this->connection->select('votingapi_vote', 'v');
-    $query->condition('type', 'evaluation');
-    $query->fields('v', [
-      'vote_criteria',
-      'value'
-    ]);
+    // Feedback term counts
+    $query = $this->connection->select('webform_submission', 'ws');
+    $query->addField('wsd', 'value');
+    $query->innerJoin('webform_submission_data', 'wsd', 'ws.sid = wsd.sid');
+    $query->condition('ws.webform_id', 'intercept_event_feedback');
+    $query->condition('name', 'terms');
     $query->condition('entity_id', $node->id());
     $result = $query->execute()->fetchAll();
-    if (count($result) > 0) {
-      foreach ($result as $value) {
-        $vote_criteria = unserialize($value->vote_criteria);
-        foreach ($vote_criteria['taxonomy_term'] as $taxonomy_term) {
-          // Loop through the responses and each time a term pops up add to the total for that term.
-          foreach($positives as $key => $positive) {
-            if ($taxonomy_term == $positive['id']) {
-              $positives[$key]['count']++;
-            }
-          }
-          foreach($negatives as $key => $negative) {
-            if ($taxonomy_term == $negative['id']) {
-              $negatives[$key]['count']++;
-            }
-          }
-        }
+
+    $positives = [];
+    foreach($result as $positive) {
+      if (array_key_exists($positive->value, $positives)) {
+        $positives[$positive->value]['count']++;
+      }
+      else {
+        $positives[$positive->value] = [
+          'name' => $positive->value,
+          'count' => 1
+        ];
       }
     }
-
-    // Print each one with a total.
     foreach($positives as $index => $positive) {
       $rows[] = [
         ['data' => $positive['name']],
         ['data' => new FormattableMarkup('<b>@id</b>', [
           '@id' => $positive['count']
         ])],
-        ['data' => $negatives[$index]['name']],
+        ['data' => ''],
+        ['data' => ''],
+      ];
+    }
+
+    // tell_us_more_positive
+    $rows[] = [['data' => '', 'colspan' => 4]];
+    $rows[] = [
+      [
+        'data' => new FormattableMarkup('<b>Positive Feedback</b>', []),
+        'colspan' => 4
+      ]
+    ];
+    $query = $this->connection->select('webform_submission', 'ws');
+    $query->addField('wsd', 'value');
+    $query->innerJoin('webform_submission_data', 'wsd', 'ws.sid = wsd.sid');
+    $query->condition('ws.webform_id', 'intercept_event_feedback');
+    $query->condition('name', 'tell_us_more_positive');
+    $query->condition('value', '', '<>');
+    $query->condition('entity_id', $node->id());
+    $result = $query->execute()->fetchAll();
+    foreach($result as $value) {
+      $rows[] = [
+        [
+          'data' => $value->value,
+          'colspan' => 4
+        ]
+      ];
+    }
+    
+    // tell_us_more_negative
+    $rows[] = [['data' => '', 'colspan' => 4]];
+    $rows[] = [
+      [
+        'data' => new FormattableMarkup('<b>Negative Feedback</b>', []),
+        'colspan' => 4
+      ]
+    ];
+    $query = $this->connection->select('webform_submission', 'ws');
+    $query->addField('wsd', 'value');
+    $query->innerJoin('webform_submission_data', 'wsd', 'ws.sid = wsd.sid');
+    $query->condition('ws.webform_id', 'intercept_event_feedback');
+    $query->condition('name', 'tell_us_more_negative');
+    $query->condition('value', '', '<>');
+    $query->condition('entity_id', $node->id());
+    $result = $query->execute()->fetchAll();
+    foreach($result as $value) {
+      $rows[] = [
+        [
+          'data' => $value->value,
+          'colspan' => 4
+        ]
+      ];
+    }
+
+    // how_likely_are_you_to_recommend_this_event_to_a_friend (1-10)
+    // Should this go on the main table on the page?
+    // "Net Promoter Score"
+
+    // how_did_you_hear_about_this_event
+    $rows[] = [['data' => '', 'colspan' => 4]];
+    $rows[] = [
+      [
+        'data' => new FormattableMarkup('<b>How did you hear about this event?</b>', []),
+        'colspan' => 4
+      ]
+    ];
+    $query = $this->connection->select('webform_submission', 'ws');
+    $query->addField('wsd', 'value');
+    $query->innerJoin('webform_submission_data', 'wsd', 'ws.sid = wsd.sid');
+    $query->condition('ws.webform_id', 'intercept_event_feedback');
+    $query->condition('name', 'how_did_you_hear_about_this_event');
+    $query->condition('entity_id', $node->id());
+    $result = $query->execute()->fetchAll();
+
+    $heards = [];
+    foreach($result as $heard) {
+      if (array_key_exists($heard->value, $heards)) {
+        $heards[$heard->value]['count']++;
+      }
+      else {
+        $heards[$heard->value] = [
+          'name' => $heard->value,
+          'count' => 1
+        ];
+      }
+    }
+    foreach($heards as $index => $heard) {
+      $rows[] = [
+        ['data' => $heard['name'], 'colspan' => 2],
         ['data' => new FormattableMarkup('<b>@id</b>', [
-          '@id' => $negatives[$index]['count']
+          '@id' => $heard['count']
         ])],
+        ['data' => ''],
       ];
     }
 
@@ -913,6 +934,7 @@ class EventsController extends ControllerBase {
     $build['#attached']['library'][] = 'intercept_base/evaluation';
     $build['#title'] = $this->t('Saved Events');
     $content = &$build['content'];
+    $upcoming = TRUE;
 
     // This is a 4-part query to get events.
     // 1) Get non-canceled registrations for the current user.
@@ -934,6 +956,7 @@ class EventsController extends ControllerBase {
     // 2) Get attendances/scans for the current user.
     // Past Events
     if (@$query_params['field_date_time_value'] == 1) {
+      $upcoming = FALSE;
       $query_ea = $this->connection->select('event_attendance', 'ea');
       $query_ea->join('event_attendance__field_event', 'eafe', 'ea.id = eafe.entity_id');
       $query_ea->join('event_attendance__field_user', 'eafu', 'ea.id = eafu.entity_id');
@@ -962,6 +985,34 @@ class EventsController extends ControllerBase {
 
     // 4) Display only the event nodes that have nids in that array.
     if (count($nids) > 0) {
+
+      // Get rid of duplicates in the array of nodes.
+      $nids = array_unique($nids);
+
+      // Past Events.
+      if (@$query_params['field_date_time_value'] == 1) {
+        // Remove nids if they've already given us feedback.
+        $nids_feedback_complete = [];
+        // Using an inner join ensures that we have at least one row in the
+        // webform_submission_data table (one answer to a question).
+        $query_ws = $this->connection->select('webform_submission', 'ws');
+        $query_ws->addField('ws', 'entity_id');
+        $query_ws->innerJoin('webform_submission_data', 'wsd', 'ws.sid = wsd.sid');
+        $query_ws->condition('ws.webform_id', 'intercept_event_feedback');
+        $query_ws->condition('uid', $this->currentUser->id());
+        $query_ws->condition('wsd.name', 'how_did_the_event_go');
+        $query_ws->condition('wsd.value', '', '<>');
+        // Check to make sure the feedback was given more than 4 minutes ago.
+        $query_ws->condition('ws.changed', strtotime('-4 minutes'), '<');
+
+        $result = $query_ws->execute()->fetchAll();
+        if (count($result) > 0) {
+          foreach ($result as $value) {
+            $nids_feedback_complete[] = $value->entity_id;
+          }
+        }
+        $nids = array_diff($nids, $nids_feedback_complete);
+      }
 
       $query = \Drupal::entityQuery('node');
       $query->condition('type', 'event')
@@ -998,10 +1049,15 @@ class EventsController extends ControllerBase {
         'div', 'article', 'h3', 'h4', 'i', 'b', 'em', 'strong', 'li', 'p', 'span',
         'a', 'img', 'svg', 'title',
         'g', 'circle', 'path',
+        'pre', 'input', 'button',
       ];
+
+      // $counter = 0; // TEST only 1 nid.
 
       // From: https://www.drupal.org/forum/support/module-development-and-code-questions/2019-04-24/how-to-integrate-a-render-array-into
       foreach ($events as $nid) {
+        // $counter++; // TEST only 1 nid.
+        // if ($counter > 1) { continue; } // TEST only 1 nid.
         $node = $this->entityTypeManager->getStorage('node')->load($nid);
 
         // Temporarily change these values just for the display of the correct times.
@@ -1015,10 +1071,32 @@ class EventsController extends ControllerBase {
           'end_value' => $end_date,
         ]);
 
+        $content['nodes'][$nid]['#prefix'] = '<li class="list__item">';
+        if (!$upcoming) {
+          $content['nodes'][$nid]['#prefix'] .= '<div class="evaluation">';
+        }
+        
         $view = $this->entityTypeManager->getViewBuilder('node')->view($node, 'evaluation_attendee');
-        $content['nodes'][$nid]['#markup'] = '<li class="list__item">';
-        $content['nodes'][$nid]['#markup'] .= $this->renderer->render($view);
-        $content['nodes'][$nid]['#markup'] .= '</li>';
+        $content['nodes'][$nid]['subject'] = $view;
+
+        if (!$upcoming) {
+          $webform = $this->entityTypeManager()->getStorage('webform')->load('intercept_event_feedback');
+          $content['nodes'][$nid]['evaluation'] = [
+            '#type' => 'webform',
+            '#webform' => $webform,
+            '#entity_id' => $nid,
+            '#entity_type' => 'node',
+          ];
+          $content['nodes'][$nid]['evaluation']['#prefix'] = '<div class="evaluation__widget"><div class="evaluation__app"><fieldset class="evaluation__eval-widget">';
+          
+          $content['nodes'][$nid]['evaluation']['#suffix'] = '</div></div>';
+
+          $content['nodes'][$nid]['#suffix'] = '</li>';
+        }
+        else {
+          $content['nodes'][$nid]['#suffix'] = '</li>';
+        }
+
         $content['nodes'][$nid]['#allowed_tags'] = $allowed_tags;
       }
 
@@ -1235,7 +1313,7 @@ class EventsController extends ControllerBase {
             <tr>
               <td class="container">' . $names[$id]['name_last'] . '</td>
               <td class="container">' . $names[$id]['name_first'] . '</td>
-              <td class="border-bottom-1-black" class="container">&nbsp;</td>
+              <td class="container"><div class="border-bottom-1-black">&nbsp;</div></td>
             </tr>';
           }
 
@@ -1306,10 +1384,15 @@ class EventsController extends ControllerBase {
     $strFileEventTitle = strtolower(str_ireplace($arryReplaceFile, $arryReplaceFileWith, $title));
     $strFileName = $event->Id() . "--" . $strFileEventTitle . "--attendance.pdf";
 
-    // Stream/Download PDF File.
-    $dompdf->stream($strFileName);
+    // Create downloadable PDF file.
+    $output = $dompdf->output();
+    $dir = 'sites/default/files/intercept_event_tmp';
+    if (!is_dir($dir)) {
+      mkdir($dir);
+    }
+    file_put_contents($dir . '/' . $strFileName, $output);
 
-    return new JsonResponse("", 200);
+    return new RedirectResponse('/' . $dir . '/' . $strFileName);
   }
 
   /**

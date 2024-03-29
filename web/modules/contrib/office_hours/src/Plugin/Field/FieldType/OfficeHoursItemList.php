@@ -3,11 +3,10 @@
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\Field\PluginSettingsBase;
 use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\field\Entity\FieldConfig;
-use Drupal\office_hours\Event\OfficeHoursEvents;
-use Drupal\office_hours\Event\OfficeHoursUpdateEvent;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\OfficeHoursFormatterTrait;
 use Drupal\office_hours\OfficeHoursSeason;
@@ -22,60 +21,60 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   }
 
   /**
+   * A list of seasons, for this ItemList.
+   *
+   * @var \Drupal\office_hours\OfficeHoursSeason[]
+   */
+  private $seasons = NULL;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(DataDefinitionInterface $definition, $name = NULL, TypedDataInterface $parent = NULL)
-  {
+  public function __construct(DataDefinitionInterface $definition, $name = NULL, TypedDataInterface $parent = NULL) {
     parent::__construct($definition, $name, $parent);
-    $this->dateHelper = new OfficeHoursDateHelper;
   }
 
   /**
-   * Helper for creating a list item object of several types.
+   * Helper for creating a list item object of several class types.
    *
    * {@inheritdoc}
    */
   protected function createItem($offset = 0, $value = NULL) {
-    // @todo Move static variables to class plugin.
-    static $pluginManager = NULL;
-    $pluginManager = $pluginManager ?? \Drupal::service('plugin.manager.field.field_type');
-
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $value = $value ?? [];
     $day = $value['day'] ?? NULL;
-    if ($day === NULL) {
-      // Empty Item from List Widget (or added item via AddMore button?).
-      $item = parent::createItem($offset, $value);
+
+    switch (TRUE) {
+      case is_null($day):
+        // Empty Item from List Widget (or added item via AddMore button?).
+      case OfficeHoursDateHelper::isWeekDay($day):
+        // Add Weekday Item.
+        $item = parent::createItem($offset, $value);
+        return $item;
+
+      case OfficeHoursDateHelper::isSeasonHeader($day):
+        $field_type = 'office_hours_season_header';
+        break;
+
+      case OfficeHoursDateHelper::isSeasonDay($day):
+        // Add (seasonal) Weekday item (including season header).
+        $field_type = 'office_hours_season_item';
+        break;
+
+      case OfficeHoursDateHelper::isExceptionDay($day):
+        // Add Exception Item.
+        $field_type = 'office_hours_exceptions';
+        break;
     }
-    elseif (OfficeHoursDateHelper::isExceptionDay($day)) {
-      // Use quasi Factory pattern to create Exception day item.
-      $field_type = 'office_hours_exceptions';
-      $field_definition = $this->getFieldDefinition($field_type);
-      $configuration = [
-        'data_definition' => $field_definition->getItemDefinition(),
-        'name' => $this->getName(),
-        'parent' => $this,
-      ];
-      $item = $this->typedDataManager->createInstance("field_item:$field_type", $configuration);
-      $item->setValue($value);
-    }
-    elseif (OfficeHoursDateHelper::isSeasonDay($day)) {
-      // Add (seasonal) Weekday Item.
-      // Copied from FieldTypePluginManager->createInstance().
-      $field_type = 'office_hours_season';
-      $field_definition = $this->getFieldDefinition($field_type);
-      $configuration = [
-        'data_definition' => $field_definition->getItemDefinition(),
-        'name' => $this->getName(),
-        'parent' => $this,
-      ];
-      $item = $this->typedDataManager->createInstance("field_item:$field_type", $configuration);
-      $item->setValue($value);
-    }
-    else {
-      // Add Weekday Item.
-      $item = parent::createItem($offset, $value);
-    }
+
+    // Add special Item (season, exception), using quasi Factory pattern.
+    // Copied from FieldTypePluginManager->createInstance().
+    $field_definition = $this->getFieldDefinition($field_type);
+    $configuration = [
+      'data_definition' => $field_definition->getItemDefinition(),
+      'name' => $this->getName(),
+      'parent' => $this,
+    ];
+    $item = $this->typedDataManager->createInstance("field_item:$field_type", $configuration);
+    $item->setValue($value);
 
     // Pass item to parent, where it appears amongst Weekdays.
     return $item;
@@ -90,55 +89,26 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    */
   public function setValue($values, $notify = TRUE) {
     parent::setValue($values, $notify);
-    // Sort the database values by day number.
-    $this->sort();
 
-    // Allow other modules to alter $values.
-    if (FALSE) {
-      $values = $this->getValue();
-      // @todo Disabled until #3063782 is resolved.
-      $this->dispatchUpdateEvent(OfficeHoursEvents::OFFICE_HOURS_UPDATE, $values);
-    }
+    // Sort the database values by day number.
+    // @todo In Formatter: itemList::getRows() or Widget: itemList::setValue().
+    // $this->sort();
   }
 
   /**
+   * Sorts the items on date, but leaves hours unsorted, as maintained by user.
+   *
    * {@inheritdoc}
    */
   public function sort() {
-    // Sort the transitions on state weight.
-    uasort($this->list, [
-      'Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemBase',
-      'sort',
-    ]);
-  }
-
-  /**
-   * Dispatches an event.
-   *
-   * @param string $event_name
-   *   The event to trigger.
-   * @param array|null $value
-   *   An array of values of the field items, or NULL to unset the field.
-   *   Can be changed by EventSubscribers.
-   *
-   * @return \Drupal\office_hours\Event\OfficeHoursUpdateEvent
-   *   The dispatched event.
-   */
-  protected function dispatchUpdateEvent($event_name, &$value) {
-    // Allow other modules to alter $values.
-    $event_dispatcher = \Drupal::service('event_dispatcher');
-    /** @var \Drupal\office_hours\Event\OfficeHoursUpdateEvent $event */
-    $event = new OfficeHoursUpdateEvent($value);
-    $event = $event_dispatcher->dispatch($event);
-    $value = $event->getValues();
-    return $event;
+    uasort($this->list, [OfficeHoursItem::class, 'sort']);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0) {
-    return $this->getFieldRows($this->getValue(), $settings, $field_settings, $third_party_settings, $time);
+  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, PluginSettingsBase $plugin = NULL) {
+    return $this->getFieldRows($this->getValue(), $settings, $field_settings, $third_party_settings, $time, $plugin);
   }
 
   /**
@@ -165,65 +135,117 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    *   because easier to construct.
    */
   public function getFieldDefinition($field_type = '') {
-    static $field_definitions = [];
+
     switch ($field_type) {
       case '':
       case 'office_hours':
         return parent::getFieldDefinition();
 
       case 'office_hours_exceptions':
-      case 'office_hours_season':
+      case 'office_hours_season_header':
+      case 'office_hours_season_item':
       default:
-        $field_definitions[$field_type] = $field_definitions[$field_type]
-          ?? FieldConfig::create([
-            'entity_type' => $this->getEntity()->getEntityTypeId(),
-            'bundle' => $this->getEntity()->bundle(),
-            'field_name' => $this->getName(),
-            'field_type' => $field_type,
-          ]);
+        $field_definition = FieldConfig::create([
+          'entity_type' => $this->getEntity()->getEntityTypeId(),
+          'bundle' => $this->getEntity()->bundle(),
+          'field_name' => $this->getName(),
+          'field_type' => $field_type,
+        ]);
         /*
-        ?? BaseFieldDefinition::create($field_type)
+        $field_definition = BaseFieldDefinition::create($field_type)
         ->setName($this->fieldDefinition->getName())
         ->setSettings($this->fieldDefinition->getSettings());
          */
     }
-    return $field_definitions[$field_type];
 
+    return $field_definition;
   }
 
   /**
-   * Create an array of seasons. (Do not collect regular or exception days.)
-   *
-   * @param bool $add_weekdays_as_season
-   *   True, if the weekdays must be added as season with ID = 0.
-   * @param bool $add_new_season
-   *   True, when a default, empty, season must be added.
-   *
-   * @return \Drupal\office_hours\OfficeHoursSeason[]
-   *   A keyed array of seasons. Key = Season ID.
+   * {@inheritdoc}
    */
-  public function getSeasons($add_weekdays_as_season = FALSE, $add_new_season = FALSE) {
-    $seasons = [];
-    $season_id = 0;
+  public function getSeasons($add_weekdays_as_season = FALSE, $add_new_season = FALSE, $sort = '', $from = 0, $to = 0) {
+    $season_max = 0;
 
-    if ($add_weekdays_as_season) {
-      $seasons[$season_id] = new OfficeHoursSeason($season_id);
+    // Use static, to avoid recursive calling of getSeasons()/getSeason().
+    if (!isset($this->seasons)) {
+      $seasons = [];
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+      foreach ($this->list as $item) {
+        if ($item->isSeasonHeader()) {
+          $season_id = $item->getSeasonId();
+          $seasons[$season_id] = new OfficeHoursSeason($item);
+          // $season_max is needed later on.
+          $season_max = max($season_max, $season_id);
+        }
+      }
+      $this->seasons = $seasons;
     }
+    $seasons = $this->seasons;
 
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    foreach ($this->list as $item) {
-      if ($item->isSeasonHeader()) {
-        $season_id = $item->getSeasonId();
-        $seasons[$season_id] = new OfficeHoursSeason($item);
+    // Remove past seasons.
+    /** @var \Drupal\office_hours\OfficeHoursSeason[] $seasons */
+    foreach ($seasons as $id => $season) {
+      if (!$season->isInRange($from, $to)) {
+        unset($seasons[$id]);
       }
     }
+
+    // Sort seasons by start date.
+    if (!empty($sort)) {
+      uasort($seasons, [OfficeHoursSeason::class, 'sort']);
+      if ($sort == 'descending') {
+        array_reverse($seasons, TRUE);
+      }
+    }
+
+    // Add Weekdays at top of sorted list.
+    if ($add_weekdays_as_season) {
+      $season_id = 0;
+      $seasons = [$season_id => new OfficeHoursSeason($season_id)] + $seasons;
+    }
+
+    // Add New season at bottom of sorted list.
     if ($add_new_season) {
       // Add 'New season', until we have a proper 'Add season' button.
-      $season_id += OfficeHoursSeason::SEASON_ID_FACTOR;
+      $season_id = $season_max + OfficeHoursSeason::SEASON_ID_FACTOR;
       $seasons[$season_id] = new OfficeHoursSeason($season_id);
     }
 
     return $seasons;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExceptionDays() {
+    $exception_days = [];
+
+    foreach ($this->list as $item) {
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+      if ($item->isExceptionDay()) {
+        $day = $item->getValue()['day'];
+        $exception_days[$day][] = $item;
+      }
+    }
+
+    return $exception_days;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasExceptionDays() {
+    $exception_days = $this->getExceptionDays();
+    return (bool) $exception_days;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isOpen(int $time = 0): bool {
+    $current_item = $this->getCurrentSlot($time);
+    return (bool) $current_item;
   }
 
 }

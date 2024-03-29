@@ -2,9 +2,9 @@
 
 namespace Drupal\profile\Plugin\search_api\processor;
 
+use Drupal\profile\Entity\ProfileInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Processor\ProcessorPluginBase;
-use Drupal\profile\Entity\ProfileInterface;
 
 /**
  * Adds access checks for profiles.

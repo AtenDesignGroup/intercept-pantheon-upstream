@@ -2,8 +2,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.taxonomy_term.event_type.field_evaluation_criteria_neg
-    - field.field.taxonomy_term.event_type.field_evaluation_criteria_pos
     - field.field.taxonomy_term.event_type.field_examples
     - taxonomy.vocabulary.event_type
   module:
@@ -22,18 +20,6 @@ content:
       placeholder: ''
       rows: 5
     third_party_settings: {  }
-  field_evaluation_criteria_neg:
-    weight: 33
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
-  field_evaluation_criteria_pos:
-    weight: 34
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
   field_examples:
     weight: 31
     settings:

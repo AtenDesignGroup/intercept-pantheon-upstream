@@ -111,12 +111,6 @@ class EventEvaluationController extends ControllerBase {
     if ($method == 'DELETE') {
       $evaluation->delete();
     }
-    else {
-      $criteria = !empty($post['evaluation_criteria'])
-        ? ['taxonomy_term' => $this->convertUuids($post['evaluation_criteria'], 'taxonomy_term')]
-        : [];
-      $evaluation->evaluate($post['evaluation'], $criteria);
-    }
     $result = [
       'message' => 'saved',
     ];

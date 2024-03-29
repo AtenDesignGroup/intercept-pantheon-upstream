@@ -1,0 +1,5 @@
+Clientside Validation 8.x-2.0-dev, 2019-09-26
+-----------------------------
+- Issue #3066451 by Eduardo Morales, Luke.Leber, msuthars, JayKandari: Composer
+  Deprecation Warning
+- Added CHANGELOG.txt

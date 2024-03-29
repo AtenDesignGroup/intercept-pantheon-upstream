@@ -3,9 +3,6 @@
 namespace Drupal\profile\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
-use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
@@ -49,47 +46,14 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
   protected $entityDisplayRepository;
 
   /**
-   * Constructs a new ProfileFormWidget object.
-   *
-   * @param string $plugin_id
-   *   The plugin_id for the widget.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
-   *   The definition of the field to which the widget is associated.
-   * @param array $settings
-   *   The widget settings.
-   * @param array $third_party_settings
-   *   Any third party settings.
-   * @param \Drupal\core\Entity\EntityFieldManagerInterface $entity_field_manager
-   *   The entity field manager.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
-   *   The entity display repository.
-   */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityFieldManagerInterface $entity_field_manager, EntityTypeManagerInterface $entity_type_manager, EntityDisplayRepositoryInterface $entity_display_repository) {
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
-
-    $this->entityFieldManager = $entity_field_manager;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->entityDisplayRepository = $entity_display_repository;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $plugin_id,
-      $plugin_definition,
-      $configuration['field_definition'],
-      $configuration['settings'],
-      $configuration['third_party_settings'],
-      $container->get('entity_field.manager'),
-      $container->get('entity_type.manager'),
-      $container->get('entity_display.repository')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->entityFieldManager = $container->get('entity_field.manager');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->entityDisplayRepository = $container->get('entity_display.repository');
+    return $instance;
   }
 
   /**
@@ -123,7 +87,7 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
   public function settingsSummary() {
     $form_modes = $this->entityDisplayRepository->getFormModeOptions($this->getFieldSetting('target_type'));
     $form_mode = $this->getSetting('form_mode');
-    $form_mode = isset($form_modes[$form_mode]) ? $form_modes[$form_mode] : $form_mode;
+    $form_mode = $form_modes[$form_mode] ?? $form_mode;
     $summary = [];
     $summary[] = $this->t('Form mode: @mode', ['@mode' => $form_mode]);
 
@@ -153,17 +117,17 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
     $profile_type_storage = $this->entityTypeManager->getStorage('profile_type');
     /** @var \Drupal\profile\Entity\ProfileTypeInterface $profile_type */
     $profile_type = $profile_type_storage->load($this->getFieldSetting('profile_type'));
-    $property = ['profiles', $profile_type->id()];
+    $property = ['profiles', $profile_type->id(), $delta];
     $profile = $form_state->get($property);
     if (!$profile) {
-      if (!$account->isAnonymous()) {
-        $profile = $profile_storage->loadByUser($account, $profile_type->id());
+      if (!$account->isAnonymous() && !$account->isNew() && ($profile_id = $items->get($delta)->target_id)) {
+        $profile = $profile_storage->load($profile_id);
       }
       if (!$profile) {
         $values = [
           'type' => $profile_type->id(),
         ];
-        if (!$account->isAnonymous()) {
+        if (!$account->isAnonymous() && !$account->isNew()) {
           $values['uid'] = $account->id();
         }
         $profile = $profile_storage->create($values);
@@ -206,6 +170,7 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
         $items->getName(), $delta, 'entity',
       ]),
       '#bundle' => $profile->bundle(),
+      '#delta' => $delta,
       '#element_validate' => [
         [get_class($this), 'validateProfileForm'],
       ],
@@ -266,11 +231,9 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
       return;
     }
     $property = ['profiles', $this->getFieldSetting('profile_type')];
-    $profile = $form_state->get($property);
-    if (!empty($profile)) {
-      $values = [
-        ['entity' => $profile],
-      ];
+    $profiles = $form_state->get($property);
+    if (!empty($profiles)) {
+      $values = array_map(fn($profile) => ['entity' => $profile], $profiles);
       $items->setValue($values);
       $items->filterEmptyItems();
     }
@@ -286,7 +249,7 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
    */
   public static function validateProfileForm(array &$element, FormStateInterface $form_state) {
     /** @var \Drupal\profile\Entity\ProfileInterface $profile */
-    $property = ['profiles', $element['#bundle']];
+    $property = ['profiles', $element['#bundle'], $element['#delta']];
     $profile = $form_state->get($property);
     if (!empty($profile)) {
       assert($profile instanceof ProfileInterface);
@@ -311,11 +274,13 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
       return;
     }
     $profiles = $form_state->get('profiles');
-    foreach ($profiles as $profile) {
-      assert($profile instanceof ProfileInterface);
-      $profile->setOwnerId($account->id());
-      $profile->setPublished();
-      $profile->save();
+    foreach ($profiles as $profile_list) {
+      foreach ($profile_list as $profile) {
+        assert($profile instanceof ProfileInterface);
+        $profile->setOwnerId($account->id());
+        $profile->setPublished();
+        $profile->save();
+      }
     }
   }
 

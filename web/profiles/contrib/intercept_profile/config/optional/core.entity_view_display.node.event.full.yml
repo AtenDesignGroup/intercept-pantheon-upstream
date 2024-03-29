@@ -54,7 +54,7 @@ content:
     third_party_settings: {  }
     weight: 18
     region: content
-  evaluation_attendee_js:
+  evaluation_attendee_default:
     settings: {  }
     third_party_settings: {  }
     weight: 2
@@ -224,7 +224,6 @@ content:
     weight: 0
     region: content
 hidden:
-  evaluation_attendee_default: true
   evaluation_staff: true
   event_recurrence: true
   field_attendees: true

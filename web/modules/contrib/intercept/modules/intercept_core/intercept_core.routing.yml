@@ -69,7 +69,7 @@ intercept_core.user_edit:
     _title: 'Profile'
     route_name: 'entity.user.edit_form'
   requirements:
-    _role: 'intercept_equipment_reservation_manager + intercept_event_manager + intercept_event_organizer + intercept_staff + intercept_system_admin + administrator'
+    _role: 'intercept_equipment_reservation_manager + intercept_event_manager + intercept_staff + intercept_system_admin + administrator'
 
 intercept_core.admin_permissions:
   path: '/admin/config/intercept/permissions'

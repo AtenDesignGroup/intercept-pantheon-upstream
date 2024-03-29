@@ -34,7 +34,6 @@ settings:
         intercept_kiosk: '0'
         intercept_equipment_reservation_manager: '0'
         intercept_event_manager: '0'
-        intercept_event_organizer: '0'
         intercept_staff: '0'
         intercept_system_admin: '0'
     target_bundles: null

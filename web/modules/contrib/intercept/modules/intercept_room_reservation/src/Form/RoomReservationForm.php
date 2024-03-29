@@ -604,7 +604,7 @@ class RoomReservationForm extends ContentEntityForm {
     $current_user = \Drupal::currentUser();
     $roles = $current_user->getRoles();
     $userIsManager = $userIsStaff = FALSE;
-    if (in_array('intercept_event_manager', $roles) || in_array('intercept_event_organizer', $roles) || in_array('intercept_system_admin', $roles) || in_array('intercept_room_manager', $roles)) {
+    if (in_array('intercept_event_manager', $roles) || in_array('intercept_staff', $roles) || in_array('intercept_system_admin', $roles) || in_array('intercept_room_manager', $roles)) {
       $userIsManager = TRUE;
     }
     if (in_array('intercept_staff', $roles)) {
@@ -648,7 +648,7 @@ class RoomReservationForm extends ContentEntityForm {
     $current_user = \Drupal::currentUser();
     $roles = $current_user->getRoles();
     $userIsManager = $userIsStaff = FALSE;
-    if (in_array('intercept_event_manager', $roles) || in_array('intercept_event_organizer', $roles) || in_array('intercept_system_admin', $roles) || in_array('intercept_room_manager', $roles)) {
+    if (in_array('intercept_event_manager', $roles) || in_array('intercept_staff', $roles) || in_array('intercept_system_admin', $roles) || in_array('intercept_room_manager', $roles)) {
       $userIsManager = TRUE;
     }
     if (in_array('intercept_staff', $roles)) {

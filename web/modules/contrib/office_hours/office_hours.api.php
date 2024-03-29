@@ -5,7 +5,6 @@
  * Hooks and API provided by the "Office Hours" module.
  */
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
@@ -18,12 +17,12 @@ use Drupal\user\EntityOwnerInterface;
  *
  * @param int $time
  *   A Unix timestamp.
- * @param \Drupal\Core\Entity\EntityInterface $entity
- *   The Entity to be displayed with Office Hours.
+ * @param object $entity
+ *   Some (undeclared) EntityInterface object to be displayed with Office Hours.
  *
  * @see https://www.drupal.org/project/office_hours/issues/1925272
  */
-function hook_office_hours_current_time_alter(int &$time, EntityInterface $entity) {
+function hook_office_hours_current_time_alter(int &$time, $entity) {
   // Update the 'current time' to calculate 'current' and 'open' office hours.
   // Assume that all owned entities (for example, offices) should
   // depend on user timezone.
@@ -40,7 +39,8 @@ function hook_office_hours_current_time_alter(int &$time, EntityInterface $entit
   // Each city has a timezone attached.
   //
   // Adjust content time to content owner's timezone.
-  if ($entity instanceof EntityOwnerInterface
+  if (
+    $entity instanceof EntityOwnerInterface
     && ($account = $entity->getOwner())
     && ($account->isAuthenticated())
   ) {
@@ -81,4 +81,12 @@ function hook_office_hours_time_format_alter(string &$formatted_time) {
 
 /**
  * @} End of "addtogroup hooks".
+ */
+
+/**
+ * Eventsubscriber.
+ *
+ * To use events, do the followiung:
+ * 1. copy the event_subscriber from services.yml to your own project
+ * 2. copy and subclass the OfficeHoursEventSubscriber.php to your own project.
  */

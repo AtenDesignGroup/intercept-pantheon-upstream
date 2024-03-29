@@ -1,0 +1,13 @@
+type: module
+name: Clientside Validation
+description: 'Add client side validation to forms.'
+package: Clientside Validation
+core_version_requirement: ^9.4 || ^10
+
+test_dependencies:
+ - clientside_validation:clientside_validation_demo
+
+# Information added by Drupal.org packaging script on 2023-02-10
+version: '4.0.2'
+project: 'clientside_validation'
+datestamp: 1676011272

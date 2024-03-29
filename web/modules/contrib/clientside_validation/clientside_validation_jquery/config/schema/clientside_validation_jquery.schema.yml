@@ -1,0 +1,19 @@
+clientside_validation_jquery.settings:
+  type: config_object
+  label: 'Clientside Validation jQuery Settings'
+  mapping:
+    use_cdn:
+      type: boolean
+      label: 'Use JS from CDN'
+      description: 'CDN is used by default if JS not added into libraries.'
+    cdn_base_url:
+      type: string
+      label: 'CDN Base URL'
+      description: 'CDN to use (along with version in URL).'
+    validate_all_ajax_forms:
+      type: integer
+      label: 'Validate all forms before AJAX submit'
+      description: 'All forms with class "cv-validate-before-ajax" will be validated by default'
+    force_validate_on_blur:
+      type: integer
+      label: 'Force validate on Blur/focusout'

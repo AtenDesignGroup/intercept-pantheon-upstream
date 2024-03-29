@@ -96,7 +96,7 @@ class ProfileTypeForm extends BundleEntityFormBase {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
-    if (\Drupal::moduleHandler()->moduleExists('field_ui') &&
+    if ($this->moduleHandler->moduleExists('field_ui') &&
       $this->getEntity()->isNew()
     ) {
       $actions['save_continue'] = $actions['submit'];
@@ -121,13 +121,14 @@ class ProfileTypeForm extends BundleEntityFormBase {
   public function save(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\profile\Entity\ProfileTypeInterface $profile_type */
     $profile_type = $this->entity;
-    $profile_type->save();
+    $save = $profile_type->save();
     $this->postSave($profile_type, $this->operation);
 
     $this->messenger()->addMessage($this->t('Saved the %label profile type.', [
       '%label' => $this->entity->label(),
     ]));
     $form_state->setRedirect('entity.profile_type.collection');
+    return $save;
   }
 
   /**

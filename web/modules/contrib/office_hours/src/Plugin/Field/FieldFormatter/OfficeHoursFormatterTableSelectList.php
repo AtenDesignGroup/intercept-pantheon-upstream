@@ -2,8 +2,8 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
@@ -23,9 +23,9 @@ class OfficeHoursFormatterTableSelectList extends OfficeHoursFormatterTable {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-    $summary = parent::settingsSummary();
     // @todo Make sure the correct line is overridden.
-    $summary[2] = $this->t('Display Office hours in a openable Select list.');
+    $summary = [$this->t('Display Office hours in a openable Select list.')]
+    + parent::settingsSummary();
     return $summary;
   }
 
@@ -33,45 +33,30 @@ class OfficeHoursFormatterTableSelectList extends OfficeHoursFormatterTable {
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
 
-    // Activate the current_status position. It might be off in Field UI.
-    // This is needed for correct addCacheData().
+    // Prevent some user errors in the 'Manage display' Field UI.
+    // Activate the 'current_status' position. Needed for attachCacheData().
     $this->settings['current_status']['position'] = 'before';
-
+    // Hide field label, or it would display twice.
+    $this->label = 'hidden';
+    // Now call the formatter.
     $elements = parent::viewElements($items, $langcode);
+    // Remove StatusFormatter. It was used to set 'current_status' '#cache'.
+    unset($elements[0]);
 
-    // If no data is filled for this entity, do not show the formatter.
-    if ($items->isEmpty()) {
+    // Hide the formatter if no data is filled for this entity,
+    // or if empty fields must be hidden.
+    if ($elements == []) {
       return $elements;
     }
 
-    // Process the given formatters.
-    $hours_formatter = NULL;
-    foreach ($elements as $key => $element) {
-      switch ($element['#theme'] ?? '') {
-        case 'office_hours':
-        case 'office_hours_table':
-          // Fetch the Office Hours formatter.
-          $hours_formatter = &$elements[$key];
-          break;
-
-        case 'office_hours_status':
-          // Remove the Status Formatter. Moved/Re-determined to Details Title.
-          unset($elements[$key]);
-          break;
-      }
-    }
-
-    if ($hours_formatter) {
-      // Convert formatter to Select List ('details' render element),
-      // adding the extra render element data.
-      // Note: The theming class for 'current' is set in the parent formatter.
-      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
-      $hours_formatter += [
-        '#type' => 'details',
-        '#title' => $this->getStatusTitle($items, $hours_formatter),
-      ];
-    }
+    // Convert formatter to Select List ('details' render element).
+    $elements = [
+      '#type' => 'details',
+      '#title' => $this->getStatusTitle($items),
+      '#summary_attributes' => [],
+    ] + $elements;
 
     return $elements;
   }
@@ -80,30 +65,30 @@ class OfficeHoursFormatterTableSelectList extends OfficeHoursFormatterTable {
    * Generates the title for the 'details' formatter.
    *
    * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
-   *   An Office Hours ItemList object.
-   * @param array $hours_formatter
-   *   An Office Hours formatter array.
+   *   An Office HoursItemList object.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup|string
    *   Title of the element.
    */
-  private function getStatusTitle(OfficeHoursItemListInterface $items, array $hours_formatter) {
+  private function getStatusTitle(OfficeHoursItemListInterface $items) {
     $settings = $this->getSettings();
 
     // Use the 'open_text' and 'current' slot to set the title.
     $current_item = $items->getCurrentSlot();
     if ($current_item) {
-      // Get details from currently open slot.
-      $item = $hours_formatter['#office_hours'][$current_item->getValue()['day']];
-      $formatted_slots = $item['formatted_slots'];
+      // For this title, print only the weekday, not the exception date.
+      // $settings['exceptions']['date_format'] = $settings['day_format']; .
+      $settings['exceptions']['date_format'] = 'l';
+
       // There might be some confusion with yesterday after midnight.
-      $label = OfficeHoursItem::formatLabel($settings, ['day' => $current_item->getWeekday()]);
-      $status_text = $this->t($settings['current_status']['open_text']);
-      $title = $status_text . ' ' . $label . ' ' . $formatted_slots;
+      $title = implode(' ', [
+        $this->t(Html::escape($settings['current_status']['open_text'])),
+        $current_item->label($settings),
+        $current_item->formatTimeSlot($settings),
+      ]);
     }
     else {
-      $status_text = $this->t($settings['current_status']['closed_text']);
-      $title = $status_text;
+      $title = $this->t(Html::escape($settings['current_status']['closed_text']));
     }
 
     return $title;

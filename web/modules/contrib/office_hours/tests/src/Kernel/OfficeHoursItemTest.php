@@ -152,7 +152,7 @@ class OfficeHoursItemTest extends FieldKernelTestBase {
         'endhours' => '2000',
         'comment' => '',
       ],
-      // @todo Normal day with multiple time slots.
+      // @todo Add test normal weekday with multiple time slots.
       //
       // 'all_day' is checked, hours will be overwritten.
       [

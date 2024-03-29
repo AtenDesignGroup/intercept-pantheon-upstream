@@ -9,13 +9,13 @@
 }
 /* Format the 'day' column. */
 .office-hours-label {
-  font-weight: bold;
   text-align: left;
+  font-weight: bold;
 }
 /* Format the 'day' column for additional slots. */
 .office-hours-more-label {
-  font-weight: bold;
   text-align: right;
+  font-weight: bold;
   font-style: italic;
 }
 .office-hours__item-label {
@@ -27,6 +27,7 @@
 }
 /* Make each link unbreakable for responsive widget table. */
 .office-hours-link {
+  display: block;
   white-space: nowrap;
 }
 
@@ -35,13 +36,19 @@
  */
 /* Formatter settings - default formatter */
 .office-hours__item-label {
+  /* Do not wrap label, slots, comments in cells. */
   vertical-align: text-top;
+  white-space: nowrap;
 }
 .office-hours__item-slots {
+  /* Do not wrap label, slots, comments in cells. */
   vertical-align: text-top;
+  white-space: normal;
 }
 .office-hours__item-comments {
+  /* Do not wrap label, slots, comments in cells. */
   vertical-align: text-top;
+  white-space: nowrap;
 }
 
 /* Formatter settings - table formatter */
@@ -52,18 +59,20 @@ tr.office-hours__item {
 
 .office-hours__item td {
   /* Do not wrap label, slots, comments in cells. */
-  white-space: nowrap;
-  vertical-align: text-top;
 }
+
 /* Formatter - the currently active time slot. */
-.office-hours__item-current {
+tr.office-hours__item.office-hours__item-current {
   background: rgba(0, 0, 0, 0);
+  /* background: rgba(227, 17, 17, 0); */
+  /* color: blue; */
+  /* font-weight: bold; */
 }
+
 /* Formatter - status formatter. */
 .office-hours-status.office-hours-status--closed {
-  font-style: italic;
-  /* color: #e20e17; */
+  /* color: red; */
 }
 .office-hours-status.office-hours-status--open {
-  /* color: #10a90b; */
+  /* color: green; */
 }

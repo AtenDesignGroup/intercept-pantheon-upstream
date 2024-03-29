@@ -3,7 +3,7 @@
 namespace Drupal\office_hours\Event;
 
 /**
- * Office hours events.
+ * Office hours Events.
  *
  * @package Drupal\office_hours\Event
  *
@@ -12,14 +12,37 @@ namespace Drupal\office_hours\Event;
 final class OfficeHoursEvents {
 
   /**
-   * Event dispatched when Office hours of an entity have changed.
+   * Event dispatched when Office hours of an entity are changed or displayed.
    *
    * @Event
    *
-   * @see \Drupal\office_hours\Event\OfficeHoursUpdateEvent
+   * @see \Drupal\office_hours\Event\OfficeHoursEvent
    *
    * @var string
    */
-  const OFFICE_HOURS_UPDATE = 'office_hours.hours_update';
+
+  const UPDATE = 'office_hours.update';
+
+  /**
+   * Event PRE_FORMAT: e.g., adding a holiday for all locations in a region.
+   *
+   * @Event
+   *
+   * @see \Drupal\office_hours\Event\OfficeHoursEvent
+   *
+   * @var string
+   */
+  const PRE_FORMAT = 'office_hours.pre_format';
+
+  /**
+   * Event POST_FORMAT: e.g., changing time format from 'am' to non-php 'A.M.'.
+   *
+   * @Event
+   *
+   * @see \Drupal\office_hours\Event\OfficeHoursEvent
+   *
+   * @var string
+   */
+  const POST_FORMAT = 'office_hours.post_format';
 
 }

@@ -23,7 +23,7 @@ class UserPermissionsForm extends CoreUserPermissionsForm {
       'intercept_kiosk',
       'intercept_staff',
       'intercept_equipment_reservation_manager',
-      'intercept_event_organizer',
+      'intercept_staff',
       'intercept_event_manager',
       'intercept_room_manager',
       'intercept_system_admin',

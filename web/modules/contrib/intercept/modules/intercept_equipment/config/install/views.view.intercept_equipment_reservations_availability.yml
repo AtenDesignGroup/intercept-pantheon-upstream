@@ -265,7 +265,7 @@ display:
           type: daterange_custom
           settings:
             timezone_override: ''
-            date_format: 'n/d/y g:i A'
+            date_format: 'n/j/y g:i A'
             separator: '-'
           group_column: value
           group_columns: {  }

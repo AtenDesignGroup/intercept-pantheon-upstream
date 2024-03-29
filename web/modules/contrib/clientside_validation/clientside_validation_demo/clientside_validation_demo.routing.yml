@@ -1,0 +1,7 @@
+clientside_validation_demo.form:
+  path: '/admin/config/user-interface/clientside-validation-demo'
+  defaults:
+    _form: '\Drupal\clientside_validation_demo\Form\ClientsideValidationDemoForm'
+    _title: 'Clientside Validation Demo'
+  requirements:
+    _permission: 'administer site configuration'

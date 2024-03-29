@@ -201,8 +201,9 @@ input[type="date"].use-native-picker::-webkit-calendar-picker-indicator {
 }
 
 /*
-* End: Overrides for multi-select dropdown, like the one on manage/room-reservations/list (reservation status).
-*/
+ * End: Overrides for multi-select dropdown, like the one on
+ * manage/room-reservations/list (reservation status).
+ */
 
 // Disables Material UI hiding of the calendar icon when using exposed filters.
 .views-exposed-form input::-webkit-calendar-picker-indicator {

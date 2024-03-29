@@ -577,7 +577,10 @@ class ReservationManager implements ReservationManagerInterface {
       // If we're editing a room reservation, we need to make sure to not
       // count the existing reservation towards unavailability.
       if (!empty($params['event'])) {
-        $query->condition('field_event', $params['event'], '!=');
+        $query->condition($query->orConditionGroup()
+          ->condition('field_event', $params['event'], '!=')
+          ->condition('field_event', NULL, 'IS NULL') // It may be empty.
+        );
       }
       if (!empty($params['exclude_uuid'])) {
         $query->condition('uuid', $params['exclude_uuid'], 'NOT IN');

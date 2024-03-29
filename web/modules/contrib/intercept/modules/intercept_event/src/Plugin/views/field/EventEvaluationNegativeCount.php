@@ -35,7 +35,7 @@ class EventEvaluationNegativeCount extends NumericField {
    *   The mapped query data.
    */
   protected function addExpressionField(array $data) {
-    $this->countValueKey = $this->query->addField(NULL, "(SELECT COUNT(value) as count FROM votingapi_vote AS v WHERE v.entity_id = node_field_data.nid AND v.type = 'evaluation' AND v.value = 0)", $this->countValueKey, []);
+    $this->countValueKey = $this->query->addField(NULL, "(SELECT SUM(value = 'Dislike') AS count FROM webform_submission_data AS wsd INNER JOIN webform_submission AS ws ON ws.sid = wsd.sid WHERE ws.entity_id = node_field_data.nid AND name = 'how_did_the_event_go' AND ws.webform_id = 'intercept_event_feedback')", $this->countValueKey, []);
   }
 
   /**

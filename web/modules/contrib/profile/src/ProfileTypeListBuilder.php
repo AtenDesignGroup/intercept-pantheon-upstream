@@ -2,8 +2,8 @@
 
 namespace Drupal\profile;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Defines the list builder for profile types.

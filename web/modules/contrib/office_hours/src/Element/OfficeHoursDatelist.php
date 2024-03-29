@@ -72,7 +72,7 @@ class OfficeHoursDatelist extends Datelist {
           $timezone = $element['#date_timezone'];
           // The Date function needs a fixed format, so format $time to '0030'.
           $time = OfficeHoursDateHelper::format($time, 'Hi');
-          $date = OfficeHoursDateHelper::createFromFormat('Gi', $time, $timezone);
+          $date = OfficeHoursDateHelper::createFromFormat('Hi', $time, $timezone);
         }
       }
       catch (\Exception $e) {
@@ -124,7 +124,7 @@ class OfficeHoursDatelist extends Datelist {
    *   The complete form structure.
    */
   public static function validateDatelist(&$element, FormStateInterface $form_state, &$complete_form) {
-    // This overrides parent::validateDatelist($element, $form_state, $complete_form);
+    // This overrides parent::validateDatelist() function.
     $input = $element['#value'];
     $value = NULL;
 

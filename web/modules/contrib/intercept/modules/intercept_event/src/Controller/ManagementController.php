@@ -168,7 +168,6 @@ class ManagementController extends ManagementControllerBase implements RenderCal
         ],
         'taxonomies' => $this->getTaxonomyVocabularyTable([
           'audience',
-          'evaluation_criteria',
           'event_type',
           'population_segment',
           'tag',

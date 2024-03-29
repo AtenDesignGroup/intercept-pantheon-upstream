@@ -1,0 +1,6 @@
+services:
+  clientside_validation_jquery.commands:
+    class: Drupal\clientside_validation_jquery\Commands\ClientsideValidationJqueryDrush
+    arguments: ['@file_system']
+    tags:
+      -  { name: drush.command }

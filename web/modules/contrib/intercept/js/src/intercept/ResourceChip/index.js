@@ -10,8 +10,18 @@ const ResourceChip = (props) => {
   const { identifier, onDelete, label } = props;
   const { id } = identifier;
 
+  // Prevent interactions from bubbling. This is necessary because the chip is
+  // rendered inside a multi-select input and would otherwise trigger the
+  // multi-select to open, rather than deleting the chip.
+  const wrapDelete = (event) => {
+    if (event && event.stopPropagation !== undefined) {
+      event.stopPropagation();
+    }
+    return onDelete(id);
+  };
+
   return (
-    <OptionChip key={id} label={label} onDelete={() => onDelete(id)} onClick={() => onDelete(id)} />
+    <OptionChip key={id} label={label} onDelete={wrapDelete} onMouseDown={wrapDelete} onClick={wrapDelete} />
   );
 };
 

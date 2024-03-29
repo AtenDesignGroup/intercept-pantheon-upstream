@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * @file
+ * Install and update hooks for clientside_validation_jquery.
+ */
+
+use Symfony\Component\Yaml\Yaml;
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add default value for new config setting - force_validate_on_blur.
+ */
+function clientside_validation_jquery_update_8004() {
+  \Drupal::configFactory()
+    ->getEditable('clientside_validation_jquery.settings')
+    ->set('force_validate_on_blur', 0)
+    ->save();
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add default value for new config setting - validate_all_ajax_forms.
+ */
+function clientside_validation_jquery_update_8003() {
+  \Drupal::configFactory()
+    ->getEditable('clientside_validation_jquery.settings')
+    ->set('validate_all_ajax_forms', 2)
+    ->save();
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Install new config for module settings.
+ */
+function clientside_validation_jquery_update_8002() {
+  // Prepare the new config path.
+  $config_path = \Drupal::service('extension.list.module')->getPath('clientside_validation_jquery') . '/config/install/clientside_validation_jquery.settings.yml';
+
+  // Parse the yaml and get data from config file.
+  $config_yaml = Yaml::parse(file_get_contents($config_path));
+
+  // Add new config using config factory.
+  \Drupal::configFactory()
+    ->getEditable('clientside_validation_jquery.settings')
+    ->setData($config_yaml)
+    ->save();
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Empty update function because we need a cache clear after deleting a plugin.
+ */
+function clientside_validation_jquery_update_8001() {
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function clientside_validation_jquery_requirements($phase) {
+  $requirements = [];
+
+  if ($phase == 'runtime') {
+    $config = \Drupal::config('clientside_validation_jquery.settings');
+
+    // We don't display any warning if specifically asked to use from CDN.
+    if ($config->get('use_cdn')) {
+      return $requirements;
+    }
+
+    $library_exists = file_exists('libraries/jquery-validation/dist/jquery.validate.min.js');
+
+    $requirements['clientside_validation_jquery_library'] = [
+      'title' => t('Clientside Validation jQuery library'),
+      'value' => $library_exists ? t('Downloaded in Library') : t('Downloaded in module OR using from CDN'),
+      'description' => $library_exists ? '' : t('Check README in module folder for instructions on how to use it through libraries (Drupal way).'),
+      'severity' => $library_exists ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    ];
+  }
+
+  return $requirements;
+}

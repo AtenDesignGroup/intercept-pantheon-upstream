@@ -50,9 +50,14 @@
           }
         } only %}
       </header>
-      {% include '@intercept-base-components/content/content.twig' with { content: page.content
-      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_first, class: 'layout-sidebar-first'
-      } %} {% include '@intercept-base-components/sidebar/sidebar.twig' with { region: page.sidebar_second, class: 'layout-sidebar-second'
+      {% include '@intercept-base-components/content/content.twig' with {
+        content: page.content
+      } %}
+      {% include '@intercept-base-components/sidebar/sidebar.twig' with {
+        region: page.sidebar_first, class: 'layout-sidebar-first'
+      } %}
+      {% include '@intercept-base-components/sidebar/sidebar.twig' with {
+        region: page.sidebar_second, class: 'layout-sidebar-second'
       } %}
     </main>
     {% endblock %}

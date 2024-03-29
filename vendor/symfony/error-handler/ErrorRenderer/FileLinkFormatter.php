@@ -30,9 +30,9 @@ class FileLinkFormatter
     private \Closure|string|null $urlFormat;
 
     /**
-     * @param string|\Closure $urlFormat the URL format, or a closure that returns it on-demand
+     * @param string|\Closure $urlFormat The URL format, or a closure that returns it on-demand
      */
-    public function __construct(string|array $fileLinkFormat = null, RequestStack $requestStack = null, string $baseDir = null, string|\Closure $urlFormat = null)
+    public function __construct(string|array|null $fileLinkFormat = null, ?RequestStack $requestStack = null, ?string $baseDir = null, string|\Closure|null $urlFormat = null)
     {
         $fileLinkFormat ??= $_ENV['SYMFONY_IDE'] ?? $_SERVER['SYMFONY_IDE'] ?? '';
 
@@ -48,10 +48,7 @@ class FileLinkFormatter
         $this->urlFormat = $urlFormat;
     }
 
-    /**
-     * @return string|false
-     */
-    public function format(string $file, int $line): string|bool
+    public function format(string $file, int $line): string|false
     {
         if ($fmt = $this->getFileLinkFormat()) {
             for ($i = 1; isset($fmt[$i]); ++$i) {
@@ -108,8 +105,4 @@ class FileLinkFormatter
 
         return false;
     }
-}
-
-if (!class_exists(\Symfony\Component\HttpKernel\Debug\FileLinkFormatter::class, false)) {
-    class_alias(FileLinkFormatter::class, \Symfony\Component\HttpKernel\Debug\FileLinkFormatter::class);
 }

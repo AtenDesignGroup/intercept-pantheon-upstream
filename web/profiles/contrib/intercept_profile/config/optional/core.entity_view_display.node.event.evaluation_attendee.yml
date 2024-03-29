@@ -51,7 +51,7 @@ content:
     third_party_settings: {  }
     weight: 7
     region: content
-  evaluation_attendee_js:
+  evaluation_attendee_default:
     settings: {  }
     third_party_settings: {  }
     weight: 8
@@ -121,7 +121,6 @@ content:
     region: content
 hidden:
   checkin_link: true
-  evaluation_attendee_default: true
   evaluation_staff: true
   event_recurrence: true
   field_add_to_cal: true

@@ -27,7 +27,7 @@ email:
     subject: ''
     body: ''
   reservation_canceled:
-    subject: 'Reservation canceled - [room_reservation:field_dates:start_date:custom:n/d/y g:i A]'
+    subject: 'Reservation canceled - [room_reservation:field_dates:start_date:custom:n/j/y g:i A]'
     body: "Hello [room_reservation:first-name],<br>\r\nYou have canceled your reservation [room_reservation:field_room:entity:title] at [room_reservation:field_room:entity:field_location:entity:title].<br>\r\n<br>\r\n<a href=\"[site:url]account/room-reservations\">View My Reservations</a>"
     status_original:
       requested: requested
@@ -37,7 +37,7 @@ email:
     user: reservation_author
     user_role: {  }
   reservation_requested:
-    subject: 'Reservation requested - [room_reservation:field_dates:start_date:custom:n/d/y g:i A]'
+    subject: 'Reservation requested - [room_reservation:field_dates:start_date:custom:n/j/y g:i A]'
     body: "Hello [room_reservation:first-name],<br>\r\nYour reservation request for [room_reservation:field_room:entity:title] at [room_reservation:field_room:entity:field_location:entity:title] has been sent.<br>\r\n<br>\r\n<a href=\"[site:url]account/room-reservations\">View My Reservations</a>"
     status_original:
       empty: empty
@@ -46,7 +46,6 @@ email:
     user: reservation_user
     user_role:
       intercept_staff: intercept_staff
-      intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
   reservation_approved:
@@ -56,7 +55,7 @@ email:
     subject: ''
     body: ''
   reservation_approved_staff:
-    subject: 'Reservation approved - [room_reservation:field_dates:start_date:custom:n/d/y g:i A]'
+    subject: 'Reservation approved - [room_reservation:field_dates:start_date:custom:n/j/y g:i A]'
     body: "Hello [room_reservation:first-name],<br>\r\nYour reservation request for [room_reservation:field_room:entity:title] at [room_reservation:field_room:entity:field_location:entity:title] has been approved.<br>\r\n<br>\r\n<a href=\"[site:url]account/room-reservations\">View My Reservations</a>"
     status_original:
       requested: requested
@@ -65,11 +64,10 @@ email:
     user: user_role
     user_role:
       intercept_staff: intercept_staff
-      intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
   reservation_denied_staff:
-    subject: 'Reservation denied - [room_reservation:field_dates:start_date:custom:n/d/y g:i A]'
+    subject: 'Reservation denied - [room_reservation:field_dates:start_date:custom:n/j/y g:i A]'
     body: "Hello [room_reservation:first-name],<br>\r\nYour reservation request for [room_reservation:field_room:entity:title] at [room_reservation:field_room:entity:field_location:entity:title] has been denied.<br>\r\n<br>\r\n<a href=\"[site:url]account/room-reservations\">View My Reservations</a>"
     status_original:
       requested: requested
@@ -78,11 +76,10 @@ email:
     user: user_role
     user_role:
       intercept_staff: intercept_staff
-      intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
   reservation_approved_auto:
-    subject: 'Reservation approved - [room_reservation:field_dates:start_date:custom:n/d/y g:i A]'
+    subject: 'Reservation approved - [room_reservation:field_dates:start_date:custom:n/j/y g:i A]'
     body: "Hello [room_reservation:first-name],<br>\r\nYour reservation request for [room_reservation:field_room:entity:title] at [room_reservation:field_room:entity:field_location:entity:title] has been automatically approved.<br>\r\n<br>\r\n<a href=\"[site:url]account/room-reservations\">View My Reservations</a>"
     status_original:
       empty: empty
@@ -91,7 +88,7 @@ email:
     user: reservation_user
     user_role: {  }
   reservation_canceled_staff:
-    subject: 'Reservation canceled - [room_reservation:field_dates:start_date:custom:n/d/y g:i A]'
+    subject: 'Reservation canceled - [room_reservation:field_dates:start_date:custom:n/j/y g:i A]'
     body: "Hello [room_reservation:first-name],<br>\r\nYour reservation request for [room_reservation:field_room:entity:title] at [room_reservation:field_room:entity:field_location:entity:title] has been canceled.<br>\r\n<br>\r\n<a href=\"[site:url]account/room-reservations\">View My Reservations</a>"
     status_original:
       requested: requested
@@ -102,7 +99,6 @@ email:
     user: user_role
     user_role:
       intercept_staff: intercept_staff
-      intercept_event_organizer: intercept_event_organizer
       intercept_event_manager: intercept_event_manager
       intercept_system_admin: intercept_system_admin
 reservation_limit_message:

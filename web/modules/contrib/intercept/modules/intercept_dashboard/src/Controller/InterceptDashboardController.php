@@ -171,98 +171,6 @@ class InterceptDashboardController extends ControllerBase {
   }
 
   /**
-   * Constructs the base query to select events based on
-   * the provided filter values.
-   *
-   * @return query
-   */
-  public function getBaseQuery() {
-    // Get filter and sort criteria from url query params.
-    $params = $this->currentRequest->query->all();
-
-    $query = $this->database->select('node_field_data', 'n');
-    // $query->fields('n', ['nid']);
-    $query->condition('n.type', 'event');
-    $query->condition('n.status', 1);
-
-    /**
-     * @todo Make sure the default value is shared with the form.
-     */
-    $startDate = new DrupalDateTime($params['start'] ?? date('Y-m-01'));
-    $startDate->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
-    $startFormatted = $startDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
-
-    /**
-     * @todo Make sure the default value is shared with the form.
-     */
-    $endDate = new DrupalDateTime($params['end'] ?? date('Y-m-d'));
-    // Increase the date by 1 day to include the current day.
-    $endDate->add(\DateInterval::createFromDateString('1 day'));
-    $endDate->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
-    $endFormatted = $endDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
-
-    $query->join('node__field_date_time', 'date', 'n.nid = date.entity_id');
-    $query->condition('date.field_date_time_value', [$startFormatted, $endFormatted], 'BETWEEN');
-
-    // Add keyword condition.
-    // @todo Can this be integrated into search_api?
-    if (isset($params['keyword']) && !empty($params['keyword'])) {
-      $query->leftJoin('node__field_text_content', 'text_content', 'n.nid = text_content.entity_id');
-      $query->leftJoin('node__field_text_intro', 'text_intro', 'n.nid = text_intro.entity_id');
-      $query->leftJoin('node__field_text_teaser', 'text_teaser', 'n.nid = text_teaser.entity_id');
-      $keywordCondition = $query->orConditionGroup()
-        ->condition('n.title', '%' . $this->database->escapeLike($params['keyword']) . '%', 'LIKE')
-        ->condition('text_content.field_text_content_value', '%' . $this->database->escapeLike($params['keyword']) . '%', 'LIKE')
-        ->condition('text_intro.field_text_intro_value', '%' . $this->database->escapeLike($params['keyword']) . '%', 'LIKE')
-        ->condition('text_teaser.field_text_teaser_value', '%' . $this->database->escapeLike($params['keyword']) . '%', 'LIKE');
-      $query->condition($keywordCondition);
-    }
-
-    // Add created_by condition.
-    if (isset($params['created_by']) && !empty($params['created_by'])) {
-      $query->condition('n.uid', array_values($params['created_by'][0]), 'IN');
-    }
-
-    // Add primary audience condition.
-    if (isset($params['audience']) && !empty($params['audience'])) {
-      $query->join('node__field_audience_primary', 'audience', 'n.nid = audience.entity_id AND audience.field_audience_primary_target_id IN (:audience[])', [':audience[]' => $params['audience']]);
-    }
-
-    // Add primary event type condition.
-    if (isset($params['type']) && !empty($params['type'])) {
-      $query->join('node__field_event_type_primary', 'event_type', 'n.nid = event_type.entity_id AND event_type.field_event_type_primary_target_id IN (:type[])', [':type[]' => $params['type']]);
-    }
-
-    // Add tags condition.
-    if (isset($params['tags']) && !empty($params['tags'])) {
-      $query->join('node__field_event_tags', 'event_tags', 'n.nid = event_tags.entity_id AND event_tags.field_event_tags_target_id IN (:tags[])', [':tags[]' => $params['tags']]);
-    }
-
-    // Add location condition.
-    if (isset($params['location']) && !empty($params['location'])) {
-      $query->join('node__field_location', 'location', 'n.nid = location.entity_id AND location.field_location_target_id IN (:location[])', [':location[]' => $params['location']]);
-    }
-
-    // Add event series condition.
-    if (isset($params['event_series']) && !empty($params['event_series'])) {
-      $query->join('node__field_event_series', 'event_series', 'n.nid = event_series.entity_id AND event_series.field_event_series_target_id IN (:event_series[])', [':event_series[]' => $params['event_series']]);
-    }
-
-    // Add external presenter condition.
-    if (isset($params['external_presenter']) && !empty($params['external_presenter'])) {
-      $query->leftJoin('node__field_presenter', 'presenter', 'n.nid = presenter.entity_id');
-      if ($params['external_presenter'] === 'yes') {
-        $query->isNotNull('presenter.field_presenter_value');
-      }
-      else {
-        $query->isNull('presenter.field_presenter_value');
-      }
-    }
-
-    return $query;
-  }
-
-  /**
    * Builds the filter summary render array that shows the current filters set.
    *
    * @return array Render array
@@ -445,14 +353,14 @@ class InterceptDashboardController extends ControllerBase {
         'context' => 'url',
       ],
     ];
-    // Build the "View All" link to view all staff feedback.
-    $eventQuery = $this->getBaseQuery();
-    $eventQuery->addJoin('right', $this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.nid');
-    $eventQuery->fields('customer_evaluations', ['nid']);
-    $all_staff_evaluations = $eventQuery->execute()->fetchAll();
+    // Build the "View All" link to view all customer feedback.
+    $eventQuery = $this->filterProvider->getBaseQuery();
+    $eventQuery->addJoin('right', $this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.entity_id');
+    $eventQuery->fields('customer_evaluations', ['entity_id']);
+    $all_customer_evaluations = $eventQuery->execute()->fetchAll();
     $nids = [];
-    foreach ($all_staff_evaluations as $evaluation) {
-      $nids[] = $evaluation->nid;
+    foreach ($all_customer_evaluations as $evaluation) {
+      $nids[] = $evaluation->entity_id;
     }
     if (count($nids) > 0) {
       $build['#link'] = new FormattableMarkup('
@@ -507,7 +415,7 @@ class InterceptDashboardController extends ControllerBase {
    * @return array Render array of the total attendees metric.
    */
   public function buildTotalAttendees() {
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->join($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
     $eventQuery->addExpression('SUM(attendees)', 'total_attendees');
 
@@ -532,7 +440,7 @@ class InterceptDashboardController extends ControllerBase {
    * @return array Render array.
    */
   public function buildTotalStaffEvaluations() {
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->join($this->getStaffEvaluationsSubQuery(), 'staff_evaluations', 'n.nid = staff_evaluations.nid');
     $eventQuery->addExpression('SUM(staff_evaluations)', 'total_staff_evaluations');
     $count = $eventQuery->execute()->fetchAssoc()['total_staff_evaluations'];
@@ -547,7 +455,7 @@ class InterceptDashboardController extends ControllerBase {
     ];
 
     // Build the "View All" link to view all staff feedback.
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->addJoin('right', $this->getStaffEvaluationsSubQuery(), 'staff_evaluations', 'n.nid = staff_evaluations.nid'); // rightJoin is removed in D9.
     $eventQuery->fields('staff_evaluations', ['nid']);
     $all_staff_evaluations = $eventQuery->execute()->fetchAll();
@@ -573,7 +481,7 @@ class InterceptDashboardController extends ControllerBase {
    */
   public function getTotalEvents() {
     if (!isset($this->totalEvents)) {
-      $query = $this->getBaseQuery();
+      $query = $this->filterProvider->getBaseQuery();
       $this->totalEvents = $query
         ->countQuery()
         ->execute()
@@ -606,7 +514,7 @@ class InterceptDashboardController extends ControllerBase {
    * @return array Render array
    */
   public function buildTotalAttendeesCheckedIn() {
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->join($this->getCheckedInSubQuery(), 'checked_in', 'n.nid = checked_in.nid');
     $eventQuery->addExpression('SUM(checked_in)', 'total_checked_in');
 
@@ -632,7 +540,7 @@ class InterceptDashboardController extends ControllerBase {
    * @return array Render array
    */
   public function buildTotalRegistrants() {
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->join($this->getRegistrantsSubQuery(), 'registrants', 'n.nid = registrants.nid');
     $eventQuery->addExpression('SUM(registrants)', 'total_registrants');
 
@@ -658,7 +566,7 @@ class InterceptDashboardController extends ControllerBase {
    * @return array Render array.
    */
   public function buildTotalSaves() {
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->join($this->getSavedEventsSubQuery(), 'saves', 'n.nid = saves.nid');
     $eventQuery->addExpression('SUM(saves)', 'total_saves');
 
@@ -731,6 +639,11 @@ class InterceptDashboardController extends ControllerBase {
         'initial_click_sort' => 'desc',
       ],
       [
+        'data' => $this->t('Net Promoter Score'),
+        'field' => 'net_promoter_score',
+        'initial_click_sort' => 'desc',
+      ],
+      [
         'data' => $this->t('Customer Feedback'),
         'field' => 'customer_evaluations',
         'initial_click_sort' => 'desc',
@@ -742,13 +655,13 @@ class InterceptDashboardController extends ControllerBase {
       ],
     ];
 
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->fields('n', [
       'nid',
       'title',
     ]);
     $eventQuery->fields('date', [
-      'field_date_time_value',
+      'field_date_time_value'
     ]);
 
     // Attendees.
@@ -769,6 +682,12 @@ class InterceptDashboardController extends ControllerBase {
       'saves',
     ]);
 
+    // Net Promoter Score
+    $eventQuery->leftJoin($this->getNetPromoterScoreSubQuery(), 'net_promoter_score', 'n.nid = net_promoter_score.nid');
+    $eventQuery->fields('net_promoter_score', [
+      'net_promoter_score',
+    ]);
+
     // Registrants.
     $eventQuery->leftJoin($this->getRegistrantsSubQuery(), 'registrants', 'n.nid = registrants.nid');
     $eventQuery->fields('registrants', [
@@ -776,7 +695,7 @@ class InterceptDashboardController extends ControllerBase {
     ]);
 
     // Customer Evaluations.
-    $eventQuery->leftJoin($this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.nid');
+    $eventQuery->leftJoin($this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.entity_id');
     $eventQuery->fields('customer_evaluations', [
       'percent_positive_customer_evaluations',
       'percent_negative_customer_evaluations',
@@ -828,6 +747,7 @@ class InterceptDashboardController extends ControllerBase {
               '@negative' => number_format($row->percent_negative_customer_evaluations, 0),
             ]) :
           new FormattableMarkup('<span>—</span>', []),
+          'net_promoter_score' => number_format($row->net_promoter_score ?? 0),
           'customer_evaluations' => $row->customer_evaluations ?
           new FormattableMarkup('
               <a href="@url" class="use-ajax" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:1000}">View <span class="visually-hidden">Customer Feedback</span></a>',
@@ -1013,7 +933,7 @@ class InterceptDashboardController extends ControllerBase {
       'name',
     ]);
 
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
 
     // Attendees.
     $attendees_table = $eventQuery->join($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
@@ -1078,7 +998,7 @@ class InterceptDashboardController extends ControllerBase {
       'name',
     ]);
 
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
 
     // Attendees.
     $attendees_table = $eventQuery->join($this->getAttendeesTotalSubQuery(), 'attendees', 'n.nid = attendees.nid');
@@ -1277,7 +1197,7 @@ class InterceptDashboardController extends ControllerBase {
       ],
     ];
 
-    $eventQuery = $this->getBaseQuery();
+    $eventQuery = $this->filterProvider->getBaseQuery();
     $eventQuery->fields('n', [
       'nid',
       'title',
@@ -1415,6 +1335,27 @@ class InterceptDashboardController extends ControllerBase {
   }
 
   /**
+   * Construct a query to get an average net promoter score.
+   *
+   * @return \Drupal\Core\Database\Query\SelectInterface
+   */
+  public function getNetPromoterScoreSubQuery() {
+    $data = [
+      'entity_table' => 'webform_submission_data',
+      'join_table'   => 'webform_submission',
+    ];
+
+    $query = $this->database->select($data['entity_table'], 'related_entity_table');
+    $query->condition('name', 'how_likely_are_you_to_recommend_this_event_to_a_friend');
+    $query->join($data['join_table'], 'related_join_table', 'related_entity_table.sid = related_join_table.sid AND related_join_table.webform_id = :wid', [':wid' => 'intercept_event_feedback']);
+    $query->addField('related_join_table', 'entity_id', 'nid');
+    $query->addExpression('AVG(value)', 'net_promoter_score');
+    $query->groupBy('nid');
+
+    return $query;
+  }
+
+  /**
    * Construct a query of attendees for an event.
    *
    * @return \Drupal\Core\Database\Query\SelectInterface
@@ -1429,21 +1370,23 @@ class InterceptDashboardController extends ControllerBase {
   }
 
   /**
-   * Construct a query to count customer evaluations for an events.
+   * Construct a query to count customer evaluations for events.
    *
    * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getCustomerEvaluationsSubQuery() {
     // Construct the Customer Evaluation subQuery.
-    $query = $this->database->select('votingapi_vote', 'v');
-    $query->condition('type', 'evaluation');
-    $query->addField('v', 'entity_id', 'nid');
+    $query = $this->database->select('webform_submission', 'ws');
+    $query->addField('ws', 'entity_id');
+    $query->innerJoin('webform_submission_data', 'wsd', 'ws.sid = wsd.sid');
+    $query->condition('ws.webform_id', 'intercept_event_feedback');
+    $query->condition('name', 'how_did_the_event_go');
     $query->addExpression('COUNT(value)', 'customer_evaluations');
-    $query->addExpression('SUM(value=1)', 'positive_customer_evaluations');
-    $query->addExpression('SUM(value=0)', 'negative_customer_evaluations');
-    $query->addExpression('SUM(value=1) / COUNT(value) * 100', 'percent_positive_customer_evaluations');
-    $query->addExpression('SUM(value=0) / COUNT(value) * 100', 'percent_negative_customer_evaluations');
-    $query->groupBy('nid');
+    $query->addExpression('SUM(value = \'Like\')', 'positive_customer_evaluations');
+    $query->addExpression('SUM(value = \'Dislike\')', 'negative_customer_evaluations');
+    $query->addExpression('SUM(value = \'Like\') / COUNT(value) * 100', 'percent_positive_customer_evaluations');
+    $query->addExpression('SUM(value = \'Dislike\') / COUNT(value) * 100', 'percent_negative_customer_evaluations');
+    $query->groupBy('entity_id');
 
     return $query;
   }
@@ -1454,13 +1397,13 @@ class InterceptDashboardController extends ControllerBase {
    * @return \Drupal\Core\Database\Query\SelectInterface
    */
   public function getStaffEvaluationsSubQuery() {
+    // @todo: Use Webform.
     $query = $this->database->select('votingapi_vote', 'v');
     $query->condition('type', 'evaluation_staff');
     $query->isNotNull('feedback__value');
     $query->addField('v', 'entity_id', 'nid');
     $query->addExpression('COUNT(feedback__value)', 'staff_evaluations');
     $query->groupBy('nid');
-
     return $query;
   }
 
@@ -1503,8 +1446,8 @@ class InterceptDashboardController extends ControllerBase {
    *   ].
    */
   public function queryTotalCustomerEvaluations() {
-    $query = $this->getBaseQuery();
-    $query->join($this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.nid');
+    $query = $this->filterProvider->getBaseQuery();
+    $query->join($this->getCustomerEvaluationsSubQuery(), 'customer_evaluations', 'n.nid = customer_evaluations.entity_id');
     $query->addExpression('SUM(customer_evaluations)', 'total_customer_evaluations');
     $query->addExpression('SUM(positive_customer_evaluations)', 'total_positive_customer_evaluations');
     $query->addExpression('SUM(negative_customer_evaluations)', 'total_negative_customer_evaluations');
@@ -1555,8 +1498,9 @@ class InterceptDashboardController extends ControllerBase {
         $headers_simplified[4] => $row['data']['registrants'],
         $headers_simplified[5] => $row['data']['saves'],
         $headers_simplified[6] => $customer_rating,
-        // $headers_simplified[7] => str_replace('—', '', $row['data']['customer_evaluations']),
-        // $headers_simplified[8] => str_replace('—', '', $row['data']['staff_evaluations']),
+        $headers_simplified[7] => $row['data']['net_promoter_score'],
+        // $headers_simplified[8] => str_replace('—', '', $row['data']['customer_evaluations']),
+        // $headers_simplified[9] => str_replace('—', '', $row['data']['staff_evaluations']),
       ];
     }
     $result = $this->encoder->encode($csv_data, 'csv');

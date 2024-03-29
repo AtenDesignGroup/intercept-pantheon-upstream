@@ -18,10 +18,14 @@ class OfficeHoursWeekSlot extends OfficeHoursBaseSlot {
     parent::processOfficeHoursSlot($element, $form_state, $complete_form);
 
     // The valueCallback() has populated the #value array.
-    $value = $element['#value'];
-    $day = $element['#value']['day'];
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+    $item = $element['#value'];
+    $day = $item->day;
     $day_delta = $element['#day_delta'];
-    $label = parent::getLabel('long', $value, $day_delta);
+    // Add day_delta for label() or isEmpty() call.
+    $item->day_delta = $day_delta;
+    $settings = ['day_format' => 'long'];
+    $label = $item->label($settings);
 
     // Override (hide) the 'day' select-field, only showing the Weekday name.
     $element['day'] = [

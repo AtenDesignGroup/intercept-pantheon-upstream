@@ -2,7 +2,7 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
-use Drupal\Component\Utility\Xss;
+use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Field\FieldItemListInterface;
 
 /**
@@ -24,7 +24,7 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
   public function settingsSummary() {
     $summary = parent::settingsSummary();
 
-    if (get_class($this) == __CLASS__) {
+    if (static::class === __CLASS__) {
       // Avoids message when class overridden. Parent repeats it when needed.
       $summary[] = '(When using multiple slots per day, better use the table formatter.)';
     }
@@ -36,52 +36,37 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
-    $elements = [];
+    $elements = parent::viewElements($items, $langcode);
 
-    // If no data is filled for this entity, do not show the formatter.
-    if ($items->isEmpty()) {
+    // Hide the formatter if no data is filled for this entity,
+    // or if empty fields must be hidden.
+    if ($elements == []) {
       return $elements;
     }
 
-    $settings = $this->getSettings();
+    $formatter_settings = $this->getSettings();
+    $widget_settings = $this->getFieldSettings();
     $third_party_settings = $this->getThirdPartySettings();
-    $field_definition = $items->getFieldDefinition();
+
     // N.B. 'Show current day' may return nothing in getRows(),
     // while other days are filled.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
-    $office_hours = $items->getRows($settings, $this->getFieldSettings(), $third_party_settings);
-
-    $elements[] = [
-      '#theme' => 'office_hours',
-      '#parent' => $field_definition,
+    $office_hours = $items->getRows($formatter_settings, $widget_settings, $third_party_settings, 0, $this);
       // Pass filtered office_hours structures to twig theming.
-      '#office_hours' => $office_hours,
-      // Pass (unfiltered) office_hours items to twig theming.
-      '#office_hours_field' => $items,
-      // Pass formatting options to twig theming.
-      '#is_open' => $items->isOpen(),
-      '#item_separator' => Xss::filter($settings['separator']['days'], ['br', 'hr', 'span', 'div']),
-      '#slot_separator' => $settings['separator']['more_hours'],
-      '#attributes' => [
-        'class' => ['office-hours'],
-      ],
-      // '#empty' => $this->t('This location has no opening hours.'),
-      '#attached' => [
-        'library' => [
-          'office_hours/office_hours_formatter',
-        ],
-      ],
-    ];
+    $elements[0]['#theme'] = 'office_hours';
+    $elements[0]['#office_hours'] = $office_hours;
 
-    $elements = $this->addSchemaFormatter($items, $langcode, $elements);
-    $elements = $this->addStatusFormatter($items, $langcode, $elements);
+    $elements = $this->attachSchemaFormatter($items, $langcode, $elements);
+    $elements = $this->attachStatusFormatter($items, $langcode, $elements);
+    // Sort elements, to have Statusformattor on correct position.
+    usort($elements, [SortArray::class, 'sortByWeightProperty']);
 
-    // Enable dynamic field update in office_hours_status_update.js.
-    // Since Field cache does not work properly for Anonymous users.
-    $elements = $this->attachStatusUpdateJS($items, $langcode, $elements);
-    // Add a ['#cache']['max-age'] attribute to $elements.
-    // Note: This invalidates a previous Cache in Status Formatter.
-    $elements = $this->addCacheData($items, $elements);
+    if ($this->attachCache) {
+      // Since Field cache does not work properly for Anonymous users,
+      // .. enable dynamic field update in office_hours_status_update.js.
+      // .. add a ['#cache']['max-age'] attribute to $elements.
+      $elements += $this->attachCacheData($items, $langcode);
+    }
 
     return $elements;
   }

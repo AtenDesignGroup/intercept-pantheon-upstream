@@ -2034,8 +2034,9 @@ input[type="date"].use-native-picker::-webkit-calendar-picker-indicator {
   width: 0.375rem; }
 
 /*
-* End: Overrides for multi-select dropdown, like the one on manage/room-reservations/list (reservation status).
-*/
+ * End: Overrides for multi-select dropdown, like the one on
+ * manage/room-reservations/list (reservation status).
+ */
 .views-exposed-form input::-webkit-calendar-picker-indicator {
   display: inline; }
 

@@ -5,6 +5,7 @@ namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\office_hours\OfficeHoursSeason;
 
 /**
  * Plugin implementation of the 'office_hours_exceptions' widget.
@@ -12,10 +13,11 @@ use Drupal\Core\Form\FormStateInterface;
  * @FieldWidget(
  *   id = "office_hours_exceptions",
  *   label = @Translation("Office hours (week) with exceptions and seasons"),
+ *   description = @Translation("A widget with sections for weekdays, seasons and exception dates."),
  *   field_types = {
  *     "office_hours",
  *   },
- *   multiple_values = "FALSE",
+ *   multiple_values = TRUE,
  * )
  */
 class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
@@ -35,50 +37,58 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
     // Make form_state not cached since we will update it in ajax callback.
     $form_state->setCached(FALSE);
 
-    // First, create a Week widget for the normal weekdays.
-    // Use the form we are already in, not by adding a new widget.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
     /** @var \Drupal\office_hours\Plugin\Field\FieldWidget\OfficeHoursWeekWidget $widget */
+
+    // First, create a Week widget for the normal weekdays.
+    // Use the form we are already in, not by adding a new widget.
     $field_type = 'office_hours';
-    $element[$field_type][0] = parent::formElement($items, $delta, $element, $form, $form_state);
-    $items->filterEmptyItems();
+    $field_definition = $items->getFieldDefinition($field_type);
+    $id = 0;
+    // Explicitely set the season 0, avoiding error upon addMoreSubmit().
+    $this->setSeason();
+    $widget_form = parent::formElement($items, $delta, $element, $form, $form_state);
+    $element[$field_type][$id] = $widget_form;
+    // $element[$field_type][$id]['#tree'] = TRUE;
 
     // Then, add a List Widget for the Exception days.
     if ($this->getFieldSetting('exceptions')) {
-      $field_type = 'office_hours_exceptions';
       $plugin_id = 'office_hours_exceptions_only';
+      $field_type = 'office_hours_exceptions';
       $field_definition = $items->getFieldDefinition($field_type);
-
-      $id = 0;
       $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
-
+      $id++;
       $widget_form = $widget->form($items, $form, $form_state);
       // @todo #3335549 Decide to use complete form or only ['widget'] part.
       $element[$field_type][$id] = $widget_form['widget'];
-      unset($element[$field_type][$id]['#after_build']);
       unset($element[$field_type][$id]['#parents']);
-      unset($element[$field_type][$id]['#tree']);
+      // $element[$field_type][$id]['#tree'] = TRUE;
     }
 
     // Then, add Widgets for the Season days.
     if ($this->getFieldSetting('seasons')) {
-      $field_type = 'office_hours_season';
       $plugin_id = 'office_hours_season_only';
+      $field_type = 'office_hours_season_header';
       $field_definition = $items->getFieldDefinition($field_type);
-      // Create a Widget for each season.
+      $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
+      // Create a Widget for each season. @todo Add sorting?
       $seasons = $items->getSeasons(FALSE, TRUE);
       foreach ($seasons as $id => $season) {
-        $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
         $widget->setSeason($season);
 
         $widget_form = $widget->form($items, $form, $form_state);
         // @todo #3335549 Decide to use complete form or only ['widget'] part.
         $element[$field_type][$id] = $widget_form['widget'];
-        unset($element[$field_type][$id]['#after_build']);
         unset($element[$field_type][$id]['#parents']);
-        unset($element[$field_type][$id]['#tree']);
+        // $element[$field_type][$id]['#tree'] = TRUE;
       }
     }
+
+    // Remove messages from WeekWidget::addMessage();
+    // @todo Perhaps first fetch MessengerInterface::all(), then restore.
+    \Drupal::messenger()->deleteByType(self::MESSAGE_TYPE);
+
+    // @todo The '#required' is now on main level, not on weekday level.
     return $element;
   }
 
@@ -129,21 +139,10 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $massaged_values = [];
-    foreach ($values as $field_type => $widgets) {
-      foreach ($widgets as $id => $widget_values) {
-        switch ($field_type) {
-          case 'office_hours':
-            $widget_values = OfficeHoursWeekWidget::massageFormValues($widget_values, $form, $form_state);
-            break;
 
-          case 'office_hours_exceptions':
-            $widget_values = OfficeHoursExceptionsWidget::_massageFormValues($widget_values, $form, $form_state);
-            break;
-
-          case 'office_hours_season':
-            $widget_values = OfficeHoursSeasonWidget::massageFormValues($widget_values, $form, $form_state);
-            break;
-        }
+    foreach ($values as $widgets) {
+      foreach ($widgets as $widget_values) {
+        $widget_values = OfficeHoursSeasonWidget::massageFormValues($widget_values, $form, $form_state);
         $massaged_values = array_merge($massaged_values, $widget_values);
       }
     }

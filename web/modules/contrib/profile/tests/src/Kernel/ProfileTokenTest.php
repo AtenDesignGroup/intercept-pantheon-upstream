@@ -2,11 +2,11 @@
 
 namespace Drupal\Tests\profile\Kernel;
 
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 use Drupal\profile\Entity\Profile;
 use Drupal\profile\Entity\ProfileType;
-use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field\Entity\FieldConfig;
-use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
  * Tests token resolution for profiles.

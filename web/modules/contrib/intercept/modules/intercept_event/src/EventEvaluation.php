@@ -184,28 +184,6 @@ class EventEvaluation {
   }
 
   /**
-   * Get the criteria terms for this evaluation.
-   *
-   * @return array
-   *   The criteria terms.
-   */
-  public function getVoteCriteria() {
-    return $this->vote->get('vote_criteria')->taxonomy_term;
-  }
-
-  /**
-   * Are there criteria set for this event type.
-   *
-   * @return bool
-   *   Whether criteria are set for this event type.
-   */
-  public function hasCriteria() {
-    $event = $this->getEvent();
-    return $this->manager->getPrimaryEventType($event)
-      && !empty($this->manager->getCriteria($event));
-  }
-
-  /**
    * Gets the primary event type.
    *
    * @return object
@@ -216,71 +194,6 @@ class EventEvaluation {
       return FALSE;
     }
     return $this->manager->getPrimaryEventType($event);
-  }
-
-  /**
-   * Gets an array of negative criteria taxonomy Terms.
-   *
-   * @return array
-   *   The array of negative criteria taxonomy Terms.
-   */
-  public function getNegativeCriteria() {
-    if (!$event = $this->getEvent()) {
-      return FALSE;
-    }
-    return $this->manager->getNegativeCriteria($event);
-  }
-
-  /**
-   * Gets an array of negative criteria taxonomy Term names.
-   *
-   * @return array
-   *   The array of negative criteria taxonomy Term names.
-   */
-  public function getNegativeCriteriaOptions() {
-    if (!$event = $this->getEvent()) {
-      return FALSE;
-    }
-    return $this->manager->getNegativeCriteriaOptions($event);
-  }
-
-  /**
-   * Gets an array of positive criteria taxonomy Terms.
-   *
-   * @return array
-   *   The array of positive criteria taxonomy Terms.
-   */
-  public function getPositiveCriteria() {
-    if (!$event = $this->getEvent()) {
-      return FALSE;
-    }
-    return $this->manager->getPositiveCriteria($event);
-  }
-
-  /**
-   * Gets an array of positive criteria taxonomy Term names.
-   *
-   * @return array
-   *   The array of positive criteria taxonomy Term names.
-   */
-  public function getPositiveCriteriaOptions() {
-    if (!$event = $this->getEvent()) {
-      return FALSE;
-    }
-    return $this->manager->getPositiveCriteriaOptions($event);
-  }
-
-  /**
-   * Gets an array of criteria taxonomy Terms.
-   *
-   * @return array
-   *   The array of criteria taxonomy Terms.
-   */
-  public function getCriteria() {
-    if (!$event = $this->getEvent()) {
-      return FALSE;
-    }
-    return $this->manager->getCriteria($event);
   }
 
   /**

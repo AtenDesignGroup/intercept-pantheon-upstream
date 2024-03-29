@@ -43,7 +43,7 @@ class ProfileEntityFieldItemList extends FieldItemList implements EntityReferenc
     $profile_storage = \Drupal::entityTypeManager()->getStorage('profile');
 
     // Ignore anonymous and user accounts not saved yet.
-    if ($user->isAnonymous()) {
+    if ($user->isAnonymous() || $user->isNew()) {
       return [];
     }
 

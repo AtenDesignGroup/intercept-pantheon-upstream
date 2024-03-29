@@ -1,0 +1,40 @@
+{{ attach_library('intercept_base/teaser') }}
+{{ attach_library('intercept_base/call-prompt') }}
+{{ attach_library('richland/action-button') }}
+{{ attach_library('richland/room') }}
+<article{{ attributes.addclass(['teaser']) }}>
+  <div class="teaser__image">
+    {{ content.image_primary }}
+  </div>
+  <div class="teaser__main clearfix">
+    <div class="teaser__content">
+      {% if content.field_location|field_value %}
+      <span class="teaser__supertitle">{{ content.field_location|field_value }}</span>
+      {% endif %}
+      <h3 class="teaser__title">{{ label }}</h3>
+      <div class="teaser__description">
+        {{ content.field_text_teaser }}
+      </div>
+      {% if content.field_room_type|field_value %}
+      <div class="teaser__tags field--inline">
+        <strong class="field__label">Room Type:</strong> {{ content.field_room_type|field_value }}
+      </div>
+      {% endif %}
+      {% if content.field_capacity_max is not empty %}
+      <div class="teaser__tags field--inline">
+        <strong class="field__label">Capacity:</strong> {{ content.field_capacity_max|field_value }}
+      </div>
+      {% endif %}
+    </div>
+    <div class="teaser__footer">
+    {% if 1 in content.field_reservable_online[0] %}
+      <div class="action-button">
+        <a class="action-button__button button" href="/reserve-room/by-room?room={{ uuid }}&step=1">Reserve</a>
+        <a class="action-button__button button" href="{{ url }}">View Details</a>
+      </div>
+    {% else %}
+      {{ content.field_reservation_phone_number }}
+    {% endif %}
+    </div>
+  </div>
+</article>

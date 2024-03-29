@@ -5,6 +5,7 @@
  * Implements third_party_settings hooks provided by the Field UI module.
  */
 
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /* @see File core/modules/field_ui/field_ui.api.php
@@ -35,7 +36,29 @@ function office_hours_exceptions_preprocess_field(array &$variables, $hook) {
   }
 
   // Check if an exception day exists in the table.
-  if (!$items->hasExceptionDays()) {
+  if (TRUE || !$items->hasExceptionDays()) {
+    // The remaining code is of no use at the moment.
+    return;
+  }
+
+  $element = $variables['element'];
+  $entity = $element['#object'];
+  $field_name = $element['#field_name'];
+  $view_mode = $element['#view_mode'];
+  $view_mode = $element['#third_party_settings']['layout_builder']['view_mode'] ?? $view_mode;
+
+  // Check the field formatter settings.
+  $entity_display = EntityViewDisplay::collectRenderDisplay($entity, $view_mode);
+  $settings = $entity_display->getComponent($field_name)['settings'] ?? [];
+  if (!isset($settings['exceptions']['title'])) {
+    \Drupal::messenger()->addMessage(t(
+      "Please review the display settings
+      for field %field_name in view mode %view_mode, and save them again.",
+      [
+        '%field_name' => $field_name,
+        '%view_mode' => $view_mode,
+      ]
+    ));
     return;
   }
 
@@ -46,30 +69,15 @@ function office_hours_exceptions_preprocess_field(array &$variables, $hook) {
     if (is_numeric($key)) {
       // If there is an exception, add an extra row to label the exceptions.
       // Note: may be changed in template_preprocess_office_hours_table().
-      $exception_header = [];
+      $exception_header = NULL;
       switch ($element['content']['#theme']) {
 
         case 'office_hours_table':
           $formatter_rows = &$element['content']['#table']['#rows'];
-          if ($formatter_rows[OfficeHoursItem::EXCEPTION_DAY] ?? NULL) {
-            $exception_header = $formatter_rows[OfficeHoursItem::EXCEPTION_DAY];
-            $exception_header['id'] = ['office-hours-exception__title'];
-            // Set everything but title to NULL.
-            // $exception_header['data']['slots'] = NULL;
-            // $exception_header['data']['comments'] = NULL;
-          }
           break;
 
         case 'office_hours':
           $formatter_rows = &$element['content']['#office_hours'];
-          if ($formatter_rows[OfficeHoursItem::EXCEPTION_DAY] ?? NULL) {
-            $exception_header = $formatter_rows[OfficeHoursItem::EXCEPTION_DAY];
-            // Set everything but title to NULL.
-            // $exception_header['slots'] = NULL;
-            // $exception_header['formatted_slots'] = NULL;
-            // $exception_header['index'] = NULL;
-            // $exception_header['comments'] = NULL;
-          }
           break;
 
         case 'office_hours_schema':
@@ -78,10 +86,6 @@ function office_hours_exceptions_preprocess_field(array &$variables, $hook) {
           // @todo Test/Enhance this formatter for Exception days.
         default:
           break;
-      }
-      if ($exception_header) {
-        // Complete the exception header.
-        $formatter_rows[OfficeHoursItem::EXCEPTION_DAY] = $exception_header;
       }
     }
   }

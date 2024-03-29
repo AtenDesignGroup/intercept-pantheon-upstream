@@ -5,10 +5,12 @@
   "homepage": "https://drupal.org/project/profile",
   "license": "GPL-2.0-or-later",
   "require": {
+    "php": "^7.4 || ^8.0",
     "drupal/core": "^9 || ^10",
     "drupal/entity": "^1.0"
   },
   "require-dev": {
-    "drupal/token": "^1.7"
+    "drupal/token": "^1.7",
+    "drupal/search_api": "~1.30"
   }
 }

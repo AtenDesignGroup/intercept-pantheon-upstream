@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\externalauth\Unit;
 
-use Drupal\Tests\UnitTestCase;
 use Drupal\externalauth\Authmap;
+use Drupal\Tests\UnitTestCase;
 
 /**
  * Authmap unit tests.
@@ -26,7 +26,7 @@ class AuthmapTest extends UnitTestCase {
   /**
    * Mock statement.
    *
-   * @var \Drupal\Core\Database\Statement|\PHPUnit\Framework\MockObject\MockObject
+   * @var \Drupal\Core\Database\Driver\sqlite\Statement|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $statement;
 

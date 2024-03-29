@@ -51,7 +51,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
   protected $formatterSettings = [];
 
   /**
-   * An Office Hours ItemList.
+   * An OfficeHoursItemList.
    *
    * @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface
    */
@@ -71,7 +71,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
   public function getCacheContexts() {
     // Do not set caching for anonymous users.
     if (\Drupal::currentUser()->isAnonymous()) {
-    // return ['session'];
+      // return ['session'];
     }
     return [];
   }
@@ -123,9 +123,14 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
       return Cache::PERMANENT;
     }
 
+    // Get the current time. May be adapted for User Timezone.
     $time = $this->items->getRequestTime();
+    // @todo Use OfficeDateHelper::today()?
     $date = DrupalDateTime::createFromTimestamp($time);
-    $today = $date->format('w');
+
+    // Get today's weekday.
+    $today_weekday = OfficeHoursDateHelper::getWeekday($time);
+
     $now = (int) $date->format('Hi');
     $seconds = $date->format('s');
     $next_time = '0000';
@@ -133,6 +138,10 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
 
     $formatter_settings = $this->formatterSettings;
     $cache_setting = $formatter_settings['show_closed'];
+    if (!empty($formatter_settings['current_status']['position'])) {
+      $cache_setting = 'current';
+    }
+
     switch ($cache_setting) {
       case 'all':
       case 'open':
@@ -147,8 +156,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
         break;
 
       case 'next':
-        // Get the first (and only) day of the list.
-        // Make sure we only receive 1 day, only to calculate the cache.
+        $office_hours = NULL;
         $currentSlot = $this->items->getCurrentSlot($time);
         if ($currentSlot) {
           $office_hours[] = $currentSlot->getValue();
@@ -175,11 +183,11 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
           $start = $slot['starthours'];
           $end = $slot['endhours'];
 
-          if ($day != $today) {
+          if ($day != $today_weekday) {
             // We will open tomorrow or later.
             $next_time = $start;
             $seven = OfficeHoursDateHelper::DAYS_PER_WEEK;
-            $add_days = ($day - $today + $seven) % $seven;
+            $add_days = ($day - $today_weekday + $seven) % $seven;
             break;
           }
           elseif ($start > $now) {
@@ -218,25 +226,6 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
         return Cache::PERMANENT;
     }
 
-    // Cache is not PERMANENT.
-    // Do not set limited time caching for anonymous users.
-    if (\Drupal::currentUser()->isAnonymous()) {
-      // The Internal Page Cache module handles page cache for anonymous users.
-      // It should be used for small/medium websites
-      // when external page cache is not available.
-      // However, it caches a page always, which is unwanted for office_hours,
-      // where the open/closed status can change any minute.
-      // Setting the max-age to 0 prevents the caching.
-      //
-      // Note: this is a workaround. IMO the page_cache module is flawed.
-      // @see https://www.drupal.org/project/office_hours/issues/3351280
-      // where js callback is implemented, to re-read the field each call.
-      // @see https://www.drupal.org/project/drupal/issues/2835068
-      if (\Drupal::moduleHandler()->moduleExists('page_cache')) {
-        return 0;
-      }
-    }
-
     // Set to 0 to avoid php error if time field is not set.
     $next_time = is_numeric($next_time) ? $next_time : '0000';
     // Calculate the remaining cache time.
@@ -250,6 +239,43 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
     $time_left -= $seconds;
 
     return $time_left;
+  }
+
+  /**
+   * Defines if a '#cache' instruction is needed.
+   *
+   * @return bool
+   *   TRUE if '#cache' is needed, else FALSE.
+   */
+  public function isCacheNeeded() {
+    // Determine if this entity display must be formatted.
+    // Return TRUE if render caching must be active.
+    // This is the case when:
+    // - a Status formatter (open/closed) is used.
+    // - only the currently open day is displayed.
+    // Note: Also, on the entity itself, it must be checked whether
+    // Exception days are used. If so, then caching is also needed.
+    if (!empty($this->formatterSettings['current_status']['position'])) {
+      return TRUE;
+    }
+
+    // Always add caching when exceptions are in place.
+    if ($this->items->hasExceptionDays()) {
+      return TRUE;
+    }
+
+    switch ($this->formatterSettings['show_closed']) {
+      case 'all':
+      case 'open':
+      case 'none':
+        // These caches never expire, since they are always correct.
+        return FALSE;
+
+      case 'current':
+      case 'next':
+      default:
+        return TRUE;
+    }
   }
 
 }

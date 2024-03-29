@@ -22,8 +22,6 @@ libraries:
 
 libraries-override:
   addtocalendar/base: intercept_event/eventAddToCalendar
-  styleguide/styleguide_css: intercept_base/styleguide
-  intercept_core/bigCalendar: intercept_base/bigCalendar
   core/drupal.dialog.off_canvas:
     css:
       base:
@@ -43,6 +41,8 @@ libraries-override:
         # misc/dialog/off-canvas/css/dropbutton.css: {}
         misc/dialog/off-canvas/css/titlebar.css: false
         # misc/dialog/off-canvas/css/wrapper.css: {}
+  intercept_core/bigCalendar: intercept_base/bigCalendar
+  styleguide/styleguide_css: intercept_base/styleguide
   views_filters_summary/views_filters_summary:
     css:
       theme:
@@ -53,18 +53,6 @@ libraries-extend:
     - intercept_base/dropbutton
   fullcalendar_block/libraries.fullcalendar:
     - intercept_base/fullCalendar
-  intercept_event/eventList:
-    - intercept_base/action-button
-    - intercept_base/current-filters
-    - intercept_base/content-list
-    - intercept_base/filters
-    - intercept_base/loading-indicator
-    - intercept_base/page-spinner
-    - intercept_base/page-title
-    - intercept_base/print-cal
-    - intercept_base/teaser
-    - intercept_base/view-switcher
-    - intercept_base/summary
   intercept_event/eventRegister:
     - intercept_base/action-button
     - intercept_base/card
@@ -76,11 +64,6 @@ libraries-extend:
     - intercept_base/teaser
   intercept_event/eventRegisterButton:
     - intercept_base/action-button
-  intercept_event/eventCustomerEvaluation:
-    - intercept_base/evaluation
-  intercept_event/eventCustomerEvaluations:
-    - intercept_base/evaluation-summary
-    - intercept_base/loading-indicator
   intercept_room_reservation/RoomReservationActionButton:
     - intercept_base/action-button
   intercept_event/manageEventRegistrations:
@@ -138,7 +121,7 @@ components:
     intercept-base-icons:
       - images/icons
 
-# Information added by Drupal.org packaging script on 2024-01-26
-version: '8.x-1.0-beta22'
+# Information added by Drupal.org packaging script on 2024-03-29
+version: '8.x-1.0-beta23'
 project: 'intercept_base'
-datestamp: 1706291551
+datestamp: 1711740054

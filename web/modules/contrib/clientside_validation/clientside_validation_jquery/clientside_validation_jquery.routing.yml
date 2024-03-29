@@ -1,0 +1,7 @@
+clientside_validation_jquery.settings_form:
+  path: '/admin/config/user-interface/clientside-validation-jquery-settings'
+  defaults:
+    _form: '\Drupal\clientside_validation_jquery\Form\ClientsideValidationjQuerySettingsForm'
+    _title: 'Clientside Validation jQuery Settings'
+  requirements:
+    _permission: 'administer site configuration'

@@ -4,11 +4,11 @@ namespace Drupal\Tests\office_hours\Unit;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Language\Language;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\office_hours\Element\OfficeHoursDatetime;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 use Drupal\Tests\UnitTestCase;
-use Drupal\Core\Language\LanguageManagerInterface;
 
 /**
  * Tests the new entity API for the office_hours field type.
@@ -99,6 +99,35 @@ class OfficeHoursDatetimeUnitTest extends UnitTestCase {
       "one3" => ['1:00', 'H:i', '01:00'],
       // "fallback" => ['0:00', 'g:i a', '12:00 am'],
     ];
+  }
+
+  /**
+   * Test 'dateHelper::format' formatting.
+   *
+   * @see https://www.php.net/manual/en/datetime.format.php
+   */
+  public function testDateHelperFormat(): void {
+    $format = 'Hi';
+    $value = '1500';
+    // 24hrs tests.
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '15:00', $format, TRUE));
+    // Ampm tests.
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = ' 3:00 P.M.', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '3:00 P.M.', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '3:00 PM', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '3:00pm', $format, TRUE));
+
+    $format = 'Gi';
+    $value = '300';
+    // 24hrs tests.
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = ' 3:00', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '03:00', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '3:00', $format, TRUE));
+    // Ampm tests.
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = ' 3:00 A.M.', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '3:00 A.M.', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '3:00 AM', $format, TRUE));
+    $this->assertEquals($value, OfficeHoursDateHelper::format($raw = '3:00am', $format, TRUE));
   }
 
 }

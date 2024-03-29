@@ -107,9 +107,9 @@ class WebformOfficeHours extends WebformCompositeBase {
     $element['container']['cardinality']['#value'] = 'number';
     unset($element['container']['cardinality']['#options'][-1]);
 
-    $element['container']['cardinality_number']['#max'] = 1;
     $element['container']['cardinality_number']['#default_value'] = 1;
     $element['container']['cardinality_number']['#value'] = 1;
+    $element['container']['cardinality_number']['#max'] = 1;
 
     return $element;
   }
@@ -195,12 +195,13 @@ class WebformOfficeHours extends WebformCompositeBase {
   public static function validateOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
     OfficeHoursBaseSlot::validateOfficeHoursSlot($element, $form_state, $complete_form);
 
+    // The result may be empty, upon preview in build mode (when not saved).
+    $office_hours = $form_state->getValue($element['#webform_key']) ?? [];
     // Encode Values here always, since this is expected by prepare(),
     // and since postLoad() does not have the values, yet,
     // so we cannot use preSave() unconditionally.
     // There does not seem to exist a Webform equivalent of massageFormValues().
     // $errors = $form_state->getErrors($element); if ($errors !== []) {}.
-    $office_hours = $form_state->getValue($element['#webform_key']);
     $office_hours = self::serialize($office_hours);
     $form_state->setValueForElement($element, $office_hours);
   }
@@ -380,10 +381,10 @@ class WebformOfficeHours extends WebformCompositeBase {
    * since Webform does not support sub-sub components.
    *
    * @param array $office_hours
-   *   Array of time slots.
+   *   Office hours array.
    *
    * @return array
-   *   Converted array of Office Hours time slots.
+   *   Serialized Office hours array.
    */
   private static function serialize(array $office_hours) {
     // Static function, because called from static function.
@@ -391,7 +392,6 @@ class WebformOfficeHours extends WebformCompositeBase {
 
     foreach ($office_hours as $key => $value) {
       if (!OfficeHoursItem::isValueEmpty($value)) {
-        // Convert Office Hours from array to serialized string.
         $result[$key] = \Drupal::service('serialization.phpserialize')
           ->encode($value);
       }
@@ -407,7 +407,7 @@ class WebformOfficeHours extends WebformCompositeBase {
    * since Webform does not support sub-sub components.
    *
    * @param array $office_hours
-   *   Array of time slots.
+   *   Office hours array.
    * @param array $element
    *   An element.
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission

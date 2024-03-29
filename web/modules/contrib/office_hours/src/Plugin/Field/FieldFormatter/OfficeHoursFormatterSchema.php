@@ -2,7 +2,6 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Field\FieldItemListInterface;
 
 /**
@@ -67,32 +66,25 @@ class OfficeHoursFormatterSchema extends OfficeHoursFormatterBase {
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
-    $elements = [];
+    $elements = parent::viewElements($items, $langcode);
 
-    if ($items->isEmpty()) {
+    // Hide the formatter if no data is filled for this entity,
+    // or if empty fields must be hidden.
+    if ($elements == []) {
       return $elements;
     }
 
     // Get some settings from field. Do not overwrite defaults.
-    $settings = $this->defaultSettings() + $this->getSettings();
+    $formatter_settings = $this->defaultSettings() + $this->getSettings();
+    $widget_settings = $this->getFieldSettings();
     $third_party_settings = $this->getThirdPartySettings();
+
     // N.B. 'Show current day' may return nothing in getRows(),
     // while other days are filled.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
-    $office_hours = $items->getRows($settings, $this->getFieldSettings(), $third_party_settings);
-    $elements[] = [
-      '#theme' => 'office_hours_schema',
-      // Pass filtered office_hours structures to twig theming.
-      '#office_hours' => $office_hours,
-      // Pass (unfiltered) office_hours items to twig theming.
-      '#office_hours_field' => $items,
-      // Pass formatting options to twig theming.
-      '#item_separator' => Xss::filter($settings['separator']['days'], ['br']),
-      '#slot_separator' => $settings['separator']['more_hours'],
-      '#attributes' => [
-        'class' => ['office-hours'],
-      ],
-    ];
+    $office_hours = $items->getRows($formatter_settings, $widget_settings, $third_party_settings, 0, $this);
+    $elements[0]['#theme'] = 'office_hours_schema';
+    $elements[0]['#office_hours'] = $office_hours;
 
     return $elements;
   }

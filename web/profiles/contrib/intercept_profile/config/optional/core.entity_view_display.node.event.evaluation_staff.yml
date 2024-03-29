@@ -52,7 +52,6 @@ hidden:
   checkin_link: true
   evaluation_attendee: true
   evaluation_attendee_default: true
-  evaluation_attendee_js: true
   event_recurrence: true
   field_add_to_cal: true
   field_address: true

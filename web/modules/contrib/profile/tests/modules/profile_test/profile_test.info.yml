@@ -5,7 +5,7 @@ package: Testing
 dependencies:
   - profile:profile
 
-# Information added by Drupal.org packaging script on 2022-10-07
-version: '8.x-1.7'
+# Information added by Drupal.org packaging script on 2024-03-27
+version: '8.x-1.10'
 project: 'profile'
-datestamp: 1665131794
+datestamp: 1711545365

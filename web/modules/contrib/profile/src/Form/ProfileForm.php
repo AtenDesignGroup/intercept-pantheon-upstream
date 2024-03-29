@@ -25,7 +25,7 @@ class ProfileForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\profile\Entity\ProfileInterface $profile */
     $profile = $this->entity;
-    $profile->save();
+    $save = $profile->save();
 
     $profile_type_storage = $this->entityTypeManager->getStorage('profile_type');
     /** @var \Drupal\profile\Entity\ProfileTypeInterface $profile_type */
@@ -45,6 +45,8 @@ class ProfileForm extends ContentEntityForm {
     else {
       $form_state->setRedirect('entity.profile.collection');
     }
+
+    return $save;
   }
 
 }

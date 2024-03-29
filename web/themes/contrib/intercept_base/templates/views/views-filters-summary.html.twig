@@ -18,8 +18,12 @@
  */
 #}
 {{ attach_library('intercept_base/current-filters') }}
+{% set classes = [
+  'views-filters-summary',
+  options.use_ajax ? 'views-filters-summary--use-ajax'
+] %}
 {% apply spaceless %}
-  <div class="views-filters-summary">
+  <div{{ attributes.addClass(classes) }}>
     <div class="current-filters__wrapper">
       {% for filter in summary %}
       <div class="current-filter">

@@ -1,0 +1,5 @@
+clientside_validation_jquery.settings_form:
+  title: 'Clientside Validation jQuery Settings'
+  description: 'Configure clientside validation jQuery settings.'
+  route_name: clientside_validation_jquery.settings_form
+  parent: system.admin_config_ui

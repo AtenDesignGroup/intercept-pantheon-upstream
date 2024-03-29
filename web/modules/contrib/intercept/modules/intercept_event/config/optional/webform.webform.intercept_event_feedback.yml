@@ -1,0 +1,361 @@
+langcode: en
+status: open
+dependencies:
+  module:
+    - webformautosave
+third_party_settings:
+  webformautosave:
+    auto_save: true
+    auto_save_time: 500
+    optimistic_locking: false
+weight: 0
+open: null
+close: null
+uid: 6
+template: false
+archive: false
+id: intercept_event_feedback
+title: 'Intercept Event Feedback'
+description: ''
+categories: {  }
+elements: |-
+  step_1:
+    '#type': webform_card
+    '#title': 'Step 1'
+    '#title_display': none
+    '#title_tag': ''
+    '#prev_button_label': '< Previous'
+    '#next_button_label': 'Next >'
+    how_did_the_event_go:
+      '#type': webform_image_select
+      '#title': 'How’d the event go?'
+      '#title_display': before
+      '#images':
+        Like:
+          text: Like
+          src: '/modules/contrib/intercept/modules/intercept_event/img/like.svg'
+        Dislike:
+          text: Dislike
+          src: '/modules/contrib/intercept/modules/intercept_event/img/dislike.svg'
+      '#required': true
+      '#attributes':
+        class:
+          - browser-default
+  step_2_positive:
+    '#type': webform_card
+    '#title': 'Step 2 Positive'
+    '#title_display': none
+    '#states':
+      visible:
+        ':input[name="how_did_the_event_go"]':
+          value: Like
+    '#title_tag': ''
+    '#prev_button_label': '< Previous'
+    '#next_button_label': 'Next >'
+    terms:
+      '#type': checkboxes
+      '#title': Terms
+      '#title_display': none
+      '#options':
+        'learned something new': 'learned something new'
+        'fun or engaging': 'fun or engaging'
+        inclusive: inclusive
+        'empowering or inspiring': 'empowering or inspiring'
+        'made connections to my community': 'made connections to my community'
+    tell_us_more_positive:
+      '#type': textarea
+      '#title': 'Tell us more...'
+  step_2a_negative:
+    '#type': webform_card
+    '#title': 'Step 2A Negative'
+    '#title_display': none
+    '#states':
+      visible:
+        ':input[name="how_did_the_event_go"]':
+          value: Dislike
+    '#title_tag': ''
+    '#prev_button_label': '< Previous'
+    '#next_button_label': 'Next >'
+    tell_us_more_negative:
+      '#type': textarea
+      '#title': 'Tell us why...'
+  step_2b_negative:
+    '#type': webform_card
+    '#title': 'Step 2B Negative'
+    '#title_display': none
+    '#states':
+      visible:
+        ':input[name="how_did_the_event_go"]':
+          value: Dislike
+    '#title_tag': ''
+    '#prev_button_label': '< Previous'
+    '#next_button_label': 'Next >'
+    contacted_by_a_staff_member_to_discuss:
+      '#type': radios
+      '#title': 'Would you like to be contacted by a staff member to discuss your experience?'
+      '#options': yes_no
+  step_3:
+    '#type': webform_card
+    '#title': 'Step 3'
+    '#title_display': none
+    '#title_tag': ''
+    '#prev_button_label': '< Previous'
+    '#next_button_label': 'Next >'
+    how_likely_are_you_to_recommend_this_event_to_a_friend:
+      '#type': radios
+      '#title': 'How likely are you to recommend this event to a friend?'
+      '#description': '<p>10 = extremely likely, 1 = not likely at all</p>'
+      '#options': likert_ten_scale
+  step_4:
+    '#type': webform_card
+    '#title': 'Step 4'
+    '#title_display': none
+    '#title_tag': ''
+    '#prev_button_label': '< Previous'
+    '#next_button_label': Save
+    how_did_you_hear_about_this_event:
+      '#type': webform_radios_other
+      '#title': 'How did you hear about this event?'
+      '#options':
+        'Search engine (Google, Bing, etc.)': 'Search engine (Google, Bing, etc.)'
+        'Social media (Facebook, Instagram, Twitter, etc.)': 'Social media (Facebook, Instagram, Twitter, etc.)'
+        "Library's home page": "Library's home page"
+        "Library's events page": "Library's events page"
+        'Blog post': 'Blog post'
+        'Through a friend': 'Through a friend'
+  step_5:
+    '#type': webform_card
+    '#title': 'Step 5'
+    '#title_display': none
+    '#title_tag': ''
+    '#prev_button_label': '< Previous'
+    confirmation_text:
+      '#type': webform_markup
+      '#markup': '<p>Thank you for your feedback on this event!</p>'
+css: ''
+javascript: ''
+settings:
+  ajax: true
+  ajax_scroll_top: ''
+  ajax_progress_type: ''
+  ajax_effect: none
+  ajax_speed: null
+  page: true
+  page_submit_path: ''
+  page_confirm_path: ''
+  page_theme_name: ''
+  form_title: source_entity_webform
+  form_submit_once: false
+  form_open_message: ''
+  form_close_message: ''
+  form_exception_message: ''
+  form_previous_submissions: false
+  form_confidential: false
+  form_confidential_message: ''
+  form_disable_remote_addr: true
+  form_convert_anonymous: false
+  form_prepopulate: true
+  form_prepopulate_source_entity: true
+  form_prepopulate_source_entity_required: false
+  form_prepopulate_source_entity_type: node
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
+  form_disable_autocomplete: false
+  form_novalidate: false
+  form_disable_inline_errors: false
+  form_required: false
+  form_autofocus: false
+  form_details_toggle: false
+  form_reset: false
+  form_access_denied: message
+  form_access_denied_title: ''
+  form_access_denied_message: '<p>Access to this form is currently disabled.</p>'
+  form_access_denied_attributes: {  }
+  form_file_limit: ''
+  form_attributes:
+    class:
+      - evaluation
+  form_method: ''
+  form_action: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
+  submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
+  submission_log: true
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
+  submission_views: {  }
+  submission_views_replace: {  }
+  submission_user_columns: {  }
+  submission_user_duplicate: false
+  submission_access_denied: default
+  submission_access_denied_title: ''
+  submission_access_denied_message: ''
+  submission_access_denied_attributes: {  }
+  previous_submission_message: ''
+  previous_submissions_message: ''
+  autofill: false
+  autofill_message: ''
+  autofill_excluded_elements: {  }
+  wizard_progress_bar: false
+  wizard_progress_pages: false
+  wizard_progress_percentage: false
+  wizard_progress_link: false
+  wizard_progress_states: false
+  wizard_start_label: ''
+  wizard_preview_link: false
+  wizard_confirmation: true
+  wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: true
+  wizard_keyboard: true
+  wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
+  preview: 0
+  preview_label: ''
+  preview_title: ''
+  preview_message: ''
+  preview_attributes: {  }
+  preview_excluded_elements: {  }
+  preview_exclude_empty: true
+  preview_exclude_empty_checkbox: false
+  draft: all
+  draft_multiple: false
+  draft_auto_save: true
+  draft_saved_message: ''
+  draft_loaded_message: '[none]'
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
+  confirmation_type: none
+  confirmation_url: ''
+  confirmation_title: ''
+  confirmation_message: '<p>Thanks for your feedback on this event!</p>'
+  confirmation_attributes: {  }
+  confirmation_back: false
+  confirmation_back_label: ''
+  confirmation_back_attributes: {  }
+  confirmation_exclude_query: false
+  confirmation_exclude_token: false
+  confirmation_update: false
+  limit_total: null
+  limit_total_interval: null
+  limit_total_message: ''
+  limit_total_unique: false
+  limit_user: null
+  limit_user_interval: null
+  limit_user_message: ''
+  limit_user_unique: false
+  entity_limit_total: null
+  entity_limit_total_interval: null
+  entity_limit_user: null
+  entity_limit_user_interval: null
+  purge: draft
+  purge_days: 182
+  results_disabled: false
+  results_disabled_ignore: false
+  results_customize: false
+  token_view: false
+  token_update: false
+  token_delete: false
+  serial_disabled: false
+access:
+  create:
+    roles:
+      - anonymous
+      - authenticated
+    users: {  }
+    permissions: {  }
+  view_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  purge_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  view_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  administer:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  test:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  configuration:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+handlers:
+  email_if_customer_wants_to_be_contacted:
+    id: email
+    handler_id: email_if_customer_wants_to_be_contacted
+    label: 'Email if customer wants to be contacted'
+    notes: ''
+    status: true
+    conditions:
+      enabled:
+        ':input[name="contacted_by_a_staff_member_to_discuss"]':
+          value: 'Yes'
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: EventsandExperience_mg@richlandlibrary.com
+      to_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      subject: _default
+      body: _default
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: false
+      theme_name: ''
+      parameters: {  }
+      debug: false
+variants: {  }

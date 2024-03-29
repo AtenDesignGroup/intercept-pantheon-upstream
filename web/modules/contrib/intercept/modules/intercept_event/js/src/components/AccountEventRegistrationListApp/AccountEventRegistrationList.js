@@ -23,10 +23,6 @@ import ContentList from 'intercept/ContentList';
 import EventTeaser from 'intercept/EventTeaser';
 import LoadingIndicator from 'intercept/LoadingIndicator';
 import ViewSwitcher from 'intercept/ViewSwitcher';
-// Local Components
-import EventList from '../EventList';
-
-import { CircularProgress } from '@material-ui/core';
 
 const { constants, api, select } = interceptClient;
 const c = constants;

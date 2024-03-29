@@ -46,7 +46,7 @@ class StatusUpdateController implements ContainerInjectionInterface {
    *   The entity type of the office hours field.
    * @param string $entity_id
    *   The entity id.
-   * @param string $field
+   * @param string $field_name
    *   The office hours field in question.
    * @param string $langcode
    *   The current langcode for the entity.
@@ -87,12 +87,29 @@ class StatusUpdateController implements ContainerInjectionInterface {
       throw new NotFoundHttpException();
     }
 
-    $fieldItemList = $entity->get($field_name);
-    if (!$fieldItemList instanceof OfficeHoursItemListInterface) {
+    $items = $entity->get($field_name);
+    if (!$items instanceof OfficeHoursItemListInterface) {
       throw new AccessDeniedHttpException();
     }
 
-    $renderable = $fieldItemList->view($view_mode);
+    $renderable = $items->view($view_mode);
+    /*
+      @see https://www.drupal.org/project/office_hours/issues/3397009
+      Here, we tried in vain to use the layout_builder third_party_settings.
+      This is not possible, as per core\modules\layout_builder\src\Entity\LayoutBuilderEntityViewDisplay.php::buildMultiple().
+      "Layout Builder can not be enabled for the '_custom' view mode that is
+      "used for on-the-fly rendering of fields in isolation from the entity.
+
+      @see also https://www.drupal.org/project/drupal/issues/3023220 :
+      "Performance: Prevent extra Layout Builder code from running
+      "when rendering fields in isolation (Views results, FieldBlock, etc)"
+
+        $entity_bundle = $entity->bundle();
+        $entity_display = EntityViewDisplay::collectRenderDisplay($entity, $view_mode);
+        $display_settings = $entity_display->getComponent($field_name);
+        $display_settings['view_mode'] = $view_mode;
+        $renderable = $items->view($display_settings);
+     */
 
     $response = new Response();
     $response->setContent($this->renderer->render($renderable));
@@ -100,8 +117,41 @@ class StatusUpdateController implements ContainerInjectionInterface {
     return $response;
   }
 
-  public static function attachStatusUpdateJS(OfficeHoursItemListInterface $items, $langcode, $view_mode, array $elements)
-  {
+  /**
+   * Attaches JSON-encoded attributes for StatusUpdateJS file.
+   *
+   * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items
+   *   The office_hours items.
+   * @param string $langcode
+   *   The preferred language.
+   * @param string $view_mode
+   *   The current view mode.
+   * @param array $third_party_settings
+   *   Extra settings, e.g., layout_builder.
+   * @param array $elements
+   *   The render array.
+   *
+   * @return array
+   *   Updated render array.
+   */
+  public static function attachStatusUpdate(OfficeHoursItemListInterface $items, $langcode, $view_mode, array $third_party_settings, array $elements) {
+    // Note: when changing this, also test the Views StatusFilter.
+    if (!\Drupal::currentUser()->isAnonymous()) {
+      // Field cache should work properly for non-anonymous users.
+      return $elements;
+    }
+
+    if (!\Drupal::moduleHandler()->moduleExists('page_cache')) {
+      // This is to fix the page_cache module.
+      return $elements;
+    }
+
+    if ($third_party_settings['layout_builder']['view_mode'] ?? FALSE) {
+      // layout_builder module cannot display fields in isolation.
+      // @see https://www.drupal.org/project/office_hours/issues/3397009
+      return $elements;
+    }
+
     $parent_entity = $items->getParent()->getEntity();
     $field_definition = $items->getFieldDefinition();
     $status_metadata = [
@@ -110,6 +160,7 @@ class StatusUpdateController implements ContainerInjectionInterface {
       'field_name' => $field_definition->getName(),
       'langcode' => $langcode,
       'view_mode' => $view_mode,
+      'request_time' => \Drupal::time()->getRequestTime(),
     ];
 
     // Enable dynamic field update in office_hours_status_update.js.
@@ -119,8 +170,9 @@ class StatusUpdateController implements ContainerInjectionInterface {
       ],
     ];
 
-    $elements['#attributes']['data-drupal-office-hours-status'] = json_encode($status_metadata);
+    $elements['#attributes']['js-office-hours-status-data'] = json_encode($status_metadata);
 
     return $elements;
   }
+
 }

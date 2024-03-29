@@ -1,7 +1,0 @@
-langcode: en
-status: true
-dependencies: {  }
-name: 'Evaluation Criteria'
-vid: evaluation_criteria
-description: 'Simple statements that provide insight into how users come up with their evaluation'
-weight: 0

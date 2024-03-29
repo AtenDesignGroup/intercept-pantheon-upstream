@@ -10,7 +10,7 @@ libraries:
   - office_hours
 type: module
 
-# Information added by Drupal.org packaging script on 2023-10-07
-version: '8.x-1.12'
+# Information added by Drupal.org packaging script on 2024-03-07
+version: '8.x-1.17'
 project: 'office_hours'
-datestamp: 1696706145
+datestamp: 1709818120

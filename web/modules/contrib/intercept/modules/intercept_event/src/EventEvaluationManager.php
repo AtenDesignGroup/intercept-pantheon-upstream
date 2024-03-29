@@ -11,7 +11,6 @@ use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\intercept_event\Form\EventEvaluationAttendeeForm;
 use Drupal\intercept_event\Form\EventEvaluationStaffForm;
 use Drupal\node\NodeInterface;
 use Drupal\votingapi\VoteInterface;
@@ -28,10 +27,6 @@ class EventEvaluationManager {
   const VOTE_TYPE_ID = 'evaluation';
 
   const VOTE_TYPE_STAFF_ID = 'evaluation_staff';
-
-  const FIELD_NAME_POSITIVE = 'field_evaluation_criteria_pos';
-
-  const FIELD_NAME_NEGATIVE = 'field_evaluation_criteria_neg';
 
   /**
    * The class resolver.
@@ -326,83 +321,8 @@ class EventEvaluationManager {
         'count' => $count,
       ];
     }
-    $criteria_terms = $this->getPositiveCriteria($entity) + $this->getNegativeCriteria($entity);
-    $data = array_reduce($votes, function ($carry, $vote) use ($criteria_terms) {
-      $e = $this->createEventEvaluationInstance($vote);
-      $values = &$carry[$e->getVote()]['criteria'];
-      foreach ($e->getVoteCriteria() as $tid) {
-        $term = $criteria_terms[$tid];
-        $key = $this->useUuid ? $term->uuid() : $tid;
-        if (!isset($values[$key])) {
-          $values[$key] = [
-            'count' => 1,
-            'label' => $term->label(),
-            'id' => $tid,
-          ];
-        }
-        else {
-          $values[$key]['count']++;
-        }
-      }
-      return $carry;
-    }, $data);
 
     return $data;
-  }
-
-  /**
-   * Build the React.js widget for voting on an event view mode.
-   *
-   * @param \Drupal\node\NodeInterface $entity
-   *   The Event Node.
-   *
-   * @return array
-   *   The renderable build array.
-   */
-  public function buildJsWidget(NodeInterface $entity) {
-    if (!$evaluation = $this->loadByEntity($entity, [
-      'type' => self::VOTE_TYPE_ID,
-      'user_id' => '<current>',
-    ])) {
-      $evaluation = $this->createFromEntity($entity);
-    }
-
-    $build['wrapper'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'div',
-      '#attributes' => [
-        'class' => ['js-event-evaluation--attendee'],
-        'data-event-uuid' => [$entity->uuid()],
-        'data-event-type-primary-uuid' => [
-          $evaluation->getPrimaryEventType() ? $evaluation->getPrimaryEventType()->uuid() : '',
-        ],
-      ],
-      '#evaluation' => $evaluation,
-      '#attached' => [
-        'library' => ['intercept_event/eventCustomerEvaluation'],
-      ],
-    ];
-
-    // Attach library here.
-    return $build;
-  }
-
-  /**
-   * Attendee evaluation form.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The Event Evaluation.
-   *
-   * @return array
-   *   Form render array.
-   */
-  public function getAttendeeForm(EntityInterface $entity) {
-    $class = EventEvaluationAttendeeForm::class;
-    $form_arg = $this->classResolver->getInstanceFromDefinition($class)
-      ->setEntity($entity);
-    $form_state = new FormState();
-    return $this->formBuilder
-      ->buildForm($form_arg, $form_state);
   }
 
   /**
@@ -419,8 +339,7 @@ class EventEvaluationManager {
     $form_arg = $this->classResolver->getInstanceFromDefinition($class)
       ->setEntity($entity);
     $form_state = new FormState();
-    return $this->formBuilder
-      ->buildForm($form_arg, $form_state);
+    return $this->formBuilder->buildForm($form_arg, $form_state);
   }
 
   /**
@@ -437,99 +356,6 @@ class EventEvaluationManager {
       return FALSE;
     }
     return $event_type;
-  }
-
-  /**
-   * Gets an array of negative criteria taxonomy Terms.
-   *
-   * @param \Drupal\node\NodeInterface $event
-   *   The event Node.
-   *
-   * @return array
-   *   The array of negative criteria taxonomy Terms.
-   */
-  public function getNegativeCriteria(NodeInterface $event) {
-    $criteria = $this->getCriteria($event);
-    if (!empty($criteria[self::FIELD_NAME_NEGATIVE])) {
-      return $criteria[self::FIELD_NAME_NEGATIVE];
-    }
-    return [];
-  }
-
-  /**
-   * Gets an array of negative criteria taxonomy Term names.
-   *
-   * @param \Drupal\node\NodeInterface $event
-   *   The event Node.
-   *
-   * @return array
-   *   The array of negative criteria taxonomy Term names.
-   */
-  public function getNegativeCriteriaOptions(NodeInterface $event) {
-    $criteria = $this->getNegativeCriteria($event);
-    return array_map(function ($term) {
-      return $term->label();
-    }, $criteria);
-  }
-
-  /**
-   * Gets an array of positive criteria taxonomy Terms.
-   *
-   * @param \Drupal\node\NodeInterface $event
-   *   The event Node.
-   *
-   * @return array
-   *   The array of positive criteria taxonomy Terms.
-   */
-  public function getPositiveCriteria(NodeInterface $event) {
-    $criteria = $this->getCriteria($event);
-    if (!empty($criteria[self::FIELD_NAME_POSITIVE])) {
-      return $criteria[self::FIELD_NAME_POSITIVE];
-    }
-    return [];
-  }
-
-  /**
-   * Gets an array of positive criteria taxonomy Term names.
-   *
-   * @param \Drupal\node\NodeInterface $event
-   *   The event Node.
-   *
-   * @return array
-   *   The array of positive criteria taxonomy Term names.
-   */
-  public function getPositiveCriteriaOptions(NodeInterface $event) {
-    $criteria = $this->getPositiveCriteria($event);
-    return array_map(function ($term) {
-      return $term->label();
-    }, $criteria);
-  }
-
-  /**
-   * Gets an array of criteria taxonomy Terms.
-   *
-   * @param \Drupal\node\NodeInterface $event
-   *   The Event Node.
-   *
-   * @return array
-   *   The array of criteria taxonomy Terms.
-   */
-  public function getCriteria(NodeInterface $event) {
-    $criteria = [];
-    if (!$event_type = $this->getPrimaryEventType($event)) {
-      return $criteria;
-    }
-    $fields = [self::FIELD_NAME_POSITIVE, self::FIELD_NAME_NEGATIVE];
-    foreach ($fields as $field_name) {
-      if ($event_type->get($field_name)->isEmpty()) {
-        continue;
-      }
-      $criteria[$field_name] = [];
-      foreach ($event_type->get($field_name)->getIterator() as $item) {
-        $criteria[$field_name][$item->entity->id()] = $item->entity;
-      }
-    }
-    return $criteria;
   }
 
 }

@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta23] - 2024-03-29
+
+* Updated the Event Data Dashboard to disable filter options that are excluded from the current set of filtered results
+* Updated the room reservation denial message to ask customers to contact the library location to discuss alternate arrangements
+* Updated the event entry page to display a more prominent warning message to staff when their event includes a room reservation that conflicts with an existing room reservation
+* Consolidated Intercept Staff and Intercept Event Organizer roles
+* Fixed issue where staff feedback on events wasn’t saving as expected
+* Fixed a bug on the events listing page where customers could not de-select locations
+* Removed some unnecessary configuration that was used in the old version of customer event feedback
+* Redesigned the Event Feedback mechanism used by customers
+* Improve customer interface for filtering rooms by location when reserving by room
+* Ensured that customers can see the "Add to my Calendar" link once they reserve a room using the "by room" interface
+* Fixed a bug that allowed double-booking by staff when editing an existing event with a reservation
+* Fixed an issue with inconsistent room reserve button sizes on location pages
+* Fixed an error when attempting to clone an existing event
+* Fixed an issue where printable sign-in sheets for events were not loading
+* Removed some unused code on the event list
+
+### Note for Intercept libraries
+
+In this release we’ve restructured the customer feedback mechanism for events. This mechanism previously relied on the Voting API system and now relies on the Webform system. After upgrading to this version of Intercept, it’s recommended that you run all database updates to ensure that feedback is transitioned into this new system and then legacy feedback “votes” should be removed from your system using drush via the following command:
+
+`drush entity:delete vote --bundle=evaluation`
+
+Configuration files related to the old Voting API setup will be removed from Intercept in a future release.
+
 ## [8.x-1.0-beta22] - 2024-01-26
 
  - Fixed an issue on the room reservation calendar where staff were sometimes unable to update guest reservation information

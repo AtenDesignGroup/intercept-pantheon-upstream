@@ -106,12 +106,4 @@ function intercept_event_views_data_alter(&$data) {
     ],
   ];
 
-  $data['node_field_data']['event_evaluation_criteria_count'] = [
-    'group' => new TranslatableMarkup('Intercept'),
-    'title' => new TranslatableMarkup('Event evaluation criteria count'),
-    'help' => new TranslatableMarkup('The number of times customers used a given "evaluation criteria" term in relation to an event.'),
-    'field' => [
-      'id' => 'event_evaluation_criteria_count',
-    ],
-  ];
 }

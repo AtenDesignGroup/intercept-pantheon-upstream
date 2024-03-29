@@ -648,7 +648,6 @@ display:
               intercept_kiosk: '0'
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'
             reduce: false
@@ -709,7 +708,6 @@ display:
               intercept_kiosk: '0'
               intercept_equipment_reservation_manager: '0'
               intercept_event_manager: '0'
-              intercept_event_organizer: '0'
               intercept_room_manager: '0'
               intercept_staff: '0'
               intercept_system_admin: '0'

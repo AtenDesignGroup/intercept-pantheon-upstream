@@ -5,7 +5,6 @@ import debounce from 'lodash/debounce';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
 import interceptClient from 'interceptClient';
-import drupalSettings from 'drupalSettings';
 
 // Material UI
 

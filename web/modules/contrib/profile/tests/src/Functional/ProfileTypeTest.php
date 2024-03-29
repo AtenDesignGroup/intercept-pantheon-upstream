@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\profile\Functional;
 
-use Drupal\profile\Entity\ProfileType;
 use Drupal\profile\Entity\Profile;
+use Drupal\profile\Entity\ProfileType;
 
 /**
  * Tests the profile type UI.
@@ -102,7 +102,7 @@ class ProfileTypeTest extends ProfileTestBase {
       'label' => 'Customer2',
       'id' => 'customer2',
     ];
-    $this->submitForm($edit, t('Save'));
+    $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('Saved the Customer2 profile type.');
 
     // Confirm that the original profile type is unchanged.

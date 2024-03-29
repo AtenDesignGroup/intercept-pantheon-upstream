@@ -3,6 +3,7 @@
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\PluginSettingsBase;
 
 /**
  * Implements ItemListInterface for OfficeHours.
@@ -22,6 +23,8 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    *   The formatter's third party settings.
    * @param int $time
    *   A UNIX time stamp. Defaults to 'REQUEST_TIME'.
+   * @param \Drupal\Core\Field\PluginSettingsBase $plugin
+   *   The widget/formatter at hand.
    *
    * @return array
    *   The formatted list of slots.
@@ -31,7 +34,7 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    * Since twig filters are static methods, a trait is not really an option.
    * Some installations are also subclassing this class.
    */
-  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0);
+  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, PluginSettingsBase $plugin = NULL);
 
   /**
    * {@inheritdoc}
@@ -68,10 +71,37 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    * @param int $time
    *   A UNIX time stamp. Defaults to 'REQUEST_TIME'.
    *
-   * @return null|\Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem
+   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem|null
    *   The current slot data, if any.
    */
   public function getCurrentSlot(int $time = 0);
+
+  /**
+   * Create an array of seasons. (Do not collect regular or exception days.)
+   *
+   * @param bool $add_weekdays_as_season
+   *   True, if the weekdays must be added as season with ID = 0.
+   * @param bool $add_new_season
+   *   True, when a default, empty, season must be added.
+   * @param string $sort
+   *   Empty, 'ascending', 'descending', to sort seasons by start date.
+   * @param int $from
+   *   Unix timestamp. Only seasons with end date after this date are returned.
+   * @param int $from
+   *   Unix timestamp. Only seasons with start date before this date are returned.
+   *
+   * @return \Drupal\office_hours\OfficeHoursSeason[]
+   *   A keyed array of seasons. Key = Season ID.
+   */
+  public function getSeasons($add_weekdays_as_season = FALSE, $add_new_season = FALSE, $sort = '', $from = 0, $to = 0);
+
+  /**
+   * Create an array of exception days keyed by date.
+   *
+   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursExceptionsItem[]
+   *   A keyed array of exception days keyed by date.
+   */
+  public function getExceptionDays();
 
   /**
    * Determines if the Entity has Exception days.
@@ -90,6 +120,6 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    * @return bool
    *   Indicator whether the entity is Open or Closed at the given time.
    */
-  public function isOpen(int $time = 0);
+  public function isOpen(int $time = 0): bool;
 
 }

@@ -3,9 +3,9 @@
 namespace Drupal\Tests\externalauth\Unit;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\externalauth\ExternalAuth;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\UserInterface;
-use Drupal\externalauth\ExternalAuth;
 
 /**
  * ExternalAuth unit tests.

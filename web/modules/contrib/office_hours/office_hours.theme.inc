@@ -5,8 +5,6 @@
  * Implements theme.api.php hooks.
  */
 
-use Drupal\Core\Entity\Entity\EntityViewDisplay;
-
 /**
  * Implements hook_theme().
  */
@@ -82,33 +80,13 @@ function office_hours_preprocess_field(&$variables, $hook) {
     return;
   }
 
-  $element = $variables['element'];
-
-  $entity = $element['#object'];
-  $view_mode = $element['#third_party_settings']['layout_builder']['view_mode'] ?? $element['#view_mode'];
-  $field_name = $element['#field_name'];
-
-  // Get the field formatter settings.
-  $entity_display = EntityViewDisplay::collectRenderDisplay($entity, $view_mode);
-  $settings = $entity_display->getComponent($field_name)['settings'] ?? [];
-
-  // Create error if field settings for this view_mode are not set, yet.
-  if (!isset($settings['exceptions']['title'])) {
-    \Drupal::messenger()->addMessage(t(
-      "Please review the display settings
-      for field %field_name in view mode %view_mode, and save them again.",
-      [
-        '%field_name' => $field_name,
-        '%view_mode' => $view_mode,
-      ]
-    ));
-    return;
-  }
-
   // Update variables for exception hours.
   office_hours_exceptions_preprocess_field($variables, $hook);
 
+  $element = $variables['element'];
   // Add view_mode, taking into account some ThirdPartySettings.
+  $view_mode = $element['#view_mode'];
+  $view_mode = $element['#third_party_settings']['layout_builder']['view_mode'] ?? $view_mode;
   // Note: This could be set in formatter.php with $this->viewMode.
   $delta = 0;
   while (!empty($element[$delta])) {

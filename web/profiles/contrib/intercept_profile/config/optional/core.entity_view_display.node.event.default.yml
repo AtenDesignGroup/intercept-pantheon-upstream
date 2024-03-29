@@ -317,7 +317,6 @@ content:
 hidden:
   checkin_link: true
   evaluation_attendee_default: true
-  evaluation_attendee_js: true
   evaluation_staff: true
   event_recurrence: true
   field_add_to_cal: true

@@ -8,7 +8,7 @@ use Drupal\Core\Field\FieldDefinitionInterface;
  * Plugin implementation of the 'office_hours' field type.
  *
  * @FieldType(
- *   id = "office_hours_season",
+ *   id = "office_hours_season_item",
  *   label = @Translation("Office hours in season"),
  *   list_class = "\Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList",
  *   no_ui = TRUE,
@@ -28,39 +28,19 @@ class OfficeHoursSeasonItem extends OfficeHoursItem {
   /**
    * {@inheritdoc}
    */
-  public function formatTimeSlot(array $settings) {
-    if (!$this->isSeasonHeader()) {
-      return parent::formatTimeSlot($settings);
+  public function isInRange(int $from, int $to): bool {
+    if ($to < $from || $to < 0) {
+      // @todo Error. Raise try/catch exception for $to < $from.
+      // @todo Undefined result for <0. Raise try/catch exception.
+      return FALSE;
     }
 
-    // For now, do not show the season dates in the formatter.
-    // The user can set them in the Season name, too.
-    // This saves many feature requests :-).
-    // $format = 'd-m-Y'; // @todo Implement formatting for season header.
-    return '';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getLabel(array $settings) {
-    if ($this->isSeasonHeader()) {
-      return $this->comment;
+    $season = $this->getSeason();
+    $result = $season->isInRange($from, $to);
+    if ($result == TRUE) {
+      $result = parent::isInRange($from, $to);
     }
-    return parent::getLabel($settings);
-  }
-
-   /**
-   * {@inheritdoc}
-   */
-  public function isInRange($from, $to) {
-    if ($this->isSeasonDay()) {
-      $season = $this->parent->getSeasons()[$this->getSeasonId()];
-      $minTime = $season->getFromDate();
-      $maxTime = $season->getToDate();
-      return ($from >= $minTime && $to <= $maxTime);
-    }
-    return FALSE;
+    return $result;
   }
 
 }

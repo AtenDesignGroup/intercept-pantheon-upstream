@@ -86,7 +86,7 @@ function intercept_location_closing_form_node_form_alter(&$form, FormStateInterf
   $entity = $form_state->getFormObject()->getEntity();
   $bundle = $entity->bundle();
 
-  if ($bundle == 'event') {
+  if ($bundle == 'event' && $form_id != 'node_event_quick_node_clone_form') {
     \Drupal::service('intercept_location_closing.query')->eventClosingConflictPrompt($entity);
   }
 }
@@ -107,40 +107,6 @@ function intercept_location_closing_node_update(EntityInterface $entity) {
   if ($entity->bundle() == 'event') {
     \Drupal::service('intercept_location_closing.query')->eventClosingConflictPrompt($entity);
   }
-}
-
-/**
- * Implements hook_preprocess_HOOK() for intercept_event_list.
- */
-function intercept_location_closing_preprocess_intercept_event_list(&$variables) {
-  $results = [];
-  $first_day = new \DateTime('first day of january this year');
-  $closing_query = \Drupal::service('entity_type.manager')
-    ->getStorage('intercept_location_closing')
-    ->getQuery()
-    ->accessCheck(TRUE);
-  $closings = $closing_query
-    ->condition('status', 1)
-    ->condition('date.value', $first_day->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>=')
-    ->execute();
-  if (!empty($closings)) {
-    $results = array_map(function ($closing_id) {
-      /** @var \Drupal\intercept_location_closing\Entity\InterceptLocationClosingInterface $closing */
-      $closing = \Drupal::service('entity_type.manager')
-        ->getStorage('intercept_location_closing')
-        ->load($closing_id);
-      return [
-        'id' => $closing->id(),
-        'message' => $closing->getMessage(),
-        'start' => $closing->getStartTime(),
-        'end' => $closing->getEndTime(),
-        'locations' => array_map(function ($location) {
-          return $location->uuid();
-        }, $closing->getLocations()),
-      ];
-    }, $closings);
-  }
-  $variables['#attached']['drupalSettings']['intercept']['location_closings'] = $results;
 }
 
 /**

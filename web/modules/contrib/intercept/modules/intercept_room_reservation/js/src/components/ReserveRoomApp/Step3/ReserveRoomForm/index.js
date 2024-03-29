@@ -357,7 +357,7 @@ class ReserveRoomForm extends PureComponent {
     this.form = React.createRef();
 
     // Show the reservation teaser if it has successfully saved.
-    if (uuid && get(this.props.getRoomReservation(uuid), `${uuid}.state.saved`) === true) {
+    if (uuid && get(this.props.getRoomReservation(uuid), 'state.saved') === true) {
       content = <ReservationTeaser id={uuid} />;
     } else {
       // Contact Information display for customers

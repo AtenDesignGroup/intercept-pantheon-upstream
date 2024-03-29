@@ -1,0 +1,16 @@
+{
+  "name": "drupal/clientside_validation",
+  "description": "This module adds clientside validation",
+  "homepage": "https://www.drupal.org/project/clientside_validation",
+  "type": "drupal-module",
+  "support": {
+    "issues": "https://drupal.org/project/issues/clientside_validation",
+    "source": "https://git.drupalcode.org/project/clientside_validation"
+  },
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.4.0",
+    "drupal/core": "^9.4 || ^10.0"
+  }
+}

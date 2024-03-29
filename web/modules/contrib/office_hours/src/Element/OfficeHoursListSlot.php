@@ -20,19 +20,18 @@ class OfficeHoursListSlot extends OfficeHoursBaseSlot {
     parent::processOfficeHoursSlot($element, $form_state, $complete_form);
 
     // The valueCallback() has populated the #value array.
-    $value = $element['#value'];
-    $day = $element['#value']['day'];
-    $day_delta = $element['#day_delta'];
-    $label = parent::getLabel('long', $value, $day_delta);
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+    $item = $element['#value'];
+    $day = $item->day;
 
-    // Fetch titles.
+    // Add standardized labels to time slot element.
     $field_settings = $element['#field_settings'];
     $labels = OfficeHoursItem::getPropertyLabels('#prefix', $field_settings);
 
     $element['day'] = [
       '#type' => 'select',
       // Add a label/header/title for accessibility (a11y) screen readers.
-      '#title' => 'A Weekday',
+      '#title' => t('Weekday'),
       '#title_display' => 'invisible',
       '#options' => OfficeHoursDateHelper::weekDays(FALSE),
       '#default_value' => $day,

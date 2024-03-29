@@ -1,0 +1,5 @@
+clientside_validation_demo.form:
+  title: 'Clientside Validation Demo'
+  description: 'Provides demo for Clientside Validation.'
+  route_name: clientside_validation_demo.form
+  parent: system.admin_config_ui

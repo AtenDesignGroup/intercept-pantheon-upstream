@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Post update functions for Office Hours.
+ * Post update functions for Office Hours module.
  */
 
 use Drupal\Core\Config\Entity\ConfigEntityUpdater;

@@ -20,9 +20,8 @@ class ProfileStorage extends SqlContentEntityStorage implements ProfileStorageIn
       ->condition('type', $profile_type_id)
       ->condition('status', $published)
       ->sort('is_default', 'DESC')
-      ->sort('profile_id', 'DESC')
-      ->accessCheck(FALSE);
-    $result = $query->execute();
+      ->sort('profile_id', 'DESC');
+    $result = $query->accessCheck(FALSE)->execute();
 
     return $result ? $this->loadMultiple($result) : [];
   }
@@ -38,9 +37,8 @@ class ProfileStorage extends SqlContentEntityStorage implements ProfileStorageIn
       ->condition('status', TRUE)
       ->sort('is_default', 'DESC')
       ->sort('profile_id', 'DESC')
-      ->range(0, 1)
-      ->accessCheck(FALSE);
-    $result = $query->execute();
+      ->range(0, 1);
+    $result = $query->accessCheck(FALSE)->execute();
 
     return $result ? $this->load(reset($result)) : NULL;
   }

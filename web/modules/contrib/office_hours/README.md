@@ -1,7 +1,8 @@
 # OFFICE HOURS
 
-Office Hours creates a Field, that you can add to any entity (like a location,
-a restaurant or a user) to represent "office hours" or "opening hours".
+The Office Hours module creates a Field, that you can add to any entity
+(like a location, a restaurant or a user) to represent "office hours"
+or "opening hours".
 
 ## GENERAL FEATURES
 
@@ -68,16 +69,17 @@ Add the Field to any Views display, as you are used to do.
 ## USING VIEWS - FILTER CRITERIA
 
 Only default (out-of-the-box) Views functionality is provided.
-- To show only the entities that have a office hours:
+- To show only the entities that have Office hours:
   - add the filter criterion 'Content: Office hours (field_office_hours:day)',
   - set the filter option 'Operator' to 'is not empty',
-- To show only the entities that have office hours for e.g., Friday:
+- To show only the entities that have Office hours for e.g., Friday:
   - add the filter criterion 'Content: Office hours (field_office_hours:day)',
   - set the filter option 'Operator' to 'is equal to',
   - set the filter option 'Value' to '5',
      or leave 'Value' empty and set 'Expose operator' to YES.
 - To show only the entities that are open NOW:
-  - add the filter criterion 'Content: Office hours (OfficeHours2 (field_office_hours:status)',
+  - add the filter criterion
+   'Content: Office hours (OfficeHours2 (field_office_hours:status)',
   - choose any of the statusses Open, temporarily closed, permanently closed.
 
 ## USING VIEWS - SORT CRITERIA

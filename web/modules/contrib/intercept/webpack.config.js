@@ -14,7 +14,6 @@ const entries = {
     'eventAttendanceList',
     'eventCustomerEvaluation',
     'eventCustomerEvaluations',
-    'eventList',
     'eventRegister',
     'eventRegisterButton',
     'eventRegistrationList',

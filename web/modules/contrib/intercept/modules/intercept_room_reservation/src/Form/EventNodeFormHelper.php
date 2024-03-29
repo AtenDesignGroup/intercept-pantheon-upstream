@@ -155,7 +155,7 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $form['reservation']['dates']['start'] = [
       '#title' => $this->t('Reservation start time'),
       '#type' => 'datetime',
-    // Use 15 minute increments.
+      // Use 15 minute increments.
       '#date_increment' => 900,
       '#default_value' => $start_date_object,
       '#ajax' => [
@@ -174,7 +174,7 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     $form['reservation']['dates']['end'] = [
       '#title' => $this->t('Reservation end time'),
       '#type' => 'datetime',
-    // Use 15 minute increments.
+      // Use 15 minute increments.
       '#date_increment' => 900,
       '#default_value' => $end_date_object,
       '#ajax' => [
@@ -247,6 +247,35 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
 
     if ($start_date > $end_date) {
       $message = $this->t('The selected reservation times are invalid.');
+      $form_state->setError($form['reservation'], $message);
+    }
+
+    // Check for room reservation conflict.
+    // Very similar to what's going on in updateFormStatusField().
+    $event = $form_state->getFormObject()->getEntity();
+    $room = $form_state->getValue('field_room');
+    $dates = $form_state->getValue(['reservation', 'dates']);
+    $params = [
+      'rooms' => [$room[0]['target_id']],
+      'start' => $this->dateUtility->convertTimezone($start_date)->format($this->reservationManager::FORMAT),
+      'end' => $this->dateUtility->convertTimezone($end_date)->format($this->reservationManager::FORMAT),
+    ];
+    if (!$event->isNew()) {
+      $params['event'] = $event->id();
+    }
+    $availability = $this->reservationManager->availability($params);
+    $status = reset($availability);
+    $message = '';
+    if ($status['has_reservation_conflict']) {
+      $message = $this->t('This room is not available due to a conflict.');
+    }
+    elseif ($status['has_open_hours_conflict']) {
+      $message = $this->t('Reservation times conflict with location open hours.');
+    }
+    if ($start_date > $end_date) {
+      $message = $this->t('The selected reservation times are invalid.');
+    }
+    if (!empty($message)) {
       $form_state->setError($form['reservation'], $message);
     }
   }

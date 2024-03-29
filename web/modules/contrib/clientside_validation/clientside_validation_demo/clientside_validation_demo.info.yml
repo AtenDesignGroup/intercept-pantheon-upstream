@@ -1,0 +1,13 @@
+type: module
+name: Clientside Validation Demo
+description: 'Provides demo for Clientside Validation.'
+package: Clientside Validation
+configure: clientside_validation_demo.form
+core_version_requirement: ^9.4 || ^10
+dependencies:
+  - clientside_validation:clientside_validation_jquery
+
+# Information added by Drupal.org packaging script on 2023-02-10
+version: '4.0.2'
+project: 'clientside_validation'
+datestamp: 1676011272

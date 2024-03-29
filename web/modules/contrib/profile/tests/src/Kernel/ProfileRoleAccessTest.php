@@ -117,7 +117,7 @@ class ProfileRoleAccessTest extends EntityKernelTestBase {
    * Tests profile create role access checks.
    */
   public function testProfileCreate() {
-    $user = $this->createUser([], [
+    $user = $this->createUser([
       "create {$this->type1->id()} profile",
       "create {$this->type2->id()} profile",
       "create {$this->type3->id()} profile",
@@ -154,7 +154,7 @@ class ProfileRoleAccessTest extends EntityKernelTestBase {
    * Tests profile operations role access checks.
    */
   public function testProfileOperations() {
-    $user = $this->createUser([], [
+    $user = $this->createUser([
       "update own {$this->type1->id()} profile",
       "update own {$this->type2->id()} profile",
     ]);
@@ -172,7 +172,7 @@ class ProfileRoleAccessTest extends EntityKernelTestBase {
     $this->assertTrue($this->accessHandler->access($profile2, 'update', $user));
 
     $operations = ['view', 'update', 'delete'];
-    $user2 = $this->createUser([], [
+    $user2 = $this->createUser([
       "view any {$this->type2->id()} profile",
       "update any {$this->type2->id()} profile",
       "delete any {$this->type2->id()} profile",
@@ -191,7 +191,7 @@ class ProfileRoleAccessTest extends EntityKernelTestBase {
       $this->assertFalse($this->accessHandler->access($profile2, $operation, $user2));
     }
 
-    $user3 = $this->createUser([], [
+    $user3 = $this->createUser([
       "view own {$this->type3->id()} profile",
       "update own {$this->type3->id()} profile",
       "delete own {$this->type3->id()} profile",

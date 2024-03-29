@@ -1,12 +1,19 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - intercept_core
+    - media
+    - node
+    - system
 id: intercept_staff
 label: 'Intercept Staff'
-weight: 4
+weight: 7
 is_admin: null
 permissions:
+  - 'access email field'
   - 'access environment indicator'
+  - 'access event attendance tab'
   - 'access event registrations tab'
   - 'access management'
   - 'access management page equipment_reservations'
@@ -23,22 +30,33 @@ permissions:
   - 'analyze events'
   - 'approve room_reservation'
   - 'bypass event registration limit'
+  - 'bypass room certification constraints'
   - 'bypass room reservation agreement'
   - 'bypass room reservation limit'
-  - 'bypass room reservation maximum duration constraints'
-  - 'bypass room reservation open hours constraints'
   - 'bypass room reservation maximum capacity constraints'
+  - 'bypass room reservation maximum duration constraints'
   - 'bypass room reservation minimum capacity constraints'
+  - 'bypass room reservation open hours constraints'
   - 'cancel event_registration entities'
   - 'cancel referenced user room_reservation'
   - 'cancel room_reservation'
+  - 'clone event content'
+  - 'copy room reservations'
   - 'create equipment_reservation'
+  - 'create event content'
   - 'create event content from template'
+  - 'create event_recurrence'
   - 'create event_registration'
+  - 'create own event feedback'
+  - 'create media'
   - 'create room_reservation'
+  - 'delete any event_registration'
   - 'delete equipment reservation entities'
   - 'delete intercept guest entity'
   - 'delete own equipment_reservation'
+  - 'delete own event content'
+  - 'delete own files'
+  - 'edit any event content'
   - 'edit equipment reservation entities'
   - 'edit intercept guest entity'
   - 'evaluate any event'
@@ -51,8 +69,10 @@ permissions:
   - 'unflag saved_event'
   - 'update any event evaluation'
   - 'update any event_attendance'
+  - 'update any event_recurrence'
   - 'update any event_registration'
   - 'update any room_reservation'
+  - 'update media'
   - 'update own customer profile'
   - 'update own equipment_reservation'
   - 'update own room_reservation'

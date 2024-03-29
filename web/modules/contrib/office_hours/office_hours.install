@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Office hours module.
+ * Install, update and uninstall functions for the Office Hours module.
  */
 
 use Drupal\Core\Database\Database;
@@ -14,9 +14,9 @@ use Drupal\Core\Database\Database;
  *   The sandbox variable.
  */
 function office_hours_update_8001(&$sandbox) {
-  \Drupal::messenger()->addMessage(
+  \Drupal::messenger()->addMessage(t(
     'Please review the Field, Widget and Formatter settings,
-    and save them again.');
+    and save them again.'));
 }
 
 /**
@@ -115,6 +115,18 @@ function office_hours_update_8005(&$sandbox) {
       $field_storage_definition = $entity_definition_update_manager->getFieldStorageDefinition($field_name, $entity_type);
       $entity_definition_update_manager->updateFieldStorageDefinition($field_storage_definition);
     }
+  }
+
+  /**
+   * Re-saving data needed.
+   *
+   * @param mixed $sandbox
+   *   The sandbox variable.
+   */
+  function office_hours_update_8013(&$sandbox) {
+    \Drupal::messenger()->addMessage(t(
+      'Please review the new settings for Seasonal and Exceptional Office hours
+      in Field, Widget, Formatter and Views.'));
   }
 
 }

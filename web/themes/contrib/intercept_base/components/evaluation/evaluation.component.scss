@@ -11,6 +11,7 @@
 }
 
 .evaluation {
+  div[id^="webform-submission-intercept-event-feedback"],
   .evaluation__eval-widget,
   .evaluation__criteria-widget {
     width: 100%;
@@ -20,18 +21,69 @@
     }
   }
 
+  .webform-card {
+    border: none;
+    padding: 0;
+    margin: 0 0 1.875rem 0;
+  }
+
+  [id^="edit-step-1"] label,
+  legend,
   .evaluation__widget-label {
-    @include fs(body);
+    font-size: 20px;
+    color: $gray-20;
+    font-weight: $fw-semibold;
+    margin: 0 0 0.75rem 0;
+    display: block;
 
     &:not(:last-child) {
       @include spacing('margin-bottom', compact);
     }
   }
 
+  .form-checkboxes label {
+    vertical-align: top;
+  }
+
+  ul.thumbnails.image_picker_selector,
   .evaluation__widget-inputs {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+  }
+
+  ul.thumbnails.image_picker_selector li .thumbnail {
+    width: 100%;
+    justify-content: inherit;
+    border: none;
+    padding: 9px;
+    float: none;
+    margin: 0;
+    flex: 0 0 auto;
+    overflow: visible;
+    font-size: 1.5rem;
+    text-align: center;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    outline: 0;
+    position: relative;
+    align-items: center;
+    user-select: none;
+    vertical-align: middle;
+    -moz-appearance: none;
+    justify-content: center;
+    text-decoration: none;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .MuiIconButton-label {
+    width: 100%;
+    display: flex;
+    align-items: inherit;
+    justify-content: inherit;
   }
 
   .evaluation__radio-icon {
@@ -40,6 +92,7 @@
     height: rem(80px);
     width: rem(80px);
 
+    img,
     svg {
       height: percentage(60/110);
       width: percentage(60/110);
@@ -52,6 +105,38 @@
     &:not(:first-child) {
       margin-right: rem(10px);
     }
+  }
+
+  .form-submit {
+    padding: 4px 10px;
+    font-size: 0.8125rem;
+    box-shadow: none;
+    min-width: 64px;
+    box-sizing: border-box;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-weight: 700;
+    line-height: 1.75;
+    border-radius: 0;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    border: 0;
+    cursor: pointer;
+    margin: 0;
+    display: inline-flex;
+    outline: 0;
+    position: relative;
+    align-items: center;
+    user-select: none;
+    vertical-align: middle;
+    -moz-appearance: none;
+    justify-content: center;
+    text-decoration: none;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .webform-button--submit {
+    // Has to be marked as important to override the inline style from webform.
+    display: none !important;
   }
 
   @include bp(medium) {
@@ -85,7 +170,8 @@
       justify-content: stretch;
     }
 
-    .evaluation__criteria {
+    .evaluation__criteria,
+    .form-actions {
       flex: none;
       margin-left: rem(50px);
       padding-left: rem(50px);
@@ -191,5 +277,12 @@
     // This is important to overide the focus state from MUI.
     color: $clr-text !important;
     margin-bottom: 16px;
+  }
+}
+
+// Event Feedback webform
+.webform-submission-form.webform-submission-intercept-event-feedback-form {
+  .webform-button--draft {
+    display: none !important;
   }
 }

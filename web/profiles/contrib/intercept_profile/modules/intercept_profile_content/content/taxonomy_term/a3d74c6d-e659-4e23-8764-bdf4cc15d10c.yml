@@ -38,29 +38,3 @@ default:
       alias: ''
       langcode: en
       pathauto: 0
-  field_evaluation_criteria_neg:
-    -
-      entity: 8f45b464-ed1e-456b-9625-b22e2299a1d8
-    -
-      entity: 722df3ba-783b-4b70-866b-f4aa7517d68b
-    -
-      entity: d74e7b0f-cefa-4158-b2ed-29145adf46e6
-    -
-      entity: d6e0c15d-d1fc-49b1-89f8-3eda73446c1d
-    -
-      entity: df791128-071f-466f-87f7-c33037ebd9c4
-    -
-      entity: d7bb0d12-54a3-4b02-b99a-bb86a918dd25
-  field_evaluation_criteria_pos:
-    -
-      entity: b198e151-eb92-4021-922a-34dbb545047f
-    -
-      entity: ca9d7513-7eab-4801-b9f1-497868db3eca
-    -
-      entity: 46ab7721-b4df-49e0-8939-749253ae1930
-    -
-      entity: 17b370e8-a396-4a32-9938-0970fcafafb3
-    -
-      entity: a347f34c-4743-49f2-8b82-08d5c4488bd8
-    -
-      entity: 81ba7bb0-327d-4057-b1fd-30bd8a7a160d

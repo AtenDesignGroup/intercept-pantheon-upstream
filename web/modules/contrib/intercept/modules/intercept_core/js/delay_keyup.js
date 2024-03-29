@@ -1,6 +1,7 @@
 /**
  * @file
  * Provides JavaScript for delayed keyup response form.
+ * Keyword: delay_keyup
  */
 
 (function ($, Drupal) {

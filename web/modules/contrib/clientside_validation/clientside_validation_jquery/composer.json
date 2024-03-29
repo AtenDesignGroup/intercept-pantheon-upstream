@@ -1,0 +1,17 @@
+{
+  "name": "drupal/clientside_validation_jquery",
+  "description": "Sub-module of clientside_validation.",
+  "type": "drupal-drush",
+  "autoload": {
+    "psr-4": {
+      "Drupal\\clientside_validation_jquery\\": "src/"
+    }
+  },
+  "extra": {
+    "drush": {
+      "services": {
+        "drush.services.yml": "^9"
+      }
+    }
+  }
+}

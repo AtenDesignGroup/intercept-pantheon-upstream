@@ -710,7 +710,7 @@ function getReservationButtonText(resource) {
   }
 }
 
-export const roomReservation = id => records(c.TYPE_ROOM_RESERVATION, id);
+export const roomReservation = id => record({type: c.TYPE_ROOM_RESERVATION, id});
 export const roomReservations = records(c.TYPE_ROOM_RESERVATION);
 export const roomReservationsArray = createSelector(roomReservations, Object.values);
 

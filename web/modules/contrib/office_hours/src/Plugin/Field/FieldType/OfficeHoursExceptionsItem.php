@@ -2,6 +2,7 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
 
@@ -40,32 +41,22 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
   /**
    * {@inheritdoc}
    */
-  public function getLabel(array $settings) {
+  public function label(array $settings) {
     $day = $this->day;
-    if ($day === '' || $day === NULL) {
-      // A new Exception slot.
-      // @todo Value deteriorates in ExceptionsSlot::validate().
-      $label = '';
-    }
-    elseif ($day == OfficeHoursItem::EXCEPTION_DAY) {
-      $label = $settings['exceptions']['title'] ?? '';
-    }
-    else {
-      $exceptions_day_format = $settings['exceptions']['date_format'] ?? NULL;
-      $day_format = $settings['day_format'];
-      $days_suffix = $settings['separator']['day_hours'];
-      $pattern = $exceptions_day_format ? $exceptions_day_format : $day_format;
 
-      if ($pattern == 'l') {
-        // Convert date into weekday in widget.
-        $label = \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
-      }
-      else {
-        $label = \Drupal::service('date.formatter')->format($day, $pattern);
-        // Remove excessive time part.
-        $label = str_replace(' - 00:00', '', $label);
-      }
-      $label .= $days_suffix;
+    switch (TRUE) {
+      case OfficeHoursDateHelper::isExceptionHeader($day):
+        $label = $settings['exceptions']['title']
+          ? $this->t(Html::escape($settings['exceptions']['title']))
+          : '';
+        break;
+
+      default:
+        // Exception date. Override pattern.
+        $settings['day_format'] = $settings['exceptions']['date_format']
+          ?? $settings['day_format'];
+        $label = parent::label($settings);
+        break;
     }
 
     return $label;
@@ -81,15 +72,11 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
   /**
    * {@inheritdoc}
    */
-  public function isInRange($from, $to) {
-    if ($to < $from) {
-      // @todo Error. Raise try/catch exception.
+  public function isInRange(int $from, int $to): bool {
+    if ($to < $from || $to < 0) {
+      // @todo Error. Raise try/catch exception for $to < $from.
+      // @todo Undefined result for <0. Raise try/catch exception.
       return FALSE;
-    }
-
-    if ($to < 0) {
-      // @todo Undefined result. Raise try/catch exception.
-      return TRUE;
     }
 
     if ($to == 0) {
@@ -97,46 +84,64 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
       return TRUE;
     }
 
-    $yesterday = strtotime('yesterday midnight');
-    $today = strtotime('today midnight');
+    $date = OfficeHoursDateHelper::format($from, 'Y-m-d');
+    $today = OfficeHoursDateHelper::today();
+    $yesterday = strtotime('-1 day', $today);
     $day = $this->day;
-    $time = $this->parent->getRequestTime();
 
-    if (OfficeHoursDateHelper::isExceptionDay($to)) {
-      // $from-$to are calendar dates.
-      // 'Hi' format, with leading zero (0900).
-      $now = (int) OfficeHoursDateHelper::format($time, 'Hi');
-
-      if ($day == $yesterday) {
-        // We were open yesterday evening, check if we are still open.
-        $slot = $this->getValue();
-        $day = $slot['day'];
-        $start = (int) $slot['starthours'];
-        $end = (int) $slot['endhours'];
-        if ($start >= $end && $end > $now) {
-          return TRUE;
-        }
-        return FALSE;
-      }
-      elseif ($day < $yesterday) {
-        return FALSE;
-      } else {
-        // @todo Undefined result. Raise try/catch exception.
-        // There is no use case (yet) fopr Dates in the future.
-        return TRUE;
-      }
-    }
-    else {
+    if ($to < OfficeHoursItem::EXCEPTION_HORIZON_MAX) {
       // $from-$to is a range, e.g., 0..7 days.
       // Time slots from yesterday with endhours after midnight are included.
-      $minTime = $today + ($from - 1) * 24 * 60 * 60;
-      $maxTime = $today + $to * 24 * 60 * 60;
-      if ($day >= $minTime && $day <= $maxTime) {
+      // @todo Call parent::isInRange();
+      // @todo Support $from <> 0.
+      $lastday = strtotime($date . " +$to day");
+      if ($day == $yesterday) {
+        $time = $this->parent->getRequestTime();
+        return parent::isOpen($time);
+      }
+      elseif ($day >= $yesterday && $day <= $lastday) {
         return TRUE;
       }
       return FALSE;
     }
+    elseif (OfficeHoursDateHelper::isExceptionDay($to)) {
+      // $from-$to are calendar dates.
+      // @todo Support not only ($from = today, $to = today).
+      if ($day < $yesterday) {
+        return FALSE;
+      }
+      elseif ($day == $yesterday) {
+        $time = $this->parent->getRequestTime();
+        // If the slot is until after midnight, it could be in range.
+        return parent::isOpen($time);
+      }
+      elseif ($day <= $to) {
+        return TRUE;
+      }
+      else {
+        return FALSE;
+      }
+    }
 
+    // Undefined. $time is a real timestamp.
+    return FALSE;
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isOpen($time) {
+    $is_open = FALSE;
+
+    $today = OfficeHoursDateHelper::today();
+    $yesterday = strtotime('-1 day', $today);
+    $day = $this->day;
+
+    if ($day == $yesterday || $day == $today) {
+      $is_open = parent::isOpen($time);
+    }
+    return $is_open;
   }
 
 }

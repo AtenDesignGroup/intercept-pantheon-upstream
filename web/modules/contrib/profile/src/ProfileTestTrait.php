@@ -2,9 +2,9 @@
 
 namespace Drupal\profile;
 
-use Drupal\profile\Entity\ProfileTypeInterface;
-use Drupal\profile\Entity\ProfileType;
 use Drupal\profile\Entity\Profile;
+use Drupal\profile\Entity\ProfileType;
+use Drupal\profile\Entity\ProfileTypeInterface;
 use Drupal\user\UserInterface;
 
 /**

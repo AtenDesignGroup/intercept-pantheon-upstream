@@ -212,6 +212,16 @@ function intercept_base_preprocess_evaluation_eval_widget(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_webform().
+ */
+function intercept_base_preprocess_webform(&$variables) {
+  $form_id = $variables['attributes']['data-webform-id'];
+  if ($form_id == 'intercept_event_feedback') {
+    $variables['#attached']['library'][] = 'intercept_base/evaluation';
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK() for event_eval_feedback templates.
  */
 function intercept_base_preprocess_event_eval_feedback(&$variables) {
@@ -806,5 +816,24 @@ function intercept_base_css_alter(&$css) {
     unset($css[\Drupal::service('extension.list.theme')->getPath('gin') . '/dist/css/components/dialog.css']);
     unset($css[\Drupal::service('extension.list.theme')->getPath('gin') . '/dist/css/components/ajax.css']);
     unset($css[\Drupal::service('extension.list.theme')->getPath('claro') . '/css/components/dialog.css']);
+  }
+
+  // Remove problematic CSS on feedback form.
+  if (isset($css['themes/contrib/intercept_base/build/components/evaluation/evaluation.theme.css'])) {
+    unset($css['themes/contrib/intercept_base/build/libraries/materialize-src/sass/materialize.css']);
+  }
+}
+
+/**
+ * Implements hook_js_alter().
+ */
+function intercept_base_js_alter(&$js) {
+  // Remove problematic JS on feedback form.
+  $current_path = \Drupal::service('path.current')->getPath();
+  $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+  if ($alias == '/form/intercept-event-feedback' || $alias == '/account/events') {
+    unset($js['themes/contrib/intercept_base/libraries/materialize-src/js/bin/materialize.js']);
+    unset($js['themes/contrib/intercept_base/build/libraries/materialize-src/js/select.js']);
+    unset($js['themes/contrib/intercept_base/build/libraries/global/global.js']);
   }
 }

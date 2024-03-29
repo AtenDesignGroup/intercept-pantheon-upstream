@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import interceptClient from 'interceptClient';
@@ -19,41 +19,40 @@ const SAVED = 'saved';
 const ERROR = 'error';
 const LOADING = 'loading';
 
-class ReserveRoomConfirmation extends React.Component {
-  constructor(props) {
-    super(props);
+const ReserveRoomConfirmation = ({
+  fetchAvailability,
+  availabilityQuery,
+  hasSuccessfullySaved,
+  onConfirm,
+  save,
+  open,
+  onCancel,
+  values,
+  eventNid,
+}) => {
+  const [entityState, setEntityState] = useState(IDLE);
+  const [uuid, setUuid] = useState(null);
 
-    this.state = {
-      uuid: null,
-      state: 'idle',
-      saved: false,
-      disableBackdropClick: true,
-      disableEscapeKeyDown: true,
-    };
-
-    this.checkAvailability = this.checkAvailability.bind(this);
-    this.handleConfirm = this.handleConfirm.bind(this);
+  // Redirect to reservations list if the reservation has been saved.
+  if (hasSuccessfullySaved(uuid)) {
+    const destination = interceptClient.utils.userIsStaff()
+      ? '/manage/room-reservations/list'
+      : '/account/room-reservations';
+    window.location.href = destination;
   }
 
-  /**
-   * Checks room availabilty.
-   *
-   * @memberof ReserveRoomConfirmation
-   */
-  checkAvailability() {
-    const { fetchAvailability, availabilityQuery } = this.props;
-    const uuid = availabilityQuery.rooms[0];
+  const checkAvailability = useCallback(() => {
+    const entityUuid = availabilityQuery.rooms[0];
 
-    this.setState({ state: LOADING });
+    setEntityState(LOADING);
 
-    // Checks reservation for potential conflicts.
     return new Promise((resolve, reject) => {
       try {
         fetchAvailability(availabilityQuery, (r) => {
           const res = JSON.parse(r);
-          if (res[uuid].has_reservation_conflict) {
+          if (res[entityUuid].has_reservation_conflict) {
             reject();
-            this.setState({ state: CONFLICT });
+            setEntityState(CONFLICT);
           }
           else {
             resolve();
@@ -62,114 +61,102 @@ class ReserveRoomConfirmation extends React.Component {
       }
       catch (error) {
         reject(error);
-        this.setState({ state: ERROR });
+        setEntityState(ERROR);
       }
     });
-  }
+  }, [fetchAvailability, availabilityQuery]);
 
-  handleConfirm() {
-    const { onConfirm, save } = this.props;
-
-    // Make one last availability check
-    // then -> save
-    // reject -> display error with link back to step 2
-    this.checkAvailability()
+  const handleConfirm = useCallback(() => {
+    checkAvailability()
       .then(() => {
-        const uuid = onConfirm();
-        save(uuid);
-        this.setState({
-          state: SAVED,
-          uuid,
-        });
+        const entityUuid = onConfirm();
+        save(entityUuid);
+        setUuid(entityUuid);
+        setEntityState(SAVED);
       })
       .catch(() => {
-        this.setState({ state: CONFLICT });
+        setEntityState(CONFLICT);
       });
+  }, [checkAvailability, onConfirm, save]);
+
+  let content = null;
+  let dialogProps = {
+    onCancel,
+  };
+
+  switch (entityState) {
+    case IDLE:
+      content = <RoomReservationSummary {...values} />;
+      dialogProps = {
+        ...dialogProps,
+        confirmText: 'Submit',
+        cancelText: 'Cancel',
+        heading: 'Confirm reservation request?',
+        onConfirm: handleConfirm,
+      };
+      break;
+    case LOADING:
+      content = <RoomReservationSummary {...values} />;
+      dialogProps = {
+        ...dialogProps,
+        cancelText: 'Cancel',
+        heading: 'Sending reservation request',
+        onConfirm: null,
+        onCancel: null,
+      };
+      break;
+    case CONFLICT:
+      dialogProps = {
+        ...dialogProps,
+        heading: 'This reservation time is no longer available.',
+        cancelText: 'Close',
+      };
+      break;
+    case ERROR:
+      dialogProps = {
+        ...dialogProps,
+        heading: 'There was an unexpected error with your reservation.',
+        cancelText: 'Close',
+        confirmText: 'Try Again',
+        onConfirm: handleConfirm,
+      };
+      break;
+    case SAVED:
+      content = <RoomReservationStatus uuid={uuid} />;
+      dialogProps = {
+        ...dialogProps,
+        confirmText: 'View Your Reservations',
+        cancelText: 'Close',
+        heading: '',
+        onConfirm: () => {
+          window.location.href = '/account/room-reservations';
+        },
+      };
+
+      // Handle event room reservations.
+      if (eventNid) {
+        dialogProps.confirmText = 'Back to Edit Event';
+        dialogProps.onConfirm = () => {
+          window.location.href = `/node/${eventNid}/edit`;
+        };
+      }
+      break;
+    default:
+      break;
   }
 
-  render() {
-    const { open, onCancel, values, eventNid } = this.props;
-    const { uuid, state, disableBackdropClick, disableEscapeKeyDown} = this.state;
-
-    let content = null;
-    let dialogProps = {
-      onCancel,
-    };
-
-    switch (state) {
-      case IDLE:
-        content = <RoomReservationSummary {...values} />;
-        dialogProps = {
-          ...dialogProps,
-          confirmText: 'Submit',
-          cancelText: 'Cancel',
-          heading: 'Confirm reservation request?',
-          onConfirm: this.handleConfirm,
-        };
-        break;
-      case LOADING:
-        content = <RoomReservationSummary {...values} />;
-        dialogProps = {
-          ...dialogProps,
-          cancelText: 'Cancel',
-          heading: 'Sending reservation request',
-          onConfirm: null,
-          onCancel: null,
-        };
-        break;
-      case CONFLICT:
-        dialogProps = {
-          ...dialogProps,
-          heading: 'This reservation time is no longer available.',
-          cancelText: 'Close',
-        };
-        break;
-      case ERROR:
-        dialogProps = {
-          ...dialogProps,
-          heading: 'There was an unexpected error with your reservation.',
-          cancelText: 'Close',
-          confirmText: 'Try Again',
-          onConfirm: this.handleConfirm,
-        };
-        break;
-      case SAVED:
-        content = <RoomReservationStatus uuid={uuid} />;
-        dialogProps = {
-          ...dialogProps,
-          confirmText: 'View Your Reservations',
-          cancelText: 'Close',
-          heading: '',
-          onConfirm: () => {
-            window.location.href = '/account/room-reservations';
-          },
-        };
-
-        // Handle event room reservations.
-        if (eventNid) {
-          dialogProps.confirmText = 'Back to Edit Event';
-          dialogProps.onConfirm = () => {
-            window.location.href = `/node/${eventNid}/edit`;
-          };
-        }
-        break;
-      default:
-        break;
-    }
-
-    return (
-      <DialogConfirm
-        {...dialogProps}
-        open={open}
-        onBackdropClick={null}
-        disableEscapeKeyDown={disableEscapeKeyDown}
-        disableBackdropClick={disableBackdropClick}
-      >
-        {content}
-      </DialogConfirm>
-    );
-  }
-}
+  return (
+    <DialogConfirm
+      {...dialogProps}
+      open={open}
+      onBackdropClick={null}
+      disableEscapeKeyDown={true}
+      disableBackdropClick={true}
+    >
+      {content}
+    </DialogConfirm>
+  );
+};
 
 ReserveRoomConfirmation.propTypes = {
   availabilityQuery: PropTypes.object.isRequired,
@@ -178,6 +165,7 @@ ReserveRoomConfirmation.propTypes = {
   onCancel: PropTypes.func,
   open: PropTypes.bool,
   save: PropTypes.func.isRequired,
+  hasSuccessfullySaved: PropTypes.func.isRequired,
   values: PropTypes.object.isRequired,
   eventNid: PropTypes.number,
 };
@@ -200,14 +188,23 @@ const mapStateToProps = (state, ownProps) => {
     eventNid = get(select.event(values[c.TYPE_EVENT])(state), 'data.attributes.nid');
   }
 
+  // A Reservation saved successfully if it has a valid
+  // drupal_internal__id.
+  const hasSuccessfullySaved = (uuid) => {
+    if (!uuid) {
+      return false;
+    }
+    return !!get(select.roomReservation(uuid)(state), 'data.attributes.drupal_internal__id');
+  };
+
   return {
     eventNid,
+    hasSuccessfullySaved,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   save: (uuid) => {
-    // dispatch(actions.add(data, c.TYPE_ROOM_RESERVATION, data.id));
     session
       .getToken()
       .then((token) => {

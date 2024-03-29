@@ -37,18 +37,22 @@ class OfficeHoursStatusFilter extends ManyToOne {
    *
    * Note: When using pager on a view, less results might be displayed.
    */
-  public static function viewsFieldData(FieldStorageConfigInterface $field_storage) {
-    $data = views_field_default_views_data($field_storage);
-
+  public static function viewsFieldData(FieldStorageConfigInterface $field_storage, array $data) {
+    // The following was called earlier:
+    // $data = views_field_default_views_data($field_storage);
     $field_name = $field_storage->getName();
     foreach ($data as $table_name => $table_data) {
-      if ($data[$table_name][$field_name] ?? FALSE) {
+      if (isset($data[$table_name][$field_name])) {
+        $field_label = $data[$table_name][$field_name]['title short'];
+
         $data[$table_name][$field_name]['filter'] = [
           'field' => $field_name,
           'table' => $table_name,
           'field_name' => $field_name,
           'id' => static::VIEWS_FILTER_ID,
           'allow_empty' => TRUE,
+          'title' => $field_label . ' current open/closed status',
+          'title short' => $field_label . ' current open/closed status',
         ];
       }
     }
@@ -60,14 +64,12 @@ class OfficeHoursStatusFilter extends ManyToOne {
    * {@inheritdoc}
    */
   public function getValueOptions() {
-    if (!isset($this->valueOptions)) {
-      $this->valueOptions = [
-        static::ANY => $this->t('- Any -'),
-        static::OPEN => $this->t('Open now'),
-        static::CLOSED => $this->t('Temporarily closed'),
-        static::NEVER => $this->t('Permanently closed'),
-      ];
-    }
+    $this->valueOptions = [
+      static::ANY => $this->t('Select all'),
+      static::OPEN => $this->t('Open now'),
+      static::CLOSED => $this->t('Temporarily closed'),
+      static::NEVER => $this->t('Permanently closed'),
+    ];
 
     return $this->valueOptions;
   }
@@ -76,8 +78,10 @@ class OfficeHoursStatusFilter extends ManyToOne {
    * Internal function to determine if view is relevant for this filter.
    *
    * @param \Drupal\views\ViewExecutable $view
+   *   The view to analyze.
    *
-   * @return \Drupal\views\Plugin\views\filter\FilterPluginBase|NULL
+   * @return \Drupal\views\Plugin\views\filter\FilterPluginBase|null
+   *   The fetched filter object, if found.
    */
   protected static function getFilter(ViewExecutable $view) {
     if ($view->filter) {
@@ -94,10 +98,9 @@ class OfficeHoursStatusFilter extends ManyToOne {
    * Internal function to filter results. Can be called from any hook.
    *
    * @param \Drupal\views\ViewExecutable $view
-   * @param array $output
-   * @param \Drupal\views\Plugin\views\cache\CachePluginBase $cache
+   *   The view to filter upon. Rows will be removed from $view->result array.
    */
-  protected static function filter(ViewExecutable $view, array &$output = [], CachePluginBase $cache = NULL) {
+  protected static function filter(ViewExecutable $view) {
     $filter = static::getFilter($view);
     if (!$filter) {
       return;
@@ -112,7 +115,6 @@ class OfficeHoursStatusFilter extends ManyToOne {
     $previous_id = -1;
     /** @var \Drupal\views\ResultRow $value */
     foreach ($view->result as $key => $value) {
-
       // Remove duplicate rows from the view.
       $id = $value->_entity->id();
       if ($previous_id === $id) {
@@ -125,13 +127,14 @@ class OfficeHoursStatusFilter extends ManyToOne {
       // Since this is a calculated field, it cannot be done via query().
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
       $items = $value->_entity->$fieldName;
-      $is_open = $items->isOpen();
-      if ($items->isEmpty()) {
+      if (is_null($items) || $items->isEmpty()) {
         if (!array_key_exists(static::NEVER, $filterValue)) {
           unset($view->result[$key]);
         }
         continue;
       }
+
+      $is_open = $items->isOpen();
       if ($is_open && array_key_exists((int) static::OPEN, $filterValue)) {
         continue;
       }
@@ -190,7 +193,7 @@ class OfficeHoursStatusFilter extends ManyToOne {
     }
 
     // @todo Improve time-based caching (is_open/closed status),
-    // setting $output['#cache']['max-age'], calculated from $items->getmaxAge.
+    // setting $output['#cache']['max-age'] from $items->getCacheMaxAge().
     // $cache->options['results_lifespan'] = 0;
     // $cache->options['output_lifespan'] = 0;
     // $output['#cache']['max-age'] = 1;
@@ -202,14 +205,16 @@ class OfficeHoursStatusFilter extends ManyToOne {
   public function getCacheMaxAge() {
     $max_age = parent::getCacheMaxAge();
     // $max_age = $this->getDefaultCacheMaxAge();
-    // $max_age = Cache::mergeMaxAges($max_age, $this->view->getQuery()->getCacheMaxAge());
+    // $max_age = Cache::mergeMaxAges($max_age, $this->view->getQuery()
+    // ->getCacheMaxAge());
     return $max_age;
   }
 
   /**
    * {@inheritdoc}
    *
-   * @see OfficeHoursCacheHelper~getCacheContexts() and ~getCacheTags().
+   * @see OfficeHoursCacheHelper~getCacheContexts()
+   * @see OfficeHoursCacheHelper~getCacheTags()
    */
   public function getCacheContexts() {
     $contexts = parent::getCacheContexts();

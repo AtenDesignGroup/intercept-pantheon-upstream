@@ -1,0 +1,15 @@
+type: module
+core_version_requirement: ^10.1
+name: Image Effects
+description: 'Provides effects and operations for the Image API.'
+package: Media
+configure: image_effects.settings
+dependencies:
+  - drupal:image
+  - file_mdm:file_mdm_exif
+  - file_mdm:file_mdm_font
+
+# Information added by Drupal.org packaging script on 2024-01-19
+version: '8.x-3.6'
+project: 'image_effects'
+datestamp: 1705681114

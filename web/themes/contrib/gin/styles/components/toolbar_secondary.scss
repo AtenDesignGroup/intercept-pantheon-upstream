@@ -394,6 +394,10 @@
   }
 }
 
+#toolbar-item-administration-search::before {
+  mask-size: var(--gin-icon-size-toolbar-secondary) var(--gin-icon-size-toolbar-secondary) !important;
+}
+
 #admin-toolbar-search-input {
   line-height: 1; // FF fix
   padding-top: 10px;
@@ -422,5 +426,18 @@
 
   .ui-menu-item-wrapper {
     font-size: var(--gin-font-size-xs);
+  }
+}
+
+.announce-toolbar-tab {
+  > .ajax-progress {
+    position: absolute;
+    top: 12px;
+    z-index: 999;
+    background-color: var(--gin-bg-layer);
+
+    .ajax-progress__throbber {
+      border-width: 2px;
+    }
   }
 }

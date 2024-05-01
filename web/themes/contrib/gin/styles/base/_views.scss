@@ -77,6 +77,13 @@
   }
 }
 
+.views-exposed-form.views-exposed-form.views-exposed-form--preview {
+  background: none;
+  border-color: var(--gin-border-color);
+  border-radius: var(--gin-border-l);
+
+}
+
 .views-exposed-form__item--preceding-actions.views-exposed-form__item--preceding-actions {
   margin-right: var(--gin-spacing-xs);
 }
@@ -177,7 +184,7 @@
 
   .dropbutton-wrapper {
     top: 20px;
-    right: 2var(--gin-spacing-l);
+    right: var(--gin-spacing-l);
   }
 }
 
@@ -255,6 +262,7 @@
     &.open {
       a {
         background: var(--gin-bg-layer2);
+        color: var(--gin-color-primary);
 
         &:hover, &:focus, &:active {
           color: var(--gin-color-primary);

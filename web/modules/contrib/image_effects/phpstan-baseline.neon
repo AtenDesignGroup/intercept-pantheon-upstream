@@ -1,0 +1,16 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to method get\\(\\) on an unknown class Drupal\\\\textimage\\\\TextimageFactory\\.$#"
+			count: 1
+			path: src/Plugin/ImageEffect/TextOverlayImageEffect.php
+
+		-
+			message: "#^Call to method getState\\(\\) on an unknown class Drupal\\\\textimage\\\\TextimageFactory\\.$#"
+			count: 1
+			path: src/Plugin/ImageEffect/TextOverlayImageEffect.php
+
+		-
+			message: "#^Method Drupal\\\\image_effects\\\\Plugin\\\\ImageEffect\\\\TextOverlayImageEffect\\:\\:getTextimageFactory\\(\\) has invalid return type Drupal\\\\textimage\\\\TextimageFactory\\.$#"
+			count: 1
+			path: src/Plugin/ImageEffect/TextOverlayImageEffect.php

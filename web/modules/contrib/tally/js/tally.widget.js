@@ -1,10 +1,4 @@
-/**
- * @file
- * Provides jQuery for the Tally default widget.
- */
-
-(function ($, Drupal) {
-
+(function ($, Drupal, once) {
   /**
    * Provides jQuery for the total field of the Tally default widget.
    */
@@ -12,8 +6,8 @@
     attach: function (context, settings) {
 
       // If the user changes the counts, let's update the "Total" on the fly.
-      $('.js-tally-container').once('js-tally-attached').each(function() {
-        var $container = $(this);
+      once('js-tally-attached', '.js-tally-container').forEach(function(element) {
+        var $container = $(element);
         $container.on('input', '.js-tally-input', function() {
           var totalSum = 0;
           $('.js-tally-input', $container).each(function() {
@@ -28,5 +22,4 @@
 
     }
   };
-
-  })(jQuery, Drupal);
+  })(jQuery, Drupal, once);

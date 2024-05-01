@@ -1,7 +1,13 @@
 <?php
 
+/**
+ * @file
+ * API documentation.
+ */
+
 use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
+
 /**
  * @file
  * Hooks related to quick_node_clone module and it's plugins.

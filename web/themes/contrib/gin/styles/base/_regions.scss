@@ -16,7 +16,7 @@
     padding-top: var(--gin-spacing-m);
 
     @include mq(large) {
-      top: calc(var(--gin-toolbar-y-offset) - var(--gin-spacing-xxxl));
+      top: var(--gin-toolbar-y-offset);
       padding-top: var(--gin-spacing-s);
     }
   }
@@ -118,6 +118,13 @@
   margin-bottom: 0;
   background-color: transparent;
   overflow: initial;
+
+  // Normalize whitespace if empty.
+  @include mq(small) {
+    &:not(:has(.layout-container *)) {
+      margin-top: calc(var(--gin-spacing-m) * -1);
+    }
+  }
 }
 
 .sticky-shadow {

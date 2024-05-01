@@ -11,7 +11,7 @@ dependencies:
   - jsonapi_views:jsonapi_views
   - views_exposed_filter_blocks:views_exposed_filter_blocks
 
-# Information added by Drupal.org packaging script on 2024-03-29
-version: '8.x-1.0-beta23'
+# Information added by Drupal.org packaging script on 2024-05-01
+version: '8.x-1.0-beta24'
 project: 'intercept'
-datestamp: 1711740025
+datestamp: 1714580896

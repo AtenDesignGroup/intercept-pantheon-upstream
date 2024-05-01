@@ -60,6 +60,10 @@
     @media (forced-colors: none) {
       background-color: var(--gin-color-text-light);
     }
+
+    @supports (-webkit-mask-image: url()) and (mask-composite: source-over) {
+      background-color: var(--gin-color-text-light);
+    }
   }
 
   &:hover {
@@ -130,4 +134,8 @@
 
 .field-plugin-settings-edit-wrapper + a {
   margin-top: var(--gin-spacing-s);
+}
+
+.table-file-multiple-widget .tabledrag-cell-content {
+  display: flex;
 }

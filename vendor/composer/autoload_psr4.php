@@ -10,6 +10,7 @@ return array(
     'phpowermove\\docblock\\' => array($vendorDir . '/phpowermove/docblock/src'),
     'phootwork\\lang\\' => array($vendorDir . '/phootwork/lang'),
     'phootwork\\collection\\' => array($vendorDir . '/phootwork/collection'),
+    'lsolesen\\pel\\' => array($vendorDir . '/fileeye/pel/src'),
     'lordelph\\SIP2\\' => array($vendorDir . '/lordelph/php-sip2/src'),
     'cweagans\\Composer\\' => array($vendorDir . '/cweagans/composer-patches/src'),
     'Twig\\' => array($vendorDir . '/twig/twig/src'),

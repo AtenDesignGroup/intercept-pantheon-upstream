@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\quick_node_clone\Functional;
 
-use Drupal\Tests\paragraphs\Functional\WidgetLegacy\ParagraphsTestBase;
 use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
+use Drupal\Tests\paragraphs\Functional\WidgetLegacy\ParagraphsTestBase;
 use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
 
 /**

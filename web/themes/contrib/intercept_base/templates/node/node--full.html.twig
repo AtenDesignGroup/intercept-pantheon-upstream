@@ -9,21 +9,21 @@
   </header>
 
   <div class="l--sidebar-after">
-  <div class="l__main l--offset">
-    {% if sidebar_first %}
-    <div class="l__primary l--section">
-    {% else %}
-    <div class="l--section">
-    {% endif %}
-      {% if content %}
-        {{ content }}
+    <div class="l__main l--offset">
+      {% if sidebar_first %}
+      <div class="l__primary l--section">
+      {% else %}
+      <div class="l--section">
+      {% endif %}
+        {% if content %}
+          {{ content }}
+        {% endif %}
+      </div>
+      {% if sidebar_first %}
+        <div class="l__secondary l--section">
+          {{ sidebar_first }}
+        </div>
       {% endif %}
     </div>
-    {% if sidebar_first %}
-      <div class="l__secondary l--section">
-        {{ sidebar_first }}
-      </div>
-    {% endif %}
-  </div>
   </div>
 </article>

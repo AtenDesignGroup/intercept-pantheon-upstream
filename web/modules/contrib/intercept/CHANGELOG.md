@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.x-1.0-beta24] - 2024-05-01
+
+* Fixed an issue where customers using iOS Safari would sometimes reserve rooms outside of regular 15 minute intervals
+* Fixed a bug when typing in date filters on Events page
+* Fixed an issue where dropdowns could lose focus when the Events view refreshed
+* Fixed an issue on the Events page where deselecting options within multi-value filters required two clicks
+* Fixed issue in the Intercept upstream with missing configuration files for location slideshows
+* Fixed a bug where events could not be saved in a draft state
+* Added additional logging for study room reservations in order to help track down double-booking issues
+* Fixed an issue with event registration where registered customers were sometimes unable to view the registration page for that event
+
 ## [8.x-1.0-beta23] - 2024-03-29
 
 * Updated the Event Data Dashboard to disable filter options that are excluded from the current set of filtered results

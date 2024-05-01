@@ -37,10 +37,7 @@
 
   {{ attachment_after }}
   {% if more %}
-  {% include more_link with {
-    text: more['#title'],
-    url: more['#url']|render
-  } %}
+    {{ more }}
   {% endif %}
 
   {% if footer %}

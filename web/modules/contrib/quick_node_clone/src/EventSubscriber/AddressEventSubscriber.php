@@ -66,7 +66,10 @@ class AddressEventSubscriber implements EventSubscriberInterface {
     if (!class_exists('\Drupal\address\Event\AddressEvents')) {
       return $events;
     }
-    $events[AddressEvents::INITIAL_VALUES][] = ['onInitialValues'];
+    if (defined('AddressEvents::INITIAL_VALUES')) {
+      $events[AddressEvents::INITIAL_VALUES][] = ['onInitialValues'];
+    }
+
     return $events;
   }
 

@@ -11,12 +11,13 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupContent;
-use Drupal\node\Entity\Node;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupRelationship;
+use Drupal\node\Entity\Node;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Builds entity forms.
@@ -135,10 +136,10 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
     // Get and store groups of original entity, if any.
     $groups = [];
     if ($this->moduleHandler->moduleExists('gnode')) {
+      $relation_class = class_exists(GroupContent::class) ? GroupContent::class : GroupRelationship::class;
       /** @var \Drupal\Core\Entity\ContentEntityInterface $original_entity */
-      $group_contents = GroupContent::loadByEntity($original_entity);
-      foreach ($group_contents as $group_content) {
-        $groups[] = $group_content->getGroup();
+      foreach ($relation_class::loadByEntity($original_entity) as $group_relationship) {
+        $groups[] = $group_relationship->getGroup();
       }
     }
     $form_state_additions['quick_node_clone_groups_storage'] = $groups;

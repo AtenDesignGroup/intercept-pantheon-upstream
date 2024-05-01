@@ -6,7 +6,7 @@ package: 'Intercept'
 dependencies:
   - intercept_room_reservation
 
-# Information added by Drupal.org packaging script on 2024-03-29
-version: '8.x-1.0-beta23'
+# Information added by Drupal.org packaging script on 2024-05-01
+version: '8.x-1.0-beta24'
 project: 'intercept'
-datestamp: 1711740025
+datestamp: 1714580896

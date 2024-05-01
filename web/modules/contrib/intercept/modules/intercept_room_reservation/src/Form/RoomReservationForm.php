@@ -554,6 +554,14 @@ class RoomReservationForm extends ContentEntityForm {
         $form_state->setErrorByName('field_attendee_count', $validationMessage);
       }
     }
+
+    // Double-check 15 minute increments (since that doesn't work on iOS Safari).
+    $acceptable_minutes = ['00', '15', '30', '45'];
+    $reservation_start_time_minutes = $reservation_dates[0]['value']->format('i');
+    $reservation_end_time_minutes = $reservation_dates[0]['end_value']->format('i');
+    if (!in_array($reservation_start_time_minutes, $acceptable_minutes) || !in_array($reservation_end_time_minutes, $acceptable_minutes)) {
+      $form_state->setErrorByName('field_dates', 'Reservations must be made in 15 minute increments.');
+    }
   }
 
   /**

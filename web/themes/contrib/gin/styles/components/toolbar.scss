@@ -216,6 +216,14 @@ body.gin--classic-toolbar {
       }
     }
 
+    // Admin tray: Announcements
+    .toolbar-icon-announcements-feed-announcement,
+    .toolbar-icon-announce {
+      &:before {
+        mask-image: icon('announcement');
+      }
+    }
+
     // Groups
     .toolbar-icon-system-admin-group {
       &:before {
@@ -270,6 +278,13 @@ body.gin--classic-toolbar {
     .toolbar-icon-bat-admin {
       &:before {
         mask-image: icon('bat');
+      }
+    }
+
+    // Commerce Inbox
+    .toolbar-icon-commerce-inbox {
+      &:before {
+        mask-image: icon('commerce-inbox');
       }
     }
 
@@ -364,14 +379,6 @@ body.gin--classic-toolbar {
     .toolbar-icon-workbench-content-tab {
       &:before {
         mask-image: icon('tool');
-      }
-    }
-  }
-
-  .toolbar-menu {
-    .toolbar-icon {
-      @include mq(medium) {
-        padding-right: var(--gin-spacing-l);
       }
     }
   }
@@ -685,6 +692,11 @@ body.gin--classic-toolbar {
   .toolbar-logo {
     display: none;
   }
+}
+
+// Hide announcements tab
+.menu-item__announcements_feed-announcement {
+  display: none !important;
 }
 
 .responsive-preview-icon {

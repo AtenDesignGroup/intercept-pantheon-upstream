@@ -1,0 +1,40 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - image_effects
+name: 3_2_1360x907
+label: '3:2 1360x907'
+effects:
+  796d179d-45f0-48be-84eb-fbe8451130ec:
+    uuid: 796d179d-45f0-48be-84eb-fbe8451130ec
+    id: image_effects_set_canvas
+    weight: 3
+    data:
+      canvas_size: exact
+      canvas_color: ''
+      exact:
+        width: '1360'
+        height: ''
+        placement: center-center
+        x_offset: 0
+        y_offset: 0
+      relative:
+        left: 0
+        right: 0
+        top: 0
+        bottom: 0
+  3df68325-3581-44cd-81be-78c8aaf04091:
+    uuid: 3df68325-3581-44cd-81be-78c8aaf04091
+    id: image_scale
+    weight: 2
+    data:
+      width: null
+      height: 907
+      upscale: true
+  168d7a2f-775e-4b22-8f4c-49811f34634f:
+    uuid: 168d7a2f-775e-4b22-8f4c-49811f34634f
+    id: image_convert
+    weight: 1
+    data:
+      extension: webp

@@ -113,6 +113,8 @@ libraries-extend:
     - gin/layout_paragraphs2
   responsive_preview/drupal.responsive-preview:
     - gin/responsive_preview
+  workspaces/drupal.workspaces.overview:
+    - gin/workspaces
 
 ckeditor_stylesheets:
   - dist/css/theme/accent.css
@@ -135,7 +137,7 @@ regions:
 regions_hidden:
   - sidebar_first
 
-# Information added by Drupal.org packaging script on 2023-12-16
-version: '8.x-3.0-rc8'
+# Information added by Drupal.org packaging script on 2024-04-09
+version: '8.x-3.0-rc10'
 project: 'gin'
-datestamp: 1702729140
+datestamp: 1712686348

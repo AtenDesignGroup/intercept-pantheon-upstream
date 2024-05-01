@@ -14,7 +14,9 @@ bundle: stories_slideshow
 mode: default
 content:
   field_stories_slideshow:
+    type: inline_entity_form_complex
     weight: 0
+    region: content
     settings:
       form_mode: default
       override_labels: true
@@ -26,8 +28,6 @@ content:
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: stories_slideshow
-    type: inline_entity_form_complex
-    region: content
 hidden:
   created: true
   field_stories_alignment: true

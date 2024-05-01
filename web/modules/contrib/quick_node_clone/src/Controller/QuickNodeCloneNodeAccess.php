@@ -2,8 +2,8 @@
 
 namespace Drupal\quick_node_clone\Controller;
 
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
 
 /**

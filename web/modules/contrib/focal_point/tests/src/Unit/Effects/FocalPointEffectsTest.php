@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\focal_point\Unit\Effects;
 
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\crop\CropInterface;
 use Drupal\crop\CropStorageInterface;
-use Drupal\focal_point\Plugin\ImageEffect\FocalPointCropImageEffect;
 use Drupal\focal_point\FocalPointEffectBase;
-use Psr\Log\LoggerInterface;
+use Drupal\focal_point\Plugin\ImageEffect\FocalPointCropImageEffect;
 use Drupal\Tests\focal_point\Unit\FocalPointUnitTestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -19,13 +21,6 @@ use Symfony\Component\HttpFoundation\Request;
  * @coversDefaultClass \Drupal\focal_point\FocalPointEffectBase
  */
 class FocalPointEffectsTest extends FocalPointUnitTestCase {
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp(): void {
-    parent::setUp();
-  }
 
   /**
    * Test the construct method.

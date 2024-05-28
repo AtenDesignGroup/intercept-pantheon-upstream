@@ -35,7 +35,7 @@ class DateRecurInterpreterAddForm extends DateRecurInterpreterEditForm {
 
     $options = array_map(
       fn (array $definition): string => (string) $definition['label'],
-      $this->dateRecurInterpreterPluginManager->getDefinitions()
+      $this->dateRecurInterpreterPluginManager->getDefinitions(),
     );
     $form['plugin_type'] = [
       '#type' => 'select',
@@ -44,7 +44,9 @@ class DateRecurInterpreterAddForm extends DateRecurInterpreterEditForm {
       '#required' => TRUE,
     ];
 
-    if ($pluginType = $form_state->getValue('plugin_type')) {
+    /** @var string|null $pluginType */
+    $pluginType = $form_state->getValue('plugin_type');
+    if ($pluginType !== NULL && $pluginType !== '') {
       $dateRecurInterpreter->setPlugin($pluginType);
       $form = parent::form($form, $form_state);
     }
@@ -71,7 +73,9 @@ class DateRecurInterpreterAddForm extends DateRecurInterpreterEditForm {
   protected function actions(array $form, FormStateInterface $form_state): array {
     $actions = parent::actions($form, $form_state);
 
-    if (!$form_state->getValue('plugin_type')) {
+    /** @var string|null $pluginType */
+    $pluginType = $form_state->getValue('plugin_type');
+    if ($pluginType === NULL || $pluginType === '') {
       $actions['submit']['#value'] = $this->t('Next');
     }
 

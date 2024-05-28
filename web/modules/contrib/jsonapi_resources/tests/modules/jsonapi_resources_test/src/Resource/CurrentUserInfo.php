@@ -119,12 +119,12 @@ class CurrentUserInfo extends ResourceBase implements ContainerInjectionInterfac
   public function getRouteResourceTypes(Route $route, string $route_name): array {
     $fields = [
       'displayName' => new ResourceTypeAttribute('displayName'),
-      // @todo: convert this to a ResourceTypeRelationship.
+      // @todo convert this to a ResourceTypeRelationship.
       'roles' => new ResourceTypeAttribute('roles', NULL, TRUE, FALSE),
       'token' => new ResourceTypeAttribute('token'),
     ];
     $resource_type = new ResourceType('current_user', 'current_user', NULL, FALSE, TRUE, TRUE, FALSE, $fields);
-    // @todo: Add role entities as a relatable resource type.
+    // @todo Add role entities as a relatable resource type.
     $resource_type->setRelatableResourceTypes([]);
     return [$resource_type];
   }

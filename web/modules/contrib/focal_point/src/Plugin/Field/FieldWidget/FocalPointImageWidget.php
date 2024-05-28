@@ -3,11 +3,11 @@
 namespace Drupal\focal_point\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\crop\Entity\Crop;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\image\Plugin\Field\FieldWidget\ImageWidget;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\crop\Entity\Crop;
+use Drupal\image\Plugin\Field\FieldWidget\ImageWidget;
 
 /**
  * Plugin implementation of the 'image_focal_point' widget.
@@ -48,11 +48,13 @@ class FocalPointImageWidget extends ImageWidget {
     // @todo Implement https://www.drupal.org/node/2872960
     //   The preview image should not be generated using a focal point effect
     //   and should maintain the aspect ratio of the original image.
+    // phpcs:disable
     $form['preview_image_style']['#description'] = t(
       $form['preview_image_style']['#description']->getUntranslatedString() . "<br/>Do not choose an image style that alters the aspect ratio of the original image nor an image style that uses a focal point effect.",
       $form['preview_image_style']['#description']->getArguments(),
       $form['preview_image_style']['#description']->getOptions()
     );
+    // phpcs:enable
 
     $form['preview_link'] = [
       '#type' => 'checkbox',
@@ -126,7 +128,7 @@ class FocalPointImageWidget extends ImageWidget {
       'focal_point' => 'focal-point-' . implode('-', $element['#parents']),
     ];
 
-    $default_focal_point_value = isset($item['focal_point']) ? $item['focal_point'] : $element['#focal_point']['offsets'];
+    $default_focal_point_value = $item['focal_point'] ?? $element['#focal_point']['offsets'];
 
     // Override the default Image Widget template when using the Media Library
     // module so we can use the image field's preview rather than the preview
@@ -145,14 +147,14 @@ class FocalPointImageWidget extends ImageWidget {
 
       // Even for image fields with a cardinality higher than 1 the correct fid
       // can always be found in $item['fids'][0].
-      $fid = isset($item['fids'][0]) ? $item['fids'][0] : '';
+      $fid = $item['fids'][0] ?? '';
       if ($element['#focal_point']['preview_link'] && !empty($fid)) {
         $preview['preview_link'] = self::createPreviewLink($fid, $element['#field_name'], $element_selectors, $default_focal_point_value);
       }
 
       // Use the existing preview weight value so that the focal point indicator
       // and thumbnail appear in the correct order.
-      $preview['#weight'] = isset($element['preview']['#weight']) ? $element['preview']['#weight'] : 0;
+      $preview['#weight'] = $element['preview']['#weight'] ?? 0;
       unset($preview['thumbnail']['#weight']);
 
       $element['preview'] = $preview;

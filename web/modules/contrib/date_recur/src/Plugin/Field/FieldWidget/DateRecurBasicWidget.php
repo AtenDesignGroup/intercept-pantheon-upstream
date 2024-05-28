@@ -73,6 +73,9 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
     // @codingStandardsIgnoreLine
     $element['value']['#value_callback'] = $element['end_value']['#value_callback'] = [$this, 'dateValueCallback'];
 
+    // Replace \Datetime::validateDatetime validator with our own.
+    $element['value']['#element_validate'] = $element['end_value']['#element_validate'] = [[$this, 'validateDatetime']];
+
     // Saved values (should) always have a time zone.
     $timeZone = $items[$delta]->timezone ?? NULL;
 
@@ -113,13 +116,14 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    * @return array
    *   The value to assign to the element.
    */
-  public function dateValueCallback(array $element, $input, FormStateInterface $form_state): array {
+  public function dateValueCallback(array &$element, $input, FormStateInterface $form_state): array {
     if ($input !== FALSE) {
       $timeZonePath = array_slice($element['#parents'], 0, -1);
       $timeZonePath[] = 'timezone';
 
       // Warning: The time zone is not yet validated, make sure it is valid
       // before using.
+      /** @var string|null $submittedTimeZone */
       $submittedTimeZone = NestedArray::getValue($form_state->getUserInput(), $timeZonePath);
       if (!isset($submittedTimeZone)) {
         // If no time zone was submitted, such as when the 'timezone' field is
@@ -133,14 +137,21 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
 
       $allTimeZones = \DateTimeZone::listIdentifiers();
       // @todo Add test for invalid submitted time zone.
-      if (!in_array($submittedTimeZone, $allTimeZones)) {
+      if (!in_array($submittedTimeZone, $allTimeZones, TRUE)) {
         // A date is invalid if the time zone is invalid.
         // Need to kill inputs otherwise
         // \Drupal\Core\Datetime\Element\Datetime::validateDatetime thinks there
         // is valid input.
+        // Indicate to validator the value could not be built since time zone
+        // was invalid combined with a provided non-empty start or end date.
+        // This key/value is internal and may be modified at any time.
+        $element['#date_recur_basic_widget__invalid_timezone'] = TRUE;
         return [
-          'date' => '',
-          'time' => '',
+          // Restore the inputs' previous values.
+          'date' => $input['date'],
+          'time' => $input['time'],
+          // Marking object as NULL indicates this field is invalid, see
+          // \Drupal\Core\Datetime\Element\Datetime::processDatetime.
           'object' => NULL,
         ];
       }
@@ -151,6 +162,36 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
     // Setting a callback overrides default value callback in the element,
     // call original now.
     return Datetime::valueCallback($element, $input, $form_state);
+  }
+
+  /**
+   * Validates start and end date field.
+   *
+   * If a time zone was not provided then its not necessary to validate start
+   * and end date values if they are non-empty.
+   *
+   * @param array $element
+   *   An associative array containing the properties and children of the
+   *   generic form element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param array $complete_form
+   *   The complete form structure.
+   */
+  public function validateDatetime(array &$element, FormStateInterface $form_state, array &$complete_form): void {
+    $input_exists = FALSE;
+    $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
+    if ($input_exists) {
+      if ((!empty($input['date']) || !empty($input['time'])) && isset($element['#date_recur_basic_widget__invalid_timezone'])) {
+        $timeZoneFieldPath = array_slice($element['#array_parents'], 0, -1);
+        $timeZoneFieldPath[] = 'timezone';
+        $timeZoneField = NestedArray::getValue($form_state->getCompleteForm(), $timeZoneFieldPath);
+        $form_state->setError($timeZoneField, $this->t('Missing time zone for date.'));
+        return;
+      }
+    }
+
+    Datetime::validateDatetime($element, $form_state, $complete_form);
   }
 
   /**

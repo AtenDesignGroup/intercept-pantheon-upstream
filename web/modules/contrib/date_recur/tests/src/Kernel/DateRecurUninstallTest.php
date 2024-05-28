@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
@@ -31,14 +31,14 @@ final class DateRecurUninstallTest extends KernelTestBase {
   /**
    * Tests uninstall.
    */
-  public function testUninstall() {
+  public function testUninstall(): void {
     $database = \Drupal::database();
     $this->installEntitySchema('dr_entity_test_rev');
     $this->installSchema('user', ['users_data']);
 
     $tableName = 'date_recur__dr_entity_test_rev__abc123';
 
-    $this->assertFalse($database->schema()->tableExists($tableName));
+    static::assertFalse($database->schema()->tableExists($tableName));
 
     $fieldStorage = FieldStorageConfig::create([
       'entity_type' => 'dr_entity_test_rev',
@@ -50,11 +50,11 @@ final class DateRecurUninstallTest extends KernelTestBase {
     ]);
     $fieldStorage->save();
 
-    $this->assertTrue($database->schema()->tableExists($tableName));
+    static::assertTrue($database->schema()->tableExists($tableName));
 
     $fieldStorage->delete();
 
-    $this->assertFalse($database->schema()->tableExists($tableName));
+    static::assertFalse($database->schema()->tableExists($tableName));
 
     /** @var \Drupal\Core\CronInterface $cron */
     $cron = \Drupal::service('cron');

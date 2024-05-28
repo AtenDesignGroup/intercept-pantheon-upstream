@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur_entity_test\Entity\DrEntityTest;
@@ -44,7 +46,7 @@ class DateRecurTokenTest extends KernelTestBase {
   /**
    * Tests tokens.
    */
-  public function testTokens() {
+  public function testTokens(): void {
     $user = User::create([
       'uid' => 2,
       // UTC+8.
@@ -64,11 +66,11 @@ class DateRecurTokenTest extends KernelTestBase {
 
     // Start date token.
     $replaced = \Drupal::token()->replace('[dr_entity_test:dr:start_date:long]', ['dr_entity_test' => $entity]);
-    $this->assertEquals('Monday, June 16, 2014 - 07:00', $replaced);
+    static::assertEquals('Monday, June 16, 2014 - 07:00', $replaced);
 
     // End date token.
     $replaced = \Drupal::token()->replace('[dr_entity_test:dr:end_date:long]', ['dr_entity_test' => $entity]);
-    $this->assertEquals('Monday, June 16, 2014 - 15:00', $replaced);
+    static::assertEquals('Monday, June 16, 2014 - 15:00', $replaced);
   }
 
 }

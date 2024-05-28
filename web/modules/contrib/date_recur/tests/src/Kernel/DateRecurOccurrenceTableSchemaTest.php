@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur\DateRecurOccurrences;
@@ -44,37 +46,37 @@ class DateRecurOccurrenceTableSchemaTest extends KernelTestBase {
   /**
    * Tests occurrence table schema for non revisionable entities.
    */
-  public function testNonRevisionableOccurrenceTableSchema() {
+  public function testNonRevisionableOccurrenceTableSchema(): void {
     $testEntityType = 'dr_entity_test';
     $this->installEntitySchema($testEntityType);
 
     // Check again this entity type is not revisionable.
     $definition = \Drupal::entityTypeManager()->getDefinition($testEntityType);
-    $this->assertFalse($definition->isRevisionable());
+    static::assertFalse($definition->isRevisionable());
 
     $definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions($testEntityType);
     $tableName = DateRecurOccurrences::getOccurrenceCacheStorageTableName($definitions[$this->fieldName]);
 
     $schema = \Drupal::database()->schema();
-    $this->assertFalse($schema->fieldExists($tableName, 'revision_id'));
+    static::assertFalse($schema->fieldExists($tableName, 'revision_id'));
   }
 
   /**
    * Tests occurrence table schema for revisionable entities.
    */
-  public function testRevisionableOccurrenceTableSchema() {
+  public function testRevisionableOccurrenceTableSchema(): void {
     $testEntityType = 'dr_entity_test_rev';
     $this->installEntitySchema($testEntityType);
 
     // Check again this entity type is not revisionable.
     $definition = \Drupal::entityTypeManager()->getDefinition($testEntityType);
-    $this->assertTrue($definition->isRevisionable());
+    static::assertTrue($definition->isRevisionable());
 
     $definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions($testEntityType);
     $tableName = DateRecurOccurrences::getOccurrenceCacheStorageTableName($definitions[$this->fieldName]);
 
     $schema = \Drupal::database()->schema();
-    $this->assertTrue($schema->fieldExists($tableName, 'revision_id'));
+    static::assertTrue($schema->fieldExists($tableName, 'revision_id'));
   }
 
 }

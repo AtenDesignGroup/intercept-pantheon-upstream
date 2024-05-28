@@ -43,7 +43,7 @@ class DateRecurTest extends KernelTestBase {
   /**
    * Basic tests for purposes of ensuring the entity type works.
    */
-  public function testSingleCardinalityBaseField() {
+  public function testSingleCardinalityBaseField(): void {
     $this->installEntitySchema('dr_entity_test_single');
 
     $entity = DrEntityTestSingleCardinality::create();
@@ -69,19 +69,19 @@ class DateRecurTest extends KernelTestBase {
     $validations = $fieldList->validate();
     $violation = $validations->get(0);
     $message = (string) $violation->getMessage();
-    $this->assertEquals('<em class="placeholder">Rule</em>: this field cannot hold more than 1 values.', $message);
-    $this->assertEquals(2, $fieldList->count());
+    static::assertEquals('<em class="placeholder">Rule</em>: this field cannot hold more than 1 values.', $message);
+    static::assertEquals(2, $fieldList->count());
 
     // Assert after saving and reloading entity only one value is available.
     $entity->save();
     $entity = DrEntityTestSingleCardinality::load($entity->id());
-    $this->assertEquals(1, $entity->dr->count());
+    static::assertEquals(1, $entity->dr->count());
   }
 
   /**
    * Tests adding a field, setting values, reading occurrences.
    */
-  public function testGetOccurrences() {
+  public function testGetOccurrences(): void {
     $this->installEntitySchema('entity_test');
 
     $field_storage = FieldStorageConfig::create([
@@ -111,21 +111,21 @@ class DateRecurTest extends KernelTestBase {
     ];
 
     // No need to save the entity.
-    $this->assertTrue($entity->isNew());
+    static::assertTrue($entity->isNew());
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item */
     $item = $entity->abc[0];
     $occurrences = $item->getHelper()
       ->getOccurrences(NULL, NULL, 2);
-    $this->assertEquals('Mon, 16 Jun 2014 09:00:00 +1000', $occurrences[0]->getStart()->format('r'));
-    $this->assertEquals('Mon, 16 Jun 2014 17:00:00 +1000', $occurrences[0]->getEnd()->format('r'));
-    $this->assertEquals('Tue, 17 Jun 2014 09:00:00 +1000', $occurrences[1]->getStart()->format('r'));
-    $this->assertEquals('Tue, 17 Jun 2014 17:00:00 +1000', $occurrences[1]->getEnd()->format('r'));
+    static::assertEquals('Mon, 16 Jun 2014 09:00:00 +1000', $occurrences[0]->getStart()->format('r'));
+    static::assertEquals('Mon, 16 Jun 2014 17:00:00 +1000', $occurrences[0]->getEnd()->format('r'));
+    static::assertEquals('Tue, 17 Jun 2014 09:00:00 +1000', $occurrences[1]->getStart()->format('r'));
+    static::assertEquals('Tue, 17 Jun 2014 17:00:00 +1000', $occurrences[1]->getEnd()->format('r'));
   }
 
   /**
    * Tests accessing occurrences with fields with no end date or rule.
    */
-  public function testHelperNonRecurringWithNoEnd() {
+  public function testHelperNonRecurringWithNoEnd(): void {
     $entity = DrEntityTest::create();
     $entity->dr = [
       'value' => '2014-06-15T23:00:00',
@@ -138,18 +138,18 @@ class DateRecurTest extends KernelTestBase {
     // Ensure a non repeating field value generates a single occurrence.
     /** @var \Drupal\date_recur\DateRange[] $occurrences */
     $occurrences = iterator_to_array($entity->dr->occurrences);
-    $this->assertCount(1, $occurrences);
+    static::assertCount(1, $occurrences);
 
     $tz = new \DateTimeZone('Australia/Sydney');
     $startAssert = new \DateTime('9am 16 June 2014', $tz);
-    $this->assertEquals($startAssert, $occurrences[0]->getStart());
-    $this->assertEquals($startAssert, $occurrences[0]->getEnd());
+    static::assertEquals($startAssert, $occurrences[0]->getStart());
+    static::assertEquals($startAssert, $occurrences[0]->getEnd());
   }
 
   /**
    * Tests accessing occurrences with fields with end date or rule.
    */
-  public function testHelperNonRecurringWithEnd() {
+  public function testHelperNonRecurringWithEnd(): void {
     $entity = DrEntityTest::create();
     $entity->dr = [
       'value' => '2014-06-15T23:00:00',
@@ -162,13 +162,13 @@ class DateRecurTest extends KernelTestBase {
     // Ensure a non repeating field value generates a single occurrence.
     /** @var \Drupal\date_recur\DateRange[] $occurrences */
     $occurrences = iterator_to_array($entity->dr->occurrences);
-    $this->assertCount(1, $occurrences);
+    static::assertCount(1, $occurrences);
 
     $tz = new \DateTimeZone('Australia/Sydney');
     $startAssert = new \DateTime('9am 16 June 2014', $tz);
-    $this->assertEquals($startAssert, $occurrences[0]->getStart());
+    static::assertEquals($startAssert, $occurrences[0]->getStart());
     $endAssert = new \DateTime('5pm 16 June 2014', $tz);
-    $this->assertEquals($endAssert, $occurrences[0]->getEnd());
+    static::assertEquals($endAssert, $occurrences[0]->getEnd());
   }
 
 }

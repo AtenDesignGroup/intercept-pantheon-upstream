@@ -46,6 +46,14 @@ class DateRecurFilter extends FilterPluginBase {
   protected \DateTime $largestDate;
 
   /**
+   * {@inheritdoc}
+   *
+   * Fixes when exposed filter turned on changes value to array. Seems like
+   * property name is opposite of intention?
+   */
+  protected $alwaysMultiple = TRUE;
+
+  /**
    * Constructs a DateRecurFilter object.
    *
    * @param array $configuration
@@ -61,7 +69,7 @@ class DateRecurFilter extends FilterPluginBase {
    * @param \Drupal\Core\Session\AccountInterface $currentUser
    *   The current user.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, protected Connection $database, protected EntityFieldManagerInterface $entityFieldManager, protected AccountInterface $currentUser) {
+  final public function __construct(array $configuration, $plugin_id, $plugin_definition, protected Connection $database, protected EntityFieldManagerInterface $entityFieldManager, protected AccountInterface $currentUser) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
 
@@ -75,17 +83,9 @@ class DateRecurFilter extends FilterPluginBase {
       $plugin_definition,
       $container->get('database'),
       $container->get('entity_field.manager'),
-      $container->get('current_user')
+      $container->get('current_user'),
     );
   }
-
-  /**
-   * {@inheritdoc}
-   *
-   * Fixes when exposed filter turned on changes value to array. Seems like
-   * property name is opposite of intention?
-   */
-  protected $alwaysMultiple = TRUE;
 
   /**
    * {@inheritdoc}
@@ -148,7 +148,7 @@ class DateRecurFilter extends FilterPluginBase {
       ],
       // Pass along the plugin options so validator is aware.
       '#filter_plugin_options' => $this->options,
-      '#filter_plugin_user_timezone' => !empty($timezone) ? $timezone : date_default_timezone_get(),
+      '#filter_plugin_user_timezone' => strlen($timezone) > 0 ? $timezone : date_default_timezone_get(),
     ];
     return $form;
   }

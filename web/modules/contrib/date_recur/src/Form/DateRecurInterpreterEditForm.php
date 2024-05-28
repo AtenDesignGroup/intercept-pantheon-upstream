@@ -35,7 +35,7 @@ class DateRecurInterpreterEditForm extends EntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin_form.factory'),
-      $container->get('plugin.manager.date_recur_interpreter')
+      $container->get('plugin.manager.date_recur_interpreter'),
     );
   }
 

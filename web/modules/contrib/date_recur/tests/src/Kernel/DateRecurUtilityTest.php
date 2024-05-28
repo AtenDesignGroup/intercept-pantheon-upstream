@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur\DateRecurUtility;
@@ -26,10 +28,10 @@ class DateRecurUtilityTest extends KernelTestBase {
    * @covers ::createSmallestDateFromInput
    * @dataProvider providerSmallestDate
    */
-  public function testSmallestDate($granularity, $value, $expected) {
+  public function testSmallestDate($granularity, $value, $expected): void {
     $timezone = new \DateTimeZone('Asia/Singapore');
     $smallest = DateRecurUtility::createSmallestDateFromInput($granularity, $value, $timezone);
-    $this->assertEquals($expected, $smallest->format('r'));
+    static::assertEquals($expected, $smallest->format('r'));
   }
 
   /**
@@ -38,7 +40,7 @@ class DateRecurUtilityTest extends KernelTestBase {
    * @return array
    *   Data for testing.
    */
-  public function providerSmallestDate() {
+  public function providerSmallestDate(): array {
     $data = [];
 
     $data['year'] = [
@@ -78,10 +80,10 @@ class DateRecurUtilityTest extends KernelTestBase {
    * @covers ::createLargestDateFromInput
    * @dataProvider providerLargestDate
    */
-  public function testLargestDate($granularity, $value, $expected) {
+  public function testLargestDate($granularity, $value, $expected): void {
     $timezone = new \DateTimeZone('Asia/Singapore');
     $largest = DateRecurUtility::createLargestDateFromInput($granularity, $value, $timezone);
-    $this->assertEquals($expected, $largest->format('r'));
+    static::assertEquals($expected, $largest->format('r'));
   }
 
   /**
@@ -90,7 +92,7 @@ class DateRecurUtilityTest extends KernelTestBase {
    * @return array
    *   Data for testing.
    */
-  public function providerLargestDate() {
+  public function providerLargestDate(): array {
     $data = [];
 
     $data['year'] = [

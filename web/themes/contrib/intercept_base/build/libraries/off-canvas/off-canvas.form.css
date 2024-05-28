@@ -361,6 +361,11 @@
     background-color: #f3faef;
     padding: 15px;
     margin-bottom: 20px; }
+  #drupal-off-canvas .form-actions .ajax-progress {
+    display: inline !important;
+    padding: 0; }
+    #drupal-off-canvas .form-actions .ajax-progress .throbber {
+      padding: 5px 7px 0px 7px; }
 
 #room-reservation-form__messages {
   z-index: 10;

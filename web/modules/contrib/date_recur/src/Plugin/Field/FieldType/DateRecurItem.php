@@ -19,6 +19,7 @@ use Drupal\date_recur\DateRecurRruleMap;
 use Drupal\date_recur\Exception\DateRecurHelperArgumentException;
 use Drupal\date_recur\Plugin\Field\DateRecurDateTimeComputed;
 use Drupal\date_recur\Plugin\Field\DateRecurOccurrencesComputed;
+use Drupal\date_recur\Plugin\Validation\Constraint\DateRecurTimeZoneConstraint;
 use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
 
 /**
@@ -93,16 +94,16 @@ class DateRecurItem extends DateRangeItem {
     $properties['rrule'] = DataDefinition::create('string')
       ->setLabel((string) new TranslatableMarkup('RRule'))
       ->setRequired(FALSE);
+    /** @var null|int<1, max> $rruleMaxLength */
     $rruleMaxLength = $field_definition->getSetting('rrule_max_length');
-    assert(empty($rruleMaxLength) || (is_numeric($rruleMaxLength) && $rruleMaxLength > 0));
-    if (!empty($rruleMaxLength)) {
+    if ($rruleMaxLength !== NULL) {
       $properties['rrule']->addConstraint('Length', ['max' => $rruleMaxLength]);
     }
 
     $properties['timezone'] = DataDefinition::create('string')
       ->setLabel((string) new TranslatableMarkup('Timezone'))
       ->setRequired(TRUE)
-      ->addConstraint('DateRecurTimeZone');
+      ->addConstraint(DateRecurTimeZoneConstraint::PLUGIN_ID);
 
     $properties['infinite'] = DataDefinition::create('boolean')
       ->setLabel((string) new TranslatableMarkup('Whether the RRule is an infinite rule. Derived value from RRULE.'))
@@ -264,7 +265,7 @@ class DateRecurItem extends DateRangeItem {
       if (count($enabledParts) === 0) {
         $defaultSetting = static::FREQUENCY_SETTINGS_DISABLED;
       }
-      elseif (in_array(static::PART_SUPPORTS_ALL, $enabledParts)) {
+      elseif (in_array(static::PART_SUPPORTS_ALL, $enabledParts, TRUE)) {
         $defaultSetting = static::FREQUENCY_SETTINGS_PARTS_ALL;
       }
       elseif (count($enabledParts) > 0) {
@@ -325,7 +326,7 @@ class DateRecurItem extends DateRangeItem {
     NestedArray::unsetValue($form_state->getValues(), $element['#parents']);
 
     $parts = [];
-    $parts['all'] = !empty($values['all']);
+    $parts['all'] = ($values['all'] === TRUE || $values['all'] === 1);
     $parts['frequencies'] = [];
     foreach ($values['table'] as $frequency => $row) {
       $enabledParts = array_keys(array_filter($row['parts']));
@@ -376,7 +377,7 @@ class DateRecurItem extends DateRangeItem {
    */
   public function setValue($values, $notify = TRUE): void {
     // Cast infinite to boolean on load.
-    $values['infinite'] = !empty($values['infinite']);
+    $values['infinite'] = (bool) ($values['infinite'] ?? FALSE);
     // All values are going to be overwritten atomically.
     $this->resetHelper();
     parent::setValue($values, $notify);
@@ -386,7 +387,7 @@ class DateRecurItem extends DateRangeItem {
    * {@inheritdoc}
    */
   public function onChange($property_name, $notify = TRUE) {
-    if (in_array($property_name, ['value', 'end_value', 'rrule', 'timezone'])) {
+    if (in_array($property_name, ['value', 'end_value', 'rrule', 'timezone'], TRUE)) {
       // Reset cached helper instance if values changed.
       $this->resetHelper();
     }
@@ -400,7 +401,7 @@ class DateRecurItem extends DateRangeItem {
    *   Whether the field value is recurring.
    */
   public function isRecurring(): bool {
-    return !empty($this->rrule);
+    return $this->rrule !== NULL && strlen($this->rrule) > 0;
   }
 
   /**
@@ -420,7 +421,7 @@ class DateRecurItem extends DateRangeItem {
     }
 
     $timeZoneString = $this->timezone;
-    if (empty($timeZoneString)) {
+    if ($timeZoneString === NULL || strlen($timeZoneString) === 0) {
       throw new DateRecurHelperArgumentException('Missing time zone');
     }
 
@@ -459,11 +460,9 @@ class DateRecurItem extends DateRangeItem {
     $start_value = $this->get('value')->getValue();
     $end_value = $this->get('end_value')->getValue();
     return (
-      // Use OR operator instead of AND from parent. See
-      // https://www.drupal.org/project/drupal/issues/3025812
-      ($start_value === NULL || $start_value === '') ||
-      ($end_value === NULL || $end_value === '') ||
-      empty($this->get('timezone')->getValue())
+      ($start_value === NULL || $start_value === '') &&
+      ($end_value === NULL || $end_value === '') &&
+      in_array($this->get('timezone')->getValue(), ['', NULL], TRUE)
     );
   }
 

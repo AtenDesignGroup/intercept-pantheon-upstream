@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\focal_point\Unit;
 
-use Drupal\crop\CropStorageInterface;
+use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Image\ImageInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\crop\CropStorageInterface;
 use Drupal\focal_point\FocalPointManager;
-use Drupal\Tests\UnitTestCase;
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\focal_point\Plugin\ImageEffect\FocalPointCropImageEffect;
+use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
-use Drupal\Core\Config\ImmutableConfig;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Focal point unit test case.

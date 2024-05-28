@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\jsonapi_resources\Unstable;
 
@@ -81,7 +83,7 @@ final class DocumentExtractor {
    * @return \Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel
    *   The document.
    */
-  public function getDocument(Request $request) {
+  public function getDocument(Request $request): JsonApiDocumentTopLevel {
     if (!$this->documents->contains($request)) {
       $this->documents[$request] = $this->extractDocument($request);
     }
@@ -98,21 +100,28 @@ final class DocumentExtractor {
    * @return \Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel
    *   The document.
    */
-  protected function extractDocument(Request $request) {
-    return new JsonApiDocumentTopLevel(new ResourceObjectData([$this->extractResourceObjectFromRequest($request)], 1), new NullIncludedData(), new LinkCollection([]));
+  protected function extractDocument(Request $request): JsonApiDocumentTopLevel {
+    $decoded = $this->decodeRequestPayload($request);
+    return new JsonApiDocumentTopLevel(
+      new ResourceObjectData([$this->extractResourceObject($decoded, $request)], 1),
+      new NullIncludedData(),
+      new LinkCollection([]),
+      $decoded['meta'] ?? []
+    );
   }
 
   /**
    * Decodes and builds a resource object from a request body.
    *
+   * @param array $decoded
+   *   The decoded request payload.
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request.
    *
    * @return \Drupal\jsonapi_resources\Unstable\Value\NewResourceObject
    *   A new resource object.
    */
-  protected function extractResourceObjectFromRequest(Request $request) {
-    $decoded = $this->decodeRequestPayload($request);
+  protected function extractResourceObject(array $decoded, Request $request): NewResourceObject {
     $primary_data = $decoded['data'] ?? [];
     if (isset($decoded['data'][0])) {
       // The `data` member of a request document can only be an array if it is
@@ -162,7 +171,7 @@ final class DocumentExtractor {
       $primary_data['relationships'] = $this->handleRelationships($decoded['data']);
     }
 
-    return NewResourceObject::createFromPrimaryData($resource_type, $primary_data);
+    return NewResourceObject::createFromPrimaryData($resource_type, $primary_data, $primary_data['meta'] ?? []);
   }
 
   /**

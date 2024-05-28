@@ -60,7 +60,7 @@ class DateRecurUtility {
    *   User date input.
    * @param \DateTimeZone $timezone
    *   The timezone of the input.
-   * @param string $end
+   * @param 'start'|'end' $end
    *   Either 'start' or 'end' to get a date at the beginning or end of a
    *   granularity period.
    *
@@ -73,7 +73,6 @@ class DateRecurUtility {
    * @internal
    */
   protected static function createDateFromInput(string $granularity, string $value, \DateTimeZone $timezone, string $end): \DateTime {
-    assert(in_array($end, ['start', 'end']));
     $start = $end === 'start';
 
     $granularityFormatsMap = DateRecurGranularityMap::GRANULARITY_DATE_FORMATS;

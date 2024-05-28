@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\focal_point\Unit\FieldWidgets;
 
+use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Image\ImageFactory;
+use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\focal_point\FocalPointManager;
 use Drupal\focal_point\Plugin\Field\FieldWidget\FocalPointImageWidget;
-use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Render\ElementInfoManagerInterface;
-use Drupal\Core\Image\ImageFactory;
-use Drupal;
 
 /**
  * @coversDefaultClass \Drupal\focal_point\Plugin\Field\FieldWidget\FocalPointImageWidget
@@ -56,7 +57,7 @@ class FocalPointFieldWidgetTest extends UnitTestCase {
     ];
 
     // Setup a mock form state object for testing.
-    // @todo: Figure out why using prophesize for this mock causes an exception.
+    // @todo Figure out why using prophesize for this mock causes an exception.
     $this->testFormState = $this->getMockBuilder('\Drupal\Core\Form\FormStateInterface')->disableOriginalConstructor()->getMock();
   }
 
@@ -89,7 +90,7 @@ class FocalPointFieldWidgetTest extends UnitTestCase {
 
     // Create a focal point image widget and test the validate method. Note that
     // an additional argument was added to the ImageWidget constructor in 8.5.
-    if (version_compare(Drupal::VERSION, '8.5', '<')) {
+    if (version_compare(\Drupal::VERSION, '8.5', '<')) {
       $focalPointImageWidget = new FocalPointImageWidget([], [], $this->prophesize(FieldDefinitionInterface::class)->reveal(), [], [], $this->prophesize(ElementInfoManagerInterface::class)->reveal());
     }
     else {

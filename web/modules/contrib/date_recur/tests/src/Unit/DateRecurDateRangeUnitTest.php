@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Unit;
 
 use Drupal\date_recur\DateRange;
@@ -19,14 +21,14 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    * @covers ::getStart
    * @covers ::getEnd
    */
-  public function testGetters() {
+  public function testGetters(): void {
     $start = new \DateTime('yesterday');
     $end = new \DateTime('tomorrow');
     $dateRange = $this->createDateRange($start, $end);
 
-    $this->assertEquals($start, $dateRange->getStart());
-    $this->assertEquals($end, $dateRange->getEnd());
-    $this->assertNotEquals($dateRange->getStart(), $dateRange->getEnd());
+    static::assertEquals($start, $dateRange->getStart());
+    static::assertEquals($end, $dateRange->getEnd());
+    static::assertNotEquals($dateRange->getStart(), $dateRange->getEnd());
   }
 
   /**
@@ -35,7 +37,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    * @covers ::setStart
    * @covers ::setEnd
    */
-  public function testConstructorReferencesLost() {
+  public function testConstructorReferencesLost(): void {
     $startOriginal = new \DateTime('Monday 12:00:00');
     $endOriginal = new \DateTime('Monday 12:00:00');
     $start = clone $startOriginal;
@@ -47,8 +49,8 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
     $end->modify('+1 year');
 
     // Dates should be the same as passed.
-    $this->assertEquals($startOriginal, $dateRange->getStart());
-    $this->assertEquals($endOriginal, $dateRange->getEnd());
+    static::assertEquals($startOriginal, $dateRange->getStart());
+    static::assertEquals($endOriginal, $dateRange->getEnd());
   }
 
   /**
@@ -56,7 +58,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    *
    * @covers ::getStart
    */
-  public function testGetStartImmutable() {
+  public function testGetStartImmutable(): void {
     $original = new \DateTime('Monday 12:00:00');
     $dateRange = $this->createDateRange(clone $original, new \DateTime('Monday 12:00:00'));
 
@@ -64,7 +66,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
     $gotten->modify('+1 year');
     $gotten->setTimezone(new \DateTimeZone('Asia/Singapore'));
 
-    $this->assertEquals($original, $dateRange->getStart());
+    static::assertEquals($original, $dateRange->getStart());
   }
 
   /**
@@ -72,7 +74,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    *
    * @covers ::getEnd
    */
-  public function testGetEndImmutable() {
+  public function testGetEndImmutable(): void {
     $original = new \DateTime('Monday 12:00:00');
     $dateRange = $this->createDateRange(new \DateTime('Monday 12:00:00'), clone $original);
 
@@ -80,7 +82,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
     $gotten->modify('+1 year');
     $gotten->setTimezone(new \DateTimeZone('Asia/Singapore'));
 
-    $this->assertEquals($original, $dateRange->getEnd());
+    static::assertEquals($original, $dateRange->getEnd());
   }
 
   /**
@@ -88,7 +90,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    *
    * @covers ::validateDates
    */
-  public function testEndAfterStartValidation() {
+  public function testEndAfterStartValidation(): void {
     // Same time.
     $start = new \DateTime('Monday 12:00:00');
     $end = new \DateTime('Monday 12:00:00');
@@ -118,7 +120,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    *
    * @covers ::validateDates
    */
-  public function testTimezoneValidation() {
+  public function testTimezoneValidation(): void {
     $start = new \DateTime('Monday 12:00:00', new \DateTimeZone('Australia/Melbourne'));
     $end = new \DateTime('Monday 12:00:00', new \DateTimeZone('Australia/Sydney'));
     $this->expectException(\InvalidArgumentException::class);
@@ -139,7 +141,7 @@ class DateRecurDateRangeUnitTest extends UnitTestCase {
    * @return \Drupal\date_recur\DateRange
    *   New range object.
    */
-  protected function createDateRange($start, $end) {
+  protected function createDateRange($start, $end): DateRange {
     return new DateRange($start, $end);
   }
 

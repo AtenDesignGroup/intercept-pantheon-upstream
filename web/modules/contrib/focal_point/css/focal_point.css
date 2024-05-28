@@ -3,35 +3,35 @@
   height: 1px;
   cursor: move;
 }
-.focal-point-indicator:after {
-  content: "+";
-  color: #fff;
-  cursor: move;
-  text-shadow: 1px 1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, -1px -1px 0 #000;
-  width: .75em;
-  height: .75em;
-  font-size: 1.5em;
-  line-height: .75em;
-  display: block;
+.focal-point-indicator::after {
   position: relative;
   top: -.375em;
   left: -.375em;
+  display: block;
+  width: .75em;
+  height: .75em;
+  content: "+";
+  cursor: move;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, -1px -1px 0 #000;
+  font-size: 1.5em;
+  line-height: .75em;
 }
 .focal-point-wrapper {
-  display: inline-block;
   position: relative;
+  display: inline-block;
   direction: ltr;
 }
 .focal-point-preview-link {
   display: block;
-  direction: initial;
   text-align: center;
+  direction: initial;
   line-height: initial;
 }
-.focal-point-preview-link:before {
+.focal-point-preview-link::before {
   content: "\1F50D";
-  font-size: x-large;
   vertical-align: middle;
+  font-size: x-large;
 }
 .focal-point-preview-link:hover {
   text-decoration: none;

@@ -459,6 +459,17 @@
     margin-bottom: 20px;
   }
 
+  .form-actions {
+    .ajax-progress {
+      display: inline !important;
+      padding: 0;
+    
+      .throbber {
+        padding: 5px 7px 0px 7px;
+      }
+    }
+  }
+
 
 }
 

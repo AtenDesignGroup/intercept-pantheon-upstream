@@ -300,7 +300,7 @@ class JsonapiResourceTest extends BrowserTestBase {
         'attributes' => [
           'entity_type' => 'node',
           'field_name' => 'comment',
-          'subject' => 'Dramallama',
+          'subject' => 'Drama llama',
           'status' => 1,
           'comment_body' => [
             'value' => 'Llamas are awesome.',

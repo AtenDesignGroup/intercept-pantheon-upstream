@@ -18,19 +18,25 @@
         }
     },
   "require": {
-    "php": ">=8.0",
-    "drupal/core": "^9 || ^10",
-    "rlanvin/php-rrule": "^1 || ^2"
+    "php": ">=8.1",
+    "drupal/core": "^10",
+    "rlanvin/php-rrule": "^2"
   },
   "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1",
     "drupal/coder": "^8.3",
     "drupal/token": "^1.5",
-    "phpstan/phpstan": "^1",
     "mglaman/phpstan-drupal": "^1",
+    "phpstan/phpstan": "^1",
     "phpstan/phpstan-deprecation-rules": "*",
-    "dealerdirect/phpcodesniffer-composer-installer": "dev-master"
+    "previousnext/coding-standard": "^0.1.0"
   },
   "suggest": {
     "drupal/date_recur_interactive": "Provides an interactive recurring date widget."
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }

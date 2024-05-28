@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2024-05-28
+
+* Fixed a spacing issue on location pages under "Today's Hours"
+* Fixed off-center loading icon on room reservation form
+* Updated Date Recur module to latest version
+* Added first 2.0.x release
+
 ## [8.x-1.0-beta24] - 2024-05-01
 
 * Fixed an issue where customers using iOS Safari would sometimes reserve rooms outside of regular 15 minute intervals

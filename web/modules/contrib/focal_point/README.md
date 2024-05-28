@@ -47,10 +47,21 @@ INSTALLATION
 CONFIGURATION
 -------------
 
-    1. Navigate to Administration > Extend and enable the module.
-    2. Navigate to Administration > Structure > Content types > [Content type to
-       edit] > Manage Form Display and choose the "Image (Focal Point)" widget
-       for the image field.
+1. Navigate to Administration > Extend and enable the module.
+2. For Field type Image in Content type
+   1. Navigate to Administration > Structure > Content types > [Content type to
+      edit] > Manage Form Display and choose the "Image (Focal Point)" widget
+      for the image field.
+3. For Field type Media as image in Content type
+   1. Enable the core Media Library and Media modules
+   2. Navigate to Administration > Structure > Media
+      types > Image > Manage form display
+   3. Change the Widget type of the 'Image' field to 'Image (Focal Point)'
+   4. Follow instructions for configuring Media Library fields in Nodes
+
+    
+USAGE
+-----
 
  * Setting the focal point for an image:
    To set the focal point on an image, go to the content edit form (ex. the node
@@ -77,3 +88,4 @@ MAINTAINERS
 -----------
 
  * Alexander Ross (bleen) - https://www.drupal.org/u/bleen
+ * Pravin Gaikwad (rajeshreeputra) - https://www.drupal.org/u/rajeshreeputra - 2.x version only.

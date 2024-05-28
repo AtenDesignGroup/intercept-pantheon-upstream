@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\jsonapi_resources\Resource;
 
@@ -6,9 +8,9 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\RevisionableStorageInterface;
 use Drupal\jsonapi\JsonApiResource\ResourceObjectData;
+use Drupal\jsonapi_resources\Entity\Query\PaginatorInterface;
 use Drupal\jsonapi_resources\Unstable\Entity\Query\CacheabilityCapturingExecutor;
 use Drupal\jsonapi_resources\Unstable\Entity\Query\Pagination\OffsetLimitPaginator;
-use Drupal\jsonapi_resources\Entity\Query\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

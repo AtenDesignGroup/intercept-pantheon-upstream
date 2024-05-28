@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\Core\Field\Entity\BaseFieldOverride;
+use Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList;
 use Drupal\date_recur_entity_test\Entity\DrEntityTest;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\user\Entity\User;
@@ -67,7 +70,7 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
   /**
    * Tests default behaviour.
    */
-  public function testDefaults() {
+  public function testDefaults(): void {
     $this->baseFieldOverride->setDefaultValue([
       [
         'default_date_type' => 'relative',
@@ -76,26 +79,27 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
         'default_end_date' => '12th April 2013 4pm',
         'default_date_time_zone' => 'Europe/Oslo',
         'default_time_zone' => 'Indian/Christmas',
+        'default_time_zone_source' => DateRecurFieldItemList::DEFAULT_TIME_ZONE_SOURCE_FIXED,
         'default_rrule' => 'FREQ=DAILY;COUNT=100',
       ],
     ]);
     $this->baseFieldOverride->save();
 
     $entity = DrEntityTest::create();
-    $this->assertEquals('2013-04-12T13:00:00', $entity->dr->value);
-    $this->assertEquals('2013-04-12T14:00:00', $entity->dr->end_value);
-    $this->assertEquals('Indian/Christmas', $entity->dr->timezone);
-    $this->assertEquals('FREQ=DAILY;COUNT=100', $entity->dr->rrule);
+    static::assertEquals('2013-04-12T13:00:00', $entity->dr->value);
+    static::assertEquals('2013-04-12T14:00:00', $entity->dr->end_value);
+    static::assertEquals('Indian/Christmas', $entity->dr->timezone);
+    static::assertEquals('FREQ=DAILY;COUNT=100', $entity->dr->rrule);
 
     $entity->save();
     // Value is kept after save.
-    $this->assertEquals(1, $entity->dr->count());
+    static::assertEquals(1, $entity->dr->count());
   }
 
   /**
    * Tests time zone from current user.
    */
-  public function testDefaultCurrentUser() {
+  public function testDefaultCurrentUser(): void {
     $this->baseFieldOverride->setDefaultValue([
       [
         'default_date_type' => 'relative',
@@ -104,14 +108,15 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
         'default_end_date' => '12th April 2013 4pm',
         'default_date_time_zone' => 'Europe/Oslo',
         'default_time_zone' => '',
+        'default_time_zone_source' => DateRecurFieldItemList::DEFAULT_TIME_ZONE_SOURCE_CURRENT_USER,
       ],
     ]);
     $this->baseFieldOverride->save();
 
     $entity = DrEntityTest::create();
-    $this->assertEquals('2013-04-12T13:00:00', $entity->dr->value);
-    $this->assertEquals('2013-04-12T14:00:00', $entity->dr->end_value);
-    $this->assertEquals('Asia/Singapore', $entity->dr->timezone);
+    static::assertEquals('2013-04-12T13:00:00', $entity->dr->value);
+    static::assertEquals('2013-04-12T14:00:00', $entity->dr->end_value);
+    static::assertEquals('Asia/Singapore', $entity->dr->timezone);
   }
 
 }

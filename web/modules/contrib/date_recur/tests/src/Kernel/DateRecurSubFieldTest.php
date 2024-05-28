@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur\DateRecurOccurrences;
@@ -19,14 +21,6 @@ class DateRecurSubFieldTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp(): void {
-    parent::setUp();
-    $this->installEntitySchema('entity_test');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_subfield',
     'entity_test',
@@ -38,9 +32,17 @@ class DateRecurSubFieldTest extends KernelTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+    $this->installEntitySchema('entity_test');
+  }
+
+  /**
    * Tests occurrence table is created for subclassed fields.
    */
-  public function testOccurrenceTable() {
+  public function testOccurrenceTable(): void {
     $fieldStorage = FieldStorageConfig::create([
       'entity_type' => 'entity_test',
       'field_name' => 'abc',
@@ -72,14 +74,14 @@ class DateRecurSubFieldTest extends KernelTestBase {
     $actualExists = $this->container->get('database')
       ->schema()
       ->tableExists($tableName);
-    $this->assertTrue($actualExists);
+    static::assertTrue($actualExists);
 
     // Test deletion.
     $fieldStorage->delete();
     $actualExists = $this->container->get('database')
       ->schema()
       ->tableExists($tableName);
-    $this->assertFalse($actualExists);
+    static::assertFalse($actualExists);
   }
 
 }

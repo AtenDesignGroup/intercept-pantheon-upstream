@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi_resources\Unit\Routing;
 
@@ -49,16 +49,19 @@ final class ResourceRoutesTest extends UnitTestCase {
     $generic_route = $route_collection->get('generic_route');
     $this->assertSame('/generic', $generic_route->getPath());
     $this->assertNull($generic_route->getOption('_auth'));
+    $this->assertNull($generic_route->getRequirement('_format'));
 
     $jsonapi_resource_route = $route_collection->get('jsonapi_resource_route');
     $this->assertSame('/custom-base-path/resource', $jsonapi_resource_route->getPath());
     $this->assertSame(['GET'], $jsonapi_resource_route->getMethods());
     $this->assertSame(['basic_auth'], $jsonapi_resource_route->getOption('_auth'));
+    $this->assertEquals('api_json', $jsonapi_resource_route->getRequirement('_format'));
 
     $multi_method_route = $route_collection->get('jsonapi_resource_multi_method_route');
     $this->assertSame('/custom-base-path/resource', $multi_method_route->getPath());
     $this->assertSame(['POST', 'PATCH'], $multi_method_route->getMethods());
     $this->assertSame(['basic_auth'], $multi_method_route->getOption('_auth'));
+    $this->assertEquals('api_json', $multi_method_route->getRequirement('_format'));
   }
 
   /**

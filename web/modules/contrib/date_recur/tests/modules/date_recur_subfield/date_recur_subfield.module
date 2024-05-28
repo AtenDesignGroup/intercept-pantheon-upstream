@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /**
  * @file
  * Date Recur Subfield hooks.
@@ -8,10 +10,10 @@
 /**
  * Implements hook_field_widget_info_alter().
  */
-function date_recur_subfield_field_field_widget_info_alter(array &$info) {
+function date_recur_subfield_field_field_widget_info_alter(array &$info): void {
   // Duplicate date_recur widgets for date_recur_sub field.
   foreach ($info as $widgetId => $widgetInfo) {
-    if (in_array('date_recur', $widgetInfo['field_types'])) {
+    if (in_array('date_recur', $widgetInfo['field_types'], TRUE)) {
       $info[$widgetId]['field_types'][] = 'date_recur_sub';
     }
   }
@@ -20,10 +22,10 @@ function date_recur_subfield_field_field_widget_info_alter(array &$info) {
 /**
  * Implements hook_field_formatter_info_alter().
  */
-function date_recur_subfield_field_field_formatter_info_alter(array &$info) {
+function date_recur_subfield_field_field_formatter_info_alter(array &$info): void {
   // Duplicate date_recur formatters for date_recur_sub field.
   foreach ($info as $formatterId => $formatterInfo) {
-    if (in_array('date_recur', $formatterInfo['field_types'])) {
+    if (in_array('date_recur', $formatterInfo['field_types'], TRUE)) {
       $info[$formatterId]['field_types'][] = 'date_recur_sub';
     }
   }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Unit;
 
 use Drupal\date_recur\DateRecurPartGrid;
@@ -19,13 +21,13 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::isAllowEverything
    */
-  public function testOriginal() {
+  public function testOriginal(): void {
     $partGrid = $this->createPartGrid();
-    $this->assertTrue($partGrid->isAllowEverything());
+    static::assertTrue($partGrid->isAllowEverything());
     // Test a random frequency.
-    $this->assertTrue($partGrid->isFrequencyAllowed('WEEKLY'));
+    static::assertTrue($partGrid->isFrequencyAllowed('WEEKLY'));
     // Test a random frequency and part.
-    $this->assertTrue($partGrid->isPartAllowed('DAILY', 'BYMONTH'));
+    static::assertTrue($partGrid->isPartAllowed('DAILY', 'BYMONTH'));
   }
 
   /**
@@ -33,10 +35,10 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::isRecurringAllowed
    */
-  public function testIsRecurringNotAllowedDefault() {
+  public function testIsRecurringNotAllowedDefault(): void {
     // A created part grid without any passed parameters allows everything.
     $partGrid = $this->createPartGrid();
-    $this->assertTrue($partGrid->isRecurringAllowed());
+    static::assertTrue($partGrid->isRecurringAllowed());
   }
 
   /**
@@ -44,10 +46,10 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::isRecurringAllowed
    */
-  public function testIsRecurringNotAllowed() {
+  public function testIsRecurringNotAllowed(): void {
     $partGrid = $this->createPartGrid();
     $partGrid->allowParts('DAILY', []);
-    $this->assertFalse($partGrid->isRecurringAllowed());
+    static::assertFalse($partGrid->isRecurringAllowed());
   }
 
   /**
@@ -55,10 +57,10 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::isRecurringAllowed
    */
-  public function testIsRecurringAllowed() {
+  public function testIsRecurringAllowed(): void {
     $partGrid = $this->createPartGrid();
     $partGrid->allowParts('DAILY', ['BYSETPOS']);
-    $this->assertTrue($partGrid->isRecurringAllowed());
+    static::assertTrue($partGrid->isRecurringAllowed());
   }
 
   /**
@@ -66,19 +68,19 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::isPartAllowed
    */
-  public function testAllowParts() {
+  public function testAllowParts(): void {
     $partGrid = $this->createPartGrid();
     $partGrid->allowParts('DAILY', ['BYSETPOS']);
 
-    $this->assertFalse($partGrid->isAllowEverything());
+    static::assertFalse($partGrid->isAllowEverything());
 
     // Test frequencies.
-    $this->assertTrue($partGrid->isFrequencyAllowed('DAILY'));
-    $this->assertFalse($partGrid->isFrequencyAllowed('WEEKLY'));
+    static::assertTrue($partGrid->isFrequencyAllowed('DAILY'));
+    static::assertFalse($partGrid->isFrequencyAllowed('WEEKLY'));
 
     // Test frequencies and parts.
-    $this->assertTrue($partGrid->isPartAllowed('DAILY', 'BYSETPOS'));
-    $this->assertFalse($partGrid->isPartAllowed('DAILY', 'BYMONTH'));
+    static::assertTrue($partGrid->isPartAllowed('DAILY', 'BYSETPOS'));
+    static::assertFalse($partGrid->isPartAllowed('DAILY', 'BYMONTH'));
   }
 
   /**
@@ -86,11 +88,11 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::configSettingsToGrid
    */
-  public function testSettingsToGridOriginal() {
+  public function testSettingsToGridOriginal(): void {
     $parts = [];
 
     $partGrid = DateRecurPartGrid::configSettingsToGrid($parts);
-    $this->assertTrue($partGrid->isAllowEverything());
+    static::assertTrue($partGrid->isAllowEverything());
   }
 
   /**
@@ -98,16 +100,16 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::configSettingsToGrid
    */
-  public function testSettingsToGridAllowEverything() {
+  public function testSettingsToGridAllowEverything(): void {
     $parts = ['all' => TRUE];
     $partGrid = DateRecurPartGrid::configSettingsToGrid($parts);
-    $this->assertTrue($partGrid->isAllowEverything());
+    static::assertTrue($partGrid->isAllowEverything());
 
     // A false 'all' config doesn't disallow everything, it defers part
     // allowance to 'frequency' config.
     $parts = ['all' => FALSE];
     $partGrid = DateRecurPartGrid::configSettingsToGrid($parts);
-    $this->assertTrue($partGrid->isAllowEverything());
+    static::assertTrue($partGrid->isAllowEverything());
   }
 
   /**
@@ -115,7 +117,7 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::configSettingsToGrid
    */
-  public function testSettingsToGridAllFrequenciesDisabled() {
+  public function testSettingsToGridAllFrequenciesDisabled(): void {
     $parts = [
       'all' => FALSE,
       'frequencies' => [
@@ -125,9 +127,9 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
 
     $partGrid = DateRecurPartGrid::configSettingsToGrid($parts);
     // Test defined frequency.
-    $this->assertFalse($partGrid->isFrequencyAllowed('WEEKLY'));
+    static::assertFalse($partGrid->isFrequencyAllowed('WEEKLY'));
     // Test undefined frequency.
-    $this->assertFalse($partGrid->isFrequencyAllowed('DAILY'));
+    static::assertFalse($partGrid->isFrequencyAllowed('DAILY'));
   }
 
   /**
@@ -135,7 +137,7 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::configSettingsToGrid
    */
-  public function testSettingsToGridAllPartsForFrequencyAllowed() {
+  public function testSettingsToGridAllPartsForFrequencyAllowed(): void {
     $parts = [
       'all' => FALSE,
       'frequencies' => [
@@ -146,17 +148,17 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
 
     $partGrid = DateRecurPartGrid::configSettingsToGrid($parts);
     // Test defined frequency no parts.
-    $this->assertFalse($partGrid->isFrequencyAllowed('WEEKLY'));
-    $this->assertFalse($partGrid->isPartAllowed('WEEKLY', 'BYSETPOS'));
+    static::assertFalse($partGrid->isFrequencyAllowed('WEEKLY'));
+    static::assertFalse($partGrid->isPartAllowed('WEEKLY', 'BYSETPOS'));
     // Test undefined frequency.
-    $this->assertFalse($partGrid->isFrequencyAllowed('DAILY'));
-    $this->assertFalse($partGrid->isPartAllowed('DAILY', 'BYSETPOS'));
+    static::assertFalse($partGrid->isFrequencyAllowed('DAILY'));
+    static::assertFalse($partGrid->isPartAllowed('DAILY', 'BYSETPOS'));
     // Test defined frequency.
-    $this->assertTrue($partGrid->isFrequencyAllowed('MONTHLY'));
+    static::assertTrue($partGrid->isFrequencyAllowed('MONTHLY'));
     // Test defined part.
-    $this->assertTrue($partGrid->isPartAllowed('MONTHLY', 'BYSETPOS'));
+    static::assertTrue($partGrid->isPartAllowed('MONTHLY', 'BYSETPOS'));
     // Test undefined frequency.
-    $this->assertTrue($partGrid->isPartAllowed('MONTHLY', 'BYMONTH'));
+    static::assertTrue($partGrid->isPartAllowed('MONTHLY', 'BYMONTH'));
   }
 
   /**
@@ -164,7 +166,7 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    *
    * @covers ::configSettingsToGrid
    */
-  public function testIncompatiblePartException() {
+  public function testIncompatiblePartException(): void {
     $partGrid = $this->createPartGrid();
     $partGrid->allowParts('DAILY', ['*']);
     // BYWEEKNO is incompatible with daily.
@@ -178,7 +180,7 @@ class DateRecurPartGridUnitTest extends UnitTestCase {
    * @return \Drupal\date_recur\DateRecurPartGrid
    *   New part grid object.
    */
-  protected function createPartGrid() {
+  protected function createPartGrid(): DateRecurPartGrid {
     return new DateRecurPartGrid();
   }
 

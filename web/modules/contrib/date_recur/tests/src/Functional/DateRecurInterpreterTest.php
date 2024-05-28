@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Functional;
 
 use Drupal\Core\Url;
@@ -15,7 +17,7 @@ class DateRecurInterpreterTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'starterkit_theme';
 
   /**
    * {@inheritdoc}
@@ -38,7 +40,7 @@ class DateRecurInterpreterTest extends WebDriverTestBase {
   /**
    * Tests adding a new interpreter.
    */
-  public function testInterpreterWebCreate() {
+  public function testInterpreterWebCreate(): void {
     $instanceLabel = 'Kaya';
     $url = Url::fromRoute('entity.date_recur_interpreter.add_form');
     $this->drupalGet($url);

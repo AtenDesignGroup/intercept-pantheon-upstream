@@ -16,6 +16,7 @@ class DateRecurOccurrenceListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader(): array {
+    $header = [];
     $header['label'] = $this->t('Name');
     return $header + parent::buildHeader();
   }
@@ -24,6 +25,7 @@ class DateRecurOccurrenceListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity): array {
+    $row = [];
     $row['label'] = $entity->label();
     return $row + parent::buildRow($entity);
   }

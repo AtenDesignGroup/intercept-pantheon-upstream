@@ -18,7 +18,7 @@ class DateRecurTimeZoneConstraintValidator extends ConstraintValidator {
   public function validate($value, Constraint $constraint) {
     assert($constraint instanceof DateRecurTimeZoneConstraint);
     $timeZones = \DateTimeZone::listIdentifiers();
-    if (is_string($value) && !in_array($value, $timeZones)) {
+    if (is_string($value) && !in_array($value, $timeZones, TRUE)) {
       $this->context->addViolation($constraint->invalidTimeZone, ['%value' => $value]);
     }
   }

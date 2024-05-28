@@ -110,13 +110,13 @@ class DateRecurPartGrid {
   /**
    * Converts settings from date recur field configuration to a part grid.
    *
-   * @param array $parts
+   * @param array{all: bool, frequencies: array<mixed>} $parts
    *   Part configuration.
    *
    * @return \Drupal\date_recur\DateRecurPartGrid
    *   A new parts grid.
    */
-  public static function configSettingsToGrid(array $parts) {
+  public static function configSettingsToGrid(array $parts): DateRecurPartGrid {
     $grid = new static();
 
     if (!empty($parts['all'])) {

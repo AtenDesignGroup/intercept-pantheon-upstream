@@ -5,11 +5,11 @@ declare(strict_types = 1);
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\Core\Field\FieldConfigInterface;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Tests field validation failures as a result part grids.
@@ -65,7 +65,7 @@ class DateRecurPartGridTest extends KernelTestBase {
   /**
    * Tests when nothing is allowed.
    */
-  public function testAllowedAll() {
+  public function testAllowedAll(): void {
     $this->setPartSettings([
       'all' => TRUE,
       'frequencies' => [
@@ -91,13 +91,13 @@ class DateRecurPartGridTest extends KernelTestBase {
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->foo->validate();
-    $this->assertEquals(0, $violations->count());
+    static::assertEquals(0, $violations->count());
   }
 
   /**
    * Tests when nothing is allowed.
    */
-  public function testAllowedNothing() {
+  public function testAllowedNothing(): void {
     $this->setPartSettings([
       'all' => FALSE,
       'frequencies' => [
@@ -123,17 +123,17 @@ class DateRecurPartGridTest extends KernelTestBase {
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->foo->validate();
-    $this->assertEquals(1, $violations->count());
+    static::assertEquals(1, $violations->count());
 
     $violation = $violations->get(0);
     $message = strip_tags((string) $violation->getMessage());
-    $this->assertEquals('Weekly is not a permitted frequency.', $message);
+    static::assertEquals('Weekly is not a permitted frequency.', $message);
   }
 
   /**
    * Tests when a frequency is allowed or disallowed.
    */
-  public function testFrequency() {
+  public function testFrequency(): void {
     $this->setPartSettings([
       'all' => FALSE,
       'frequencies' => [
@@ -153,11 +153,11 @@ class DateRecurPartGridTest extends KernelTestBase {
     // Try a disallowed frequency.
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->foo->validate();
-    $this->assertEquals(1, $violations->count());
+    static::assertEquals(1, $violations->count());
 
     $violation = $violations->get(0);
     $message = strip_tags((string) $violation->getMessage());
-    $this->assertEquals('Daily is not a permitted frequency.', $message);
+    static::assertEquals('Daily is not a permitted frequency.', $message);
 
     // Try an allowed frequency.
     $entity = EntityTest::create();
@@ -171,13 +171,13 @@ class DateRecurPartGridTest extends KernelTestBase {
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->foo->validate();
-    $this->assertEquals(0, $violations->count());
+    static::assertEquals(0, $violations->count());
   }
 
   /**
    * Tests when some parts for a frequency is allowed.
    */
-  public function testAllowedSomeParts() {
+  public function testAllowedSomeParts(): void {
     $this->setPartSettings([
       'all' => FALSE,
       'frequencies' => [
@@ -197,11 +197,11 @@ class DateRecurPartGridTest extends KernelTestBase {
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->foo->validate();
-    $this->assertEquals(1, $violations->count());
+    static::assertEquals(1, $violations->count());
 
     $violation = $violations->get(0);
     $message = strip_tags((string) $violation->getMessage());
-    $this->assertEquals('By-day is not a permitted part.', $message);
+    static::assertEquals('By-day is not a permitted part.', $message);
 
     $entity = EntityTest::create();
     $entity->foo = [
@@ -215,7 +215,7 @@ class DateRecurPartGridTest extends KernelTestBase {
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->foo->validate();
-    $this->assertEquals(0, $violations->count());
+    static::assertEquals(0, $violations->count());
   }
 
   /**
@@ -224,7 +224,7 @@ class DateRecurPartGridTest extends KernelTestBase {
    * @param array $settings
    *   An array of parts settings.
    */
-  protected function setPartSettings(array $settings) {
+  protected function setPartSettings(array $settings): void {
     $this->fieldConfig->setSetting('parts', $settings)->save();
   }
 

@@ -22,7 +22,7 @@ class DateRecurRruleConstraintValidator extends ConstraintValidator {
     assert($constraint instanceof DateRecurRruleConstraint);
 
     // Validator do not apply to field values without RRULE.
-    if (empty($value->rrule)) {
+    if ($value->rrule === NULL || $value->rrule === '') {
       return;
     }
 

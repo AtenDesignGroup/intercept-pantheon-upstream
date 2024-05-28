@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\date_recur_interpreter_test\Plugin\DateRecurInterpreter;
 
 use Drupal\Core\Form\FormStateInterface;

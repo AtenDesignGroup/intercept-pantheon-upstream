@@ -76,7 +76,7 @@ class DateRecurFieldItemListTest extends KernelTestBase {
   /**
    * Tests list.
    */
-  public function testList() {
+  public function testList(): void {
     $this->entity->foo = [
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
@@ -85,25 +85,25 @@ class DateRecurFieldItemListTest extends KernelTestBase {
       'timezone' => 'Australia/Sydney',
     ];
 
-    $this->assertTrue($this->entity->foo->occurrences instanceof \Generator);
+    static::assertTrue($this->entity->foo->occurrences instanceof \Generator);
     // Iterate over it a bit, because this is an infinite RRULE it will go
     // forever.
     $iterationCount = 0;
     $maxIterations = 7;
     foreach ($this->entity->foo->occurrences as $occurrence) {
-      $this->assertTrue($occurrence instanceof DateRange);
+      static::assertTrue($occurrence instanceof DateRange);
       $iterationCount++;
       if ($iterationCount >= $maxIterations) {
         break;
       }
     }
-    $this->assertEquals($maxIterations, $iterationCount);
+    static::assertEquals($maxIterations, $iterationCount);
   }
 
   /**
    * Tests default values are available programmatically.
    */
-  public function testDefaultValues() {
+  public function testDefaultValues(): void {
     $this->installEntitySchema('dr_entity_test');
 
     $defaultRrule = 'FREQ=WEEKLY;COUNT=995';
@@ -116,7 +116,7 @@ class DateRecurFieldItemListTest extends KernelTestBase {
     $baseFieldOverride->save();
 
     $entity = DrEntityTest::create();
-    $this->assertEquals($defaultRrule, $entity->dr->rrule);
+    static::assertEquals($defaultRrule, $entity->dr->rrule);
   }
 
   /**
@@ -124,7 +124,7 @@ class DateRecurFieldItemListTest extends KernelTestBase {
    *
    * @covers ::onChange
    */
-  public function testHelperResetAfterItemOverwritten() {
+  public function testHelperResetAfterItemOverwritten(): void {
     $entity = DrEntityTest::create();
     $entity->dr = [
       [
@@ -138,9 +138,9 @@ class DateRecurFieldItemListTest extends KernelTestBase {
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper1 */
     $helper1 = $entity->dr[0]->getHelper();
     $firstOccurrence = $helper1->getOccurrences(NULL, NULL, 1)[0];
-    $this->assertEquals('Mon, 16 Jun 2014 06:00:01 +0700', $firstOccurrence->getStart()->format('r'));
-    $this->assertEquals('Mon, 16 Jun 2014 14:00:02 +0700', $firstOccurrence->getEnd()->format('r'));
-    $this->assertEquals('WEEKLY', $helper1->getRules()[0]->getFrequency());
+    static::assertEquals('Mon, 16 Jun 2014 06:00:01 +0700', $firstOccurrence->getStart()->format('r'));
+    static::assertEquals('Mon, 16 Jun 2014 14:00:02 +0700', $firstOccurrence->getEnd()->format('r'));
+    static::assertEquals('WEEKLY', $helper1->getRules()[0]->getFrequency());
 
     // Overwrite item.
     $entity->dr[0] = [
@@ -153,9 +153,9 @@ class DateRecurFieldItemListTest extends KernelTestBase {
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper2 */
     $helper2 = $entity->dr[0]->getHelper();
     $firstOccurrence = $helper2->getOccurrences(NULL, NULL, 1)[0];
-    $this->assertEquals('Thu, 16 Jul 2015 06:00:03 +0700', $firstOccurrence->getStart()->format('r'));
-    $this->assertEquals('Thu, 16 Jul 2015 14:00:04 +0700', $firstOccurrence->getEnd()->format('r'));
-    $this->assertEquals('DAILY', $helper2->getRules()[0]->getFrequency());
+    static::assertEquals('Thu, 16 Jul 2015 06:00:03 +0700', $firstOccurrence->getStart()->format('r'));
+    static::assertEquals('Thu, 16 Jul 2015 14:00:04 +0700', $firstOccurrence->getEnd()->format('r'));
+    static::assertEquals('DAILY', $helper2->getRules()[0]->getFrequency());
   }
 
 }

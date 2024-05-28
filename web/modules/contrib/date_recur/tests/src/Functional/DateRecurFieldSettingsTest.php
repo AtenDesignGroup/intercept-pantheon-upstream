@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Functional;
 
 use Drupal\Core\Field\FieldConfigInterface;
@@ -19,7 +21,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'starterkit_theme';
 
   /**
    * {@inheritdoc}
@@ -73,7 +75,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
   /**
    * Tests field config when all frequencies are enabled.
    */
-  public function testAllAllowed() {
+  public function testAllAllowed(): void {
     $url = Url::fromRoute('entity.field_config.entity_test_field_edit_form', [
       'bundle' => 'entity_test',
       'field_config' => $this->fieldConfig->id(),
@@ -85,7 +87,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
     ], 'Save settings');
     $this->assertSession()->pageTextContains('Saved foo configuration.');
 
-    $this->assertEquals([
+    static::assertEquals([
       'all' => TRUE,
       'frequencies' => [
         'SECONDLY' => [],
@@ -102,7 +104,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
   /**
    * Tests field config when all parts are disabled for a frequency.
    */
-  public function testAllDisabled() {
+  public function testAllDisabled(): void {
     $url = Url::fromRoute('entity.field_config.entity_test_field_edit_form', [
       'bundle' => 'entity_test',
       'field_config' => $this->fieldConfig->id(),
@@ -115,7 +117,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
     $this->submitForm([], 'Save settings');
     $this->assertSession()->pageTextContains('Saved foo configuration.');
 
-    $this->assertEquals([
+    static::assertEquals([
       'all' => FALSE,
       'frequencies' => [
         'SECONDLY' => [],
@@ -132,7 +134,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
   /**
    * Tests field config when all parts are enabled for a frequency.
    */
-  public function testAllPartsInFrequency() {
+  public function testAllPartsInFrequency(): void {
     $url = Url::fromRoute('entity.field_config.entity_test_field_edit_form', [
       'bundle' => 'entity_test',
       'field_config' => $this->fieldConfig->id(),
@@ -148,7 +150,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
     ], 'Save settings');
     $this->assertSession()->pageTextContains('Saved foo configuration.');
 
-    $this->assertEquals([
+    static::assertEquals([
       'all' => FALSE,
       'frequencies' => [
         'SECONDLY' => [],
@@ -165,7 +167,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
   /**
    * Tests field config when some parts are enabled for a frequency.
    */
-  public function testSomePartsInFrequency() {
+  public function testSomePartsInFrequency(): void {
     $url = Url::fromRoute('entity.field_config.entity_test_field_edit_form', [
       'bundle' => 'entity_test',
       'field_config' => $this->fieldConfig->id(),
@@ -188,7 +190,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
     $this->submitForm([], 'Save settings');
     $this->assertSession()->pageTextContains('Saved foo configuration.');
 
-    $this->assertEquals([
+    static::assertEquals([
       'all' => FALSE,
       'frequencies' => [
         'SECONDLY' => [],
@@ -208,7 +210,7 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
    * @return array
    *   An array of parts settings.
    */
-  protected function getPartSettings() {
+  protected function getPartSettings(): array {
     $fieldConfig = FieldConfig::load($this->fieldConfig->id());
     return $fieldConfig->getSetting('parts');
   }

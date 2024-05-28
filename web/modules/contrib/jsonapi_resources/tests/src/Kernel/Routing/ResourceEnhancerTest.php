@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi_resources\Kernel;
 
@@ -17,6 +19,7 @@ final class ResourceEnhancerTest extends KernelTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'file',
     'serialization',
     'jsonapi',
     'jsonapi_resources',
@@ -43,7 +46,7 @@ final class ResourceEnhancerTest extends KernelTestBase {
     // Ensure that the enhancer ignores routes that already have a controller
     // defined.
     $route_defaults = [
-      '_controller' => '\\Drupal\\mymodule\\Controller\\Doesnt::exist',
+      '_controller' => '\\Drupal\\mymodule\\Controller\\DoesNot::exist',
     ];
     $enhanced_defaults = $resource_enhancer->enhance($route_defaults, Request::createFromGlobals());
     $this->assertSame($enhanced_defaults['_controller'], $route_defaults['_controller']);

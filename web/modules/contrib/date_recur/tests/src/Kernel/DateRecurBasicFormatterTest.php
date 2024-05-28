@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\Core\Datetime\DateFormatInterface;
@@ -75,7 +77,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
   /**
    * Tests interpretation.
    */
-  public function testFormatterInterpretation() {
+  public function testFormatterInterpretation(): void {
     $dateFormatId = $this->dateFormat->id();
     $settings = [
       'format_type' => $dateFormatId,
@@ -86,15 +88,15 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $this->renderFormatterSettings($this->createRecurringEntity(), $settings);
 
     $interpretation = $this->cssSelect('.date-recur-interpretaton');
-    $this->assertCount(1, $interpretation);
+    static::assertCount(1, $interpretation);
     $assertInnerText = (string) $interpretation[0];
-    $this->assertEquals('weekly on Monday, Tuesday, Wednesday, Thursday and Friday, starting from Mon, 16 Jun 2014 09:00:00 +1000, forever', $assertInnerText);
+    static::assertEquals('weekly on Monday, Tuesday, Wednesday, Thursday and Friday, starting from Mon, 16 Jun 2014 09:00:00 +1000, forever', $assertInnerText);
   }
 
   /**
    * Tests occurrences.
    */
-  public function testFormatterOccurrencesPerItem() {
+  public function testFormatterOccurrencesPerItem(): void {
     $this->dateFormat = DateFormat::create([
       'id' => $this->randomMachineName(),
       'pattern' => 'H:i',
@@ -132,21 +134,21 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $this->renderFormatterSettings($entity, $settings);
 
     $occurrences = $this->cssSelect('.date-recur-occurrences li');
-    $this->assertCount(4, $occurrences);
-    $this->assertEquals('10:00', (string) $occurrences[0]->time[0]);
-    $this->assertEquals('16:00', (string) $occurrences[0]->time[1]);
-    $this->assertEquals('10:00', (string) $occurrences[1]->time[0]);
-    $this->assertEquals('16:00', (string) $occurrences[1]->time[1]);
-    $this->assertEquals('09:00', (string) $occurrences[2]->time[0]);
-    $this->assertEquals('17:00', (string) $occurrences[2]->time[1]);
-    $this->assertEquals('09:00', (string) $occurrences[3]->time[0]);
-    $this->assertEquals('17:00', (string) $occurrences[3]->time[1]);
+    static::assertCount(4, $occurrences);
+    static::assertEquals('10:00', (string) $occurrences[0]->time[0]);
+    static::assertEquals('16:00', (string) $occurrences[0]->time[1]);
+    static::assertEquals('10:00', (string) $occurrences[1]->time[0]);
+    static::assertEquals('16:00', (string) $occurrences[1]->time[1]);
+    static::assertEquals('09:00', (string) $occurrences[2]->time[0]);
+    static::assertEquals('17:00', (string) $occurrences[2]->time[1]);
+    static::assertEquals('09:00', (string) $occurrences[3]->time[0]);
+    static::assertEquals('17:00', (string) $occurrences[3]->time[1]);
   }
 
   /**
    * Tests occurrences.
    */
-  public function testFormatterOccurrencesNotPerItem() {
+  public function testFormatterOccurrencesNotPerItem(): void {
     $this->dateFormat = DateFormat::create([
       'id' => $this->randomMachineName(),
       'pattern' => 'H:i',
@@ -184,17 +186,17 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $this->renderFormatterSettings($entity, $settings);
 
     $occurrences = $this->cssSelect('.date-recur-occurrences li');
-    $this->assertCount(2, $occurrences);
-    $this->assertEquals('10:00', (string) $occurrences[0]->time[0]);
-    $this->assertEquals('16:00', (string) $occurrences[0]->time[1]);
-    $this->assertEquals('10:00', (string) $occurrences[1]->time[0]);
-    $this->assertEquals('16:00', (string) $occurrences[1]->time[1]);
+    static::assertCount(2, $occurrences);
+    static::assertEquals('10:00', (string) $occurrences[0]->time[0]);
+    static::assertEquals('16:00', (string) $occurrences[0]->time[1]);
+    static::assertEquals('10:00', (string) $occurrences[1]->time[0]);
+    static::assertEquals('16:00', (string) $occurrences[1]->time[1]);
   }
 
   /**
    * Tests setting summary.
    */
-  public function testFormatterSettingsSummary() {
+  public function testFormatterSettingsSummary(): void {
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $efm */
     $efm = $this->container->get('entity_field.manager');
     $definitions = $efm->getBaseFieldDefinitions('dr_entity_test');
@@ -224,21 +226,24 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     /** @var \Drupal\Core\Field\FormatterPluginManager $fieldFormatterManager */
     $fieldFormatterManager = $this->container->get('plugin.manager.field.formatter');
     $instance = $fieldFormatterManager->getInstance($options);
+
+    // Interface is currently string[] though it is stringable[].
+    /** @var array<int, string|\Drupal\Component\Render\MarkupInterface> $summary */
     $summary = $instance->settingsSummary();
 
     // Generate after summary to prevent random test failures.
     $now = new \DateTime('now');
     $formatSample = $now->format($this->dateFormat->getPattern());
 
-    $this->assertEquals('Format: ' . $formatSample, $summary[0]);
-    $this->assertEquals('Separator: <em class="placeholder">' . $separator . '</em>', $summary[1]);
-    $this->assertEquals('Show maximum of 5 occurrences per field item', $summary[2]);
+    static::assertEquals('Format: ' . $formatSample, (string) $summary[0]);
+    static::assertEquals('Separator: <em class="placeholder">' . $separator . '</em>', (string) $summary[1]);
+    static::assertEquals('Show maximum of 5 occurrences per field item', (string) $summary[2]);
   }
 
   /**
    * Tests setting summary where count is shared across items.
    */
-  public function testFormatterSettingsSummaryNotPerItem() {
+  public function testFormatterSettingsSummaryNotPerItem(): void {
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $efm */
     $efm = $this->container->get('entity_field.manager');
     $definitions = $efm->getBaseFieldDefinitions('dr_entity_test');
@@ -268,13 +273,13 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $instance = $fieldFormatterManager->getInstance($options);
     $summary = $instance->settingsSummary();
 
-    $this->assertEquals('Show maximum of 10 occurrences across all field items', $summary[2]);
+    static::assertEquals('Show maximum of 10 occurrences across all field items', $summary[2]);
   }
 
   /**
    * Tests setting summary occurrence sample for same day.
    */
-  public function testFormatterSettingsSummarySampleOccurrenceSameDay() {
+  public function testFormatterSettingsSummarySampleOccurrenceSameDay(): void {
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $efm */
     $efm = $this->container->get('entity_field.manager');
     $definitions = $efm->getBaseFieldDefinitions('dr_entity_test');
@@ -312,17 +317,17 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $renderer = $this->container->get('renderer');
     $rendered = $renderer->renderRoot($summary['sample_same_day']);
     // Remove newlines from Twig templates.
-    $rendered = preg_replace('/\n/', '', $rendered);
+    $rendered = preg_replace('/\n/', '', (string) $rendered);
     $this->setRawContent($rendered);
     $this->removeWhiteSpace();
     $pattern = $this->dateFormat->getPattern();
-    $this->assertEquals(sprintf('Same day range: %s-%s', $start->format($pattern), $endSameDay->format($pattern)), $this->getTextContent());
+    static::assertEquals(sprintf('Same day range: %s-%s', $start->format($pattern), $endSameDay->format($pattern)), $this->getTextContent());
   }
 
   /**
    * Tests setting summary occurrence sample for different day.
    */
-  public function testFormatterSettingsSummarySampleOccurrenceDifferentDay() {
+  public function testFormatterSettingsSummarySampleOccurrenceDifferentDay(): void {
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $efm */
     $efm = $this->container->get('entity_field.manager');
     $definitions = $efm->getBaseFieldDefinitions('dr_entity_test');
@@ -361,17 +366,17 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $renderer = $this->container->get('renderer');
     $rendered = $renderer->renderRoot($summary['sample_different_day']);
     // Remove newlines from Twig templates.
-    $rendered = preg_replace('/\n/', '', $rendered);
+    $rendered = preg_replace('/\n/', '', (string) $rendered);
     $this->setRawContent($rendered);
     $this->removeWhiteSpace();
     $pattern = $this->dateFormat->getPattern();
-    $this->assertEquals(sprintf('Different day range: %s-%s', $start->format($pattern), $endDifferentDay->format($pattern)), $this->getTextContent());
+    static::assertEquals(sprintf('Different day range: %s-%s', $start->format($pattern), $endDifferentDay->format($pattern)), $this->getTextContent());
   }
 
   /**
    * Tests setting summary occurrence sample for different day.
    */
-  public function testFormatterDependencies() {
+  public function testFormatterDependencies(): void {
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $efm */
     $efm = $this->container->get('entity_field.manager');
     $definitions = $efm->getBaseFieldDefinitions('dr_entity_test');
@@ -412,7 +417,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
       'date_recur.interpreter.' . $this->interpreter->id(),
     ];
     sort($expectedConfigDependencies);
-    $this->assertEquals($expectedConfigDependencies, $instance->calculateDependencies()['config']);
+    static::assertEquals($expectedConfigDependencies, $instance->calculateDependencies()['config']);
   }
 
   /**
@@ -421,7 +426,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
    * It doesnt matter which time zone the data is in, we only check same date
    * for the current logged in user.
    */
-  public function testFormatterSameDay() {
+  public function testFormatterSameDay(): void {
     $user = User::create([
       'uid' => 2,
       // UTC+10.
@@ -453,13 +458,13 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $this->renderFormatterSettings($entity, $settings);
 
     $dates = $this->cssSelect('time');
-    $this->assertCount(2, $dates);
+    static::assertCount(2, $dates);
 
     // First time is start date.
-    $this->assertEquals('Sun, 15 Jun 2014 00:00:00 +1000', (string) $dates[0]);
+    static::assertEquals('Sun, 15 Jun 2014 00:00:00 +1000', (string) $dates[0]);
 
     // Second time is end date.
-    $this->assertEquals('same date', (string) $dates[1]);
+    static::assertEquals('same date', (string) $dates[1]);
   }
 
   /**
@@ -470,7 +475,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
    * @param array $settings
    *   Settings for date recur basic formatter.
    */
-  protected function renderFormatterSettings(DrEntityTest $entity, array $settings) {
+  protected function renderFormatterSettings(DrEntityTest $entity, array $settings): void {
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $field */
     $field = $entity->dr;
     $build = $field->view([
@@ -488,7 +493,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
    * @return \Drupal\date_recur_entity_test\Entity\DrEntityTest
    *   A recurring entity.
    */
-  protected function createRecurringEntity() {
+  protected function createRecurringEntity(): DrEntityTest {
     $entity = DrEntityTest::create();
     $entity->dr = [
       'value' => '2014-06-15T23:00:00',

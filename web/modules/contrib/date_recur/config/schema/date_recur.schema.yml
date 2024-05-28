@@ -7,7 +7,10 @@ field.value.date_recur:
       label: 'A time zone identifier used for default start and/or end dates.'
     default_time_zone:
       type: string
-      label: 'A time zone identifier used as default value for time zone. If empty, current user time zone should be used.'
+      label: 'A time zone identifier used as default value for time zone.'
+    default_time_zone_source:
+      type: string
+      label: 'Determine where to get the time zone: the sibling `default_time_zone` with `fixed`, or the current user time zone with `current_user`.'
     default_rrule:
       type: string
       label: 'Default RRULE'

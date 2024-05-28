@@ -1,0 +1,9 @@
+@@ -52,7 +52,7 @@
+      *   True this is currently an off-canvas dialog.
+      */
+     isOffCanvas($element) {
+-      return $element[0].id === 'drupal-off-canvas';
++      return $element.is('#drupal-off-canvas');
+     },
+ 
+     /**

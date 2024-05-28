@@ -4,24 +4,24 @@ declare(strict_types = 1);
 
 namespace Drupal\date_recur;
 
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\TypedDataManagerInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\field\FieldStorageConfigInterface;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
-use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 
 /**
  * Defines Views hooks.
@@ -61,7 +61,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
       $container->get('module_handler'),
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager'),
-      $container->get('typed_data_manager')
+      $container->get('typed_data_manager'),
     );
   }
 
@@ -218,7 +218,8 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
     $fieldTableName = $tableMapping->getDedicatedDataTableName($fieldDefinition);
 
     $parentData = $this->getParentFieldViewsData($fieldDefinition);
-    if (empty($parentData)) {
+    // If there is no views data then quit (does this happen?).
+    if (count($parentData) === 0) {
       return $data;
     }
     $originalTable = $parentData[$fieldTableName];
@@ -248,7 +249,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
         $field['group'] = $recurTableGroup;
 
         foreach ($handlerTypes as $handlerType) {
-          if (!empty($field[$handlerType]['table'])) {
+          if (isset($field[$handlerType]['table'])) {
             $field[$handlerType]['table'] = $occurrenceTableName;
             $field[$handlerType]['additional fields'] = [
               $fieldName . '_value',
@@ -331,7 +332,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
               $typeDefinition = $this->typedDataManager->getDefinition('field_item:' . $field->getType());
               // @see \Drupal\date_recur\DateRecurCachedHooks::fieldInfoAlter
               return isset($typeDefinition[DateRecurOccurrences::IS_DATE_RECUR]);
-            }
+            },
           );
         }
       }

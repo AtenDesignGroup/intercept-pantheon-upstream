@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\focal_point\FunctionalJavascript;
 
 use Behat\Mink\Element\DocumentElement;

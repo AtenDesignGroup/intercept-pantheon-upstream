@@ -1,8 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\jsonapi_resources\Unstable;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Http\Exception\CacheableBadRequestHttpException;
 use Drupal\Core\Url;
 use Drupal\jsonapi\CacheableResourceResponse;
 use Drupal\jsonapi\IncludeResolver;
@@ -11,9 +14,11 @@ use Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel;
 use Drupal\jsonapi\JsonApiResource\Link;
 use Drupal\jsonapi\JsonApiResource\LinkCollection;
 use Drupal\jsonapi\JsonApiResource\NullIncludedData;
+use Drupal\jsonapi\JsonApiResource\ResourceIdentifierInterface;
 use Drupal\jsonapi\JsonApiResource\ResourceObject;
 use Drupal\jsonapi\JsonApiResource\ResourceObjectData;
 use Drupal\jsonapi\ResourceResponse;
+use Drupal\jsonapi\ResourceType\ResourceType;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -73,21 +78,20 @@ final class ResourceResponseFactory {
 
     $includes = $this->getIncludes($request, $data);
 
-    // \Drupal\jsonapi\ResourceResponse no longer implements
-    // CacheableResponseInterface in Drupal 9.1.
-    // Drupal\jsonapi\CacheableResourceResponse has ben added for cacheable
-    // responses. Keep compatibility with Drupal < 9.1.
-    // See https://www.drupal.org/node/3163310
     $document = new JsonApiDocumentTopLevel($data, $includes, $links, $meta);
-    $response = class_exists('\Drupal\jsonapi\CacheableResourceResponse') ?
-      new CacheableResourceResponse($document, $response_code, $headers) :
-      new ResourceResponse($document, $response_code, $headers);
-    // Make sure that different sparse fieldsets are cached differently.
-    $cache_contexts[] = 'url.query_args:fields';
-    // Make sure that different sets of includes are cached differently.
-    $cache_contexts[] = 'url.query_args:include';
-    $cacheability = (new CacheableMetadata())->addCacheContexts($cache_contexts);
-    $response->addCacheableDependency($cacheability);
+
+    if ($request->isMethodCacheable()) {
+      $response = new CacheableResourceResponse($document, $response_code, $headers);
+      // Make sure that different sparse fieldsets are cached differently.
+      $cache_contexts[] = 'url.query_args:fields';
+      // Make sure that different sets of includes are cached differently.
+      $cache_contexts[] = 'url.query_args:include';
+      $cacheability = (new CacheableMetadata())->addCacheContexts($cache_contexts);
+      $response->addCacheableDependency($cacheability);
+    }
+    else {
+      $response = new ResourceResponse($document, $response_code, $headers);
+    }
     return $response;
   }
 
@@ -96,21 +100,87 @@ final class ResourceResponseFactory {
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
-   * @param \Drupal\jsonapi\JsonApiResource\ResourceObject|\Drupal\jsonapi\JsonApiResource\ResourceObjectData $data
+   * @param \Drupal\jsonapi\JsonApiResource\ResourceObjectData|\Drupal\jsonapi\JsonApiResource\ResourceObject $data
    *   The response data from which to resolve includes.
    *
    * @return \Drupal\jsonapi\JsonApiResource\IncludedData
-   *   A Data object to be included or a NullData object if the request does not
+   *   A Data object to be included or a NullData object if the request does
+   *   not
    *   specify any include paths.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  private function getIncludes(Request $request, $data): IncludedData {
+  private function getIncludes(Request $request, ResourceObjectData|ResourceObject $data): IncludedData {
     assert($data instanceof ResourceObject || $data instanceof ResourceObjectData);
-    return $request->query->has('include') && ($include_parameter = $request->query->get('include')) && !empty($include_parameter)
-      ? $this->includeResolver->resolve($data, $include_parameter)
-      : new NullIncludedData();
+    if (!$request->query->has('include')) {
+      return new NullIncludedData();
+    }
+    $include_parameter = $request->query->get('include');
+    if (empty($include_parameter)) {
+      return new NullIncludedData();
+    }
+    if ($data instanceof ResourceObject) {
+      return $this->includeResolver->resolve($data, $include_parameter);
+    }
+
+    /** @var \Drupal\jsonapi\ResourceType\ResourceType[] $route_resource_types */
+    $route_resource_types = $request->attributes->get('resource_types');
+    $relatable_resource_types = array_map(
+      static fn (ResourceType $type) => array_keys($type->getRelatableResourceTypes()),
+      $route_resource_types
+    );
+
+    // Group resource objects to optimize IncludeResolver::toIncludeTree.
+    $resource_objects_by_type = [];
+    foreach ($data as $resource_object) {
+      assert($resource_object instanceof ResourceIdentifierInterface);
+      $resource_objects_by_type[$resource_object->getTypeName()][] = $resource_object;
+    }
+
+    $include_paths = array_map('trim', explode(',', $include_parameter));
+    $unresolved_include_paths = [];
+    $included_data = [];
+    foreach ($resource_objects_by_type as $resource_objects) {
+      foreach ($include_paths as $include_path) {
+        try {
+          $included_data[] = $this->includeResolver->resolve(
+            new ResourceObjectData($resource_objects),
+            $include_path
+          );
+          $unresolved_include_paths[$include_path] = FALSE;
+        }
+        catch (\Exception) {
+          if (!isset($unresolved_include_paths[$include_path])) {
+            $unresolved_include_paths[$include_path] = TRUE;
+          }
+        }
+      }
+    }
+
+    if (count(array_filter($unresolved_include_paths)) > 0) {
+      // Throw an error if invalid include paths provided.
+      // @see \Drupal\jsonapi\Context\FieldResolver::resolveInternalIncludePath().
+      $message = sprintf(
+        '%s are not valid relationship names.',
+        implode(',', array_map(static fn (string $path) => "`$path`", array_keys($unresolved_include_paths)))
+      );
+      if (count($relatable_resource_types) > 0) {
+        $message .= sprintf(' Possible values: %s', implode(', ', array_unique(array_merge(...$relatable_resource_types))));
+      }
+      throw new CacheableBadRequestHttpException(
+        (new CacheableMetadata())->addCacheContexts(['url.query_args:include']),
+        $message
+      );
+    }
+
+    $included_data = array_reduce(
+      $included_data,
+      [IncludedData::class, 'merge'],
+      new IncludedData([])
+    );
+
+    return IncludedData::deduplicate($included_data);
   }
 
 }

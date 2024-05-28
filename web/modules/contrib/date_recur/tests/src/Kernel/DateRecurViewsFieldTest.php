@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur\DateRecurOccurrences;
@@ -86,9 +88,9 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
   /**
    * Tests field.
    */
-  public function testField() {
+  public function testField(): void {
     $entity1 = $this->createEntity();
-    $entity1->{$this->fieldName} = [
+    $entity1->set($this->fieldName, [
       [
         // 9am-5pm.
         'value' => '2018-11-05T22:00:00',
@@ -97,10 +99,10 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
         'infinite' => '0',
         'timezone' => 'Australia/Sydney',
       ],
-    ];
+    ]);
     $entity1->save();
     $entity2 = $this->createEntity();
-    $entity2->{$this->fieldName} = [
+    $entity2->set($this->fieldName, [
       [
         // 9:05am-5:05pm.
         'value' => '2018-11-05T22:05:00',
@@ -109,7 +111,7 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
         'infinite' => '0',
         'timezone' => 'Australia/Sydney',
       ],
-    ];
+    ]);
     $entity2->save();
 
     $definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions($this->entityType);
@@ -142,7 +144,7 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
     $this->executeView($executable);
 
     // There are 3 occurrences for two entities.
-    $this->assertCount(6, $executable->result);
+    static::assertCount(6, $executable->result);
     $expectedResult = [
       [
         'entity_id' => 1,
@@ -180,7 +182,7 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
       $startFieldId => 'start',
       $endFieldId => 'end',
     ];
-    $this->assertIdenticalResultset($executable, $expectedResult, $this->map);
+    static::assertIdenticalResultset($executable, $expectedResult, $this->map);
 
     // Render the dates.
     $assertRendered = [
@@ -212,9 +214,9 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
     $result = $executable->result;
     foreach ($assertRendered as $rowIndex => $assertRender) {
       $renderedStart = $executable->field[$startFieldId]->advancedRender($result[$rowIndex]);
-      $this->assertEquals($assertRender['start'], $renderedStart, 'Asserting start for start: index' . $rowIndex);
+      static::assertEquals($assertRender['start'], $renderedStart, 'Asserting start for start: index' . $rowIndex);
       $renderedEnd = $executable->field[$endFieldId]->advancedRender($result[$rowIndex]);
-      $this->assertEquals($assertRender['end'], $renderedEnd, 'Asserting start for end: index' . $rowIndex);
+      static::assertEquals($assertRender['end'], $renderedEnd, 'Asserting start for end: index' . $rowIndex);
     }
   }
 
@@ -224,7 +226,7 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
    * @return \Drupal\date_recur_entity_test\Entity\DrEntityTest
    *   A test entity.
    */
-  protected function createEntity() {
+  protected function createEntity(): DrEntityTest {
     return DrEntityTest::create();
   }
 

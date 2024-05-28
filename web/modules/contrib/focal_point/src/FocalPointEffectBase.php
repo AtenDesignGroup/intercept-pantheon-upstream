@@ -103,7 +103,7 @@ abstract class FocalPointEffectBase extends ResizeImageEffect implements Contain
    * {@inheritdoc}
    */
   public function applyEffect(ImageInterface $image) {
-    // @todo: Get the original image in case there are multiple scale/crop effects?
+    // @todo Get the original image in case there are multiple scale/crop effects?
     $this->setOriginalImageSize($image->getWidth(), $image->getHeight());
     return TRUE;
   }
@@ -278,7 +278,7 @@ abstract class FocalPointEffectBase extends ResizeImageEffect implements Contain
    *   An array with keys 'width' and 'height'.
    */
   public function getOriginalImageSize() {
-    // @todo: check if originalImageSize exists and if not throw an exception.
+    // @todo check if originalImageSize exists and if not throw an exception.
     return $this->originalImageSize;
   }
 
@@ -373,7 +373,7 @@ abstract class FocalPointEffectBase extends ResizeImageEffect implements Contain
     // from the query parameter, otherwise use the crop position.
     $preview_value = $this->getPreviewValue();
     if (!is_null($preview_value)) {
-      // @todo: should we check that preview_value is valid here? If it's invalid it gets converted to 0,0.
+      // @todo should we check that preview_value is valid here? If it's invalid it gets converted to 0,0.
       $original_image_size = $this->getOriginalImageSize();
       [$x, $y] = explode('x', $preview_value);
       $focal_point = $focal_point_manager->relativeToAbsolute($x, $y, $original_image_size['width'], $original_image_size['height']);

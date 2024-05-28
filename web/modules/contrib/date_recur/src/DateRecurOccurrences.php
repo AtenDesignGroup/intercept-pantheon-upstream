@@ -12,9 +12,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeListenerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionEventSubscriberTrait;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionListenerInterface;
 use Drupal\Core\TypedData\TypedDataManagerInterface;
 use Drupal\date_recur\Event\DateRecurEvents;
@@ -123,7 +123,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
         return $row;
       },
       $occurrences,
-      array_keys($occurrences)
+      array_keys($occurrences),
     );
 
     $insert = $this->database
@@ -274,6 +274,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
 
     // Logic taken from field tables: see \Drupal\Core\Entity\Sql\SqlContentEntityStorageSchema::getDedicatedTableSchema.
     $idDefinition = $entityFieldDefinitions[$entityType->getKey('id')];
+    $fields = [];
     if ($idDefinition->getType() === 'integer') {
       $fields['entity_id'] = [
         'type' => 'int',
@@ -399,7 +400,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
 
     return array_map(
       fn (FieldDefinitionInterface $baseField): FieldStorageDefinitionInterface => $baseField->getFieldStorageDefinition(),
-      $baseFields
+      $baseFields,
     );
   }
 

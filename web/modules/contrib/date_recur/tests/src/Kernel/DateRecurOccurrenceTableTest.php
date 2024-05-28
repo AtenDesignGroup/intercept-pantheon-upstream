@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\date_recur\DateRecurOccurrences;
 use Drupal\date_recur_entity_test\Entity\DrEntityTestRev;
+use Drupal\entity_test\Entity\EntityTestRev;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\KernelTests\KernelTestBase;
 
@@ -73,7 +76,7 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
   /**
    * Ensure occurrence table rows are created.
    */
-  public function testTableRows() {
+  public function testTableRows(): void {
     $preCreate = 'P1Y';
 
     if ($this->fieldDefinition instanceof BaseFieldDefinition) {
@@ -88,14 +91,14 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
     $fieldConfig->save();
 
     $entity = $this->createEntity();
-    $entity->{$this->fieldName} = [
+    $entity->set($this->fieldName, [
       // The duration is 8 hours.
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
       'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
       'infinite' => '1',
       'timezone' => 'Australia/Sydney',
-    ];
+    ]);
     $entity->save();
 
     // Calculate number of weekdays between first occurrence and end of
@@ -109,7 +112,7 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
     $countDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
     $count = 0;
     while ($day <= $until) {
-      if (in_array($day->format('D'), $countDays)) {
+      if (in_array($day->format('D'), $countDays, TRUE)) {
         $count++;
       }
       $day->modify('+1 day');
@@ -122,29 +125,29 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
       ->execute()
       ->fetchField();
     // Make sure more than zero rows created.
-    $this->assertGreaterThan(0, $actualCount);
-    $this->assertEquals($count, $actualCount);
+    static::assertGreaterThan(0, $actualCount);
+    static::assertEquals($count, $actualCount);
   }
 
   /**
    * Test table name generator.
    */
-  public function testGetOccurrenceTableName() {
+  public function testGetOccurrenceTableName(): void {
     $actual = DateRecurOccurrences::getOccurrenceCacheStorageTableName($this->fieldDefinition);
     $entityTypeId = $this->fieldDefinition->getTargetEntityTypeId();
-    $this->assertEquals('date_recur__' . $entityTypeId . '__' . $this->fieldName, $actual);
+    static::assertEquals('date_recur__' . $entityTypeId . '__' . $this->fieldName, $actual);
   }
 
   /**
    * Tests values of occurrence table.
    */
-  public function testOccurrenceTableValues() {
+  public function testOccurrenceTableValues(): void {
     $columnNameValue = $this->fieldName . '_value';
     $columnNameEndValue = $this->fieldName . '_end_value';
 
     $entity = $this->createEntity();
     $entityTypeId = $entity->getEntityTypeId();
-    $entity->{$this->fieldName} = [
+    $entity->set($this->fieldName, [
       [
         'value' => '2014-06-17T23:00:00',
         'end_value' => '2014-06-18T07:00:00',
@@ -159,7 +162,7 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
         'infinite' => '0',
         'timezone' => 'Indian/Cocos',
       ],
-    ];
+    ]);
     $entity->save();
 
     $tableName = 'date_recur__' . $entityTypeId . '__' . $this->fieldName;
@@ -176,7 +179,7 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
       ->fields('occurences', $fields)
       ->execute()
       ->fetchAll();
-    $this->assertCount(7, $results);
+    static::assertCount(7, $results);
 
     $assertExpected = [
       [
@@ -240,17 +243,14 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
     foreach ($results as $actualIndex => $actualValues) {
       $expectedValues = $assertExpected[$actualIndex];
       $actualValues = (array) $actualValues;
-      $this->assertEquals($expectedValues, $actualValues);
+      static::assertEquals($expectedValues, $actualValues);
     }
   }
 
   /**
    * Creates an unsaved test entity.
-   *
-   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTestRev
-   *   A test entity.
    */
-  protected function createEntity() {
+  protected function createEntity(): EntityTestRev {
     return DrEntityTestRev::create();
   }
 

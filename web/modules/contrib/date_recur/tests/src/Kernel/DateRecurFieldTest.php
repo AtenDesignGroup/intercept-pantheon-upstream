@@ -58,7 +58,7 @@ class DateRecurFieldTest extends KernelTestBase {
    *
    * Not the timezone used for current request, or default to UTC per storage.
    */
-  public function testOccurrencesTimezone() {
+  public function testOccurrencesTimezone(): void {
     // Set the timezone to something different than UTC or storage.
     date_default_timezone_set('Pacific/Wake');
 
@@ -81,10 +81,10 @@ class DateRecurFieldTest extends KernelTestBase {
     $assertDateStart = new \DateTime('6am 2014-06-16', $tzChristmas);
     $assertDateEnd = new \DateTime('2pm 2014-06-16', $tzChristmas);
 
-    $this->assertTrue($assertDateStart == $occurrences[0]->getStart());
-    $this->assertEquals($tzChristmas->getName(), $occurrences[0]->getStart()->getTimezone()->getName());
-    $this->assertTrue($assertDateEnd == $occurrences[0]->getEnd());
-    $this->assertEquals($tzChristmas->getName(), $occurrences[0]->getEnd()->getTimezone()->getName());
+    static::assertTrue($assertDateStart == $occurrences[0]->getStart());
+    static::assertEquals($tzChristmas->getName(), $occurrences[0]->getStart()->getTimezone()->getName());
+    static::assertTrue($assertDateEnd == $occurrences[0]->getEnd());
+    static::assertEquals($tzChristmas->getName(), $occurrences[0]->getEnd()->getTimezone()->getName());
   }
 
 }

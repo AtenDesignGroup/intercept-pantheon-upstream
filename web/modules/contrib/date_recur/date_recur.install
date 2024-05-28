@@ -14,6 +14,7 @@ use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
 use Drupal\Core\Utility\UpdateException;
 use Drupal\date_recur\Entity\DateRecurInterpreter;
 use Drupal\date_recur\Plugin\Field\FieldWidget\DateRecurBasicWidget;
+use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 
 /**
@@ -312,7 +313,7 @@ function date_recur_update_8206(&$sandbox): void {
     $components = $display->getComponents();
     foreach ($components as $component => $options) {
       $widgetId = $options['type'] ?? NULL;
-      if (in_array($widgetId, $basicWidgetDerivativeWidgetIds)) {
+      if (in_array($widgetId, $basicWidgetDerivativeWidgetIds, TRUE)) {
         // Unset the old setting.
         unset($options['settings']['timezone_override']);
         $updated++;
@@ -323,5 +324,44 @@ function date_recur_update_8206(&$sandbox): void {
     if ($updated > 0) {
       $display->save();
     }
+  }
+}
+
+/**
+ * Updates default time zone configuration.
+ */
+function date_recur_update_8207(&$sandbox): void {
+  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
+  $entityFieldManager = \Drupal::service('entity_field.manager');
+  $entityFieldMap = $entityFieldManager->getFieldMapByFieldType('date_recur');
+
+  // Iterate over all date_recur fields for all entity types.
+  /** @var \Drupal\Core\Field\FieldConfigInterface[] $drFields */
+  $drFields = [];
+  foreach ($entityFieldMap as $entityTypeId => $fields) {
+    foreach ($fields as $fieldName => ['bundles' => $bundles]) {
+      foreach ($bundles as $bundle) {
+        $field = FieldConfig::loadByName($entityTypeId, $bundle, $fieldName);
+        if ($field) {
+          array_push($drFields, $field);
+        }
+      }
+    }
+  }
+
+  foreach ($drFields as $fieldConfig) {
+    $defaultValue = $fieldConfig->getDefaultValueLiteral();
+    // Skip if the whole value is empty.
+    // Don't bother updating install functions, these will be removed.
+    if (empty($defaultValue)) {
+      continue;
+    }
+
+    // Don't bother updating install functions, these will be removed.
+    $defaultValue[0]['default_time_zone_source'] = !empty($defaultValue[0]['default_time_zone'])
+      ? 'fixed'
+      : 'current_user';
+    $fieldConfig->setDefaultValue($defaultValue);
+    $fieldConfig->save();
   }
 }

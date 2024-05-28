@@ -93,7 +93,7 @@ class DateRecurInterpreter extends ConfigEntityBase implements DateRecurInterpre
         \Drupal::service('plugin.manager.date_recur_interpreter'),
         $this->plugin,
         $this->settings,
-        $this->id
+        $this->id,
       );
     }
     return $this->pluginCollection;

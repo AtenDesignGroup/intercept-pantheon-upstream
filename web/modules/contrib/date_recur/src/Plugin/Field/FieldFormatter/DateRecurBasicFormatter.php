@@ -87,7 +87,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
       $configuration['third_party_settings'],
       $container->get('date.formatter'),
       $container->get('entity_type.manager')->getStorage('date_format'),
-      $container->get('entity_type.manager')->getStorage('date_recur_interpreter')
+      $container->get('entity_type.manager')->getStorage('date_recur_interpreter'),
     );
   }
 
@@ -116,7 +116,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
 
     /** @var string|null $dateFormatId */
     $interpreterId = $this->getSetting('interpreter');
-    if ($interpreterId && ($interpreter = $this->dateRecurInterpreterStorage->load($interpreterId))) {
+    if ($interpreterId !== NULL && ($interpreter = $this->dateRecurInterpreterStorage->load($interpreterId))) {
       $this->addDependency('config', $interpreter->getConfigDependencyName());
     }
 
@@ -175,7 +175,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
 
     $interpreterOptions = array_map(
       fn (DateRecurInterpreterInterface $interpreter): string => $interpreter->label() ?? (string) $this->t('- Missing label -'),
-      $this->dateRecurInterpreterStorage->loadMultiple()
+      $this->dateRecurInterpreterStorage->loadMultiple(),
     );
     $form['interpreter'] = [
       '#type' => 'select',
@@ -267,7 +267,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
         $showOccurrencesCount,
         'Show maximum of @count occurrence @per',
         'Show maximum of @count occurrences @per',
-        ['@per' => $countPerItem ? $this->t('per field item') : $this->t('across all field items')]
+        ['@per' => $countPerItem ? $this->t('per field item') : $this->t('across all field items')],
       );
     }
 
@@ -366,10 +366,10 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
         return $this->buildDateRangeValue(
           $startDate,
           $endDate,
-          TRUE
+          TRUE,
         );
       },
-      $this->getOccurrences($item, $maxOccurrences)
+      $this->getOccurrences($item, $maxOccurrences),
     );
 
     $cacheability->applyTo($build);

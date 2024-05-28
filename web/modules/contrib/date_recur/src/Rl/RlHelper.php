@@ -72,7 +72,9 @@ class RlHelper implements DateRecurHelperInterface {
     foreach ($lines as $n => $line) {
       $line = trim($line);
 
-      str_contains($line, ':') ?: throw new DateRecurHelperArgumentException(sprintf('Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line %s', $n + 1));
+      if (str_contains($line, ':') === FALSE) {
+        throw new DateRecurHelperArgumentException(sprintf('Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line %s', $n + 1));
+      }
 
       [$part, $partValue] = explode(':', $line, 2);
       $parts[$part] ?? throw new DateRecurHelperArgumentException("Unsupported line: " . $part);
@@ -131,7 +133,7 @@ class RlHelper implements DateRecurHelperInterface {
         $parts = array_filter($rule->getRule());
         return new RlDateRecurRule($parts);
       },
-      $this->set->getRRules()
+      $this->set->getRRules(),
     );
   }
 
@@ -204,7 +206,7 @@ class RlHelper implements DateRecurHelperInterface {
     // rule string, normalise it here.
     return array_map(
       fn (\DateTime $date): \DateTime => $date->setTimezone($this->timeZone),
-      $this->set->getExDates()
+      $this->set->getExDates(),
     );
   }
 

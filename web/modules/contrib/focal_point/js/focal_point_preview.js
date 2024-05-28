@@ -4,48 +4,63 @@
  */
 
 (function ($, Drupal) {
-  'use strict';
-
   /**
    * Focal Point preview.
    */
   Drupal.behaviors.focalPointPreview = {
-    attach: function (context, settings) {
-      var $focalPointDerivativePreviews = $(".focal-point-derivative-preview");
+    attach(context, settings) {
+      const $focalPointDerivativePreviews = $(
+        ".focal-point-derivative-preview",
+      );
 
-      var $focalPointImagePreview = $("#focal-point-preview-image");
-      var $focalPointImagePreviewLabel = $("#focal-point-preview-label");
+      const $focalPointImagePreview = $("#focal-point-preview-image");
+      const $focalPointImagePreviewLabel = $("#focal-point-preview-label");
 
-      var originalImageURL = $focalPointImagePreview.attr('src');
-      var originalImagePreviewLabel = $focalPointImagePreviewLabel.html();
+      const originalImageURL = $focalPointImagePreview.attr("src");
+      const originalImagePreviewLabel = $focalPointImagePreviewLabel.html();
 
       // Add a click event to each derivative preview.
       $focalPointDerivativePreviews.each(function () {
         $(this).click(function (event) {
           // Remove any image style classes added by active previews.
           $(".focal-point-derivative-preview.active").each(function () {
-            $focalPointImagePreview.removeClass($(this).data('image-style'))
+            $focalPointImagePreview.removeClass($(this).data("image-style"));
           });
           // Before adding the active class, remove the active class from all
           // derivative previews in case one is already active.
-          $(".focal-point-derivative-preview").removeClass('active');
-          var $this = $(this);
-          var image_style = $this.data('image-style');
-          $this.addClass('active');
+          $(".focal-point-derivative-preview").removeClass("active");
+          const $this = $(this);
+          const imageStyle = $this.data("image-style");
+          $this.addClass("active");
 
           // Set the main preview label and image to this derivative since it
           // was just clicked.
-          var imageSrc = $this.find("img").attr('src');
-          var imageLabel = $this.find('h3').html();
+          const imageSrc = $this.find("img").attr("src");
+          const imageLabel = $this.find("h3").html();
           $focalPointImagePreviewLabel.html(imageLabel);
-          $focalPointImagePreview.attr('src', imageSrc);
-          $focalPointImagePreview.addClass(image_style);
-          $focalPointImagePreview.data('image-style', image_style);
+          $focalPointImagePreview.attr("src", imageSrc);
+          $focalPointImagePreview.addClass(imageStyle);
+          $focalPointImagePreview.data("image-style", imageStyle);
 
           // Prevent the window click event from running.
           event.stopPropagation();
         });
       });
+
+      /**
+       * Reset the main preview image.
+       *
+       * Remove the active class from all derivative image previews and then
+       * reset the main preview image and label.
+       */
+      function resetPreview() {
+        $focalPointDerivativePreviews.removeClass("active");
+        $focalPointImagePreviewLabel.html(originalImagePreviewLabel);
+        $focalPointImagePreview.removeClass(
+          $focalPointImagePreview.data("image-style"),
+        );
+        $focalPointImagePreview.attr("src", originalImageURL);
+      }
 
       // Add some window events for reverting to the original image.
       $(window).click(function (event) {
@@ -57,21 +72,6 @@
           resetPreview();
         }
       });
-
-      /**
-       * Reset the main preview image.
-       *
-       * Remove the active class from all derivative image previews and then
-       * reset the main preview image and label.
-       */
-      function resetPreview() {
-        $focalPointDerivativePreviews.removeClass('active');
-        $focalPointImagePreviewLabel.html(originalImagePreviewLabel);
-        $focalPointImagePreview.removeClass($focalPointImagePreview.data('image-style'));
-        $focalPointImagePreview.attr('src', originalImageURL);
-      }
-
-    }
-
+    },
   };
 })(jQuery, Drupal);

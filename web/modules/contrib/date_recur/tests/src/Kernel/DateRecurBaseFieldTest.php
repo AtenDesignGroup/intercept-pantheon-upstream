@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur_entity_test\Entity\DrEntityTest;
@@ -41,7 +43,7 @@ class DateRecurBaseFieldTest extends KernelTestBase {
   /**
    * Tests date recur entity.
    */
-  public function testDrEntityTest() {
+  public function testDrEntityTest(): void {
     $entity = DrEntityTest::create();
     $entity->dr = [
       'value' => '2014-06-15T23:00:00',
@@ -58,7 +60,7 @@ class DateRecurBaseFieldTest extends KernelTestBase {
       ->countQuery()
       ->execute()
       ->fetchField();
-    $this->assertEquals(3, $actualCount);
+    static::assertEquals(3, $actualCount);
   }
 
   /**
@@ -66,7 +68,7 @@ class DateRecurBaseFieldTest extends KernelTestBase {
    *
    * @covers \Drupal\date_recur\DateRecurOccurrences::fieldStorageDelete
    */
-  public function testOccurrenceTableDrop() {
+  public function testOccurrenceTableDrop(): void {
     $this->container->get('module_installer')
       ->uninstall(['date_recur_entity_test']);
 
@@ -74,7 +76,7 @@ class DateRecurBaseFieldTest extends KernelTestBase {
     $actualExists = $this->container->get('database')
       ->schema()
       ->tableExists($tableName);
-    $this->assertFalse($actualExists);
+    static::assertFalse($actualExists);
   }
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
@@ -34,11 +36,11 @@ class DateRecurDefaultInterpreterTest extends KernelTestBase {
   /**
    * Tests interpreter config is installed.
    */
-  public function testDefaultInterpreter() {
+  public function testDefaultInterpreter(): void {
     $config = \Drupal::config('date_recur.interpreter.default_interpreter');
     // Values will be an empty array if it doesn't exist.
     $values = $config->get();
-    $this->assertEquals('default_interpreter', $values['id']);
+    static::assertEquals('default_interpreter', $values['id']);
   }
 
 }

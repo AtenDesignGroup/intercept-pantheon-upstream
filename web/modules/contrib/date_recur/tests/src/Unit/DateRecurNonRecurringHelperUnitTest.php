@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Unit;
 
+use Drupal\date_recur\DateRecurHelperInterface;
 use Drupal\date_recur\DateRecurNonRecurringHelper;
 use Drupal\Tests\UnitTestCase;
 
@@ -19,70 +22,70 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
    * @covers ::getOccurrences
    * @covers ::generateOccurrences
    */
-  public function testOccurrence() {
+  public function testOccurrence(): void {
     $helper = $this->createHelper(
       new \DateTime('2am 14 April 2014'),
-      new \DateTime('4am 14 April 2014')
+      new \DateTime('4am 14 April 2014'),
     );
 
     // Test out of range (before).
     $occurrences = $helper->getOccurrences(
       new \DateTime('1am 14 April 2014'),
-      new \DateTime('1:30am 14 April 2014')
+      new \DateTime('1:30am 14 April 2014'),
     );
-    $this->assertCount(0, $occurrences);
+    static::assertCount(0, $occurrences);
 
     // Test out of range (after).
     $occurrences = $helper->getOccurrences(
       new \DateTime('4:30am 14 April 2014'),
-      new \DateTime('5am 14 April 2014')
+      new \DateTime('5am 14 April 2014'),
     );
-    $this->assertCount(0, $occurrences);
+    static::assertCount(0, $occurrences);
 
     // Test in range (intersects occurrence start).
     $occurrences = $helper->getOccurrences(
       new \DateTime('1am 14 April 2014'),
-      new \DateTime('3am 14 April 2014')
+      new \DateTime('3am 14 April 2014'),
     );
-    $this->assertCount(1, $occurrences);
+    static::assertCount(1, $occurrences);
 
     // Test in range (exact).
     $occurrences = $helper->getOccurrences(
       new \DateTime('2am 14 April 2014'),
-      new \DateTime('4am 14 April 2014')
+      new \DateTime('4am 14 April 2014'),
     );
-    $this->assertCount(1, $occurrences);
+    static::assertCount(1, $occurrences);
 
     // Test in range (within).
     $occurrences = $helper->getOccurrences(
       new \DateTime('2:30am 14 April 2014'),
-      new \DateTime('3:30am 14 April 2014')
+      new \DateTime('3:30am 14 April 2014'),
     );
-    $this->assertCount(1, $occurrences);
+    static::assertCount(1, $occurrences);
 
     // Test in range (intersects occurrence end).
     $occurrences = $helper->getOccurrences(
       new \DateTime('3am 14 April 2014'),
-      new \DateTime('5am 14 April 2014')
+      new \DateTime('5am 14 April 2014'),
     );
-    $this->assertCount(1, $occurrences);
+    static::assertCount(1, $occurrences);
 
     // Test in range but zero limit.
     $occurrences = $helper->getOccurrences(
       new \DateTime('1am 14 April 2014'),
       new \DateTime('3am 14 April 2014'),
-      0
+      0,
     );
-    $this->assertCount(0, $occurrences);
+    static::assertCount(0, $occurrences);
   }
 
   /**
    * Tests invalid argument for limit.
    */
-  public function testInvalidLimit() {
+  public function testInvalidLimit(): void {
     $helper = $this->createHelper(
       new \DateTime('2am 14 April 2014'),
-      new \DateTime('4am 14 April 2014')
+      new \DateTime('4am 14 April 2014'),
     );
 
     $this->expectException(\InvalidArgumentException::class);
@@ -90,20 +93,20 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
     $helper->getOccurrences(
       new \DateTime('1am 14 April 2014'),
       new \DateTime('3am 14 April 2014'),
-      -1
+      -1,
     );
   }
 
   /**
    * Test the helper works as an iterator.
    */
-  public function testIteration() {
+  public function testIteration(): void {
     $format = 'ga j F Y';
     $start = '2am 14 April 2014';
     $end = '4am 14 April 2014';
     $helper = $this->createHelper(
       new \DateTime($start),
-      new \DateTime($end)
+      new \DateTime($end),
     );
     $occurrences = [];
 
@@ -115,9 +118,9 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
     /** @var \Drupal\date_recur\DateRange $occurrence */
     $occurrence = reset($occurrences);
 
-    $this->assertCount(1, $occurrences);
-    $this->assertSame($occurrence->getStart()->format($format), $start);
-    $this->assertSame($occurrence->getEnd()->format($format), $end);
+    static::assertCount(1, $occurrences);
+    static::assertSame($occurrence->getStart()->format($format), $start);
+    static::assertSame($occurrence->getEnd()->format($format), $end);
   }
 
   /**
@@ -133,7 +136,7 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
    *
    * @see \Drupal\date_recur\DateRecurHelperInterface::createInstance
    */
-  protected function createHelper(?\DateTimeInterface ...$args) {
+  protected function createHelper(?\DateTimeInterface ...$args): DateRecurHelperInterface {
     return DateRecurNonRecurringHelper::createInstance('', ...$args);
   }
 

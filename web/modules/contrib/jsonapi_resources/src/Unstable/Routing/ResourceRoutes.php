@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jsonapi_resources\Unstable\Routing;
 
 use Drupal\Core\Routing\RouteBuildEvent;
@@ -84,7 +86,7 @@ final class ResourceRoutes implements EventSubscriberInterface {
   public function decorateJsonapiResourceRoutes(RouteBuildEvent $event) {
     $route_collection = $event->getRouteCollection();
     foreach ($route_collection as $route_name => $route) {
-      if ($route->getDefault('_jsonapi_resource') === NULL) {
+      if (!self::isJsonApiResourceRequest($route->getDefaults())) {
         continue;
       }
 
@@ -207,6 +209,19 @@ final class ResourceRoutes implements EventSubscriberInterface {
     if ($prefix !== '%jsonapi%') {
       throw new RouteDefinitionException("The $route_name route definition's path, `{$route->getPath()}`, must begin with `/%jsonapi%` so that the JSON:API base path can be substituted in its place.");
     }
+  }
+
+  /**
+   * Determines if the given request is for a JSON:API Resource route.
+   *
+   * * @param array $defaults
+   * *   The request's route defaults.
+   * *
+   * * @return bool
+   * *   Whether the request targets a generated route.
+   */
+  public static function isJsonApiResourceRequest(array $defaults) {
+    return !empty($defaults['_jsonapi_resource']);
   }
 
 }

@@ -2,8 +2,8 @@
 
 namespace Drupal\focal_point\Plugin\ImageEffect;
 
-use Drupal\focal_point\FocalPointEffectBase;
 use Drupal\Core\Image\ImageInterface;
+use Drupal\focal_point\FocalPointEffectBase;
 
 /**
  * Scales and crops image while keeping its focal point close to centered.

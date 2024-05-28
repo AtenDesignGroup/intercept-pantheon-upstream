@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
@@ -50,13 +52,13 @@ class DateRecurOccurrenceTableAttachedTest extends DateRecurOccurrenceTableTest 
   /**
    * Ensure occurrence table is created and deleted for field storage entities.
    */
-  public function testTableCreateDeleteOnFieldStorageCreate() {
+  public function testTableCreateDeleteOnFieldStorageCreate(): void {
     $tableName = 'date_recur__entity_test_rev__abc123';
 
     $actualExists = $this->container->get('database')
       ->schema()
       ->tableExists($tableName);
-    $this->assertFalse($actualExists);
+    static::assertFalse($actualExists);
 
     $fieldStorage = FieldStorageConfig::create([
       'entity_type' => $this->testEntityType,
@@ -71,23 +73,20 @@ class DateRecurOccurrenceTableAttachedTest extends DateRecurOccurrenceTableTest 
     $actualExists = $this->container->get('database')
       ->schema()
       ->tableExists($tableName);
-    $this->assertTrue($actualExists);
+    static::assertTrue($actualExists);
 
     $fieldStorage->delete();
 
     $actualExists = $this->container->get('database')
       ->schema()
       ->tableExists($tableName);
-    $this->assertFalse($actualExists);
+    static::assertFalse($actualExists);
   }
 
   /**
    * {@inheritdoc}
-   *
-   * @return \Drupal\entity_test\Entity\EntityTestRev
-   *   A test entity.
    */
-  protected function createEntity() {
+  protected function createEntity(): EntityTestRev {
     return EntityTestRev::create();
   }
 

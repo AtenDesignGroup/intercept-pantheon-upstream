@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\jsonapi_resources\Unstable\Entity;
 
@@ -50,7 +52,7 @@ trait EntityCreationTrait {
     }
     $entity = $this->resourceObjectToEntityMapper->createEntityFromResourceObject($data->getIterator()->current());
 
-    // Allow the class using this trait to modfiy the created entity before it
+    // Allow the class using this trait to modify the created entity before it
     // is saved.
     $this->modifyCreatedEntity($entity, $request);
 
@@ -59,7 +61,7 @@ trait EntityCreationTrait {
     // Return a 409 Conflict response in accordance with the JSON:API spec. See
     // http://jsonapi.org/format/#crud-creating-responses-409.
     try {
-      // @todo: remove the assignment of the entity type manager to a variable when an "Aware" interface is added.
+      // @todo remove the assignment of the entity type manager to a variable when an "Aware" interface is added.
       /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
       /** @var \Drupal\Core\Entity\EntityStorageInterface $entity_storage */
       $entity_type_manager = $this->entityTypeManager;

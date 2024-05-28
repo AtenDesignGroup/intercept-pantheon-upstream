@@ -298,7 +298,12 @@ class CertificationController extends ControllerBase implements ContainerInjecti
   public static function getUserCertificationNotes($uid) {
     $user = User::load($uid);
     $profile = \Drupal::entityTypeManager()->getStorage('profile')->loadByUser($user, 'customer');
-    $certification_notes = trim($profile->field_certification_notes->getString());
+    if ($profile) {
+      $certification_notes = trim($profile->field_certification_notes->getString());
+    }
+    else {
+      $certification_notes = '';
+    }
     return $certification_notes;
   }
 

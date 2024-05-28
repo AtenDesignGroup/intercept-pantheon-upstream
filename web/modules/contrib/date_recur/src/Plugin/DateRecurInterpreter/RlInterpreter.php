@@ -26,6 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  *
  * @ingroup RLanvinPhpRrule
+ * @phpstan-property array{show_start_date: bool, show_until: bool, date_format: string, show_infinite: bool} $configuration
  */
 class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerFactoryPluginInterface, PluginFormInterface {
 
@@ -59,7 +60,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
       $plugin_id,
       $plugin_definition,
       $container->get('date.formatter'),
-      $container->get('entity_type.manager')->getStorage('date_format')
+      $container->get('entity_type.manager')->getStorage('date_format'),
     );
   }
 
@@ -81,7 +82,9 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
   public function interpret(array $rules, string $language, ?\DateTimeZone $timeZone = NULL): string {
     $pluginConfig = $this->getConfiguration();
 
-    in_array($language, $this->supportedLanguages()) ?: throw new \Exception('Language not supported.');
+    if (in_array($language, $this->supportedLanguages(), TRUE) === FALSE) {
+      throw new \Exception('Language not supported.');
+    }
 
     $options = [
       'locale' => $language,
@@ -91,7 +94,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
     ];
 
     $dateFormatId = $this->configuration['date_format'];
-    if (!empty($dateFormatId)) {
+    if ($dateFormatId !== '') {
       $dateFormat = $this->dateFormatStorage->load($dateFormatId);
       if ($dateFormat) {
         $dateFormatter = function (\DateTimeInterface $date) use ($dateFormat, $timeZone): string {
@@ -139,7 +142,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
         '@name' => $dateFormat->label(),
         '@date' => $this->dateFormatter->format($exampleDate->getTimestamp(), (string) $dateFormat->id()),
       ]),
-      $this->dateFormatStorage->loadMultiple()
+      $this->dateFormatStorage->loadMultiple(),
     );
     $form['date_format'] = [
       '#type' => 'select',

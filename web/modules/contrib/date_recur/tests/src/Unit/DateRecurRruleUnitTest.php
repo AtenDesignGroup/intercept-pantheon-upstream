@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Unit;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
@@ -24,9 +26,9 @@ class DateRecurRruleUnitTest extends UnitTestCase {
     parent::setUp();
     // DrupalDateTime wants to access the language manager.
     $languageManager = $this->getMockForAbstractClass(LanguageManagerInterface::class);
-    $languageManager->expects($this->any())
+    $languageManager->expects($this::any())
       ->method('getCurrentLanguage')
-      ->will($this->returnValue(new Language(['id' => 'en'])));
+      ->will($this::returnValue(new Language(['id' => 'en'])));
 
     $container = new ContainerBuilder();
     $container->set('language_manager', $languageManager);
@@ -42,7 +44,7 @@ class DateRecurRruleUnitTest extends UnitTestCase {
    *
    * @dataProvider providerTimezone
    */
-  public function testTz(\DateTimeZone $tz) {
+  public function testTz(\DateTimeZone $tz): void {
     $start = new \DateTime('11pm 7 June 2005', $tz);
     $rule = $this->newRule('FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;INTERVAL=1', $start);
 
@@ -50,20 +52,21 @@ class DateRecurRruleUnitTest extends UnitTestCase {
     $results = $rule->getOccurrences(
       NULL,
       NULL,
-      1
+      1,
     );
-    $this->assertInstanceOf(\DateTimeInterface::class, $results[0]->getStart());
-    $this->assertTrue($start == $results[0]->getStart());
+    static::assertInstanceOf(\DateTimeInterface::class, $results[0]->getStart());
+    static::assertTrue($start == $results[0]->getStart());
   }
 
   /**
    * Data provider for ::testTz.
+   *
+   * @phpstan-return \Generator<\DateTimeZone>
    */
-  public function providerTimezone() {
-    $data[] = [new \DateTimeZone('America/Los_Angeles')];
-    $data[] = [new \DateTimeZone('UTC')];
-    $data[] = [new \DateTimeZone('Australia/Sydney')];
-    return $data;
+  public function providerTimezone(): \Generator {
+    yield [new \DateTimeZone('America/Los_Angeles')];
+    yield [new \DateTimeZone('UTC')];
+    yield [new \DateTimeZone('Australia/Sydney')];
   }
 
   /**
@@ -71,7 +74,7 @@ class DateRecurRruleUnitTest extends UnitTestCase {
    *
    * @covers ::generateOccurrences
    */
-  public function testGenerateOccurrences() {
+  public function testGenerateOccurrences(): void {
     $tz = new \DateTimeZone('Africa/Cairo');
     $start = new \DateTime('11pm 7 June 2005', $tz);
     $end = clone $start;
@@ -79,7 +82,7 @@ class DateRecurRruleUnitTest extends UnitTestCase {
     $rule = $this->newRule('FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR', $start, $end);
 
     $generator = $rule->generateOccurrences();
-    $this->assertTrue($generator instanceof \Generator);
+    static::assertTrue($generator instanceof \Generator);
 
     $assertOccurrences = [
       [
@@ -117,18 +120,18 @@ class DateRecurRruleUnitTest extends UnitTestCase {
     $iterationCount = 0;
     $maxIterations = count($assertOccurrences);
     foreach ($generator as $occurrence) {
-      $this->assertTrue($occurrence instanceof DateRange);
+      static::assertTrue($occurrence instanceof DateRange);
 
       [$assertStart, $assertEnd] = $assertOccurrences[$iterationCount];
-      $this->assertTrue($assertStart == $occurrence->getStart());
-      $this->assertTrue($assertEnd == $occurrence->getEnd());
+      static::assertTrue($assertStart == $occurrence->getStart());
+      static::assertTrue($assertEnd == $occurrence->getEnd());
 
       $iterationCount++;
       if ($iterationCount >= $maxIterations) {
         break;
       }
     }
-    $this->assertEquals($maxIterations, $iterationCount);
+    static::assertEquals($maxIterations, $iterationCount);
   }
 
   /**
@@ -136,16 +139,16 @@ class DateRecurRruleUnitTest extends UnitTestCase {
    *
    * @covers ::getExcluded
    */
-  public function testGetExcluded() {
+  public function testGetExcluded(): void {
     $tz = new \DateTimeZone('Asia/Singapore');
     $dtStart = new \DateTime('9am 4 September 2018', $tz);
     $string = 'RRULE:FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR;COUNT=3
 EXDATE:20180906T010000Z';
     $helper = $this->newRule($string, $dtStart);
     $excluded = $helper->getExcluded();
-    $this->assertCount(1, $excluded);
+    static::assertCount(1, $excluded);
     $expectedDate = new \DateTime('9am 6 September 2018', $tz);
-    $this->assertEquals($expectedDate, $excluded[0]);
+    static::assertEquals($expectedDate, $excluded[0]);
   }
 
   /**
@@ -161,7 +164,7 @@ EXDATE:20180906T010000Z';
    * @return \Drupal\date_recur\DateRecurHelper
    *   A new DateRecurHelper object.
    */
-  protected function newRule($rrule, \DateTime $startDate, \DateTime $startDateEnd = NULL) {
+  protected function newRule($rrule, \DateTime $startDate, \DateTime $startDateEnd = NULL): DateRecurHelper {
     return DateRecurHelper::create($rrule, $startDate, $startDateEnd);
   }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\date_recur\Unit;
 
 use Drupal\Core\Datetime\DateFormatInterface;
@@ -38,26 +40,26 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     parent::setUp();
 
     $dateFormat = $this->createMock(DateFormatInterface::class);
-    $dateFormat->expects($this->any())
+    $dateFormat->expects($this::any())
       ->method('id')
       ->willReturn($this->randomMachineName());
 
     $dateFormatStorage = $this->createMock(EntityStorageInterface::class);
-    $dateFormatStorage->expects($this->any())
+    $dateFormatStorage->expects($this::any())
       ->method('load')
-      ->with($this->anything())
+      ->with($this::anything())
       ->willReturn($dateFormat);
 
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
-    $entityTypeManager->expects($this->any())
+    $entityTypeManager->expects($this::any())
       ->method('getStorage')
       ->with('date_format')
       ->willReturn($dateFormatStorage);
 
     $dateFormatter = $this->createMock(DateFormatterInterface::class);
-    $dateFormatter->expects($this->any())
+    $dateFormatter->expects($this::any())
       ->method('format')
-      ->with($this->anything())
+      ->with($this::anything())
       // See \Drupal\Core\Datetime\DateFormatterInterface::format.
       ->willReturnCallback(function ($timestamp, $type = 'medium', $format = '', string $timezone = NULL, $langcode = NULL) {
         $date = new \DateTime('@' . $timestamp);
@@ -77,7 +79,7 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
   /**
    * Tests secondly interpretation.
    */
-  public function testSecondly() {
+  public function testSecondly(): void {
     $parts = [
       'FREQ' => 'SECONDLY',
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
@@ -87,13 +89,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $configuration = ['date_format' => $this->randomMachineName()];
     $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('secondly at second 59, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+    static::assertEquals('secondly at second 59, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
    * Tests minutely interpretation.
    */
-  public function testMinutely() {
+  public function testMinutely(): void {
     $parts = [
       'FREQ' => 'MINUTELY',
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
@@ -103,13 +105,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $configuration = ['date_format' => $this->randomMachineName()];
     $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('minutely at minute 44, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+    static::assertEquals('minutely at minute 44, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
    * Tests hourly interpretation.
    */
-  public function testHourly() {
+  public function testHourly(): void {
     $parts = [
       'FREQ' => 'HOURLY',
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
@@ -119,13 +121,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $configuration = ['date_format' => $this->randomMachineName()];
     $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('hourly at 4h and 7h, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+    static::assertEquals('hourly at 4h and 7h, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
    * Tests daily interpretation.
    */
-  public function testDaily() {
+  public function testDaily(): void {
     $parts = [
       'FREQ' => 'DAILY',
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
@@ -135,13 +137,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $configuration = ['date_format' => $this->randomMachineName()];
     $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('daily on Wednesday and Sunday, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+    static::assertEquals('daily on Wednesday and Sunday, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
    * Tests weekly interpretation.
    */
-  public function testWeekly() {
+  public function testWeekly(): void {
     $parts = [
       'FREQ' => 'WEEKLY',
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
@@ -151,13 +153,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $configuration = ['date_format' => $this->randomMachineName()];
     $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('weekly on Monday and Tuesday, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+    static::assertEquals('weekly on Monday and Tuesday, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
    * Tests monthly interpretation.
    */
-  public function testMonthly() {
+  public function testMonthly(): void {
     $parts = [
       'FREQ' => 'MONTHLY',
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
@@ -167,13 +169,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $configuration = ['date_format' => $this->randomMachineName()];
     $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('monthly in February and October, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+    static::assertEquals('monthly in February and October, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
    * Tests yearly interpretation.
    */
-  public function testYearly() {
+  public function testYearly(): void {
     $parts = [
       'FREQ' => 'YEARLY',
       'DTSTART' => new \DateTime('4am 15 July 2012', new \DateTimeZone('Pacific/Honolulu')),
@@ -182,13 +184,13 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     $configuration = ['date_format' => $this->randomMachineName()];
     $interpreter = RlInterpreter::create($this->testContainer, $configuration, '', []);
     $interpretation = $interpreter->interpret($rules, 'en');
-    $this->assertEquals('yearly, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
+    static::assertEquals('yearly, starting from Mon, 16 Jul 2012 00:00:00 +1000, forever', $interpretation);
   }
 
   /**
    * Tests output is in the same time zone as requested.
    */
-  public function testDisplayTimeZone() {
+  public function testDisplayTimeZone(): void {
     $parts = [
       'FREQ' => 'WEEKLY',
       // Africa/Tripoli: UTC+2 No DST.
@@ -200,7 +202,7 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
     // Asia/Singapore: UTC+8 No DST.
     $displayTimeZone = new \DateTimeZone('Asia/Singapore');
     $interpretation = $interpreter->interpret($rules, 'en', $displayTimeZone);
-    $this->assertEquals('weekly, starting from Sun, 15 Jul 2012 10:00:00 +0800, forever', $interpretation);
+    static::assertEquals('weekly, starting from Sun, 15 Jul 2012 10:00:00 +0800, forever', $interpretation);
   }
 
 }

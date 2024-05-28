@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Drupal\jsonapi_resources\Resource;
 
@@ -109,13 +111,24 @@ abstract class ResourceBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the resource types for a route.
+   *
+   * Resource types are defined on routes in the `_jsonapi_resource_types`
+   * route's defaults.
+   *
+   * @param \Symfony\Component\Routing\Route $route
+   *   The route.
+   * @param string $route_name
+   *   The route name.
+   *
+   * @return array
+   *   The resource types for the route.
    */
   public function getRouteResourceTypes(Route $route, string $route_name): array {
     return array_map(function ($resource_type_name) use ($route_name) {
       $resource_type = $this->resourceTypeRepository->getByTypeName($resource_type_name);
       if (is_null($resource_type)) {
-        // @todo: try to move this exception into Drupal\jsonapi_resources\Routing\ResourceRoutes::ensureResourceImplementationValid().
+        // @todo Try to move this exception into Drupal\jsonapi_resources\Routing\ResourceRoutes::ensureResourceImplementationValid().
         throw new RouteDefinitionException("The $route_name route definition's _jsonapi_resource_types route default declares the resource type $resource_type_name but a resource type by that name does not exist.");
       }
       return $resource_type;

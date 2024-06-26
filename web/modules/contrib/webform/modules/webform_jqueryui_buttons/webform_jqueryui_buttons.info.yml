@@ -8,8 +8,3 @@ lifecycle_link: 'https://www.drupal.org/docs/8/modules/webform/webform-frequentl
 dependencies:
   - 'webform:webform'
   - 'jquery_ui_checkboxradio:jquery_ui_checkboxradio'
-
-# Information added by Drupal.org packaging script on 2023-12-07
-version: '6.2.2'
-project: 'webform'
-datestamp: 1701948372

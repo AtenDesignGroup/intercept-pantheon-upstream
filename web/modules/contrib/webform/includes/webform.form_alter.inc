@@ -99,6 +99,7 @@ function _webform_form_webform_submission_form_after_build($form, FormStateInter
  * @see https://www.drupal.org/project/webform/issues/2920095
  */
 function webform_form_update_manager_update_form_alter(&$form, FormStateInterface $form_state) {
+  return;
   if (!isset($form['projects']) || !isset($form['projects']['#options']['webform'])) {
     return;
   }

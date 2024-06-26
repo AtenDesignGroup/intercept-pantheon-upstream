@@ -290,6 +290,16 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
           $this->field_agreement->setValue(1);
         }
       }
+      // Debugging/logging for double-bookings.
+      $current_path = \Drupal::service('path.current')->getPath();
+      $status = $this->getStatus();
+      if ($current_path == '/jsonapi/room_reservation/room_reservation') {
+        $this->setRevisionLogMessage('Reserved by Room. Initial status: ' . $status);
+      }
+      else {
+        $this->setRevisionLogMessage('Reserved by Calendar. Initial status: ' . $status);
+      }
+      // End debugging/logging.
     }
     // Don't set the default status for staff. They may be editing the status.
     elseif ($current_user->hasPermission('bypass room reservation agreement') == FALSE) {

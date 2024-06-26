@@ -20,8 +20,7 @@
     "drupal/admin_toolbar": "^3.1.0",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core-composer-scaffold": "^10.2.6",
-    "drupal/core": "^10.2.6",
+    "drupal/core": "10.2.7",
     "drupal/date_popup": "^1.3",
     "drupal/date_recur": "3.4",
     "drupal/date_recur_modular": "^3.1",
@@ -29,8 +28,8 @@
     "drupal/gin": "^3.0",
     "drupal/gin_toolbar": "^1.0@beta",
     "drupal/image_effects": "^3.6",
-    "drupal/intercept_base": "2.0.1",
-    "drupal/intercept": "2.0.1",
+    "drupal/intercept_base": "2.0.2",
+    "drupal/intercept": "2.0.2",
     "drupal/jsonapi_extras": "^3.23",
     "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",
@@ -39,14 +38,13 @@
     "drupal/stories": "^3.0@alpha",
     "drupal/video_embed_field": "^2.4",
     "drupal/view_unpublished": "^1.0",
-    "drupal/view_user_email": "^1.0.1",
+    "drupal/view_user_email": "^1.0.3",
     "drupal/views_autosubmit": "^1.5",
     "drupal/views_bulk_operations": "^4.0",
     "drupal/views_filters_summary": "2.0.0-alpha3",
     "drupal/views_infinite_scroll": "^2.0",
     "drush/drush": "^12",
     "lordelph/php-sip2": "^3.0",
-    "mglaman/composer-drupal-lenient": "^1.0",
     "pantheon-systems/drupal-integrations": "^9",
     "pantheon-systems/quicksilver-pushback": "^2",
     "zaporylie/composer-drupal-optimizations": "^1.0"
@@ -56,12 +54,13 @@
   },
   "minimum-stability": "dev",
   "config": {
-    "preferred-install": "dist",
+    "preferred-install": {
+      "drupal/webform": "source",
+      "*": "auto"
+    },
     "allow-plugins": {
       "composer/installers": true,
       "cweagans/composer-patches": true,
-      "drupal/core-composer-scaffold": true,
-      "mglaman/composer-drupal-lenient": true,
       "zaporylie/composer-drupal-optimizations": true
     }
   },
@@ -85,17 +84,14 @@
         "./vendor/bin/phpcs --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md --ignore=node_modules,bower_components,vendor ./web/themes/custom"
     ],
     "unit-test": "echo 'No unit test step defined.'",
-    "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
     "prepare-for-pantheon": "DrupalProject\\composer\\ScriptHandler::prepareForPantheon",
     "post-install-cmd": [
-        "@drupal-scaffold",
         "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
     ],
     "post-update-cmd": [
         "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
     ],
     "post-create-project-cmd": [
-        "@drupal-scaffold",
         "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
     ]
   },
@@ -152,9 +148,6 @@
         "Removes requirements for dropzonejs due to known issues on Pantheon.": "patches/stories-remove-dropzone.patch",
         "Moves stories_media config back to install directory": "https://www.drupal.org/files/issues/2023-09-01/3384860-stories-media-move-config-to-install-4.patch"
       },
-      "drupal/view_user_email": {
-        "D10 compatibility": "https://www.drupal.org/files/issues/2023-05-15/view_user_email-d10-compatibility.patch"
-      },
       "drupal/views_filters_summary": {
         "Issue #3345403: Remove link removes all filters": "https://www.drupal.org/files/issues/2023-11-02/views_filters_summary-fix-remove-link-3345403-8.patch"
       },
@@ -162,14 +155,13 @@
         "Stops immediate autoloading": "https://www.drupal.org/files/issues/2021-06-30/stop-immediate-autoloading-3207098-8.patch",
         "Support views grouping": "https://www.drupal.org/files/issues/2021-10-25/views_infinite_scroll-grouping-support-2813145-22.patch"
       },
+      "drupal/webform": {
+        "Removes unnecessary Webform notices on system pages": "patches/webform-remove-notices.patch",
+        "Removes unnecessary requirement for clientside validation modules": "patches/webform-remove-clientside-validation.patch"
+      },
       "lordelph/php-sip2": {
         "Adds controller support for patrons and organizations": "https://www.drupal.org/files/issues/2021-12-10/3253888-php-sip2-module-integration.patch"
       }
-    },
-    "drupal-lenient": {
-      "allowed-list": [
-        "drupal/view_user_email"
-      ]
     }
   }
 }

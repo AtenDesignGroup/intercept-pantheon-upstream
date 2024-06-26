@@ -36,6 +36,20 @@ class Auth extends UserAuth {
   protected $interceptILSPlugin;
 
   /**
+   * Validates user authentication credentials.
+   *
+   * @var \Drupal\user\UserAuth
+   */
+  private $userAuth;
+
+  /**
+   * Service for managing authmap database records.
+   *
+   * @var \Drupal\externalauth\Authmap
+   */
+  private $externalAuthmap;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(EntityTypeManagerInterface $entity_manager, PasswordInterface $password_checker, UserAuth $user_auth, ExternalAuth $external_auth, Authmap $external_authmap, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {

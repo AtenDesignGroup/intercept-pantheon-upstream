@@ -1,0 +1,25 @@
+diff --git a/includes/webform.form_alter.inc b/includes/webform.form_alter.inc
+index 6ce8b8cb8..26ee3ab51 100644
+--- a/includes/webform.form_alter.inc
++++ b/includes/webform.form_alter.inc
+@@ -99,6 +99,7 @@ function _webform_form_webform_submission_form_after_build($form, FormStateInter
+  * @see https://www.drupal.org/project/webform/issues/2920095
+  */
+ function webform_form_update_manager_update_form_alter(&$form, FormStateInterface $form_state) {
++  return;
+   if (!isset($form['projects']) || !isset($form['projects']['#options']['webform'])) {
+     return;
+   }
+diff --git a/webform.module b/webform.module
+index 0d44d8936..861c19ddd 100644
+--- a/webform.module
++++ b/webform.module
+@@ -45,7 +45,7 @@ function webform_help($route_name, RouteMatchInterface $route_match) {
+ 
+   // Get path from route match.
+   $path = preg_replace('/^' . preg_quote(base_path(), '/') . '/', '/', Url::fromRouteMatch($route_match)->setAbsolute(FALSE)->toString());
+-  if (!in_array($route_name, ['system.modules_list', 'update.status']) && strpos($route_name, 'webform') === FALSE && strpos($path, '/webform') === FALSE) {
++  if (strpos($route_name, 'webform') === FALSE && strpos($path, '/webform') === FALSE) {
+     return NULL;
+   }
+ 

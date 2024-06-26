@@ -14,9 +14,15 @@ use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Symfony\Component\HttpFoundation\Request;
+
+// Workaround to support tests against Drupal 9, 10 and 11.
+// @todo Remove once we end support for Drupal 10.1.x and below.
+if (!trait_exists(EntityReferenceFieldCreationTrait::class)) {
+  class_alias('\Drupal\Tests\field\Traits\EntityReferenceTestTrait', EntityReferenceFieldCreationTrait::class);
+}
 
 /**
  * Tests ResourceResponseFactory.
@@ -26,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class ResourceResponseFactoryTest extends KernelTestBase {
 
-  use EntityReferenceTestTrait;
+  use EntityReferenceFieldCreationTrait;
   use UserCreationTrait;
 
   private const NODE_TYPE_ARTICLE_UUID = 'e5da5021-d7a0-4606-a21c-9586a8cf79a4';

@@ -4,7 +4,7 @@ type: module
 core_version_requirement: ^9 || ^10
 package: 'Intercept'
 
-# Information added by Drupal.org packaging script on 2024-05-28
-version: '2.0.1'
+# Information added by Drupal.org packaging script on 2024-06-26
+version: '2.0.2'
 project: 'intercept'
-datestamp: 1716925373
+datestamp: 1719421875

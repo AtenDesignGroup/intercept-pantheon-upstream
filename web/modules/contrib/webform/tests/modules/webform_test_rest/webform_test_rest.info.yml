@@ -8,8 +8,3 @@ dependencies:
   - 'drupal:rest'
   - 'drupal:serialization'
   - 'webform:webform'
-
-# Information added by Drupal.org packaging script on 2023-12-07
-version: '6.2.2'
-project: 'webform'
-datestamp: 1701948372

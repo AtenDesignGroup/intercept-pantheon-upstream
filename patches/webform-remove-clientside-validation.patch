@@ -1,0 +1,48 @@
+diff --git a/modules/webform_cards/js/webform_cards.js b/modules/webform_cards/js/webform_cards.js
+index ecabca4c1..f52fc0b9d 100644
+--- a/modules/webform_cards/js/webform_cards.js
++++ b/modules/webform_cards/js/webform_cards.js
+@@ -670,15 +670,15 @@
+          *   The event triggered.
+          */
+         function nextButtonClickEventHandler(event) {
+-          var validator = $form.validate(drupalSettings.cvJqueryValidateOptions);
+-          if (!$form.valid()) {
+-            // Focus first invalid input.
+-            validator.focusInvalid();
+-            // Shake the invalid card.
+-            var $activeCard = $allCards.filter('.webform-card--active');
+-            shake($activeCard);
+-          }
+-          else {
++          // var validator = $form.validate(drupalSettings.cvJqueryValidateOptions);
++          // if (!$form.valid()) {
++          //   // Focus first invalid input.
++          //   validator.focusInvalid();
++          //   // Shake the invalid card.
++          //   var $activeCard = $allCards.filter('.webform-card--active');
++          //   shake($activeCard);
++          // }
++          // else {
+             // Get next visible card (not "display: none").
+             var $nextCard = $allCards.filter('.webform-card--active')
+               .nextAll('.webform-card:not([style*="display: none"])')
+@@ -692,7 +692,7 @@
+             else {
+               $submitButton.trigger('click');
+             }
+-          }
++          // }
+           // Prevent the button's default behavior.
+           event.preventDefault();
+         }
+diff --git a/modules/webform_cards/webform_cards.info.yml b/modules/webform_cards/webform_cards.info.yml
+index 05df4980a..b8775efb4 100644
+--- a/modules/webform_cards/webform_cards.info.yml
++++ b/modules/webform_cards/webform_cards.info.yml
+@@ -5,5 +5,3 @@ package: 'Webform'
+ core_version_requirement: ^9.4 || ^10
+ dependencies:
+   - 'webform:webform'
+-  - 'webform:webform_clientside_validation'
+-  - 'drupal:inline_form_errors'

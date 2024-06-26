@@ -7,15 +7,22 @@ namespace Drupal\jsonapi_resources\Unstable\Controller\ArgumentResolver;
 use Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel;
 use Drupal\jsonapi_resources\Unstable\DocumentExtractor;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+
+// The ArgumentValueResolverInterface is deprecated since Symfony 6.2 and
+// removed from Symfony 7. Hence, below workaround to run PHPUnit tests against
+// Drupal 9, 10 and 11.
+if (!interface_exists(ValueResolverInterface::class)) {
+  class_alias('\Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface', ValueResolverInterface::class);
+}
 
 /**
  * Deserializes POST, PATCH and DELETE request documents.
  *
  * @internal
  */
-final class DocumentResolver implements ArgumentValueResolverInterface {
+final class DocumentResolver implements ValueResolverInterface {
 
   /**
    * The document extractor.

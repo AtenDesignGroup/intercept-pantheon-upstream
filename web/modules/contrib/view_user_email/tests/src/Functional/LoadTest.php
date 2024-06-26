@@ -12,6 +12,8 @@ use Drupal\Tests\BrowserTestBase;
  */
 class LoadTest extends BrowserTestBase {
 
+  protected $defaultTheme = 'classy';
+
   /**
    * Modules to enable.
    *
@@ -29,7 +31,7 @@ class LoadTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp(): void {
+  protected function setUp() {
     parent::setUp();
     $this->user = $this->drupalCreateUser(['administer site configuration']);
     $this->drupalLogin($this->user);

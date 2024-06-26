@@ -7,8 +7,3 @@ lifecycle: deprecated
 lifecycle_link: 'https://www.drupal.org/docs/8/modules/webform/webform-frequently-asked-questions/what-to-do-about-deprecated-external-libraries-in-webform-6x'
 dependencies:
   - 'webform:webform'
-
-# Information added by Drupal.org packaging script on 2023-12-07
-version: '6.2.2'
-project: 'webform'
-datestamp: 1701948372

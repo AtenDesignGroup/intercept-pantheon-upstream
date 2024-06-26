@@ -106,6 +106,13 @@ class EventsController extends ControllerBase {
   protected $viewBuilder;
 
   /**
+   * ILS client object.
+   *
+   * @var object
+   */
+  protected $client;
+
+  /**
    * Constructs an EventsController object.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser

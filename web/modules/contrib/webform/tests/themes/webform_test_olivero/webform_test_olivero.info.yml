@@ -4,8 +4,3 @@ base theme: olivero
 name: 'Webform Olivero test'
 description: 'Support theme for webform Olivero integration testing.'
 package: 'Webform Testing'
-
-# Information added by Drupal.org packaging script on 2023-12-07
-version: '6.2.2'
-project: 'webform'
-datestamp: 1701948372

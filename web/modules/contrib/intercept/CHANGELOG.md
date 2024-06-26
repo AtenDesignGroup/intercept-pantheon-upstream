@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2024-06-26
+
+* Removed Deprecation Warnings related to PHP 8.2
+
 ## [2.0.1] - 2024-05-28
 
 * Fixed a spacing issue on location pages under "Today's Hours"

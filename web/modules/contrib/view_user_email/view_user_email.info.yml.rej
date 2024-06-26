@@ -1,0 +1,10 @@
+--- view_user_email.info.yml
++++ view_user_email.info.yml
+@@ -1,6 +1,5 @@
+ name: 'View User Email'
+ type: module
+ description: 'Allow site administrator the ability to grant users of certain roles access to another users email address.'
+-core: 8.x
+-core_version_requirement: ^8 || ^9
++core_version_requirement: ^9 || ^10
+ package: 'User'

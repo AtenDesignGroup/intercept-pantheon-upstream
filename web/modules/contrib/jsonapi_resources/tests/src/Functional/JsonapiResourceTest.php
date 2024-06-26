@@ -10,13 +10,19 @@ use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\Tests\BrowserTestBase;
-use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\Tests\jsonapi\Functional\JsonApiRequestTestTrait;
 use Drupal\Tests\jsonapi\Functional\ResourceResponseTestTrait;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 use Drupal\user\RoleInterface;
 use GuzzleHttp\RequestOptions;
+
+// Workaround to support tests against Drupal 9, 10 and 11.
+// @todo Remove once we end support for Drupal 10.1.x and below.
+if (!trait_exists(EntityReferenceFieldCreationTrait::class)) {
+  class_alias('\Drupal\Tests\field\Traits\EntityReferenceTestTrait', EntityReferenceFieldCreationTrait::class);
+}
 
 /**
  * Tests JSON:API Resource processors.
@@ -27,7 +33,7 @@ class JsonapiResourceTest extends BrowserTestBase {
 
   use JsonApiRequestTestTrait;
   use ResourceResponseTestTrait;
-  use EntityReferenceTestTrait;
+  use EntityReferenceFieldCreationTrait;
   use CommentTestTrait;
 
   /**

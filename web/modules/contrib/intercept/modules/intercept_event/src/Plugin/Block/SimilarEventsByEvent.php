@@ -37,6 +37,13 @@ class SimilarEventsByEvent extends BlockBase implements ContainerFactoryPluginIn
   protected $suggestedEventsProvider;
 
   /**
+   * Provides an interface for classes representing the result of routing.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
    * Constructs a new UserSuggestedEvents object.
    *
    * @param array $configuration
@@ -137,7 +144,7 @@ class SimilarEventsByEvent extends BlockBase implements ContainerFactoryPluginIn
           unset($events[$key]);
         }
       }
-      uasort($events, 'static::sort');
+      uasort($events, static::sort(...));
       $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
       $build['results'] = [
         '#theme' => 'events_recommended',

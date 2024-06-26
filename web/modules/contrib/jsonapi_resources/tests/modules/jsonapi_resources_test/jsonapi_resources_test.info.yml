@@ -2,11 +2,12 @@ name: 'JSON:API Resources test module'
 description: "Tests for JSON:API Resources."
 type: module
 package: Testing
+core_version_requirement: ^9.1 || ^10 || ^11
 dependencies:
   - drupal:node
   - jsonapi_resources:jsonapi_resources
 
-# Information added by Drupal.org packaging script on 2024-05-02
-version: '8.x-1.0'
+# Information added by Drupal.org packaging script on 2024-06-25
+version: '8.x-1.1'
 project: 'jsonapi_resources'
-datestamp: 1714670129
+datestamp: 1719351150

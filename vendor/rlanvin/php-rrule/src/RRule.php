@@ -219,34 +219,38 @@ class RRule implements RRuleInterface
 		$this->rule = $parts; // save original rule
 
 		// WKST
-		$parts['WKST'] = strtoupper($parts['WKST']);
-		if (! array_key_exists($parts['WKST'], self::WEEKDAYS)) {
+		if (is_string($parts['WKST'])) {
+			$parts['WKST'] = strtoupper($parts['WKST']);
+			if (array_key_exists($parts['WKST'], self::WEEKDAYS)) {
+				$this->wkst = self::WEEKDAYS[$parts['WKST']];
+			}
+		}
+
+		if (!$this->wkst) {
 			throw new \InvalidArgumentException(
 				'The WKST rule part must be one of the following: '
 				.implode(', ',array_keys(self::WEEKDAYS))
 			);
 		}
-		$this->wkst = self::WEEKDAYS[$parts['WKST']];
 
 		// FREQ
 		if (is_integer($parts['FREQ'])) {
-			if ($parts['FREQ'] > self::SECONDLY || $parts['FREQ'] < self::YEARLY) {
-				throw new \InvalidArgumentException(
-					'The FREQ rule part must be one of the following: '
-					.implode(', ',array_keys(self::FREQUENCIES))
-				);
+			if ($parts['FREQ'] <= self::SECONDLY && $parts['FREQ'] >= self::YEARLY) {
+				$this->freq = $parts['FREQ'];
 			}
-			$this->freq = $parts['FREQ'];
 		}
-		else { // string
+		elseif (is_string($parts['FREQ'])) {
 			$parts['FREQ'] = strtoupper($parts['FREQ']);
-			if (! array_key_exists($parts['FREQ'], self::FREQUENCIES)) {
-				throw new \InvalidArgumentException(
-					'The FREQ rule part must be one of the following: '
-					.implode(', ',array_keys(self::FREQUENCIES))
-				);
+			if (array_key_exists($parts['FREQ'], self::FREQUENCIES)) {
+				$this->freq = self::FREQUENCIES[$parts['FREQ']];
 			}
-			$this->freq = self::FREQUENCIES[$parts['FREQ']];
+		} 
+
+		if (!$this->freq) {
+			throw new \InvalidArgumentException(
+				'The FREQ rule part must be one of the following: '
+				.implode(', ',array_keys(self::FREQUENCIES))
+			);
 		}
 
 		// INTERVAL
@@ -2068,9 +2072,10 @@ class RRule implements RRuleInterface
 	 * | `locale`          | string  | The locale to use (autodetect)
 	 * | `fallback`        | string  | Fallback locale if main locale is not found (default en)
 	 * | `date_formatter`  | callable| Function used to format the date (takes date, returns formatted)
-	 * | `explicit_inifite`| bool    | Mention "forever" if the rule is infinite (true)
+	 * | `explicit_infinite`| bool    | Mention "forever" if the rule is infinite (true)
 	 * | `dtstart`         | bool    | Mention the start date (true)
 	 * | `include_start`   | bool    |
+	 * | `start_time_only` | bool    | Mention the time of day only, without the date
 	 * | `include_until`   | bool    |
 	 * | `custom_path`     | string  |
 	 *
@@ -2091,6 +2096,7 @@ class RRule implements RRuleInterface
 			'fallback' => 'en',
 			'explicit_infinite' => true,
 			'include_start' => true,
+			'start_time_only' => false,
 			'include_until' => true,
 			'custom_path' => null
 		);
@@ -2100,13 +2106,13 @@ class RRule implements RRuleInterface
 			$default_opt['locale'] = \Locale::getDefault();
 		} else {
 			$default_opt['locale'] = setlocale(LC_CTYPE, 0);
-			if ($default_opt['locale'] == 'C') {
+			if (!$default_opt['locale'] || $default_opt['locale'][0] == 'C') {
 				$default_opt['locale'] = 'en';
 			}
 		}
 
 		if ($opt['use_intl']) {
-			$default_opt['date_format'] = \IntlDateFormatter::SHORT;
+			$default_opt['date_format'] = isset($opt['start_time_only']) && $opt['start_time_only'] ? \IntlDateFormatter::NONE : \IntlDateFormatter::SHORT;
 			if ($this->freq >= self::SECONDLY || not_empty($this->rule['BYSECOND'])) {
 				$default_opt['time_format'] = \IntlDateFormatter::LONG;
 			}
@@ -2114,7 +2120,7 @@ class RRule implements RRuleInterface
 				$default_opt['time_format'] = \IntlDateFormatter::SHORT;
 			}
 			else {
-				$default_opt['time_format'] = \IntlDateFormatter::NONE;
+				$default_opt['time_format'] = isset($opt['start_time_only']) && $opt['start_time_only'] ? \IntlDateFormatter::SHORT : \IntlDateFormatter::NONE;
 			}
 		}
 
@@ -2149,8 +2155,9 @@ class RRule implements RRuleInterface
 				};
 			}
 			else {
-				$opt['date_formatter'] = function($date) {
-					return $date->format('Y-m-d H:i:s');
+				$opt['date_formatter'] = function ($date) use ($opt) {
+					$format = $opt['start_time_only'] ? 'H:i:s' : 'Y-m-d H:i:s';
+					return $date->format($format);
 				};
 			}
 		}
@@ -2362,7 +2369,12 @@ class RRule implements RRuleInterface
 
 		if ($opt['include_start']) {
 			// from X
-			$parts['start'] = strtr($i18n['dtstart'], array(
+			if ($opt['start_time_only']) {
+				$value = $this->freq >= self::HOURLY ? 'startingtimeofday' : 'timeofday';
+			} else {
+				$value = 'dtstart';
+			}
+			$parts['start'] = strtr($i18n[$value], array(
 				'%{date}' => $opt['date_formatter']($this->dtstart)
 			));
 		}

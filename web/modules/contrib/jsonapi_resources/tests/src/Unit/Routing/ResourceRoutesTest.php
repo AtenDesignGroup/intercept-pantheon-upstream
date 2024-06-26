@@ -35,7 +35,15 @@ final class ResourceRoutesTest extends UnitTestCase {
       '_jsonapi_resource_types' => ['node--article'],
     ];
     $route_collection->add('jsonapi_resource_route', new Route('/%jsonapi%/resource', $route_defaults));
-    $route_collection->add('jsonapi_resource_multi_method_route', new Route('/%jsonapi%/resource', $route_defaults, [], [], '', [], ['POST', 'PATCH']));
+    $route_collection->add('jsonapi_resource_multi_method_route', new Route(
+      '/%jsonapi%/resource',
+      $route_defaults,
+      [],
+      [],
+      '',
+      [],
+      ['POST', 'PATCH'],
+    ));
 
     $route_rebuild_event = new RouteBuildEvent($route_collection);
 

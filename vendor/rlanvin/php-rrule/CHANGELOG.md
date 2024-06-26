@@ -2,6 +2,29 @@
 
 ## [Unreleased]
 
+## [2.5.1] - 2024-06-23
+
+### Fixed
+
+- Fix insufficient type detection for FREQ and WKST leading to deprecation warning in tests with PHP 8.3 [#149](https://github.com/rlanvin/php-rrule/pull/149)
+- Fix failing tests with ICU 72.1 because of NNBSP
+- Fix C.UTF8 locale support when intl isn't installed
+
+## [2.5.0] - 2024-06-08
+
+### Fixed
+
+- Swedish: Corrects the spelling of monday and the grammar of enumeration partials. [#134](https://github.com/rlanvin/php-rrule/pull/134)
+- Spanish: Improve clarity in daily and weekly recurrence translation [#147](https://github.com/rlanvin/php-rrule/pull/147)
+- Dutch: weekdays and months are written in lowercase [#136](https://github.com/rlanvin/php-rrule/pull/136)
+- Better handle TZ with Exchange / M365 generated iCal files [#143](https://github.com/rlanvin/php-rrule/pull/143)
+
+### Added
+
+- Human readable time of day option [#124](https://github.com/rlanvin/php-rrule/pull/124)
+- Japanese translation [#139](https://github.com/rlanvin/php-rrule/pull/139)
+- Czech translation [#137](https://github.com/rlanvin/php-rrule/pull/137)
+
 ## [2.4.1] - 2023-06-07
 
 ### Fixed
@@ -250,7 +273,9 @@
 
 - First release, everything before that was unversioned (`dev-master` was used).
 
-[Unreleased]: https://github.com/rlanvin/php-rrule/compare/v2.4.1...HEAD
+[Unreleased]: https://github.com/rlanvin/php-rrule/compare/v2.5.1...HEAD
+[2.5.1]: https://github.com/rlanvin/php-rrule/compare/v2.5.0...v2.5.1
+[2.5.0]: https://github.com/rlanvin/php-rrule/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/rlanvin/php-rrule/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/rlanvin/php-rrule/compare/v2.3.2...v2.4.0
 [2.3.2]: https://github.com/rlanvin/php-rrule/compare/v2.3.1...v2.3.2

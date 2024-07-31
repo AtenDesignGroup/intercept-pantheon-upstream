@@ -12,7 +12,9 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
+use Drupal\focal_point\FocalPointEffectBase;
 use Drupal\focal_point\Plugin\Field\FieldWidget\FocalPointImageWidget;
+use Drupal\image\ImageEffectManager;
 use Drupal\image\ImageStyleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -46,6 +48,13 @@ class FocalPointPreviewController extends ControllerBase {
   protected $fileStorage;
 
   /**
+   * The image effect plugin manager.
+   *
+   * @var \Drupal\image\ImageEffectManager
+   */
+  protected $imageEffectManager;
+
+  /**
    * A logger instance.
    *
    * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
@@ -61,11 +70,14 @@ class FocalPointPreviewController extends ControllerBase {
    *   The request parameter.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger
    *   The logger factory.
+   * @param \Drupal\image\ImageEffectManager $imageEffectManager
+   *   The image effect manager.
    */
   public function __construct(
     ImageFactory $image_factory,
     RequestStack $request_stack,
     LoggerChannelFactoryInterface $logger,
+    ImageEffectManager $imageEffectManager,
   ) {
     $this->imageFactory = $image_factory;
     $this->request = $request_stack->getCurrentRequest();
@@ -80,7 +92,8 @@ class FocalPointPreviewController extends ControllerBase {
     return new static(
       $container->get('image.factory'),
       $container->get('request_stack'),
-      $container->get('logger.factory')
+      $container->get('logger.factory'),
+      $container->get('plugin.manager.image.effect')
     );
   }
 
@@ -226,8 +239,13 @@ class FocalPointPreviewController extends ControllerBase {
    *   An array of machine names of image styles that use a focal point effect.
    */
   public function getFocalPointImageStyles() {
-    // @todo Can this be generated? See $imageEffectManager->getDefinitions();
-    $focal_point_effects = ['focal_point_crop', 'focal_point_scale_and_crop'];
+    $focal_point_effects = [];
+
+    foreach ($this->imageEffectManager->getDefinitions() as $id => $definition) {
+      if (is_subclass_of($definition['class'], FocalPointEffectBase::class)) {
+        $focal_point_effects[] = $id;
+      }
+    }
 
     $styles_using_focal_point = [];
     $styles = $this->entityTypeManager()->getStorage('image_style')->loadMultiple();

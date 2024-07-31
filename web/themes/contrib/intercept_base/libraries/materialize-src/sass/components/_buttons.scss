@@ -10,6 +10,11 @@
   text-transform: uppercase;
   vertical-align: middle;
   -webkit-tap-highlight-color: transparent; // Gets rid of tap active state
+
+  i.right {
+    float: right;
+    margin-left: 10px;
+  }
 }
 
 // Disabled shared style

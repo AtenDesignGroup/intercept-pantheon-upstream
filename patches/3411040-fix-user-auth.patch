@@ -1,0 +1,13 @@
+diff --git a/core/modules/user/user.services.yml b/core/modules/user/user.services.yml
+index ec34738d99..e2ec9cc3a0 100644
+--- a/core/modules/user/user.services.yml
++++ b/core/modules/user/user.services.yml
+@@ -43,7 +43,7 @@ services:
+     tags:
+       - { name: theme_negotiator, priority: -40 }
+   user.auth:
+-    class: Drupal\user\UserAuthentication
++    class: Drupal\user\UserAuth
+     arguments: ['@entity_type.manager', '@password']
+   Drupal\user\UserAuthInterface: '@user.auth'
+   user.permissions:

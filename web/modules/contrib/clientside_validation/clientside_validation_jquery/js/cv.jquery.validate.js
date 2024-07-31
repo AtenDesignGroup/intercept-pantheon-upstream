@@ -19,6 +19,12 @@
   // Add messages with translations from backend.
   $.extend($.validator.messages, drupalSettings.clientside_validation_jquery.messages);
 
+  // Overwrite default URL validation method, accepting public/private urlscheme.
+  var _urlValidation = $.validator.methods.url;
+  $.validator.methods.url = function(value, element) {
+    return _urlValidation.call(this, value, element) || /^(public|private):\/\//.test(value);
+  }
+
   /**
    * Attaches jQuery validate behavior to forms.
    *

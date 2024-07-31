@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.3] - 2024-07-31
+
+* Updated Reserve By Room to allow staff to reserve all rooms as they can on the calendar
+* Fixed an error that could sometimes occur on event registration cancellation and checkins
+
 ## [2.0.2] - 2024-06-26
 
 * Removed Deprecation Warnings related to PHP 8.2

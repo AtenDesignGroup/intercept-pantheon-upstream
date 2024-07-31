@@ -2261,6 +2261,10 @@
   text-transform: uppercase;
   vertical-align: middle;
   -webkit-tap-highlight-color: transparent; }
+  .btn i.right, .btn-large i.right, .btn-small i.right,
+  .btn-flat i.right {
+    float: right;
+    margin-left: 10px; }
 
 .btn.disabled, .disabled.btn-large, .disabled.btn-small,
 .btn-floating.disabled,

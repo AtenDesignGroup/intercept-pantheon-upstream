@@ -121,7 +121,7 @@ components:
     intercept-base-icons:
       - images/icons
 
-# Information added by Drupal.org packaging script on 2024-06-26
-version: '2.0.2'
+# Information added by Drupal.org packaging script on 2024-07-31
+version: '2.0.3'
 project: 'intercept_base'
-datestamp: 1719421897
+datestamp: 1722459152

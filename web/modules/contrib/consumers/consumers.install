@@ -28,7 +28,6 @@ function consumers_update_8101() {
   // Replaced by consumers_update_8102().
 }
 
-
 /**
  * Add field 'third_party' using the entity system.
  */
@@ -47,7 +46,7 @@ function consumers_update_8102() {
     ->setRevisionable(TRUE)
     ->setTranslatable(TRUE)
     ->setDefaultValue(TRUE)
-    // Explicitly initialue existing entities with TRUE, to ensure a consistent
+    // Explicitly initialize existing entities with TRUE, to ensure a consistent
     // consistent behavior.
     ->setInitialValue(TRUE);
 
@@ -124,9 +123,11 @@ function consumers_update_8106() {
 }
 
 /**
- * Fix image field widget plugin ID. Was image, should be image_image.
+ * Fix image field widget plugin ID.
  *
- * https://www.drupal.org/project/consumers/issues/3105435
+ * Was image, should be image_image.
+ *
+ * @see https://www.drupal.org/project/consumers/issues/3105435
  */
 function consumers_update_8107() {
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();

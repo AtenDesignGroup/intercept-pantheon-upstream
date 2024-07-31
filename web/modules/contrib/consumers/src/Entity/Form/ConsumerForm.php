@@ -42,20 +42,21 @@ class ConsumerForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $status = $this->entity->save();
     $label = $this->entity->label();
+    $args = [
+      '%label' => $label,
+      '@type' => $this->entity->getEntityType()->getLabel(),
+    ];
 
     switch ($status) {
       case SAVED_NEW:
-        $this->messenger()->addMessage($this->t('Created the %label Consumer.', [
-          '%label' => $label,
-        ]));
+        $this->messenger()->addMessage($this->t('Created the %label @type.', $args));
         break;
 
       default:
-        $this->messenger()->addMessage($this->t('Saved the %label Consumer.', [
-          '%label' => $label,
-        ]));
+        $this->messenger()->addMessage($this->t('Saved the %label @type.', $args));
     }
     $form_state->setRedirect('entity.consumer.collection');
+    return $status;
   }
 
   /**

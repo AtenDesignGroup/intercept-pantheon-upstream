@@ -3,12 +3,13 @@
 namespace Drupal\consumers\Entity;
 
 use Drupal\Core\Access\AccessException;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Utility\Error;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -17,6 +18,9 @@ use Drupal\user\EntityOwnerTrait;
  * @ContentEntityType(
  *   id = "consumer",
  *   label = @Translation("Consumer"),
+ *   label_collection = @Translation("Consumers"),
+ *   label_singular = @Translation("consumer"),
+ *   label_plural = @Translation("consumers"),
  *   handlers = {
  *     "list_builder" = "Drupal\consumers\ConsumerListBuilder",
  *     "form" = {
@@ -72,7 +76,18 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
         $this->removeDefaultConsumerFlags();
       }
       catch (AccessException $exception) {
-        watchdog_exception('consumers', $exception);
+        // Backwards compatibility of error logging. See
+        // https://www.drupal.org/node/2932520. This can be removed when we no
+        // longer support Drupal > 10.1.
+        if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
+          $logger = \Drupal::logger('consumers');
+          Error::logException($logger, $exception);
+        }
+        else {
+          // @phpstan-ignore-next-line
+          watchdog_exception('consumers', $exception);
+        }
+
         \Drupal::messenger()->addError($exception->getMessage());
         $this->set('is_default', FALSE);
       }
@@ -95,9 +110,12 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 
+    // Prepare args for translatable markup.
+    $args['@label'] = $entity_type->getSingularLabel();
+
     $fields['client_id'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Client ID'))
-      ->setDescription(new TranslatableMarkup('The client ID associated with this consumer. This is an arbitrary unique field, like a machine name.'))
+      ->setDescription(new TranslatableMarkup('The client ID associated with this @label. This is an arbitrary unique field, like a machine name.', $args))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
       ->addConstraint('UniqueField')
@@ -109,7 +127,7 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
       ->setDisplayConfigurable('form', TRUE);
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Label'))
-      ->setDescription(new TranslatableMarkup('The consumer label.'))
+      ->setDescription(new TranslatableMarkup('The @label label.', $args))
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setRevisionable(TRUE)
@@ -126,7 +144,7 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
       ->setDisplayConfigurable('form', TRUE);
     $fields['description'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Description'))
-      ->setDescription(t('A description of the consumer. This text will be shown to the users to authorize sharing their data to create an access token.'))
+      ->setDescription(t('A description of the @label. This text will be shown to the users to authorize sharing their data to create an access token.', $args))
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', [
         'label' => 'hidden',
@@ -142,7 +160,7 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
 
     $fields['image'] = BaseFieldDefinition::create('image')
       ->setLabel(t('Logo'))
-      ->setDescription(t('Logo of the consumer.'))
+      ->setDescription(t('Logo of the @label.', $args))
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', [
@@ -162,8 +180,8 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['third_party'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(new TranslatableMarkup('Is this consumer 3rd party?'))
-      ->setDescription(new TranslatableMarkup('Mark this if the organization behind this consumer is not the same as the one behind the Drupal API.'))
+      ->setLabel(new TranslatableMarkup('Is this @label 3rd party?', $args))
+      ->setDescription(new TranslatableMarkup('Mark this if the organization behind this @label is not the same as the one behind the Drupal API.', $args))
       ->setDisplayOptions('view', [
         'label' => 'inline',
         'type' => 'boolean',
@@ -177,8 +195,8 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
       ->setDefaultValue(TRUE);
 
     $fields['is_default'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(new TranslatableMarkup('Is this the default consumer?'))
-      ->setDescription(new TranslatableMarkup('There can only be one default consumer. Mark this to use this consumer when none other applies.'))
+      ->setLabel(new TranslatableMarkup('Is this the default @label?', $args))
+      ->setDescription(new TranslatableMarkup('There can only be one default @label. Mark this to use this @label when none other applies.', $args))
       ->setDisplayOptions('view', [
         'label' => 'inline',
         'type' => 'boolean',
@@ -233,10 +251,11 @@ class Consumer extends ContentEntityBase implements ConsumerInterface {
   /**
    * Gets closure that will set is_default to the selected value for an entity.
    *
-   * @param boolean $value
+   * @param bool $value
    *   The final value of the "is_default" field.
    *
    * @return \Closure
+   *   The closure that will set the "is_default" field to the selected value.
    */
   protected static function setDefaultTo($value) {
     return function (ConsumerInterface $consumer) use ($value) {

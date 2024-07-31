@@ -115,6 +115,21 @@ class ClientsideValidationTest extends WebDriverTestBase {
 
     $this->validateAssertions($assertions);
 
+    // URL field.
+    $assertions = [];
+
+    // Validate public and private are allowed.
+    $this->page->findById('edit-url')->setValue('public://abc');
+    $assertions['edit-url'] = '';
+
+    $this->validateAssertions($assertions);
+
+    // Validate other URI are still not allowed.
+    $this->page->findById('edit-url')->setValue('public1://abc');
+    $assertions['edit-url'] = 'URL does not contain a valid url.';
+
+    $this->validateAssertions($assertions);
+
     // E-Mail field.
     $assertions = [];
 

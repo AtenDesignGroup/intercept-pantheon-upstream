@@ -57,7 +57,7 @@ class ClientsideValidationJqueryDrush extends DrushCommands {
 
     // Download library.
     $tmp_location = $this->fileSystem->getTempDirectory();
-    $download_url = 'https://github.com/jquery-validation/jquery-validation/archive/1.17.0.zip';
+    $download_url = 'https://github.com/jquery-validation/jquery-validation/archive/1.20.0.zip';
     $this->logger()->notice('Downloading {download_url}', ['download_url' => $download_url]);
     file_put_contents($tmp_location . '/jquery-validation.zip', fopen($download_url, 'r'));
     $path = $tmp_location . '/jquery-validation.zip';
@@ -74,7 +74,7 @@ class ClientsideValidationJqueryDrush extends DrushCommands {
 
     // Name it properly (remove version number from directory).
     $fs = new Filesystem();
-    $fs->rename(DRUPAL_ROOT . '/libraries/jquery-validation-1.17.0', DRUPAL_ROOT . '/libraries/jquery-validation', TRUE);
+    $fs->rename(DRUPAL_ROOT . '/libraries/jquery-validation-1.20.0', DRUPAL_ROOT . '/libraries/jquery-validation', TRUE);
 
     // Flush all caches.
     drupal_flush_all_caches();

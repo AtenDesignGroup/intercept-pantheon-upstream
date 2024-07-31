@@ -6,20 +6,30 @@ use Drupal\Core\Entity\ContentEntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
+/**
+ * Form controller for the Consumer make default form.
+ *
+ * @ingroup consumers
+ */
 class MakeDefaultForm extends ContentEntityConfirmFormBase {
 
   /**
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to make %consumer the default consumer?', ['%consumer' => $this->entity->label()]);
+    return $this->t('Are you sure you want to make %consumer the default @label?', [
+      '%consumer' => $this->entity->label(),
+      '@label' => $this->entity->getEntityType()->getSingularLabel(),
+    ]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getDescription() {
-    return $this->t('The consumer currently marked as default will lose this property, since there can only be one default consumer. This may break current assumptions in existing client-side applications.');
+    return $this->t('The @label currently marked as default will lose this property, since there can only be one default @label. This may break current assumptions in existing client-side applications.', [
+      '@label' => $this->entity->getEntityType()->getSingularLabel(),
+    ]);
   }
 
   /**

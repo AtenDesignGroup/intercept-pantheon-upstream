@@ -39,6 +39,11 @@ class EventEvaluation {
   protected $manager;
 
   /**
+   * The vote.
+   */
+  protected $vote;
+
+  /**
    * EventEvaluation constructor.
    */
   public function __construct($vote) {

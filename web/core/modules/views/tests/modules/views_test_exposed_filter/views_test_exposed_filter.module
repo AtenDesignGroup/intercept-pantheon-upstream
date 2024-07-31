@@ -25,6 +25,7 @@ function views_test_exposed_filter_form_views_exposed_form_alter(&$form, FormSta
  *   The form definition array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state object.
+ *
  * @return array
  *   Render array to display when the AJAX callback is triggered.
  */

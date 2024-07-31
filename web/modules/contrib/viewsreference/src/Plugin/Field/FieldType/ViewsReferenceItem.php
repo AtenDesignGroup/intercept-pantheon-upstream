@@ -19,7 +19,7 @@ use Drupal\views\Views;
  *   id = "viewsreference",
  *   label = @Translation("Views reference"),
  *   description = @Translation("A field reference to a view."),
- *   category = @Translation("Reference"),
+ *   category = "reference",
  *   default_widget = "viewsreference_autocomplete",
  *   default_formatter = "viewsreference_formatter",
  *   list_class = "\Drupal\viewsreference\Plugin\Field\ViewsReferenceFieldItemList",

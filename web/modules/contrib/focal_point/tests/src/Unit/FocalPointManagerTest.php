@@ -47,7 +47,7 @@ class FocalPointManagerTest extends FocalPointUnitTestCase {
   /**
    * Data provider for testFocalPoint().
    */
-  public function providerValidateFocalPoint() {
+  public static function providerValidateFocalPoint() {
     $data = [];
     $data['default_focal_point_position'] = ['50,50', TRUE];
     $data['basic_focal_point_position_1'] = ['75,25', TRUE];
@@ -104,7 +104,7 @@ class FocalPointManagerTest extends FocalPointUnitTestCase {
   /**
    * Data provider for testRelativeToAbsolute() and absoluteToRelative().
    */
-  public function providerCoordinates() {
+  public static function providerCoordinates() {
     $data = [];
     $data['top_left'] = [
       ['x' => 0, 'y' => 0],

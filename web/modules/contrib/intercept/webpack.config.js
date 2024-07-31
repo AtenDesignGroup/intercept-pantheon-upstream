@@ -12,8 +12,6 @@ const entries = {
   intercept_event: [
     'eventAddToCalendar',
     'eventAttendanceList',
-    'eventCustomerEvaluation',
-    'eventCustomerEvaluations',
     'eventRegister',
     'eventRegisterButton',
     'eventRegistrationList',

@@ -2,10 +2,10 @@
 
 namespace Drupal\consumers;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
 
 /**
  * Access controller for the Access Token entity.
@@ -54,7 +54,12 @@ class AccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    return AccessResult::allowedIfHasPermission($account, sprintf('add %s entities', static::$name));
+    $admin_access = parent::checkCreateAccess($account, $context, $entity_bundle);
+
+    return $admin_access->orIf(AccessResult::allowedIfHasPermission(
+      $account,
+      sprintf('add %s entities', static::$name),
+    ));
   }
 
 }

@@ -49,10 +49,7 @@ function template_preprocess_consumer(array &$variables) {
 /**
  * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
  */
-function consumers_jsonapi_consumer_filter_access(
-  EntityTypeInterface $entity_type,
-  AccountInterface $account
-) {
+function consumers_jsonapi_consumer_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
   return [
     JSONAPI_FILTER_AMONG_OWN => AccessResult::allowedIfHasPermission(
       $account,

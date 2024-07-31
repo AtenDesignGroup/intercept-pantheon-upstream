@@ -6,7 +6,6 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\gin\GinContentFormHelper;
 use Drupal\gin\GinSettings;
 use Drupal\node\Entity\Node;
 
@@ -35,24 +34,17 @@ function gin_preprocess_page(&$variables) {
       $variables['entity_edit_url'] = $entity->toUrl('edit-form');
     }
   }
-}
 
-/**
- * Implements hook_preprocess_HOOK() for page_alter.
- */
-function gin_theme_suggestions_page_alter(&$suggestions, $variables) {
-  $path = \Drupal::requestStack()->getCurrentRequest()->getPathInfo();
-
-  if ($path != '/') {
-    $path = trim($path, '/');
-    $arg = str_replace(["/", '-'], ['_', '_'], $path);
-    $suggestions[] = 'page__' . $arg;
-  }
-
-  // The node page template is required to use the node content form.
-  if (\Drupal::classResolver(GinContentFormHelper::class)->isContentForm()
-    && !in_array('page__node', $suggestions)) {
-    $suggestions[] = 'page__node';
+  // Get form actions.
+  if ($form_actions = _gin_form_actions()) {
+    $navigation_config = \Drupal::configFactory()->get('navigation.settings');
+    if ($navigation_config->get('show_top_bar')) {
+      $variables['gin_form_actions'] = '';
+    }
+    else {
+      $variables['gin_form_actions'] = $form_actions;
+    }
+    $variables['gin_form_actions_class'] = 'gin-sticky-form-actions--preprocessed';
   }
 }
 
@@ -99,6 +91,7 @@ function gin_page_attachments_alter(&$page) {
     $page['#attached']['drupalSettings']['gin']['highcontrastmode'] = $settings->get('high_contrast_mode');
     $page['#attached']['drupalSettings']['gin']['highcontrastmode_class'] = 'gin--high-contrast-mode';
     $page['#attached']['drupalSettings']['gin']['toolbar_variant'] = $settings->get('classic_toolbar');
+    $page['#attached']['drupalSettings']['gin']['show_user_theme_settings'] = $settings->get('show_user_theme_settings');
 
     // Expose stylesheets to JS.
     $basethemeurl = '/' . \Drupal::service('extension.list.theme')->getPath('gin');

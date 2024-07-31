@@ -8,7 +8,7 @@ dependencies:
   - office_hours:office_hours
   - intercept:intercept_location
 
-# Information added by Drupal.org packaging script on 2024-06-26
-version: '2.0.2'
+# Information added by Drupal.org packaging script on 2024-07-31
+version: '2.0.3'
 project: 'intercept'
-datestamp: 1719421875
+datestamp: 1722459108

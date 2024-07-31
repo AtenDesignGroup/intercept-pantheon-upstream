@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains post updates for Consumers module.
+ */
+
 use Drupal\Core\Field\BaseFieldDefinition;
 
 /**

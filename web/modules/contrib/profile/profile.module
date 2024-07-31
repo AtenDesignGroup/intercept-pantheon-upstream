@@ -78,7 +78,7 @@ function profile_entity_field_access($operation, FieldDefinitionInterface $field
         /** @var \Drupal\profile\Entity\ProfileInterface $profile */
         $profile = $items->getEntity();
         if ($account->id() === $profile->getOwnerId()) {
-          return AccessResult::neutral();
+          return AccessResult::neutral()->addCacheContexts(['session']);
         }
 
         return AccessResult::forbiddenIf(!$account->hasPermission('administer profile'));
@@ -321,7 +321,7 @@ function profile_migration_plugins_alter(array &$migrations) {
  * Map profile2 fields to 'profile'.
  *
  * @param array $migration
- *   Thei migration to process.
+ *   The migration to process.
  * @param string $destination
  *   The process destination.
  */

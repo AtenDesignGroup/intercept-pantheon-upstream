@@ -50,6 +50,7 @@ class FocalPointImageWidget extends ImageWidget {
     //   and should maintain the aspect ratio of the original image.
     // phpcs:disable
     $form['preview_image_style']['#description'] = t(
+      // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
       $form['preview_image_style']['#description']->getUntranslatedString() . "<br/>Do not choose an image style that alters the aspect ratio of the original image nor an image style that uses a focal point effect.",
       $form['preview_image_style']['#description']->getArguments(),
       $form['preview_image_style']['#description']->getOptions()

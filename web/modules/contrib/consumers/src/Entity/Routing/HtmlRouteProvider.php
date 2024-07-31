@@ -6,6 +6,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
 
+/**
+ * Provides HTML routes for the Consumer entity.
+ */
 class HtmlRouteProvider extends DefaultHtmlRouteProvider {
 
   /**

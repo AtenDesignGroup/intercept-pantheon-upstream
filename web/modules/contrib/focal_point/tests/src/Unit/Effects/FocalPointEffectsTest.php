@@ -56,7 +56,7 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
    *
    * @see FocalPointEffectsTest::testCalculateResizeData()
    */
-  public function calculateResizeDataProvider() {
+  public static function calculateResizeDataProvider() {
     $data = [];
     // @codingStandardsIgnoreStart
     $data['horizontal_image_horizontal_crop'] = [640, 480, 300, 100, ['width' => 300, 'height' => 225]];
@@ -110,7 +110,7 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
    *
    * @see FocalPointEffectsTest::testTransformFocalPoint()
    */
-  public function transformFocalPointProvider() {
+  public static function transformFocalPointProvider() {
     $data = [];
     // @codingStandardsIgnoreStart
     $data['no_scale'] = [['width' => 800, 'height' => 600], ['width' => 800, 'height' => 600], ['x' => 300, 'y' => 400], ['x' => 300, 'y' => 400]];
@@ -186,7 +186,7 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
    *
    * @see FocalPointEffectsTest::testConstrainCropArea()
    */
-  public function constrainCropAreaProvider() {
+  public static function constrainCropAreaProvider() {
     $data = [];
     // @codingStandardsIgnoreStart
     $data['constrained-top-left'] = [['x' => -10, 'y' => -10], ['width' => 1000, 'height' => 1000], ['width' => 100, 'height' => 100], ['x' => 0, 'y' => 0]];
@@ -229,7 +229,7 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
    *
    * @see FocalPointEffectsTest::testCalculateAnchor()
    */
-  public function calculateAnchorProvider() {
+  public static function calculateAnchorProvider() {
     $data = [];
     // @codingStandardsIgnoreStart
 

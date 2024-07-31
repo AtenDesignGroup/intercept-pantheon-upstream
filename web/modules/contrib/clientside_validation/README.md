@@ -23,7 +23,7 @@ or using Composer.
 ### To install the library manually:
 
 1. Download the jQuery Validation library from http://jqueryvalidation.org/ .
-   jQuery Validation 1.17.0 or higher is recommended.
+   jQuery Validation 1.20.0 or higher is recommended.
 
 2. If it does not already exist, create a folder named `libraries` at the web
    root of your Drupal site. Then, create a folder named `jquery-validation`
@@ -73,7 +73,7 @@ Check composer.example.json in module directory for a complete working example
 3. Require following composer dependencies.
 ```
 composer require oomphinc/composer-installers-extender
-composer require npm-asset/jquery-validation:^1.17
+composer require npm-asset/jquery-validation:^1.20
 ```
 
 4. Install module as usual.

@@ -147,6 +147,7 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
             'Drush\\' => 6,
             'Drupal\\Core\\' => 12,
             'Drupal\\Component\\' => 17,
+            'DrupalFinder\\' => 13,
             'DrupalCodeGenerator\\' => 20,
             'Dompdf\\' => 7,
             'Doctrine\\Deprecations\\' => 22,
@@ -442,7 +443,8 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         ),
         'FontLib\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+            0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
+            1 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
         ),
         'Egulias\\EmailValidator\\' => 
         array (
@@ -459,6 +461,10 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'Drupal\\Component\\' => 
         array (
             0 => __DIR__ . '/../..' . '/web/core/lib/Drupal/Component',
+        ),
+        'DrupalFinder\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/webflo/drupal-finder/src',
         ),
         'DrupalCodeGenerator\\' => 
         array (
@@ -566,8 +572,8 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'DateRangeError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateRangeError.php',
         'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'Drupal' => __DIR__ . '/../..' . '/web/core/lib/Drupal.php',
-        'DrupalFinder\\DrupalFinder' => __DIR__ . '/..' . '/webflo/drupal-finder/src/DrupalFinder.php',
         'DrupalProject\\composer\\ScriptHandler' => __DIR__ . '/../..' . '/scripts/composer/ScriptHandler.php',
+        'Drupal\\Component\\Datetime\\Time' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Component/Datetime/Time.php',
         'Drupal\\Component\\DependencyInjection\\Container' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Component/DependencyInjection/Container.php',
         'Drupal\\Component\\DependencyInjection\\PhpArrayContainer' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Component/DependencyInjection/PhpArrayContainer.php',
         'Drupal\\Component\\FileCache\\FileCacheFactory' => __DIR__ . '/../..' . '/web/core/lib/Drupal/Component/FileCache/FileCacheFactory.php',

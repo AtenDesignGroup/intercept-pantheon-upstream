@@ -80,7 +80,7 @@ class FocalPointFieldWidgetTest extends UnitTestCase {
     else {
       $this->testFormState->expects($this->once())
         ->method('setError')
-        ->will($this->returnSelf());
+        ->willReturnSelf();
     }
 
     $element = [
@@ -103,7 +103,7 @@ class FocalPointFieldWidgetTest extends UnitTestCase {
   /**
    * Data provider for testFocalPoint().
    */
-  public function providerValidateFocalPoint() {
+  public static function providerValidateFocalPoint() {
     $data = [];
     $data['default_focal_point_position'] = ['50,50', TRUE];
     $data['basic_focal_point_position_1'] = ['75,25', TRUE];

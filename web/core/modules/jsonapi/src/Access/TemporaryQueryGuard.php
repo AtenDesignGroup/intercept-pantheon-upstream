@@ -121,14 +121,13 @@ class TemporaryQueryGuard {
    * @see \Drupal\Core\Database\Query\AlterableInterface::addMetaData()
    * @see \Drupal\Core\Database\Query\ConditionInterface
    */
-  protected static function secureQuery(QueryInterface $query, $entity_type_id, array $tree, CacheableMetadata $cacheability, $field_prefix = NULL, FieldStorageDefinitionInterface $field_storage_definition = NULL, array $entity_types_already_secured = []) {
+  protected static function secureQuery(QueryInterface $query, $entity_type_id, array $tree, CacheableMetadata $cacheability, $field_prefix = NULL, ?FieldStorageDefinitionInterface $field_storage_definition = NULL, array $entity_types_already_secured = []) {
     $entity_type = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
     // Config entity types are not fieldable, therefore they do not have field
     // access restrictions, nor entity references to other entity types.
     if ($entity_type instanceof ConfigEntityTypeInterface) {
       return;
     }
-
     foreach ($tree as $specifier => $children) {
       // The field path reconstructs the entity condition fields.
       // E.g. `uid.0` would become `uid.0.name` if $specifier === 'name'.
@@ -140,7 +139,6 @@ class TemporaryQueryGuard {
         // cases, the specifier must be a field name.
         $field_storage_definitions = static::$fieldManager->getFieldStorageDefinitions($entity_type_id);
         static::secureQuery($query, $entity_type_id, $children, $cacheability, $child_prefix, $field_storage_definitions[$specifier], $entity_types_already_secured);
-
         // When $field_prefix is NULL, this must be the first specifier in the
         // entity query field path and a condition for the query's base entity
         // type must be applied.
@@ -170,7 +168,6 @@ class TemporaryQueryGuard {
           $target_entity_type_id = $target_entity_type_id ?: $field_storage_definition->getSetting('target_type');
           $query->addTag("{$target_entity_type_id}_access");
           static::applyAccessConditions($query, $target_entity_type_id, $child_prefix, $cacheability);
-
           // Keep descending the tree.
           static::secureQuery($query, $target_entity_type_id, $children, $cacheability, $child_prefix, NULL, $entity_types_already_secured);
         }
@@ -300,7 +297,8 @@ class TemporaryQueryGuard {
         // user's currently displayed shortcut set.
         // @see \Drupal\shortcut\ShortcutAccessControlHandler::checkAccess()
         if (!$current_user->hasPermission('administer shortcuts')) {
-          $specific_condition = new EntityCondition('shortcut_set', shortcut_current_displayed_set()->id());
+          $shortcut_set_storage = \Drupal::entityTypeManager()->getStorage('shortcut_set');
+          $specific_condition = new EntityCondition('shortcut_set', $shortcut_set_storage->getDisplayedToUser($current_user)->id());
           $cacheability->addCacheContexts(['user']);
           $cacheability->addCacheTags($entity_type->getListCacheTags());
         }

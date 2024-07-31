@@ -4,7 +4,9 @@ namespace Drupal\consumers;
 
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Utility\Error;
 use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -41,8 +43,9 @@ class Negotiator {
   /**
    * Instantiates a new Negotiator object.
    */
-  public function __construct(RequestStack $request_stack) {
+  public function __construct(RequestStack $request_stack, LoggerInterface $logger) {
     $this->requestStack = $request_stack;
+    $this->logger = $logger;
   }
 
   /**
@@ -75,7 +78,17 @@ class Negotiator {
         $consumer = !empty($results) ? reset($results) : $results;
       }
       catch (EntityStorageException $exception) {
-        watchdog_exception('consumers', $exception);
+        // Backwards compatibility of error logging. See
+        // https://www.drupal.org/node/2932520. This can be removed when we no
+        // longer support Drupal > 10.1.
+        if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
+          $logger = \Drupal::logger('consumers');
+          Error::logException($logger, $exception);
+        }
+        else {
+          // @phpstan-ignore-next-line
+          watchdog_exception('consumers', $exception);
+        }
       }
     }
     if (empty($consumer)) {
@@ -124,7 +137,7 @@ class Negotiator {
       ->execute();
     $consumer_id = reset($results);
     if (!$consumer_id) {
-      // Throw if there is no default consumer..
+      // Throw if there is no default consumer.
       throw new MissingConsumer('Unable to find the default consumer.');
     }
     $this->defaultConsumer = $this->storage->load($consumer_id);

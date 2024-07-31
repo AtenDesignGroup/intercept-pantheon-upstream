@@ -27,6 +27,19 @@ function viewsreference_help($route_name, RouteMatchInterface $arg) {
 }
 
 /**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function viewsreference_theme_suggestions_viewsreference__view_title(array $variables) {
+  $suggestions = [];
+
+  if (!empty($variables['variables']['#view']) && $variables['variables']['#view'] instanceof ViewExecutable) {
+    $suggestions = $variables['variables']['#view']->buildThemeFunctions('viewsreference__view_title');
+  }
+
+  return $suggestions;
+}
+
+/**
  * Implements hook_theme().
  */
 function viewsreference_theme($existing, $type, $theme, $path) {
@@ -41,8 +54,11 @@ function viewsreference_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_preprocess_HOOK().
  */
-function viewsreference_preprocess_viewsreference__view_title(&$variables) {
+function template_preprocess_viewsreference__view_title(&$variables) {
   $variables['title'] = ['#markup' => $variables['variables']['#title']];
+  if (!empty($variables['variables']['#view'])) {
+    \Drupal::service('renderer')->addCacheableDependency($variables, $variables['variables']['#view']->storage);
+  }
 }
 
 /**

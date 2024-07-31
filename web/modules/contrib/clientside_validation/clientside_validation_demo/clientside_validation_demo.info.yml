@@ -7,7 +7,7 @@ core_version_requirement: ^9.4 || ^10
 dependencies:
   - clientside_validation:clientside_validation_jquery
 
-# Information added by Drupal.org packaging script on 2023-02-10
-version: '4.0.2'
+# Information added by Drupal.org packaging script on 2024-06-28
+version: '4.0.3'
 project: 'clientside_validation'
-datestamp: 1676011272
+datestamp: 1719601030

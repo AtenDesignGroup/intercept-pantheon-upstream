@@ -56,7 +56,6 @@ class NegotiatorTest extends KernelTestBase {
     $this->installEntitySchema('consumer');
     $this->installEntitySchema('file');
     $this->installConfig(['user']);
-    $this->installSchema('system', 'sequences');
     $this->negotiator = $this->container->get('consumer.negotiator');
 
     $this->consumer = Consumer::create([

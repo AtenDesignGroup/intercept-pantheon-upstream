@@ -43,7 +43,7 @@ class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('CDN Base URL'),
       '#description' => $this->t('CDN to use (along with version in URL). E.g. @url', [
-        '@url' => '//cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/',
+        '@url' => '//cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/',
       ]),
       '#required' => TRUE,
       '#default_value' => $config->get('cdn_base_url'),
@@ -113,7 +113,7 @@ class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
       $form_state->setErrorByName('cdn_base_url', $this->t('CDN URL seems invalid. @file not accessible on @url. Use the URL in this format @format.', [
         '@file' => 'jquery.validate.min.js',
         '@url' => $cdn_url,
-        '@format' => '//cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/',
+        '@format' => '//cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/',
       ]));
     }
   }

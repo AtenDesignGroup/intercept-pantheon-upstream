@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
@@ -620,7 +620,7 @@ class DateRecurViewsOccurrenceFilterTest extends ViewsKernelTestBase {
       [$exposedIdentifier => '2014-09-14'],
       [],
       $filterOptions,
-      'no match folowing day',
+      'no match following day',
     );
   }
 

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin\DateRecurInterpreter;
 
@@ -46,7 +46,13 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
    * @param \Drupal\Core\Entity\EntityStorageInterface $dateFormatStorage
    *   The date format storage.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, protected DateFormatterInterface $dateFormatter, protected EntityStorageInterface $dateFormatStorage) {
+  public function __construct(
+      array $configuration,
+      $plugin_id,
+      $plugin_definition,
+      protected DateFormatterInterface $dateFormatter,
+      protected EntityStorageInterface $dateFormatStorage,
+  ) {
     parent::__construct([], $plugin_id, $plugin_definition);
     $this->setConfiguration($configuration);
   }

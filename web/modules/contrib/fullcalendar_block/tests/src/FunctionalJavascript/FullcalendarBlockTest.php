@@ -38,13 +38,13 @@ class FullcalendarBlockTest extends WebDriverTestBase {
     // Add a Fullcalendar block in content region.
     $theme_name = $this->config('system.theme')->get('default');
 
-    // Set open dialog to currnet page to confirm that block settings works.
+    // Set open dialog to current page to confirm that block settings works.
     $this->drupalGet('admin/structure/block/add/fullcalendar_block/' . $theme_name);
     $click_event = $this->assertSession()->waitForElement('css', '#edit-settings-click-event');
     $click_event->click();
     $this->submitForm([
       'settings[event_source]' => 'https://fullcalendar.io/api/demo-feeds/events.json',
-      'settings[click_event][open_dialog]' => 2,
+      'settings[click_event][open_dialog]' => '2',
       'region' => 'content',
     ], 'Save block');
   }

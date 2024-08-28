@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Form;
 
@@ -26,7 +26,10 @@ class DateRecurInterpreterEditForm extends EntityForm {
    * @param \Drupal\date_recur\Plugin\DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager
    *   Date recur interpreter plugin manager.
    */
-  public function __construct(protected PluginFormFactoryInterface $pluginFormFactory, protected DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager) {
+  public function __construct(
+      protected PluginFormFactoryInterface $pluginFormFactory,
+      protected DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager,
+  ) {
   }
 
   /**

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
@@ -68,7 +68,7 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
   }
 
   /**
-   * Tests default behaviour.
+   * Tests default behavior.
    */
   public function testDefaults(): void {
     $this->baseFieldOverride->setDefaultValue([

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur;
 
@@ -11,7 +11,7 @@ use Drupal\date_recur\Rl\RlHelper;
  * Helper for recurring rules.
  *
  * Provides a helper for getting occurrences from a RRULE. The class can be
- * iterated apon, producing occurrence objects beginning at the first
+ * iterated upon, producing occurrence objects beginning at the first
  * occurrence.
  *
  * This helper is a proxy to the default helper. It should be used if there is
@@ -25,7 +25,9 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    * @param \Drupal\date_recur\DateRecurHelperInterface $dateRecurHelper
    *   The date recur helper.
    */
-  public function __construct(protected DateRecurHelperInterface $dateRecurHelper) {
+  public function __construct(
+      protected DateRecurHelperInterface $dateRecurHelper,
+  ) {
   }
 
   /**

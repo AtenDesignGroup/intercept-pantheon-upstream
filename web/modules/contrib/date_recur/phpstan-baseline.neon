@@ -1,0 +1,711 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/DateRecurCachedHooks.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/DateRecurHelper.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with array\\<Drupal\\\\date_recur\\\\DateRecurRuleInterface\\> will always evaluate to true\\.$#"
+			count: 1
+			path: src/DateRecurHelper.php
+
+		-
+			message: "#^Call to function is_int\\(\\) with int will always evaluate to true\\.$#"
+			count: 1
+			path: src/DateRecurNonRecurringHelper.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, DateTimeInterface\\|null given\\.$#"
+			count: 2
+			path: src/DateRecurNonRecurringHelper.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/DateRecurNonRecurringHelper.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTime\\(\\)\\.$#"
+			count: 1
+			path: src/DateRecurOccurrences.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 1
+			path: src/DateRecurOccurrences.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/DateRecurOccurrences.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 1
+			path: src/DateRecurPartGrid.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/DateRecurPartGrid.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/DateRecurViewsHooks.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\DateRecurViewsHooks\\:\\:create\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/DateRecurViewsHooks.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/DateRecurViewsHooks.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Form\\\\DateRecurInterpreterEditForm\\:\\:create\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Form/DateRecurInterpreterEditForm.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Form/DateRecurInterpreterEditForm.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, Drupal\\\\Core\\\\Entity\\\\EntityInterface\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/DateRecurInterpreter/RlInterpreter.php
+
+		-
+			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(Drupal\\\\Core\\\\Entity\\\\EntityInterface\\)\\: mixed\\)\\|null, Closure\\(Drupal\\\\Core\\\\Datetime\\\\DateFormatInterface\\)\\: Drupal\\\\Core\\\\StringTranslation\\\\TranslatableMarkup given\\.$#"
+			count: 1
+			path: src/Plugin/DateRecurInterpreter/RlInterpreter.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/DateRecurInterpreter/RlInterpreter.php
+
+		-
+			message: "#^Plugin definitions cannot be altered\\.$#"
+			count: 1
+			path: src/Plugin/DateRecurInterpreterManager.php
+
+		-
+			message: "#^config\\:date_recur_interpreter_list cache tag might be unclear and does not contain the cache key in it\\.$#"
+			count: 1
+			path: src/Plugin/DateRecurInterpreterManager.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\DateRecurOccurrencesComputed\\:\\:getValue\\(\\) has parameter \\$langcode with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/DateRecurOccurrencesComputed.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Entity\\\\EntityInterface\\|null given on the right side\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Only booleans are allowed in &&, mixed given on the right side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Only booleans are allowed in &&, string\\|null given on the left side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, Drupal\\\\Core\\\\Entity\\\\EntityInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, mixed given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, mixed given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(Drupal\\\\Core\\\\Entity\\\\EntityInterface\\)\\: mixed\\)\\|null, Closure\\(Drupal\\\\date_recur\\\\Entity\\\\DateRecurInterpreterInterface\\)\\: string given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Variable \\$dateFormatId in PHPDoc tag @var does not match assigned variable \\$interpreterId\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/DateRecurBasicFormatter.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurFieldItemList.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with array will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurFieldItemList.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurFieldItemList.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurFieldItemList\\:\\:onChange\\(\\) has parameter \\$delta with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurFieldItemList.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between int\\<0, max\\> and '' will always evaluate to false\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurFieldItemList.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Call to function is_bool\\(\\) with bool will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Call to function is_string\\(\\) with non\\-empty\\-string will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Comparison operation \"\\>\" between int\\<1, max\\> and 0 is always true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\:\\:onChange\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\:\\:onChange\\(\\) has parameter \\$property_name with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of static method Drupal\\\\Component\\\\Utility\\\\NestedArray\\:\\:getValue\\(\\) is passed by reference, so it expects variables only\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of static method Drupal\\\\Component\\\\Utility\\\\NestedArray\\:\\:unsetValue\\(\\) is passed by reference, so it expects variables only\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Parameter \\#1 \\$values \\(array\\|null\\) of method Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\:\\:setValue\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Drupal\\\\Core\\\\TypedData\\\\TypedDataInterface\\:\\:setValue\\(\\)$#"
+			count: 4
+			path: src/Plugin/Field/FieldType/DateRecurItem.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Call to function is_string\\(\\) with string will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime and Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the left side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the right side\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, DateTimeZone\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of static method Drupal\\\\Component\\\\Utility\\\\NestedArray\\:\\:getValue\\(\\) is passed by reference, so it expects variables only\\.$#"
+			count: 5
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Parameter \\#2 \\$item of method Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurBasicWidget\\:\\:createDateRecurDefaultValue\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Parameter \\#2 \\$message of method Drupal\\\\Core\\\\Form\\\\FormStateInterface\\:\\:setError\\(\\) expects string, Drupal\\\\Core\\\\StringTranslation\\\\TranslatableMarkup given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurBasicWidget.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\Validation\\\\Constraint\\\\DateRecurRruleConstraintValidator\\:\\:validate\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/Validation/Constraint/DateRecurRruleConstraintValidator.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 1
+			path: src/Plugin/Validation/Constraint/DateRecurRulePartConstraintValidator.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\Validation\\\\Constraint\\\\DateRecurRulePartConstraintValidator\\:\\:validate\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/Validation/Constraint/DateRecurRulePartConstraintValidator.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\Validation\\\\Constraint\\\\DateRecurTimeZoneConstraintValidator\\:\\:validate\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/Validation/Constraint/DateRecurTimeZoneConstraintValidator.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 4
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\views\\\\filter\\\\DateRecurFilter\\:\\:buildOptionsForm\\(\\) has parameter \\$form with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\views\\\\filter\\\\DateRecurFilter\\:\\:submitOptionsForm\\(\\) has parameter \\$form with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\views\\\\filter\\\\DateRecurFilter\\:\\:validateExposed\\(\\) has parameter \\$form with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur\\\\Plugin\\\\views\\\\filter\\\\DateRecurFilter\\:\\:valueForm\\(\\) has parameter \\$form with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, string\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
+			count: 1
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\. Use \\-\\> instead\\.$#"
+			count: 4
+			path: src/Plugin/views/filter/DateRecurFilter.php
+
+		-
+			message: "#^Call to an undefined method RRule\\\\RSet\\:\\:current\\(\\)\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Call to an undefined method RRule\\\\RSet\\:\\:key\\(\\)\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Call to an undefined method RRule\\\\RSet\\:\\:next\\(\\)\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Call to an undefined method RRule\\\\RSet\\:\\:rewind\\(\\)\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Call to an undefined method RRule\\\\RSet\\:\\:valid\\(\\)\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Call to function is_int\\(\\) with int will always evaluate to true\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, DateTimeInterface\\|null given\\.$#"
+			count: 2
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Variable \\$occurrence in PHPDoc tag @var does not match assigned variable \\$occurrenceEnd\\.$#"
+			count: 1
+			path: src/Rl/RlHelper.php
+
+		-
+			message: "#^Function date_recur_basic_widget_test_form_alter\\(\\) has parameter \\$form with no type specified\\.$#"
+			count: 1
+			path: tests/modules/date_recur_basic_widget_test/date_recur_basic_widget_test.module
+
+		-
+			message: "#^Function date_recur_basic_widget_test_form_alter\\(\\) has parameter \\$form_id with no type specified\\.$#"
+			count: 1
+			path: tests/modules/date_recur_basic_widget_test/date_recur_basic_widget_test.module
+
+		-
+			message: "#^PHPDoc tag @property has invalid value \\(array dr\\)\\: Unexpected token \"dr\", expected variable at offset 1425$#"
+			count: 1
+			path: tests/modules/date_recur_entity_test/src/Entity/DrEntityTest.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_interpreter_test\\\\Plugin\\\\DateRecurInterpreter\\\\TestInterpreter\\:\\:submitConfigurationForm\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/modules/date_recur_interpreter_test/src/Plugin/DateRecurInterpreter/TestInterpreter.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_interpreter_test\\\\Plugin\\\\DateRecurInterpreter\\\\TestInterpreter\\:\\:validateConfigurationForm\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/modules/date_recur_interpreter_test/src/Plugin/DateRecurInterpreter/TestInterpreter.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\TypedData\\\\TypedDataInterface\\:\\:toArray\\(\\)\\.$#"
+			count: 3
+			path: tests/src/Functional/DateRecurBasicWidgetTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$base_field_definition of static method Drupal\\\\Core\\\\Field\\\\Entity\\\\BaseFieldOverride\\:\\:createFromBaseFieldDefinition\\(\\) expects Drupal\\\\Core\\\\Field\\\\BaseFieldDefinition, Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface given\\.$#"
+			count: 2
+			path: tests/src/Functional/DateRecurBasicWidgetTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<int, array\\<string, string\\>\\>\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurBasicWidgetTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<int, array\\<string, string\\|true\\>\\>\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurBasicWidgetTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurBaseFieldTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<int, array\\<string, string\\>\\>\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurBasicFormatterTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurBasicFormatterTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\:\\:\\$end_value\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurFieldItemDefaultValuesTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\:\\:\\$rrule\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemDefaultValuesTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\:\\:\\$timezone\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurFieldItemDefaultValuesTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$base_field_definition of static method Drupal\\\\Core\\\\Field\\\\Entity\\\\BaseFieldOverride\\:\\:createFromBaseFieldDefinition\\(\\) expects Drupal\\\\Core\\\\Field\\\\BaseFieldDefinition, Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface given\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemDefaultValuesTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\:\\:\\$rrule\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemListTest.php
+
+		-
+			message: "#^Cannot access property \\$occurrences on array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurFieldItemListTest.php
+
+		-
+			message: "#^Cannot call method getHelper\\(\\) on array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurFieldItemListTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$base_field_definition of static method Drupal\\\\Core\\\\Field\\\\Entity\\\\BaseFieldOverride\\:\\:createFromBaseFieldDefinition\\(\\) expects Drupal\\\\Core\\\\Field\\\\BaseFieldDefinition, Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface given\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemListTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<int, array\\<string, string\\>\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemListTest.php
+
+		-
+			message: "#^Property Drupal\\\\entity_test\\\\Entity\\\\EntityTest\\:\\:\\$foo \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemListTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\:\\:\\$infinite\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\:\\:\\$rrule\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\:\\:\\$timezone\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Cannot access property \\$end_value on array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Cannot access property \\$infinite on array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Cannot access property \\$rrule on array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Cannot access property \\$value on array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Cannot call method getHelper\\(\\) on array\\<string, string\\>\\.$#"
+			count: 6
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Cannot call method validate\\(\\) on array\\<string, stdClass\\|string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Cannot call method validate\\(\\) on array\\<string, string\\>\\.$#"
+			count: 4
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<int, array\\<string, string\\>\\>\\.$#"
+			count: 11
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, stdClass\\|string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 3
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Property Drupal\\\\entity_test\\\\Entity\\\\EntityTest\\:\\:\\$foo \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldItemTest.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurFieldTest.php
+
+		-
+			message: "#^Property Drupal\\\\entity_test\\\\Entity\\\\EntityTest\\:\\:\\$foo \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurFieldTest.php
+
+		-
+			message: "#^Cannot call method validate\\(\\) on array\\<string, string\\>\\.$#"
+			count: 6
+			path: tests/src/Kernel/DateRecurPartGridTest.php
+
+		-
+			message: "#^Property Drupal\\\\entity_test\\\\Entity\\\\EntityTest\\:\\:\\$foo \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 6
+			path: tests/src/Kernel/DateRecurPartGridTest.php
+
+		-
+			message: "#^Property Drupal\\\\entity_test\\\\Entity\\\\EntityTest\\:\\:\\$abc \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurSubFieldTest.php
+
+		-
+			message: "#^Cannot access property \\$occurrences on array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurTest.php
+
+		-
+			message: "#^Offset 0 does not exist on array\\{value\\: '2014\\-06\\-15T23\\:00\\:00', end_value\\: '2014\\-06\\-16T07\\:00\\:00', rrule\\: 'FREQ\\=WEEKLY;BYDAY…', infinite\\: '1', timezone\\: 'Australia/Sydney'\\}\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Kernel/DateRecurTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTestSingleCardinality\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<int, array\\<string, string\\>\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurTest.php
+
+		-
+			message: "#^Property Drupal\\\\entity_test\\\\Entity\\\\EntityTest\\:\\:\\$abc \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTest\\:\\:\\$dr \\(Drupal\\\\Core\\\\Field\\\\FieldItemListInterface\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Kernel/DateRecurTokenTest.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:modify\\(\\)\\.$#"
+			count: 2
+			path: tests/src/Unit/DateRecurDateRangeUnitTest.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 2
+			path: tests/src/Unit/DateRecurDateRangeUnitTest.php
+
+		-
+			message: "#^PHPDoc tag @param for parameter \\$args with type array\\<DateTimeInterface\\|null\\> is incompatible with native type DateTimeInterface\\|null\\.$#"
+			count: 1
+			path: tests/src/Unit/DateRecurNonRecurringHelperUnitTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\date_recur\\\\DateRecurHelperInterface\\:\\:getRlRuleset\\(\\)\\.$#"
+			count: 4
+			path: tests/src/Unit/DateRecurRlHelperUnitTest.php
+
+		-
+			message: "#^Implicit array creation is not allowed \\- variable \\$rules does not exist\\.$#"
+			count: 8
+			path: tests/src/Unit/DateRecurRlInterpretationUnitTest.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, string\\|null given\\.$#"
+			count: 1
+			path: tests/src/Unit/DateRecurRlInterpretationUnitTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'DateTimeInterface' and DateTimeInterface will always evaluate to true\\.$#"
+			count: 1
+			path: tests/src/Unit/DateRecurRruleUnitTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with true will always evaluate to true\\.$#"
+			count: 2
+			path: tests/src/Unit/DateRecurRruleUnitTest.php
+
+		-
+			message: "#^Generator expects value type DateTimeZone, array\\<int, DateTimeZone\\> given\\.$#"
+			count: 3
+			path: tests/src/Unit/DateRecurRruleUnitTest.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\date_recur\\\\DateRange and Drupal\\\\date_recur\\\\DateRange will always evaluate to true\\.$#"
+			count: 1
+			path: tests/src/Unit/DateRecurRruleUnitTest.php
+
+		-
+			message: "#^Instanceof between Generator&iterable\\<Drupal\\\\date_recur\\\\DateRange\\> and Generator will always evaluate to true\\.$#"
+			count: 1
+			path: tests/src/Unit/DateRecurRruleUnitTest.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 3
+			path: tests/src/Unit/DateRecurRruleUnitTest.php

@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   module:
-  - date_recur_entity_test
+    - date_recur_entity_test
 id: dr_entity_test_list
 label: 'Dr Entity Test List'
 module: views
@@ -177,7 +177,7 @@ display:
     cache_metadata:
       max-age: -1
       contexts:
-      - 'languages:language_content'
-      - 'languages:language_interface'
-      - url.query_args
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url.query_args
       tags: {  }

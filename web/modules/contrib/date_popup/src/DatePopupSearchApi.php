@@ -2,7 +2,6 @@
 
 namespace Drupal\date_popup;
 
-
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api\Plugin\views\filter\SearchApiDate;
 
@@ -18,7 +17,7 @@ class DatePopupSearchApi extends SearchApiDate {
    */
   public function buildExposedForm(&$form, FormStateInterface $form_state) {
     parent::buildExposedForm($form, $form_state);
-    $this->applyDatePopupToForm($form);
+    static::applyDatePopupToForm($form, $this->options);
   }
 
 }

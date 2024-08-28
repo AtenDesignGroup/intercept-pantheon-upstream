@@ -138,10 +138,6 @@ class SeriesGenerator implements SeriesGeneratorInterface {
         $roomAttributes[$room->id()] = [
           'disabled' => [$attribute],
         ];
-        if (!$available) {
-          // Move on to the next room.
-          continue 2;
-        }
         $series[] = [
           'room' => $room->id(),
           'range' => $range,
@@ -467,7 +463,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
 
         $days = $dateField['weekdays'];
         for ($day = 0; $day <= $daysToCheck; $day++) {
-          $increment = (string) ($day * 7) . ' days';
+          $increment = (string) ($day) . ' days';
           $dateToCheck = date('Y-m-d', strtotime($dateField['start']['date'] . $increment));
           // Stop if this date is beyond our end date.
           if ($input['field_date_time'][0]['ends_mode'] == 'date') {
@@ -480,16 +476,18 @@ class SeriesGenerator implements SeriesGeneratorInterface {
               break;
             }
           }
+          // Check to see if the day of the week for the "dateToCheck" is in the user's selection of weekdays.
           if (is_array($days)) {
             $dayOfWeek = $this->getDayOfWeek($dateToCheck);
             if (in_array($dayOfWeek, $days, TRUE)) {
               $logistics['dates'][] = $dateToCheck;
-              continue;
             }
           }
-          // User didn't select a day of the week. Simply add $dateToCheck to
-          // $logistics['dates'].
-          $logistics['dates'][] = $dateToCheck;
+          else {
+            // User didn't select a day of the week. Simply add $dateToCheck to
+            // $logistics['dates'].
+            $logistics['dates'][] = $dateToCheck;
+          }
         }
         break;
 

@@ -6,8 +6,3 @@ package: 'Intercept'
 dependencies:
   - externalauth:externalauth
   - profile:profile
-
-# Information added by Drupal.org packaging script on 2024-07-31
-version: '2.0.3'
-project: 'intercept'
-datestamp: 1722459108

@@ -1144,6 +1144,8 @@ function intercept_event_views_query_alter(ViewExecutable $view, QueryPluginBase
     }
   }
   elseif ($view->id() == 'intercept_event_attendance_by_age_group') {
+    $query->addField('node', 'nid', 'node_nid', ['function' => 'groupby']);
+    $query->addGroupBy('node.nid');
     foreach ($query->where as &$condition_group) {
       // For each condition in condition group.
       foreach ($condition_group['conditions'] as &$condition) {

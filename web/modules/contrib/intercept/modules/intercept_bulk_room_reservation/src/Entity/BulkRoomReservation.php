@@ -261,7 +261,6 @@ class BulkRoomReservation extends RevisionableContentEntityBase implements BulkR
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE)
       ->setLabel(t('Title'))
-      ->setDescription(t('The title of the bulk room reservation entity.'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 255)
       ->setDisplayOptions('form', [

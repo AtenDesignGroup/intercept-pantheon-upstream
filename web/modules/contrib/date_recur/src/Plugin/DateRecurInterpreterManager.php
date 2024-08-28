@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin;
 
@@ -12,7 +12,6 @@ use Drupal\Core\Plugin\DefaultPluginManager;
 /**
  * Date recur interpreter plugin manager.
  */
-// @phpstan-ignore-next-line
 class DateRecurInterpreterManager extends DefaultPluginManager implements DateRecurInterpreterManagerInterface {
 
   /**
@@ -20,7 +19,6 @@ class DateRecurInterpreterManager extends DefaultPluginManager implements DateRe
    *
    * @param \Traversable<string,string[]> $namespaces
    */
-  // @phpstan-ignore-next-line
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     //@codingStandardsIgnoreEnd
     parent::__construct(

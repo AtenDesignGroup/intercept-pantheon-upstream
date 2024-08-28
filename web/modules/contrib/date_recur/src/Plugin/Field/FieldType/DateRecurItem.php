@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin\Field\FieldType;
 
@@ -321,8 +321,8 @@ class DateRecurItem extends DateRangeItem {
     // Original parts container.
     $values = NestedArray::getValue($form_state->getValues(), $element['#parents']);
 
-    // Remove the original parts values so they dont get saved in same structure
-    // as the form.
+    // Remove the original parts values so they don't get saved in same
+    // structure as the form.
     NestedArray::unsetValue($form_state->getValues(), $element['#parents']);
 
     $parts = [];

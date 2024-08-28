@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin\views\filter;
 
@@ -69,7 +69,14 @@ class DateRecurFilter extends FilterPluginBase {
    * @param \Drupal\Core\Session\AccountInterface $currentUser
    *   The current user.
    */
-  final public function __construct(array $configuration, $plugin_id, $plugin_definition, protected Connection $database, protected EntityFieldManagerInterface $entityFieldManager, protected AccountInterface $currentUser) {
+  final public function __construct(
+      array $configuration,
+      $plugin_id,
+      $plugin_definition,
+      protected Connection $database,
+      protected EntityFieldManagerInterface $entityFieldManager,
+      protected AccountInterface $currentUser,
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
 
@@ -172,7 +179,7 @@ class DateRecurFilter extends FilterPluginBase {
       '#default_value' => $this->options['value_granularity'],
     ];
 
-    $minDefault = isset($this->options['value_min']) ? DrupalDateTime::createFromFormat(\DATE_ISO8601, $this->options['value_min']) : NULL;
+    $minDefault = isset($this->options['value_min']) ? DrupalDateTime::createFromFormat('Y-m-d\TH:i:sO', $this->options['value_min']) : NULL;
     $form['value_minimum'] = [
       '#title' => $this->t('Minimum date'),
       '#description' => $this->t('Minimum date to use. If a larger granularity than <em>seconds</em> is chosen, this date will be rounded off. For example if this date and time is in September 2018 but the granularity is <em>year</em>, then the minimum year would be 2018.'),
@@ -180,7 +187,7 @@ class DateRecurFilter extends FilterPluginBase {
       '#default_value' => $minDefault,
     ];
 
-    $maxDefault = isset($this->options['value_max']) ? DrupalDateTime::createFromFormat(\DATE_ISO8601, $this->options['value_max']) : NULL;
+    $maxDefault = isset($this->options['value_max']) ? DrupalDateTime::createFromFormat('Y-m-d\TH:i:sO', $this->options['value_max']) : NULL;
     $form['value_maximum'] = [
       '#title' => $this->t('Maximum date'),
       '#description' => $this->t('Maximum date to use. If a larger granularity than <em>seconds</em> is chosen, this date will be rounded off. For example if this date and time is in September 2018 but the granularity is <em>year</em>, then the maximum year would be 2018.'),
@@ -201,12 +208,12 @@ class DateRecurFilter extends FilterPluginBase {
     /** @var \Drupal\Core\Datetime\DrupalDateTime $min|null */
     $min = $form_state->getValue(['options', 'value_minimum']);
     $min?->setTimezone($utc);
-    $this->options['value_min'] = $min?->format(\DATE_ISO8601);
+    $this->options['value_min'] = $min?->format('Y-m-d\TH:i:sO');
 
     /** @var \Drupal\Core\Datetime\DrupalDateTime $max|null */
     $max = $form_state->getValue(['options', 'value_maximum']);
     $max?->setTimezone($utc);
-    $this->options['value_max'] = $max?->format(\DATE_ISO8601);
+    $this->options['value_max'] = $max?->format('Y-m-d\TH:i:sO');
   }
 
   /**
@@ -230,10 +237,10 @@ class DateRecurFilter extends FilterPluginBase {
 
     /** @var string|null $optionValueMin */
     $optionValueMin = $pluginOptions['value_min'];
-    $valueMin = isset($optionValueMin) ? \DateTime::createFromFormat(\DATE_ISO8601, $optionValueMin) : NULL;
+    $valueMin = isset($optionValueMin) ? \DateTime::createFromFormat('Y-m-d\TH:i:sO', $optionValueMin) : NULL;
     /** @var string|null $optionValueMax */
     $optionValueMax = $pluginOptions['value_max'];
-    $valueMax = isset($optionValueMax) ? \DateTime::createFromFormat(\DATE_ISO8601, $optionValueMax) : NULL;
+    $valueMax = isset($optionValueMax) ? \DateTime::createFromFormat('Y-m-d\TH:i:sO', $optionValueMax) : NULL;
 
     $granularityFormatsMap = DateRecurGranularityMap::GRANULARITY_DATE_FORMATS;
     $format = $granularityFormatsMap[$granularity];

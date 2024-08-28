@@ -1,0 +1,32 @@
+diff --git a/templates/form/date-recur-modular-alpha-widget--bulk-room-reservation.html.twig b/templates/form/date-recur-modular-alpha-widget--bulk-room-reservation.html.twig
+new file mode 100644
+index 0000000..b798883
+--- /dev/null
++++ b/templates/form/date-recur-modular-alpha-widget--bulk-room-reservation.html.twig
+@@ -0,0 +1,26 @@
++<div{{ attributes }}>
++  <div class="container-inline">
++    <h6>{{ 'Recurrence pattern'|t }}</h6>
++    {{ widget.mode }}
++    {{ widget.daily_count }}
++  </div>
++  <div class="description">
++    <p>{{ 'The "Starts On" and "Ends On" dates are not intended to define the series, but rather the beginning/ending of the first event in the series.'|t }}</p>
++  </div>
++  <div class="dates">
++    <div class="date">{{ widget.start }}</div>
++    <div class="date">{{ widget.end }}</div>
++    <div class="date">{{ widget.time_zone }}</div>
++  </div>
++  {{ widget.weekdays }}
++  {{ widget.ordinals }}
++  <div class="ends">
++    <div>
++      {{ widget.ends_mode }}
++    </div>
++    <div>
++      {{ widget.ends_count }}
++      {{ widget.ends_date }}
++    </div>
++  </div>
++</div>

@@ -5,7 +5,7 @@
  * Contains hooks for date_recur module.
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 use Drupal\Core\Render\Element;
 use Drupal\date_recur\DateRecurCachedHooks;

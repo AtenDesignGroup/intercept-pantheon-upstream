@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin\Field\FieldType;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Datetime\TimeZoneFormHelper;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemList;
@@ -202,7 +203,7 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
     if ($hasDefaultDateTimeZone && ($hasDefaultStartDateType || $hasDefaultEndDateType)) {
       $storageFormat = $definition->getSetting('datetime_type') == DateRecurItem::DATETIME_TYPE_DATE ? DateRecurItem::DATE_STORAGE_FORMAT : DateRecurItem::DATETIME_STORAGE_FORMAT;
 
-      // Instruct 'value' and 'end_value' to convert from the localised time
+      // Instruct 'value' and 'end_value' to convert from the localized time
       // zone to UTC.
       $formatSettings = ['timezone' => DateTimeItemInterface::STORAGE_TIMEZONE];
 
@@ -254,7 +255,7 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
    *   human readable and translatable labels.
    */
   protected function getTimeZoneOptions(): array {
-    return \system_time_zones(TRUE, TRUE);
+    return TimeZoneFormHelper::getOptionsListByRegion(TRUE);
   }
 
   /**

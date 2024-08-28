@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur;
 
@@ -24,7 +24,10 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    * @param \DateTimeInterface|null $dtStartEnd
    *   The initial occurrence end date, or NULL to use start date.
    */
-  public function __construct(\DateTimeInterface $dtStart, \DateTimeInterface $dtStartEnd = NULL) {
+  public function __construct(
+      \DateTimeInterface $dtStart,
+      \DateTimeInterface $dtStartEnd = NULL,
+  ) {
     $dtStartEnd ??= clone $dtStart;
     $this->occurrences = [new DateRange($dtStart, $dtStartEnd)];
   }

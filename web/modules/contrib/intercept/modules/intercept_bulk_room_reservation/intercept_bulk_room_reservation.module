@@ -46,100 +46,6 @@ function intercept_bulk_room_reservation_preprocess_bulk_room_reservation(array 
 }
 
 /**
- * Builds array of room options for a location and event series.
- *
- * @param Drupal\Core\Form\FormStateInterface $form_state
- *   The FormStateInterface from BulkReservationForm.
- *
- * @return array
- *   Array of rooms at the location with attributes for unavailable rooms.
- */
-function intercept_bulk_room_reservation_get_rooms_for_location(FormStateInterface $form_state) {
-  $results = [];
-  $room_options = [];
-  $room_attributes = [];
-  $location = $form_state->getUserInput()['location'];
-  $values = $form_state->getValues();
-  $format = 'Y-m-d H:i:s';
-
-  // First parse the autocomplete string to obtain the location nid.
-  preg_match('#\((.*?)\)#', $location, $match);
-  if (array_key_exists(1, $match)) {
-    $nid = $match[1];
-    $query = \Drupal::entityQuery('node')
-      ->accessCheck(FALSE)
-      ->condition('status', 1)
-      ->condition('type', 'room')
-      ->condition('field_location', $nid);
-    $room_nids = $query->execute();
-
-    // Need to return an array of Room labels keyed by Room node ids, and
-    // another array similarly keyed with availability attributes.
-    $rooms = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($room_nids);
-
-    $daysToCheck = round((strtotime($values['end_date']) - strtotime($values['start_date'])) / (60 * 60 * 24));
-    $startDate = strtotime($values['start_date']);
-
-    // Create an array of dates to check for availability.
-    $dates = [];
-
-    switch ($values['recurrence']) {
-      case 'none':
-        $dates[] = date('Y-m-d', $values['start_date']);
-        break;
-
-      case 'daily':
-        $daysToCheck = round((strtotime($values['end_date']) - strtotime($values['start_date'])) / (60 * 60 * 24));
-        for ($day = 0; $day <= $daysToCheck; $day++) {
-          $increment = (string) $day . ' days';
-          $dates[] = date('Y-m-d', strtotime($values['start_date'] . $increment));
-        }
-        break;
-
-      case 'weekly':
-        // On which days of the week should the reservation recur? Using
-        // is_string here because Sunday is day zero which array_filter would
-        // otherwise eliminate.
-        $days = array_filter($values['weekly_pattern'], 'is_string');
-        $daysToCheck = round((strtotime($values['end_date']) - strtotime($values['start_date'])) / (60 * 60 * 24));
-
-        for ($day = 0; $day <= $daysToCheck; $day++) {
-          $increment = (string) $day . ' days';
-          $dateToCheck = date('Y-m-d', strtotime($values['start_date'] . $increment));
-          $dayOfWeek = _getDayOfWeek($dateToCheck);
-          if (in_array($dayOfWeek, $days)) {
-            $dates[] = $dateToCheck;
-          }
-        }
-
-        break;
-
-    }
-
-    $range = [
-      'start' => \DateTime::createFromFormat($format, date('Y-m-d', $startDate) . ' ' . $values['start_time']),
-      'end' => \DateTime::createFromFormat($format, date('Y-m-d', $startDate) . ' ' . $values['end_time']),
-    ];
-    foreach ($rooms as $nid => $room) {
-      $room_options[$nid] = $room->label();
-      // Determine this room's availability for the series.
-      $available = intercept_bulk_room_reservation_check_availability([$nid], $range);
-      $attribute = ($available) ? '' : 'disabled';
-      $room_attributes[$nid] = [
-        'disabled' => [$attribute],
-      ];
-    }
-  }
-
-  $results = [
-    'room_options' => $room_options,
-    'room_attributes' => $room_attributes,
-  ];
-
-  return $results;
-}
-
-/**
  * Checks to see if a room is available for a date/time range.
  *
  * @param array $room
@@ -195,20 +101,20 @@ function intercept_bulk_room_reservation_check_availability($room, array $range)
           // Add a message with details about the conflict.
           $storage = \Drupal::entityTypeManager()->getStorage('node');
           $room_node = $storage->load(reset($params['rooms']));
-          $conflict_date_string = $room_availability['dates'][0]['start'];
-          if (is_null($conflict_date_string)) {
-            continue;
+          if (count($room_availability['dates']) >= 1) {
+            foreach ($room_availability['dates'] as $conflict) {
+              $conflict_date_string = $conflict['start'];
+              $conflict_time = strtotime($conflict_date_string);
+              $conflict_date_time = new \DateTime();
+              $conflict_date_time->setTimestamp($conflict_time);
+              $siteTimeZone = \Drupal::config('system.date')->get('timezone')['default'];
+              $siteTimeZone = new \DateTimeZone($siteTimeZone);
+              $conflict_date_time->setTimezone($siteTimeZone);
+              $formatted_date = $conflict_date_time->format('m-d-Y');
+              $message = $room_node->label() . ' has a conflict with your series on ' . $formatted_date . '.';
+              \Drupal::messenger()->addWarning($message);
+            }
           }
-          $conflict_time = strtotime($conflict_date_string);
-          $conflict_date_time = new \DateTime();
-          $conflict_date_time->setTimestamp($conflict_time);
-          $siteTimeZone = \Drupal::config('system.date')->get('timezone')['default'];
-          $siteTimeZone = new \DateTimeZone($siteTimeZone);
-          $conflict_date_time->setTimezone($siteTimeZone);
-          $formatted_date = $conflict_date_time->format('m-d-Y');
-
-          $message = $room_node->label() . ' has a conflict with your series on ' . $formatted_date . '.';
-          \Drupal::messenger()->addWarning($message);
         }
         else {
           if ($room_availability['has_open_hours_conflict'] && !$user_is_privileged) {
@@ -489,6 +395,7 @@ function intercept_bulk_room_reservation_form_alter(&$form, FormStateInterface $
   switch ($form_id) {
     case 'bulk_room_reservation_add_form':
     case 'bulk_room_reservation_edit_form':
+      $form['#attached']['library'][] = 'intercept_event/event_form_helper';
       // Hide revision log message & new revision fields.
       $form['revision_log']['#access'] = FALSE;
       $form['revision_information']['#access'] = FALSE;

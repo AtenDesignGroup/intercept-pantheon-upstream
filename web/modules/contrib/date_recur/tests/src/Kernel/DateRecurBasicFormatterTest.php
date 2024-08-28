@@ -1,11 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\Core\Datetime\DateFormatInterface;
 use Drupal\Core\Datetime\Entity\DateFormat;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\date_recur\Entity\DateRecurInterpreter;
 use Drupal\date_recur\Entity\DateRecurInterpreterInterface;
 use Drupal\date_recur_entity_test\Entity\DrEntityTest;
@@ -87,7 +90,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     ];
     $this->renderFormatterSettings($this->createRecurringEntity(), $settings);
 
-    $interpretation = $this->cssSelect('.date-recur-interpretaton');
+    $interpretation = $this->cssSelect('.date-recur-interpretation');
     static::assertCount(1, $interpretation);
     $assertInnerText = (string) $interpretation[0];
     static::assertEquals('weekly on Monday, Tuesday, Wednesday, Thursday and Friday, starting from Mon, 16 Jun 2014 09:00:00 +1000, forever', $assertInnerText);
@@ -198,7 +201,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
    */
   public function testFormatterSettingsSummary(): void {
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $efm */
-    $efm = $this->container->get('entity_field.manager');
+    $efm = $this->container->get(EntityFieldManagerInterface::class);
     $definitions = $efm->getBaseFieldDefinitions('dr_entity_test');
 
     $separator = $this->randomMachineName(4);
@@ -227,17 +230,18 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $fieldFormatterManager = $this->container->get('plugin.manager.field.formatter');
     $instance = $fieldFormatterManager->getInstance($options);
 
-    // Interface is currently string[] though it is stringable[].
-    /** @var array<int, string|\Drupal\Component\Render\MarkupInterface> $summary */
-    $summary = $instance->settingsSummary();
-
     // Generate after summary to prevent random test failures.
     $now = new \DateTime('now');
     $formatSample = $now->format($this->dateFormat->getPattern());
 
-    static::assertEquals('Format: ' . $formatSample, (string) $summary[0]);
-    static::assertEquals('Separator: <em class="placeholder">' . $separator . '</em>', (string) $summary[1]);
-    static::assertEquals('Show maximum of 5 occurrences per field item', (string) $summary[2]);
+    /** @var array<string|\Drupal\Core\StringTranslation\TranslatableMarkup|array{'#context': array{label: \Drupal\Core\StringTranslation\TranslatableMarkup}}> $summary */
+    $summary = $instance->settingsSummary();
+    $summary = array_map(function (string|TranslatableMarkup|array $summary): string {
+      return (string) (is_array($summary) ? $summary['#context']['label'] : $summary);
+    }, $summary);
+    static::assertContains('Format: ' . $formatSample, $summary);
+    static::assertContains('Separator: <em class="placeholder">' . $separator . '</em>', $summary);
+    static::assertContains('Show maximum of 5 occurrences per field item', $summary);
   }
 
   /**
@@ -245,7 +249,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
    */
   public function testFormatterSettingsSummaryNotPerItem(): void {
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $efm */
-    $efm = $this->container->get('entity_field.manager');
+    $efm = $this->container->get(EntityFieldManagerInterface::class);
     $definitions = $efm->getBaseFieldDefinitions('dr_entity_test');
 
     $dateFormatId = $this->dateFormat->id();
@@ -271,9 +275,12 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     /** @var \Drupal\Core\Field\FormatterPluginManager $fieldFormatterManager */
     $fieldFormatterManager = $this->container->get('plugin.manager.field.formatter');
     $instance = $fieldFormatterManager->getInstance($options);
+    /** @var array<string|\Drupal\Core\StringTranslation\TranslatableMarkup|array{'#context': array{label: \Drupal\Core\StringTranslation\TranslatableMarkup}}> $summary */
     $summary = $instance->settingsSummary();
-
-    static::assertEquals('Show maximum of 10 occurrences across all field items', $summary[2]);
+    $summary = array_map(function (string|TranslatableMarkup|array $summary): string {
+      return (string) (is_array($summary) ? $summary['#context']['label'] : $summary);
+    }, $summary);
+    static::assertContains('Show maximum of 10 occurrences across all field items', $summary);
   }
 
   /**
@@ -423,7 +430,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
   /**
    * Tests formatter output for same start/end date.
    *
-   * It doesnt matter which time zone the data is in, we only check same date
+   * It doesn't matter which time zone the data is in, we only check same date
    * for the current logged in user.
    */
   public function testFormatterSameDay(): void {
@@ -483,8 +490,8 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
       'settings' => $settings,
     ]);
     /** @var \Drupal\Core\Render\RendererInterface $renderer */
-    $renderer = $this->container->get('renderer');
-    $this->setRawContent($renderer->renderPlain($build));
+    $renderer = $this->container->get(RendererInterface::class);
+    $this->setRawContent((string) $renderer->renderInIsolation($build));
   }
 
   /**

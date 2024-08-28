@@ -5,8 +5,3 @@ core_version_requirement: ^9 || ^10
 package: 'Intercept'
 dependencies:
   - intercept:intercept_location
-
-# Information added by Drupal.org packaging script on 2024-07-31
-version: '2.0.3'
-project: 'intercept'
-datestamp: 1722459108

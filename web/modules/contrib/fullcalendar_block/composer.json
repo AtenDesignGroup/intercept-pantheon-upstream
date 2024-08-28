@@ -17,6 +17,13 @@
     "issues": "http://drupal.org/project/issues/fullcalendar_block",
     "source": "http://cgit.drupalcode.org/fullcalendar_block"
   },
+  "require": {
+    "drupal/core": "^9.4 || ^10 || ^11",
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "drupal/core": "^9.4 || ^10 || ^11"
+  },
   "suggest": {
     "zodiacmedia/drupal-libraries-installer": "This Composer plugin will help you easily install Drupal libraries locally."
   },

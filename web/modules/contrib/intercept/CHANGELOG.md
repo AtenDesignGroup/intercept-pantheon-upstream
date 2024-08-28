@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.4] - 2024-08-28
+
+* Fixed an issue with the bulk room reservation form not showing all conflicts
+* Fixed an issue with event attendance export where some programs were being listed multiple times
+* Fixed an issue that prevented some customers from logging in
+* Fixed errors on content creation form that prevented room reservations from being created
+* Fixed an issue with the “Save Draft” button being hidden in the Gin theme
+* Updated date popup, date recur modules to latest versions. Also removed unnecessary/outdated patches.
+
 ## [2.0.3] - 2024-07-31
 
 * Updated Reserve By Room to allow staff to reserve all rooms as they can on the calendar

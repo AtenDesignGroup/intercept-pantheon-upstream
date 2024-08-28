@@ -1,6 +1,16 @@
 include:
-  # https://docs.gitlab.com/ee/ci/yaml/index.html#includetemplate
-  - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
+  ################
+  # DrupalCI includes:
+  # As long as you include this, any future includes added by the Drupal Association will be accessible to your pipelines automatically.
+  # View these include files at https://git.drupalcode.org/project/gitlab_templates/
+  ################
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      # The `main` include from gitlab_templates which is normally here can
+      # instead be found in the main `.gitlab-single-pipeline.yml` file.
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
 
 deploystacks:
   trigger:
@@ -8,8 +18,21 @@ deploystacks:
     strategy: depend
   parallel:
     matrix:
-      # Drupal 10 requires PHP 8.1
-      - DRUPAL_CORE_CONSTRAINT: ["10.0", "10.1"]
-        PHP_VERSION: ["8.1", "8.2"]
-        MYSQL_VERSION: ["8"]
-        RRULE_CONSTRAINT: ["^2"]
+      # Variable expansion doesn't work with Matrix so cant use the variables
+      # from `include.drupalci.variables.yml`. Until then define the strings
+      # manually https://gitlab.com/gitlab-org/gitlab/-/issues/11549
+      # Valid tags for databases are at https://git.drupalcode.org/project/drupalci_environments/-/tree/dev/db
+      - _TARGET_CORE: ["11.x-dev" ]
+        _TARGET_PHP: [ "8.3" ]
+        _TARGET_DB_TYPE: "mysql"
+        _TARGET_DB_VERSION: "8"
+
+      - _TARGET_CORE: ["10.3.x-dev" ]
+        _TARGET_PHP: [ "8.3" ]
+        _TARGET_DB_TYPE: "pgsql"
+        _TARGET_DB_VERSION: "16"
+
+      - _TARGET_CORE: ["10.3.x-dev" ]
+        _TARGET_PHP: [ "8.3" ]
+        _TARGET_DB_TYPE: "sqlite"
+        _TARGET_DB_VERSION: "3"

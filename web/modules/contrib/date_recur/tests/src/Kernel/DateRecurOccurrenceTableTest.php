@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
@@ -175,8 +175,8 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
       $columnNameEndValue,
     ];
     $results = $this->container->get('database')
-      ->select($tableName, 'occurences')
-      ->fields('occurences', $fields)
+      ->select($tableName, 'occurrences')
+      ->fields('occurrences', $fields)
       ->execute()
       ->fetchAll();
     static::assertCount(7, $results);

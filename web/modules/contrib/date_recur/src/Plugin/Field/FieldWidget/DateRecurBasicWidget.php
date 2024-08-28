@@ -1,12 +1,13 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Datetime\Element\Datetime;
+use Drupal\Core\Datetime\TimeZoneFormHelper;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\date_recur\DateRecurHelper;
@@ -40,7 +41,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
     $element['#theme'] = 'date_recur_basic_widget';
     $element['#element_validate'][] = [$this, 'validateRrule'];
 
-    // ::createDefaultValue isnt given enough context about the field item, so
+    // ::createDefaultValue isn't given enough context about the field item, so
     // override its functions here.
     $element['value']['#default_value'] = $element['end_value']['#default_value'] = NULL;
     $element['value']['#date_timezone'] = $element['end_value']['#date_timezone'] = NULL;
@@ -254,7 +255,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    *   human readable and translatable labels.
    */
   protected function getTimeZoneOptions(): array {
-    return \system_time_zones(TRUE, TRUE);
+    return TimeZoneFormHelper::getOptionsListByRegion(TRUE);
   }
 
   /**

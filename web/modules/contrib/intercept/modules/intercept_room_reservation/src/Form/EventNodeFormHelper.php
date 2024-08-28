@@ -108,9 +108,6 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
       '#type' => 'checkbox',
       '#title' => $this->t('Create a room reservation'),
       '#default_value' => 0,
-      '#states' => [
-        'enabled' => [':input[name="field_room"]' => ['!value' => '_none']],
-      ],
       '#attributes' => ['class' => ['reservation-prepopulate-dates']],
       '#access' => empty($reservation),
       '#ajax' => $this->updateStatusAjax(),

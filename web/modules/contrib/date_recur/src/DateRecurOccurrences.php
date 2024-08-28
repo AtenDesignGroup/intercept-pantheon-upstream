@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur;
 
@@ -51,7 +51,12 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
    */
-  public function __construct(protected Connection $database, protected EntityFieldManagerInterface $entityFieldManager, protected TypedDataManagerInterface $typedDataManager, protected EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(
+      protected Connection $database,
+      protected EntityFieldManagerInterface $entityFieldManager,
+      protected TypedDataManagerInterface $typedDataManager,
+      protected EntityTypeManagerInterface $entityTypeManager,
+  ) {
   }
 
   /**
@@ -326,6 +331,12 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
       'description' => 'The sequence number in generated occurrences for the RRULE',
     ];
 
+    $primaryKey = [
+      $entityType->isRevisionable() ? 'revision_id' : 'entity_id',
+      'field_delta',
+      'delta',
+    ];
+
     $fieldSchema = $fieldDefinition->getSchema();
     $fields[$fieldName . '_value'] = $fieldSchema['columns']['value'];
     $fields[$fieldName . '_end_value'] = $fieldSchema['columns']['end_value'];
@@ -333,6 +344,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
     $schema = [
       'description' => sprintf('Occurrences cache for %s.%s', $fieldDefinition->getTargetEntityTypeId(), $fieldName),
       'fields' => $fields,
+      'primary key' => $primaryKey,
       'indexes' => [
         'value' => ['entity_id', $fieldName . '_value'],
       ],
@@ -395,7 +407,7 @@ class DateRecurOccurrences implements EventSubscriberInterface, EntityTypeListen
   protected function getBaseFieldStorages(ContentEntityTypeInterface $entityType): array {
     $baseFields = $this->entityFieldManager->getBaseFieldDefinitions($entityType->id());
     $baseFields = array_filter($baseFields,
-      fn (FieldDefinitionInterface $fieldDefinition): bool => $this->isDateRecur($fieldDefinition->getFieldStorageDefinition())
+      fn (FieldDefinitionInterface $fieldDefinition): bool => $this->isDateRecur($fieldDefinition->getFieldStorageDefinition()),
     );
 
     return array_map(

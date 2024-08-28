@@ -25,8 +25,3 @@ dependencies:
   - intercept:intercept_ils
   - profile:profile
   - views_autosubmit:views_autosubmit
-
-# Information added by Drupal.org packaging script on 2024-07-31
-version: '2.0.3'
-project: 'intercept'
-datestamp: 1722459108

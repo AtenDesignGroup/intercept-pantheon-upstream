@@ -27,7 +27,6 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
     'views',
     'views_test_modal',
     'user_test_views',
-    'views_test_config',
   ];
 
   /**
@@ -40,7 +39,7 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
    *
    * @var array
    */
-  public static $testViews = ['test_user_name', 'test_content_ajax'];
+  public static $testViews = ['test_user_name'];
 
   /**
    * {@inheritdoc}
@@ -257,29 +256,6 @@ class ExposedFilterAJAXTest extends WebDriverTestBase {
     $this->submitForm(['uid' => $name], 'Apply');
     $this->assertSession()->waitForElement('css', 'div[aria-label="Error message"]');
     $this->assertSession()->pageTextContainsOnce(sprintf('There are no users matching "%s"', $name));
-  }
-
-  /**
-   * Tests if AJAX events can be attached to the exposed filter form.
-   */
-  public function testExposedFilterAjaxCallback() {
-    ViewTestData::createTestViews(self::class, ['views_test_config']);
-
-    // Attach an AJAX event to all 'title' fields in the exposed filter form.
-    \Drupal::service('module_installer')->install(['views_test_exposed_filter']);
-    $this->resetAll();
-    $this->rebuildContainer();
-    $this->container->get('module_handler')->reload();
-
-    $this->drupalGet('test-content-ajax');
-
-    $page = $this->getSession()->getPage();
-    $this->assertSession()->pageTextContains('Default prefix');
-
-    $page->fillField('title', 'value');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-
-    $this->assertSession()->pageTextContains('Callback called.');
   }
 
 }

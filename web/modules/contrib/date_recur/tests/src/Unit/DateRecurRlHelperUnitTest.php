@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Unit;
 
@@ -205,7 +205,7 @@ RDATE:20121006T120000Z';
 
     // Occurrence time zones are same as start date.
     static::assertEquals('Thu, 04 Oct 2012 11:00:00 +0800', $occurrences[0]->getStart()->format('r'));
-    // The RDATE date/time zone is not normalised to the start-date time zone.
+    // The RDATE date/time zone is not normalized to the start-date time zone.
     static::assertEquals('Sat, 06 Oct 2012 12:00:00 +0000', $occurrences[1]->getStart()->format('r'));
     static::assertEquals('Thu, 11 Oct 2012 11:00:00 +0800', $occurrences[2]->getStart()->format('r'));
     static::assertEquals('Thu, 18 Oct 2012 11:00:00 +0800', $occurrences[3]->getStart()->format('r'));
@@ -233,7 +233,7 @@ RDATE:20121006T120000Z,20121013T120000Z';
 
     // Occurrence time zones are same as start date.
     static::assertEquals('Thu, 04 Oct 2012 11:00:00 +0800', $occurrences[0]->getStart()->format('r'));
-    // The RDATE date/time zone is not normalised to the start-date time zone.
+    // The RDATE date/time zone is not normalized to the start-date time zone.
     static::assertEquals('Sat, 06 Oct 2012 12:00:00 +0000', $occurrences[1]->getStart()->format('r'));
     static::assertEquals('Thu, 11 Oct 2012 11:00:00 +0800', $occurrences[2]->getStart()->format('r'));
     static::assertEquals('Sat, 13 Oct 2012 12:00:00 +0000', $occurrences[3]->getStart()->format('r'));
@@ -261,7 +261,7 @@ RDATE:20121006T120000Z,20121013T120000Z';
     $parts = $rule->getParts();
     // Rlanvin/rrule will return parts: 'DTSTART', 'FREQ', 'COUNT', 'INTERVAL',
     // 'WKST'. However we just need to test completely unrelated parts such as
-    // BYMONTHDAY etc arn't returned here.
+    // BYMONTHDAY etc aren't returned here.
     static::assertArrayHasKey('DTSTART', $parts);
     static::assertArrayHasKey('COUNT', $parts);
     static::assertArrayNotHasKey('BYMONTHDAY', $parts);

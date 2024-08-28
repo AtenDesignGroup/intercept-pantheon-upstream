@@ -6,8 +6,8 @@
  */
 
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Site\Settings;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Site\Settings;
 
 /**
  * Implements hook_help().

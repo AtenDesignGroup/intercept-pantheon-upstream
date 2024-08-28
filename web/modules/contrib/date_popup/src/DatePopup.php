@@ -17,7 +17,7 @@ class DatePopup extends Date {
    */
   public function buildExposedForm(&$form, FormStateInterface $form_state) {
     parent::buildExposedForm($form, $form_state);
-    $this->applyDatePopupToForm($form);
+    static::applyDatePopupToForm($form, $this->options);
   }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Event;
 
@@ -20,7 +20,10 @@ class DateRecurValueEvent extends Event {
    * @param bool $insert
    *   Specifies whether the entity was created.
    */
-  public function __construct(protected DateRecurFieldItemList $field, protected bool $insert) {
+  public function __construct(
+      protected DateRecurFieldItemList $field,
+      protected bool $insert,
+  ) {
   }
 
   /**

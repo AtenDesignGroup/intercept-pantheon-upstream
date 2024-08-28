@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Unit;
 
@@ -110,7 +110,7 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
     );
     $occurrences = [];
 
-    // Iterate the occurences.
+    // Iterate the occurrences.
     foreach ($helper as $date_range) {
       $occurrences[] = $date_range;
     }

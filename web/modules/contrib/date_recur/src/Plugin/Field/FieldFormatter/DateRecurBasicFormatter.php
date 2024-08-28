@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin\Field\FieldFormatter;
 
@@ -69,7 +69,18 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
    * @param \Drupal\Core\Entity\EntityStorageInterface $dateRecurInterpreterStorage
    *   The date recur interpreter entity storage.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, DateFormatterInterface $dateFormatter, EntityStorageInterface $dateFormatStorage, protected EntityStorageInterface $dateRecurInterpreterStorage) {
+  public function __construct(
+      $plugin_id,
+      $plugin_definition,
+      FieldDefinitionInterface $field_definition,
+      array $settings,
+      $label,
+      $view_mode,
+      array $third_party_settings,
+      DateFormatterInterface $dateFormatter,
+      EntityStorageInterface $dateFormatStorage,
+      protected EntityStorageInterface $dateRecurInterpreterStorage,
+  ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, $dateFormatter, $dateFormatStorage);
   }
 

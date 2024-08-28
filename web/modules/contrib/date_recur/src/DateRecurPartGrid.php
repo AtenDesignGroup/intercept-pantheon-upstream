@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur;
 
@@ -110,7 +110,7 @@ class DateRecurPartGrid {
   /**
    * Converts settings from date recur field configuration to a part grid.
    *
-   * @param array{all: bool, frequencies: array<mixed>} $parts
+   * @param array{all?: bool, frequencies?: array<mixed>} $parts
    *   Part configuration.
    *
    * @return \Drupal\date_recur\DateRecurPartGrid

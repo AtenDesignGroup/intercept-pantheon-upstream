@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Plugin\Validation\Constraint;
 
@@ -64,7 +64,7 @@ class DateRecurRulePartConstraintValidator extends ConstraintValidator {
         $frequencyLabel = $frequencyLabels[$frequency] ?? $frequency;
         $this->context->addViolation($constraint->disallowedFrequency, ['%frequency' => $frequencyLabel]);
 
-        // If the frequency isn't supported then dont continue validating its
+        // If the frequency isn't supported then don't continue validating its
         // parts as it creates redundant violations.
         continue;
       }

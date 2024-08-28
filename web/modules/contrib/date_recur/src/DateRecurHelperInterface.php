@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur;
 
@@ -83,7 +83,7 @@ interface DateRecurHelperInterface extends \Iterator {
    * dates in the same time zone as the initial dates.
    *
    * Implementors of this method are responsible for ensuring time zone is
-   * normalised.
+   * normalized.
    *
    * @return \DateTimeInterface[]
    *   An array of excluded dates.

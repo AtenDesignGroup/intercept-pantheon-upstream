@@ -19,6 +19,14 @@ Drupal.behaviors.eventFormHelper = {
         $('[name="field_date_time[0][end_value][date]"]').val($(this).val());
       }
     });
+    // Bulk room reservation version
+    $('#edit-field-date-time-0-start-date', context).once().change(function() {
+      var endDate = $('#edit-field-date-time-0-end-date');
+      if ($(this).val() > endDate.val()) {
+        endDate.val($(this).val());
+        $('[name="field_date_time[0][end][date]"]').val($(this).val());
+      }
+    });
 
     // Show/hide hosting location field.
     $('#edit-field-hosting-location-wrapper').hide();
@@ -37,6 +45,9 @@ Drupal.behaviors.eventFormHelper = {
       '#edit-field-date-time-0-end-value-time',
       '#edit-field-event-register-period-0-value-time',
       '#edit-field-event-register-period-0-end-value-time',
+      // Bulk room reservation
+      '#edit-field-date-time-0-start-time',
+      '#edit-field-date-time-0-end-time',
     ];
     $.each(fields, function(index, value) {
       $(value, context).once().change(function() {

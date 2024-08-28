@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur\Rl;
 
@@ -26,7 +26,7 @@ class RlHelper implements DateRecurHelperInterface {
   protected RSet $set;
 
   /**
-   * The time zone used to normalise other date objects.
+   * The time zone used to normalize other date objects.
    *
    * @var \DateTimeZone
    */
@@ -51,7 +51,11 @@ class RlHelper implements DateRecurHelperInterface {
    * @param \DateTimeInterface|null $dtStartEnd
    *   The initial occurrence end date, or NULL to use start date.
    */
-  public function __construct(string $string, \DateTimeInterface $dtStart, ?\DateTimeInterface $dtStartEnd = NULL) {
+  public function __construct(
+      string $string,
+      \DateTimeInterface $dtStart,
+      ?\DateTimeInterface $dtStartEnd = NULL,
+  ) {
     $dtStartEnd ??= clone $dtStart;
     $this->recurDiff = $dtStart->diff($dtStartEnd);
     $this->timeZone = $dtStart->getTimezone();
@@ -203,7 +207,7 @@ class RlHelper implements DateRecurHelperInterface {
    */
   public function getExcluded(): array {
     // Implementation normally returns the same time zone as the EXDATE from the
-    // rule string, normalise it here.
+    // rule string, normalize it here.
     return array_map(
       fn (\DateTime $date): \DateTime => $date->setTimezone($this->timeZone),
       $this->set->getExDates(),

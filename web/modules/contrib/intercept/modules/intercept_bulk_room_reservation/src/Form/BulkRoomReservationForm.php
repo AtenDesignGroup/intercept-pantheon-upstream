@@ -60,7 +60,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
    *
    * @var \Drupal\intercept_bulk_room_reservation\SeriesGeneratorInterface
    */
-  protected $interceptBulkReservationsSeriesGenerator;
+  protected $bulkReservationsSeriesGenerator;
 
   /**
    * Constructs a ContentEntityForm object.
@@ -71,16 +71,16 @@ class BulkRoomReservationForm extends ContentEntityForm {
    *   The entity type bundle service.
    * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time service.
-   * @param \Drupal\intercept_bulk_room_reservation\SeriesGeneratorInterface $interceptBulkReservationsSeriesGenerator
+   * @param \Drupal\intercept_bulk_room_reservation\SeriesGeneratorInterface $bulkReservationsSeriesGenerator
    *   The series generator.
    * @param \Drupal\Core\Session\AccountProxy $currentUser
    *   The current user account proxy.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, SeriesGeneratorInterface $interceptBulkReservationsSeriesGenerator, AccountProxy $currentUser) {
+  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, SeriesGeneratorInterface $bulkReservationsSeriesGenerator, AccountProxy $currentUser) {
     $this->entityRepository = $entity_repository;
     $this->entityTypeBundleInfo = $entity_type_bundle_info ?: \Drupal::service('entity_type.bundle.info');
     $this->time = $time ?: \Drupal::service('datetime.time');
-    $this->rlBulkReservationsSeriesGenerator = $interceptBulkReservationsSeriesGenerator;
+    $this->bulkReservationsSeriesGenerator = $bulkReservationsSeriesGenerator;
     $this->currentUser = $currentUser;
   }
 
@@ -125,7 +125,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
     $roomOptions = $roomAttributes = [];
     $endDate = (array_key_exists('field_date_time', $input)) ? $input['field_date_time'][0]['end']['date'] : NULL;
     if ((!empty($endDate) && !empty($input['field_location'])) || !$entity->isNew()) {
-      $room_data = $this->rlBulkReservationsSeriesGenerator->generateSeries($form_state, 'room_data');
+      $room_data = $this->bulkReservationsSeriesGenerator->generateSeries($form_state, 'room_data');
       $roomOptions = $room_data['room_options'];
       $roomAttributes = $room_data['room_attributes'];
     }
@@ -192,7 +192,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
       case SAVED_NEW:
         $this->messenger()->addStatus($this->t('New bulk room reservation %label has been created.', $message_arguments));
         $this->logger('intercept_bulk_room_reservation')->notice('Created new bulk room reservation %label', $logger_arguments);
-        $dates = $this->rlBulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
+        $dates = $this->bulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
 
         // Create, edit or delete room_reservations using a batch process.
         $batch = $this->createBatch($dates, 'create', $form_state);
@@ -215,7 +215,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
         batch_set($batch);
 
         // Now add room reservations for the series of $dates.
-        $dates = $this->rlBulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
+        $dates = $this->bulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
         $batch = $this->createBatch($dates, 'create', $form_state);
         batch_set($batch);
 
@@ -330,7 +330,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
    */
   public function getCreateCount(BulkRoomReservation $entity, FormStateInterface $form_state) {
     $count = 0;
-    $dates = $this->rlBulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
+    $dates = $this->bulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
 
     foreach ($dates as $date) {
       $found = FALSE;
@@ -390,7 +390,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
    */
   public function getDeleteIds(BulkRoomReservation $entity, FormStateInterface $form_state) {
     $deleteIds = [];
-    $dates = $this->rlBulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
+    $dates = $this->bulkReservationsSeriesGenerator->generateSeries($form_state, 'dates');
     foreach ($entity->field_related_room_reservations->referencedEntities() as $key => $room_reservation) {
       if (array_key_exists('update_overridden', $form_state->getValues()) && !$form_state->getValue('update_overridden')) {
         // Not updating overridden room reservations.

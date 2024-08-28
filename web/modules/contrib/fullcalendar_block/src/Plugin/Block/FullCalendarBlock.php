@@ -83,6 +83,7 @@ class FullCalendarBlock extends BlockBase implements ContainerFactoryPluginInter
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    // @phpstan-ignore-next-line
     $instance = new static($configuration, $plugin_id, $plugin_definition);
     $instance->time = $container->get('datetime.time');
     $instance->configFactory = $container->get('config.factory');

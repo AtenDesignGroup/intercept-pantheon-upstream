@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur;
 
@@ -79,7 +79,7 @@ class DateRecurUtility {
     $format = $granularityFormatsMap[$granularity];
 
     // Fill in the month, and day, for Year/Month granularities because if the
-    // date we are creating doesnt have a month/day that exists at that time,
+    // date we are creating doesn't have a month/day that exists at that time,
     // the date will be created in the future.
     // For example: if today is the 31st day, and the user is searching for
     // 2014-09, where September does not have 31 days, then the created date

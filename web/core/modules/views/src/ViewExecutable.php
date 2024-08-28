@@ -743,11 +743,13 @@ class ViewExecutable {
       // Ensure that we can call the method at any point in time.
       $this->initDisplay();
 
+      $this->exposed_input = $this->request->query->all();
+
       $request = \Drupal::request();
       $triggered = $request->request->get('_triggering_element_name');
       $this->exposed_input = $request->isMethod('post') && $triggered ? $request->request->all() : $request->query->all();
 
-      // unset items that are definitely not our input:
+      // Unset items that are definitely not our input:
       foreach (['page', 'q'] as $key) {
         if (isset($this->exposed_input[$key])) {
           unset($this->exposed_input[$key]);
@@ -1125,7 +1127,7 @@ class ViewExecutable {
       return TRUE;
     }
 
-    // build arguments.
+    // Build arguments.
     $position = -1;
     $substitutions = [];
     $status = TRUE;
@@ -1150,11 +1152,11 @@ class ViewExecutable {
       if (isset($arg) || $argument->hasDefaultArgument()) {
         if (!isset($arg)) {
           $arg = $argument->getDefaultArgument();
-          // make sure default args get put back.
+          // Make sure default args get put back.
           if (isset($arg)) {
             $this->args[$position] = $arg;
           }
-          // remember that this argument was computed, not passed on the URL.
+          // Remember that this argument was computed, not passed on the URL.
           $argument->is_default = TRUE;
         }
 
@@ -1185,7 +1187,7 @@ class ViewExecutable {
         }
       }
       else {
-        // determine default condition and handle.
+        // Determine default condition and handle.
         $status = $argument->defaultAction();
         break;
       }
@@ -1194,7 +1196,7 @@ class ViewExecutable {
       unset($argument);
     }
 
-    // set the title in the build info.
+    // Set the title in the build info.
     if (!empty($title)) {
       $this->build_info['title'] = $title;
     }
@@ -1229,7 +1231,7 @@ class ViewExecutable {
     if (!empty($this->query)) {
       $class = get_class($this->query);
       if ($class && $class != 'stdClass') {
-        // return if query is already initialized.
+        // Return if query is already initialized.
         return TRUE;
       }
     }
@@ -1350,7 +1352,7 @@ class ViewExecutable {
       if ($this->style_plugin->buildSort()) {
         $this->_build('sort');
       }
-      // allow the plugin to build second sorts as well.
+      // Allow the plugin to build second sorts as well.
       $this->style_plugin->buildSortPost();
     }
 
@@ -1758,7 +1760,7 @@ class ViewExecutable {
    * Unsets the current view, mostly.
    */
   public function postExecute() {
-    // unset current view so we can be properly destructed later on.
+    // Unset current view so we can be properly destructed later on.
     // Return the previous value in case we're an attachment.
 
     if ($this->old_view) {

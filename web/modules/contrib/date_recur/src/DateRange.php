@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur;
 
@@ -31,7 +31,10 @@ class DateRange {
    * @param \DateTimeInterface $end
    *   The end date.
    */
-  public function __construct(\DateTimeInterface $start, \DateTimeInterface $end) {
+  public function __construct(
+      \DateTimeInterface $start,
+      \DateTimeInterface $end,
+  ) {
     $this->start = clone $start;
     $this->end = clone $end;
     $this->validateDates();

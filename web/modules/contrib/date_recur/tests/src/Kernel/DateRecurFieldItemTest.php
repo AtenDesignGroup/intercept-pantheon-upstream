@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
-use Drupal\Core\Entity\EntityStorageException;
 use Drupal\date_recur\Exception\DateRecurHelperArgumentException;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\date_recur_entity_test\Entity\DrEntityTest;
@@ -77,7 +76,7 @@ class DateRecurFieldItemTest extends KernelTestBase {
   }
 
   /**
-   * Tests no violations when time zone is recognised by PHP.
+   * Tests no violations when time zone is recognized by PHP.
    */
   public function testTimeZoneConstraintValid(): void {
     $entity = DrEntityTest::create();
@@ -95,7 +94,7 @@ class DateRecurFieldItemTest extends KernelTestBase {
   }
 
   /**
-   * Tests violations when time zone is not a recognised by PHP.
+   * Tests violations when time zone is not a recognized by PHP.
    */
   public function testTimeZoneConstraintInvalidZone(): void {
     $entity = DrEntityTest::create();
@@ -281,8 +280,8 @@ class DateRecurFieldItemTest extends KernelTestBase {
       ],
     ];
 
-    $this->expectException(EntityStorageException::class);
-    $this->expectExceptionMessage("Integrity constraint violation: 1048 Column 'dr_timezone' cannot be null");
+    // Cannot assert message as it differs between DB engines.
+    $this->expectException(\Exception::class);
     $entity->save();
   }
 
@@ -300,8 +299,8 @@ class DateRecurFieldItemTest extends KernelTestBase {
       ],
     ];
 
-    $this->expectException(EntityStorageException::class);
-    $this->expectExceptionMessage("Integrity constraint violation: 1048 Column 'dr_value' cannot be null");
+    // Cannot assert message as it differs between DB engines.
+    $this->expectException(\Exception::class);
     $entity->save();
   }
 
@@ -319,8 +318,8 @@ class DateRecurFieldItemTest extends KernelTestBase {
       ],
     ];
 
-    $this->expectException(EntityStorageException::class);
-    $this->expectExceptionMessage("Integrity constraint violation: 1048 Column 'dr_end_value' cannot be null");
+    // Cannot assert message as it differs between DB engines.
+    $this->expectException(\Exception::class);
     $entity->save();
   }
 

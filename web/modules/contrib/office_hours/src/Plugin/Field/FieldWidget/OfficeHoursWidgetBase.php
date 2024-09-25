@@ -64,6 +64,7 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
 
     $element['value'] = [
       // Add field settings, for usage in each Element.
+      // @todo Still needed? Check correct usage in each Widget type.
       '#field_settings' => $this->getFieldSettings(),
       '#attached' => [
         'library' => [
@@ -79,7 +80,7 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    // Remove the 'value' of the 'add more' button.
+    // Remove 'value' of the 'Add exception' button.
     unset($values['add_more']);
 
     $values = parent::massageFormValues($values, $form, $form_state);
@@ -153,7 +154,7 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
         return;
 
       case $item->isWeekDay():
-        // Season days are already catched with the season header.
+        // Season days are already processed with the season header.
         return;
 
       case $item->isExceptionDay():

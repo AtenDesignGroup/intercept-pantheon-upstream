@@ -154,25 +154,27 @@ class OfficeHoursDateHelper extends DateHelper {
       // SelectList 'datelist' element.
       $time = '';
       if (($element['hour'] !== '') || ($element['minute'] !== '')) {
+        $hour = intval($element['hour']);
+        $minute = intval($element['minute']);
         // Begin copy DateList::valueCallback().
         if (isset($element['ampm'])) {
-          if ($element['ampm'] == 'pm' && $element['hour'] < 12) {
-            $element['hour'] += 12;
+          if ($element['ampm'] == 'pm' && $hour < 12) {
+            $hour += 12;
           }
-          elseif ($element['ampm'] == 'am' && $element['hour'] == 12) {
-            $element['hour'] -= 12;
+          elseif ($element['ampm'] == 'am' && $hour == 12) {
+            $hour -= 12;
           }
           unset($element['ampm']);
         }
-/*
+        /*
         try {
           $date = DrupalDateTime::createFromArray($element, $timezone = NULL);
         } catch (\Exception $e) {
           $form_state->setError($element, t('Selected combination of hour and minute is not valid.'));
         }
- */
+         */
         // End copy DateList::valueCallback().
-        $time = intval($element['hour']) * 100 + intval($element['minute']);
+        $time = $hour * 100 + $minute;
       }
     }
     else {
@@ -395,7 +397,7 @@ class OfficeHoursDateHelper extends DateHelper {
    * @param int $day
    *   The Office hours 'day' element as weekday or Exception day date.
    * @param bool $include_empty_day
-   *   Set to TRUE if the 'add Exception' empty day is also an Exception day.
+   *   Set to TRUE if the 'Add exception' empty day is also an Exception day.
    *
    * @return bool
    *   True if the day_number is a date (unix timestamp).
@@ -423,6 +425,21 @@ class OfficeHoursDateHelper extends DateHelper {
    */
   public static function isExceptionHeader($day) {
     return ($day == OfficeHoursItem::EXCEPTION_DAY);
+  }
+
+  /**
+   * Determines whether the item is a seasonal or a regular Weekday.
+   *
+   * @param int $day
+   *   The Office hours 'day' element as Weekday/SeasonDay
+   *   (using date_api as key (0=Sun, 6=Sat)) or Exception day date.
+   *
+   * @return int
+   *   The season ID.
+   */
+  public static function getSeasonId($day) {
+    $season_id = OfficeHoursDateHelper::isSeasonDay($day) ? ($day - $day % 100) : 0;
+    return $season_id;
   }
 
   /**

@@ -4,6 +4,7 @@ namespace Drupal\office_hours\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /**
  * Provides a one-line text field form element for Exception days.
@@ -19,14 +20,15 @@ class OfficeHoursExceptionsSlot extends OfficeHoursBaseSlot {
     parent::processOfficeHoursSlot($element, $form_state, $complete_form);
 
     // The valueCallback() has populated the #value array.
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $item = $element['#value'];
-    $day = $item->day;
+    $value = $element['#value'];
+    $value = is_object($value) ? $value->getValue() : $value;
+    $day = $value['day'];
     $day_delta = $element['#day_delta'];
     // Add day_delta for label() or isEmpty() call.
-    $item->day_delta = $day_delta;
-    $settings = ['day_format' => 'l'];
-    $label = $item->label($settings);
+    $value['day_delta'] = $day_delta;
+
+    $pattern = 'l';
+    $label = OfficeHoursItem::formatLabel($pattern, $value, $day_delta);
 
     // Override the hidden (Week widget) or select (List widget)
     // first time slot 'day', setting a 'date' select element + day name.

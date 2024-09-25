@@ -109,6 +109,9 @@ class OfficeHoursDatelist extends Datelist {
     // Get the valid, restricted hours.
     // Date API doesn't provide a straight method for this.
     $element['hour']['#options'] = OfficeHoursDateHelper::hours($time_format, FALSE, $limit_start, $limit_end);
+    // Make sure contrib module 'chosen' is not applied. It breaks JS.
+    $element['hour']['#chosen'] = FALSE;
+    $element['minute']['#chosen'] = FALSE;
 
     return $element;
   }
@@ -131,7 +134,9 @@ class OfficeHoursDatelist extends Datelist {
     // @todo Get proper title.
     $title = static::getElementTitle($element, $complete_form);
 
-    $is_empty = empty($input['hour']) && empty($input['minute']) && (!isset($element['#date_part_order']['ampm']) || empty($input['ampm']));
+    $is_empty = ($input['hour'] == '')
+      && ($input['minute'] == '')
+      && (($input['ampm'] ?? '') == '');
     $all_empty = static::checkEmptyInputs($input, $element['#date_part_order']);
 
     // If there's empty input, set it to empty.

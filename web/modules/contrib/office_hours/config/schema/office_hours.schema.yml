@@ -33,10 +33,10 @@ field.storage_settings.office_hours:
       label: 'Expose all_day checkbox in widget'
     exceptions:
       type: boolean
-      label: 'Allow exceptions in extended weekwidget'
+      label: 'Allow exceptions in Extended Weekwidget'
     seasons:
       type: boolean
-      label: 'Allow seasons in extended weekwidget'
+      label: 'Allow seasons in Extended Weekwidget'
     comment:
       type: integer
       label: 'Allow a comment per time slot'
@@ -117,6 +117,9 @@ field.formatter.settings.office_hours:
         restrict_exceptions_to_num_days:
           type: integer
           label: 'Restrict exceptions display to x days in future'
+        restrict_seasons_to_num_days:
+          type: integer
+          label: 'Restrict seasons display to x days in future'
         date_format:
           type: string
           label: 'Date format for exception day'
@@ -151,7 +154,7 @@ field.formatter.settings.office_hours_status:
       type: label
       label: 'Currently closed message'
 
-field.widget.settings.office_hours_default:
+field.widget.settings.*:
   type: mapping
   label: 'Office hours default widget settings'
   mapping:

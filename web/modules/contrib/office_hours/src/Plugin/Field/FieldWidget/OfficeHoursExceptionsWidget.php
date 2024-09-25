@@ -2,11 +2,13 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\FocusFirstCommand;
+use Drupal\Core\Ajax\InsertCommand;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /**
@@ -26,90 +28,8 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
 
   /**
    * {@inheritdoc}
-   *
-   * Manipulate the default element data.
-   */
-  protected function formMultipleElements(FieldItemListInterface $items, array &$form, FormStateInterface $form_state) {
-
-    // As per www.drupal.org/project/drupal/issues/1038316,
-    // setProgrammed() adds 'add' and 'delete' buttons to the widget.
-    $form_state->setProgrammed(FALSE);
-    $element = parent::formMultipleElements($items, $form, $form_state);
-    // Remove 'delete' button. (Somehow, the 'add' button is 1 level higher.)
-    unset($element[0]['_actions']);
-
-    $field_name = $this->fieldDefinition->getName();
-    $parents = $form['#parents'];
-    $cardinality_per_day = $this->getFieldSetting('cardinality_per_day');
-
-    $field_state = static::getWidgetState($parents, $field_name, $form_state);
-    // @todo Test and remove redundant $field_state value $count_days vs. $max.
-    $count_days = $field_state["$field_name-exceptions_count"];
-    $max = $field_state['items_count'];
-
-    // Remove the 'field_multiple_value_form' theme,
-    // since it interferes with our table layout.
-    unset($element['#theme']);
-    unset($element['#field_name']);
-    // unset($element['#cardinality']);
-    // unset($element['#cardinality_multiple']);
-    unset($element['#required']);
-    // unset($element['#title']);
-    // unset($element['#description']);
-
-    // Set/unset data for 'Add more' button.
-    // unset($element['#max_delta']);
-    $element['#max_delta'] = $max = $count_days;
-    // unset($element['#prefix']);
-    // unset($element['#suffix']);
-    // unset($element['add_more']);
-    $element['#cardinality_per_day'] = $cardinality_per_day;
-
-    // Build multi element widget. Copy the description, etc. into the table.
-    // Use the more complex 'data' construct,
-    // to allow ExceptionsWeekWidget to add a 'colspan':
-    $header = OfficeHoursItem::getPropertyLabels('data', $this->getFieldSettings());
-    // Change header 'Day' to 'Date'.
-    $header['day'] = $this->t('Date');
-
-    $table = [
-      '#type' => 'office_hours_table',
-      '#header' => $header,
-      '#tableselect' => FALSE,
-      '#tabledrag' => FALSE,
-      // '#attributes' => ['id' => 'exceptions-container'],
-      '#empty' => $this->t('No exception day maintained, yet.'),
-    ]
-    + ($element[0] ?? []);
-    // Remove the draggable feature from the table.
-    unset($table['_weight']);
-    // Remove the above added data.
-    unset($element[0]);
-
-    $field_state = static::getWidgetState($parents, $field_name, $form_state);
-    // Make sure the 'details' element keeps open after 'add_more' button.
-    $collapsed = $field_state['collapsed'] ?? $this->getSetting('collapsed');
-    $element = [
-      // Wrap the table in a collapsible fieldset, which is the only way(?)
-      // to show the 'required' asterisk and the help text.
-      // The help text is now shown above the table, as requested by some users.
-      // N.B. For some reason, the title is shown in Capitals.
-      '#type' => 'details',
-      // Controls the HTML5 'open' attribute. Defaults to FALSE.
-      '#open' => !$collapsed,
-      '#title' => $this->formatPlural($count_days, '1 exception', '@count exceptions'),
-      // Add the time slot table as a sub-element.
-      'value' => $table,
-    ] + $element;
-
-    return $element;
-  }
-
-  /**
-   * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-
     // In D8, we have a (deliberate) anomaly in the widget.
     // We prepare 1 widget for the whole week,
     // but the field has unlimited cardinality.
@@ -118,70 +38,90 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
       return [];
     }
 
-    $field_name = $this->fieldDefinition->getName();
-    $cardinality = $this->getFieldSetting('cardinality_per_day');
-    $parents = $form['#parents'];
-
     // Make form_state not cached since we will update it in ajax callback.
     $form_state->setCached(FALSE);
+    // Avoid adding delete and add buttons.
+    // $form_state->setProgrammed(TRUE);
 
-    // Create an indexed two level array of time slots:
-    // - First level are day numbers.
-    // - Second level contains field values arranged by $day_delta.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
-    $indexed_items = $items->getExceptionDays();
-    $indexed_items = OfficeHoursDateHelper::weekDaysOrdered($indexed_items);
+    $filtered_items = $items->getExceptionItems();
+    $element = parent::formElement($filtered_items, $delta, $element, $form, $form_state);
 
-    // Add empty days if we clicked "Add exception".
+    // Copied from WidgetBase::formMultipleElements();
+    $parents = $form['#parents'];
+    $field_settings = $this->getFieldSettings();
+    $widget_settings = $this->getSettings();
+    $field_name = $this->fieldDefinition->getName();
     $field_state = static::getWidgetState($parents, $field_name, $form_state);
-    // @todo Test and remove redundant $field_state value $count_days vs. $max.
-    $count_days = $field_state["$field_name-exceptions_count"] ??= count($indexed_items);
-    $max = $field_state['items_count'];
-    static::setWidgetState($parents, $field_name, $form_state, $field_state);
 
-    // Set a minimum of 1 Exception, to get the add_more button from WidgetBase.
-    for ($i = count($indexed_items); $i < max(1, $count_days); $i++) {
-      $day_delta = 0;
-      $indexed_items[][$day_delta] = NULL;
+    if (!isset($field_state["$field_name-exceptions_count"])) {
+      $field_state["$field_name-exceptions_count"] ??= $items->countExceptionDays();
+      $field_state['collapsed'] ??= $widget_settings['collapsed'];
+      static::setWidgetState($parents, $field_name, $form_state, $field_state);
     }
 
-    // Build elements, sorted by day number/timestamp.
-    $elements = [];
-    $day_index = 0;
-    foreach ($indexed_items as $day => $indexed_item) {
-      $day_index++;
-
-      for ($day_delta = 0; $day_delta < $cardinality; $day_delta++) {
-        // Add a new empty item if it doesn't exist yet at this delta.
-        $item = $indexed_items[$day][$day_delta]
-        ?? $items->appendItem([
-          'day' => OfficeHoursItem::EXCEPTION_DAY,
-        ]);
-
-        $elements[] = [
-          '#type' => 'office_hours_exceptions_slot',
-          '#default_value' => $item,
-          '#day_index' => $day_index,
-          '#day_delta' => $day_delta,
-          // Add field settings, for usage in each Element.
-          '#field_settings' => $this->getFieldSettings(),
-          '#date_element_type' => $this->getSetting('date_element_type'),
-          '#title' => '',
-          '#title_display' => 'invisible',
-          '#description' => '',
-        ];
-
-      }
+    $count_days = $field_state["$field_name-exceptions_count"];
+    // Keep aligned in ExceptionsWidget and OfficeHoursTable element.
+    // Add empty days if we clicked "AddMore: Add exception".
+    // We cannot do this in valueCallback, in case a date value is changed.
+    for ($i = $filtered_items->countExceptionDays(); $i < max(0, $count_days); $i++) {
+      $filtered_items->appendItem(['day' => OfficeHoursItem::EXCEPTION_DAY]);
     }
 
-    return $elements;
+    // @todo Set better '#parents', so addMoreAjax() can adhere to core.
+    $element = [
+      '#type' => 'office_hours_table',
+      '#field_settings' => $field_settings,
+      '#widget_settings' => $widget_settings,
+      '#field_type' => 'office_hours_exceptions',
+      '#default_value' => $filtered_items->getValue(),
+      '#tableselect' => FALSE,
+      '#tabledrag' => FALSE,
+      // '#attributes' => ['id' => 'exceptions-container'],
+      '#empty' => $this->t('No exception day maintained, yet.'),
+    ];
+
+    $element = [
+      // Wrap the table in a collapsible fieldset, which is the only way(?)
+      // to show the 'required' asterisk and the help text.
+      // The help text is now shown above the table, as requested by some users.
+      // N.B. For some reason, the title is shown in Capitals.
+      '#type' => 'details',
+      // Controls the HTML5 'open' attribute. Defaults to FALSE.
+      // Make sure the 'details' element keeps open after 'Add exception' button.
+      '#open' => !$field_state['collapsed'],
+      '#title' => \Drupal::translation()->formatPlural($count_days, '1 exception', '@count exceptions'),
+      // Add the time slot table as a sub-element.
+      'value' => $element,
+    ];
+
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Change core behaviour, added after formElement().
+   */
+  public static function afterBuild(array $element, FormStateInterface $form_state) {
+    $element = parent::afterBuild($element, $form_state);
+
+    // Remove the 'drag-n-drop reordering' element.
+    $element['#cardinality_multiple'] = FALSE;
+    // Remove the little draggable 'Weight for row n' box.
+    unset($element['_weight']);
+    // Remove the 'Remove' action button.
+    unset($element['_actions']);
+    $element['add_more']['#value'] = t('Add exception');
+
+    return $element;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function afterBuild(array $element, FormStateInterface $form_state) {
-    return parent::afterBuild($element, $form_state);
+  public function extractFormValues(FieldItemListInterface $items, array $form, FormStateInterface $form_state) {
+    parent::extractFormValues($items, $form, $form_state);
   }
 
   /**
@@ -192,15 +132,15 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
 
     // Go one level up in the form, to the widgets container.
     $element = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, -1));
-    $field_name = $element['#field_name'];
+
     $parents = $element['#field_parents'];
+    $field_name = $element['#field_name'];
+    $field_state = static::getWidgetState($parents, $field_name, $form_state);
 
     // Increment the items count.
-    $field_state = static::getWidgetState($parents, $field_name, $form_state);
-    // @todo Test and remove redundant $field_state value $count_days vs. $max.
     $field_state["$field_name-exceptions_count"]++;
     $field_state['items_count']++;
-    // Make sure the 'details' element keeps open after 'add_more' button.
+    // Make sure the 'details' element keeps open after 'Add exception' button.
     $field_state['collapsed'] = FALSE;
     static::setWidgetState($parents, $field_name, $form_state, $field_state);
 
@@ -209,8 +149,13 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
 
   /**
    * {@inheritdoc}
+   *
+   * Contains the following changes compared with parent:
+   * - determine the $delta differently;
+   * - use 'value' subelement to set prefix/suffix.
    */
   public static function addMoreAjax(array $form, FormStateInterface $form_state) {
+    // return parent::addMoreAjax($form, $form_state);
     $button = $form_state->getTriggeringElement();
 
     // Go one level up in the form, to the widgets container.
@@ -222,15 +167,33 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
     }
 
     // Add a DIV around the delta receiving the Ajax effect.
-    // Taking into account the office_hours cardinality.
-    $cardinality_per_day = $element['#cardinality_per_day'];
-    $delta = ($element['#max_delta'] - 1) * $cardinality_per_day;
-    for ($i = 0; $i < $cardinality_per_day; $i++) {
-      $element['value'][$delta + $i]['#prefix'] = '<div class="ajax-new-content">' . ($element['value'][$delta + $i]['#prefix'] ?? '');
-      $element['value'][$delta + $i]['#suffix'] = ($element['value'][$delta + $i]['#suffix'] ?? '') . '</div>';
-    }
+    $delta = $element['#max_delta'];
+    // Start: Override the $delta by incrementing the items count.
+    // @todo Update $element['#max_delta'] in other location, to avoid this override.
+    $parents = $element['#field_parents'];
+    $field_name = $element['#field_name'];
+    $field_state = static::getWidgetState($parents, $field_name, $form_state);
+    $exceptions_count = $field_state["$field_name-exceptions_count"];
 
-    return $element;
+    // Taking into account the office_hours cardinality.
+    $cardinality_per_day = $element['value']['#field_settings']['cardinality_per_day'];
+    $delta = ($exceptions_count - 1) * $cardinality_per_day;
+    // $element['#max_delta'] = $delta;
+    // End: Override the $delta by incrementing the items count.
+
+    // @todo Set better '#parents', so addMoreAjax() can adhere to core.
+    // Construct an attribute to add to div for use as selector to set the focus on.
+    $button_parent = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, -1));
+    $focus_attribute = 'data-drupal-selector="field-' . $button_parent['#field_name'] . '-more-focus-target"';
+    $element['value'][$delta]['#prefix'] = '<div class="ajax-new-content" ' . $focus_attribute . '>' . ($element[$delta]['#prefix'] ?? '');
+    $element['value'][$delta]['#suffix'] = ($element[$delta]['#suffix'] ?? '') . '</div>';
+
+    // Turn render array into response with AJAX commands.
+    $response = new AjaxResponse();
+    $response->addCommand(new InsertCommand(NULL, $element));
+    // Add command to set the focus on first focusable element within the div.
+    $response->addCommand(new FocusFirstCommand("[$focus_attribute]"));
+    return $response;
   }
 
   /**

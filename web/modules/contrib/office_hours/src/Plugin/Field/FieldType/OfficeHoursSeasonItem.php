@@ -29,6 +29,7 @@ class OfficeHoursSeasonItem extends OfficeHoursItem {
    * {@inheritdoc}
    */
   public function isInRange(int $from, int $to): bool {
+    $is_in_range = FALSE;
     if ($to < $from || $to < 0) {
       // @todo Error. Raise try/catch exception for $to < $from.
       // @todo Undefined result for <0. Raise try/catch exception.
@@ -36,11 +37,11 @@ class OfficeHoursSeasonItem extends OfficeHoursItem {
     }
 
     $season = $this->getSeason();
-    $result = $season->isInRange($from, $to);
-    if ($result == TRUE) {
-      $result = parent::isInRange($from, $to);
+    $is_in_range = $season->isInRange($from, $to);
+    if ($is_in_range) {
+      $is_in_range = parent::isInRange($from, $to);
     }
-    return $result;
+    return $is_in_range;
   }
 
 }

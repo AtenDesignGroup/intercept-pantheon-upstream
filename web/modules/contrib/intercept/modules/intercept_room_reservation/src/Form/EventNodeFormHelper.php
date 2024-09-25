@@ -241,6 +241,11 @@ class EventNodeFormHelper implements ContainerInjectionInterface {
     }
     $start_date = $dates[0]['value'];
     $end_date = $dates[0]['end_value'];
+    // Stop checking if they aren't creating a reservation.
+    $create = $form_state->getValue(['reservation', 'create']);
+    if ($create != TRUE) {
+      return;
+    }
 
     if ($start_date > $end_date) {
       $message = $this->t('The selected reservation times are invalid.');

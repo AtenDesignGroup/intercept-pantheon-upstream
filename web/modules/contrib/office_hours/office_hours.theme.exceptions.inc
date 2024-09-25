@@ -6,7 +6,6 @@
  */
 
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
-use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /* @see File core/modules/field_ui/field_ui.api.php
  *

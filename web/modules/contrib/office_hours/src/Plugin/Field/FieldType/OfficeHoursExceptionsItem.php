@@ -94,12 +94,12 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
       // Time slots from yesterday with endhours after midnight are included.
       // @todo Call parent::isInRange();
       // @todo Support $from <> 0.
-      $lastday = strtotime($date . " +$to day");
+      $last_day = strtotime($date . " +$to day");
       if ($day == $yesterday) {
         $time = $this->parent->getRequestTime();
         return parent::isOpen($time);
       }
-      elseif ($day >= $yesterday && $day <= $lastday) {
+      elseif ($day >= $yesterday && $day <= $last_day) {
         return TRUE;
       }
       return FALSE;
@@ -118,9 +118,7 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
       elseif ($day <= $to) {
         return TRUE;
       }
-      else {
-        return FALSE;
-      }
+      return FALSE;
     }
 
     // Undefined. $time is a real timestamp.

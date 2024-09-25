@@ -141,7 +141,7 @@ class OfficeHoursItemBase extends FieldItemBase {
   public static function defaultStorageSettings() {
     $defaultStorageSettings = [
       'time_format' => 'G',
-      'element_type' => 'office_hours_datelist',
+      'element_type' => 'office_hours_datetime',
       'increment' => 30,
       'required_start' => FALSE,
       'required_end' => FALSE,
@@ -162,7 +162,7 @@ class OfficeHoursItemBase extends FieldItemBase {
    * {@inheritdoc}
    */
   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
-    // admin/structure/types/manage/ctoh2/fields/TYPE/storage
+    // admin/structure/types/manage/TYPE/fields/TYPE/storage
     $settings = $this->getFieldDefinition()
       ->getFieldStorageDefinition()
       ->getSettings();
@@ -175,7 +175,7 @@ class OfficeHoursItemBase extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function storageSettingsFormAlter(array &$form, FormStateInterface $form_state, $has_data) {
-    // admin/structure/types/manage/ctoh2/fields/TYPE/storage
+    // admin/structure/types/manage/TYPE/fields/TYPE/storage
     $field_type = $form_state->getFormObject()->getEntity()->getType();
     if ($field_type == 'office_hours') {
       $form['cardinality_container']['cardinality'] = [

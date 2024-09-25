@@ -3,10 +3,10 @@
 namespace Drupal\viewsreference\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\views\Plugin\views\exposed_form\ExposedFormPluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
 
@@ -78,12 +78,22 @@ class ViewsReferenceFieldFormatter extends FormatterBase {
     $parent_entity_type = $items->getEntity()->getEntityTypeId();
     $parent_entity_id = $items->getEntity()->id();
     $parent_field_name = $items->getFieldDefinition()->getName();
+    $parent_revision_id = NULL;
+    if ($items->getEntity() instanceof RevisionableInterface) {
+      $parent_revision_id = $items->getEntity()->getRevisionId();
+    }
 
     $cacheability = new CacheableMetadata();
 
     foreach ($items as $delta => $item) {
       $view_name = $item->getValue()['target_id'];
       $display_id = $item->getValue()['display_id'];
+
+      // Since no JS creating a node is a multi-step, it is possible that
+      // no display ID has yet been selected.
+      if (!$display_id) {
+        continue;
+      }
       $view = Views::getView($view_name);
 
       // Add an extra check because the view could have been deleted.
@@ -104,18 +114,22 @@ class ViewsReferenceFieldFormatter extends FormatterBase {
         'parent_entity_type' => $parent_entity_type,
         'parent_entity_id' => $parent_entity_id,
         'parent_field_name' => $parent_field_name,
+        'parent_revision_id' => $parent_revision_id,
+        'field_item_delta' => $delta,
       ];
 
       $view->preExecute();
       $view->execute($display_id);
 
       // Exposed form handler.
-      /** @var ExposedFormPluginBase $exposed_form_handler */
+      /** @var \Drupal\views\Plugin\views\exposed_form\ExposedFormPluginBase $exposed_form_handler */
       $exposed_form_handler = $view->display_handler->getPlugin('exposed_form');
 
       $render_array = $view->buildRenderable($display_id, $view->args, FALSE);
       if (!empty(array_filter($this->getSetting('plugin_types')))) {
-        if (!empty($view->result) || !empty($view->empty) || ($exposed_form_handler?->options['input_required'] ?? FALSE)) {
+        // Show view if there are results, empty behaviour defined, exposed
+        // widgets, or a header or footer set to appear despite no results.
+        if (!empty($view->result) || !empty($view->empty) || ($exposed_form_handler?->options['input_required'] ?? FALSE) || !empty($view->exposed_widgets) || !empty($view->header) || !empty($view->footer)) {
           // Add a custom template if the title is available.
           $title = $view->getTitle();
           if (!empty($title)) {

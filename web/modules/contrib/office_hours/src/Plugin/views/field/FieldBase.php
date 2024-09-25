@@ -4,6 +4,7 @@ namespace Drupal\office_hours\Plugin\views\field;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldStorageConfigInterface;
+use Drupal\office_hours\Plugin\Field\FieldFormatter\OfficeHoursFormatterBase;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
 
@@ -39,7 +40,7 @@ class FieldBase extends FieldPluginBase {
       }
 
       if (isset($data[$table_name][$field_name])) {
-        $field_label =$data[$table_name][$field_name]['title short'];
+        $field_label = $data[$table_name][$field_name]['title short'];
 
         // Extend 'timeslot'.
         // @todo Why is 'timeslot' not filled already, when set in properties?
@@ -161,10 +162,29 @@ class FieldBase extends FieldPluginBase {
     if (!is_null($delta)) {
       $items = $entity->get($field_name);
       $item = $items->get($delta);
-      // Add default 'day_delta', to avoid problem with label().
-      $item->day_delta = 0;
     }
     return $item;
+  }
+
+  /**
+   * Returns the array of settings, including defaults for missing settings.
+   *
+   * @todo Use officeHoursFormatterBase::getSettings() instead.
+   *
+   * @parameter string $field_name
+   *   The field name.
+   *
+   * @return array
+   *   The array of settings.
+   */
+  protected function getFieldSettings(string $field_name) : array {
+    $default_settings = OfficeHoursFormatterBase::defaultSettings();
+
+    $settings = $this->view->field[$field_name]->options['settings'];
+    $settings += $default_settings;
+    $settings['exceptions'] += $default_settings['exceptions'];
+    $settings['schema'] += $default_settings['schema'];
+    return $settings;
   }
 
 }

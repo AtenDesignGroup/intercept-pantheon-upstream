@@ -87,7 +87,7 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    *   Empty, 'ascending', 'descending', to sort seasons by start date.
    * @param int $from
    *   Unix timestamp. Only seasons with end date after this date are returned.
-   * @param int $from
+   * @param int $to
    *   Unix timestamp. Only seasons with start date before this date are returned.
    *
    * @return \Drupal\office_hours\OfficeHoursSeason[]
@@ -96,20 +96,31 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
   public function getSeasons($add_weekdays_as_season = FALSE, $add_new_season = FALSE, $sort = '', $from = 0, $to = 0);
 
   /**
-   * Create an array of exception days keyed by date.
+   * Filters out Exception days.
    *
-   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursExceptionsItem[]
-   *   A keyed array of exception days keyed by date.
+   * @return $this
+   *   A filtered clone of the ItemList.
    */
-  public function getExceptionDays();
+  public function getExceptionItems();
+
+  /**
+   * Filters out Season days by Season ID.
+   *
+   * @param int $season_id
+   *   The requested season ID.
+   *
+   * @return $this
+   *   A filtered clone of the ItemList.
+   */
+  public function getSeasonItems(int $season_id);
 
   /**
    * Determines if the Entity has Exception days.
    *
-   * @return bool
-   *   Indicator whether the entity has Exception days.
+   * @return int
+   *   Counter whether the entity has Exception days.
    */
-  public function hasExceptionDays();
+  public function countExceptionDays();
 
   /**
    * Determines if the Entity is Open or Closed.

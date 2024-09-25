@@ -13,8 +13,6 @@ use Drupal\intercept_event\CustomerSearchFormTrait;
  */
 class EventRegistrationEventForm extends ContentEntityForm {
 
-  use CustomerSearchFormTrait;
-
   /**
    * {@inheritdoc}
    */
@@ -27,78 +25,7 @@ class EventRegistrationEventForm extends ContentEntityForm {
 
     $form['#theme'] = 'event_registration_event_form';
 
-    $form['customer_barcode'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Card Number'),
-      '#weight' => '-1',
-    ];
-    $form['customer_first_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Customer First Name'),
-      '#weight' => '-1',
-    ];
-    $form['customer_last_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Customer Last Name'),
-      '#weight' => '-1',
-    ];
-    $form['customer_email'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Customer Email'),
-      '#weight' => '-1',
-    ];
-    $form['lookup'] = [
-      '#value' => $this->t('Search customer'),
-      '#type' => 'button',
-      '#limit_validation_errors' => [],
-      '#ajax' => [
-        'callback' => static::class . '::searchAjax',
-        'event' => 'click',
-        'wrapper' => 'edit-results',
-        'progress' => [
-          'type' => 'throbber',
-          'message' => $this->t('Searching ILS...'),
-        ],
-      ],
-      '#weight' => '-1',
-    ];
-    $values = $form_state->getUserInput();
-    $results = $this->searchQuery($this->mapValues($values));
-    $form['results'] = $this->buildTableElement($results);
-    $form['results']['#attributes'] = ['id' => ['edit-results']];
-    $form['results']['#weight'] = '-1';
-
     return $form;
-  }
-
-  /**
-   * Returns the results table element.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return array
-   *   The results table element.
-   */
-  public static function searchAjax(array &$form, FormStateInterface $form_state) {
-    return $form['results'];
-  }
-
-  /**
-   * Maps customer values.
-   *
-   * @return array
-   *   The customer value array.
-   */
-  protected function map() {
-    return [
-      'customer_first_name' => 'first_name',
-      'customer_last_name' => 'last_name',
-      'customer_email' => 'email',
-      'customer_barcode' => 'barcode',
-    ];
   }
 
   /**

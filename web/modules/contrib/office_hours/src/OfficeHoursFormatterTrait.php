@@ -16,7 +16,7 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 trait OfficeHoursFormatterTrait {
 
   /**
-   * An object to maintain the sorted Itemlist.
+   * An object to maintain the sorted ItemList.
    *
    * @var array
    */
@@ -62,9 +62,7 @@ trait OfficeHoursFormatterTrait {
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
     $office_hours = [];
 
-    // Change time to today midnight, to avoid first/last-day season problems.
     $time = $this->getRequestTime($time);
-    $time = OfficeHoursDateHelper::today($time);
 
     // Let other modules alter the $items or $office_hours.
     $this->eventDispatcher ??= new OfficeHoursEventDispatcher();
@@ -81,8 +79,6 @@ trait OfficeHoursFormatterTrait {
     // while custom installations need complete $items in theme preprocessing.
     $itemList = clone $this;
 
-    $replace_exceptions = $settings['exceptions']['replace_exceptions'] ?? '';
-
     // Initialize $office_hours.
     // Create 7 empty weekdays, using date_api as key (0=Sun, 6=Sat).
     $weekdays = OfficeHoursDateHelper::weekDays(TRUE);
@@ -90,25 +86,33 @@ trait OfficeHoursFormatterTrait {
     $weekdays = OfficeHoursDateHelper::weekDaysOrdered($weekdays, $settings['office_hours_first_day']);
 
     // Prepare array of empty weekdays for normal days and seasons.
-    $seasons = $itemList->getSeasons(TRUE, FALSE, 'ascending', $time);
+    $replace_exceptions = $settings['exceptions']['replace_exceptions'] ?? FALSE;
+    $horizon = $settings['exceptions']['restrict_seasons_to_num_days'];
+    $seasons = $itemList->getSeasons(TRUE, FALSE, 'ascending', $time, $horizon);
     foreach ($seasons as $season_id => $season) {
+
+      // @todo getSeasons(): A start_date with a horizon 0 is never in range.
+      if ($horizon == 0 && $season_id !== 0) {
+        unset($seasons[$season_id]);
+        continue;
+      }
+
       // First, add season header. It must be before the season days.
       // But do not add for regular 'season'.
       // Directly replace with exception day, if needed.
-      if ($season->id()) {
-        $day = OfficeHoursItem::SEASON_DAY_MIN;
-        $day = $day + $season_id;
+      if ($season_id) {
+        $day = $season_id + OfficeHoursItem::SEASON_DAY_MIN;
         $this->addOfficeHours($office_hours, $day, $time, $replace_exceptions);
       }
       // Then, add season days.
       foreach ($weekdays as $day => $label) {
-        $day = $day + $season_id;
+        $day = $season_id + $day;
         $this->addOfficeHours($office_hours, $day, $time, $replace_exceptions);
       }
     }
 
     // Remove excessive exception days.
-    $horizon = $settings['exceptions']['restrict_exceptions_to_num_days'] ?? 0;
+    $horizon = $settings['exceptions']['restrict_exceptions_to_num_days'];
     $itemList->keepExceptionDaysInHorizon($horizon);
 
     // Move items to $office_hours.
@@ -117,7 +121,7 @@ trait OfficeHoursFormatterTrait {
       $item = $iterator->current();
 
       // Filter on the valid seasons (past seasons have been removed).
-      // Note: weekdays and exception have valid SeasonId = 0.
+      // Note: weekdays and exception dates have valid SeasonId = 0.
       if (isset($seasons[$item->getSeasonId()])) {
         // Add time slot to $office_hours.
         $this->addOfficeHours($office_hours, $item, $time, $replace_exceptions);
@@ -188,7 +192,7 @@ trait OfficeHoursFormatterTrait {
   }
 
   /**
-   * Formatter: Set $office_hours for $tiem->day.
+   * Formatter: Set $office_hours for $item->day.
    *
    * @param array $office_hours
    *   Office hours array.
@@ -196,47 +200,48 @@ trait OfficeHoursFormatterTrait {
    *   The time slot to be added.
    * @param int $time
    *   The actual UNIX date/timestamp to use.
-   * @param $replace_exceptions
+   * @param bool $replace_exceptions
    *   Indicator to yes/no replace the weekdays with exception date values.
    *   (Currently using a 'rolling' calendar, not a 'current week' calendar.)
    */
-  protected function addOfficeHours(&$office_hours, $item, int $time, $replace_exceptions) {
-    $day = is_integer($item) ? $item : $item->day;
+  protected function addOfficeHours(&$office_hours, $item, int $time, bool $replace_exceptions) {
+    $day = is_int($item) ? $item : $item->day;
     // Add initial empty day data.
     $office_hours[$day] ??= ['day' => $day] + $this->getOfficeHoursDefault();
 
-    if (is_object($item) ) {
-      if (!$replace_exceptions || $day > OfficeHoursItem::SEASON_DAY_MIN) {
+    if (is_object($item)) {
+      if ((!$replace_exceptions) || ($day > OfficeHoursItem::SEASON_DAY_MIN)) {
         // Add day data per time slot.
         // Avoid duplicates for weekdays, if replace_exceptions is set.
         $office_hours[$day]['items'][] = $item;
       }
     }
-    elseif (is_integer($item) && $replace_exceptions && $day < 7) {
+    elseif (is_int($item)) {
+      if ($replace_exceptions && $day < OfficeHoursItem::SEASON_DAY_MIN) {
+        // During initial weekday setup, replace with exception data.
+        // Needed, because in $items, empty days are not visited again.
+        // Check for $replace_exceptions, to avoid duplicate records.
+        $this->sortedList ??= new OfficeHoursItemListSorter($this);
+        $sorted_list = $this->sortedList->getSortedItemList($time);
 
-      // During initial weekday setup, replace exceptions.
-      // Needed, because in $items, empty days are not visited again.
-      $this->sortedList ??= new OfficeHoursItemListSorter($this);
-      $sorted_list = $this->sortedList->getSortedItemList($time);
-
-      // Get today's weekday.
-      $weekday = OfficeHoursDateHelper::getWeekday($time);
-      // Determine if the $day is this or next week.
-      $week = ($day >= $weekday) ? 'this' : 'next';
-      // Get date of $day for the exception day lookup.
-      $date = strtotime($day - 1 . ' day ' . $week . ' week midnight');
-      if (isset($sorted_list[$date])) {
-        $exception_day = $sorted_list[$date][0]->day;
-        if ($replace_exceptions || $day !== $exception_day) {
-          // Add day data per day.
-          // Only replace exceptions, not normal weekday,
-          // since otherwise, normal weekdays slots will be duplicated.
-          $office_hours[$day]['items'] = $sorted_list[$date];
-        }
+        // Get today's weekday.
+        $weekday = OfficeHoursDateHelper::getWeekday($time);
+        // Determine if the $day is this or next week.
+        $week = ($day >= $weekday) ? 'this' : 'next';
+        // Get date of $day for the exception day lookup.
+        $slot_date = strtotime($day - 1 . " day $week week midnight");
+        // Finally, replace weekdays with exception date slots.
+        $office_hours[$day]['items'] = $sorted_list[$slot_date] ?? [];
       }
     }
   }
 
+  /**
+   * Returns the default values for all parameters.
+   *
+   * @return array
+   *   Array with default values for theming.
+   */
   protected function getOfficeHoursDefault() {
     // Prepare a complete structure for theming.
     $default_office_hours = [
@@ -271,21 +276,29 @@ trait OfficeHoursFormatterTrait {
 
     foreach ($office_hours as $key => &$info) {
       foreach ($info['items'] as $day_index => $item) {
-        if ($day_index > 0) {
-          // Fetch the first slot of the day.
-          $compressed_item = &$info['items'][0];
-          // Compress other slot in first slot.
+
+        if (!$item->isCompressed ?? FALSE) {
+          // Item is already compressed.
+          // E.g., on schema formatter, already compressed in table formatter.
+          return $office_hours;
+        }
+
+        if ($day_index == 0) {
+          // Fetch the first slot of the day into an array element.
+          $compressed_item = $item;
+          $comments = [$compressed_item->comment];
+        }
+        else {
+          // Compress other slots in first slot.
           $compressed_item->starthours = min($compressed_item->starthours, $item->starthours);
           $compressed_item->endhours = max($compressed_item->endhours, $item->endhours);
-          // Copy comments into first slot.
-          $comments = $compressed_item->comment;
-          if (!is_array($comments)) {
-            $comments = [$comments];
-          }
+          // Add, copy comments into first slot.
           $comments[] = $item->comment;
-          $compressed_item->comment = $comments;
+          $compressed_item->set('comment', $comments);
 
-          // Delete subsequent item.
+          $compressed_item->isCompressed = TRUE;
+          $item->isCompressed = TRUE;
+          // Remove subsequent item.
           unset($info['items'][$day_index]);
         }
       }
@@ -411,23 +424,29 @@ trait OfficeHoursFormatterTrait {
     $result = [];
 
     $today = OfficeHoursDateHelper::today();
+    $weekday = OfficeHoursDateHelper::getWeekday($today);
 
     $this->sortedList ??= new OfficeHoursItemListSorter($this);
     $sorted_days = $this->sortedList->getSortedItemList($today);
 
     $current_day = $sorted_days[$today] ?? NULL;
 
-    // Mark the current day.
-    if ($current_day) {
-      $day_number = $current_day[0]->day;
-      foreach ($office_hours as $key => $info) {
-        if ($key == $day_number) {
-          $result[$key] = $info;
-          return $result;
-        }
+    // Mark the current day, even if it is closed.
+    // @todo Exception days.
+    // @todo Add css for office-hours__item-current.
+    $day_number = $current_day ? $current_day[0]->day : $weekday;
+    foreach ($office_hours as $key => $info) {
+      if ($info['day'] == $day_number) {
+        $result[$key] = $info;
+        return $result;
+      }
+      elseif (($info['day'] <= $day_number) && ($day_number <= $info['endday'])) {
+        // Grouped days.
+        // @todo When first day of week is not Sunday.
+        $result[$key] = $info;
+        return $result;
       }
     }
-
     return $result;
   }
 
@@ -519,7 +538,7 @@ trait OfficeHoursFormatterTrait {
       $item_comments = $item->comment;
       switch (TRUE) {
         case $item->isSeasonHeader():
-          // Remove season name from comments.
+          // Remove the Season name from comments.
           $info['comments'] = [];
           break;
 

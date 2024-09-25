@@ -41,12 +41,11 @@ class OfficeHoursItemListSorter {
       return $this->sortedItemList[$time];
     }
 
-    $date = OfficeHoursDateHelper::format($time, 'Y-m-d');
     // Start with last week, to get complete current week. Last for 2 weeks.
     $past = 8;
     $horizon = 14;
-    $start_date = strtotime($date . " -$past day");
-    $end_date = (strtotime($date . " +$horizon day"));
+    $start_date = strtotime("-$past day midnight", $time);
+    $end_date = strtotime("+$horizon day midnight", $time);
     $seasons = $this->itemList->getSeasons(TRUE, FALSE, 'ascending', $start_date, $end_date);
 
     // Build a list of open next days. Then pick the first day.
@@ -72,9 +71,8 @@ class OfficeHoursItemListSorter {
       // Exclude dates in the far past and the far future.
       switch (TRUE) {
         case $item->isSeasonHeader():
-          // Must be parsed before $item->isSeasonDay().
-          // But is processed after the days of the each season.
-
+          // Note: Header must be parsed before $item->isSeasonDay(),
+          // but is processed after the days of the each season.
           $season = $item->getSeason();
           $season_startdate = max($start_date, $season->getFromDate());
           // For future seasons only, fill the upcoming empty dates,
@@ -143,7 +141,7 @@ class OfficeHoursItemListSorter {
     }
     else {
       if ($item->isSeasonDay()
-      && !$item->getSeason()->isInRange($slot_date)) {
+      && !$item->getSeason()->isInRange($slot_date, $slot_date)) {
         // Do not add to list. Outside range.
       }
       elseif ($item->isEmpty()) {

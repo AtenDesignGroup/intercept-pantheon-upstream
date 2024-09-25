@@ -84,9 +84,9 @@ function hook_office_hours_time_format_alter(string &$formatted_time) {
  */
 
 /**
- * Eventsubscriber.
+ * EventSubscriber.
  *
- * To use events, do the followiung:
+ * To use events, do the following:
  * 1. copy the event_subscriber from services.yml to your own project
  * 2. copy and subclass the OfficeHoursEventSubscriber.php to your own project.
  */

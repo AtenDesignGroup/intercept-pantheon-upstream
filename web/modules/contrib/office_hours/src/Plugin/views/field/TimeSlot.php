@@ -92,7 +92,7 @@ class TimeSlot extends FieldBase {
       $this->addOptionsFormWarning($form, $form_state, $this->options['label']);
       // Set value to not return here again.
       static::$renderIndex = [];
-      // Clear all render output. View is incorrrect.
+      // Clear all render output. View is incorrect.
       $values = [];
 
       return;
@@ -189,7 +189,7 @@ class TimeSlot extends FieldBase {
 
       case $item->isExceptionDay():
         // Fill the Exception in the correct Weekday column.
-        // @todo What if the Weekay is not on view (e.g., Fri-Sun)?
+        // @todo What if the Weekday is not on view (e.g., Fri-Sun)?
         if ($weekday !== $item->getWeekday()) {
           return NULL;
         }
@@ -218,11 +218,11 @@ class TimeSlot extends FieldBase {
     /** @var \Drupal\Core\Entity\ContentEntityBase $entity */
     if ($entity->hasField($field_name)) {
       $items = $entity->get($field_name);
-
-      // Get the formatter settings of the main field,
-      // using the time slot formatter settings only once, not 7 times.
       $field_definition = $items->getFieldDefinition();
-      $formatter_settings = $this->view->field[$field_name]->options['settings'];
+
+      // Get the formatter settings of the main 'office_hours' field,
+      // re-using the time slot formatter settings 7 times.
+      $formatter_settings = $this->getFieldSettings($field_name);
       $widget_settings = $field_definition->getSettings();
       // @todo Fetch third_party_settings.
       $third_party_settings = [];

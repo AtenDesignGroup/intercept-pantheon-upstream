@@ -138,7 +138,7 @@ class OfficeHoursStatusFilter extends ManyToOne {
       if ($is_open && array_key_exists((int) static::OPEN, $filterValue)) {
         continue;
       }
-      if (!$is_open && array_key_exists((int) static::CLOSED, $filterValue)) {
+      if ((!$is_open) && array_key_exists((int) static::CLOSED, $filterValue)) {
         continue;
       }
       unset($view->result[$key]);

@@ -139,7 +139,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
     $formatter_settings = $this->formatterSettings;
     $cache_setting = $formatter_settings['show_closed'];
     if (!empty($formatter_settings['current_status']['position'])) {
-      $cache_setting = 'current';
+      $cache_setting = 'next';
     }
 
     switch ($cache_setting) {
@@ -156,6 +156,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
         break;
 
       case 'next':
+        // Cache expires after closing of current slot.
         $office_hours = NULL;
         $currentSlot = $this->items->getCurrentSlot($time);
         if ($currentSlot) {
@@ -165,7 +166,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
           // Get next slot.
           $next_day = $this->items->getNextDay($time);
           foreach ($this->items->getValue() as $item) {
-            if ($item['day'] == $next_day) {
+            if ($item['day'] == ($next_day[0]->day ?? NULL)) {
               $office_hours[] = $item;
               // Do no break here. It could be a closed slot from earlier today.
             }
@@ -260,7 +261,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
     }
 
     // Always add caching when exceptions are in place.
-    if ($this->items->hasExceptionDays()) {
+    if ($this->items->countExceptionDays()) {
       return TRUE;
     }
 

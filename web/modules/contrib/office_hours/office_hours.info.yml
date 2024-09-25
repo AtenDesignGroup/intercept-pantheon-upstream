@@ -4,13 +4,13 @@ package: Field types
 dependencies:
   - drupal:field
   - drupal:datetime
-core_version_requirement: ^8 || ^9 || ^10
+core_version_requirement: ^8 || ^9 || ^10 || ^11
 
 libraries:
   - office_hours
 type: module
 
-# Information added by Drupal.org packaging script on 2024-03-07
-version: '8.x-1.17'
+# Information added by Drupal.org packaging script on 2024-09-19
+version: '8.x-1.19'
 project: 'office_hours'
-datestamp: 1709818120
+datestamp: 1726747366

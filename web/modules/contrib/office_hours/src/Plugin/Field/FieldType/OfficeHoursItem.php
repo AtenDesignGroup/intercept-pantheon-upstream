@@ -66,10 +66,8 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    */
   public function getSeasonId() {
     $day = $this->day;
-    if (OfficeHoursDateHelper::isSeasonDay($day)) {
-      return $day - $day % 100;
-    }
-    return 0;
+    $season_id = OfficeHoursDateHelper::getSeasonId($day);
+    return $season_id;
   }
 
   /**
@@ -141,7 +139,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
       return FALSE;
     }
 
-    // $from-$to is converted to a weekday range, e.g., 0..7 days.
+    // Convert $from-$to dates to weekdays.
     // @todo Support other first_day_of_week.
     if ($to > OfficeHoursItem::SEASON_DAY_MIN) {
       $from = OfficeHoursDateHelper::getWeekday($from);
@@ -296,7 +294,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
 
     // Facilitate closed Exception days - first slots are never empty.
     if (OfficeHoursDateHelper::isExceptionDay($value['day'])) {
-      switch ($value['day_delta'] ?? 0) {
+      switch ($value['day_delta']) {
         case 0:
           // First slot is never empty if an Exception day is set.
           // In this case, on that date, the entity is 'Closed'.
@@ -328,7 +326,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    * {@inheritdoc}
    */
   public function setValue($value, $notify = TRUE) {
-    $this->format($value);
+    $value = $this->format($value);
     parent::setValue($value, $notify);
   }
 
@@ -339,11 +337,12 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    *   The value of a time slot; day, start, end, comment.
    *
    * @return array
-   *   The normalised value of a time slot.
+   *   The normalized value of a time slot.
    */
-  public static function format(&$value) {
+  public static function format($value) {
     $value ??= [];
     $day = $value['day'] ?? NULL;
+    $day_delta = $value['day_delta'] ?? 0;
 
     if (OfficeHoursDateHelper::isExceptionHeader($day)) {
       // An ExceptionItem is created with ['day' => EXCEPTION_DAY,].
@@ -355,6 +354,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
     if ($day === NULL) {
       $value += [
         'day' => '',
+        'day_delta' => 0,
         'all_day' => FALSE,
         'starthours' => NULL,
         'endhours' => NULL,
@@ -372,38 +372,6 @@ class OfficeHoursItem extends OfficeHoursItemBase {
     elseif ($day !== '') {
       // Convert day number to integer to get '0' for Sunday, not 'false'.
       $day = (int) $day;
-    }
-
-    // Handle exception day 'more' slots.
-    // The following should be in slot::valueCallback(),
-    // But the results are not propagated into the widget.
-    if ($value !== FALSE) {
-
-      // This function is called in a loop over widget items.
-      // Save the exception day for the first delta,
-      // then use it in the following delta's of a day.
-      static $day_delta = 0;
-      static $previous_day = NULL;
-
-      if ($previous_day === $day) {
-        $day_delta++;
-      }
-      // Note: in ideal implementation, this is only needed in valueCallback(),
-      // but values are not copied from slot to widget.
-      // Only need to widget-specific massaging of form values,
-      // All logical changes will be done in ItemList->setValue($values),
-      // where the format() function will be called, also.
-      // Process Exception days with 'more slots'.
-      // This cannot be done in above form, since we parse $day over items.
-      // Process 'day_delta' first, to avoid problem in isExceptionDay().
-      elseif ($value['day'] === 'exception_day_delta') {
-        $day = $previous_day;
-        $day_delta++;
-      }
-      else {
-        $previous_day = $day;
-        $day_delta = 0;
-      }
     }
 
     $starthours = $value['starthours'] ?? NULL;
@@ -554,10 +522,11 @@ class OfficeHoursItem extends OfficeHoursItemBase {
   public function label(array $settings) {
     $value = $this->getValue();
     $day = $value['day'];
+    $day_delta = $value['day_delta'];
 
     // Get the label.
     $pattern = $settings['day_format'];
-    $label = $this->formatLabel($pattern, $value, $value['day_delta'] ?? 0);
+    $label = OfficeHoursItem::formatLabel($pattern, $value, $day_delta);
 
     // Extend the label for Grouped days.
     if (isset($value['endday'])) {

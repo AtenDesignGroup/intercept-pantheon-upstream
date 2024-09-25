@@ -58,7 +58,7 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
 
     $elements = $this->attachSchemaFormatter($items, $langcode, $elements);
     $elements = $this->attachStatusFormatter($items, $langcode, $elements);
-    // Sort elements, to have Statusformattor on correct position.
+    // Sort elements, to have the StatusFormatter on correct position.
     usort($elements, [SortArray::class, 'sortByWeightProperty']);
 
     if ($this->attachCache) {

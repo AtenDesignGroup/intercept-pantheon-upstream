@@ -59,10 +59,10 @@ class Season extends FieldBase {
         break;
 
       case $item->isExceptionDay():
-        // Get the formatter settings of the 'office_hours' main field,
-        // re-using the settings only once.
-        $settings = $this->view->field[$field_name]->options['settings'];
-        $result = $item->label($settings);
+        // Get the formatter settings of the main 'office_hours' field,
+        // re-using the time slot formatter settings 7 times.
+        $formatter_settings = $this->getFieldSettings($field_name);
+        $result = $item->label($formatter_settings);
         break;
 
       // case $item->isSeasonHeader():

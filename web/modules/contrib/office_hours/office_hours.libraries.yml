@@ -22,6 +22,7 @@ office_hours_widget:
   dependencies:
     - core/drupal
     - core/jquery
+    - core/once
 
 office_hours_webform:
   version: VERSION

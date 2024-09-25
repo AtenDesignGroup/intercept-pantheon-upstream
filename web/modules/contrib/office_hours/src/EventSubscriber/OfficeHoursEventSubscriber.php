@@ -14,7 +14,7 @@ abstract class OfficeHoursEventSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events[OfficeHoursEvents::UPDATE][] = ['updateProcess'];
     $events[OfficeHoursEvents::PRE_FORMAT][] = ['preFormatProcess'];
     $events[OfficeHoursEvents::POST_FORMAT][] = ['postFormatProcess'];

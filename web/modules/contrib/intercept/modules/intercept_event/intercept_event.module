@@ -26,7 +26,6 @@ use Drupal\Core\Url;
 use Drupal\Component\Datetime\DateTimePlus;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
-use Drupal\pathauto\AliasUniquifier;
 use Drupal\user\Entity\User;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
@@ -276,45 +275,10 @@ function intercept_event_page_attachments(array &$attachments) {
 }
 
 /**
- * Implements hook_pathauto_alias_alter().
- */
-function intercept_event_pathauto_alias_alter(&$alias, array &$context) {
-  if ($context['module'] == 'node' && $context['bundle'] == 'event') {
-    // Utilize uniquify() function from Pathauto to prevent duplicate aliases
-    // which will lead to incorrect registrations for events.
-    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
-    $config_factory = \Drupal::service('config.factory');
-    $alias_storage_helper = \Drupal::service('pathauto.alias_storage_helper');
-    $module_handler = \Drupal::service('module_handler');
-    $route_provider = \Drupal::service('router.route_provider');
-    $alias_manager = \Drupal::service('path_alias.manager');
-    $alias_uniquifier = new AliasUniquifier($config_factory, $alias_storage_helper, $module_handler, $route_provider, $alias_manager);
-    $unique_alias = $alias_uniquifier->uniquify($alias, $context['source'], $langcode);
-    // Then ultimately make the alias for registration.
-    \Drupal::service('intercept_event.manager')->addRegisterAlias($context['data']['node'], $unique_alias);
-  }
-}
-
-/**
- * Implements hook_node_update().
- */
-function intercept_event_node_update(NodeInterface $node) {
-  if ($node->bundle() == 'event') {
-    if ($node->path->pathauto) {
-      return;
-    }
-    \Drupal::service('intercept_event.manager')->addRegisterAlias($node);
-  }
-}
-
-/**
  * Implements hook_node_insert().
  */
 function intercept_event_node_insert(NodeInterface $node) {
   if ($node->bundle() == 'event') {
-    if (!$node->path->pathauto) {
-      \Drupal::service('intercept_event.manager')->addRegisterAlias($node);
-    }
     $event_recurrences = $node->get('event_recurrence')->referencedEntities();
     foreach ($event_recurrences as $recurrence) {
       if (!$recurrence->get('event')->target_id) {

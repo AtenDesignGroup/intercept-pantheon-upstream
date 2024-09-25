@@ -13,6 +13,8 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemBase;
 \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme');
 // Add ExceptionItem field formatter theming/preprocessing.
 \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme.exceptions');
+// Add views hooks.
+\Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.views');
 
 /**
  * Implements hook_help().
@@ -54,7 +56,7 @@ function office_hours_help($route_name, RouteMatchInterface $route_match) {
  * Changes the Field_storage settings form to assure unlimited cardinality.
  */
 function office_hours_form_field_storage_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // admin/structure/types/manage/ctoh2/fields/TYPE/storage
+  // admin/structure/types/manage/TYPE/fields/TYPE/storage
   $field_type = $form_state->getFormObject()->getEntity()->getType();
   if ($field_type == 'office_hours') {
     OfficeHoursItemBase::storageSettingsFormAlter($form, $form_state, $form_id);

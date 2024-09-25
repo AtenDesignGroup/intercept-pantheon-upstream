@@ -606,6 +606,7 @@ display:
         type: full
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 15
           total_pages: null
           id: 0
@@ -1024,6 +1025,53 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          operator: '='
+          value: All
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: Published
+            description: ''
+            use_operator: false
+            operator: status_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: status
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+              administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
         field_date_time_value:
           id: field_date_time_value
           table: node__field_date_time
@@ -1065,53 +1113,6 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        status:
-          id: status
-          table: node_field_data
-          field: status
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: status
-          plugin_id: boolean
-          operator: '='
-          value: All
-          group: 1
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Published
-            description: ''
-            use_operator: false
-            operator: status_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: status
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1357,7 +1358,7 @@ display:
           group_type: group
           admin_label: 'field_location: Content'
           plugin_id: standard
-          required: true
+          required: false
       use_ajax: false
       group_by: false
       header: {  }
@@ -2243,6 +2244,53 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          operator: '='
+          value: All
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: Published
+            description: ''
+            use_operator: false
+            operator: status_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: status
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              intercept_registered_customer: '0'
+              intercept_kiosk: '0'
+              intercept_event_manager: '0'
+              intercept_staff: '0'
+              intercept_system_admin: '0'
+              administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
         field_date_time_value:
           id: field_date_time_value
           table: node__field_date_time
@@ -2284,53 +2332,6 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        status:
-          id: status
-          table: node_field_data
-          field: status
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: status
-          plugin_id: boolean
-          operator: '='
-          value: All
-          group: 1
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Published
-            description: ''
-            use_operator: false
-            operator: status_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: status
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2504,6 +2505,7 @@ display:
         type: full
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 50
           total_pages: null
           id: 0
@@ -3049,7 +3051,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
       tags: {  }
   list_page:
@@ -3071,7 +3072,7 @@ display:
           exclude: true
           alter:
             alter_text: true
-            text: "{% if (field_date_time__value|date('U') >=  'today midnight'|date('U')) and (field_date_time__value|date('U') <  'tomorrow midnight'|date('U')) %} \r\n{{ 'Today'|t }}\r\n{% elseif (field_date_time__value|date('U') >=  'tomorrow midnight'|date('U')) and (field_date_time__value|date('U') <  '+2 day midnight'|date('U')) %} \r\n{{ 'Tomorrow'|t }}\r\n{% else %}\r\n{{ field_date_time__value|date('l, F d, Y') }}\r\n{% endif %}\r\n"
+            text: "{% if (field_date_time__value|date('U') >=  'today midnight'|date('U')) and (field_date_time__value|date('U') <  'tomorrow midnight'|date('U')) %} \r\n{{ 'Today'|t }}\r\n{% elseif (field_date_time__value|date('U') >=  'tomorrow midnight'|date('U')) and (field_date_time__value|date('U') <  '+2 day midnight'|date('U')) %} \r\n{{ 'Tomorrow'|t }}\r\n{% else %}\r\n{{ field_date_time__value|date('l, F d, Y') }}\r\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -3723,7 +3724,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
       tags:
         - 'config:core.entity_view_display.node.equipment.default'

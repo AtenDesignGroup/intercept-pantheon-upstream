@@ -4,6 +4,7 @@ namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 
 /**
  * Plugin implementation of the 'office_hours_week' widget.
@@ -46,7 +47,7 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
     $day_index = $delta;
     $element['value'] = [
       '#type' => 'office_hours_list',
-      '#default_value' => $item,
+      '#default_value' => $default_value,
       '#day_index' => $day_index,
       '#day_delta' => 0,
         // Wrap all of the select elements with a fieldset.
@@ -59,6 +60,24 @@ class OfficeHoursListWidget extends OfficeHoursWidgetBase {
         ],
       ],
     ] + $element['value'];
+
+    return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function afterBuild(array $element, FormStateInterface $form_state) {
+    $element = parent::afterBuild($element, $form_state);
+
+    foreach (Element::children($element) as $key) {
+      // Remove the 'drag-n-drop reordering' element.
+      // $element[$key]['#cardinality_multiple'] = FALSE;
+      // Remove the little draggable 'Weight for row n' box.
+      // unset($element[$key]['_weight']);
+      // Remove core's 'Remove' action button.
+      unset($element[$key]['_actions']);
+    }
 
     return $element;
   }

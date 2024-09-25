@@ -14,14 +14,14 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 class OfficeHoursEvent extends Event {
 
   /**
-   * The Itemlist.
+   * The ItemList.
    *
    * @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface
    */
   public $items;
 
   /**
-   * The foramtterd office_hours.
+   * The formatted office_hours.
    *
    * @var array
    */

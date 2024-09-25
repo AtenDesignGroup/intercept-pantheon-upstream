@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.5] - 2024-09-25
+
+* Fixed an issue with registration pages not working on some recurring events
+* Fixed an error that could appear on the event form related to room reservation times when no reservation was being made
+* Fixed an issue with some events (with missing location values) not showing up on the staff listing of events
+* Fixed an error on the staff-facing form for creating event registrations on behalf of customers
+
 ## [2.0.4] - 2024-08-28
 
 * Fixed an issue with the bulk room reservation form not showing all conflicts

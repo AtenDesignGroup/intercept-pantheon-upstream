@@ -5,7 +5,6 @@ namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\office_hours\OfficeHoursSeason;
 
 /**
  * Plugin implementation of the 'office_hours_exceptions' widget.
@@ -44,12 +43,11 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
     // Use the form we are already in, not by adding a new widget.
     $field_type = 'office_hours';
     $field_definition = $items->getFieldDefinition($field_type);
-    $id = 0;
-    // Explicitely set the season 0, avoiding error upon addMoreSubmit().
+    // Explicitly set the season 0, avoiding error upon addMoreSubmit().
     $this->setSeason();
+    $id = 0;
     $widget_form = parent::formElement($items, $delta, $element, $form, $form_state);
     $element[$field_type][$id] = $widget_form;
-    // $element[$field_type][$id]['#tree'] = TRUE;
 
     // Then, add a List Widget for the Exception days.
     if ($this->getFieldSetting('exceptions')) {
@@ -57,12 +55,13 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
       $field_type = 'office_hours_exceptions';
       $field_definition = $items->getFieldDefinition($field_type);
       $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
-      $id++;
+      // Explicitly set an ID/weight between 0 and first season ID.
+      $id = 10;
       $widget_form = $widget->form($items, $form, $form_state);
       // @todo #3335549 Decide to use complete form or only ['widget'] part.
-      $element[$field_type][$id] = $widget_form['widget'];
+      $element[$field_type][$id] = $widget_form['widget'][0] + $widget_form['widget'];
+      unset($element[$field_type][$id][0]);
       unset($element[$field_type][$id]['#parents']);
-      // $element[$field_type][$id]['#tree'] = TRUE;
     }
 
     // Then, add Widgets for the Season days.
@@ -74,19 +73,18 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
       // Create a Widget for each season. @todo Add sorting?
       $seasons = $items->getSeasons(FALSE, TRUE);
       foreach ($seasons as $id => $season) {
+        $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
         $widget->setSeason($season);
-
         $widget_form = $widget->form($items, $form, $form_state);
         // @todo #3335549 Decide to use complete form or only ['widget'] part.
         $element[$field_type][$id] = $widget_form['widget'];
         unset($element[$field_type][$id]['#parents']);
-        // $element[$field_type][$id]['#tree'] = TRUE;
       }
     }
 
     // Remove messages from WeekWidget::addMessage();
     // @todo Perhaps first fetch MessengerInterface::all(), then restore.
-    \Drupal::messenger()->deleteByType(self::MESSAGE_TYPE);
+    \Drupal::messenger()->deleteByType(static::MESSAGE_TYPE);
 
     // @todo The '#required' is now on main level, not on weekday level.
     return $element;
@@ -112,7 +110,7 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
 
     // @todo Keep aligned between WebformOfficeHours and ~Widget.
     $label = $this->label ?? '';
-    $settings = $this->getSettings();
+    $widget_settings = $this->getSettings();
     $pluginManager = \Drupal::service("plugin.manager.field.$plugin_type");
     $plugin = $pluginManager->getInstance([
       'field_definition' => $field_definition,
@@ -127,7 +125,7 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
         'label' => $label,
         // No need to prepare, defaults have been merged in setComponent().
         'prepare' => FALSE,
-        'settings' => $settings,
+        'settings' => $widget_settings,
         'third_party_settings' => [],
       ],
     ]);
@@ -140,6 +138,9 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $massaged_values = [];
 
+    // @todo Correct $element['#parents'], since FormBuilder's
+    // $form_state->setValueForElement() and  $form_state->setUserInput($input)
+    // set too much/wrong data, complicating massageFormValues().
     foreach ($values as $widgets) {
       foreach ($widgets as $widget_values) {
         $widget_values = OfficeHoursSeasonWidget::massageFormValues($widget_values, $form, $form_state);
@@ -148,6 +149,13 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
     }
 
     return $massaged_values;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function extractFormValues(FieldItemListInterface $items, array $form, FormStateInterface $form_state) {
+    parent::extractFormValues($items, $form, $form_state);
   }
 
 }

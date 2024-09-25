@@ -218,26 +218,49 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   /**
    * {@inheritdoc}
    */
-  public function getExceptionDays() {
-    $exception_days = [];
+  public function getExceptionItems() {
+    $list = clone $this;
 
-    foreach ($this->list as $item) {
+    $list->filter(function ($item) {
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
       if ($item->isExceptionDay()) {
-        $day = $item->getValue()['day'];
-        $exception_days[$day][] = $item;
+        return TRUE;
       }
-    }
+    });
 
-    return $exception_days;
+    return $list;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function hasExceptionDays() {
-    $exception_days = $this->getExceptionDays();
-    return (bool) $exception_days;
+  public function getSeasonItems(int $season_id) {
+    $list = clone $this;
+
+    $list->filter(function ($item) use ($season_id) {
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+      if ($season_id == OfficeHoursItem::EXCEPTION_DAY && $item->isExceptionDay()) {
+        return TRUE;
+      }
+      if ($season_id == 0 && $item->isExceptionDay()) {
+        return FALSE;
+      }
+      return $season_id == $item->getSeasonId();
+    });
+
+    return $list;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function countExceptionDays() {
+    $items = $this->getExceptionItems();
+    $exception_days = [];
+    foreach($items as $item) {
+      $exception_days[$item->day] = true;
+    }
+    return count($exception_days);
   }
 
   /**

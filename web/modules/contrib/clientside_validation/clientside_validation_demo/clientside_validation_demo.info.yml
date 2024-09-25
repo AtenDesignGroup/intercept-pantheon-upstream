@@ -3,11 +3,11 @@ name: Clientside Validation Demo
 description: 'Provides demo for Clientside Validation.'
 package: Clientside Validation
 configure: clientside_validation_demo.form
-core_version_requirement: ^9.4 || ^10
+core_version_requirement: ^9.4 || ^10 || ^11
 dependencies:
   - clientside_validation:clientside_validation_jquery
 
-# Information added by Drupal.org packaging script on 2024-06-28
-version: '4.0.3'
+# Information added by Drupal.org packaging script on 2024-09-25
+version: '4.1.0'
 project: 'clientside_validation'
-datestamp: 1719601030
+datestamp: 1727266057

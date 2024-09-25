@@ -20,9 +20,9 @@ class OfficeHoursListSlot extends OfficeHoursBaseSlot {
     parent::processOfficeHoursSlot($element, $form_state, $complete_form);
 
     // The valueCallback() has populated the #value array.
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $item = $element['#value'];
-    $day = $item->day;
+    $value = $element['#value'];
+    $value = is_object($value) ? $value->getValue() : $value;
+    $day = $value['day'];
 
     // Add standardized labels to time slot element.
     $field_settings = $element['#field_settings'];

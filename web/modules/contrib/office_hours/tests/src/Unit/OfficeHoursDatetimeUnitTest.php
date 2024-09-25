@@ -88,7 +88,7 @@ class OfficeHoursDatetimeUnitTest extends UnitTestCase {
    * @return array
    *   A list of test cases.
    */
-  public function providerGetEndTimes(): array {
+  public static function providerGetEndTimes(): array {
     return [
       "midnight1" => ['00:00', 'G', '24'],
       "midnight2" => ['00:00', 'H:i', '24:00'],

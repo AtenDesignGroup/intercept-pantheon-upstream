@@ -40,26 +40,26 @@ class OfficeHoursBaseSlot extends FormElement {
   public static function getDefaultOperations(array $element) {
     $operations = [];
 
-    // Add explicitely, needed when dropbuttons are used.
+    // Add explicitly, needed when dropbuttons are used.
     $operations['add'] = [];
     $operations['clear'] = [];
     $operations['copy'] = [];
 
     // The valueCallback() has populated the #value array.
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $item = $element['#value'];
-    $day = $item->day;
+    $value = $element['#value'];
+    $value = is_object($value) ? $value->getValue() : $value;
+    $day = $value['day'];
     $day_delta = $element['#day_delta'];
-    $max_delta = $element['#field_settings']['cardinality_per_day'] - 1;
-    // For 'link', add dummy URL - it will be catch-ed by js.
-    $url = Url::fromRoute('<front>');
-    $suffix = ' ';
 
     // Note: the operations key is also using in JS, e.g., $('[id$=add]').
     // Note: When using '#type' => 'operations', the weight is not used,
     // so ordering must be OK here.
     //
     // Add 'Add time slot' link to all-but-last slots of each day.
+    $max_delta = $element['#field_settings']['cardinality_per_day'] - 1;
+    // For 'link', add dummy URL - it will be catch-ed by js.
+    $url = Url::fromRoute('<front>');
+    $suffix = ' ';
     if ($day_delta < $max_delta) {
       $operations['add'] = [
         '#type' => 'link',
@@ -74,11 +74,11 @@ class OfficeHoursBaseSlot extends FormElement {
     }
 
     // Show a 'Clear this line' js-link to each element.
-    // Use text 'Remove', which has lots of translations.
+    // Use text 'Clear', which has lots of translations.
     // Show this link always, even if empty, to allow not-committed entries.
     $operations['clear'] = [
       '#type' => 'link',
-      '#title' => t('Remove'),
+      '#title' => t('Clear'),
       '#weight' => 12,
       '#url' => $url,
       '#suffix' => $suffix,
@@ -120,13 +120,23 @@ class OfficeHoursBaseSlot extends FormElement {
 
     if ($input ?? FALSE) {
       // Massage, normalize value after pressing Form button.
-      // $element is also updated via reference.
-      $item = $element['#default_value'];
-      $item->setValue($input);
-      return $item;
+      $value = OfficeHoursItem::format($input);
+      // Add day_delta for label() or isEmpty() call.
+      $day_delta = $element['#day_delta'];
+      $value['day_delta'] = $day_delta;
+      return $value;
     }
-
-    return NULL;
+    else {
+      $value = $element['#default_value'];
+      // Add day_delta for label() or isEmpty() call.
+      $day_delta = $element['#day_delta'];
+      if ($value == []) {
+        $value = OfficeHoursItem::format(['day' => NULL,
+          'day_delta' => $day_delta,
+        ]);
+      }
+    }
+    return $value;
   }
 
   /**
@@ -148,12 +158,12 @@ class OfficeHoursBaseSlot extends FormElement {
   public static function processOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
 
     // The valueCallback() has populated the #value array.
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $item = $element['#value'];
-    $day = $item->day;
+    $value = $element['#value'];
+    $value = is_object($value) ? $value->getValue() : $value;
+    $day = $value['day'];
     $day_delta = $element['#day_delta'];
     // Add day_delta for label() or isEmpty() call.
-    $item->day_delta = $day_delta;
+    $value['day_delta'] = $day_delta;
 
     $field_settings = $element['#field_settings'];
     $time_format = $field_settings['time_format'];
@@ -165,7 +175,7 @@ class OfficeHoursBaseSlot extends FormElement {
       // Add a label/header/title for accessibility (a11y) screen readers.
       '#title' => t('Indicates if the entity is opened all day'),
       '#title_display' => 'invisible',
-      '#default_value' => $item->all_day,
+      '#default_value' => $value['all_day'],
     ];
     $element['starthours'] = [
       '#type' => $field_settings['element_type'], // 'datelist', 'datetime'.
@@ -181,14 +191,14 @@ class OfficeHoursBaseSlot extends FormElement {
       // Attributes for element \Drupal\Core\Datetime\Element\Datelist - End.
     ];
     $element['endhours'] = $element['starthours'];
-    $element['starthours']['#default_value'] = $item->starthours;
-    $element['endhours']['#default_value'] = $item->endhours;
+    $element['starthours']['#default_value'] = $value['starthours'];
+    $element['endhours']['#default_value'] = $value['endhours'];
     $element['comment'] = !$field_settings['comment'] ? NULL : [
       '#type' => 'textfield',
       // Add a label/header/title for accessibility (a11y) screen readers.
       '#title' => t('A Comment for this time slot'),
       '#title_display' => 'invisible',
-      '#default_value' => $item->comment,
+      '#default_value' => $value['comment'],
       '#size' => 20,
       '#maxlength' => 255,
       '#field_settings' => $field_settings,
@@ -204,8 +214,7 @@ class OfficeHoursBaseSlot extends FormElement {
     if ($day_delta == 0) {
       // This is the first slot of the day.
     }
-    elseif (!OfficeHoursItem::isValueEmpty($item->getValue())) {
-      // @todo Use $item->isEmpty(), but that gives other result, somehow.
+    elseif (!OfficeHoursItem::isValueEmpty($value)) {
       // This is a following slot with contents.
       // Display the slot and display Add-link.
       // Note: value includes the $day_delta parameter.
@@ -223,6 +232,11 @@ class OfficeHoursBaseSlot extends FormElement {
     $element['#attributes']['office_hours_day'] = "$day_index";
 
     $element['#attributes']['id'] = $element['#id'];
+
+    // Wrap the columns in a div with specific class that will be used
+    // in JS to target only elements coming from this module.
+    $element['#prefix'] = "<div class='js-office-hours-columns-wrapper'>";
+    $element['#suffix'] = "</div>";
 
     return $element;
   }
@@ -251,13 +265,15 @@ class OfficeHoursBaseSlot extends FormElement {
     // Do not use NestedArray::getValue();
     // It does not return formatted values from valueCallback().
     // The valueCallback() has populated the #value array.
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $item = $element['#value'];
-    $value = $item->getValue();
+    $value = $element['#value'];
+    $value = is_object($value) ? $value->getValue() : $value;
+    $day = $value['day'];
+    $day_delta = $element['#day_delta'];
+    // Add day_delta for label() or isEmpty() call.
+    $value['day_delta'] = 0;
 
     // Avoid complex validation below. Remove comment, only in validation.
     // No complex validation if empty.
-    // @todo Use $item->isEmpty(), but that gives other result, somehow.
     if (OfficeHoursItem::isValueEmpty(['comment' => NULL] + $value)) {
       return;
     }
@@ -266,18 +282,15 @@ class OfficeHoursBaseSlot extends FormElement {
       return;
     }
 
-    $day = $item->day;
+    $pattern = 'long';
+    $label = OfficeHoursItem::formatLabel($pattern, $value, $day_delta);
+
     $field_settings = $element['#field_settings'];
     $date_helper = new OfficeHoursDateHelper();
-    // Add day_delta for label() or isEmpty() call.
-    $item->day_delta = 0;
-    $settings = ['day_format' => 'long'];
-    $label = $item->label($settings);
-
     // Exception: end time 00:00 --> 24:00.
-    $start = $date_helper->format($item->starthours, 'Gi', FALSE);
-    $end = $date_helper->format($item->endhours, 'Gi', TRUE);
-    $all_day = $item->all_day;
+    $start = $date_helper->format($value['starthours'], 'Gi', FALSE);
+    $end = $date_helper->format($value['endhours'], 'Gi', TRUE);
+    $all_day = $value['all_day'];
 
     $time_format = $date_helper->getTimeFormat($field_settings['time_format']);
     $validate_hours = $field_settings['valhrs'];

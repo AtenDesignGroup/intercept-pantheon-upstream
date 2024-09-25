@@ -3,7 +3,7 @@
 namespace Drupal\office_hours;
 
 // The following are not used, but left for testing below issue.
-// @see https://www.drupal.org/project/office_hours/issues/339905
+// @see https://www.drupal.org/project/office_hours/issues/3399054
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
@@ -63,7 +63,7 @@ class OfficeHoursSeason {
    *   or an OfficeHours Item, read from database.
    *   or a Season, to be cloned.
    * @param string $name
-   *   The season name.
+   *   The Season name.
    * @param int $from
    *   The start date of the season (unix timestamp).
    * @param int $to
@@ -187,28 +187,34 @@ class OfficeHoursSeason {
    * @param int $from
    *   The start date of the date range.
    * @param int $to
-   *   The duration (0..7) or end date (timestamp).
+   *   The duration (1..999) or end date (timestamp).
    *
    * @return bool
    *   TRUE if the given time period is in range, else FALSE.
    */
-  public function isInRange(int $from, int $to = 0): bool {
+  public function isInRange(int $from, int $to): bool {
     $is_in_range = TRUE;
 
     if ($from == 0 && $to == 0) {
-      return $is_in_range;
+      return TRUE;
     }
 
-    // Change duration to end date.
-    if ($from > OfficeHoursItem::SEASON_DAY_MIN
-    && $to < 365) {
-      $to = strtotime("+$to day", $from);
+    // Change start date + duration to start date + end date.
+    if ($from > OfficeHoursItem::SEASON_DAY_MIN) {
+      if ($to == 0) {
+        // A start_date with a horizon 0 is never in range.
+        return FALSE;
+      }
+      if ($to < OfficeHoursItem::SEASON_DAY_MAX) {
+        // Convert duration to end date.
+        $to = strtotime("+$to day", $from);
+      }
     }
 
     $season = $this;
     if ($season->id()) {
       $minDate = $season->getFromDate();
-      $maxDate = $season->getToDate();
+      $maxDate = strtotime("+1 day midnight", $season->getToDate());
       // Season days. Weekdays are always in range.
       $is_in_range = ($minDate <= $to && $maxDate >= $from);
     }
@@ -227,7 +233,7 @@ class OfficeHoursSeason {
   }
 
   /**
-   * Returns the translated Season Name.
+   * Returns the translated Season name.
    *
    * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
    *   The name.
@@ -241,9 +247,9 @@ class OfficeHoursSeason {
     // Enable locale module 'User interface translation.
     // Enable both exceptions and season in widget.
     // Edit with non-english page /nl/node/8/edit .
-    // Click 'Add Exception' button.
+    // Click 'Add exception' button.
     // Check if an empty exception is added.
-    // @see https://www.drupal.org/project/office_hours/issues/339905
+    // @see https://www.drupal.org/project/office_hours/issues/3399054
     // return $this->name;
     // return t($this->name);
     // return $this->t($this->name);
@@ -254,7 +260,7 @@ class OfficeHoursSeason {
    * Returns the untranslated Season name.
    *
    * @return string
-   *   The season name.
+   *   The Season name.
    */
   public function getName() {
     return $this->name;

@@ -20,7 +20,7 @@ use Drupal\webform\WebformSubmissionInterface;
  * @WebformElement(
  *   id = "office_hours",
  *   label = @Translation("Office hours"),
- *   description = @Translation("Defines a 'weekly office hours' webform element"),
+ *   description = @Translation("Defines a 'weekly office hours' Webform element"),
  *   category = @Translation("Composite elements"),
  *   composite = TRUE,
  *   multiple = FALSE,
@@ -77,7 +77,7 @@ class WebformOfficeHours extends WebformCompositeBase {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    // Add afterbuild to fix 'Limited to 1' setting.
+    // Add '#afterBuild' to fix 'Limited to 1' setting.
     if (isset($form['element']['multiple'])) {
       $form['element']['multiple']['#after_build'] = [
         [static::class, 'afterBuild'],
@@ -361,7 +361,7 @@ class WebformOfficeHours extends WebformCompositeBase {
    * @param array $element
    *   An element.
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
+   *   A Webform submission.
    * @param array $options
    *   An array of options.
    *
@@ -411,7 +411,7 @@ class WebformOfficeHours extends WebformCompositeBase {
    * @param array $element
    *   An element.
    * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
+   *   A Webform submission.
    *
    * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface
    *   An Item list for office hours.

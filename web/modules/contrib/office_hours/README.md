@@ -80,7 +80,7 @@ Only default (out-of-the-box) Views functionality is provided.
 - To show only the entities that are open NOW:
   - add the filter criterion
    'Content: Office hours (OfficeHours2 (field_office_hours:status)',
-  - choose any of the statusses Open, temporarily closed, permanently closed.
+  - choose any of the values Open, temporarily closed, permanently closed.
 
 ## USING VIEWS - SORT CRITERIA
 

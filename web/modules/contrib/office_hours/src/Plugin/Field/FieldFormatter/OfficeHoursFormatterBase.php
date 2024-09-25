@@ -109,6 +109,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       'exceptions' => [
         'replace_exceptions' => FALSE,
         'restrict_exceptions_to_num_days' => 7,
+        'restrict_seasons_to_num_days' => 366,
         'date_format' => 'long',
         'title' => 'Exception hours',
         'all_day_format' => 'All day open',
@@ -347,11 +348,11 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     ];
 
     $element['exceptions'] = [
-      '#title' => $this->t('Exception days'),
+      '#title' => $this->t('Exception days and Seasons'),
       '#type' => 'details',
       '#open' => FALSE,
-      '#description' => $this->t("Note: Exception days can only be entered
-        using the '(week) with exceptions' widget."),
+      '#description' => $this->t("Note: Exception days and Seasons
+        can only be maintained using the '(week) with exceptions' widget."),
     ];
     // Get the exception day formats.
     $formats = $this->entityTypeManager->getStorage('date_format')->loadMultiple();
@@ -377,7 +378,15 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#min' => 0,
       '#max' => OfficeHoursItem::EXCEPTION_HORIZON_MAX,
       '#step' => 1,
-      '#description' => $this->t("To enable Exception days, set a non-zero number (to be used in the formatter) and select an 'Exceptions' widget."),
+      '#required' => TRUE,
+    ];
+    $element['exceptions']['restrict_seasons_to_num_days'] = [
+      '#title' => $this->t('Restrict seasons display to x days in future'),
+      '#type' => 'number',
+      '#default_value' => $settings['exceptions']['restrict_seasons_to_num_days'],
+      '#min' => 0,
+      '#max' => OfficeHoursItem::EXCEPTION_HORIZON_MAX,
+      '#step' => 1,
       '#required' => TRUE,
     ];
     // @todo Add link to admin/config/regional/date-time.
@@ -488,6 +497,11 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
         $settings['exceptions']['title'] ?: 'Exception days'),
       '@label' => OfficeHoursItem::formatLabel(
         $settings['exceptions']['date_format'], ['day' => $date]),
+    ]);
+    $summary[] = $this->t("Show '@title' until @time days in the future.", [
+      '@time' =>
+        $settings['exceptions']['restrict_seasons_to_num_days'],
+      '@title' => $this->t('Seasons'),
     ]);
 
     $current_status = $settings['current_status']['position'];

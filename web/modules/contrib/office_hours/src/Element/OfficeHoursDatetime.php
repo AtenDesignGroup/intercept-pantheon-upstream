@@ -66,7 +66,14 @@ class OfficeHoursDatetime extends Datetime {
   }
 
   /**
-   * {@inheritdoc}
+   * Creates an example for a date format.
+   *
+   * @param string $format
+   *   The date format.
+   *
+   * @return string
+   *
+   * @see https://www.drupal.org/node/3385058
    */
   public static function processDatetime(&$element, FormStateInterface $form_state, &$complete_form) {
     $time_format = $element['#date_time_format'];
@@ -106,7 +113,14 @@ class OfficeHoursDatetime extends Datetime {
   }
 
   /**
-   * {@inheritdoc}
+   * Creates an example for a date format.
+   *
+   * This is centralized for a consistent method of creating these examples.
+   *
+   * @param string $format
+   *   The date format.
+   *
+   * @return string
    */
   public static function formatExample($format, $step = 5) {
     // Overwrite parent function, to adhere to field settings.

@@ -4,7 +4,7 @@
 {{ attach_library('intercept_base/header-desktop') }}
 {% set menu = header.menu %}
 
-<header class="header-desktop desktop" role="banner">
+<header aria-label="{{'Desktop Header'|t}}" class="header-desktop desktop" role="banner">
   <div class="header-desktop__inner l-page">
     <div class="header-desktop__logo">
       {% include '@intercept-base-components/logo/logo.twig' with { logo_path: logo_path, alt: site_name ~ ' logo' } only %}

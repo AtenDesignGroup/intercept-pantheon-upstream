@@ -2,15 +2,15 @@
 
 namespace Drupal\consumer_image_styles\Normalizer;
 
-use Drupal\consumers\Entity\Consumer;
-use Drupal\consumers\MissingConsumer;
-use Drupal\consumers\Negotiator;
-use Drupal\consumer_image_styles\ImageStylesProviderInterface;
-use Drupal\consumer_image_styles\ImageStylesProvider;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Image\ImageFactory;
 use Drupal\Core\Url;
+use Drupal\consumer_image_styles\ImageStylesProvider;
+use Drupal\consumer_image_styles\ImageStylesProviderInterface;
+use Drupal\consumers\Entity\Consumer;
+use Drupal\consumers\MissingConsumer;
+use Drupal\consumers\Negotiator;
 use Drupal\image\ImageStyleInterface;
 use Drupal\jsonapi\JsonApiResource\Link;
 use Drupal\jsonapi\JsonApiResource\LinkCollection;
@@ -25,21 +25,29 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class LinkCollectionNormalizer implements NormalizerInterface {
 
   /**
+   * Consumer Negotiator service.
+   *
    * @var \Drupal\consumers\Negotiator
    */
   protected $consumerNegotiator;
 
   /**
+   * Image Styles provider service.
+   *
    * @var \Drupal\consumer_image_styles\ImageStylesProviderInterface
    */
   protected $imageStylesProvider;
 
   /**
+   * The Image Factory.
+   *
    * @var \Drupal\Core\Image\ImageFactory
    */
   protected $imageFactory;
 
   /**
+   * The Normalizer Serializer.
+   *
    * @var \Symfony\Component\Serializer\Normalizer\NormalizerInterface
    */
   protected $inner;
@@ -65,7 +73,7 @@ class LinkCollectionNormalizer implements NormalizerInterface {
    *   The decorated service.
    * @param \Drupal\consumers\Negotiator $consumer_negotiator
    *   The consumer negotiator.
-   * @param \Drupal\consumer_image_styles\ImageStylesProviderInterface
+   * @param \Drupal\consumer_image_styles\ImageStylesProviderInterface $imageStylesProvider
    *   Image styles utility.
    * @param \Drupal\Core\Image\ImageFactory $image_factory
    *   The image factory.
@@ -86,14 +94,14 @@ class LinkCollectionNormalizer implements NormalizerInterface {
   /**
    * {@inheritdoc}
    */
-  public function supportsNormalization($data, $format = NULL) {
-    return $this->inner->supportsNormalization($data, $format);
+  public function supportsNormalization($data, $format = NULL, $context = []): bool {
+    return $this->inner->supportsNormalization($data, $format, $context);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function normalize($link_collection, $format = NULL, array $context = []) {
+  public function normalize($link_collection, $format = NULL, array $context = []): array|string|int|float|bool|\ArrayObject|NULL {
     assert($link_collection instanceof LinkCollection);
     if ($this->decorationApplies($link_collection) && ($consumer = $this->getConsumer())) {
       $variant_links = $this->buildVariantLinks($link_collection->getContext(), $consumer);
@@ -109,8 +117,12 @@ class LinkCollectionNormalizer implements NormalizerInterface {
   }
 
   /**
+   * Builds links for the consumer variant.
+   *
    * @param \Drupal\jsonapi\JsonApiResource\ResourceObject $resource_object
-   * @param \Drupal\consumers\Entity\Consumer
+   *   The Resource Object.
+   * @param \Drupal\consumers\Entity\Consumer $consumer
+   *   The attached consumer entity.
    *
    * @return \Drupal\jsonapi\JsonApiResource\LinkCollection
    *   The variant links.
@@ -121,15 +133,17 @@ class LinkCollectionNormalizer implements NormalizerInterface {
     // Generate derivatives only for the found ones.
     $image_styles = $this->imageStylesProvider->loadStyles($consumer);
     return array_reduce($image_styles, function (LinkCollection $decorated, ImageStyleInterface $image_style) use ($uri) {
-      $image = $this->imageFactory->get($uri);
-      $dimensions = [
-        'width' => $image->getWidth(),
-        'height' => $image->getHeight(),
-      ];
-      $image_style->transformDimensions($dimensions, $uri);
+      $link = $this->imageStylesProvider->buildDerivativeLink($uri, $image_style);
+      $dimensions = [];
+      if (isset($link['meta']['width'])) {
+        $dimensions['width'] = $link['meta']['width'];
+      }
+      if (isset($link['meta']['height'])) {
+        $dimensions['width'] = $link['meta']['height'];
+      }
       $variant_link = new Link(
         CacheableMetadata::createFromObject($image_style),
-        $this->fileUrlGenerator->generate($image_style->buildUrl($uri)),
+        Url::fromUri($link['href']),
         ImageStylesProvider::DERIVATIVE_LINK_REL,
         // Target attributes can only be strings, but dimensions are links.
         array_map(function (?int $dimension): string {
@@ -204,6 +218,15 @@ class LinkCollectionNormalizer implements NormalizerInterface {
       }
     }
     return new CacheableNormalization($cacheable_normalization, $normalization);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSupportedTypes(?string $format): array {
+    return [
+      LinkCollection::class => TRUE,
+    ];
   }
 
 }

@@ -543,11 +543,11 @@ th {
     th,
     td {
       padding: 1rem;
-  
+
       &:first-child {
         padding: 1rem;
       }
-  
+
       &:last-child {
         padding: 1rem;
       }
@@ -562,17 +562,6 @@ caption {
 // Account for multiple tbody instances
 tbody + tbody {
   border-top: 2px solid $clr-table-border;
-}
-
-:focus {
-  outline-width: 3px;
-  outline-style: dashed;
-  outline-color: #008db1;
-  outline-color: rgba(#008db1, 0.6);
-}
-
-:active {
-  outline: 0;
 }
 
 .ajax-progress {

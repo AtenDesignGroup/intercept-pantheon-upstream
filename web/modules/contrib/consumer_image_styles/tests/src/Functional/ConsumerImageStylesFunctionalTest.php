@@ -1,30 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\consumer_image_styles\Functional;
 
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\consumer_image_styles\ImageStylesProvider;
-use Drupal\consumers\Entity\Consumer;
 use Drupal\Core\Url;
-use Drupal\file\Entity\File;
-use Drupal\image\Entity\ImageStyle;
-use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\image\Kernel\ImageFieldCreationTrait;
 use Drupal\Tests\jsonapi\Functional\JsonApiRequestTestTrait;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+use Drupal\consumer_image_styles\ImageStylesProvider;
+use Drupal\consumers\Entity\Consumer;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
+use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use GuzzleHttp\RequestOptions;
 
 /**
+ * Tests Image Styles within Consumer JSON requests.
+ *
  * @group consumer_image_styles
  */
-class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
+class ConsumerImageStylesFunctionalTest extends BrowserTestBase {
 
   use ContentTypeCreationTrait;
   use ImageFieldCreationTrait;
   use JsonApiRequestTestTrait;
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = [
     'consumers',
     'consumer_image_styles',
@@ -41,6 +48,8 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
   protected $defaultTheme = 'stark';
 
   /**
+   * The test user.
+   *
    * @var \Drupal\user\Entity\User
    */
   protected $user;
@@ -60,16 +69,22 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
   protected $contentType;
 
   /**
+   * Nodes to test.
+   *
    * @var \Drupal\node\Entity\Node[]
    */
   protected $nodes = [];
 
   /**
+   * The Image File(s).
+   *
    * @var \Drupal\file\Entity\File[]
    */
   protected $files = [];
 
   /**
+   * The consumer entity.
+   *
    * @var \Drupal\consumers\Entity\Consumer
    */
   protected $consumer;
@@ -82,9 +97,18 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
     $this->contentType = $this->createContentType();
     $this->imageFieldName = $this->getRandomGenerator()->word(8);
     $this->user = $this->drupalCreateUser();
-    $this->createImageField($this->imageFieldName, $this->contentType->id());
+    // @todo Remove this once we minimum support is Drupal 10.3.
+    if (version_compare(\Drupal::VERSION, '10.3.0', '>=')) {
+      $this->createImageField($this->imageFieldName, 'node', $this->contentType->id());
+    }
+    else {
+      // @phpstan-ignore-next-line
+      $this->createImageField($this->imageFieldName, $this->contentType->id());
+    }
+
     $this->overrideResources();
     drupal_flush_all_caches();
+
   }
 
   /**
@@ -122,7 +146,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
     }
     // Create the image styles.
     $image_styles = array_map(function ($name) {
-      $image_style = ImageStyle::create(['name' => $name]);
+      $image_style = ImageStyle::create(['name' => $name, 'label' => $name]);
       $image_style->save();
       return $image_style;
     }, ['foo', 'bar']);
@@ -131,6 +155,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
     $this->consumer = Consumer::create([
       'owner_id' => '',
       'label' => $this->getRandomGenerator()->name(),
+      'client_id' => \Drupal::service('uuid')->generate(),
       'image_styles' => array_map(function (ImageStyle $image_style) {
         return ['target_id' => $image_style->id()];
       }, $image_styles),
@@ -147,14 +172,14 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
     // 1. Check the request for the image directly.
     $url = Url::fromRoute('jsonapi.file--file.individual', ['entity' => $this->files[0]->uuid()]);
     $request_options = [
-      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->uuid()],
+      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->getClientId()],
     ];
     $response = $this->request('GET', $url, $request_options);
     $output = Json::decode($response->getBody());
     $this->assertEquals(200, $response->getStatusCode());
     $links = $output['data']['links'];
     $derivatives = array_filter($links, function ($link) {
-      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
+      $rels = $link['meta']['rel'] ?? [];
       return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
     });
     $this->assertNotEmpty($derivatives);
@@ -170,14 +195,14 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
     );
     $request_options = [
       RequestOptions::QUERY => ['include' => $this->imageFieldName],
-      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->uuid()],
+      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->getClientId()],
     ];
     $response = $this->request('GET', $url, $request_options);
     $output = Json::decode($response->getBody());
     $this->assertEquals(200, $response->getStatusCode());
     $links = $output['included'][0]['links'];
     $derivatives = array_filter($links, function ($link) {
-      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
+      $rels = $link['meta']['rel'] ?? [];
       return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
     });
     $this->assertStringContainsString(\Drupal::service('file_url_generator')->generateAbsoluteString('public://styles/foo/public/'), $derivatives['foo']['href']);
@@ -192,7 +217,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
     $this->assertEquals(200, $response->getStatusCode());
     $links = $output['data']['links'];
     $derivatives = array_filter($links, function ($link) {
-      $rels = isset($link['meta']['rel']) ? $link['meta']['rel'] : [];
+      $rels = $link['meta']['rel'] ?? [];
       return !empty($rels) && in_array(ImageStylesProvider::DERIVATIVE_LINK_REL, $rels);
     });
     $this->assertEmpty(empty($derivatives));
@@ -203,7 +228,7 @@ class ConsumerImageSylesFunctionalTest extends BrowserTestBase {
       ['entity' => $this->nodes[0]->uuid()]
     );
     $request_options = [
-      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->uuid()],
+      RequestOptions::HEADERS => ['X-Consumer-ID' => $this->consumer->getClientId()],
     ];
     $response = $this->request('GET', $url, $request_options);
     $output = Json::decode($response->getBody());

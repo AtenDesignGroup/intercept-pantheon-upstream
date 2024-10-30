@@ -62,13 +62,22 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     $values = $form_state->getValues();
     $format = 'Y-m-d H:i';
 
-    // Get a list of room node ids.
-    $query = \Drupal::entityQuery('node')
+    // If the bulk room reservation form is being edited (rather than being
+    // filled out for the first time), it will only look for availability info
+    // for the previously-selected room. That might not be a perfect solution,
+    // but it would probably resolve some performance issues when editing.
+    if (isset($entity->field_room->target_id)) {
+      $roomNids = [$entity->field_room->target_id];
+    }
+    else {
+      // Get a list of room node ids.
+      $query = \Drupal::entityQuery('node')
       ->accessCheck(FALSE)
       ->condition('status', 1)
       ->condition('type', 'room')
       ->condition('field_location', $locationNid);
-    $roomNids = $query->execute();
+      $roomNids = $query->execute();
+    }
 
     switch ($return) {
       case 'room_data':

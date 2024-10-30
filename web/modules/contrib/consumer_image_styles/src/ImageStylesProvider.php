@@ -3,21 +3,21 @@
 namespace Drupal\consumer_image_styles;
 
 use Drupal\Component\Plugin\Exception\PluginException;
-use Drupal\consumers\Entity\Consumer;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Image\ImageFactory;
-use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\consumers\Entity\Consumer;
 use Drupal\file\Entity\File;
 use Drupal\image\ImageStyleInterface;
 
 /**
- * Class ImageStylesProvider.
+ * Image Styles Provider service.
  *
  * @package Drupal\consumer_image_styles
  */
@@ -71,13 +71,14 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
     EntityTypeManagerInterface $entity_type_manager,
     ImageFactory $image_factory,
     FileUrlGeneratorInterface $file_url_generator,
-    ?StreamWrapperManagerInterface $stream_wrapper_manager = NULL
+    ?StreamWrapperManagerInterface $stream_wrapper_manager = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->imageFactory = $image_factory;
     $this->fileUrlGenerator = $file_url_generator;
     if (!$stream_wrapper_manager) {
-      @trigger_error(sprintf('Invoking %s without $stream_wrapper_manager is deprecated in 4.0.6 and unsupported in 5.0. See https://www.drupal.org/project/consumer_image_styles/issues/3252023', __FUNCTION__), E_USER_DEPRECATED);
+      @trigger_error(sprintf('Invoking %s without $stream_wrapper_manager is deprecated in consumer_image_styles:4.0.6 and is unsupported in consumer_image_styles:5.0.0. See https://www.drupal.org/project/consumer_image_styles/issues/3252023', __FUNCTION__), E_USER_DEPRECATED);
+      // @phpstan-ignore-next-line as used on purpose.
       $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
     }
     $this->streamWrapperManager = $stream_wrapper_manager;
@@ -109,9 +110,9 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function buildDerivativeLink($uri, ImageStyleInterface $image_style, CacheableMetadata $cacheable_metadata = NULL) {
+  public function buildDerivativeLink($uri, ImageStyleInterface $image_style, ?CacheableMetadata $cacheable_metadata = NULL) {
     if (is_null($cacheable_metadata)) {
-      @trigger_error(sprintf('Calling %s without $cacheable_metadata is deprecated in 4.0.6; it is required in 5.0.', __METHOD__), E_USER_DEPRECATED);
+      @trigger_error(sprintf('Calling %s without $cacheable_metadata is deprecated in consumer_image_styles:4.0.6 and is required in consumer_image_styles:5.0.0. See https://www.drupal.org/project/consumer_image_styles/issues/3252023', __METHOD__), E_USER_DEPRECATED);
       $cacheable_metadata = new CacheableMetadata();
     }
     $cacheable_metadata->addCacheableDependency($image_style);
@@ -124,7 +125,7 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
     ];
     // Sites with external images cannot afford to download the image to the
     // webserver in order to inspect the image dimensions.
-    if ($this->streamWrapperManager->getViaScheme(StreamWrapperManager::getScheme($uri))->getType() & ~StreamWrapperInterface::LOCAL) {
+    if ($this->streamWrapperManager->getViaScheme(StreamWrapperManager::getScheme($uri))->getType() & ~StreamWrapperInterface::LOCAL_NORMAL) {
       return $info;
     }
     $image = $this->imageFactory->get($uri);
@@ -139,9 +140,8 @@ class ImageStylesProvider implements ImageStylesProviderInterface {
     return $info;
   }
 
-
   /**
-   * {inheritdoc}
+   * {@inheritdoc}
    */
   public function entityIsImage(EntityInterface $entity) {
     if (!$entity instanceof File) {

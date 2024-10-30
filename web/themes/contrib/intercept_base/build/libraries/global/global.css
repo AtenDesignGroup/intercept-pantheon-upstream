@@ -756,15 +756,6 @@ caption {
 tbody + tbody {
   border-top: 2px solid #d3d8df; }
 
-:focus {
-  outline-width: 3px;
-  outline-style: dashed;
-  outline-color: #008db1;
-  outline-color: rgba(0, 141, 177, 0.6); }
-
-:active {
-  outline: 0; }
-
 .ajax-progress {
   display: inline !important;
   padding: 0; }

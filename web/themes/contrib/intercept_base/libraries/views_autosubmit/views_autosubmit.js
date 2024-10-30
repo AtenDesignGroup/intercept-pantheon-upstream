@@ -23,7 +23,7 @@
       console.warn('Failed to override Drupal.behaviors.ViewsAutoSubmitRefocus.');
       return;
     }
-    if (Drupal.behaviors && typeof Drupal.behaviors.ViewsAutoSubmitRefocus !== 'undefined') {
+    if (typeof Drupal.behaviors !== 'undefined' && Drupal.behaviors.ViewsAutoSubmitRefocus) {
       overrideStoreFocusedElement();
     } else {
       attempts++;

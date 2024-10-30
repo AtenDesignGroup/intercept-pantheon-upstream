@@ -5,17 +5,17 @@
   {% set attr = attr|default({})|merge({'class': 'js--block-link'}) %}
   {% set attr = attr|default({})|merge({'data-href': title_link.url|render }) %}
 {% endif %}
+{% set html_id = title|render|striptags|clean_unique_id %}
 <article {{ component.attributes('card', modifiers, attr) }}>
   {% if image %}
   <figure class="card__image">
     {{ image }}
   </figure>
   {% endif %}
-
   <div class="card__content">
 
-    <header class="card__header">
-      <h3 class="card__title">
+    <header aria-labelledby="{{html_id}}" class="card__header">
+      <h3 id="{{html_id}}" class="card__title">
         {% if title_link.url is not empty %}
         <a href="{{ title_link.url }}" title="{{ title }}" class="{{ title_link.class }}">
         {% endif %}

@@ -2,9 +2,9 @@
 
 namespace Drupal\consumer_image_styles;
 
-use Drupal\consumers\Entity\Consumer;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\consumers\Entity\Consumer;
 use Drupal\image\ImageStyleInterface;
 
 /**
@@ -30,7 +30,7 @@ interface ImageStylesProviderInterface {
    *   The file URI.
    * @param \Drupal\image\ImageStyleInterface $image_style
    *   The image style to apply.
-   * @param \Drupal\Core\Cache\CacheableMetadata $cacheable_metadata
+   * @param \Drupal\Core\Cache\CacheableMetadata|null $cacheable_metadata
    *   Cacheable metadata for the normalization.
    *
    * @return array
@@ -48,7 +48,6 @@ interface ImageStylesProviderInterface {
    *
    * @return bool
    *   TRUE if the entity is an image.
-   * {inheritdoc}
    */
   public function entityIsImage(EntityInterface $entity);
 

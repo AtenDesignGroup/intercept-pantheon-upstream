@@ -140,7 +140,7 @@ class UserSuggestedEvents extends BlockBase implements ContainerFactoryPluginInt
           unset($events[$key]);
         }
       }
-      uasort($events, static::sort(...));
+      uasort($events, [self::class, 'sort']);
       $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
       $build['results'] = [
         '#theme' => 'events_recommended',

@@ -203,7 +203,7 @@
 
   // Twitter
   [href*='twitter.com'] {
-    mask: url('/themes/contrib/intercept_base/images/icons/twitter.svg');
+    mask: url('/themes/contrib/intercept_base/images/icons/x.svg');
   }
 
   // Instagram
@@ -230,6 +230,7 @@
     background-repeat: no-repeat;
     mask-position: center;
     mask-repeat: no-repeat;
+    mask-size: contain;
     overflow: hidden;
     text-indent: -9999px;
     width: 30px;

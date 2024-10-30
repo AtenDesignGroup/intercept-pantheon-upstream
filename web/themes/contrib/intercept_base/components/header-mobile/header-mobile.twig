@@ -23,7 +23,7 @@
   }) %}
 {% endif %}
 
-<header class="js-header-mobile header-mobile" role="banner">
+<header aria-label="{{'Mobile Header'|t}}" class="js-header-mobile header-mobile" role="banner">
   <div class="header-mobile__logo">
     {% include '@intercept-base-components/logo/logo.twig' with { logo_path: logo_path, alt: site_name ~ ' logo' } only %}
   </div>

@@ -3,8 +3,11 @@
     "description": "Consumer Image Styles integrates with JSON API to provide image styles to your images in your decoupled project.",
     "type": "drupal-module",
     "require": {
-        "drupal/jsonapi_extras": "^3.23",
-        "drupal/consumers": "^1.15"
+        "drupal/consumers": "^1.19",
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "drupal/jsonapi_extras": "^3.26"
     },
     "license": "GPL-2.0-or-later",
     "authors": [

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6] - 2024-10-30
+
+* Replaced Twitter with X icon.
+
 ## [2.0.5] - 2024-09-25
 
 * Fixed an issue with registration pages not working on some recurring events

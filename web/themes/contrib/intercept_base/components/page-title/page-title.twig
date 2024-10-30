@@ -1,6 +1,6 @@
 {% import '@intercept-base-components/component.twig' as component %}
 {{ attach_library('intercept_base/page-title') }}
-<h1 {{ component.attributes('page-title', modifiers, attr) }}>
+<h1 {{ component.attributes('page-title', modifiers, attr|default({})|merge(attr|default({}), {id: 'page-title'})) }}>
   {% if url %}
   <a href="{{ url }}" title="{{ title }}">
   {% endif %}

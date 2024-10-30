@@ -209,8 +209,8 @@
     -webkit-mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg");
             mask: url("/themes/contrib/intercept_base/images/icons/facebook.svg"); }
   .menu--social-media-menu [href*='twitter.com'] {
-    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg");
-            mask: url("/themes/contrib/intercept_base/images/icons/twitter.svg"); }
+    -webkit-mask: url("/themes/contrib/intercept_base/images/icons/x.svg");
+            mask: url("/themes/contrib/intercept_base/images/icons/x.svg"); }
   .menu--social-media-menu [href*='instagram.com'] {
     -webkit-mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg");
             mask: url("/themes/contrib/intercept_base/images/icons/instagram.svg"); }
@@ -231,6 +231,8 @@
             mask-position: center;
     -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+            mask-size: contain;
     overflow: hidden;
     text-indent: -9999px;
     width: 30px;

@@ -3,11 +3,11 @@
 namespace Drupal\consumer_image_styles\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\consumer_image_styles\ImageStylesProviderInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\consumer_image_styles\ImageStylesProviderInterface;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\image\ImageStyleInterface;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
@@ -28,11 +28,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ImageStyles extends ResourceFieldEnhancerBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The Image Styles Provider Service.
+   *
    * @var \Drupal\consumer_image_styles\ImageStylesProviderInterface
    */
   protected $imageStylesProvider;
 
   /**
+   * The Entity Type Manager.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
@@ -45,7 +49,7 @@ class ImageStyles extends ResourceFieldEnhancerBase implements ContainerFactoryP
     $plugin_id,
     $plugin_definition,
     ImageStylesProviderInterface $image_styles_provider,
-    EntityTypeManagerInterface $entity_type_manager
+    EntityTypeManagerInterface $entity_type_manager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->imageStylesProvider = $image_styles_provider;

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur_modular;
 
@@ -46,7 +46,7 @@ trait DateRecurModularWidgetFieldsTrait {
   protected function getFieldMonth(?DateRecurRuleInterface $rule): array {
     $parts = $rule ? $rule->getParts() : [];
     $monthOptions = DateHelper::monthNames(TRUE);
-    $monthDefault = isset($parts['BYMONTH']) ? explode(',', $parts['BYMONTH']) : [];
+    $monthDefault = isset($parts['BYMONTH']) ? \explode(',', $parts['BYMONTH']) : [];
     return [
       '#type' => 'checkboxes',
       '#title' => $this->t('Months'),
@@ -70,27 +70,27 @@ trait DateRecurModularWidgetFieldsTrait {
    *   A render array.
    */
   protected function getFieldByDay(?DateRecurRuleInterface $rule, string $weekDayLabels = 'full'): array {
-    assert($this->configFactory instanceof ConfigFactoryInterface);
+    \assert($this->configFactory instanceof ConfigFactoryInterface);
     $parts = $rule ? $rule->getParts() : [];
 
     $weekdaysKeys = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
     $weekdayLabels =
       ($weekDayLabels === 'full' ? DateHelper::weekDays(TRUE) :
       ($weekDayLabels === 'abbreviated' ? DateHelper::weekDaysAbbr(TRUE) : []));
-    $weekdays = array_combine($weekdaysKeys, $weekdayLabels);
+    $weekdays = \array_combine($weekdaysKeys, $weekdayLabels);
 
     // Weekday int. 0-6 (Sun-Sat).
     $firstDayInt = $this->configFactory->get('system.date')
       ->get('first_day');
 
     // Rebuild weekday options where system first day is first option in list.
-    $weekdayOptions = array_merge(
-      array_slice($weekdays, $firstDayInt),
+    $weekdayOptions = \array_merge(
+      \array_slice($weekdays, $firstDayInt),
       // Re-attach weekdays sliced up to the first day.
-      array_slice($weekdays, 0, $firstDayInt)
+      \array_slice($weekdays, 0, $firstDayInt),
     );
 
-    $weekDayDefault = isset($parts['BYDAY']) ? explode(',', $parts['BYDAY']) : [];
+    $weekDayDefault = isset($parts['BYDAY']) ? \explode(',', $parts['BYDAY']) : [];
     return [
       '#type' => 'checkboxes',
       '#title_display' => 'invisible',
@@ -118,7 +118,7 @@ trait DateRecurModularWidgetFieldsTrait {
       '#title' => $this->t('Mode'),
       '#options' => $modes,
       '#default_value' => $this->getMode($item),
-      '#access' => count($modes) > 0,
+      '#access' => \count($modes) > 0,
     ];
   }
 
@@ -156,7 +156,7 @@ trait DateRecurModularWidgetFieldsTrait {
 
     $conditions = [];
     foreach ($modes as $mode) {
-      if (count($conditions) > 0) {
+      if (\count($conditions) > 0) {
         $conditions[] = 'or';
       }
       $conditions[] = [':input[name="' . $modeFieldName . '"]' => ['value' => $mode]];

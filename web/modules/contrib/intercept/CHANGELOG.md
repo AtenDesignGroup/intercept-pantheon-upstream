@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.7] - 2024-11-26
+
+* Prevented double-bookings when staff are creating an event series
+* Prevented a scenario that would allow customers to double-book a room
+
 ## [2.0.6] - 2024-10-30
 
 * Replaced Twitter with X icon.

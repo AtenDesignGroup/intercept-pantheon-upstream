@@ -2,6 +2,6 @@ name: 'Webform Submission Log'
 type: module
 description: 'Dedicated logging and reporting for webform submissions.'
 package: Webform
-core_version_requirement: ^10.1
+core_version_requirement: ^10.2
 dependencies:
   - 'webform:webform'

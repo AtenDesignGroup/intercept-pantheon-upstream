@@ -2,7 +2,7 @@ name: 'Webform Demo: Region Contact System'
 type: module
 description: 'Demonstrates how to use the Webform module to build a region based contact system.'
 package: 'Webform Demo'
-core_version_requirement: ^10.1
+core_version_requirement: ^10.2
 dependencies:
   - 'drupal:datetime'
   - 'token:token'

@@ -590,17 +590,9 @@ class ReservationManager implements ReservationManagerInterface {
       }
       $query->condition('field_status', ['canceled', 'denied', 'archived'], 'NOT IN');
       $range = [$start_date->format(self::FORMAT), $end_date->format(self::FORMAT)];
-      $query->condition($query->orConditionGroup()
-        // Date start value is in between start / end params.
-        ->condition('field_dates.value', $range, 'BETWEEN')
-        // OR Date end value is in between start / end params.
-        ->condition('field_dates.end_value', $range, 'BETWEEN')
-        // OR Date start and date end values span larger
-        // than the start / end params.
-        ->condition($query->andConditionGroup()
-          ->condition('field_dates.value', $range[0], '<=')
-          ->condition('field_dates.end_value', $range[1], '>=')
-        )
+      $query->condition($query->andConditionGroup()
+        ->condition('field_dates.value', $range[1], '<')
+        ->condition('field_dates.end_value', $range[0], '>')
       );
       $query->sort('field_dates.value', 'ASC');
     });
@@ -722,40 +714,80 @@ class ReservationManager implements ReservationManagerInterface {
    */
   protected function getOpenings(array $blocked_times, array $params, $open_only = TRUE) {
     $openings = [];
-    // Check if there is open space between existing reservations.
+
+    // An array of preceding reservation IDs.
+    // This is populated when a reservation is found to be in conflict.
     $preceding = [];
     $parameter_start_date = $this->dateUtility->getDrupalDate($params['start']);
     $parameter_end_date = $this->dateUtility->getDrupalDate($params['end']);
 
+    /**
+     * @var \Drupal\Core\Datetime\DrupalDateTime $rolling_start_date
+     *   The start date used for searching for openings. As we iterate through
+     *   blocked times, this date will be updated to the end date of the last
+     *   evaluated blocked time. Otherwise we may think we have opennings when
+     *   we don't.
+     */
+    $rolling_start_date = $parameter_start_date;
+
     foreach ($blocked_times as $blocked_time) {
       $blocked_start_date = $this->dateUtility->getDrupalDate($blocked_time['start']);
       $blocked_end_date = $this->dateUtility->getDrupalDate($blocked_time['end']);
-      if ($blocked_start_date < $parameter_start_date && $blocked_end_date > $parameter_end_date) {
+
+      // If the current blocked time completely encompasses the requested time, return
+      // an empty array of openings. No need to check further.
+      if ($blocked_start_date <= $parameter_start_date && $blocked_end_date >= $parameter_end_date) {
         return [];
       }
-      // Diff between current res start time and
-      // (either start time param or end date of last reservation).
-      if ($opening = $this->getOpening($parameter_start_date, $blocked_start_date)) {
+
+      // $opening is the available time slot from the start of the requested time
+      // to the start of the blocked time currently being evaluated.
+      if ($opening = $this->getOpening($rolling_start_date, $blocked_start_date)) {
+        // If there are preceding reservations add them to the opening array.
         if (!empty($preceding)) {
           $opening['preceding_reservations'] = $preceding;
           $preceding = [];
         }
+        // If the blocked time has an ID, add it to the opening array
+        // as a following reservation.
         if (isset($blocked_time['id'])) {
           $opening['following_reservation'] = $blocked_time['id'];
         }
+        // Save the opening to the openings array.
         $openings[] = $opening;
       }
+      // The blocked time starts before the requested time, so we add it to the preceding array
+      // and continue to the next blocked time.
       else {
+        // Update the rolling start date to the end of the blocked time.
+        if ($blocked_end_date > $rolling_start_date) {
+          $rolling_start_date = $blocked_end_date;
+        }
         if (!empty($blocked_time['id'])) {
           $preceding[] = $blocked_time['id'];
         }
       }
     }
 
-    // Now check open space between
-    // (start time or last reservation) and end time.
+    // We now have a list of openings which represent the time between
+    // the requested start time and the start times of all blocked times
+    // that begin after the requested start time.
+
+    /**
+     * @var \Drupal\Core\Datetime\DrupalDateTime $last_date
+     *    The latest end time of blocked times or the requested start date if none exist.
+     */
     $last_date = empty($blocked_times) ? $parameter_start_date : $this->dateUtility->getDrupalDate(end($blocked_times)['end']);
+
+    /**
+     * @var \Drupal\Core\Datetime\DrupalDateTime $slot_end
+     *    The requested end date.
+     */
     $slot_end = $parameter_end_date;
+
+    // ADD an opening between the end date of the last blocked time and the
+    // end date of the requested time IF the last blocked time ends before
+    // the requested end date.
     if ($opening = $this->getOpening($last_date, $slot_end)) {
       if (!empty($preceding)) {
         $opening['preceding_reservations'] = $preceding;
@@ -824,6 +856,19 @@ class ReservationManager implements ReservationManagerInterface {
    *   The start DrupalDateTime object.
    * @param \Drupal\Core\Datetime\DrupalDateTime $end
    *   The end DrupalDateTime object.
+   *
+   * @return bool|array
+   *   The formatted opening array, or FALSE.
+   *   The opening array describes an available time slot using
+   *   the start time, end time and duration between.
+   *   [
+   *    'duration' => int,
+   *    'start' => string,
+   *    'end' => string,
+   *    'unique_hash' => string,
+   *   ]
+   *   The unique hash is a serialized hash of the opening array.
+   *   If the start time is greater than the end time, FALSE is returned.
    */
   private function getOpening(DrupalDateTime $start, DrupalDateTime $end) {
     if ($start > $end) {

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur_modular\Plugin\Field\FieldWidget;
 
@@ -60,12 +60,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
 
   protected const MODE_MONTHLY = 'monthly';
 
-  /**
-   * Part grid for this list.
-   *
-   * @var \Drupal\date_recur\DateRecurPartGrid
-   */
-  protected $partGrid;
+  protected DateRecurPartGrid $partGrid;
 
   /**
    * {@inheritdoc}
@@ -80,9 +75,6 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
     ];
   }
 
-  /**
-   * {@inheritdoc}
-   */
   protected function getMode(DateRecurItem $item): ?string {
     try {
       $helper = $item->getHelper();
@@ -92,7 +84,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
     }
 
     $rules = $helper->getRules();
-    $rule = reset($rules);
+    $rule = \reset($rules);
     if (FALSE === $rule) {
       // This widget supports one RRULE per field value.
       return NULL;
@@ -123,7 +115,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList|\Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem[] $items */
-    $elementParents = array_merge($element['#field_parents'], [$this->fieldDefinition->getName(), $delta]);
+    $elementParents = \array_merge($element['#field_parents'], [$this->fieldDefinition->getName(), $delta]);
     $element += [
       '#theme' => 'date_recur_modular_alpha_widget',
       '#type' => 'container',
@@ -142,7 +134,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
     $endsDate = NULL;
     try {
       $until = $parts['UNTIL'] ?? NULL;
-      if (is_string($until)) {
+      if (\is_string($until)) {
         $endsDate = new \DateTime($until);
       }
       elseif ($until instanceof \DateTimeInterface) {
@@ -188,7 +180,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       '#min' => 1,
       // Some part elements also need to check access, as when states are
       // applied if there are no conditions then the field is always visible.
-      '#access' => count($fieldModes['daily_count'] ?? []) > 0,
+      '#access' => \count($fieldModes['daily_count'] ?? []) > 0,
     ];
     $element['daily_count']['#states'] = $this->getVisibilityStates($element, $fieldModes['daily_count'] ?? []);
 
@@ -222,7 +214,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       '#field_suffix' => $this->t('occurrences'),
       '#default_value' => $count ?? 1,
       '#min' => 1,
-      '#access' => count($fieldModes['ends_count'] ?? []) > 0,
+      '#access' => \count($fieldModes['ends_count'] ?? []) > 0,
     ];
     $nameMode = $this->getName($element, ['mode']);
     $nameEndsMode = $this->getName($element, ['ends_mode']);
@@ -234,7 +226,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       ];
     }
 
-    // States dont yet work on date time so put it in a container.
+    // States don't yet work on date time so put it in a container.
     // @see https://www.drupal.org/project/drupal/issues/2419131
     $element['ends_date'] = [
       '#type' => 'container',
@@ -246,7 +238,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       '#description' => $this->t('No occurrences can begin after this date.'),
       '#default_value' => $endsDate ? DrupalDateTime::createFromDateTime($endsDate) : NULL,
       // Fix values tree thanks to state+container hack.
-      '#parents' => array_merge($elementParents, ['ends_date']),
+      '#parents' => \array_merge($elementParents, ['ends_date']),
       // \Drupal\Core\Datetime\Element\Datetime::valueCallback tries to change
       // the time zone to current users timezone if not set, Set the timezone
       // here so the value doesn't change.
@@ -278,11 +270,11 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
     // Each of these values can be array if input was invalid. E.g date or time
     // not provided.
     /** @var \Drupal\Core\Datetime\DrupalDateTime|array|null $start */
-    $start = $form_state->getValue(array_merge($element['#parents'], ['start']));
+    $start = $form_state->getValue(\array_merge($element['#parents'], ['start']));
     /** @var \Drupal\Core\Datetime\DrupalDateTime|array|null $end */
-    $end = $form_state->getValue(array_merge($element['#parents'], ['end']));
+    $end = $form_state->getValue(\array_merge($element['#parents'], ['end']));
     /** @var string|null $timeZone */
-    $timeZone = $form_state->getValue(array_merge($element['#parents'], ['time_zone']));
+    $timeZone = $form_state->getValue(\array_merge($element['#parents'], ['time_zone']));
 
     if ($start && !$timeZone) {
       $form_state->setError($element['start'], \t('Time zone must be set if start date is set.'));
@@ -307,7 +299,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       $form_state->setValueForElement($element['end'], $end);
     }
     /** @var \Drupal\Core\Datetime\DrupalDateTime|array|null $endsDate */
-    $endsDate = $form_state->getValue(array_merge($element['#parents'], ['ends_date']));
+    $endsDate = $form_state->getValue(\array_merge($element['#parents'], ['ends_date']));
     if ($endsDate instanceof DrupalDateTime && $timeZone) {
       $endsDate = DrupalDateTime::createFromFormat($zoneLess, $endsDate->format($zoneLess), $timeZoneObj);
       $form_state->setValueForElement($element['ends_date'], $endsDate);
@@ -325,7 +317,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
    * @return array
    *   The element.
    */
-  public static function afterBuildModularWidget(array $element, FormStateInterface $form_state) {
+  public static function afterBuildModularWidget(array $element, FormStateInterface $form_state): array {
     // Wait until ID is created, and after
     // \Drupal\Core\Render\Element\Checkboxes::processCheckboxes is run so
     // states are not replicated to children.
@@ -345,7 +337,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
   public function extractFormValues(FieldItemListInterface $items, array $form, FormStateInterface $form_state) {
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $items */
     $this->partGrid = $items->getPartGrid();
-    parent::extractFormValues(...func_get_args());
+    parent::extractFormValues(...\func_get_args());
     unset($this->partGrid);
   }
 
@@ -368,11 +360,11 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       $item = [];
 
       $start = $value['start'] ?? NULL;
-      assert(!isset($start) || $start instanceof DrupalDateTime);
+      \assert(!isset($start) || $start instanceof DrupalDateTime);
       $end = $value['end'] ?? NULL;
-      assert(!isset($end) || $end instanceof DrupalDateTime);
+      \assert(!isset($end) || $end instanceof DrupalDateTime);
       $timeZone = $value['time_zone'];
-      assert(is_string($timeZone));
+      \assert(\is_string($timeZone));
       $mode = $value['mode'] ?? NULL;
       $endsMode = $value['ends_mode'] ?? NULL;
       /** @var \Drupal\Core\Datetime\DrupalDateTime|array|null $endsDate */
@@ -385,8 +377,8 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       $item['end_value'] = $end->format($dateStorageFormat);
       $item['timezone'] = $timeZone;
 
-      $weekDays = array_values(array_filter($value['weekdays']));
-      $byDayStr = implode(',', $weekDays);
+      $weekDays = \array_values(\array_filter($value['weekdays']));
+      $byDayStr = \implode(',', $weekDays);
 
       $rule = [];
       if ($mode === static::MODE_MULTIDAY) {
@@ -410,23 +402,23 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
         $rule['BYDAY'] = $byDayStr;
 
         // Funge ordinals appropriately.
-        $ordinalCheckboxes = array_filter($value['ordinals']);
+        $ordinalCheckboxes = \array_filter($value['ordinals']);
         $ordinals = [];
-        if (count($ordinalCheckboxes) && count($weekDays)) {
-          $weekdayCount = count($weekDays);
+        if (\count($ordinalCheckboxes) && \count($weekDays)) {
+          $weekdayCount = \count($weekDays);
 
           // Expand simplified ordinals into spec compliant BYSETPOS ordinals.
           foreach ($ordinalCheckboxes as $ordinal) {
             $end = $ordinal * $weekdayCount;
             $diff = ($weekdayCount - 1);
             $start = ($end > 0) ? $end - $diff : $end + $diff;
-            $range = range($start, $end);
-            array_push($ordinals, ...$range);
+            $range = \range($start, $end);
+            \array_push($ordinals, ...$range);
           }
 
           // Order doesn't matter but simplifies testing.
-          sort($ordinals);
-          $rule['BYSETPOS'] = implode(',', $ordinals);
+          \sort($ordinals);
+          $rule['BYSETPOS'] = \implode(',', $ordinals);
         }
       }
 
@@ -441,7 +433,7 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
       }
 
       if (isset($rule['FREQ'])) {
-        $rule = array_filter($rule);
+        $rule = \array_filter($rule);
         $item['rrule'] = $this->buildRruleString($rule, $grid);
       }
 
@@ -468,16 +460,16 @@ class DateRecurModularAlphaWidget extends DateRecurModularWidgetBase {
     $parts = $rule ? $rule->getParts() : [];
 
     $ordinals = [];
-    $bySetPos = !empty($parts['BYSETPOS']) ? explode(',', $parts['BYSETPOS']) : [];
-    if (count($bySetPos) > 0) {
-      $weekdayCount = count($element['weekdays']['#default_value']);
-      sort($bySetPos);
+    $bySetPos = !empty($parts['BYSETPOS']) ? \explode(',', $parts['BYSETPOS']) : [];
+    if (\count($bySetPos) > 0) {
+      $weekdayCount = \count($element['weekdays']['#default_value']);
+      \sort($bySetPos);
 
       // Collapse all ordinals into simplified ordinals.
-      $chunks = array_chunk($bySetPos, $weekdayCount);
+      $chunks = \array_chunk($bySetPos, $weekdayCount);
       foreach ($chunks as $chunk) {
-        $first = reset($chunk);
-        $end = ($first < 0) ? min($chunk) : max($chunk);
+        $first = \reset($chunk);
+        $end = ($first < 0) ? \min($chunk) : \max($chunk);
         $ordinals[] = $end / $weekdayCount;
       }
     }

@@ -5,7 +5,7 @@
  * Install, update and uninstall functions for date_recur_modular module.
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\date_recur\Entity\DateRecurInterpreter;
@@ -16,7 +16,7 @@ use Drupal\date_recur\Entity\DateRecurInterpreter;
 function date_recur_modular_update_8201(&$sandbox): void {
   $interpreterId = 'default_interpreter';
   if (!DateRecurInterpreter::load($interpreterId)) {
-    // If default interpreter doesnt exist then skip this update.
+    // If default interpreter doesn't exist then skip this update.
     return;
   }
 

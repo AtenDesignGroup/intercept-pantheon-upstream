@@ -1,11 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur_modular\Functional;
 
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 
 /**
  * Tests Oscar Widget.
@@ -13,16 +13,10 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  * @group date_recur_modular_widget
  * @coversDefaultClass \Drupal\date_recur_modular\Plugin\Field\FieldWidget\DateRecurModularOscarWidget
  */
-class DateRecurModularOscarTest extends WebDriverTestBase {
+final class DateRecurModularOscarTest extends WebDriverTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected $defaultTheme = 'stark';
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_modular',
     'date_recur_entity_test',
@@ -35,9 +29,6 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     'system',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -68,7 +59,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * @dataProvider providerTestWidget
    */
   public function testWidget(array $values, array $expected, $clickAllDay = FALSE): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
     $this->drupalGet($entity->toUrl('edit-form'));
 
@@ -79,20 +70,15 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     $this->submitForm($values, 'Save');
     $this->assertSession()->pageTextContains('has been updated.');
 
-    $entity = DrEntityTest::load($entity->id());
-    $this->assertEquals($expected, $entity->dr[0]->getValue());
+    $entity = DrEntityTestBasic::load($entity->id());
+    self::assertEquals($expected, $entity->dr[0]->getValue());
   }
 
   /**
-   * Data provider for testWidget()
-   *
-   * @return array
-   *   Data for testing.
+   * Data provider.
    */
-  public function providerTestWidget(): array {
-    $data = [];
-
-    $data['once'] = [
+  public static function providerTestWidget(): \Generator {
+    yield 'once' => [
       [
         'dr[0][mode]' => 'once',
         'dr[0][day_start]' => '04/14/2015',
@@ -108,7 +94,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
       ],
     ];
 
-    $data['multi'] = [
+    yield 'multi' => [
       [
         'dr[0][mode]' => 'multiday',
         'dr[0][daily_count]' => 3,
@@ -125,7 +111,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
       ],
     ];
 
-    $data['weekly'] = [
+    yield 'weekly' => [
       [
         'dr[0][mode]' => 'weekly',
         'dr[0][weekdays][MO]' => TRUE,
@@ -144,7 +130,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
       ],
     ];
 
-    $data['fortnightly'] = [
+    yield 'fortnightly' => [
       [
         'dr[0][mode]' => 'fortnightly',
         'dr[0][weekdays][MO]' => TRUE,
@@ -163,7 +149,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
       ],
     ];
 
-    $data['allday'] = [
+    yield 'allday' => [
       [
         'dr[0][mode]' => 'once',
         'dr[0][day_start]' => '04/14/2015',
@@ -179,7 +165,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // First Friday of the month.
-    $data['monthly 1 ordinal 1 weekday'] = [
+    yield 'monthly 1 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -199,7 +185,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // First Thursday and Friday of the month.
-    $data['monthly 1 ordinal 2 weekday'] = [
+    yield 'monthly 1 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -219,7 +205,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // First and second Friday of the month.
-    $data['monthly 1,2 ordinal 1 weekday'] = [
+    yield 'monthly 1,2 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -239,7 +225,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // First and second Thursday and Friday of the month.
-    $data['monthly 1,2 ordinal 2 weekday'] = [
+    yield 'monthly 1,2 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -260,7 +246,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // Last Thursday of the month.
-    $data['monthly -1 ordinal 1 weekday'] = [
+    yield 'monthly -1 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -279,7 +265,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // Last Thursday and Friday of the month.
-    $data['monthly -1 ordinal 2 weekday'] = [
+    yield 'monthly -1 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -299,7 +285,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // Second to last Thursday of the month.
-    $data['monthly -2 ordinal 1 weekday'] = [
+    yield 'monthly -2 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -318,7 +304,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // Second to last Thursday and Friday of the month.
-    $data['monthly -4,-3 ordinal 2 weekday'] = [
+    yield 'monthly -4,-3 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -338,7 +324,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // Last and Second to last Thursday and Friday of the month.
-    $data['monthly -4,-3-2,-1 ordinal 2 weekday'] = [
+    yield 'monthly -4,-3-2,-1 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -359,7 +345,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
     ];
 
     // Combination second and second to last Thursday and Friday of the month.
-    $data['monthly -4,-3,3,4 ordinal 2 weekday'] = [
+    yield 'monthly -4,-3,3,4 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][day_start]' => '04/14/2015',
@@ -378,15 +364,13 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
         'timezone' => 'Asia/Singapore',
       ],
     ];
-
-    return $data;
   }
 
   /**
    * Tests times fields end before start.
    */
   public function testTimesEndBeforeStart(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $edit = [
@@ -405,7 +389,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * Tests times fields end same as start.
    */
   public function testTimesEndEqualStart(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $edit = [
@@ -424,7 +408,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * Tests times fields end after start.
    */
   public function testTimesEndAfterStart(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $edit = [
@@ -443,7 +427,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * Tests times fields end not set.
    */
   public function testTimesStartNotSet(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $edit = [
@@ -461,7 +445,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * Tests times fields end not set.
    */
   public function testTimesEndNotSet(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $edit = [
@@ -479,7 +463,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * Tests times fields end not set.
    */
   public function testTimesDayNotSet(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $edit = [
@@ -497,7 +481,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * Tests full day.
    */
   public function testFullDay(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $entity->dr = [
@@ -523,7 +507,7 @@ class DateRecurModularOscarTest extends WebDriverTestBase {
    * Tests all-day toggle visibility.
    */
   public function testAllDayToggle(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $this->drupalGet($entity->toUrl('edit-form'));

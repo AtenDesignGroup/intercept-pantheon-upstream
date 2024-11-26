@@ -2,7 +2,7 @@ name: 'Webform Node Multiple test'
 type: module
 description: 'Support module for webform nodes with multiple webforms testing.'
 package: 'Webform Testing'
-core_version_requirement: ^10.1
+core_version_requirement: ^10.2
 dependencies:
   - 'drupal:field'
   - 'drupal:menu_ui'

@@ -1,11 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur_modular\Functional;
 
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 
 /**
  * Tests Sierra Widget.
@@ -13,16 +13,10 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  * @group date_recur_modular_widget
  * @coversDefaultClass \Drupal\date_recur_modular\Plugin\Field\FieldWidget\DateRecurModularSierraWidget
  */
-class DateRecurModularSierraTest extends WebDriverTestBase {
+final class DateRecurModularSierraTest extends WebDriverTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected $defaultTheme = 'stark';
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_modular',
     'date_recur_entity_test',
@@ -35,9 +29,6 @@ class DateRecurModularSierraTest extends WebDriverTestBase {
     'system',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -70,18 +61,18 @@ class DateRecurModularSierraTest extends WebDriverTestBase {
     $user->timezone = '';
     $user->save();
     // Make sure timezone isn't changed elsewhere.
-    $this->assertNull($user->timezone->value);
+    static::assertNull($user->timezone->value);
     $this->drupalLogin($user);
 
     // Test a date/time appears as all-day.
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->dr = [
       // Time is 00:00am Sydney. (UTC+10)
       'value' => '2015-05-13T14:00:00',
       // Time is 11:59:59pm Sydney.
       'end_value' => '2015-05-14T13:59:59',
       'rrule' => 'FREQ=WEEKLY;INTERVAL=1;COUNT=1',
-      // Doesnt matter what time zone storage is.
+      // Doesn't matter what time zone storage is.
       'timezone' => 'Asia/Singapore',
     ];
     $entity->save();
@@ -90,14 +81,14 @@ class DateRecurModularSierraTest extends WebDriverTestBase {
     $this->assertSession()->checkboxChecked('dr[0][is_all_day]');
 
     // Test a date/time that does not appear as all-day.
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->dr = [
       // Time is 00:00am Sydney. (UTC+10)
       'value' => '2015-05-13T14:00:00',
       // Time is 11:58:59pm Sydney.
       'end_value' => '2015-05-14T13:58:59',
       'rrule' => 'FREQ=WEEKLY;INTERVAL=1;COUNT=1',
-      // Doesnt matter what time zone storage is.
+      // Doesn't matter what time zone storage is.
       'timezone' => 'Asia/Singapore',
     ];
     $entity->save();

@@ -20,16 +20,16 @@
     "drupal/admin_toolbar": "^3.1.0",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core": "^10.3.6",
+    "drupal/core": "^10.3.10",
     "drupal/date_popup": "^2.0",
     "drupal/date_recur": "^3.5",
-    "drupal/date_recur_modular": "^3.1",
+    "drupal/date_recur_modular": "^3.2.1",
     "drupal/default_content": "2.0.0-alpha2",
     "drupal/gin": "^3.0",
     "drupal/gin_toolbar": "^1.0@beta",
     "drupal/image_effects": "^3.6",
-    "drupal/intercept_base": "2.0.6",
-    "drupal/intercept": "2.0.6",
+    "drupal/intercept_base": "2.0.7",
+    "drupal/intercept": "2.0.7",
     "drupal/jsonapi_extras": "^3.26",
     "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",
@@ -131,7 +131,7 @@
         "3411040 Replaces UserAuthentication with UserAuth as before": "patches/3411040-fix-user-auth.patch"
       },
       "drupal/date_recur_modular": {
-        "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2020-04-01/3124197.patch"
+        "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2024-11-14/3124197-add-type-to-widget.patch"
       },
       "drupal/default_content": {
         "Handle exceptions during import": "https://www.drupal.org/files/issues/2022-09-20/3057880-16.patch"
@@ -139,7 +139,7 @@
       "drupal/gin": {
         "Adds template override for /bulk-room-reservation/add": "patches/bulk_room_reservations_date_recur_template.patch",
         "Fixes publication options not appearing in sidebar when using event templates": "patches/crl-1768_event_templates_sidebar.patch",
-        "3466692 Removes more actions group dropdown": "patches/3466692-gin-disable-more-actions-group.patch"
+        "3466692 Removes more actions group dropdown": "https://www.drupal.org/files/issues/2024-11-25/3466692-gin-disable-more-actions-group.patch"
       },
       "drupal/smsframework": {
         "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"

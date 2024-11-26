@@ -1,11 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur_modular\Functional;
 
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 
 /**
  * Tests Alpha Widget.
@@ -13,16 +13,10 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  * @group date_recur_modular_widget
  * @coversDefaultClass \Drupal\date_recur_modular\Plugin\Field\FieldWidget\DateRecurModularAlphaWidget
  */
-class DateRecurModularAlphaTest extends WebDriverTestBase {
+final class DateRecurModularAlphaTest extends WebDriverTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected $defaultTheme = 'stark';
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_modular',
     'date_recur_entity_test',
@@ -35,9 +29,6 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     'system',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -66,27 +57,22 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
    * @dataProvider providerTestWidget
    */
   public function testWidget(array $values, array $expected): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
     $this->drupalGet($entity->toUrl('edit-form'));
 
     $this->submitForm($values, 'Save');
     $this->assertSession()->pageTextContains('has been updated.');
 
-    $entity = DrEntityTest::load($entity->id());
-    $this->assertEquals($expected, $entity->dr[0]->getValue());
+    $entity = DrEntityTestBasic::load($entity->id());
+    self::assertEquals($expected, $entity->dr[0]->getValue());
   }
 
   /**
-   * Data provider for testWidget()
-   *
-   * @return array
-   *   Data for testing.
+   * Data provider.
    */
-  public function providerTestWidget(): array {
-    $data = [];
-
-    $data['once'] = [
+  public static function providerTestWidget(): \Generator {
+    yield 'once' => [
       [
         'dr[0][mode]' => 'once',
         'dr[0][start][date]' => '04/14/2015',
@@ -103,7 +89,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
       ],
     ];
 
-    $data['multi'] = [
+    yield 'multi' => [
       [
         'dr[0][mode]' => 'multiday',
         'dr[0][daily_count]' => 3,
@@ -121,7 +107,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
       ],
     ];
 
-    $data['weekly'] = [
+    yield 'weekly' => [
       [
         'dr[0][mode]' => 'weekly',
         'dr[0][weekdays][MO]' => TRUE,
@@ -141,7 +127,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
       ],
     ];
 
-    $data['fortnightly'] = [
+    yield 'fortnightly' => [
       [
         'dr[0][mode]' => 'fortnightly',
         'dr[0][weekdays][MO]' => TRUE,
@@ -162,7 +148,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // First Friday of the month.
-    $data['monthly 1 ordinal 1 weekday'] = [
+    yield 'monthly 1 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -183,7 +169,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // First Thursday and Friday of the month.
-    $data['monthly 1 ordinal 2 weekday'] = [
+    yield 'monthly 1 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -204,7 +190,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // First and second Friday of the month.
-    $data['monthly 1,2 ordinal 1 weekday'] = [
+    yield 'monthly 1,2 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -225,7 +211,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // First and second Thursday and Friday of the month.
-    $data['monthly 1,2 ordinal 2 weekday'] = [
+    yield 'monthly 1,2 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -247,7 +233,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // Last Thursday of the month.
-    $data['monthly -1 ordinal 1 weekday'] = [
+    yield 'monthly -1 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -267,7 +253,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // Last Thursday and Friday of the month.
-    $data['monthly -1 ordinal 2 weekday'] = [
+    yield 'monthly -1 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -288,7 +274,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // Second to last Thursday of the month.
-    $data['monthly -2 ordinal 1 weekday'] = [
+    yield 'monthly -2 ordinal 1 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -308,7 +294,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // Second to last Thursday and Friday of the month.
-    $data['monthly -4,-3 ordinal 2 weekday'] = [
+    yield 'monthly -4,-3 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -329,7 +315,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // Last and Second to last Thursday and Friday of the month.
-    $data['monthly -4,-3-2,-1 ordinal 2 weekday'] = [
+    yield 'monthly -4,-3-2,-1 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -351,7 +337,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
     ];
 
     // Combination second and second to last Thursday and Friday of the month.
-    $data['monthly -4,-3,3,4 ordinal 2 weekday'] = [
+    yield 'monthly -4,-3,3,4 ordinal 2 weekday' => [
       [
         'dr[0][mode]' => 'monthly',
         'dr[0][start][date]' => '04/14/2015',
@@ -371,22 +357,20 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
         'timezone' => 'Asia/Singapore',
       ],
     ];
-
-    return $data;
   }
 
   /**
    * Tests date/time/time zone is correct as loaded from storage.
    */
   public function testDefaultValuesFromStorage(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $entity->dr = [
       'value' => '2015-04-13T16:00:00',
       'end_value' => '2015-04-13T18:00:00',
       'rrule' => 'FREQ=WEEKLY;INTERVAL=1;COUNT=1',
-      // This time zone should be different to currentuser.
+      // This time zone should be different to current user.
       // Kigali: UTC+2 NO DST.
       'timezone' => 'Africa/Kigali',
     ];
@@ -409,7 +393,7 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
    * form, then re-saving.
    */
   public function testTimeZoneChanged(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->save();
 
     $entity->dr = [
@@ -439,11 +423,11 @@ class DateRecurModularAlphaTest extends WebDriverTestBase {
 
     // All values should be updated to account for different time zone, all
     // values above in field value assertions should be offset -4 hours.
-    $entity = DrEntityTest::load($entity->id());
-    $this->assertEquals('Indian/Mauritius', $entity->dr->timezone);
-    $this->assertEquals('2015-04-13T14:00:00', $entity->dr->value);
-    $this->assertEquals('2015-04-13T16:00:00', $entity->dr->end_value);
-    $this->assertEquals('FREQ=WEEKLY;INTERVAL=1;UNTIL=20151011T120000Z', $entity->dr->rrule);
+    $entity = DrEntityTestBasic::load($entity->id());
+    self::assertEquals('Indian/Mauritius', $entity->dr->timezone);
+    self::assertEquals('2015-04-13T14:00:00', $entity->dr->value);
+    self::assertEquals('2015-04-13T16:00:00', $entity->dr->end_value);
+    self::assertEquals('FREQ=WEEKLY;INTERVAL=1;UNTIL=20151011T120000Z', $entity->dr->rrule);
   }
 
 }

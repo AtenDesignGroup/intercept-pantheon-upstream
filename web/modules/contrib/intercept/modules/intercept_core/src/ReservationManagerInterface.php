@@ -114,6 +114,21 @@ interface ReservationManagerInterface {
    */
   public function hasMaxDurationConflict(array $params, NodeInterface $room);
 
+    /**
+   * Gets an array of start and end dates, keyed by reservation UUID.
+   *
+   * @param array $reservations
+   *   An array of existing reservations.
+   * @param array $params
+   *   An array of reservation parameters.
+   * @param \Drupal\node\NodeInterface $node
+   *   A Room node.
+   *
+   * @return array
+   *   An array of start and end dates, keyed by reservation UUID.
+   */
+  public function getBlockedDates(array $reservations, array $params, NodeInterface $node);
+
   /**
    * Gets the last reservation of a type by a user.
    *

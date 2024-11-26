@@ -2,7 +2,7 @@ name: 'Webform Block Custom test'
 type: module
 description: 'Support module for webform block custom testing.'
 package: 'Webform Testing'
-core_version_requirement: ^10.1
+core_version_requirement: ^10.2
 dependencies:
   - 'drupal:block'
   - 'drupal:block_content'

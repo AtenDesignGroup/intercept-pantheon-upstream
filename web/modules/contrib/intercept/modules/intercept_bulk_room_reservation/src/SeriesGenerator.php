@@ -333,7 +333,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
   /**
    * {@inheritDoc}
    */
-  private function getLogisticsFromFormState(FormStateInterface $form_state) {
+  public function getLogisticsFromFormState(FormStateInterface $form_state) {
     $logistics = [
       'dates' => [],
       'times' => [],

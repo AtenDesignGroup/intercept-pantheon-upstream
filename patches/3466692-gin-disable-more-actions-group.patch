@@ -1,54 +1,80 @@
 diff --git a/src/GinContentFormHelper.php b/src/GinContentFormHelper.php
-index 249f6bb..3168760 100644
+index 0d1a52c3..5e5e0083 100644
 --- a/src/GinContentFormHelper.php
 +++ b/src/GinContentFormHelper.php
-@@ -134,48 +134,7 @@ class GinContentFormHelper implements ContainerInjectionInterface {
-         $form['#attributes']['class'][] = 'gin--has-sticky-form-actions';
+@@ -136,38 +136,38 @@ class GinContentFormHelper implements ContainerInjectionInterface {
+         ];
  
          // Create gin_more_actions group.
 -        $toggle_more_actions = t('More actions');
--        $form['actions']['gin_more_actions'] = [
+-        $form['gin_sticky_actions']['more_actions'] = [
 -          '#type' => 'container',
 -          '#multilingual' => TRUE,
 -          '#weight' => 998,
 -          '#attributes' => [
 -            'class' => ['gin-more-actions'],
 -          ],
--          'gin_more_actions_toggle' => [
+-          'more_actions_toggle' => [
 -            '#markup' => '<a href="#toggle-more-actions" class="gin-more-actions__trigger trigger" data-gin-tooltip role="button" title="' . $toggle_more_actions . '" aria-controls="gin_more_actions"><span class="visually-hidden">' . $toggle_more_actions . '</span></a>',
 -            '#weight' => 1,
 -          ],
--          'gin_more_actions_items' => [
+-          'more_actions_items' => [
 -            '#type' => 'container',
 -            '#multilingual' => TRUE,
 -          ],
 -        ];
--
--        // Prepare actions.
--        foreach (Element::children($form['actions']) as $key => $item) {
--          // Attach to original form id.
--          $form['actions'][$item]['#attributes']['form'] = $form['#id'];
--        }
--
--        // Move all actions over.
--        $form['actions']['gin_more_actions']['gin_more_actions_items'] = ($form['actions']) ?? [];
--        $form['actions']['gin_more_actions']['gin_more_actions_items']['#weight'] = 2;
--        $form['actions']['gin_more_actions']['gin_more_actions_items']['#attributes']['class'] = ['gin-more-actions__menu'];
--
--        // Unset all items we move to the more actions menu.
--        $excludes = ['save', 'submit', 'preview', 'gin_more_actions'];
--        foreach (Element::children($form['actions']) as $key => $item) {
--          if (!empty($form['actions'][$item]['#gin_action_item'])) {
--            $excludes[] = $item;
--          }
--          if (!in_array($item, $excludes, TRUE)) {
--            unset($form['actions'][$item]);
--          }
--          else {
--            unset($form['actions']['gin_more_actions']['gin_more_actions_items'][$item]);
--          }
--        }
-+        // ...wait, no don't do that actually. ;)
++        // $toggle_more_actions = t('More actions');
++        // $form['gin_sticky_actions']['more_actions'] = [
++        //   '#type' => 'container',
++        //   '#multilingual' => TRUE,
++        //   '#weight' => 998,
++        //   '#attributes' => [
++        //     'class' => ['gin-more-actions'],
++        //   ],
++        //   'more_actions_toggle' => [
++        //     '#markup' => '<a href="#toggle-more-actions" class="gin-more-actions__trigger trigger" data-gin-tooltip role="button" title="' . $toggle_more_actions . '" aria-controls="gin_more_actions"><span class="visually-hidden">' . $toggle_more_actions . '</span></a>',
++        //     '#weight' => 1,
++        //   ],
++        //   'more_actions_items' => [
++        //     '#type' => 'container',
++        //     '#multilingual' => TRUE,
++        //   ],
++        // ];
  
          // Assign status to gin_actions.
-         $form['actions']['gin_actions'] = [
+-        $form['gin_sticky_actions']['status'] = [
+-          '#type' => 'container',
+-          '#weight' => -1,
+-          '#multilingual' => TRUE,
+-        ];
++        // $form['gin_sticky_actions']['status'] = [
++        //   '#type' => 'container',
++        //   '#weight' => -1,
++        //   '#multilingual' => TRUE,
++        // ];
+ 
+         // Set form id to status field.
+-        if (isset($form['status']['widget']) && isset($form['status']['widget']['value'])) {
+-          $form['status']['widget']['value']['#attributes']['form'] = $form['#id'];
+-        }
+-        if (isset($form['status']['#group'])) {
+-          $form['status']['#group'] = 'status';
+-        }
++        // if (isset($form['status']['widget']) && isset($form['status']['widget']['value'])) {
++        //   $form['status']['widget']['value']['#attributes']['form'] = $form['#id'];
++        // }
++        // if (isset($form['status']['#group'])) {
++        //   $form['status']['#group'] = 'status';
++        // }
+ 
+         // Helper item to move focus to sticky header.
+         $form['gin_move_focus_to_sticky_bar'] = [
+@@ -176,7 +176,7 @@ class GinContentFormHelper implements ContainerInjectionInterface {
+         ];
+ 
+         // Attach library.
+-        $form['#attached']['library'][] = 'gin/more_actions';
++        // $form['#attached']['library'][] = 'gin/more_actions';
+ 
+         $form['#after_build'][] = 'gin_form_after_build';
+       }

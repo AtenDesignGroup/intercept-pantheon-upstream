@@ -157,10 +157,7 @@ class EventManager implements EventManagerInterface {
       $location = $form['field_location']['widget']['#default_value'];
     }
     $options = &$form['field_room']['widget']['#options'];
-    if (empty($location)) {
-      $form['field_room']['widget']['#options'] = ['_none' => '- Select a location -'];
-    }
-    else {
+    if (!empty($location)) {
       $rooms = $this->entityTypeManager->getStorage('node')->loadByProperties([
         'type' => 'room',
         'field_location.target_id' => $location[0],

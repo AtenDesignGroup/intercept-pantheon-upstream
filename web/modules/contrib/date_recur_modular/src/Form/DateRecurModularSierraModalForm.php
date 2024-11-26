@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur_modular\Form;
 
@@ -31,13 +31,6 @@ class DateRecurModularSierraModalForm extends FormBase {
   use DateRecurModularWidgetFieldsTrait;
   use DateRecurModularUtilityTrait;
 
-  /**
-   * The PrivateTempStore factory.
-   *
-   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
-   */
-  protected $tempStoreFactory;
-
   protected const MODE_ONCE = 'daily';
 
   protected const MODE_WEEKLY = 'weekly';
@@ -49,6 +42,13 @@ class DateRecurModularSierraModalForm extends FormBase {
   protected const UTC_FORMAT = 'Ymd\THis\Z';
 
   /**
+   * The PrivateTempStore factory.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
+  protected $tempStoreFactory;
+
+  /**
    * Constructs a new DateRecurModularSierraModalForm.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
@@ -56,7 +56,10 @@ class DateRecurModularSierraModalForm extends FormBase {
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
    *   The PrivateTempStore factory.
    */
-  public function __construct(ConfigFactoryInterface $configFactory, PrivateTempStoreFactory $tempStoreFactory) {
+  public function __construct(
+    ConfigFactoryInterface $configFactory,
+    PrivateTempStoreFactory $tempStoreFactory,
+  ) {
     $this->configFactory = $configFactory;
     $this->tempStoreFactory = $tempStoreFactory;
   }
@@ -67,7 +70,7 @@ class DateRecurModularSierraModalForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('tempstore.private')
+      $container->get('tempstore.private'),
     );
   }
 
@@ -111,7 +114,7 @@ class DateRecurModularSierraModalForm extends FormBase {
       try {
         $helper = DateRecurHelper::create($rrule, $startDate);
         $rules = $helper->getRules();
-        $rule1 = count($rules) > 0 ? reset($rules) : NULL;
+        $rule1 = \count($rules) > 0 ? \reset($rules) : NULL;
         $parts = $rule1 ? $rule1->getParts() : [];
       }
       catch (\Exception $e) {
@@ -142,7 +145,7 @@ class DateRecurModularSierraModalForm extends FormBase {
         static::MODE_MONTHLY => $this->t('month(s)'),
         static::MODE_YEARLY => $this->t('year(s)'),
       ],
-      '#default_value' => $rule1 ? strtolower($rule1->getFrequency()) : NULL,
+      '#default_value' => $rule1 ? \strtolower($rule1->getFrequency()) : NULL,
     ];
 
     $form['weekdays'] = $this->getFieldByDay($rule1);
@@ -190,7 +193,7 @@ class DateRecurModularSierraModalForm extends FormBase {
     $endsDate = NULL;
     try {
       $until = $parts['UNTIL'] ?? NULL;
-      if (is_string($until)) {
+      if (\is_string($until)) {
         $endsDate = new \DateTime($until);
       }
       elseif ($until instanceof \DateTimeInterface) {
@@ -235,7 +238,7 @@ class DateRecurModularSierraModalForm extends FormBase {
       ':input[name="ends_mode"]' => ['value' => DateRecurModularWidgetOptions::ENDS_MODE_OCCURRENCES],
     ];
 
-    // States dont yet work on date time so put it in a container.
+    // States don't yet work on date time so put it in a container.
     // @see https://www.drupal.org/project/drupal/issues/2419131
     $form['ends']['ends_date'] = [
       '#type' => 'container',
@@ -300,18 +303,18 @@ class DateRecurModularSierraModalForm extends FormBase {
       return $response->addCommand(new OpenModalDialogCommand(
         $this->t('Errors'),
         $form,
-        ['width' => '575']
+        ['width' => '575'],
       ));
     }
 
     $frequency = $form_state->getValue('freq');
 
     $parts = [];
-    $parts['FREQ'] = strtoupper($frequency);
+    $parts['FREQ'] = \strtoupper($frequency);
     $parts['INTERVAL'] = $form_state->getValue('interval');
     if (static::MODE_WEEKLY === $frequency) {
-      $weekDays = array_values(array_filter($form_state->getValue('weekdays')));
-      $parts['BYDAY'] = implode(',', $weekDays);
+      $weekDays = \array_values(\array_filter($form_state->getValue('weekdays')));
+      $parts['BYDAY'] = \implode(',', $weekDays);
     }
 
     if (static::MODE_MONTHLY === $frequency) {
@@ -339,7 +342,7 @@ class DateRecurModularSierraModalForm extends FormBase {
     foreach ($parts as $k => $v) {
       $ruleKv[] = "$k=$v";
     }
-    $ruleString = implode(';', $ruleKv);
+    $ruleString = \implode(';', $ruleKv);
 
     // Rset cannot be casted to string yet, rebuild it here, see also
     // https://github.com/rlanvin/php-rrule/issues/37
@@ -351,19 +354,19 @@ class DateRecurModularSierraModalForm extends FormBase {
     $rset = new RSet($originalString);
     $utc = new \DateTimeZone('UTC');
 
-    $exDates = array_map(function (\DateTime $exDate) use ($utc) {
+    $exDates = \array_map(static function (\DateTime $exDate) use ($utc) {
       $exDate->setTimezone($utc);
       return $exDate->format(static::UTC_FORMAT);
     }, $rset->getExDates());
-    if (count($exDates) > 0) {
-      $lines[] = 'EXDATE:' . implode(',', $exDates);
+    if (\count($exDates) > 0) {
+      $lines[] = 'EXDATE:' . \implode(',', $exDates);
     }
 
     $collection = $this->tempStoreFactory
       ->get(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE);
-    $collection->set(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_KEY, implode("\n", $lines));
+    $collection->set(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_KEY, \implode("\n", $lines));
 
-    $refreshBtnName = sprintf('[name="%s"]', $collection->get(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_REFRESH_BUTTON));
+    $refreshBtnName = \sprintf('[name="%s"]', $collection->get(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_REFRESH_BUTTON));
     $response
       ->addCommand(new CloseDialogCommand())
       ->addCommand(new InvokeCommand($refreshBtnName, 'trigger', ['click']));

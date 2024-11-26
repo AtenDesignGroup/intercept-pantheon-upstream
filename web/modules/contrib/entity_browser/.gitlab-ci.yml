@@ -18,12 +18,24 @@ include:
 variables:
   # Broaden test coverage.
   OPT_IN_TEST_PREVIOUS_MINOR: 1
+  OPT_IN_TEST_PREVIOUS_MAJOR: 1
   _PHPUNIT_CONCURRENT: 1
 
-composer (next major):
+composer:
   variables:
-    _LENIENT_ALLOW_LIST: "ckeditor,embed,entity_embed,inline_entity_form"
+    _LENIENT_ALLOW_LIST: "ckeditor,entity_embed,inline_entity_form"
 
-phpunit (next major):
+phpunit:
+  allow_failure: true
   before_script:
-    - 'sed -i "s/core_version_requirement.*/core_version_requirement: \^11/" web/modules/contrib/**/*.info.yml'
+    - 'sed -i "s/core_version_requirement.*/core_version_requirement: \^10 || ^11/" web/modules/contrib/**/*.info.yml'
+
+composer (10.4):
+  extends: .composer-base
+  variables:
+    DRUPAL_CORE: 10.4.x-dev
+
+phpunit (10.4):
+  extends: phpunit
+  needs:
+    - "composer (10.4)"

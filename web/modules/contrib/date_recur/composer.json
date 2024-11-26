@@ -20,13 +20,13 @@
     },
     "require": {
         "php": ">=8.3",
-        "drupal/core": "^10.3",
+        "drupal/core": "^10.3 || ^11",
         "rlanvin/php-rrule": "^2"
     },
     "require-dev": {
         "composer/installers": "^2",
         "dealerdirect/phpcodesniffer-composer-installer": "^1",
-        "drupal/core-dev": "^10.3",
+        "drupal/core-dev": "^10.3 || ^11",
         "drupal/token": "^1.5",
         "micheh/phpcs-gitlab": "^1.1",
         "mockery/mockery": "^1.5",

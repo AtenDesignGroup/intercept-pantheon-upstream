@@ -2,6 +2,6 @@ name: 'Webform Attachment test'
 type: module
 description: 'Support module for webform attachment element testing.'
 package: 'Webform Testing'
-core_version_requirement: ^10.1
+core_version_requirement: ^10.2
 dependencies:
   - 'webform:webform_attachment'

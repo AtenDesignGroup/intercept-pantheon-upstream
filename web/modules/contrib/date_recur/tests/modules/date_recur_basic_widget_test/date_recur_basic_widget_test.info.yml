@@ -5,7 +5,7 @@ package: Testing
 dependencies:
   - date_recur:date_recur
 
-# Information added by Drupal.org packaging script on 2024-08-26
-version: '3.7.0'
+# Information added by Drupal.org packaging script on 2024-11-04
+version: '3.8.0'
 project: 'date_recur'
-datestamp: 1724686362
+datestamp: 1730750667

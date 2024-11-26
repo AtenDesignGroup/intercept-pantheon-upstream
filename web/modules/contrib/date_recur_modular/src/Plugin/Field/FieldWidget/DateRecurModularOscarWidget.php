@@ -1,12 +1,13 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur_modular\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\date_recur\DateRecurPartGrid;
 use Drupal\date_recur\DateRecurRuleInterface;
 use Drupal\date_recur\Exception\DateRecurHelperArgumentException;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
@@ -68,12 +69,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
 
   protected const HTML_TIME_FORMAT = 'H:i:s';
 
-  /**
-   * Part grid for this list.
-   *
-   * @var \Drupal\date_recur\DateRecurPartGrid
-   */
-  protected $partGrid;
+  protected DateRecurPartGrid $partGrid;
 
   /**
    * {@inheritdoc}
@@ -126,9 +122,6 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
     ];
   }
 
-  /**
-   * {@inheritdoc}
-   */
   protected function getMode(DateRecurItem $item): ?string {
     try {
       $helper = $item->getHelper();
@@ -138,7 +131,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
     }
 
     $rules = $helper->getRules();
-    $rule = reset($rules);
+    $rule = \reset($rules);
     if (FALSE === $rule) {
       // This widget supports one RRULE per field value.
       return NULL;
@@ -215,14 +208,14 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
         // Calendar day is same.
         ($item->start_date->format('Y-m-d') === $item->end_date->format('Y-m-d')) &&
         // Ignore seconds when checking whether time is all day.
-        (substr($item->start_date->format('H:i'), 0, 5) === '00:00') &&
-        (substr($item->end_date->format('H:i'), 0, 5) === '23:59');
+        (\substr($item->start_date->format('H:i'), 0, 5) === '00:00') &&
+        (\substr($item->end_date->format('H:i'), 0, 5) === '23:59');
     }
 
     $element['is_all_day'] = [
       '#type' => 'radios',
-      // Dont add title, else preRenderCompositeFormElement uses fieldset, which
-      // browsers wont let flex.
+      // Don't add title, else preRenderCompositeFormElement uses fieldset,
+      // which browsers wont let flex.
       '#default_value' => $isAllDay ? static::IS_ALL_DAY_ALL : static::IS_ALL_DAY_PARTIAL,
       '#options' => [
         static::IS_ALL_DAY_ALL => $this->t('All day'),
@@ -296,7 +289,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
       $element['weekdays'][$key]['#attributes']['title'] = $value;
       // Change the label to a short letter of weekday.
       /** @var \Drupal\Core\StringTranslation\TranslatableMarkup $value */
-      $value = substr((string) $value, 0, 1);
+      $value = \substr((string) $value, 0, 1);
     }
 
     $element['ordinals'] = $this->getFieldMonthlyByDayOrdinals($element, $rule);
@@ -321,9 +314,9 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
    */
   public static function validateModularWidget(array &$element, FormStateInterface $form_state, array &$complete_form): void {
     /** @var string|null $dayStartString */
-    $dayStartString = $form_state->getValue(array_merge($element['#parents'], ['day_start']));
-    $timeStartString = $form_state->getValue(array_merge($element['#parents'], ['times', 'time_start']), '');
-    $timeEndString = $form_state->getValue(array_merge($element['#parents'], ['times', 'time_end']), '');
+    $dayStartString = $form_state->getValue(\array_merge($element['#parents'], ['day_start']));
+    $timeStartString = $form_state->getValue(\array_merge($element['#parents'], ['times', 'time_start']), '');
+    $timeEndString = $form_state->getValue(\array_merge($element['#parents'], ['times', 'time_end']), '');
     $hasAnyDateTimeInput = !empty($dayStartString) || !empty($timeStartString) || !empty($timeEndString);
 
     if (!$hasAnyDateTimeInput) {
@@ -335,7 +328,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
     }
 
     /** @var string|null $timeZone */
-    $timeZone = $form_state->getValue(array_merge($element['#parents'], ['time_zone']));
+    $timeZone = $form_state->getValue(\array_merge($element['#parents'], ['time_zone']));
     if (empty($timeZone)) {
       $form_state->setError($element['end'], \t('Time zone must be set.'));
       return;
@@ -345,14 +338,14 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
     try {
       $baseDay = DrupalDateTime::createFromFormat('Y-m-d', $dayStartString, $timeZone);
       $baseDay->setTime(0, 0, 0);
-      $baseDayParts = explode('-', $baseDay->format('Y-n-j'));
+      $baseDayParts = \explode('-', $baseDay->format('Y-n-j'));
     }
     catch (\Exception $e) {
       $form_state->setError($element['day_start'], \t('Invalid start day.'));
       return;
     }
 
-    $isAllDay = $form_state->getValue(array_merge($element['#parents'], ['is_all_day'])) === static::IS_ALL_DAY_ALL;
+    $isAllDay = $form_state->getValue(\array_merge($element['#parents'], ['is_all_day'])) === static::IS_ALL_DAY_ALL;
     if ($isAllDay) {
       $startDate = (clone $baseDay)->setTime(0, 0, 0);
       $endDate = (clone $baseDay)->setTime(23, 59, 59);
@@ -360,10 +353,10 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
     else {
       // When time is POST'ed with 00 seconds, the entire part is missing.
       // Restore it here.
-      $fixTime = function (string $time): string {
+      $fixTime = static function (string $time): string {
         // See also \Drupal\Core\Datetime\Element\Datetime::valueCallback.
         // Seconds will be omitted in a post in case there's no entry.
-        if (!empty($time) && strlen($time) == 5) {
+        if (!empty($time) && \strlen($time) == 5) {
           $time .= ':00';
         }
         return $time;
@@ -411,7 +404,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
    * @return array
    *   The element.
    */
-  public static function afterBuildModularWidget(array $element, FormStateInterface $form_state) {
+  public static function afterBuildModularWidget(array $element, FormStateInterface $form_state): array {
     // Wait until ID is created, and after
     // \Drupal\Core\Render\Element\Checkboxes::processCheckboxes is run so
     // states are not replicated to children.
@@ -431,7 +424,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
   public function extractFormValues(FieldItemListInterface $items, array $form, FormStateInterface $form_state) {
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $items */
     $this->partGrid = $items->getPartGrid();
-    parent::extractFormValues(...func_get_args());
+    parent::extractFormValues(...\func_get_args());
     unset($this->partGrid);
   }
 
@@ -439,7 +432,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    $values = array_map(function (array $value): array {
+    $values = \array_map(static function (array $value): array {
       // If each of start/end/timezone/zone contain invalid values, quit here.
       // Validation errors will show on form. Notably start and end day are
       // malformed arrays thanks to 'datetime' element.
@@ -449,7 +442,7 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
       $end = $value['times']['time_end'] ?? NULL;
       $timeZone = $value['time_zone'] ?? NULL;
       $mode = $value['mode'] ?? NULL;
-      if (!$start instanceof DrupalDateTime || !$end instanceof DrupalDateTime || !is_string($timeZone) || !is_string($mode)) {
+      if (!$start instanceof DrupalDateTime || !$end instanceof DrupalDateTime || !\is_string($timeZone) || !\is_string($mode)) {
         return [];
       }
       return $value;
@@ -471,9 +464,9 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
       $item = [];
 
       $start = $value['times']['time_start'] ?? NULL;
-      assert(!isset($start) || $start instanceof DrupalDateTime);
+      \assert(!isset($start) || $start instanceof DrupalDateTime);
       $end = $value['times']['time_end'] ?? NULL;
-      assert(!isset($end) || $end instanceof DrupalDateTime);
+      \assert(!isset($end) || $end instanceof DrupalDateTime);
       $timeZone = $value['time_zone'] ?? NULL;
       $mode = $value['mode'] ?? NULL;
 
@@ -484,8 +477,8 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
       $item['end_value'] = $end->format($dateStorageFormat);
       $item['timezone'] = $timeZone;
 
-      $weekDays = array_values(array_filter($value['weekdays']));
-      $byDayStr = implode(',', $weekDays);
+      $weekDays = \array_values(\array_filter($value['weekdays']));
+      $byDayStr = \implode(',', $weekDays);
 
       $rule = [];
       if ($mode === static::MODE_MULTIDAY) {
@@ -509,28 +502,28 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
         $rule['BYDAY'] = $byDayStr;
 
         // Funge ordinals appropriately.
-        $ordinalCheckboxes = array_filter($value['ordinals']);
+        $ordinalCheckboxes = \array_filter($value['ordinals']);
         $ordinals = [];
-        if (count($ordinalCheckboxes) && count($weekDays)) {
-          $weekdayCount = count($weekDays);
+        if (\count($ordinalCheckboxes) && \count($weekDays)) {
+          $weekdayCount = \count($weekDays);
 
           // Expand simplified ordinals into spec compliant BYSETPOS ordinals.
           foreach ($ordinalCheckboxes as $ordinal) {
             $end = $ordinal * $weekdayCount;
             $diff = ($weekdayCount - 1);
             $start = ($end > 0) ? $end - $diff : $end + $diff;
-            $range = range($start, $end);
-            array_push($ordinals, ...$range);
+            $range = \range($start, $end);
+            \array_push($ordinals, ...$range);
           }
 
           // Order doesn't matter but simplifies testing.
-          sort($ordinals);
-          $rule['BYSETPOS'] = implode(',', $ordinals);
+          \sort($ordinals);
+          $rule['BYSETPOS'] = \implode(',', $ordinals);
         }
       }
 
       if (isset($rule['FREQ'])) {
-        $rule = array_filter($rule);
+        $rule = \array_filter($rule);
         $item['rrule'] = $this->buildRruleString($rule, $grid);
       }
 
@@ -549,16 +542,16 @@ class DateRecurModularOscarWidget extends DateRecurModularWidgetBase {
     $parts = $rule ? $rule->getParts() : [];
 
     $ordinals = [];
-    $bySetPos = !empty($parts['BYSETPOS']) ? explode(',', $parts['BYSETPOS']) : [];
-    if (count($bySetPos) > 0) {
-      $weekdayCount = count($element['weekdays']['#default_value']);
-      sort($bySetPos);
+    $bySetPos = !empty($parts['BYSETPOS']) ? \explode(',', $parts['BYSETPOS']) : [];
+    if (\count($bySetPos) > 0) {
+      $weekdayCount = \count($element['weekdays']['#default_value']);
+      \sort($bySetPos);
 
       // Collapse all ordinals into simplified ordinals.
-      $chunks = array_chunk($bySetPos, $weekdayCount);
+      $chunks = \array_chunk($bySetPos, $weekdayCount);
       foreach ($chunks as $chunk) {
-        $first = reset($chunk);
-        $end = ($first < 0) ? min($chunk) : max($chunk);
+        $first = \reset($chunk);
+        $end = ($first < 0) ? \min($chunk) : \max($chunk);
         $ordinals[] = $end / $weekdayCount;
       }
     }

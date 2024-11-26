@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur_modular\Plugin\Field\FieldWidget;
 
@@ -23,6 +23,7 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\date_recur\DateRecurHelper;
+use Drupal\date_recur\DateRecurPartGrid;
 use Drupal\date_recur\Entity\DateRecurInterpreterInterface;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
 use Drupal\date_recur_modular\DateRecurModularWidgetFieldsTrait;
@@ -116,14 +117,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
    */
   protected $formBuilder;
 
-  /**
-   * Part grid for this list.
-   *
-   * Temporary storage for massage values.
-   *
-   * @var \Drupal\date_recur\DateRecurPartGrid
-   */
-  protected $partGrid;
+  protected DateRecurPartGrid $partGrid;
 
   /**
    * The current user.
@@ -159,6 +153,58 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
    * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $dateFormatter;
+
+  /**
+   * Constructs a new DateRecurModularSierraWidget.
+   *
+   * @param string $plugin_id
+   *   The plugin_id for the formatter.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+   *   The definition of the field to which the formatter is associated.
+   * @param array $settings
+   *   The formatter settings.
+   * @param array $third_party_settings
+   *   Third party settings.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   A config factory for retrieving required config objects.
+   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
+   *   The PrivateTempStore factory.
+   * @param \Drupal\Core\Form\FormBuilderInterface $formBuilder
+   *   Provides form building and processing.
+   * @param \Drupal\Core\Session\AccountInterface $currentUser
+   *   The current user.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   The language manager.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
+   *   The date formatter service.
+   */
+  public function __construct(
+    $plugin_id,
+    $plugin_definition,
+    FieldDefinitionInterface $field_definition,
+    array $settings,
+    array $third_party_settings,
+    ConfigFactoryInterface $configFactory,
+    PrivateTempStoreFactory $tempStoreFactory,
+    FormBuilderInterface $formBuilder,
+    AccountInterface $currentUser,
+    EntityTypeManagerInterface $entityTypeManager,
+    LanguageManagerInterface $languageManager,
+    DateFormatterInterface $dateFormatter,
+  ) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $configFactory);
+    $this->tempStoreFactory = $tempStoreFactory;
+    $this->formBuilder = $formBuilder;
+    $this->currentUser = $currentUser;
+    $this->dateRecurInterpreterStorage = $entityTypeManager->getStorage('date_recur_interpreter');
+    $this->dateFormatStorage = $entityTypeManager->getStorage('date_format');
+    $this->languageManager = $languageManager;
+    $this->dateFormatter = $dateFormatter;
+  }
 
   /**
    * {@inheritdoc}
@@ -207,7 +253,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
   public function settingsForm(array $form, FormStateInterface $form_state): array {
     $form = parent::settingsForm($form, $form_state);
 
-    $interpreterOptions = array_map(function (DateRecurInterpreterInterface $interpreter): string {
+    $interpreterOptions = \array_map(function (DateRecurInterpreterInterface $interpreter): string {
       return $interpreter->label() ?? (string) $this->t('- Missing label -');
     }, $this->dateRecurInterpreterStorage->loadMultiple());
     $form['interpreter'] = [
@@ -220,7 +266,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       '#empty_option' => $this->t('- Do not show interpreted rule -'),
     ];
 
-    $dateFormatOptions = array_map(function (DateFormatInterface $dateFormat) {
+    $dateFormatOptions = \array_map(function (DateFormatInterface $dateFormat) {
       $time = new DrupalDateTime();
       $format = $this->dateFormatter->format($time->getTimestamp(), $dateFormat->id());
       return $dateFormat->label() . ' (' . $format . ')';
@@ -284,45 +330,6 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
   }
 
   /**
-   * Constructs a new DateRecurModularSierraWidget.
-   *
-   * @param string $plugin_id
-   *   The plugin_id for the formatter.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
-   *   The definition of the field to which the formatter is associated.
-   * @param array $settings
-   *   The formatter settings.
-   * @param array $third_party_settings
-   *   Third party settings.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-   *   A config factory for retrieving required config objects.
-   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
-   *   The PrivateTempStore factory.
-   * @param \Drupal\Core\Form\FormBuilderInterface $formBuilder
-   *   Provides form building and processing.
-   * @param \Drupal\Core\Session\AccountInterface $currentUser
-   *   The current user.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entity type manager.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
-   *   The language manager.
-   * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
-   *   The date formatter service.
-   */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, ConfigFactoryInterface $configFactory, PrivateTempStoreFactory $tempStoreFactory, FormBuilderInterface $formBuilder, AccountInterface $currentUser, EntityTypeManagerInterface $entityTypeManager, LanguageManagerInterface $languageManager, DateFormatterInterface $dateFormatter) {
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $configFactory);
-    $this->tempStoreFactory = $tempStoreFactory;
-    $this->formBuilder = $formBuilder;
-    $this->currentUser = $currentUser;
-    $this->dateRecurInterpreterStorage = $entityTypeManager->getStorage('date_recur_interpreter');
-    $this->dateFormatStorage = $entityTypeManager->getStorage('date_format');
-    $this->languageManager = $languageManager;
-    $this->dateFormatter = $dateFormatter;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -338,7 +345,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       $container->get('current_user'),
       $container->get('entity_type.manager'),
       $container->get('language_manager'),
-      $container->get('date.formatter')
+      $container->get('date.formatter'),
     );
   }
 
@@ -355,7 +362,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
 
     $item = $items[$delta];
 
-    $dropdownWrapper = 'dropdown-wrapper-' . implode('-', $elementParents);
+    $dropdownWrapper = 'dropdown-wrapper-' . \implode('-', $elementParents);
 
     $element['buttons']['#tree'] = TRUE;
     $element['buttons']['custom_recurrences'] = [
@@ -373,7 +380,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
         ],
       ],
       '#limit_validation_errors' => [],
-      '#name' => Html::cleanCssIdentifier(implode('-', array_merge($elementParents, ['custom_recurrences']))),
+      '#name' => Html::cleanCssIdentifier(\implode('-', \array_merge($elementParents, ['custom_recurrences']))),
     ];
 
     $element['buttons']['reload_recurrence_dropdown_custom'] = [
@@ -394,7 +401,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       '#submit' => [[$this, 'transferModalToFormStateCallback']],
       '#limit_validation_errors' => [],
       // Needs a name so triggering element works on multicardinal elements.
-      '#name' => Html::cleanCssIdentifier(implode('-', array_merge($elementParents, ['reload_recurrence_dropdown_custom']))),
+      '#name' => Html::cleanCssIdentifier(\implode('-', \array_merge($elementParents, ['reload_recurrence_dropdown_custom']))),
     ];
 
     $element['buttons']['reload_recurrence_dropdown'] = [
@@ -414,19 +421,19 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       ],
       '#limit_validation_errors' => [],
       // Needs a name so triggering element works on multicardinal elements.
-      '#name' => Html::cleanCssIdentifier(implode('-', array_merge($elementParents, ['reload_recurrence_dropdown']))),
+      '#name' => Html::cleanCssIdentifier(\implode('-', \array_merge($elementParents, ['reload_recurrence_dropdown']))),
     ];
 
     $timeZone = $this->getDefaultTimeZone($item);
-    $startDateInput = NestedArray::getValue($form_state->getUserInput(), array_merge($elementParents, ['day_start']));
+    $startDateInput = NestedArray::getValue($form_state->getUserInput(), \array_merge($elementParents, ['day_start']));
     if ($startDateInput) {
       $startDate = \DateTime::createFromFormat('Y-m-d', $startDateInput, new \DateTimeZone($timeZone));
       if ($startDate) {
-        $startTimeInput = NestedArray::getValue($form_state->getUserInput(), array_merge($elementParents, ['time_start']));
-        if (is_string($startTimeInput)) {
+        $startTimeInput = NestedArray::getValue($form_state->getUserInput(), \array_merge($elementParents, ['time_start']));
+        if (\is_string($startTimeInput)) {
           $timeObject = $this->parseTimeInput($startTimeInput);
           if ($timeObject) {
-            $timeExploded = explode(':', $timeObject->format('H:i:s'));
+            $timeExploded = \explode(':', $timeObject->format('H:i:s'));
             $startDate->setTime((int) $timeExploded[0], (int) $timeExploded[1], (int) $timeExploded[2]);
           }
           else {
@@ -445,7 +452,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
     $rrule = $item->rrule ?? '';
     $element['field_path'] = [
       '#type' => 'value',
-      '#value' => implode('/', [$this->fieldDefinition->getName(), $delta]),
+      '#value' => \implode('/', [$this->fieldDefinition->getName(), $delta]),
     ];
     $element['rrule_in_storage'] = [
       '#type' => 'value',
@@ -570,7 +577,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       ],
       '#limit_validation_errors' => [],
       // Needs a unique name as formbuilder cant differentiate between deltas.
-      '#name' => Html::cleanCssIdentifier(implode('-', array_merge($elementParents, ['occurrences']))),
+      '#name' => Html::cleanCssIdentifier(\implode('-', \array_merge($elementParents, ['occurrences']))),
       '#access' => $this->isOccurrencesModalEnabled(),
     ];
 
@@ -594,28 +601,28 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
     $valueParents = $element['#parents'];
     $formParents = $element['#array_parents'];
 
-    // Dont start validation until at least the start date is not empty.
+    // Don't start validation until at least the start date is not empty.
     /** @var string|null $start */
-    $startDay = $form_state->getValue(array_merge($valueParents, ['day_start']));
+    $startDay = $form_state->getValue(\array_merge($valueParents, ['day_start']));
     if (empty($startDay)) {
       return;
     }
 
     /** @var string|null $timeZone */
-    $timeZone = $form_state->getValue(array_merge($valueParents, ['time_zone']));
+    $timeZone = $form_state->getValue(\array_merge($valueParents, ['time_zone']));
     if (empty($startDay)) {
       $form_state->setError($element, \t('Time zone must be set if start date is set.'));
     }
 
-    $isAllDay = (bool) $form_state->getValue(array_merge($valueParents, ['is_all_day']));
+    $isAllDay = (bool) $form_state->getValue(\array_merge($valueParents, ['is_all_day']));
     if ($isAllDay) {
-      $form_state->setValue(array_merge($valueParents, ['time_start']), '00:00:00');
-      $form_state->setValue(array_merge($valueParents, ['time_end']), '23:59:59');
+      $form_state->setValue(\array_merge($valueParents, ['time_start']), '00:00:00');
+      $form_state->setValue(\array_merge($valueParents, ['time_end']), '23:59:59');
     }
 
     try {
-      $startDate = static::buildDatesFromFields(array_merge($formParents, ['day_start']), array_merge($formParents, ['time_start']), $timeZone, $form_state);
-      $form_state->setValue(array_merge($valueParents, ['start']), $startDate);
+      $startDate = static::buildDatesFromFields(\array_merge($formParents, ['day_start']), \array_merge($formParents, ['time_start']), $timeZone, $form_state);
+      $form_state->setValue(\array_merge($valueParents, ['start']), $startDate);
     }
     catch (\Exception $e) {
       $message = \t('Start date and time invalid.');
@@ -624,8 +631,8 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
     }
 
     try {
-      $dateEnd = static::buildDatesFromFields(array_merge($formParents, ['day_end']), array_merge($formParents, ['time_end']), $timeZone, $form_state);
-      $form_state->setValue(array_merge($valueParents, ['end']), $dateEnd);
+      $dateEnd = static::buildDatesFromFields(\array_merge($formParents, ['day_end']), \array_merge($formParents, ['time_end']), $timeZone, $form_state);
+      $form_state->setValue(\array_merge($valueParents, ['end']), $dateEnd);
     }
     catch (\Exception $e) {
       $message = \t('End date and time invalid.');
@@ -646,20 +653,20 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
     // Process RRULE.
     $rrule = '';
     if (isset($startDate)) {
-      $recurrenceOption = $form_state->getValue(array_merge($valueParents, ['recurrence_option']));
+      $recurrenceOption = $form_state->getValue(\array_merge($valueParents, ['recurrence_option']));
       if ($recurrenceOption === 'custom') {
         $rrule = $form_state->get([static::FORM_STATE_RRULE_KEY, $element['field_path']['#value']]);
         // There wont be a value in form state if the modal wasn't interacted
         // with, so fall back to value in storage.
         if (!isset($rrule)) {
-          $rrule = $form_state->getValue(array_merge($valueParents, ['rrule_in_storage']));
+          $rrule = $form_state->getValue(\array_merge($valueParents, ['rrule_in_storage']));
         }
       }
       else {
         $rrule = static::buildRruleFromRecurrenceOption($startDate, $recurrenceOption);
       }
     }
-    $form_state->setValue(array_merge($valueParents, ['rrule']), $rrule);
+    $form_state->setValue(\array_merge($valueParents, ['rrule']), $rrule);
   }
 
   /**
@@ -668,7 +675,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
   public function extractFormValues(FieldItemListInterface $items, array $form, FormStateInterface $form_state) {
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $items */
     $this->partGrid = $items->getPartGrid();
-    parent::extractFormValues(...func_get_args());
+    parent::extractFormValues(...\func_get_args());
     unset($this->partGrid);
   }
 
@@ -697,11 +704,11 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       }
 
       // If no start or end date then skip.
-      if (count($item) === 0) {
+      if (\count($item) === 0) {
         continue;
       }
 
-      assert(strlen($value['time_zone']) > 0);
+      \assert(\strlen($value['time_zone']) > 0);
       $item['timezone'] = $value['time_zone'];
 
       if (!empty($value['rrule'])) {
@@ -716,9 +723,9 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
   /**
    * Callback to convert RRULE data from form to modal then open modal.
    */
-  public function openTheModal(array &$form, FormStateInterface $form_state) {
+  public function openTheModal(array &$form, FormStateInterface $form_state): AjaxResponse {
     $button = $form_state->getTriggeringElement();
-    $element = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, -2));
+    $element = NestedArray::getValue($form, \array_slice($button['#array_parents'], 0, -2));
     $this->transferStateToTempstore($element, $form_state);
 
     // Open modal.
@@ -733,9 +740,9 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
   /**
    * Callback to convert RRULE data from form to modal then open modal.
    */
-  public function openOccurrencesModal(array &$form, FormStateInterface $form_state) {
+  public function openOccurrencesModal(array &$form, FormStateInterface $form_state): AjaxResponse {
     $button = $form_state->getTriggeringElement();
-    $element = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, -1));
+    $element = NestedArray::getValue($form, \array_slice($button['#array_parents'], 0, -1));
     $this->transferStateToTempstore($element, $form_state);
 
     // Open modal.
@@ -760,16 +767,17 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
     $valueParents = $element['#parents'];
 
     // Transfer RULE and Start Date to temporary storage.
-    $timeZone = $form_state->getValue(array_merge($valueParents, ['time_zone']));
+    /** @var string $timeZone */
+    $timeZone = $form_state->getValue(\array_merge($valueParents, ['time_zone']));
     try {
       $startDate = '';
-      $startDate = static::buildDatesFromFields(array_merge($formParents, ['day_start']), array_merge($formParents, ['time_start']), $timeZone, $form_state);
+      $startDate = static::buildDatesFromFields(\array_merge($formParents, ['day_start']), \array_merge($formParents, ['time_start']), $timeZone, $form_state);
     }
     catch (\Exception $e) {
     }
     $startDateStr = $startDate instanceof \DateTime ? $startDate->format(static::COLLECTION_MODAL_STATE_DTSTART_FORMAT) : '';
-    $path = $form_state->getValue(array_merge($valueParents, ['field_path']));
-    $rruleState = $form_state->get([static::FORM_STATE_RRULE_KEY, $path]) ?? $form_state->getValue(array_merge($valueParents, ['rrule_in_storage']));
+    $path = $form_state->getValue(\array_merge($valueParents, ['field_path']));
+    $rruleState = $form_state->get([static::FORM_STATE_RRULE_KEY, $path]) ?? $form_state->getValue(\array_merge($valueParents, ['rrule_in_storage']));
 
     $collection = $this->tempStoreFactory->get(static::COLLECTION_MODAL_STATE);
     $collection->set(static::COLLECTION_MODAL_STATE_KEY, $rruleState);
@@ -782,7 +790,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
   /**
    * Callback to convert RRULE data from modal to be consumed by form.
    */
-  public function transferModalToFormStateCallback(array &$form, FormStateInterface $form_state) {
+  public function transferModalToFormStateCallback(array &$form, FormStateInterface $form_state): void {
     $collection = $this->tempStoreFactory->get(static::COLLECTION_MODAL_STATE);
 
     $fieldPath = $collection->get(static::COLLECTION_MODAL_STATE_PATH);
@@ -793,7 +801,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
         $collection->delete(static::COLLECTION_MODAL_STATE_KEY);
       }
 
-      [$fieldName, $delta] = explode('/', $fieldPath);
+      [$fieldName, $delta] = \explode('/', $fieldPath);
       $input = &$form_state->getUserInput();
       // After closing modal, switch dropdown to custom setting.
       $input[$fieldName][$delta]['recurrence_option'] = 'custom';
@@ -805,9 +813,9 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
   /**
    * Callback to reload contents of 'recurrence_option' element.
    */
-  public function reloadRecurrenceDropdownCallback(array &$form, FormStateInterface $form_state) {
+  public function reloadRecurrenceDropdownCallback(array &$form, FormStateInterface $form_state): array {
     $button = $form_state->getTriggeringElement();
-    $element = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, -2));
+    $element = NestedArray::getValue($form, \array_slice($button['#array_parents'], 0, -2));
     return $element['recurrence_option'];
   }
 
@@ -867,10 +875,10 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
 
       case 'monthly_th_weekday':
         $monthWeekdayNth = static::getMonthWeekdayNth($startDate);
-        return sprintf('FREQ=MONTHLY;BYDAY=%s;BYSETPOS=%s', $byDay, $monthWeekdayNth);
+        return \sprintf('FREQ=MONTHLY;BYDAY=%s;BYSETPOS=%s', $byDay, $monthWeekdayNth);
 
       case 'yearly_monthday':
-        return sprintf('FREQ=YEARLY;BYMONTH=%s;BYMONTHDAY=%s', $startDate->format('n'), $startDate->format('j'));
+        return \sprintf('FREQ=YEARLY;BYMONTH=%s;BYMONTHDAY=%s', $startDate->format('n'), $startDate->format('j'));
 
       case 'weekdayly':
         return 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR';
@@ -897,7 +905,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       $helper = DateRecurHelper::create($rrule, $startDate);
       /** @var \Drupal\date_recur\DateRecurRuleInterface[] $rules */
       $rules = $helper->getRules();
-      $rule = reset($rules);
+      $rule = \reset($rules);
       if (!isset($rule)) {
         return 'custom';
       }
@@ -906,30 +914,30 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       return 'custom';
     }
 
-    if (count($helper->getExcluded()) > 0) {
+    if (\count($helper->getExcluded()) > 0) {
       return 'custom';
     }
 
-    $parts = array_filter($rule->getParts());
+    $parts = \array_filter($rule->getParts());
     $frequency = $rule->getFrequency();
     $interval = $parts['INTERVAL'] ?? 1;
     $count = $parts['COUNT'] ?? 1;
-    $byParts = array_filter($parts, function ($value, $key): bool {
-      return strpos($key, 'BY', 0) === 0;
+    $byParts = \array_filter($parts, static function ($value, $key): bool {
+      return \strpos($key, 'BY', 0) === 0;
     }, \ARRAY_FILTER_USE_BOTH);
 
-    $byPartCount = count($byParts);
+    $byPartCount = \count($byParts);
     $weekdaysKeys = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
-    $byDay = explode(',', $byParts['BYDAY'] ?? '');
-    $byDay = array_unique(array_intersect($weekdaysKeys, $byDay));
-    $byDayStr = implode(',', $byDay);
+    $byDay = \explode(',', $byParts['BYDAY'] ?? '');
+    $byDay = \array_unique(\array_intersect($weekdaysKeys, $byDay));
+    $byDayStr = \implode(',', $byDay);
 
-    $byMonth = array_unique(explode(',', $byParts['BYMONTH'] ?? ''));
-    sort($byMonth);
-    $byMonthDay = array_unique(explode(',', $byParts['BYMONTHDAY'] ?? ''));
-    sort($byMonthDay);
-    $bySetPos = array_unique(explode(',', $byParts['BYSETPOS'] ?? ''));
-    sort($bySetPos);
+    $byMonth = \array_unique(\explode(',', $byParts['BYMONTH'] ?? ''));
+    \sort($byMonth);
+    $byMonthDay = \array_unique(\explode(',', $byParts['BYMONTHDAY'] ?? ''));
+    \sort($byMonthDay);
+    $bySetPos = \array_unique(\explode(',', $byParts['BYSETPOS'] ?? ''));
+    \sort($bySetPos);
 
     $startDayWeekday = $weekdaysKeys[$startDate->format('w')];
     if ($interval == 1 && $count == 1) {
@@ -939,14 +947,14 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
       elseif ($frequency === 'WEEKLY' && $byDayStr === 'MO,TU,WE,TH,FR' && $byPartCount === 1) {
         return 'weekdayly';
       }
-      elseif ($frequency === 'WEEKLY' && $byPartCount === 1 && count($byDay) === 1 && $byDayStr === $startDayWeekday) {
+      elseif ($frequency === 'WEEKLY' && $byPartCount === 1 && \count($byDay) === 1 && $byDayStr === $startDayWeekday) {
         // Only if weekday is same as start day.
         return 'weekly_oneday';
       }
-      elseif ($frequency === 'MONTHLY' && $byPartCount === 2 && count($bySetPos) === 1 && count($byDay) === 1) {
+      elseif ($frequency === 'MONTHLY' && $byPartCount === 2 && \count($bySetPos) === 1 && \count($byDay) === 1) {
         return 'monthly_th_weekday';
       }
-      elseif ($frequency === 'YEARLY' && $byPartCount === 2 && count($byMonth) === 1 && count($byMonthDay) === 1) {
+      elseif ($frequency === 'YEARLY' && $byPartCount === 2 && \count($byMonth) === 1 && \count($byMonthDay) === 1) {
         return 'yearly_monthday';
       }
     }
@@ -962,7 +970,7 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
    */
   protected function getInterpreter(): ?DateRecurInterpreterInterface {
     $id = $this->getSetting('interpreter');
-    if (!is_string($id) || empty($id)) {
+    if (!\is_string($id) || empty($id)) {
       return NULL;
     }
     return $this->dateRecurInterpreterStorage->load($id);
@@ -992,11 +1000,11 @@ class DateRecurModularSierraWidget extends DateRecurModularWidgetBase {
    *   object should be ignored.
    */
   protected function parseTimeInput(string $input): ?DrupalDateTime {
-    if (strlen($input) == 5) {
+    if (\strlen($input) == 5) {
       $input .= ':00';
     }
 
-    $timeFormat = DateFormat::load('html_time')->getPattern();
+    $timeFormat = DateFormat::load('html_time')?->getPattern() ?? throw new \Exception('Missing html_time date format.');
     try {
       return DrupalDateTime::createFromFormat($timeFormat, $input);
     }

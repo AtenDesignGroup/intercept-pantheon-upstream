@@ -697,7 +697,7 @@ class DateRecurViewsOccurrenceFilterTest extends ViewsKernelTestBase {
    * @return array
    *   Data for testing.
    */
-  public function providerInvalidInput(): array {
+  public static function providerInvalidInput(): array {
     $data = [];
 
     $data['year success 1'] = [

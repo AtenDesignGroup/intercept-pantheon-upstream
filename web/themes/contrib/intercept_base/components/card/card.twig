@@ -9,7 +9,7 @@
 <article {{ component.attributes('card', modifiers, attr) }}>
   {% if image %}
   <figure class="card__image">
-    {{ image }}
+    {{ image|raw }}
   </figure>
   {% endif %}
   <div class="card__content">

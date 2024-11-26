@@ -236,7 +236,7 @@
     // Update the ajax binding to reflect the new preview link href value.
     Drupal.ajax.instances.forEach(function (instance, index) {
       if (instance && $(instance.element).data("selector") === dataSelector) {
-        const href = $(instance.selector).attr("href");
+        const href = $(instance.element).attr("href");
         Drupal.ajax.instances[index].url = href;
         Drupal.ajax.instances[index].options.url = href;
       }

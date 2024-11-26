@@ -63,7 +63,7 @@ class DateRecurRruleUnitTest extends UnitTestCase {
    *
    * @phpstan-return \Generator<\DateTimeZone>
    */
-  public function providerTimezone(): \Generator {
+  public static function providerTimezone(): \Generator {
     yield [new \DateTimeZone('America/Los_Angeles')];
     yield [new \DateTimeZone('UTC')];
     yield [new \DateTimeZone('Australia/Sydney')];

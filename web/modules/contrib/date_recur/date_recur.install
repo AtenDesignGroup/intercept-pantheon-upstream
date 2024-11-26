@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Drupal\Core\Database\SchemaObjectExistsException;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
@@ -404,7 +405,13 @@ function date_recur_update_8208(&$sandbox): void {
     // Iterate over all date_recur field definitions for this entity type.
     foreach ($fieldDefinitions as $fieldDefinition) {
       $tableName = DateRecurOccurrences::getOccurrenceCacheStorageTableName($fieldDefinition);
-      $schema->addPrimaryKey($tableName, $primaryKey);
+      try {
+        $schema->addPrimaryKey($tableName, $primaryKey);
+      }
+      catch (SchemaObjectExistsException $e) {
+        // Somehow people already have primary keys set, so ignore.
+        continue;
+      }
     }
   }
 }

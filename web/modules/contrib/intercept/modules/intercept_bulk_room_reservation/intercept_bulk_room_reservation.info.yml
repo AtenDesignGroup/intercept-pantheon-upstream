@@ -8,3 +8,8 @@ dependencies:
   - form_options_attributes:form_options_attributes
   - intercept:intercept_room_reservation
   - intercept:intercept_location
+
+# Information added by Drupal.org packaging script on 2024-11-26
+version: '2.0.7'
+project: 'intercept'
+datestamp: 1732646536

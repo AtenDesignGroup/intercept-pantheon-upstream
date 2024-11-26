@@ -162,6 +162,7 @@ class RoomReservationListBuilder extends EntityListBuilder {
    * Returns room reservation operations based on the user and current status.
    */
   private function getAllowedStatusChangeOperations(EntityInterface $entity) {
+    $operations = [];
     /** @var \Drupal\intercept_room_reservation\Entity\RoomReservationInterface $entity */
     if ($entity->hasField('field_status')) {
       $status = $entity->field_status->value;
@@ -180,6 +181,14 @@ class RoomReservationListBuilder extends EntityListBuilder {
 
         case 'denied':
           $operations = ['approve', 'archive'];
+          break;
+
+        case 'archived':
+          $operations = ['request'];
+          break;
+
+        default:
+          $operations = [];
           break;
       }
     }

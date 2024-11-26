@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur_modular\Form;
 
@@ -60,7 +60,11 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
    * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
    *   The date formatter service.
    */
-  public function __construct(ConfigFactoryInterface $configFactory, PrivateTempStoreFactory $tempStoreFactory, DateFormatterInterface $dateFormatter) {
+  public function __construct(
+    ConfigFactoryInterface $configFactory,
+    PrivateTempStoreFactory $tempStoreFactory,
+    DateFormatterInterface $dateFormatter,
+  ) {
     $this->configFactory = $configFactory;
     $this->tempStoreFactory = $tempStoreFactory;
     $this->dateFormatter = $dateFormatter;
@@ -73,7 +77,7 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
     return new static(
       $container->get('config.factory'),
       $container->get('tempstore.private'),
-      $container->get('date.formatter')
+      $container->get('date.formatter'),
     );
   }
 
@@ -142,14 +146,14 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
       }
       $excludes = $helper->getExcluded();
     }
-    sort($excludes);
+    \sort($excludes);
 
     // Initial limit is 1024, with 128 per page thereafter, with an absolute
     // maximum of 64000. Limit prevents performance issues and abuse.
-    $limit = min(1024 + (128 * ($multiplier - 1)), 64000);
+    $limit = \min(1024 + (128 * ($multiplier - 1)), 64000);
     // 6 months from now plus 4 months thereafter.
     $limitDate = (new \DateTime())
-      ->modify(sprintf('+%d months', 6 + (($multiplier - 1) * 4)));
+      ->modify(\sprintf('+%d months', 6 + (($multiplier - 1) * 4)));
     $occurrences = [];
     $matchedExcludes = [];
     $unmatchedExcludes = [];
@@ -170,8 +174,9 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
         if ($exDate < $occurrenceDate) {
           // Occurrence was between this and last occurrence, so likely no
           // longer matches against the RRULE.
-          // Its done progessively like this instead of comparing occurrences to
-          // EXDATEs as some EXDATEs may fall outside of the date/count limits.
+          // Its done progressively like this instead of comparing occurrences
+          // to EXDATEs as some EXDATEs may fall outside of the date/count
+          // limits.
           $unmatchedExcludes[] = $exDate;
           unset($excludes[$k]);
         }
@@ -189,23 +194,23 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
     $outOfLimitExcludes = $excludes;
     unset($excludes);
 
-    // Any remaining excludes are out of range. We dont know if they are matched
-    // to the rule or not. Keep them and save.
+    // Any remaining excludes are out of range. We don't know if they are
+    // matched to the rule or not. Keep them and save.
     $form['excludes_out_of_limit'] = [
       '#type' => 'value',
       '#value' => $outOfLimitExcludes,
     ];
 
-    if (count($unmatchedExcludes)) {
+    if (\count($unmatchedExcludes)) {
       $form['invalid_excludes'] = [
         '#type' => 'details',
-        '#title' => $this->formatPlural(count($unmatchedExcludes), '@count invalid exclude', '@count invalid excludes'),
+        '#title' => $this->formatPlural(\count($unmatchedExcludes), '@count invalid exclude', '@count invalid excludes'),
       ];
       $form['invalid_excludes']['help'] = [
         '#type' => 'inline_template',
         '#template' => '<p>{{ message }}</p>',
         '#context' => [
-          'message' => $this->formatPlural(count($unmatchedExcludes), 'This invalid excluded occurrence will be automatically removed.', 'These invalid excluded occurrences will be automatically removed.'),
+          'message' => $this->formatPlural(\count($unmatchedExcludes), 'This invalid excluded occurrence will be automatically removed.', 'These invalid excluded occurrences will be automatically removed.'),
         ],
       ];
       $form['invalid_excludes']['table'] = [
@@ -214,7 +219,7 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
           'date' => $this->t('Date'),
         ],
       ];
-      $form['invalid_excludes']['table']['#rows'] = array_map(function (\DateTime $date) use ($dateFormatId, $dtStart): array {
+      $form['invalid_excludes']['table']['#rows'] = \array_map(function (\DateTime $date) use ($dateFormatId, $dtStart): array {
         return [
           'date' => $this->dateFormatter->format($date->getTimestamp(), $dateFormatId, '', $dtStart->getTimezone()->getName()),
         ];
@@ -273,11 +278,11 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
       '#type' => 'inline_template',
       '#template' => '<p>{{ count_message }}</p>',
       '#context' => [
-        'count_message' => $this->formatPlural(count($outOfLimitExcludes), 'There is @count more hidden excluded occurrence.', 'There are @count more hidden excluded occurrences.'),
+        'count_message' => $this->formatPlural(\count($outOfLimitExcludes), 'There is @count more hidden excluded occurrence.', 'There are @count more hidden excluded occurrences.'),
       ],
     ];
-    if (count($outOfLimitExcludes) > 0) {
-      $nextExclude = reset($outOfLimitExcludes);
+    if (\count($outOfLimitExcludes) > 0) {
+      $nextExclude = \reset($outOfLimitExcludes);
       $form['occurrences']['show_more']['next_message'] = [
         '#type' => 'inline_template',
         '#template' => '<p>{{ next_message }}</p>',
@@ -342,7 +347,7 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
     $response->addCommand(new OpenModalDialogCommand(
       $this->t('Occurrences'),
       $form,
-      ['width' => '575']
+      ['width' => '575'],
     ));
     return $response;
   }
@@ -350,7 +355,7 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
   /**
    * Callback to submit modal modified exclusions.
    */
-  public function ajaxSubmitForm(array &$form, FormStateInterface $form_state) {
+  public function ajaxSubmitForm(array &$form, FormStateInterface $form_state): AjaxResponse {
     $response = new AjaxResponse();
     if ($form_state->getErrors()) {
       // Inspired by \Drupal\form_api_example\Form\ModalForm::ajaxSubmitForm.
@@ -361,7 +366,7 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
       return $response->addCommand(new OpenModalDialogCommand(
         $this->t('Errors'),
         $form,
-        ['width' => '575']
+        ['width' => '575'],
       ));
     }
 
@@ -379,7 +384,7 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
     $rset = new RSet();
     if (isset($helper)) {
       $rules = $helper->getRules();
-      array_walk($rules, function (DateRecurRuleInterface $rule) use ($rset) {
+      \array_walk($rules, static function (DateRecurRuleInterface $rule) use ($rset): void {
         $parts = $rule->getParts();
         unset($parts['DTSTART']);
         $rset->addRRule($parts);
@@ -406,18 +411,18 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
     }
 
     $utc = new \DateTimeZone('UTC');
-    $exDates = array_map(function (\DateTime $exDate) use ($utc) {
+    $exDates = \array_map(static function (\DateTime $exDate) use ($utc) {
       $exDate->setTimezone($utc);
       return $exDate->format(static::UTC_FORMAT);
     }, $rset->getExDates());
-    if (count($exDates) > 0) {
-      $lines[] = 'EXDATE:' . implode(',', $exDates);
+    if (\count($exDates) > 0) {
+      $lines[] = 'EXDATE:' . \implode(',', $exDates);
     }
 
     $collection = $this->tempStoreFactory->get(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE);
-    $collection->set(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_KEY, implode("\n", $lines));
+    $collection->set(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_KEY, \implode("\n", $lines));
 
-    $refreshBtnName = sprintf('[name="%s"]', $collection->get(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_REFRESH_BUTTON));
+    $refreshBtnName = \sprintf('[name="%s"]', $collection->get(DateRecurModularSierraWidget::COLLECTION_MODAL_STATE_REFRESH_BUTTON));
     $response
       ->addCommand(new CloseDialogCommand())
       // Transfers new lines to widget.
@@ -429,7 +434,7 @@ class DateRecurModularSierraModalOccurrencesForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): AjaxResponse {
     return new AjaxResponse();
   }
 

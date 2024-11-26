@@ -40,7 +40,7 @@ class DateRecurUtilityTest extends KernelTestBase {
    * @return array
    *   Data for testing.
    */
-  public function providerSmallestDate(): array {
+  public static function providerSmallestDate(): array {
     $data = [];
 
     $data['year'] = [
@@ -92,7 +92,7 @@ class DateRecurUtilityTest extends KernelTestBase {
    * @return array
    *   Data for testing.
    */
-  public function providerLargestDate(): array {
+  public static function providerLargestDate(): array {
     $data = [];
 
     $data['year'] = [

@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\date_recur_modular;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Datetime\TimeZoneFormHelper;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\date_recur\DateRecurPartGrid;
@@ -43,8 +44,8 @@ trait DateRecurModularUtilityTrait {
     $fieldA = NestedArray::getValue($completeForm, $dayField);
     $fieldB = NestedArray::getValue($completeForm, $timeField);
 
-    assert($fieldA['#type'] === 'date');
-    assert($fieldB['#type'] === 'date' && $fieldB['#attributes']['type'] === 'time');
+    \assert($fieldA['#type'] === 'date');
+    \assert($fieldB['#type'] === 'date' && $fieldB['#attributes']['type'] === 'time');
 
     $valueA = $formState->getValue($fieldA['#parents']);
     $valueB = $formState->getValue($fieldB['#parents']);
@@ -56,11 +57,11 @@ trait DateRecurModularUtilityTrait {
     }
 
     $baseDay->setTime(0, 0, 0);
-    $baseDayParts = explode('-', $baseDay->format('Y-n-j'));
-    $baseDayParts = array_map('intval', $baseDayParts);
+    $baseDayParts = \explode('-', $baseDay->format('Y-n-j'));
+    $baseDayParts = \array_map('intval', $baseDayParts);
 
     // Fix the time. HTML element allows omitting seconds.
-    if (!empty($valueB) && strlen($valueB) == 5) {
+    if (!empty($valueB) && \strlen($valueB) == 5) {
       $valueB .= ':00';
     }
 
@@ -84,14 +85,14 @@ trait DateRecurModularUtilityTrait {
    *   The sub element name
    */
   protected function getName(array $element, array $subNames): string {
-    assert($this->fieldDefinition instanceof FieldDefinitionInterface);
+    \assert($this->fieldDefinition instanceof FieldDefinitionInterface);
     $parents = $element['#field_parents'];
     $parents[] = $this->fieldDefinition->getName();
-    $selector = $root = array_shift($parents);
+    $selector = $root = \array_shift($parents);
     if ($parents) {
-      $selector = $root . '[' . implode('][', $parents) . ']';
+      $selector = $root . '[' . \implode('][', $parents) . ']';
     }
-    return sprintf('%s[%d][%s]', $selector, $element['#delta'], implode('][', $subNames));
+    return \sprintf('%s[%d][%s]', $selector, $element['#delta'], \implode('][', $subNames));
   }
 
   /**
@@ -108,7 +109,7 @@ trait DateRecurModularUtilityTrait {
    *   A time zone.
    */
   protected function getDefaultTimeZone(DateRecurItem $item): string {
-    assert($this->fieldDefinition instanceof FieldDefinitionInterface);
+    \assert($this->fieldDefinition instanceof FieldDefinitionInterface);
     $defaultTimeZone = $item->timezone ?? NULL;
     if (!$defaultTimeZone && empty($item->getValue())) {
       // Handily set default value to the field settings default time zone if
@@ -141,7 +142,7 @@ trait DateRecurModularUtilityTrait {
     }
 
     $rules = $helper->getRules();
-    $rule = reset($rules);
+    $rule = \reset($rules);
     return FALSE !== $rule ? $rule : NULL;
   }
 
@@ -158,7 +159,7 @@ trait DateRecurModularUtilityTrait {
    */
   protected function buildRruleString(array $parts, DateRecurPartGrid $grid): string {
     $frequency = $parts['FREQ'];
-    foreach (array_keys($parts) as $part) {
+    foreach (\array_keys($parts) as $part) {
       if ($part === 'FREQ') {
         continue;
       }
@@ -171,7 +172,7 @@ trait DateRecurModularUtilityTrait {
     foreach ($parts as $k => $v) {
       $ruleKv[] = "$k=$v";
     }
-    return implode(';', $ruleKv);
+    return \implode(';', $ruleKv);
   }
 
   /**
@@ -182,7 +183,7 @@ trait DateRecurModularUtilityTrait {
    *   human readable and translatable labels.
    */
   protected function getTimeZoneOptions(): array {
-    return \system_time_zones(TRUE, TRUE);
+    return TimeZoneFormHelper::getOptionsListByRegion();
   }
 
   /**
@@ -226,8 +227,8 @@ trait DateRecurModularUtilityTrait {
       }
 
       // Ignore seconds when checking whether time is all day.
-      return (substr($startDate->format('H:i'), 0, 5) === '00:00') &&
-        (substr($endDate->format('H:i'), 0, 5) === '23:59');
+      return (\substr($startDate->format('H:i'), 0, 5) === '00:00') &&
+        (\substr($endDate->format('H:i'), 0, 5) === '23:59');
     }
     return FALSE;
   }

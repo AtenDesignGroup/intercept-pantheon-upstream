@@ -1,0 +1,17 @@
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+variables:
+  OPT_IN_TEST_NEXT_MAJOR: '1'
+  OPT_IN_TEST_NEXT_MINOR: '1'
+  SKIP_ESLINT: '1'
+  SKIP_STYLELINT: 1
+  _TARGET_PHP: $CORE_PHP_MAX
+
+phpunit:
+  variables:
+    SYMFONY_DEPRECATIONS_HELPER: "ignoreFile=./.local-deprecation-ignore.txt"

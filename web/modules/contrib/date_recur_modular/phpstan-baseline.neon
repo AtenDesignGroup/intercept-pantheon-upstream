@@ -1,0 +1,631 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Function date_recur_modular_update_8201\\(\\) has parameter \\$sandbox with no type specified\\.$#"
+			count: 1
+			path: date_recur_modular.install
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, Drupal\\\\date_recur\\\\Entity\\\\DateRecurInterpreter\\|null given\\.$#"
+			count: 1
+			path: date_recur_modular.install
+
+		-
+			message: "#^PHPDoc tag @property has invalid value \\(\\\\Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface fieldDefinition\\)\\: Unexpected token \"fieldDefinition\", expected variable at offset 141$#"
+			count: 1
+			path: src/DateRecurModularUtilityTrait.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalForm\\:\\:\\$fieldDefinition\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalForm\\:\\:getMode\\(\\)\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalForm\\:\\:getModes\\(\\)\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 4
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface and Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface will always evaluate to true\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalForm\\:\\:ajaxSubmitForm\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalForm\\:\\:create\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalForm\\:\\:submitForm\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalForm\\:\\:validateForm\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the left side\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the right side\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, string\\|null given\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, DateTimeInterface\\|null given\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\date_recur\\\\DateRecurRuleInterface\\|null given\\.$#"
+			count: 4
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, array given\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalForm.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalOccurrencesForm\\:\\:\\$fieldDefinition\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalOccurrencesForm\\:\\:getMode\\(\\)\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalOccurrencesForm\\:\\:getModes\\(\\)\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 4
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface and Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface will always evaluate to true\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Form\\\\DateRecurModularSierraModalOccurrencesForm\\:\\:create\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the left side\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the right side\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, string\\|null given\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\date_recur\\\\DateRecurRuleInterface\\|null given\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, array given\\.$#"
+			count: 2
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, int\\<0, max\\> given\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(DateTimeInterface\\)\\: mixed\\)\\|null, Closure\\(DateTime\\)\\: array\\{date\\: string\\} given\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Variable \\$dateFormat in PHPDoc tag @var does not match assigned variable \\$dateFormatId\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Variable \\$excluded in PHPDoc tag @var does not match assigned variable \\$excludes\\.$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^\\\\Drupal calls should be avoided in classes, use dependency injection instead$#"
+			count: 1
+			path: src/Form/DateRecurModularSierraModalOccurrencesForm.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\:\\:\\$end_date\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\:\\:\\$start_date\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Binary operation \"/\" between string and int\\<0, max\\> results in an error\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Class DateTimeZone referenced with incorrect case\\: DateTimezone\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface and Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularAlphaWidget\\:\\:extractFormValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, array\\|Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the left side\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, int\\<0, max\\> given on the left side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, int\\<0, max\\> given on the right side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, int\\|null given on the left side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, string\\|null given on the right side\\.$#"
+			count: 3
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, string\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, DateTimeInterface\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\date_recur\\\\DateRecurRuleInterface\\|null given\\.$#"
+			count: 4
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, DateTimeInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularAlphaWidget\\:\\:getFieldMode\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularWidgetBase\\:\\:getDefaultTimeZone\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularWidgetBase\\:\\:getRule\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularAlphaWidget.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\:\\:\\$end_date\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\:\\:\\$start_date\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Binary operation \"/\" between string and int\\<0, max\\> results in an error\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Class DateTimeZone referenced with incorrect case\\: DateTimezone\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 8
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface and Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularOscarWidget\\:\\:extractFormValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularOscarWidget\\:\\:getFieldMonthlyByDayOrdinals\\(\\) has parameter \\$element with no type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, int\\<0, max\\> given on the left side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, int\\<0, max\\> given on the right side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Only booleans are allowed in &&, int\\|null given on the left side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\date_recur\\\\DateRecurRuleInterface\\|null given\\.$#"
+			count: 4
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularOscarWidget\\:\\:getFieldMode\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularWidgetBase\\:\\:getDefaultTimeZone\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularWidgetBase\\:\\:getRule\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$year of method Drupal\\\\Component\\\\Datetime\\\\DateTimePlus\\:\\:setDate\\(\\) expects int, string given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularOscarWidget.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\:\\:\\$end_date\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\:\\:\\$start_date\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Class DateTimeZone referenced with incorrect case\\: DateTimezone\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 11
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface and Drupal\\\\Core\\\\Config\\\\ConfigFactoryInterface will always evaluate to true\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 7
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularSierraWidget\\:\\:extractFormValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularSierraWidget\\:\\:getInterpreter\\(\\) should return Drupal\\\\date_recur\\\\Entity\\\\DateRecurInterpreterInterface\\|null but returns Drupal\\\\Core\\\\Entity\\\\EntityInterface\\|null\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\Core\\\\Entity\\\\EntityInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\date_recur\\\\DateRecurRuleInterface\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\date_recur\\\\Entity\\\\DateRecurInterpreterInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, Drupal\\\\Core\\\\Entity\\\\EntityInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, Drupal\\\\date_recur\\\\Entity\\\\DateRecurInterpreterInterface\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, mixed given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of static method Drupal\\\\Component\\\\Utility\\\\NestedArray\\:\\:getValue\\(\\) is passed by reference, so it expects variables only\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(Drupal\\\\Core\\\\Entity\\\\EntityInterface\\)\\: mixed\\)\\|null, Closure\\(Drupal\\\\Core\\\\Datetime\\\\DateFormatInterface\\)\\: non\\-falsy\\-string given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(Drupal\\\\Core\\\\Entity\\\\EntityInterface\\)\\: mixed\\)\\|null, Closure\\(Drupal\\\\date_recur\\\\Entity\\\\DateRecurInterpreterInterface\\)\\: string given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularWidgetBase\\:\\:getDefaultTimeZone\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Parameter \\#1 \\$item of method Drupal\\\\date_recur_modular\\\\Plugin\\\\Field\\\\FieldWidget\\\\DateRecurModularWidgetBase\\:\\:isAllDay\\(\\) expects Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem, Drupal\\\\Core\\\\Field\\\\FieldItemInterface\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Variable \\$plugin in PHPDoc tag @var does not match assigned variable \\$interpreter\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Variable \\$rule in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Variable \\$start in PHPDoc tag @var does not match assigned variable \\$startDay\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Variable \\$startDay in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularSierraWidget.php
+
+		-
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+			count: 3
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Instanceof between Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface and Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface will always evaluate to true\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the left side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Only booleans are allowed in &&, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given on the right side\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, string\\|null given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, Drupal\\\\Core\\\\Datetime\\\\DrupalDateTime\\|null given\\.$#"
+			count: 2
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, array given\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/Field/FieldWidget/DateRecurModularWidgetBase.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurFieldItemList&iterable\\<Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\>\\:\\:\\$end_value\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurModularAlphaTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurFieldItemList&iterable\\<Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\>\\:\\:\\$rrule\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurModularAlphaTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurFieldItemList&iterable\\<Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\>\\:\\:\\$timezone\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurModularAlphaTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTestBasic\\:\\:\\$dr \\(Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurFieldItemList&iterable\\<Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\>\\) does not accept array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Functional/DateRecurModularAlphaTest.php
+
+		-
+			message: "#^Cannot access property \\$end_value on array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurModularOscarTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTestBasic\\:\\:\\$dr \\(Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurFieldItemList&iterable\\<Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\>\\) does not accept array\\<string, string\\>\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurModularOscarTest.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: tests/src/Functional/DateRecurModularSierraTest.php
+
+		-
+			message: "#^Property Drupal\\\\date_recur_entity_test\\\\Entity\\\\DrEntityTestBasic\\:\\:\\$dr \\(Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurFieldItemList&iterable\\<Drupal\\\\date_recur\\\\Plugin\\\\Field\\\\FieldType\\\\DateRecurItem\\>\\) does not accept array\\<string, string\\>\\.$#"
+			count: 2
+			path: tests/src/Functional/DateRecurModularSierraTest.php

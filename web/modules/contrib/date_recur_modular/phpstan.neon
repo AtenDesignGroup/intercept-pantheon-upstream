@@ -1,0 +1,41 @@
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 6
+  paths:
+    - src
+    - tests
+  reportUnmatchedIgnoredErrors: true
+  fileExtensions:
+    - php
+    - module
+    - theme
+    - profile
+    - install
+    - inc
+  parallel:
+    jobSize: 20
+    maximumNumberOfProcesses: 32
+    minimumNumberOfJobsPerProcess: 4
+    processTimeout: 180.0
+  # Temporarily disable all non base rules.
+  strictRules:
+    disallowedLooseComparison: true
+    booleansInConditions: true
+    uselessCast: true
+    requireParentConstructorCall: true
+    disallowedConstructs: true
+    overwriteVariablesWithLoop: false
+    closureUsesThis: false
+    matchingInheritedMethodNames: false
+    numericOperandsInArithmeticOperators: false
+    strictCalls: true
+    switchConditionsMatchingType: false
+    noVariableVariables: true
+  ignoreErrors:
+    -
+      identifier: missingType.generics
+    -
+      identifier: missingType.iterableValue
+

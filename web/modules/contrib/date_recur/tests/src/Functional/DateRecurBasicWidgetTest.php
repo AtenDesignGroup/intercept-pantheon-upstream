@@ -350,7 +350,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
    * @return array
    *   Data for testing.
    */
-  public function providerDefaultValues(): array {
+  public static function providerDefaultValues(): array {
     $scenarios = [];
 
     $scenarios['all values'] = [

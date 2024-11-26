@@ -43,7 +43,7 @@ class FocalPointPreviewController extends ControllerBase {
   /**
    * The file storage service.
    *
-   * @var \Drupal\file\FileStorage
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $fileStorage;
 
@@ -72,17 +72,21 @@ class FocalPointPreviewController extends ControllerBase {
    *   The logger factory.
    * @param \Drupal\image\ImageEffectManager $imageEffectManager
    *   The image effect manager.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $fileStorage
+   *   The file storage service.
    */
   public function __construct(
     ImageFactory $image_factory,
     RequestStack $request_stack,
     LoggerChannelFactoryInterface $logger,
     ImageEffectManager $imageEffectManager,
+    EntityStorageInterface $fileStorage
   ) {
     $this->imageFactory = $image_factory;
     $this->request = $request_stack->getCurrentRequest();
-    $this->fileStorage = $this->entityTypeManager()->getStorage('file');
     $this->logger = $logger->get('focal_point');
+    $this->imageEffectManager = $imageEffectManager;
+    $this->fileStorage = $fileStorage;
   }
 
   /**
@@ -93,7 +97,8 @@ class FocalPointPreviewController extends ControllerBase {
       $container->get('image.factory'),
       $container->get('request_stack'),
       $container->get('logger.factory'),
-      $container->get('plugin.manager.image.effect')
+      $container->get('plugin.manager.image.effect'),
+      $container->get('entity_type.manager')->getStorage('file')
     );
   }
 

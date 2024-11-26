@@ -907,6 +907,62 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
     }
   }
 
+  // Let's check events with recurrences AND room reservations to
+  // prevent double-bookings.
+  // But don't trigger this if it's an AJAX callback validation.
+  // This is largely reused code from EventRecurrenceEventsForm.php.
+
+  $ajax_form = \Drupal::request()->query->get('ajax_form');
+  $room = $values['field_room'];
+  /*if (!empty($values['event_recurrence']) && !empty($values['reservation']) && $ajax_form != TRUE && !empty($room)) {
+    // Check for conflicts.
+    $date_utility = \Drupal::service('intercept_core.utility.dates');
+    $reservation_manager = \Drupal::service('intercept_core.reservation.manager');
+
+    $room_id = $values['field_room'][0]['target_id'];
+    $room = Node::load($room_id);
+    $room_name = $room->label();
+    $rooms = [$room_id];
+
+    // Get the start/end dates of the recurrences.
+    $series_generator = \Drupal::service('intercept_bulk_room_reservation.series_generator');
+    $logistics = $series_generator->getLogisticsFromFormState($form_state);
+    $error = FALSE;
+
+    foreach ($logistics['dates'] as $date) {
+      $start = $date . 'T' . $logistics['times']['start'];
+      $end = $date . 'T' . $logistics['times']['end'];
+      // Checking to see if each date range is in conflict.
+      $availability = $reservation_manager->availability([
+        'start' => $start,
+        'end' => $end,
+        'rooms' => $rooms,
+      ]);
+      foreach ($availability as $room_availability) {
+        if ($room_availability['user_exceeded_limit']
+          || $room_availability['has_reservation_conflict']
+          || $room_availability['has_conflict']
+          || $room_availability['has_open_hours_conflict']
+          || $room_availability['has_max_duration_conflict']
+          || $room_availability['is_closed']) {
+          $error = TRUE;
+          
+          // Unfortunately we can only set one error per form element
+          // due to this core bug:
+          // https://www.drupal.org/project/drupal/issues/2818437
+
+          \Drupal::messenger()->addError(t("There is a conflict in :room on :start.", [
+            ':room' => $room_name,
+            ':start' => $date,
+          ]));
+        }
+      }
+    }
+    if ($error) {
+      $form_state->setErrorByName('event_recurrence', "");
+    }
+  }*/
+
 }
 
 /**

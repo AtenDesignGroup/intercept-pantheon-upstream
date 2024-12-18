@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\quick_node_clone\Functional;
 
+use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\node\Traits\NodeCreationTrait;
 use Drupal\group\Entity\Group;
 use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\GroupRelationship;
@@ -10,8 +12,6 @@ use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\PermissionScopeInterface;
-use Drupal\Tests\BrowserTestBase;
-use Drupal\Tests\node\Traits\NodeCreationTrait;
 
 /**
  * Tests node cloning with groups.

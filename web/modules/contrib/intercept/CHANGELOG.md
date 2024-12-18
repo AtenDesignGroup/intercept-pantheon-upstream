@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.8] - 2024-12-18
+
+* Added validation to prevent staff from accidentally creating a double-booking when creating a recurring event with room reservations
+
 ## [2.0.7] - 2024-11-26
 
 * Prevented double-bookings when staff are creating an event series

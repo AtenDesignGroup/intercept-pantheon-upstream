@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace League\Csv;
 
+use Deprecated;
 use InvalidArgumentException;
 use php_user_filter;
 
@@ -39,6 +40,7 @@ use function strlen;
  */
 class EncloseField extends php_user_filter
 {
+    #[Deprecated(message: 'use League\Csv\Writer::forceEnclosure() instead', since: 'league/csv:9.10.0')]
     public const FILTERNAME = 'convert.league.csv.enclosure';
 
     /** Default sequence. */
@@ -93,6 +95,7 @@ class EncloseField extends php_user_filter
         return strlen($sequence) !== strcspn($sequence, self::$force_enclosure);
     }
 
+    #[Deprecated(message: 'use League\Csv\Writer::forceEnclosure() instead', since: 'league/csv:9.10.0')]
     public function onCreate(): bool
     {
         return is_array($this->params)

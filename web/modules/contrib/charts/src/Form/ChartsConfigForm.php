@@ -8,6 +8,7 @@ use Drupal\charts\TypeManager;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -53,6 +54,8 @@ class ChartsConfigForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Config factory.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfigManager
+   *   Typed config manager.
    * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
    *   Cache tag invalidator.
    * @param \Drupal\charts\ChartManager|null $chart_plugin_manager
@@ -62,8 +65,8 @@ class ChartsConfigForm extends ConfigFormBase {
    * @param \Drupal\Core\Extension\ModuleExtensionList|null $module_extension_list
    *   The module extension list.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, CacheTagsInvalidatorInterface $cache_tags_invalidator, ChartManager $chart_plugin_manager = NULL, TypeManager $chart_type_plugin_manager = NULL, ModuleExtensionList $module_extension_list = NULL) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, CacheTagsInvalidatorInterface $cache_tags_invalidator, ChartManager $chart_plugin_manager = NULL, TypeManager $chart_type_plugin_manager = NULL, ModuleExtensionList $module_extension_list = NULL) {
+    parent::__construct($config_factory, $typedConfigManager);
     $this->cacheTagsInvalidator = $cache_tags_invalidator;
     // @todo Implement full if statement for optional parameters, and add
     // deprecation warnings when they are not passed.
@@ -78,6 +81,7 @@ class ChartsConfigForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('cache_tags.invalidator'),
       $container->get('plugin.manager.charts'),
       $container->get('plugin.manager.charts_type'),

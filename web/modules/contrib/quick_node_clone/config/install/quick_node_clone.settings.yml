@@ -3,3 +3,4 @@ exclude:
   node: { }
   paragraph: { }
 clone_status: false
+create_group_relationships: true

@@ -31,9 +31,15 @@
         // Initializing the chart item.
         const chart = contents.getData(chartId);
         const options = chart['options'];
+        const enabled_plugins = [];
+        // If options.plugins.dataLabels.display is set to true, we need to add the plugin to the chart.
+        if (options.plugins && options.plugins.dataLabels && options.plugins.dataLabels.display) {
+          enabled_plugins.push(ChartDataLabels);
+        }
         new Chart(chartId, {
           type: chart['type'],
           data: chart['data'],
+          plugins: enabled_plugins,
           options: options,
         });
         if (canvas.nextElementSibling && canvas.nextElementSibling.hasAttribute('data-charts-debug-container')) {

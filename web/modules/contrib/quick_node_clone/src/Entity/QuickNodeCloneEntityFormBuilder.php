@@ -17,7 +17,6 @@ use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\GroupRelationship;
 use Drupal\node\Entity\Node;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Builds entity forms.
@@ -69,27 +68,6 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
   protected $privateTempStoreFactory;
 
   /**
-   * The Translation Interface.
-   *
-   * @var \Drupal\Core\StringTranslation\TranslationInterface
-   */
-  protected $stringTranslation;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.bundle.info'),
-      $container->get('config.factory'),
-      $container->get('module_handler'),
-      $container->get('entity_type.manager'),
-      $container->get('current_user'),
-      $container->get('tempstore.private')
-    );
-  }
-
-  /**
    * QuickNodeCloneEntityFormBuilder constructor.
    *
    * @param \Drupal\Core\Form\FormBuilderInterface $formBuilder
@@ -117,7 +95,7 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
     $this->entityTypeManager = $entityTypeManager;
     $this->currentUser = $currentUser;
     $this->privateTempStoreFactory = $privateTempStoreFactory;
-    $this->stringTranslation = $stringTranslation;
+    $this->setStringTranslation($stringTranslation);
   }
 
   /**
@@ -135,7 +113,7 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
 
     // Get and store groups of original entity, if any.
     $groups = [];
-    if ($this->moduleHandler->moduleExists('gnode')) {
+    if ($this->getConfigSettings('create_group_relationships') && $this->moduleHandler->moduleExists('gnode')) {
       $relation_class = class_exists(GroupContent::class) ? GroupContent::class : GroupRelationship::class;
       /** @var \Drupal\Core\Entity\ContentEntityInterface $original_entity */
       foreach ($relation_class::loadByEntity($original_entity) as $group_relationship) {

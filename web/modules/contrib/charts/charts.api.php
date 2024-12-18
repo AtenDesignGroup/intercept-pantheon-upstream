@@ -120,6 +120,11 @@ function hook_chart_definition_alter(array &$definition, array $element, $chart_
   }
   elseif ($element['#chart_library'] === 'highcharts') {
     $definition['title']['style']['fontSize'] = 20;
+    // Add a caption based on a field on your node containing a Chart field.
+    $node = $element['#entity'];
+    if ($node instanceof \Drupal\node\NodeInterface && $node->hasField('field_caption')) {
+      $definition['caption']['text'] = $node->field_caption->value;
+    }
   }
 }
 

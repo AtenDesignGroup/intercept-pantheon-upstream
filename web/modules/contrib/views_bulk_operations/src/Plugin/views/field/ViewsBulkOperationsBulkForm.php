@@ -10,6 +10,7 @@ use Drupal\Core\Routing\RedirectDestinationTrait;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
+use Drupal\views\Attribute\ViewsField;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\Plugin\views\field\UncacheableFieldHandlerTrait;
@@ -27,44 +28,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * Defines the Views Bulk Operations field plugin.
  *
  * @ingroup views_field_handlers
- *
- * @ViewsField("views_bulk_operations_bulk_form")
  */
+#[ViewsField("views_bulk_operations_bulk_form")]
 class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDependencyInterface, ContainerFactoryPluginInterface {
 
   use RedirectDestinationTrait;
   use UncacheableFieldHandlerTrait;
   use ViewsBulkOperationsFormTrait;
-
-  /**
-   * Object that gets the current view data.
-   */
-  protected ViewsbulkOperationsViewDataInterface $viewData;
-
-  /**
-   * Views Bulk Operations action manager.
-   */
-  protected ViewsBulkOperationsActionManager $actionManager;
-
-  /**
-   * Views Bulk Operations action processor.
-   */
-  protected ViewsBulkOperationsActionProcessorInterface $actionProcessor;
-
-  /**
-   * The tempstore service.
-   */
-  protected PrivateTempStoreFactory $tempStoreFactory;
-
-  /**
-   * The current user object.
-   */
-  protected AccountInterface $currentUser;
-
-  /**
-   * The request stack.
-   */
-  protected RequestStack $requestStack;
 
   /**
    * An array of actions that can be executed.
@@ -116,22 +86,14 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    ViewsbulkOperationsViewDataInterface $viewData,
-    ViewsBulkOperationsActionManager $actionManager,
-    ViewsBulkOperationsActionProcessorInterface $actionProcessor,
-    PrivateTempStoreFactory $tempStoreFactory,
-    AccountInterface $currentUser,
-    RequestStack $requestStack
+    protected readonly ViewsbulkOperationsViewDataInterface $viewData,
+    protected readonly ViewsBulkOperationsActionManager $actionManager,
+    protected readonly ViewsBulkOperationsActionProcessorInterface $actionProcessor,
+    protected readonly PrivateTempStoreFactory $tempStoreFactory,
+    protected readonly AccountInterface $currentUser,
+    protected readonly RequestStack $requestStack
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->viewData = $viewData;
-    $this->actionManager = $actionManager;
-    $this->actionProcessor = $actionProcessor;
-    $this->tempStoreFactory = $tempStoreFactory;
-    $this->currentUser = $currentUser;
-    $this->requestStack = $requestStack;
-
   }
 
   /**
@@ -567,12 +529,18 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
         ],
       ];
 
-      // Default label_override element.
+      // Default label and action processing message overrides.
       $table[$delta]['container']['preconfiguration']['label_override'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Override label'),
         '#description' => $this->t('Leave empty for the default label.'),
         '#default_value' => $selected_actions_data[$id]['preconfiguration']['label_override'] ?? '',
+      ];
+      $table[$delta]['container']['preconfiguration']['message_override'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Override processing message'),
+        '#description' => $this->t('Use the "@count" placeholder for number of processed items. Leave empty for the default message.'),
+        '#default_value' => $selected_actions_data[$id]['preconfiguration']['message_override'] ?? '',
       ];
 
       // Also allow to force a default confirmation step for actoins that don't
@@ -919,16 +887,6 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
         }
 
         $definition = $this->actions[$selected_action_data['action_id']];
-
-        // Check access permission, if defined.
-        if (!empty($definition['requirements']['_permission']) && !$this->currentUser->hasPermission($definition['requirements']['_permission'])) {
-          continue;
-        }
-
-        // Check custom access, if defined.
-        if (!empty($definition['requirements']['_custom_access']) && !$definition['class']::customAccess($this->currentUser, $this->view)) {
-          continue;
-        }
 
         // Override label if applicable.
         if (!empty($selected_action_data['preconfiguration']['label_override'])) {

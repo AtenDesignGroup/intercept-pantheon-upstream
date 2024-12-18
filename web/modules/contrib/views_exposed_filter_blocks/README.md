@@ -26,7 +26,8 @@ plugin, I suggest to use [views_block_filter_block](
 <https://www.drupal.org/project/views\_block\_filter_block>) or simply try
 out which of those two fits best.
 
-Based on the implementations like: [Programmatically render an exposed filter form](
+Based on the implementations like:
+[Programmatically render an exposed filter form](
 <https://blog.werk21.de/en/2017/03/08/programmatically-render-exposed-filter-form>)
 or [Render exposed filter without creating block](https://drupal.stackexchange.com/questions/236576/render-exposed-filter-without-creating-block)
 Thanks to the authors!

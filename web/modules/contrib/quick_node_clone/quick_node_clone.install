@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Quick Node Clone module.
+ */
+
+/**
+ * Setting the default value for the new "create_group_relationships" option.
+ */
+function quick_node_clone_update_9000(&$sandbox) {
+  \Drupal::configFactory()->getEditable('quick_node_clone.settings')
+    ->set('create_group_relationships', TRUE)
+    ->save();
+}

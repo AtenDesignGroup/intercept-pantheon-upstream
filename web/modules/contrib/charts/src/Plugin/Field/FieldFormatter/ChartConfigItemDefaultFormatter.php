@@ -30,6 +30,7 @@ class ChartConfigItemDefaultFormatter extends FormatterBase {
     $entity_uuid = $entity->uuid();
     $entity_type_id = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
+    $field_name = $items->getName();
     $chart_id = $entity_type_id . '__' . $bundle;
 
     foreach ($items as $delta => $item) {
@@ -37,6 +38,8 @@ class ChartConfigItemDefaultFormatter extends FormatterBase {
       $elements[$delta] = $this->viewElement($item, $chart_id);
       $elements[$delta]['#id'] = Html::getUniqueId($id);
       $elements[$delta]['#chart_id'] = $chart_id;
+      $elements[$delta]['#entity'] = $entity;
+      $elements[$delta]['#field_name'] = $field_name;
     }
 
     return $elements;

@@ -20,3 +20,6 @@ quick_node_clone.settings:
     clone_status:
       type: boolean
       label: 'Clone publication status of original?'
+    create_group_relationships:
+      type: boolean
+      label: 'Create group relationships?'

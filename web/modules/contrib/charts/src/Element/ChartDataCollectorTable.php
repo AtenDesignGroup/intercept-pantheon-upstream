@@ -311,6 +311,13 @@ class ChartDataCollectorTable extends FormElementBase {
         '#description' => t('Note importing data from CSV will overwrite all the current data entry in the table.'),
         '#open' => FALSE,
       ];
+      $element['import']['csv_separator'] = [
+        '#type' => 'textfield',
+        '#title' => t('CSV separator'),
+        '#default_value' => $element['#import_csv_separator'] ?? ',',
+        '#size' => 1,
+        '#required' => TRUE,
+      ];
       $element['import']['csv'] = [
         '#name' => 'files[' . $id_prefix . ']',
         '#title' => t('File upload'),
@@ -449,7 +456,9 @@ class ChartDataCollectorTable extends FormElementBase {
       // Populate CSV values.
       $rows_count = 0;
       $element_state = [];
-      $separator = $triggering_element['#csv_separator'];
+      $user_inputs = $form_state->getUserInput();
+      $series = NestedArray::getValue($user_inputs, $element_parents);
+      $separator = $series['import']['csv_separator'];
       while ($row = fgetcsv($handle, 0, $separator)) {
         foreach ($row as $column_value) {
           $element_state['data_collector_table'][$rows_count][] = [

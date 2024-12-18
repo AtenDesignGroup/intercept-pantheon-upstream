@@ -907,19 +907,18 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
     }
   }
 
-  // Let's check events with recurrences AND room reservations to
+  // Let's check NEW events with recurrences AND room reservations to
   // prevent double-bookings.
   // But don't trigger this if it's an AJAX callback validation.
   // This is largely reused code from EventRecurrenceEventsForm.php.
-
+  $new_node = ($form['#form_id'] == 'node_event_form') ? TRUE : FALSE;
   $ajax_form = \Drupal::request()->query->get('ajax_form');
-  $room = $values['field_room'];
-  /*if (!empty($values['event_recurrence']) && !empty($values['reservation']) && $ajax_form != TRUE && !empty($room)) {
+  $room_id = $values['field_room'][0]['target_id'];
+  if (!empty($values['event_recurrence']) && !empty($values['reservation']) && $ajax_form != TRUE && $room_id && $new_node == TRUE) {
     // Check for conflicts.
     $date_utility = \Drupal::service('intercept_core.utility.dates');
     $reservation_manager = \Drupal::service('intercept_core.reservation.manager');
 
-    $room_id = $values['field_room'][0]['target_id'];
     $room = Node::load($room_id);
     $room_name = $room->label();
     $rooms = [$room_id];
@@ -950,10 +949,10 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
           // Unfortunately we can only set one error per form element
           // due to this core bug:
           // https://www.drupal.org/project/drupal/issues/2818437
-
+          $formatted_date = date('m/d/Y', strtotime($date));
           \Drupal::messenger()->addError(t("There is a conflict in :room on :start.", [
             ':room' => $room_name,
-            ':start' => $date,
+            ':start' => $formatted_date,
           ]));
         }
       }
@@ -961,7 +960,7 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
     if ($error) {
       $form_state->setErrorByName('event_recurrence', "");
     }
-  }*/
+  }
 
 }
 

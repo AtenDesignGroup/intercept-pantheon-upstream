@@ -373,7 +373,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
           $data_row = [];
           if ($label_field_key) {
             // Labels need to be decoded; the charting library will re-encode.
-            $data_row[] = strip_tags($this->getField($row_number, $label_field_key), ENT_QUOTES);
+            $data_row[] = trim(strip_tags($this->getField($row_number, $label_field_key), ENT_QUOTES));
           }
           $data_row[] = $this->processNumberValueFromField($row_number, $data_field_key);
           $data[] = $data_row;
@@ -519,6 +519,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
             $subchart[$key]['#data'] = $processed_data;
           }
           $chart[$key] = $subchart[$key];
+          $chart[$key]['#chart_attachment_id'] = $child_display_handler->display['id'];
           // If the subchart is a different type than the parent chart, set
           // the #chart_type property on the individual chart data elements.
           if ($subchart['#chart_type'] !== $chart['#chart_type']) {
@@ -692,7 +693,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
    * @return array
    *   The fields.
    */
-  private function getSelectedDataFields(array $data_providers) {
+  protected function getSelectedDataFields(array $data_providers) {
     return array_filter($data_providers, function ($value) {
 
       return !empty($value['enabled']);
@@ -742,7 +743,9 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
     $element_key_prefix = $this->view->current_display . '__' . $label_field_key;
     $chart_settings = $this->options['chart_settings'];
     foreach ($sets as $set_label => $data_set) {
-      $name = strtolower(Html::cleanCssIdentifier($set_label));
+      $name = strtolower(Html::cleanCssIdentifier('set-label-' . $set_label));
+      // Remove the added prefix after processing.
+      $name = substr($name, strlen('set-label-'));
       $element_key = $element_key_prefix . '__' . $name;
       $chart[$element_key] = [
         '#type' => 'chart_data',

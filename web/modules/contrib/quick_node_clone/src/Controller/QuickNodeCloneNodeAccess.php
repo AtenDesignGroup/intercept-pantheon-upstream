@@ -24,9 +24,13 @@ class QuickNodeCloneNodeAccess {
    *   isForbidden() will be TRUE.
    */
   public function cloneNode(AccountInterface $account, $node) {
+    $node = intval($node);
     $node = Node::load($node);
 
-    if (_quick_node_clone_has_clone_permission($node)) {
+    if (!$node) {
+      return AccessResult::neutral();
+    }
+    elseif (_quick_node_clone_has_clone_permission($node)) {
       $result = AccessResult::allowed();
     }
     else {

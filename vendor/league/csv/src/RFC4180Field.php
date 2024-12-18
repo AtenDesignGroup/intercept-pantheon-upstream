@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace League\Csv;
 
+use Deprecated;
 use InvalidArgumentException;
 use php_user_filter;
 use TypeError;
@@ -43,6 +44,7 @@ use const STREAM_FILTER_WRITE;
  */
 class RFC4180Field extends php_user_filter
 {
+    #[Deprecated(message: 'use League\Csv\Reader::setEscape or League\Csv\Writer::setEscape instead', since: 'league/csv:9.2.0')]
     public const FILTERNAME = 'convert.league.csv.rfc4180';
 
     /**
@@ -89,6 +91,7 @@ class RFC4180Field extends php_user_filter
      * Add a formatter to the {@link Writer} object to format the record
      * field to avoid enclosure around a field with an empty space.
      */
+    #[Deprecated(message: 'use League\Csv\Reader::setEscape or League\Csv\Writer::setEscape instead', since: 'league/csv:9.2.0')]
     public static function addFormatterTo(Writer $csv, string $whitespace_replace): Writer
     {
         if ('' == $whitespace_replace || strlen($whitespace_replace) !== strcspn($whitespace_replace, self::$force_enclosure)) {
@@ -136,6 +139,7 @@ class RFC4180Field extends php_user_filter
         return PSFS_PASS_ON;
     }
 
+    #[Deprecated(message: 'use League\Csv\Reader::setEscape or League\Csv\Writer::setEscape instead', since: 'league/csv:9.2.0')]
     public function onCreate(): bool
     {
         if (!is_array($this->params)) {

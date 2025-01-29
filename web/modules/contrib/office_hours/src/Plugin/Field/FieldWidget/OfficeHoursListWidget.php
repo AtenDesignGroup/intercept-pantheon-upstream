@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 
 /**
- * Plugin implementation of the 'office_hours_week' widget.
+ * Plugin implementation of an office_hours widget.
  *
  * @FieldWidget(
  *   id = "office_hours_list",

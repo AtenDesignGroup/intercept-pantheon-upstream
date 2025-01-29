@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.9] - 2025-01-29
+
+* Made improvements to Google Analytics tracking for areas of the site under My Account
+* Fixed a timezone issue with Room Reservation entry
+* Fixed a bug with redirection to recurrences tab when saving event data on the analysis tab
+* Fixed additional deprecation warnings related to PHP 8.2
+* Updated contributed modules to latest versions
+* Updated JavaScript build tools
+
 ## [2.0.8] - 2024-12-18
 
 * Added validation to prevent staff from accidentally creating a double-booking when creating a recurring event with room reservations

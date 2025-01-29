@@ -130,7 +130,7 @@ function intercept_core_entity_type_build(array &$entity_types) {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   $entity_types['user']
     ->setFormClass('customer', '\Drupal\intercept_core\Form\UserProfileForm')
-    ->setLinkTemplate('customer-form', '/user/{user}/settings');
+    ->setLinkTemplate('customer-form', '/user/settings/{user}');
 }
 
 /**

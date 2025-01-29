@@ -2,12 +2,12 @@
 
 namespace Drupal\charts_test\Plugin\chart\Library;
 
-use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

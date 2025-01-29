@@ -1,9 +1,12 @@
 .listing__date-wrapper {
-  background-color: #0288d1; }
+  background-color: #0288d1;
+}
 
 .listing__date {
-  color: #fff; }
+  color: #fff;
+}
 
 .listing__supertitle {
   font-weight: bold;
-  font-family: serif; }
+  font-family: serif;
+}

@@ -138,11 +138,13 @@ class StatusUpdateController implements ContainerInjectionInterface {
     // Note: when changing this, also test the Views StatusFilter.
     if (!\Drupal::currentUser()->isAnonymous()) {
       // Field cache should work properly for non-anonymous users.
+      // @see https://www.drupal.org/project/office_hours/issues/3466589
       return $elements;
     }
 
     if (!\Drupal::moduleHandler()->moduleExists('page_cache')) {
       // This is to fix the page_cache module.
+      // @see https://www.drupal.org/project/office_hours/issues/3466589
       return $elements;
     }
 

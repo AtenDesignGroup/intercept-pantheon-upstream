@@ -1,301 +1,406 @@
 .fs {
   line-height: 1.2;
   margin: 10px;
-  position: relative; }
-  .fs:after {
-    bottom: 25%;
-    color: #878b90;
-    display: inline-block;
-    font-size: 14px;
-    margin: auto 8px;
-    position: absolute;
-    right: 100%; }
+  position: relative;
+}
+.fs:after {
+  bottom: 25%;
+  color: #878b90;
+  display: inline-block;
+  font-size: 0.875rem;
+  margin: auto 8px;
+  position: absolute;
+  right: 100%;
+}
 
 .fs--nano {
-  font-size: 7.38889px; }
-  .fs--nano:after {
-    content: "7.38889px "; }
+  font-size: 0.46181rem;
+}
+.fs--nano:after {
+  content: "7.3888888889px ";
+}
 
 .fs--micro {
-  font-size: 8px; }
-  .fs--micro:after {
-    content: "8px "; }
+  font-size: 0.5rem;
+}
+.fs--micro:after {
+  content: "8px ";
+}
 
 .fs--tiny {
-  font-size: 9.22222px; }
-  .fs--tiny:after {
-    content: "9.22222px "; }
+  font-size: 0.57639rem;
+}
+.fs--tiny:after {
+  content: "9.2222222222px ";
+}
 
 .fs--x-small {
-  font-size: 10.44444px; }
-  .fs--x-small:after {
-    content: "10.44444px "; }
+  font-size: 0.65278rem;
+}
+.fs--x-small:after {
+  content: "10.4444444444px ";
+}
 
 .fs--small {
-  font-size: 11.66667px; }
-  .fs--small:after {
-    content: "11.66667px "; }
+  font-size: 0.72917rem;
+}
+.fs--small:after {
+  content: "11.6666666667px ";
+}
 
 .fs--body {
-  font-size: 12.88889px; }
-  .fs--body:after {
-    content: "12.88889px "; }
+  font-size: 0.80556rem;
+}
+.fs--body:after {
+  content: "12.8888888889px ";
+}
 
 .fs--secondary-menu {
-  font-size: 14.11111px; }
-  .fs--secondary-menu:after {
-    content: "14.11111px "; }
+  font-size: 0.88194rem;
+}
+.fs--secondary-menu:after {
+  content: "14.1111111111px ";
+}
 
 .fs--main-menu {
-  font-size: 17.77778px; }
-  .fs--main-menu:after {
-    content: "17.77778px "; }
+  font-size: 1.11111rem;
+}
+.fs--main-menu:after {
+  content: "17.7777777778px ";
+}
 
 .fs--label {
-  font-size: 13.5px; }
-  .fs--label:after {
-    content: "13.5px "; }
+  font-size: 0.84375rem;
+}
+.fs--label:after {
+  content: "13.5px ";
+}
 
 .fs--medium {
-  font-size: 14.11111px; }
-  .fs--medium:after {
-    content: "14.11111px "; }
+  font-size: 0.88194rem;
+}
+.fs--medium:after {
+  content: "14.1111111111px ";
+}
 
 .fs--large {
-  font-size: 16.55556px; }
-  .fs--large:after {
-    content: "16.55556px "; }
+  font-size: 1.03472rem;
+}
+.fs--large:after {
+  content: "16.5555555556px ";
+}
 
 .fs--h5 {
-  font-size: 14.11111px; }
-  .fs--h5:after {
-    content: "14.11111px "; }
+  font-size: 0.88194rem;
+}
+.fs--h5:after {
+  content: "14.1111111111px ";
+}
 
 .fs--h4 {
-  font-size: 15.33333px; }
-  .fs--h4:after {
-    content: "15.33333px "; }
+  font-size: 0.95833rem;
+}
+.fs--h4:after {
+  content: "15.3333333333px ";
+}
 
 .fs--h3 {
-  font-size: 19px; }
-  .fs--h3:after {
-    content: "19px "; }
+  font-size: 1.1875rem;
+}
+.fs--h3:after {
+  content: "19px ";
+}
 
 .fs--h2 {
-  font-size: 22.66667px; }
-  .fs--h2:after {
-    content: "22.66667px "; }
+  font-size: 1.41667rem;
+}
+.fs--h2:after {
+  content: "22.6666666667px ";
+}
 
 .fs--h1 {
-  font-size: 30px; }
-  .fs--h1:after {
-    content: "30px "; }
+  font-size: 1.875rem;
+}
+.fs--h1:after {
+  content: "30px ";
+}
 
 .fs--mega {
-  font-size: 37.33333px; }
+  font-size: 2.33333rem;
+}
+.fs--mega:after {
+  content: "37.3333333333px ";
+}
+
+@media (min-width: 48rem) {
+  .fs--nano {
+    font-size: 0.52083rem;
+  }
+  .fs--nano:after {
+    content: "8.3333333333px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--micro {
+    font-size: 0.625rem;
+  }
+  .fs--micro:after {
+    content: "10px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--tiny {
+    font-size: 0.72917rem;
+  }
+  .fs--tiny:after {
+    content: "11.6666666667px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--x-small {
+    font-size: 0.83333rem;
+  }
+  .fs--x-small:after {
+    content: "13.3333333333px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--small {
+    font-size: 0.9375rem;
+  }
+  .fs--small:after {
+    content: "15px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--body {
+    font-size: 1.04167rem;
+  }
+  .fs--body:after {
+    content: "16.6666666667px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--secondary-menu {
+    font-size: 0.9375rem;
+  }
+  .fs--secondary-menu:after {
+    content: "15px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--main-menu {
+    font-size: 1.04167rem;
+  }
+  .fs--main-menu:after {
+    content: "16.6666666667px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--label {
+    font-size: 1.09375rem;
+  }
+  .fs--label:after {
+    content: "17.5px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--medium {
+    font-size: 1.14583rem;
+  }
+  .fs--medium:after {
+    content: "18.3333333333px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--large {
+    font-size: 1.40625rem;
+  }
+  .fs--large:after {
+    content: "22.5px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--h5 {
+    font-size: 1.14583rem;
+  }
+  .fs--h5:after {
+    content: "18.3333333333px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--h4 {
+    font-size: 1.25rem;
+  }
+  .fs--h4:after {
+    content: "20px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--h3 {
+    font-size: 1.5625rem;
+  }
+  .fs--h3:after {
+    content: "25px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--h2 {
+    font-size: 1.875rem;
+  }
+  .fs--h2:after {
+    content: "30px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--h1 {
+    font-size: 2.5rem;
+  }
+  .fs--h1:after {
+    content: "40px ";
+  }
+}
+@media (min-width: 48rem) {
+  .fs--mega {
+    font-size: 3.125rem;
+  }
   .fs--mega:after {
-    content: "37.33333px "; }
-
-@media (min-width: 48em) {
+    content: "50px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--nano {
-    font-size: 8.33333px; }
-    .fs--nano:after {
-      content: "8.33333px "; } }
-
-@media (min-width: 48em) {
+    font-size: 0.625rem;
+  }
+  .fs--nano:after {
+    content: "10px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--micro {
-    font-size: 10px; }
-    .fs--micro:after {
-      content: "10px "; } }
-
-@media (min-width: 48em) {
+    font-size: 0.75rem;
+  }
+  .fs--micro:after {
+    content: "12px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--tiny {
-    font-size: 11.66667px; }
-    .fs--tiny:after {
-      content: "11.66667px "; } }
-
-@media (min-width: 48em) {
+    font-size: 0.875rem;
+  }
+  .fs--tiny:after {
+    content: "14px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--x-small {
-    font-size: 13.33333px; }
-    .fs--x-small:after {
-      content: "13.33333px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1rem;
+  }
+  .fs--x-small:after {
+    content: "16px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--small {
-    font-size: 15px; }
-    .fs--small:after {
-      content: "15px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.125rem;
+  }
+  .fs--small:after {
+    content: "18px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--body {
-    font-size: 16.66667px; }
-    .fs--body:after {
-      content: "16.66667px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.25rem;
+  }
+  .fs--body:after {
+    content: "20px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--secondary-menu {
-    font-size: 15px; }
-    .fs--secondary-menu:after {
-      content: "15px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.125rem;
+  }
+  .fs--secondary-menu:after {
+    content: "18px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--main-menu {
-    font-size: 16.66667px; }
-    .fs--main-menu:after {
-      content: "16.66667px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.25rem;
+  }
+  .fs--main-menu:after {
+    content: "20px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--label {
-    font-size: 17.5px; }
-    .fs--label:after {
-      content: "17.5px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.3125rem;
+  }
+  .fs--label:after {
+    content: "21px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--medium {
-    font-size: 18.33333px; }
-    .fs--medium:after {
-      content: "18.33333px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.5rem;
+  }
+  .fs--medium:after {
+    content: "24px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--large {
-    font-size: 22.5px; }
-    .fs--large:after {
-      content: "22.5px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.875rem;
+  }
+  .fs--large:after {
+    content: "30px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--h5 {
-    font-size: 18.33333px; }
-    .fs--h5:after {
-      content: "18.33333px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.375rem;
+  }
+  .fs--h5:after {
+    content: "22px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--h4 {
-    font-size: 20px; }
-    .fs--h4:after {
-      content: "20px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.5rem;
+  }
+  .fs--h4:after {
+    content: "24px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--h3 {
-    font-size: 25px; }
-    .fs--h3:after {
-      content: "25px "; } }
-
-@media (min-width: 48em) {
+    font-size: 1.875rem;
+  }
+  .fs--h3:after {
+    content: "30px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--h2 {
-    font-size: 30px; }
-    .fs--h2:after {
-      content: "30px "; } }
-
-@media (min-width: 48em) {
+    font-size: 2.25rem;
+  }
+  .fs--h2:after {
+    content: "36px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--h1 {
-    font-size: 40px; }
-    .fs--h1:after {
-      content: "40px "; } }
-
-@media (min-width: 48em) {
+    font-size: 3rem;
+  }
+  .fs--h1:after {
+    content: "48px ";
+  }
+}
+@media (min-width: 62rem) {
   .fs--mega {
-    font-size: 50px; }
-    .fs--mega:after {
-      content: "50px "; } }
-
-@media (min-width: 62em) {
-  .fs--nano {
-    font-size: 10px; }
-    .fs--nano:after {
-      content: "10px "; } }
-
-@media (min-width: 62em) {
-  .fs--micro {
-    font-size: 12px; }
-    .fs--micro:after {
-      content: "12px "; } }
-
-@media (min-width: 62em) {
-  .fs--tiny {
-    font-size: 14px; }
-    .fs--tiny:after {
-      content: "14px "; } }
-
-@media (min-width: 62em) {
-  .fs--x-small {
-    font-size: 16px; }
-    .fs--x-small:after {
-      content: "16px "; } }
-
-@media (min-width: 62em) {
-  .fs--small {
-    font-size: 18px; }
-    .fs--small:after {
-      content: "18px "; } }
-
-@media (min-width: 62em) {
-  .fs--body {
-    font-size: 20px; }
-    .fs--body:after {
-      content: "20px "; } }
-
-@media (min-width: 62em) {
-  .fs--secondary-menu {
-    font-size: 18px; }
-    .fs--secondary-menu:after {
-      content: "18px "; } }
-
-@media (min-width: 62em) {
-  .fs--main-menu {
-    font-size: 20px; }
-    .fs--main-menu:after {
-      content: "20px "; } }
-
-@media (min-width: 62em) {
-  .fs--label {
-    font-size: 21px; }
-    .fs--label:after {
-      content: "21px "; } }
-
-@media (min-width: 62em) {
-  .fs--medium {
-    font-size: 24px; }
-    .fs--medium:after {
-      content: "24px "; } }
-
-@media (min-width: 62em) {
-  .fs--large {
-    font-size: 30px; }
-    .fs--large:after {
-      content: "30px "; } }
-
-@media (min-width: 62em) {
-  .fs--h5 {
-    font-size: 22px; }
-    .fs--h5:after {
-      content: "22px "; } }
-
-@media (min-width: 62em) {
-  .fs--h4 {
-    font-size: 24px; }
-    .fs--h4:after {
-      content: "24px "; } }
-
-@media (min-width: 62em) {
-  .fs--h3 {
-    font-size: 30px; }
-    .fs--h3:after {
-      content: "30px "; } }
-
-@media (min-width: 62em) {
-  .fs--h2 {
-    font-size: 36px; }
-    .fs--h2:after {
-      content: "36px "; } }
-
-@media (min-width: 62em) {
-  .fs--h1 {
-    font-size: 48px; }
-    .fs--h1:after {
-      content: "48px "; } }
-
-@media (min-width: 62em) {
-  .fs--mega {
-    font-size: 60px; }
-    .fs--mega:after {
-      content: "60px "; } }
+    font-size: 3.75rem;
+  }
+  .fs--mega:after {
+    content: "60px ";
+  }
+}

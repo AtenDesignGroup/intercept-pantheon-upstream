@@ -4,10 +4,15 @@
   color: #4c4d4f;
   text-transform: uppercase;
   font-weight: 900;
-  letter-spacing: 0.16667em; }
-  @media (min-width: 48em) {
-    .highlight {
-      margin-bottom: 0.495rem; } }
-  @media (min-width: 62em) {
-    .highlight {
-      margin-bottom: 0.75rem; } }
+  letter-spacing: 0.1666666667em;
+}
+@media (min-width: 48rem) {
+  .highlight {
+    margin-bottom: 0.495rem;
+  }
+}
+@media (min-width: 62rem) {
+  .highlight {
+    margin-bottom: 0.75rem;
+  }
+}

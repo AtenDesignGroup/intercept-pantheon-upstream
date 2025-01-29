@@ -31,10 +31,12 @@ class OfficeHoursListSlot extends OfficeHoursBaseSlot {
     $element['day'] = [
       '#type' => 'select',
       // Add a label/header/title for accessibility (a11y) screen readers.
-      '#title' => t('Weekday'),
+      '#title' => t('Day'),
       '#title_display' => 'invisible',
       '#options' => OfficeHoursDateHelper::weekDays(FALSE),
       '#default_value' => $day,
+      // Add wrapper attribute for improved (a11y) screen reader experience.
+      '#wrapper_attributes' => ['header' => TRUE],
     ];
     if (isset($element['all_day'])) {
       $element['all_day'] += $labels['all_day'];

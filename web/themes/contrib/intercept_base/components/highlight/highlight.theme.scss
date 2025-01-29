@@ -1,4 +1,6 @@
-@import "_partials";
+@use "sass:math";
+
+@use 'partials' as *;
 
 .highlight {
   @include spacing(margin-bottom, compact);
@@ -6,5 +8,5 @@
   color: $clr-secondary-dark;
   text-transform: uppercase;
   font-weight: $fw-bold;
-  letter-spacing: (2/12)*1em;
+  letter-spacing: math.div(2, 12)*1em;
 }

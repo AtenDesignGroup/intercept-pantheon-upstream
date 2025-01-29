@@ -1,4 +1,4 @@
-@import '_partials';
+@use 'partials' as *;
 
 .person {
   display: flex;
@@ -53,7 +53,7 @@
   // Department
   &__department {
     @include fs(x-small);
-    
+
     .field__item {
       display: inline-block;
 

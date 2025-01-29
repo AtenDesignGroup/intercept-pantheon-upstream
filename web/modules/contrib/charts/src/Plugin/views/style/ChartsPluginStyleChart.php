@@ -2,11 +2,6 @@
 
 namespace Drupal\charts\Plugin\views\style;
 
-use Drupal\charts\ChartManager;
-use Drupal\charts\ChartViewsFieldInterface;
-use Drupal\charts\Element\BaseSettings;
-use Drupal\charts\Plugin\chart\Library\ChartInterface;
-use Drupal\charts\TypeManager;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
@@ -15,6 +10,12 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\charts\ChartManager;
+use Drupal\charts\ChartViewsFieldInterface;
+use Drupal\charts\Element\BaseSettings;
+use Drupal\charts\Plugin\chart\Library\ChartInterface;
+use Drupal\charts\Plugin\chart\Library\LibraryRetrieverTrait;
+use Drupal\charts\TypeManager;
 use Drupal\views\Plugin\views\field\EntityField;
 use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\views\ResultRow;
@@ -34,6 +35,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactoryPluginInterface {
+
+  use LibraryRetrieverTrait;
 
   /**
    * {@inheritdoc}
@@ -91,17 +94,17 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
    *   The plugin implementation definition.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
-   * @param \Drupal\charts\ChartManager $chart_manager
+   * @param \Drupal\charts\ChartManager $chartsManager
    *   The chart manager service.
    * @param \Drupal\charts\TypeManager $chart_type_manager
    *   The chart type manager.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, ChartManager $chart_manager, TypeManager $chart_type_manager, RouteMatchInterface $route_match) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, protected ChartManager $chartsManager, TypeManager $chart_type_manager, RouteMatchInterface $route_match) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
-    $this->chartManager = $chart_manager;
+    $this->chartManager = $this->chartsManager;
     $this->chartTypeManager = $chart_type_manager;
     $this->routeMatch = $route_match;
   }
@@ -330,6 +333,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
       '#tooltips' => $chart_settings['display']['tooltips'],
       '#data_labels' => $chart_settings['display']['data_labels'],
       '#data_markers' => $chart_settings['display']['data_markers'],
+      '#connect_nulls' => $chart_settings['display']['connect_nulls'],
       // Colors only used if a grouped view or using a type such as a pie chart.
       '#colors' => $chart_settings['display']['colors'] ?? [],
       '#background' => $chart_settings['display']['background'] ?? 'transparent',
@@ -636,10 +640,13 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
   public function calculateDependencies() {
     $dependencies = [];
 
-    if (!empty($this->options['chart_settings']['library'])) {
-      $plugin_definition = $this->chartManager->getDefinition($this->options['chart_settings']['library']);
-      $dependencies['module'] = [$plugin_definition['provider']];
+    if (empty($this->options['chart_settings']['library'])) {
+      return $dependencies;
     }
+
+    $library = $this->getLibrary($this->options['chart_settings']['library']);
+    $plugin_definition = $this->chartsManager->getDefinition($library);
+    $dependencies['module'] = [$plugin_definition['provider']];
 
     return $dependencies;
   }

@@ -20,7 +20,7 @@
     "drupal/admin_toolbar": "^3.1.0",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core": "^10.3.10",
+    "drupal/core": "^10.4.1",
     "drupal/date_popup": "^2.0",
     "drupal/date_recur": "^3.5",
     "drupal/date_recur_modular": "^3.2.1",
@@ -28,8 +28,8 @@
     "drupal/gin": "^3.0",
     "drupal/gin_toolbar": "^1.0@beta",
     "drupal/image_effects": "^3.6",
-    "drupal/intercept_base": "2.0.7",
-    "drupal/intercept": "2.0.8",
+    "drupal/intercept_base": "2.0.9",
+    "drupal/intercept": "2.0.9",
     "drupal/jsonapi_extras": "^3.26",
     "drupal/key": "^1.14",
     "drupal/media_entity_slideshow": "^2.4",
@@ -139,7 +139,7 @@
       "drupal/gin": {
         "Adds template override for /bulk-room-reservation/add": "patches/bulk_room_reservations_date_recur_template.patch",
         "Fixes publication options not appearing in sidebar when using event templates": "patches/crl-1768_event_templates_sidebar.patch",
-        "3466692 Removes more actions group dropdown": "https://www.drupal.org/files/issues/2024-11-25/3466692-gin-disable-more-actions-group.patch"
+        "3466692 Removes more actions group dropdown": "https://www.drupal.org/files/issues/2025-01-21/3466692-gin-disable-more-actions-group-8.patch"
       },
       "drupal/smsframework": {
         "Allows recipient number to be stored in message options instead of a user entity": "https://www.drupal.org/files/issues/2021-03-15/3203755-smsframework-2.x-dev-recipient-options.patch"

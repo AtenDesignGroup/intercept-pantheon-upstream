@@ -9,12 +9,15 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemBase;
 
-// Add theme.api.php hooks.
-\Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme');
-// Add ExceptionItem field formatter theming/preprocessing.
-\Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme.exceptions');
-// Add views hooks.
-\Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.views');
+// Include file, avoiding container error during upgrade.
+if (\Drupal::hasContainer()) {
+  // Add theme.api.php hooks.
+  \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme');
+  // Add ExceptionItem field formatter theming/preprocessing.
+  \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.theme.exceptions');
+  // Add views hooks.
+  \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.views');
+}
 
 /**
  * Implements hook_help().
@@ -59,7 +62,9 @@ function office_hours_form_field_storage_config_edit_form_alter(&$form, FormStat
   // admin/structure/types/manage/TYPE/fields/TYPE/storage
   $field_type = $form_state->getFormObject()->getEntity()->getType();
   if ($field_type == 'office_hours') {
-    OfficeHoursItemBase::storageSettingsFormAlter($form, $form_state, $form_id);
+    if (version_compare(\Drupal::VERSION, '10.2', '<')) {
+      OfficeHoursItemBase::storageSettingsFormAlter($form, $form_state, $form_id);
+    }
   }
 }
 

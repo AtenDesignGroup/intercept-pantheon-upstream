@@ -52,7 +52,7 @@ class OfficeHoursFormatterDefault extends OfficeHoursFormatterBase {
     // while other days are filled.
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
     $office_hours = $items->getRows($formatter_settings, $widget_settings, $third_party_settings, 0, $this);
-      // Pass filtered office_hours structures to twig theming.
+    // Pass filtered office_hours structures to twig theming.
     $elements[0]['#theme'] = 'office_hours';
     $elements[0]['#office_hours'] = $office_hours;
 

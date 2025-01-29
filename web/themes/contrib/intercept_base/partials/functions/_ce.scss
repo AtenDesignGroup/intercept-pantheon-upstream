@@ -3,8 +3,10 @@
 // Calc em Function
 //
 
+@use "sass:math";
+
 @function calc-em($target, $container) {
-  @return ($target / $container) * 1em;
+  @return math.div($target, $container) * 1em;
 }
 
 @function ce($target, $container) {

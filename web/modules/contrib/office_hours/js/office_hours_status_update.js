@@ -7,7 +7,7 @@
 
     // Make sure that the field is not generated again, if this was an
     // original request, not a refresh (<10 seconds ago).
-    const refreshTime = parseInt(new Date().getTime() / 1000);
+    const refreshTime = Math.floor(Date.now() / 1000);
     if (refreshTime - statusMetadata.request_time < 10) {
       return;
     }
@@ -34,14 +34,11 @@
     element.parentElement.classList.add(parentClass);
 
     fetch(url)
-    .then(function returnResponse(response) {
-      return response.text();
-    })
-    .then(function returnElement(html) {
-      element.innerHTML = html;
-    })
-    .catch(function doNothing() {
-    });
+      .then(response => response.text())
+      .then(html => {
+        element.innerHTML = html;
+      })
+      .catch(() => {});
   }
 
   Drupal.behaviors.office_hours_status_update = {

@@ -1,81 +1,111 @@
 .card--gray {
-  background: #eef1f4; }
+  background: #eef1f4;
+}
 
 .card--registration .card__footer {
-  padding-top: 1.25rem; }
+  padding-top: 1.25rem;
+}
 
 .card__content {
-  padding: 2rem; }
+  padding: 2rem;
+}
 
 .card__title-link {
   color: #130f13;
   text-decoration: none;
-  -webkit-transition: color .2s ease-out;
-  transition: color .2s ease-out; }
-  .card__title-link:hover, .card__title-link:focus {
-    color: #747481; }
-  .card__title-link:active, .card__title-link.active--trail {
-    color: #747481; }
+  transition: color 0.2s ease-out;
+}
+.card__title-link:hover, .card__title-link:focus {
+  color: #747481;
+}
+.card__title-link:active, .card__title-link.active--trail {
+  color: #747481;
+}
 
 .card__dateline-date {
-  font-weight: 900; }
+  font-weight: 900;
+}
 
 .card--location {
   border: 2px solid #d3d8df;
   background-color: #eef1f4;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column; }
-  @media (max-width: 43.6875em) {
-    .card--location {
-      margin-bottom: 1.25rem; } }
-  @media (min-width: 43.75em) {
-    .card--location {
-      -webkit-box-flex: 1;
-          -ms-flex-positive: 1;
-              flex-grow: 1; } }
-  .card--location a {
-    text-decoration: none;
-    color: #0277bd; }
+  flex-direction: column;
+}
+@media (max-width: 43.74875rem) {
+  .card--location {
+    margin-bottom: 1.25rem;
+  }
+}
+@media (min-width: 43.75rem) {
+  .card--location {
+    flex-grow: 1;
+  }
+}
+.card--location a {
+  text-decoration: none;
+  color: #0277bd;
+}
+.card--location h3 {
+  width: 100%;
+}
+.card--location h3 {
+  font-size: 1.1875rem;
+}
+@media (min-width: 48rem) {
   .card--location h3 {
-    font-size: 1.1875rem;
-    line-height: 1.2;
-    width: 100%; }
-    @media (min-width: 48em) {
-      .card--location h3 {
-        font-size: 1.5625rem; } }
-    @media (min-width: 62em) {
-      .card--location h3 {
-        font-size: 1.875rem; } }
-  .card--location .office-hours__item-label {
-    font-weight: normal; }
-  .card--location .office-hours__item:first-child,
-  .card--location .office-hours__item:first-child .office-hours__item-label {
-    font-weight: 800; }
-  .card--location .card__image {
-    border-bottom: 2px solid #d3d8df; }
+    font-size: 1.5625rem;
+  }
+}
+@media (min-width: 62rem) {
+  .card--location h3 {
+    font-size: 1.875rem;
+  }
+}
+.card--location h3 {
+  line-height: 1.2;
+}
+.card--location .office-hours__item-label {
+  font-weight: normal;
+}
+.card--location .office-hours__item:first-child,
+.card--location .office-hours__item:first-child .office-hours__item-label {
+  font-weight: 800;
+}
+.card--location .card__image {
+  border-bottom: 2px solid #d3d8df;
+}
+.card--location .card__content {
+  padding: 1.25rem;
+}
+@media (min-width: 62rem) {
   .card--location .card__content {
-    padding: 1.25rem; }
-    @media (min-width: 62em) {
-      .card--location .card__content {
-        padding: 3.125rem; } }
-  .card--location .card__footer {
-    margin-top: 1em; }
-    .card--location .card__footer a:not([class]) {
-      font-size: 0.65278rem;
-      letter-spacing: 0.0625rem;
-      text-transform: unset; }
-      @media (min-width: 48em) {
-        .card--location .card__footer a:not([class]) {
-          font-size: 0.83333rem; } }
-      @media (min-width: 62em) {
-        .card--location .card__footer a:not([class]) {
-          font-size: 1rem; } }
-      .card--location .card__footer a:not([class]) .country {
-        display: none; }
-      .card--location .card__footer a:not([class]):after {
-        display: none; }
+    padding: 3.125rem;
+  }
+}
+.card--location .card__footer {
+  margin-top: 1em;
+}
+.card--location .card__footer a:not([class]) {
+  letter-spacing: 0.0625rem;
+  text-transform: unset;
+}
+.card--location .card__footer a:not([class]) {
+  font-size: 0.6527777778rem;
+}
+@media (min-width: 48rem) {
+  .card--location .card__footer a:not([class]) {
+    font-size: 0.8333333333rem;
+  }
+}
+@media (min-width: 62rem) {
+  .card--location .card__footer a:not([class]) {
+    font-size: 1rem;
+  }
+}
+.card--location .card__footer a:not([class]) .country {
+  display: none;
+}
+.card--location .card__footer a:not([class]):after {
+  display: none;
+}

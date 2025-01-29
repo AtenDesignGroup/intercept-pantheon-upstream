@@ -1,3 +1,6 @@
+@use "sass:math";
+@use "partials" as *;
+
 .list--bullets {
   @include list--bullets;
 }
@@ -168,7 +171,7 @@
     flex-wrap: wrap;
 
     > .list__item {
-      width: percentage(6/13);
+      width: math.percentage(math.div(6, 13));
     }
   }
 
@@ -176,9 +179,9 @@
     @include bp(large) {
       > .list__item {
         flex: none;
-        margin-right: percentage(.5/13);
+        margin-right: math.percentage(math.div(.5, 13));
         margin-top: 0;
-        width: percentage(4/13);
+        width: math.percentage(math.div(4, 13));
       }
 
       > .list__item:nth-child(3n+3) {
@@ -198,9 +201,9 @@
 
       > .list__item {
         flex: none;
-        margin-right: percentage(1/23);
+        margin-right: math.percentage(math.div(1, 23));
         margin-top: 0;
-        width: percentage(7/23);
+        width: math.percentage(math.div(7, 23));
       }
 
       > .list__item:nth-child(3n+3) {
@@ -208,7 +211,7 @@
       }
 
       > .list__item:nth-child(n+4) {
-        margin-top: percentage(1/23);
+        margin-top: math.percentage(math.div(1, 23));
       }
     }
   }
@@ -237,9 +240,9 @@
 
     > .list__item {
       flex: none;
-      margin-right: percentage(1/23);
+      margin-right: math.percentage(math.div(1, 23));
       margin-top: 0;
-      width: percentage(11/23);
+      width: math.percentage(math.div(11, 23));
     }
 
     > .list__item:nth-child(2n+2) {
@@ -247,7 +250,7 @@
     }
 
     > .list__item:nth-child(n+3) {
-      margin-top: percentage(1/23);
+      margin-top: math.percentage(math.div(1, 23));
     }
   }
 }
@@ -269,8 +272,8 @@
     > .list__item {
       flex: none;
       margin-top: 0;
-      margin-right: percentage(1/23);
-      width: percentage(11/23);
+      margin-right: math.percentage(math.div(1, 23));
+      width: math.percentage(math.div(11, 23));
     }
 
     > .list__item:nth-child(2n+2) {
@@ -287,9 +290,9 @@
     flex-wrap: wrap;
 
     > .list__item {
-      margin-right: percentage(1/23);
+      margin-right: math.percentage(math.div(1, 23));
       margin-top: 0;
-      width: percentage(5/23);
+      width: math.percentage(math.div(5, 23));
     }
 
     > .list__item:nth-child(4n+4) {

@@ -2,7 +2,7 @@
  * Tabbed.js
  */
 
-import $ from 'jquery';
+import $ from 'jQuery';
 
 const tabbed = function(name) {
   if (name) {

@@ -61,7 +61,7 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       ->method('format')
       ->with($this::anything())
       // See \Drupal\Core\Datetime\DateFormatterInterface::format.
-      ->willReturnCallback(function ($timestamp, $type = 'medium', $format = '', string $timezone = NULL, $langcode = NULL) {
+      ->willReturnCallback(function ($timestamp, $type = 'medium', $format = '', ?string $timezone = NULL, $langcode = NULL) {
         $date = new \DateTime('@' . $timestamp);
         if (!$timezone) {
           $timezone = date_default_timezone_get();

@@ -1,4 +1,6 @@
-@import '_partials';
+@use "sass:math";
+
+@use 'partials' as *;
 
 .filters__inputs {
   padding: rem(18px);
@@ -126,7 +128,7 @@
     }
   }
 
-  
+
   #edit-field-user-0-message {
     color: #dc0078;
     font-weight: 600;
@@ -149,7 +151,7 @@
       font-size: rem(12px);
       font-style: normal;
     }
-  } 
+  }
 
 }
 
@@ -189,9 +191,14 @@
 }
 
 #views-exposed-form-research-learn-page-2 .filters__inputs-inner {
-  display: -webkit-box;
-  margin-left: 0;
+  display: flex;
   flex-direction: column;
+  margin-left: 0;
+
+  > .form-item {
+    align-self: unset;
+  }
+
   @include bp(small) {
     flex-direction: row;
   }
@@ -385,10 +392,10 @@
 
   > .input--time {
     margin-bottom: 0;
-    width: percentage(11/23);
+    width: math.percentage(math.div(11, 23));
 
     &:not(:last-child) {
-      margin-right: percentage(1/23);
+      margin-right: math.percentage(math.div(1, 23));
     }
   }
 }

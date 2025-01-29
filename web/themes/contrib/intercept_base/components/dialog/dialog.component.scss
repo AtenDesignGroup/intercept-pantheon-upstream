@@ -1,4 +1,4 @@
-@import "_partials";
+@use 'partials' as *;
 
 .dialog__panel {
   @include spacing(padding-top, loose);

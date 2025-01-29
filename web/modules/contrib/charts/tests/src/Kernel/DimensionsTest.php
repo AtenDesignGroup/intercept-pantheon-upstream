@@ -29,7 +29,7 @@ class DimensionsTest extends ChartsKernelTestBase {
    *
    * @dataProvider provideChartElements
    */
-  public function testDimensions(array $element, string $expected_width = NULL, string $expected_height = NULL) {
+  public function testDimensions(array $element, ?string $expected_width = NULL, ?string $expected_height = NULL) {
     $styles = $this->getChartStyle($element);
     $width = $styles['width'] ?? NULL;
     $height = $styles['height'] ?? NULL;

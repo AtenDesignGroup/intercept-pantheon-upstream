@@ -1,119 +1,158 @@
 .content-details {
   background-color: #eef1f4;
-  padding: 6.25%; }
-  @media (min-width: 43.75em) {
-    .content-details {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex; } }
-  @media (min-width: 53.125em) {
-    .content-details {
-      padding: 3.75rem; } }
-  @media (min-width: 75em) {
-    .content-details {
-      -webkit-box-orient: horizontal;
-      -webkit-box-direction: normal;
-          -ms-flex-direction: row;
-              flex-direction: row; } }
+  padding: 6.25%;
+}
+@media (min-width: 43.75rem) {
+  .content-details {
+    display: flex;
+  }
+}
+@media (min-width: 53.125rem) {
+  .content-details {
+    padding: 3.75rem;
+  }
+}
+@media (min-width: 75rem) {
+  .content-details {
+    flex-direction: row;
+  }
+}
+.content-details .detail {
+  padding-bottom: 6.25%;
+}
+.content-details .detail {
+  line-height: 1.5;
+}
+@media (min-width: 43.75rem) {
   .content-details .detail {
-    line-height: 1.5;
-    padding-bottom: 6.25%; }
-    @media (min-width: 43.75em) {
-      .content-details .detail {
-        padding-bottom: 0;
-        width: -webkit-calc(50% - 100px);
-        width: calc(50% - 100px); } }
-    @media (min-width: 62em) {
-      .content-details .detail {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        -webkit-box-orient: horizontal;
-        -webkit-box-direction: normal;
-            -ms-flex-direction: row;
-                flex-direction: row; } }
-    @media (min-width: 62em) {
-      .content-details .detail__header {
-        -webkit-box-flex: 1;
-            -ms-flex: 1 0 30%;
-                flex: 1 0 30%; } }
-    .content-details .detail__heading {
-      font-size: 0.88194rem;
-      line-height: 1.2;
-      color: #03a9f4; }
-      @media (min-width: 48em) {
-        .content-details .detail__heading {
-          font-size: 1.14583rem; } }
-      @media (min-width: 62em) {
-        .content-details .detail__heading {
-          font-size: 1.5rem; } }
-    .content-details .detail__content {
-      font-size: 0.84375rem;
-      color: #747481; }
-      @media (min-width: 48em) {
-        .content-details .detail__content {
-          font-size: 1.09375rem; } }
-      @media (min-width: 62em) {
-        .content-details .detail__content {
-          font-size: 1.3125rem; } }
-      @media (min-width: 62em) {
-        .content-details .detail__content {
-          background: url("/themes/contrib/intercept_base/images/dots/dots--vert_gray.svg") 0 0 repeat-y;
-          -webkit-box-flex: 1;
-              -ms-flex: 1 0 70%;
-                  flex: 1 0 70%;
-          padding: 0 1.875rem; } }
-      .content-details .detail__content__item {
-        line-height: 1.2;
-        padding-bottom: 1.25rem; }
-        .content-details .detail__content__item:last-of-type {
-          padding-bottom: 0; }
-      .content-details .detail__content .country {
-        display: none; }
-      .content-details .detail__content span {
-        line-height: 1.5;
-        vertical-align: text-top; }
-      .content-details .detail__content .office-hours__item-label {
-        font-weight: normal; }
-      .content-details .detail__content .office-hours__item:first-child,
-      .content-details .detail__content .office-hours__item:first-child .office-hours__item-label {
-        font-weight: 900; }
-      .content-details .detail__content a:not([class]) {
-        /*@include button--arrow-green;*/
-        text-transform: uppercase; }
+    padding-bottom: 0;
+    width: calc(50% - 100px);
+  }
+}
+@media (min-width: 62rem) {
+  .content-details .detail {
+    display: flex;
+    flex-direction: row;
+  }
+}
+@media (min-width: 62rem) {
+  .content-details .detail__header {
+    flex: 1 0 30%;
+  }
+}
+.content-details .detail__heading {
+  color: #03a9f4;
+}
+.content-details .detail__heading {
+  font-size: 0.8819444444rem;
+}
+@media (min-width: 48rem) {
+  .content-details .detail__heading {
+    font-size: 1.1458333333rem;
+  }
+}
+@media (min-width: 62rem) {
+  .content-details .detail__heading {
+    font-size: 1.5rem;
+  }
+}
+.content-details .detail__heading {
+  line-height: 1.2;
+}
+.content-details .detail__content {
+  color: #747481;
+}
+.content-details .detail__content {
+  font-size: 0.84375rem;
+}
+@media (min-width: 48rem) {
+  .content-details .detail__content {
+    font-size: 1.09375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .content-details .detail__content {
+    font-size: 1.3125rem;
+  }
+}
+@media (min-width: 62rem) {
+  .content-details .detail__content {
+    background: url("/themes/contrib/intercept_base/images/dots/dots--vert_gray.svg") 0 0 repeat-y;
+    flex: 1 0 70%;
+    padding: 0 1.875rem;
+  }
+}
+.content-details .detail__content__item {
+  padding-bottom: 1.25rem;
+}
+.content-details .detail__content__item {
+  line-height: 1.2;
+}
+.content-details .detail__content__item:last-of-type {
+  padding-bottom: 0;
+}
+.content-details .detail__content .country {
+  display: none;
+}
+.content-details .detail__content span {
+  vertical-align: text-top;
+}
+.content-details .detail__content span {
+  line-height: 1.5;
+}
+.content-details .detail__content .office-hours__item-label {
+  font-weight: normal;
+}
+.content-details .detail__content .office-hours__item:first-child,
+.content-details .detail__content .office-hours__item:first-child .office-hours__item-label {
+  font-weight: 900;
+}
+.content-details .detail__content a:not([class]) {
+  /*@include button--arrow-green;*/
+  text-transform: uppercase;
+}
 
 .content-details--solicitation .detail__content .detail__content__files span {
-  vertical-align: initial; }
-  .content-details--solicitation .detail__content .detail__content__files span a:not([class])::after {
-    background-image: url("/themes/contrib/intercept_base/images/icons/download--white.svg");
-    padding: 0px 0.625rem;
-    width: 0.3125rem; }
-  .content-details--solicitation .detail__content .detail__content__files span a:not([class]):hover::after {
-    background-position: center; }
+  vertical-align: baseline;
+  vertical-align: initial;
+}
+.content-details--solicitation .detail__content .detail__content__files span a:not([class])::after {
+  background-image: url("/themes/contrib/intercept_base/images/icons/download--white.svg");
+  padding: 0px 0.625rem;
+  width: 0.3125rem;
+}
+.content-details--solicitation .detail__content .detail__content__files span a:not([class]):hover::after {
+  background-position: center;
+}
 
 .content-details--with-sharing {
-  padding: 6.25% 6.25% 2.25% 6.25%; }
+  padding: 6.25% 6.25% 2.25% 6.25%;
+}
 
 .content-details-sharing {
   background-color: #eef1f4;
-  padding: 0 6.25% 6.25% 6.25%; }
+  padding: 0 6.25% 6.25% 6.25%;
+}
+.content-details-sharing .share {
+  float: left;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+}
+@media (min-width: 37.5rem) {
   .content-details-sharing .share {
-    float: left;
-    padding: 0.5rem 0.5rem 0.5rem 0; }
-    @media (min-width: 37.5em) {
-      .content-details-sharing .share {
-        padding: 0.75rem 0.5rem 0.75rem 0; } }
-  .content-details-sharing .menu--social-media-menu {
-    -webkit-box-pack: left;
-        -ms-flex-pack: left;
-            justify-content: left;
-    padding: 0.75rem 0.5rem 0.75rem 0.5rem; }
-    .content-details-sharing .menu--social-media-menu a {
-      background-color: black;
-      -webkit-filter: brightness(100);
-              filter: brightness(100);
-      -webkit-mask-repeat: no-repeat;
-              mask-repeat: no-repeat;
-      -webkit-mask-position-y: center; }
-      .content-details-sharing .menu--social-media-menu a:hover {
-        background-color: black; }
+    padding: 0.75rem 0.5rem 0.75rem 0;
+  }
+}
+.content-details-sharing .menu--social-media-menu {
+  justify-content: left;
+  padding: 0.75rem 0.5rem 0.75rem 0.5rem;
+}
+.content-details-sharing .menu--social-media-menu a {
+  background-color: black;
+  filter: brightness(100);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position-y: center;
+}
+.content-details-sharing .menu--social-media-menu a:hover {
+  background-color: black;
+}

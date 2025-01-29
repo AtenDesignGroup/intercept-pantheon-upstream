@@ -3,7 +3,7 @@
 // Tabs Container Styles
 //
 
-@import "_partials";
+@use 'partials' as *;
 
 // Tabs ul
 .tabs {

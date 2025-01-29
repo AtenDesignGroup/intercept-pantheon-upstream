@@ -130,7 +130,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    *   The field type, 'office_hours' by default.
    *   If set otherwise a new FieldDefinition is returned.
    *
-   * @return \Drupal\Core\Field\FieldDefinitionInterface
+   * @return \Drupal\Core\Field\FieldDefinitionInterface|null
    *   The field definition. BaseField, not ConfigField,
    *   because easier to construct.
    */
@@ -145,17 +145,23 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
       case 'office_hours_season_header':
       case 'office_hours_season_item':
       default:
-        $field_definition = FieldConfig::create([
-          'entity_type' => $this->getEntity()->getEntityTypeId(),
-          'bundle' => $this->getEntity()->bundle(),
-          'field_name' => $this->getName(),
-          'field_type' => $field_type,
-        ]);
-        /*
-        $field_definition = BaseFieldDefinition::create($field_type)
-        ->setName($this->fieldDefinition->getName())
-        ->setSettings($this->fieldDefinition->getSettings());
-         */
+        try {
+          $field_definition = FieldConfig::create([
+            'entity_type' => $this->getEntity()->getEntityTypeId(),
+            'bundle' => $this->getEntity()->bundle(),
+            'field_name' => $this->getName(),
+            'field_type' => $field_type,
+          ]);
+          /*
+          $field_definition = BaseFieldDefinition::create($field_type)
+          ->setName($this->fieldDefinition->getName())
+          ->setSettings($this->fieldDefinition->getSettings());
+           */
+        }
+        catch (\Exception $e) {
+          echo 'Caught exception: ', $e->getMessage(), "\n";
+          $field_definition = NULL;
+        }
     }
 
     return $field_definition;
@@ -257,8 +263,8 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   public function countExceptionDays() {
     $items = $this->getExceptionItems();
     $exception_days = [];
-    foreach($items as $item) {
-      $exception_days[$item->day] = true;
+    foreach ($items as $item) {
+      $exception_days[$item->day] = TRUE;
     }
     return count($exception_days);
   }

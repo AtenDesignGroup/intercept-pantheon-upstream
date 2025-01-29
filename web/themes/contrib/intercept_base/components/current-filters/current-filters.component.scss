@@ -1,4 +1,4 @@
-@import '_partials';
+@use 'partials' as *;
 
 .current-filters__wrapper {
   @include spacing(margin-top, tight);
@@ -40,7 +40,7 @@
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     vertical-align: middle;
     white-space: nowrap;
-  
+
     &:hover,
     &:focus {
       background-color: $gray-60;
@@ -89,7 +89,7 @@
   .option-chip:after {
     content: "";
     display: inline-block;
-    background-image: inline-svg('<svg width="8" height="8" xmlns="http://www.w3.org/2000/svg"><g fill="#4C4D4F" fill-rule="evenodd"><path d="M.053 7l7-7 .893.894-7 7z"></path><path d="M7.054 7.893l-7-7L.947.002l7 7z"></path></g></svg>');
+    background-image: svg-load('icons/chip-remove.svg');
     background-position: center;
     background-repeat: no-repeat;
     height: 8px;

@@ -10,6 +10,6 @@ Source: patches/crl-1768_event_templates_sidebar.patch
 
 
 3466692 Removes more actions group dropdown
-Source: https://www.drupal.org/files/issues/2024-11-25/3466692-gin-disable-more-actions-group.patch
+Source: https://www.drupal.org/files/issues/2025-01-21/3466692-gin-disable-more-actions-group-8.patch
 
 

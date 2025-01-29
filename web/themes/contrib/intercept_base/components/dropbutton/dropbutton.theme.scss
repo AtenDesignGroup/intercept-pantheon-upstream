@@ -2,7 +2,7 @@
  * @file
  * General styles for dropbuttons.
  */
-@import "_partials";
+@use 'partials' as *;
 
 .js .dropbutton-widget {
   background-color: white;

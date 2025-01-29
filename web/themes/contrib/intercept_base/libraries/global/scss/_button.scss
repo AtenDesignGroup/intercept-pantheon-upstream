@@ -1,3 +1,5 @@
+@use "partials" as *;
+
 button.MuiButton-textPrimary {
   &:focus {
     color: $white;

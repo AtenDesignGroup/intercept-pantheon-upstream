@@ -1,4 +1,4 @@
-@import "_partials";
+@use 'partials' as *;
 
 .view-switcher__button {
   background-color: transparent !important;

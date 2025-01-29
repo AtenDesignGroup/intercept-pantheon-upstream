@@ -45,6 +45,8 @@ class OfficeHoursExceptionsSlot extends OfficeHoursBaseSlot {
         ? 'exception_day_delta'
         // Format the numeric day number to Y-m-d format for the widget.
         : (is_numeric($day) ? date(OfficeHoursDateHelper::DATE_STORAGE_FORMAT, $day) : ''),
+      // Add wrapper attribute for improved (a11y) screen reader experience.
+      '#wrapper_attributes' => ['header' => !$day_delta],
     ];
 
     return $element;

@@ -1,4 +1,4 @@
-@import '_partials';
+@use 'partials' as *;
 
 .section-title--ruled {
   border-bottom-color: $clr-border;

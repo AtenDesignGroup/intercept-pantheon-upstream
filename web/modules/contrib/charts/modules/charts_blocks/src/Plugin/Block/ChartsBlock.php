@@ -2,13 +2,13 @@
 
 namespace Drupal\charts_blocks\Plugin\Block;
 
-use Drupal\charts\Element\Chart;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\charts\Element\Chart;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

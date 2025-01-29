@@ -2,9 +2,6 @@
 
 namespace Drupal\charts_google\Plugin\chart\Library;
 
-use Drupal\charts\Element\Chart as ChartElement;
-use Drupal\charts\Plugin\chart\Library\ChartBase;
-use Drupal\charts\TypeManager;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -13,6 +10,9 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\Url;
+use Drupal\charts\Element\Chart as ChartElement;
+use Drupal\charts\Plugin\chart\Library\ChartBase;
+use Drupal\charts\TypeManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -463,6 +463,9 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
         }
         $series['pointSize'] = !empty($element['#data_markers']) ? 3 : 0;
         $series['visibleInLegend'] = $element[$key]['#show_in_legend'];
+        if (!empty($element[$key]['#connect_nulls'])) {
+          $series['interpolateNulls'] = TRUE;
+        }
 
         // Labels only supported on pies.
         $series['pieSliceText'] = $element[$key]['#show_labels'] ? 'label' : 'none';

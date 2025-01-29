@@ -7,5 +7,5 @@
 //
 // $breakpoint-name - The breakpoint map key.
 @function get-breakpoint($breakpoint-name) {
-  @return map-get($breakpoints, $breakpoint-name);
+  @return map.get($breakpoints, $breakpoint-name);
 }

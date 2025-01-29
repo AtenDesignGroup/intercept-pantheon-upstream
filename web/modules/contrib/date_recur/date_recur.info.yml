@@ -10,7 +10,7 @@ dependencies:
 test_dependencies:
   - token:token
 
-# Information added by Drupal.org packaging script on 2024-11-04
-version: '3.8.0'
+# Information added by Drupal.org packaging script on 2025-01-23
+version: '3.8.1'
 project: 'date_recur'
-datestamp: 1730750667
+datestamp: 1737608456

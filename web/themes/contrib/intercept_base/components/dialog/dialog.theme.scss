@@ -1,4 +1,5 @@
-@import "_partials";
+@use 'sass:map';
+@use 'partials' as *;
 
 /**
  * @file
@@ -102,7 +103,7 @@
 
 /* Heavily modified dialog styles originally from Gin theme */
 @function icon($name) {
-  @return url(map-get($sprites, $name));
+  @return url(map.get($sprites, $name));
 }
 
 $sprites: (

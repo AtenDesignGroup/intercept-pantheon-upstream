@@ -1,53 +1,76 @@
 h1.page-title {
   margin-bottom: 1.5625rem;
   color: #0288d1;
-  font-weight: 900; }
-  @media (min-width: 48em) {
-    h1.page-title {
-      margin-bottom: 2.0625rem; } }
-  @media (min-width: 62em) {
-    h1.page-title {
-      margin-bottom: 3.125rem; } }
+  font-weight: 900;
+}
+@media (min-width: 48rem) {
+  h1.page-title {
+    margin-bottom: 2.0625rem;
+  }
+}
+@media (min-width: 62rem) {
+  h1.page-title {
+    margin-bottom: 3.125rem;
+  }
+}
 
 h1.page-title--reversed {
-  color: #fff; }
-  h1.page-title--reversed a {
-    color: #fff; }
-    h1.page-title--reversed a:hover {
-      color: #fff; }
+  color: #fff;
+}
+h1.page-title--reversed a {
+  color: #fff;
+}
+h1.page-title--reversed a:hover {
+  color: #fff;
+}
 
 h1.page-title {
-  color: #0087A8; }
-  .path-frontpage h1.page-title {
-    display: none; }
+  color: #0087A8;
+}
+.path-frontpage h1.page-title {
+  display: none;
+}
 
 .page-title--ruled {
   margin-bottom: 0.9375rem;
   padding-bottom: 0.9375rem;
-  position: relative; }
-  @media (min-width: 48em) {
-    .page-title--ruled {
-      margin-bottom: 1.2375rem; } }
-  @media (min-width: 62em) {
-    .page-title--ruled {
-      margin-bottom: 1.875rem; } }
-  @media (min-width: 48em) {
-    .page-title--ruled {
-      padding-bottom: 1.2375rem; } }
-  @media (min-width: 62em) {
-    .page-title--ruled {
-      padding-bottom: 1.875rem; } }
-  .page-title--ruled::after {
-    background: url("/themes/contrib/intercept_base/images/dots/dots--horiz.svg");
-    content: "";
-    height: 9px;
-    left: 0;
-    position: absolute;
-    width: 100%; }
-  .page-title--ruled::after {
-    bottom: 0; }
+  position: relative;
+}
+@media (min-width: 48rem) {
+  .page-title--ruled {
+    margin-bottom: 1.2375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .page-title--ruled {
+    margin-bottom: 1.875rem;
+  }
+}
+@media (min-width: 48rem) {
+  .page-title--ruled {
+    padding-bottom: 1.2375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .page-title--ruled {
+    padding-bottom: 1.875rem;
+  }
+}
+.page-title--ruled::after {
+  background: url("/themes/contrib/intercept_base/images/dots/dots--horiz.svg");
+  content: "";
+  height: 9px;
+  left: 0;
+  position: absolute;
+  width: 100%;
+}
+.page-title--ruled::after {
+  bottom: 0;
+}
 
 h1.page-title--secondary {
-  color: #4c4d4f; }
-  h1.page-title--secondary:not(:last-child) {
-    margin-bottom: 1.5rem; }
+  color: #4c4d4f;
+}
+h1.page-title--secondary:not(:last-child) {
+  margin-bottom: 1.5rem;
+}

@@ -16,7 +16,7 @@ class LoadTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'existing_values_autocomplete_widget',
     'field',
     'text',

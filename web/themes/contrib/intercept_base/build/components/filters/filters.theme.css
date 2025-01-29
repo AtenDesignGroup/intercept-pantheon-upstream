@@ -1,40 +1,42 @@
 .filters__inputs {
   background-color: #eef1f4;
-  padding: 4.34783%; }
+  padding: 4.347826087%;
+}
 
 .filters__summary {
-  font-size: 0.65278rem;
   font-weight: 900;
-  font-style: italic; }
-  @media (min-width: 48em) {
-    .filters__summary {
-      font-size: 0.83333rem; } }
-  @media (min-width: 62em) {
-    .filters__summary {
-      font-size: 1rem; } }
+  font-style: italic;
+}
+.filters__summary {
+  font-size: 0.6527777778rem;
+}
+@media (min-width: 48rem) {
+  .filters__summary {
+    font-size: 0.8333333333rem;
+  }
+}
+@media (min-width: 62rem) {
+  .filters__summary {
+    font-size: 1rem;
+  }
+}
 
 .filters--uniform-padding .filters__inputs,
 .filters__inputs--uniform-padding {
-  padding: 2.17391%; }
+  padding: 2.1739130435%;
+}
 
 .input--textarea .input__label {
-  font-weight: 900; }
-
+  font-weight: 900;
+}
 .input--textarea .input__description {
-  font-style: italic; }
-
-.input--textarea textarea::-webkit-input-placeholder {
+  font-style: italic;
+}
+.input--textarea textarea::-moz-placeholder {
   color: #d3d8df;
-  font-weight: 900; }
-
-.input--textarea textarea:-ms-input-placeholder {
-  color: #d3d8df;
-  font-weight: 900; }
-
-.input--textarea textarea::-ms-input-placeholder {
-  color: #d3d8df;
-  font-weight: 900; }
-
+  font-weight: 900;
+}
 .input--textarea textarea::placeholder {
   color: #d3d8df;
-  font-weight: 900; }
+  font-weight: 900;
+}

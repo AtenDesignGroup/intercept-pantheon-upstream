@@ -1,19 +1,19 @@
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css);
-[dir="ltr"] body.intercept-staff-management-menu {
-  padding-left: 60px !important; }
+[dir=ltr] body.intercept-staff-management-menu {
+  padding-left: 60px !important;
+}
 
 #slide-menu-toggle:checked ~ .left-menu {
   width: 61px;
-  -webkit-transition: all 0.4s;
-  transition: all 0.4s; }
-
+  transition: all 0.4s;
+}
 #slide-menu-toggle:checked ~ .slide-menu-btn {
   left: 59px;
-  -webkit-transition: left 0.4s;
-  transition: left 0.4s; }
-
+  transition: left 0.4s;
+}
 #slide-menu-toggle:checked ~ .left-menu label span {
-  display: none; }
+  display: none;
+}
 
 .slide-menu-btn {
   cursor: pointer;
@@ -23,132 +23,147 @@
   height: 60px;
   width: 30px;
   top: 28vh;
-  left: -webkit-calc(240px - 2px);
   left: calc(240px - 2px);
-  -webkit-transition: left 0.4s;
   transition: left 0.4s;
   background: #222;
   border: 2px solid white;
   border-left: none;
-  border-radius: 0 30px 30px 0; }
-  .slide-menu-btn:hover {
-    background: #363636; }
-  .slide-menu-btn i {
-    position: relative;
-    top: 20px;
-    left: 5px; }
+  border-radius: 0 30px 30px 0;
+}
+.slide-menu-btn:hover {
+  background: rgb(54.4, 54.4, 54.4);
+}
+.slide-menu-btn i {
+  position: relative;
+  top: 20px;
+  left: 5px;
+}
 
 .slide-menu-btn span i {
   position: absolute;
   right: -40px;
-  font-size: 16px; }
+  font-size: 1rem;
+}
 
 #slide-menu-toggle {
   display: none;
   position: absolute;
   bottom: 10px;
-  right: 10px; }
+  right: 10px;
+}
 
 .my-account-btn {
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 details summary {
   display: revert;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 details summary > * {
-  display: inline; }
+  display: inline;
+}
 
 .accordion {
   color: #fff;
-  width: 100%; }
-  .accordion .section {
-    width: 100%;
-    padding: 0; }
-    .accordion .section input[type='radio'] {
-      display: none; }
-      .accordion .section input[type='radio']:checked + label {
-        background: #363636; }
-        .accordion .section input[type='radio']:checked + label:before {
-          content: ' ';
-          position: absolute;
-          border-left: 3px solid #21ccfc;
-          height: 100%;
-          left: 0; }
-        .accordion .section input[type='radio']:checked + label .caret {
-          -webkit-transform: rotate(90deg);
-                  transform: rotate(90deg);
-          -webkit-transition: all 0.4s;
-          transition: all 0.4s; }
-      .accordion .section input[type='radio']:checked ~ .content {
-        max-height: 400px;
-        opacity: 1;
-        z-index: 10;
-        overflow-y: hidden; }
-      .accordion .section input[type='radio']:checked ~ .content.hidden {
-        max-height: 0; }
-    .accordion .section label {
-      position: relative;
-      cursor: pointer;
-      padding: 10px 20px;
-      margin: 0;
-      white-space: nowrap;
-      display: table;
-      background: #222;
-      width: 100%;
-      overflow: hidden;
-      -webkit-transition: background 0.3s ease-in-out;
-      transition: background 0.3s ease-in-out;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      -o-user-select: none;
-      user-select: none; }
-      .accordion .section label:before {
-        content: ' ';
-        width: 100%;
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 1px;
-        border-top: 1px solid #363636; }
-      .accordion .section label:hover {
-        background: #363636; }
-      .accordion .section label span {
-        margin-left: 10px;
-        -webkit-transition: all 0.4s;
-        transition: all 0.4s;
-        overflow: hidden; }
-    .accordion .section:last-of-type {
-      border-bottom: 1px solid #363636; }
-    .accordion .section .content {
-      max-height: 0;
-      -webkit-transition: all 0.4s;
-      transition: all 0.4s;
-      opacity: 0;
-      position: relative;
-      overflow-y: hidden; }
-      .accordion .section .content span:hover {
-        color: #21ccfc; }
+  width: 100%;
+}
+.accordion .section {
+  width: 100%;
+  padding: 0;
+}
+.accordion .section input[type=radio] {
+  display: none;
+}
+.accordion .section input[type=radio]:checked + label {
+  background: rgb(54.4, 54.4, 54.4);
+}
+.accordion .section input[type=radio]:checked + label:before {
+  content: " ";
+  position: absolute;
+  border-left: 3px solid #21ccfc;
+  height: 100%;
+  left: 0;
+}
+.accordion .section input[type=radio]:checked + label .caret {
+  transform: rotate(90deg);
+  transition: all 0.4s;
+}
+.accordion .section input[type=radio]:checked ~ .content {
+  max-height: 400px;
+  opacity: 1;
+  z-index: 10;
+  overflow-y: hidden;
+}
+.accordion .section input[type=radio]:checked ~ .content.hidden {
+  max-height: 0;
+}
+.accordion .section label {
+  position: relative;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin: 0;
+  white-space: nowrap;
+  display: table;
+  background: #222;
+  width: 100%;
+  overflow: hidden;
+  transition: background 0.3s ease-in-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+.accordion .section label:before {
+  content: " ";
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  border-top: 1px solid rgb(54.4, 54.4, 54.4);
+}
+.accordion .section label:hover {
+  background: rgb(54.4, 54.4, 54.4);
+}
+.accordion .section label span {
+  margin-left: 10px;
+  transition: all 0.4s;
+  overflow: hidden;
+}
+.accordion .section:last-of-type {
+  border-bottom: 1px solid rgb(54.4, 54.4, 54.4);
+}
+.accordion .section .content {
+  max-height: 0;
+  transition: all 0.4s;
+  opacity: 0;
+  position: relative;
+  overflow-y: hidden;
+}
+.accordion .section .content span:hover {
+  color: #21ccfc;
+}
 
 nav .caret {
   position: absolute;
   right: 15px;
   top: 13px;
-  -webkit-transition: all 0.4s;
-  transition: all 0.4s; }
+  transition: all 0.4s;
+}
 
 *,
 *:before,
 *:after {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+}
 
 body.toolbar-tray-open .left-menu {
-  padding-top: 78px; }
+  padding-top: 78px;
+}
 
 .left-menu {
-  -webkit-transition: all 0.4s;
   transition: all 0.4s;
   background: #222;
   width: 240px;
@@ -160,39 +175,54 @@ body.toolbar-tray-open .left-menu {
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  z-index: 100; }
-  .left-menu .accordion {
-    font-size: 16px; }
-    .left-menu .accordion .section .content {
-      padding: 0 15px; }
-    .left-menu .accordion .section input[type='checkbox'] {
-      display: none; }
-      .left-menu .accordion .section input[type='checkbox']:checked ~ .content {
-        padding: 15px; }
-  .left-menu ul:not([class]) > li {
-    margin: 0; }
-    .left-menu ul:not([class]) > li:before {
-      display: none; }
-  .left-menu ul {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    list-style: none; }
-    .left-menu ul li {
-      padding: 10px; }
-      .left-menu ul li a {
-        color: inherit;
-        text-decoration: none;
-        font-weight: unset; }
-        .left-menu ul li a:hover, .left-menu ul li a:active, .left-menu ul li a:focus {
-          color: #21ccfc; }
-      .left-menu ul li i {
-        font-size: 13px;
-        width: 15px;
-        margin-right: 15px; }
-      .left-menu ul li:hover {
-        cursor: pointer; }
-        .left-menu ul li:hover i {
-          color: #21ccfc; }
-  .left-menu .contextual .trigger {
-    display: none; }
+  z-index: 100;
+}
+.left-menu .accordion {
+  font-size: 1rem;
+}
+.left-menu .accordion .section .content {
+  padding: 0 15px;
+}
+.left-menu .accordion .section input[type=checkbox] {
+  display: none;
+}
+.left-menu .accordion .section input[type=checkbox]:checked ~ .content {
+  padding: 15px;
+}
+.left-menu ul:not([class]) > li {
+  margin: 0;
+}
+.left-menu ul:not([class]) > li:before {
+  display: none;
+}
+.left-menu ul {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.left-menu ul li {
+  padding: 10px;
+}
+.left-menu ul li a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: unset;
+}
+.left-menu ul li a:hover, .left-menu ul li a:active, .left-menu ul li a:focus {
+  color: #21ccfc;
+}
+.left-menu ul li i {
+  font-size: 0.8125rem;
+  width: 15px;
+  margin-right: 15px;
+}
+.left-menu ul li:hover {
+  cursor: pointer;
+}
+.left-menu ul li:hover i {
+  color: #21ccfc;
+}
+.left-menu .contextual .trigger {
+  display: none;
+}

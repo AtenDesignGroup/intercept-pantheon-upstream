@@ -1,15 +1,24 @@
 //
 // Functions for typography
 //
+@use 'sass:map';
+
+//------------------------------------
+//  01 - Imports
+//------------------------------------
+
+@use '../settings/typography' as settings-typography;
+
+@use '../settings/_settings' as *;
 
 // Return value from $lh (line-heights) map
 @function lh($size) {
-  @if map-has-key($lh, $size) {
-    @return map-get($lh, $size);
+  @if map.has-key(settings-typography.$lh, $size) {
+    @return map.get(settings-typography.$lh, $size);
   }
 
   @else {
-    @warn "Unfortunately, no value could be retrieved from `#{$lh}`. "
+    @warn "Unfortunately, no value could be retrieved from `#{settings-typography.$lh}`. "
     + "Please make sure it is defined in `$lh` map.";
   }
 }

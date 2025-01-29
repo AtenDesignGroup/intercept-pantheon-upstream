@@ -37,7 +37,7 @@
                     "installer-name": "d3"
                 },
                 "dist": {
-                    "url": "https://github.com/d3/d3/archive/v4.9.1.zip",
+                    "url": "https://github.com/d3/d3/releases/download/v4.9.1/d3.zip",
                     "type": "zip"
                 },
                 "require": {

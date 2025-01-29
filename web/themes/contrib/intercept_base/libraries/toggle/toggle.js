@@ -2,7 +2,7 @@
  * toggle.js
  */
 
-import $ from 'jquery';
+import $ from 'jQuery';
 import debounce from 'lodash/debounce';
 
 var toggle = function () {

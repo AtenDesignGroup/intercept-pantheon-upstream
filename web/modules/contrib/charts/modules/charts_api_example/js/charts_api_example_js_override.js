@@ -1,5 +1,7 @@
-(function () {
+(function (Drupal) {
+
   'use strict';
+
   Drupal.charts_api_example = Drupal.charts_api_example || {};
   // PLEASE NOTE: this example is structured to work for Highcharts, but you
   // do the same thing for any of the charting libraries.
@@ -7,10 +9,11 @@
     return 'The value for <b>' + this.x +
       '</b> is <b>' + this.y + '</b>';
   };
+
   Drupal.behaviors.chartsApiExampleCharts = {
     attach: function (context, settings) {
-      let chartcontainer = document.getElementById('exampleidjs');
-      chartcontainer.addEventListener('drupalChartsConfigsInitialization', function (e) {
+      let chartContainer = document.getElementById('example-id-js');
+      chartContainer.addEventListener('drupalChartsConfigsInitialization', function (e) {
         let data = e.detail;
         const id = data.drupalChartDivId;
         // Change the background of the chart to green.
@@ -21,4 +24,4 @@
       });
     }
   };
-}());
+}(Drupal));

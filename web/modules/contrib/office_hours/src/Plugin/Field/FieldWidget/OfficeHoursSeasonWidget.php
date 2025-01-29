@@ -8,7 +8,7 @@ use Drupal\office_hours\OfficeHoursSeason;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /**
- * Plugin implementation of the 'office_hours_default' widget.
+ * Plugin implementation of an office_hours widget.
  *
  * @FieldWidget(
  *   id = "office_hours_season_only",
@@ -67,9 +67,7 @@ class OfficeHoursSeasonWidget extends OfficeHoursWeekWidget {
       '#open' => (!$season_id),
       '#title' => $season_id ? "<i>$label</i> " . $title : $element['#title'],
       'season' => $season_element,
-      'value' => $element,
     ] + $element;
-    unset($element['#default_value']);
 
     return $element;
   }

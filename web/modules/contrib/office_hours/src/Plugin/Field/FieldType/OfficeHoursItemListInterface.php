@@ -118,7 +118,7 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    * Determines if the Entity has Exception days.
    *
    * @return int
-   *   Counter whether the entity has Exception days.
+   *   Counter for Exception days.
    */
   public function countExceptionDays();
 

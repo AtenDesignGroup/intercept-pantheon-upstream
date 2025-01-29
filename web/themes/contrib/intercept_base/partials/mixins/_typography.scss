@@ -2,8 +2,17 @@
 // Mixins for typography
 //
 
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+
+@use '../settings/_typography' as t;
+@use './breakpoints' as breakpoints;
+@use '../functions/rem' as *;
+@use '../functions/typography' as *;
+
 @function scale-has-lh($scale) {
-  @return length($scale) > 1;
+  @return list.length($scale) > 1;
 }
 
 //
@@ -16,9 +25,9 @@
 //   `settings/typography`
 // @return
 //   Sass map of font sizes.
-@function get-breakpoint-fs-map($breakpoint: "none", $map: $font-sizes) {
-  @if map-has-key($map, $breakpoint) {
-    @return map-get($map, $breakpoint);
+@function get-breakpoint-fs-map($breakpoint: "none", $map: t.$font-sizes) {
+  @if map.has-key($map, $breakpoint) {
+    @return map.get($map, $breakpoint);
   }
 
   @else {
@@ -37,9 +46,9 @@
 // @return
 //   Font size value.
 @function get-fs($size, $map) {
-  @if map-has-key($map, $size) {
+  @if map.has-key($map, $size) {
     // Always return the first size item.
-    @return nth(map-get($map, $size), 1);
+    @return list.nth(map.get($map, $size), 1);
   }
 
   @else {
@@ -58,9 +67,9 @@
 // @return
 //   Font size value.
 @function get-lh($size, $map) {
-  @if map-has-key($map, $size) and length(map-get($map, $size)) > 1 {
+  @if map.has-key($map, $size) and list.length(map.get($map, $size)) > 1 {
     // Always return the second size item.
-    @return nth(map-get($map, $size), 2);
+    @return list.nth(map.get($map, $size), 2);
   }
 
   @else {
@@ -81,7 +90,7 @@
 //   `settings/typography`.
 // @return
 //   Font size value.
-@function get-fs-from-breakpoint($size, $breakpoint: "none", $map: $font-sizes) {
+@function get-fs-from-breakpoint($size, $breakpoint: "none", $map: t.$font-sizes) {
   @return get-fs($size, get-breakpoint-fs-map($breakpoint, $map));
 }
 
@@ -97,7 +106,7 @@
 //   `settings/typography`.
 // @return
 //   Font size in REM units.
-@function fs($size, $breakpoint: "none", $map: $font-sizes) {
+@function fs($size, $breakpoint: "none", $map: t.$font-sizes) {
   @return rem(get-fs-from-breakpoint($size, $breakpoint, $map));
 }
 
@@ -113,7 +122,7 @@
 //   `settings/typography`.
 // @return
 //   Font size value.
-@function get-lh-from-breakpoint($size, $breakpoint: "none", $map: $font-sizes) {
+@function get-lh-from-breakpoint($size, $breakpoint: "none", $map: t.$font-sizes) {
   @return get-lh($size, get-breakpoint-fs-map($breakpoint, $map));
 }
 
@@ -129,18 +138,20 @@
 //   `settings/typography`.
 // @return
 //   Font size in REM units.
-@function line-height($size, $breakpoint: "none", $map: $font-sizes) {
+@function line-height($size, $breakpoint: "none", $map: t.$font-sizes) {
   $fs: get-fs-from-breakpoint($size, $breakpoint, $map);
   $lh: get-lh-from-breakpoint($size, $breakpoint, $map);
-  @return $lh/$fs;
+  @return math.div($lh, $fs);
 }
 
-@mixin set-font-rhythm($size, $breakpoint: null, $map: $font-sizes) {
-  font-size: fs($size, $breakpoint, $map);
+@mixin set-font-rhythm($size, $breakpoint: null, $map: t.$font-sizes) {
+  & {
+    font-size: fs($size, $breakpoint, $map);
 
-  // Check if our scale has a line height.
-  @if scale-has-lh(map-get(get-breakpoint-fs-map($breakpoint, $map), $size)) {
-    line-height: line-height($size, $breakpoint, $map);
+    // Check if our scale has a line height.
+    @if scale-has-lh(map.get(get-breakpoint-fs-map($breakpoint, $map), $size)) {
+      line-height: line-height($size, $breakpoint, $map);
+    }
   }
 }
 
@@ -154,9 +165,9 @@
 // @param $map;
 //   The font scale map to use. Defaults to scale defined in
 //   `settings/typography`.
-@mixin fs($size, $breakpoint: null, $map: $font-sizes) {
+@mixin fs($size, $breakpoint: null, $map: t.$font-sizes) {
   @if $breakpoint != null {
-    @include bp($breakpoint) {
+    @include breakpoints.bp($breakpoint) {
       @include set-font-rhythm($size, $breakpoint, $map);
     }
   }
@@ -164,8 +175,8 @@
   @else {
     @each $bp, $scale in $map {
       // If the font size exists in the current scale, set our styles.
-      @if map-has-key($scale, $size) {
-        @include bp($bp) {
+      @if map.has-key($scale, $size) {
+        @include breakpoints.bp($bp) {
           @include set-font-rhythm($size, $bp, $map);
         }
       }
@@ -175,5 +186,7 @@
 
 // Line Height
 @mixin lh($size) {
-  line-height: lh($size);
+  & {
+    line-height: lh($size);
+  }
 }

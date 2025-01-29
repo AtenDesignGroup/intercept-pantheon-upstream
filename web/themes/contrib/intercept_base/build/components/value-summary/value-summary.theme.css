@@ -1,14 +1,16 @@
 .value-summary__wrapper {
-  background-color: #f6f8f9; }
-
+  background-color: #f6f8f9;
+}
 .value-summary__footer--error {
-  background: #f44336; }
-  .value-summary__footer--error .value-summary__footer-link {
-    color: #fff;
-    font-weight: 900;
-    opacity: .8;
-    -webkit-transition: .2s all ease-out;
-    transition: .2s all ease-out; }
-    .value-summary__footer--error .value-summary__footer-link:hover, .value-summary__footer--error .value-summary__footer-link:focus {
-      color: #fff;
-      opacity: 1; }
+  background: #f44336;
+}
+.value-summary__footer--error .value-summary__footer-link {
+  color: #fff;
+  font-weight: 900;
+  opacity: 0.8;
+  transition: 0.2s all ease-out;
+}
+.value-summary__footer--error .value-summary__footer-link:hover, .value-summary__footer--error .value-summary__footer-link:focus {
+  color: #fff;
+  opacity: 1;
+}

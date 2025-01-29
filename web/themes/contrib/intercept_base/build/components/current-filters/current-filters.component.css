@@ -1,85 +1,102 @@
 .current-filters__wrapper {
   margin-top: 0.9375rem;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex; }
-  @media (min-width: 48em) {
-    .current-filters__wrapper {
-      margin-top: 1.2375rem; } }
-  @media (min-width: 62em) {
-    .current-filters__wrapper {
-      margin-top: 1.875rem; } }
+  display: flex;
+}
+@media (min-width: 48rem) {
+  .current-filters__wrapper {
+    margin-top: 1.2375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .current-filters__wrapper {
+    margin-top: 1.875rem;
+  }
+}
 
 .current-filter__label {
-  font-size: 0.65278rem;
   color: #747481;
-  margin-right: .5em; }
-  @media (min-width: 48em) {
-    .current-filter__label {
-      font-size: 0.83333rem; } }
-  @media (min-width: 62em) {
-    .current-filter__label {
-      font-size: 1rem; } }
+  margin-right: 0.5em;
+}
+.current-filter__label {
+  font-size: 0.6527777778rem;
+}
+@media (min-width: 48rem) {
+  .current-filter__label {
+    font-size: 0.8333333333rem;
+  }
+}
+@media (min-width: 62rem) {
+  .current-filter__label {
+    font-size: 1rem;
+  }
+}
 
 .current-filter {
   margin-right: 1.5em;
-  margin-bottom: 0.375rem; }
-  @media (min-width: 48em) {
-    .current-filter {
-      margin-bottom: 0.495rem; } }
-  @media (min-width: 62em) {
-    .current-filter {
-      margin-bottom: 0.75rem; } }
+  margin-bottom: 0.375rem;
+}
+@media (min-width: 48rem) {
+  .current-filter {
+    margin-bottom: 0.495rem;
+  }
+}
+@media (min-width: 62rem) {
+  .current-filter {
+    margin-bottom: 0.75rem;
+  }
+}
 
 .current-filter--embedded {
   white-space: normal;
-  margin-bottom: 0; }
+  margin-bottom: 0;
+}
 
 .current-filter .option-chip {
-  font-size: 0.5rem;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   background-color: #eef1f4;
   border: none;
   border-radius: 0;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   color: rgba(0, 0, 0, 0.87);
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
   display: inline-flex;
   font-weight: 900;
   height: 2.125em;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   outline: 0;
-  padding-left: .75em;
-  padding-right: .75em;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
   text-decoration: none;
-  -webkit-transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, -webkit-box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, -webkit-box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, -webkit-box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   vertical-align: middle;
-  white-space: nowrap; }
-  @media (min-width: 48em) {
-    .current-filter .option-chip {
-      font-size: 0.625rem; } }
-  @media (min-width: 62em) {
-    .current-filter .option-chip {
-      font-size: 0.75rem; } }
-  .current-filter .option-chip:hover, .current-filter .option-chip:focus {
-    background-color: #d3d8df; }
-  .current-filter .option-chip:not(:last-child) {
-    margin-right: .75em; }
-  .current-filter .option-chip > span {
-    padding: 0; }
-  .current-filter .option-chip > svg {
-    margin-left: .5em;
-    width: 8px;
-    height: 8px; }
+  white-space: nowrap;
+}
+.current-filter .option-chip {
+  font-size: 0.5rem;
+}
+@media (min-width: 48rem) {
+  .current-filter .option-chip {
+    font-size: 0.625rem;
+  }
+}
+@media (min-width: 62rem) {
+  .current-filter .option-chip {
+    font-size: 0.75rem;
+  }
+}
+.current-filter .option-chip:hover, .current-filter .option-chip:focus {
+  background-color: #d3d8df;
+}
+.current-filter .option-chip:not(:last-child) {
+  margin-right: 0.75em;
+}
+.current-filter .option-chip > span {
+  padding: 0;
+}
+.current-filter .option-chip > svg {
+  margin-left: 0.5em;
+  width: 8px;
+  height: 8px;
+}
 
 .current-filter .option-chip__label {
   color: #4c4d4f;
@@ -87,30 +104,41 @@
   white-space: nowrap;
   padding-left: 12px;
   padding-right: 12px;
-  text-overflow: ellipsis; }
+  text-overflow: ellipsis;
+}
 
 .current-filter .option-label {
-  font-size: 0.5rem;
   display: inline-block;
-  padding-right: .25em; }
-  @media (min-width: 48em) {
-    .current-filter .option-label {
-      font-size: 0.625rem; } }
-  @media (min-width: 62em) {
-    .current-filter .option-label {
-      font-size: 0.75rem; } }
-  .current-filter .option-label:not(:last-of-type)::after {
-    content: ", "; }
+  padding-right: 0.25em;
+}
+.current-filter .option-label {
+  font-size: 0.5rem;
+}
+@media (min-width: 48rem) {
+  .current-filter .option-label {
+    font-size: 0.625rem;
+  }
+}
+@media (min-width: 62rem) {
+  .current-filter .option-label {
+    font-size: 0.75rem;
+  }
+}
+.current-filter .option-label:not(:last-of-type)::after {
+  content: ", ";
+}
 
 .current-filter--embedded .option-chip {
-  margin: .25em .25em .25em 0; }
+  margin: 0.25em 0.25em 0.25em 0;
+}
 
 .views-filters-summary .option-chip:after {
   content: "";
   display: inline-block;
-  background-image: url("data:image/svg+xml,%3Csvg%20width%3D%228%22%20height%3D%228%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%234C4D4F%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M.053%207l7-7%20.893.894-7%207z%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M7.054%207.893l-7-7L.947.002l7%207z%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%228%22%20height%3D%228%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%234C4D4F%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M.053%207l7-7%20.893.894-7%207z%22%2F%3E%3Cpath%20d%3D%22M7.054%207.893l-7-7L.947.002l7%207z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
   background-position: center;
   background-repeat: no-repeat;
   height: 8px;
-  margin-left: .25em;
-  width: 8px; }
+  margin-left: 0.25em;
+  width: 8px;
+}

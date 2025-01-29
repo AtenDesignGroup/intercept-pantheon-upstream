@@ -1,4 +1,4 @@
-@import '_partials';
+@use 'partials' as *;
 
 .call-prompt {
   @include fs(x-small);

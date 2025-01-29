@@ -6,6 +6,8 @@
 //
 // Typefaces.
 //
+@use "sass:math";
+
 $ff-mono: monospace;
 $ff-sans: "Lato", sans-serif;
 $ff-serif: serif;
@@ -37,7 +39,7 @@ $max1: 48;
   $delta1: $max1 - $min1;
   $delta2: $max2 - $min2;
 
-  @return (((($val - $min1) / $delta1) * $delta2) + $min2);
+  @return ((math.div($val - $min1, $delta1) * $delta2) + $min2);
 }
 
 @function small-size($val) {

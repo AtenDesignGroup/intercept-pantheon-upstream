@@ -1,14 +1,19 @@
 .breadcrumb__list {
   list-style: none;
   margin-left: 0;
-  padding-left: 0; }
-  .breadcrumb__list > li {
-    display: inline-block; }
+  padding-left: 0;
+}
+.breadcrumb__list > li {
+  display: inline-block;
+}
 
 .breadcrumb__link {
-  text-decoration: none; }
-  .breadcrumb__link:hover, .breadcrumb__link:focus {
-    text-decoration: underline; }
+  text-decoration: none;
+}
+.breadcrumb__link:hover, .breadcrumb__link:focus {
+  text-decoration: underline;
+}
 
 .breadcrumb__separator {
-  color: #d3d8df; }
+  color: #d3d8df;
+}

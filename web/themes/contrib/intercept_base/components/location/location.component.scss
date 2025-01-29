@@ -1,4 +1,6 @@
-@import "_partials";
+@use "sass:math";
+
+@use 'partials' as *;
 
 .location {
   align-items: stretch;
@@ -19,27 +21,27 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  padding-bottom: percentage(2/3);
+  padding-bottom: math.percentage(math.div(2, 3));
 
   @include bp(none large) {
   }
 
   // @include bp(medium) {
-  //   flex-basis: percentage(6/15);
-  //   margin-left: percentage(1/15);
+  //   flex-basis: math.percentage(6/15);
+  //   margin-left: math.percentage(1/15);
   // }
 
   // @include bp(large) {
-  //   flex-basis: percentage(10/26);
-  //   margin-left: percentage(1/26);
+  //   flex-basis: math.percentage(10/26);
+  //   margin-left: math.percentage(1/26);
   // }
   @include bp(small medium) {
-    flex-basis: percentage(3/7);
+    flex-basis: math.percentage(math.div(3, 7));
     padding-bottom: 0;
   }
 
   @include bp(large) {
-    flex-basis: percentage(7/15);
+    flex-basis: math.percentage(math.div(7, 15));
     padding-bottom: 0;
     // flex-direction: column;
     // align-items: stretch;
@@ -51,7 +53,7 @@
 .location__content {
   @include spacing(padding-top, normal);
   @include spacing(padding-bottom, normal);
-  @include box--gutters(percentage(1/16));
+  @include box--gutters(math.percentage(math.div(1, 16)));
 
   color: $white;
   flex: auto;

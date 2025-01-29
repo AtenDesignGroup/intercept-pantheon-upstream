@@ -7,7 +7,7 @@ dependencies:
   - intercept:intercept
   - duration_field:duration_field
 
-# Information added by Drupal.org packaging script on 2024-12-18
-version: '2.0.8'
+# Information added by Drupal.org packaging script on 2025-01-29
+version: '2.0.9'
 project: 'intercept'
-datestamp: 1734540682
+datestamp: 1738175534

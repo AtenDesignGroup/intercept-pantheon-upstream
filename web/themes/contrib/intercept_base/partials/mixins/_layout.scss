@@ -4,6 +4,8 @@
 //
 // These styles deal with inner padding and box widths.
 //
+@use '../settings/_settings' as *;
+@use './spacing' as spacing;
 
 @mixin box--constrained($width: $w-full) {
   box-sizing: content-box;
@@ -30,9 +32,9 @@
 }
 
 @mixin l--section {
-  @include spacing(margin-bottom, loose);
+  @include spacing.spacing(margin-bottom, loose);
 }
 
 @mixin l--section-xl {
-  @include spacing(margin-bottom, sparser);
+  @include spacing.spacing(margin-bottom, sparser);
 }

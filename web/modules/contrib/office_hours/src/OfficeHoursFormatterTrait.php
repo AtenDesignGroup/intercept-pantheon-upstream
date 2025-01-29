@@ -186,9 +186,9 @@ trait OfficeHoursFormatterTrait {
 
     // Let other modules alter the $items or $office_hours.
     $this->eventDispatcher ??= new OfficeHoursEventDispatcher();
-    $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::POST_FORMAT, $itemList, $office_hours, $time, $plugin);
+    $event = $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::POST_FORMAT, $itemList, $office_hours, $time, $plugin);
 
-    return $office_hours;
+    return $event->officeHours;
   }
 
   /**

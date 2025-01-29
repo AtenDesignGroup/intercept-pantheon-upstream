@@ -4,7 +4,10 @@
 //
 // Classes to help apply layout
 //
+@use "partials" as *;
 
+
+@use "sass:math";
 
 .l--page-wrapper > .l--page {
   @include bp(small m-large) {
@@ -106,7 +109,7 @@
 // Page
 //
 
-// factor in the admin menu height in the min-height of the page-wrapper
+// Factor in the admin menu height in the min-height of the page-wrapper.
 .adminimal-admin-toolbar .l--page-wrapper {
   min-height: calc(100vh - 80px);
 }
@@ -154,14 +157,14 @@
 // Gutters
 //
 .l--offset {
-  @include box--gutters(percentage(0.5/7));
+  @include box--gutters(math.percentage(math.div(0.5, 7)));
 
   @include bp(medium) {
-    @include box--gutters(percentage(1/16));
+    @include box--gutters(math.percentage(math.div(1, 16)));
   }
 
   @include bp(large) {
-    @include box--gutters(percentage(2/27));
+    @include box--gutters(math.percentage(math.div(2, 27)));
   }
 
   // Cancel nested offsets.
@@ -171,26 +174,26 @@
 }
 
 .l--offset-left {
-  @include box--gutters(percentage(0.5/7), 0);
+  @include box--gutters(math.percentage(math.div(0.5, 7)), 0);
 
   @include bp(medium) {
-    @include box--gutters(percentage(1/16), 0);
+    @include box--gutters(math.percentage(math.div(1, 16)), 0);
   }
 
   @include bp(large) {
-    @include box--gutters(percentage(2/27), 0);
+    @include box--gutters(math.percentage(math.div(2, 27)), 0);
   }
 }
 
 .l--offset-right {
-  @include box--gutters(0, percentage(0.5/7));
+  @include box--gutters(0, math.percentage(math.div(0.5, 7)));
 
   @include bp(medium) {
-    @include box--gutters(0, percentage(1/16));
+    @include box--gutters(0, math.percentage(math.div(1, 16)));
   }
 
   @include bp(large) {
-    @include box--gutters(0, percentage(2/27));
+    @include box--gutters(0, math.percentage(math.div(2, 27)));
   }
 }
 
@@ -277,21 +280,21 @@
 
   @include bp(medium) {
     > .l__main > .l__primary {
-      width: percentage(9/14);
+      width: math.percentage(math.div(9, 14));
     }
 
     > .l__main > .l__secondary {
-      width: percentage(4/14);
+      width: math.percentage(math.div(4, 14));
     }
   }
 
   @include bp(large) {
     > .l__main > .l__primary {
-      width: percentage(15/23);
+      width: math.percentage(math.div(15, 23));
     }
 
     > .l__main > .l__secondary {
-      width: percentage(6/23);
+      width: math.percentage(math.div(6, 23));
     }
   }
 }
@@ -363,11 +366,11 @@
     }
 
     @include bp(medium) {
-      width: percentage(6/13);
+      width: math.percentage(math.div(6, 13));
     }
 
     @include bp(m-large) {
-      width: percentage(10/23);
+      width: math.percentage(math.div(10, 23));
     }
   }
 }
@@ -386,7 +389,7 @@
           bottom: 0;
           content: '';
           display: block;
-          left: percentage(-0.5/6);
+          left: math.percentage(math.div(-0.5, 6));
           margin: auto;
           position: absolute;
           top: 0;
@@ -396,7 +399,7 @@
 
       @include bp(m-large) {
         &:after {
-          left: percentage(-1.5/10);
+          left: math.percentage(-1.5*0.1);
         }
       }
     }

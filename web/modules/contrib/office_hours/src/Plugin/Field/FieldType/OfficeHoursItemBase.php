@@ -108,7 +108,7 @@ class OfficeHoursItemBase extends FieldItemBase {
     if ($field_settings['season'] ?? FALSE) {
       $properties['season'][$parent] = t('Season name');
     }
-    $properties['day'][$parent] = t('Weekday');
+    $properties['day'][$parent] = t('Day');
     $properties['all_day'][$parent] = t('All day');
     if (!($field_settings['all_day'] ?? TRUE)) {
       $properties['all_day']['class'] = 'hidden';
@@ -148,7 +148,7 @@ class OfficeHoursItemBase extends FieldItemBase {
       'limit_start' => '',
       'limit_end' => '',
       'all_day' => FALSE,
-      'exceptions' => TRUE,
+      'exceptions' => FALSE,
       'seasons' => FALSE,
       'comment' => 1,
       'valhrs' => FALSE,
@@ -161,31 +161,42 @@ class OfficeHoursItemBase extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
-  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
+  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data): array {
     // admin/structure/types/manage/TYPE/fields/TYPE/storage
-    $settings = $this->getFieldDefinition()
-      ->getFieldStorageDefinition()
-      ->getSettings();
+    // Update cardinality.
+    // In D11, the screens for field creation have changed.
+    // @see https://www.drupal.org/node/3386675
+    self::storageSettingsFormAlter($form, $form_state, $has_data);
 
-    return parent::storageSettingsForm($form, $form_state, $has_data)
-    + $this->getStorageSettingsElement($settings);
+    // Add custom office_hours field settings.
+    $element = parent::storageSettingsForm($form, $form_state, $has_data);
+    if ($field_definition = $this->getFieldDefinition()) {
+      $settings = $field_definition
+        ->getFieldStorageDefinition()
+        ->getSettings();
+      $element = $this->getStorageSettingsElement($settings);
+    }
+    return $element;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function storageSettingsFormAlter(array &$form, FormStateInterface $form_state, $has_data) {
+  public static function storageSettingsFormAlter(array &$form, FormStateInterface $form_state, $has_data): array {
     // admin/structure/types/manage/TYPE/fields/TYPE/storage
     $field_type = $form_state->getFormObject()->getEntity()->getType();
     if ($field_type == 'office_hours') {
-      $form['cardinality_container']['cardinality'] = [
-        '#options' => [FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED => t('Unlimited')],
-        '#default_value' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
-        '#description' => '<p>' . t("This is unlimited by this field's nature.
-        See 'Number of slots' for limiting the number of slots per day."),
-      ]
-      + $form['cardinality_container']['cardinality'];
+      if (isset($form['cardinality_container']['cardinality'])) {
+        $form['cardinality_container']['cardinality'] = [
+          '#options' => [FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED => t('Unlimited')],
+          '#default_value' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+          '#description' => '<p>' . t("This is unlimited by this field's nature.
+             See 'Number of slots' for limiting the number of slots per day."),
+        ]
+        + $form['cardinality_container']['cardinality'];
+      }
     }
+    return $form;
   }
 
   /**
@@ -200,7 +211,7 @@ class OfficeHoursItemBase extends FieldItemBase {
    * @return array
    *   The form definition for the field settings.
    */
-  public static function getStorageSettingsElement(array $settings) {
+  public static function getStorageSettingsElement(array $settings): array {
 
     // "In order to get proper UX, check User interface translation page
     // "for the strings From and To in Context 'A point in time'.
@@ -423,6 +434,7 @@ class OfficeHoursItemBase extends FieldItemBase {
    */
   public function getConstraints() {
     $constraints = [];
+
     // @todo When adding parent::getConstraints(), only English is allowed...
     // $constraints = parent::getConstraints();
     $max_length = $this->getSetting('max_length');

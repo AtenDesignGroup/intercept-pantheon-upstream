@@ -25,7 +25,7 @@ intercept_event.account.events:
     _user_is_logged_in: 'TRUE'
 
 entity.user.events:
-  path: '/user/{user}/events'
+  path: '/user/events'
   defaults:
     _controller: '\Drupal\intercept_event\Controller\EventRegistrationController::manage'
     _title: 'Saved Events'

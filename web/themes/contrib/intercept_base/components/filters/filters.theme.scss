@@ -1,8 +1,10 @@
-@import "_partials";
+@use "sass:math";
+
+@use 'partials' as *;
 
 .filters__inputs {
   background-color: $clr-gray-bg;
-  padding: percentage(1/23);
+  padding: math.percentage(math.div(1, 23));
 }
 
 .filters__summary {
@@ -13,7 +15,7 @@
 
 .filters--uniform-padding .filters__inputs,
 .filters__inputs--uniform-padding {
-  padding: percentage(.5/23);
+  padding: math.percentage(math.div(.5, 23));
 }
 
 .input--textarea {

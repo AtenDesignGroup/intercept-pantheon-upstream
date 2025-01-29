@@ -384,15 +384,18 @@ function intercept_event_entity_presave(EntityInterface $entity) {
 
         // Redirect to the recurrences page as appropriate.
         $event_recurrences = $entity->get('event_recurrence')->referencedEntities();
-        if ($recurrence = \Drupal::service('intercept_event.recurring_manager')->getBaseEventRecurrence($entity) && !empty($event_recurrences)) {
-          $recurrences_url = Url::fromRoute('entity.node.recurrence_form', [
-            'node' => $entity->id(),
-          ]);
-          $response = new LocalRedirectResponse($recurrences_url->toString());
-          $response->setMaxAge(0);
-          $response->addCacheableDependency($recurrence);
-          $response->addCacheableDependency($entity);
-          $response->send();
+        $referrer = parse_url(\Drupal::request()->server->get('HTTP_REFERER'));
+        if (!strstr($referrer['path'], '/analysis')) {
+          if ($recurrence = \Drupal::service('intercept_event.recurring_manager')->getBaseEventRecurrence($entity) && !empty($event_recurrences)) {
+            $recurrences_url = Url::fromRoute('entity.node.recurrence_form', [
+              'node' => $entity->id(),
+            ]);
+            $response = new LocalRedirectResponse($recurrences_url->toString());
+            $response->setMaxAge(0);
+            $response->addCacheableDependency($recurrence);
+            $response->addCacheableDependency($entity);
+            $response->send();
+          }
         }
       }
 

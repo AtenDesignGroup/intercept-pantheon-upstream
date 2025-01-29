@@ -1,4 +1,4 @@
-@import "_partials";
+@use 'partials' as *;
 
 .event-eval-feedback__user {
   @include fs(x-small);

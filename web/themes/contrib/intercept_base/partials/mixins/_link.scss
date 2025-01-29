@@ -4,6 +4,7 @@
 //
 // These styles deal with icons and hover effects.
 //
+@use '../settings/_settings' as *;
 
 @mixin link--underline-on-hover {
   text-decoration: none;

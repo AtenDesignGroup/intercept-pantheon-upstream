@@ -34,7 +34,7 @@ class OfficeHoursField extends FieldPluginBase {
    */
   public function getFieldWidgetMap() {
     return [
-      'office_hours' => 'office_hours_default',
+      'office_hours' => 'office_hours_exceptions',
     ];
   }
 

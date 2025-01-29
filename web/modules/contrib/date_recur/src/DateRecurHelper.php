@@ -46,7 +46,7 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    * @throws \Exception
    *   Throws various exceptions if string is invalid.
    */
-  public static function create(string $string, \DateTimeInterface $dtStart, \DateTimeInterface $dtStartEnd = NULL): static {
+  public static function create(string $string, \DateTimeInterface $dtStart, ?\DateTimeInterface $dtStartEnd = NULL): static {
     // @todo Get the helper preference from Drupal module config.
     /** @var \Drupal\date_recur\DateRecurHelperInterface $dateRecurHelper */
     $dateRecurHelper = RlHelper::createInstance($string, $dtStart, $dtStartEnd);
@@ -87,7 +87,7 @@ final class DateRecurHelper implements DateRecurHelperInterface {
   /**
    * {@inheritdoc}
    */
-  public function getOccurrences(\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array {
+  public function getOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array {
     return $this->dateRecurHelper->getOccurrences($rangeStart, $rangeEnd, $limit);
   }
 

@@ -1,25 +1,36 @@
 .fc .fc-button {
-  display: none; }
+  display: none;
+}
 
 .intercept-events-calendar {
-  font-size: 0.80556rem; }
-  @media (min-width: 48em) {
-    .intercept-events-calendar {
-      font-size: 1.04167rem; } }
-  @media (min-width: 62em) {
-    .intercept-events-calendar {
-      font-size: 1.25rem; } }
+  font-size: 0.8055555556rem;
+}
+@media (min-width: 48rem) {
+  .intercept-events-calendar {
+    font-size: 1.0416666667rem;
+  }
+}
+@media (min-width: 62rem) {
+  .intercept-events-calendar {
+    font-size: 1.25rem;
+  }
+}
+.intercept-events-calendar th,
+.intercept-events-calendar td,
+.intercept-events-calendar .fc-daygrid-event {
+  font-size: 0.8055555556rem;
+}
+@media (min-width: 48rem) {
   .intercept-events-calendar th,
   .intercept-events-calendar td,
   .intercept-events-calendar .fc-daygrid-event {
-    font-size: 0.80556rem; }
-    @media (min-width: 48em) {
-      .intercept-events-calendar th,
-      .intercept-events-calendar td,
-      .intercept-events-calendar .fc-daygrid-event {
-        font-size: 1.04167rem; } }
-    @media (min-width: 62em) {
-      .intercept-events-calendar th,
-      .intercept-events-calendar td,
-      .intercept-events-calendar .fc-daygrid-event {
-        font-size: 1.25rem; } }
+    font-size: 1.0416666667rem;
+  }
+}
+@media (min-width: 62rem) {
+  .intercept-events-calendar th,
+  .intercept-events-calendar td,
+  .intercept-events-calendar .fc-daygrid-event {
+    font-size: 1.25rem;
+  }
+}

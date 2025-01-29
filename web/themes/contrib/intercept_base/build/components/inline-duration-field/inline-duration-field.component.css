@@ -1,26 +1,27 @@
 .inline-duration-field {
   font-size: 1rem;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: baseline;
-      -ms-flex-align: baseline;
-          align-items: baseline; }
+  align-items: baseline;
+}
 
-.inline-duration-field input[type="number"] {
+.inline-duration-field input[type=number] {
   width: 4em;
-  padding-right: .25em; }
+  padding-right: 0.25em;
+}
 
 .inline-duration-field__duration {
-  font-size: 1em; }
+  font-size: 1em;
+}
 
 .inline-duration-field .duration-inner-wrapper {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex; }
-  .inline-duration-field .duration-inner-wrapper .form-item {
-    margin: 0 .5em; }
-  .inline-duration-field .duration-inner-wrapper .form-item + .form-item {
-    margin-left: 0; }
-  .inline-duration-field .duration-inner-wrapper label {
-    font-weight: 700; }
+  display: inline-flex;
+}
+.inline-duration-field .duration-inner-wrapper .form-item {
+  margin: 0 0.5em;
+}
+.inline-duration-field .duration-inner-wrapper .form-item + .form-item {
+  margin-left: 0;
+}
+.inline-duration-field .duration-inner-wrapper label {
+  font-weight: 700;
+}

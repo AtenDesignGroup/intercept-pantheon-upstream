@@ -136,22 +136,26 @@ class WebformOfficeHours extends WebformCompositeBase {
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
 
+    // Save $element to better resemble getFieldDefinition() and getSettings().
+    $this->officeHoursElement = $element;
+
     // If the element is not properly defined, do not show the formatter/widget.
-    if (!isset($element['#webform_key'])) {
+    $webform_key = $this->getFieldName();
+    if (!$webform_key) {
       return;
     }
 
-    // Save $element to better resemble getFieldDefinition() and getSettings().
-    $this->officeHoursElement = $element;
     /** @var \Drupal\Core\Field\WidgetInterface $widget */
+    // @todo Use 'office_hours_exceptions' ID to add Exceptions and Seasons.
     $widget = $this->getOfficeHoursPlugin('widget', 'office_hours_default', $this->getFieldDefinition());
     $items = $this->getItemsUnserialized($element, $webform_submission);
 
     $form = [];
     $form_state = new FormState();
-    $element = $widget->formElement($items, 0, $element, $form, $form_state);
-    $element[$element['#webform_key']] = $element['value'];
-    unset($element['value']);
+    $form_element = $widget->formElement($items, 0, $element, $form, $form_state);
+    $element[$webform_key] = $form_element;
+    // $element[$webform_key] = $form_element['value'];
+    // unset($element['value']);
 
     // @todo Webform #title display defaults to invisible.
     // $element['#title_display'] = 'invisible';
@@ -193,7 +197,8 @@ class WebformOfficeHours extends WebformCompositeBase {
    *   The complete form structure.
    */
   public static function validateOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
-    OfficeHoursBaseSlot::validateOfficeHoursSlot($element, $form_state, $complete_form);
+    // The validation is done directly byBaseSlot.
+    // OfficeHoursBaseSlot::validateOfficeHoursSlot($element, $form_state, $complete_form);
 
     // The result may be empty, upon preview in build mode (when not saved).
     $office_hours = $form_state->getValue($element['#webform_key']) ?? [];
@@ -278,7 +283,7 @@ class WebformOfficeHours extends WebformCompositeBase {
    */
   private function getSettings() {
     static $field_settings = NULL;
-    if (!isset($field_settings)) {
+    if (!$field_settings) {
       // Return Widget settings, reading keys from existing field.
       $formatter_default_settings = OfficeHoursFormatterBase::defaultSettings();
       $widget_default_settings = OfficeHoursItem::defaultStorageSettings();
@@ -300,7 +305,7 @@ class WebformOfficeHours extends WebformCompositeBase {
    *   An Office Hours field definition.
    */
   private function getFieldDefinition() {
-    $field_name = $this->officeHoursElement['#webform_key'] ?? '';
+    $field_name = $this->getFieldName();
     if ($field_name && !isset($this->fieldDefinitions[$field_name])) {
       $field_type = $this->officeHoursElement['#type'];
       $this->fieldDefinitions[$field_name] = BaseFieldDefinition::create($field_type)
@@ -310,6 +315,14 @@ class WebformOfficeHours extends WebformCompositeBase {
     return $this->fieldDefinitions[$field_name] ?? NULL;
   }
 
+   /**
+   * Gets the field name of this webform_element.
+   * @return string
+   *   An Office Hours field name.
+   */
+  private function getFieldName() {
+    return $this->officeHoursElement['#webform_key'] ?? '';
+  }
   /**
    * Instantiate the widget/formatter object from the stored properties.
    *

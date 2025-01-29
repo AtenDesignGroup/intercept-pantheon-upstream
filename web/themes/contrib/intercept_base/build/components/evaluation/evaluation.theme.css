@@ -1,34 +1,38 @@
 .evaluation__widget {
-  position: relative; }
-  @media (min-width: 48em) {
-    .evaluation__widget:after {
-      background-image: -webkit-radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
-      background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
-      background-position: top center;
-      background-repeat: repeat-y;
-      background-size: .3125em .3125em;
-      bottom: 0;
-      content: "";
-      display: block;
-      left: 0;
-      margin: auto;
-      position: absolute;
-      top: 0;
-      width: .325em; } }
-  @media (min-width: 62em) {
-    .evaluation__widget .evaluation__criteria {
-      position: relative; }
-      .evaluation__widget .evaluation__criteria:after {
-        background-image: -webkit-radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
-        background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
-        background-position: top center;
-        background-repeat: repeat-y;
-        background-size: .3125em .3125em;
-        bottom: 0;
-        content: "";
-        display: block;
-        margin: auto;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: .325em; } }
+  position: relative;
+}
+@media (min-width: 48rem) {
+  .evaluation__widget:after {
+    background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
+    background-position: top center;
+    background-repeat: repeat-y;
+    background-size: 0.3125em 0.3125em;
+    bottom: 0;
+    content: "";
+    display: block;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    width: 0.325em;
+  }
+}
+@media (min-width: 62rem) {
+  .evaluation__widget .evaluation__criteria {
+    position: relative;
+  }
+  .evaluation__widget .evaluation__criteria:after {
+    background-image: radial-gradient(circle, #818487 0.0825em, transparent 0.0876em);
+    background-position: top center;
+    background-repeat: repeat-y;
+    background-size: 0.3125em 0.3125em;
+    bottom: 0;
+    content: "";
+    display: block;
+    margin: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0.325em;
+  }
+}

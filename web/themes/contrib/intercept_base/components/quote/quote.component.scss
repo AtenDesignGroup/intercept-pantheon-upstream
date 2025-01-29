@@ -3,14 +3,16 @@
 // Quote Styles
 //
 
-@import "_partials";
+@use "sass:math";
+
+@use 'partials' as *;
 
 .quote {
   @include spacing(margin-bottom, tight);
   @include spacing(margin-top, tight);
   @include spacing(padding-bottom, narrow);
-  padding-left: percentage(.5/7);
-  padding-right: percentage(.5/7);
+  padding-left: math.percentage(math.div(.5, 7));
+  padding-right: math.percentage(math.div(.5, 7));
   position: relative;
 
   @include bp(small) {
@@ -36,6 +38,6 @@
 }
 
 .quote__citation {
-  @include fs(tiny); 
+  @include fs(tiny);
   margin-top: 1rem;
 }

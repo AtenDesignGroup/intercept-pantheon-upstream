@@ -2,9 +2,9 @@
 
 namespace Drupal\charts\Plugin\views\field;
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\charts\Element\BaseSettings;
 use Drupal\charts\Plugin\views\style\ChartsPluginStyleChart;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 
 /**

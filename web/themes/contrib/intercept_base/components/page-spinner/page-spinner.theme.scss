@@ -1,4 +1,4 @@
-@import "_partials";
+@use 'partials' as *;
 
 .page-spinner {
   > [role="progressbar"] > div {

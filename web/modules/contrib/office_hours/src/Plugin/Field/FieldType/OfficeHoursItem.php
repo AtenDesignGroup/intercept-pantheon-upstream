@@ -12,8 +12,8 @@ use Drupal\office_hours\OfficeHoursDateHelper;
  *   id = "office_hours",
  *   label = @Translation("Office hours"),
  *   description = @Translation("Field to store weekly 'office hours' or 'opening hours', including seasons and exception days."),
- *   default_widget = "office_hours_default",
- *   default_formatter = "office_hours",
+ *   default_widget = "office_hours_exceptions",
+ *   default_formatter = "office_hours_table",
  *   list_class = "\Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList",
  * )
  */

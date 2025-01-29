@@ -1,11 +1,10 @@
 entity.user.room_reservations:
-  path: '/user/{user}/room-reservations'
+  path: '/user/room-reservations'
   defaults:
     _controller: '\Drupal\intercept_room_reservation\Controller\RoomReservationController::upcoming'
     _title: 'Room Reservations'
   requirements:
-    node: \d+
-    _entity_access: 'user.update'
+    _access: 'TRUE'
 
 entity.node.reservations:
   path: '/node/{node}/reservations'

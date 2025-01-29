@@ -1,4 +1,6 @@
-@import '_partials';
+@use "sass:math";
+
+@use 'partials' as *;
 
 .evaluation-summary {
   @include spacing('margin-top', tight);
@@ -38,7 +40,7 @@
     margin-left: rem(25px);
     padding-left: rem(25px);
     position: relative;
-    width: percentage(1/2);
+    width: math.percentage(1*0.5);
 
     &:after {
       background-image: radial-gradient(circle, #818487 .0825em, transparent .0876em);
@@ -59,11 +61,11 @@
   @include bp(medium) {
     margin-left: rem(50px);
     padding-left: rem(50px);
-    width: percentage(3/4);
+    width: math.percentage(3*0.25);
   }
 
   @include bp(m-large) {
-    width: percentage(2/3);
+    width: math.percentage(math.div(2, 3));
   }
 }
 

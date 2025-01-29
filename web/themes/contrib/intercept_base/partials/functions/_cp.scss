@@ -3,8 +3,10 @@
 // Calc Percentage Function
 //
 
+@use "sass:math";
+
 @function calc-percent($target, $container) {
-  @return ($target / $container) * 100%;
+  @return math.div($target, $container) * 100%;
 }
 
 @function cp($target, $container) {

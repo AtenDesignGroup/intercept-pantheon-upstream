@@ -1,4 +1,4 @@
-@import '_partials';
+@use 'partials' as *;
 
 .print-cal__header,
 .print-cal__body {

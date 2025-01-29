@@ -1,4 +1,5 @@
-@import '_partials';
+@use 'sass:color';
+@use 'partials' as *;
 
 .messages__content {
   color: $gray-20;
@@ -18,7 +19,7 @@ $messages: (
 
 @each $type, $color in $messages {
   .messages--#{$type} {
-    background-color: mix($color, $white, 10%);
+    background-color: color.mix($color, $white, 10%);
 
     .messages__icon {
       background-color: $color;

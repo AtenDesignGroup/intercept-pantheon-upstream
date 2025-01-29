@@ -1,5 +1,5 @@
 
-@import '_partials';
+@use "partials" as *;
 
 .scheduler__group-toggle {
   background-color: transparent;
@@ -15,7 +15,7 @@
 }
 
 .scheduler__group-toggle::after {
-  background-image: inline-svg('<svg width="10" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M0 5l5-5 5 5z" fill="#7A7D81" fill-rule="evenodd"/></svg>');
+  background-image: svg-load('icons/triangle-up.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
   content: "";

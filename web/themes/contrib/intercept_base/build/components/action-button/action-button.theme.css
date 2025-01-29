@@ -1,60 +1,70 @@
 .actions {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap; }
-  .actions > :not(:last-child) {
-    margin-right: 1em; }
-  @media (min-width: 37.5em) {
-    .actions {
-      -ms-flex-wrap: nowrap;
-          flex-wrap: nowrap; } }
+  flex-wrap: wrap;
+}
+.actions > :not(:last-child) {
+  margin-right: 1em;
+}
+@media (min-width: 37.5rem) {
+  .actions {
+    flex-wrap: nowrap;
+  }
+}
 
 .actions__register {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   margin-bottom: 1.125rem;
-  width: 100%; }
-  @media (min-width: 37.5em) {
-    .actions__register {
-      margin-bottom: 0;
-      width: auto; } }
+  width: 100%;
+}
+@media (min-width: 37.5rem) {
+  .actions__register {
+    margin-bottom: 0;
+    width: auto;
+  }
+}
 
 .actions__save {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex; }
+  display: flex;
+}
 
 .action-button__button.action-button__button {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   width: 100%;
-  text-align: center; }
+  text-align: center;
+}
+.action-button__button.action-button__button:not(:first-child) {
+  margin-top: 0.1875rem;
+}
+@media (min-width: 48rem) {
   .action-button__button.action-button__button:not(:first-child) {
-    margin-top: 0.1875rem; }
-    @media (min-width: 48em) {
-      .action-button__button.action-button__button:not(:first-child) {
-        margin-top: 0.12375rem; } }
-    @media (min-width: 62em) {
-      .action-button__button.action-button__button:not(:first-child) {
-        margin-top: 0.1875rem; } }
+    margin-top: 0.12375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__button.action-button__button:not(:first-child) {
+    margin-top: 0.1875rem;
+  }
+}
+.action-button__button.action-button__button:not(:last-child) {
+  margin-bottom: 0.1875rem;
+}
+@media (min-width: 48rem) {
   .action-button__button.action-button__button:not(:last-child) {
-    margin-bottom: 0.1875rem; }
-    @media (min-width: 48em) {
-      .action-button__button.action-button__button:not(:last-child) {
-        margin-bottom: 0.12375rem; } }
-    @media (min-width: 62em) {
-      .action-button__button.action-button__button:not(:last-child) {
-        margin-bottom: 0.1875rem; } }
-  [role="dialog"] .action-button__button.action-button__button {
-    width: auto; }
+    margin-bottom: 0.12375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__button.action-button__button:not(:last-child) {
+    margin-bottom: 0.1875rem;
+  }
+}
+[role=dialog] .action-button__button.action-button__button {
+  width: auto;
+}
 
 .action-button__button:hover, .action-button__button:focus {
-  background-color: rgba(2, 136, 209, 0.16); }
-
+  background-color: rgba(2, 136, 209, 0.16);
+}
 .action-button__button--outlined {
   margin-bottom: 0.1875rem;
   margin-top: 0.1875rem;
@@ -64,75 +74,108 @@
   border: 1px solid #d3d8df;
   border-radius: 0;
   color: #0288d1;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  text-align: center; }
-  @media (min-width: 48em) {
-    .action-button__button--outlined {
-      margin-bottom: 0.12375rem; } }
-  @media (min-width: 62em) {
-    .action-button__button--outlined {
-      margin-bottom: 0.1875rem; } }
-  @media (min-width: 48em) {
-    .action-button__button--outlined {
-      margin-top: 0.12375rem; } }
-  @media (min-width: 62em) {
-    .action-button__button--outlined {
-      margin-top: 0.1875rem; } }
-  @media (min-width: 48em) {
-    .action-button__button--outlined {
-      padding-bottom: 0.33rem; } }
-  @media (min-width: 62em) {
-    .action-button__button--outlined {
-      padding-bottom: 0.5rem; } }
-  @media (min-width: 48em) {
-    .action-button__button--outlined {
-      padding-top: 0.33rem; } }
-  @media (min-width: 62em) {
-    .action-button__button--outlined {
-      padding-top: 0.5rem; } }
-
+  justify-content: center;
+  text-align: center;
+}
+@media (min-width: 48rem) {
+  .action-button__button--outlined {
+    margin-bottom: 0.12375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__button--outlined {
+    margin-bottom: 0.1875rem;
+  }
+}
+@media (min-width: 48rem) {
+  .action-button__button--outlined {
+    margin-top: 0.12375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__button--outlined {
+    margin-top: 0.1875rem;
+  }
+}
+@media (min-width: 48rem) {
+  .action-button__button--outlined {
+    padding-bottom: 0.33rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__button--outlined {
+    padding-bottom: 0.5rem;
+  }
+}
+@media (min-width: 48rem) {
+  .action-button__button--outlined {
+    padding-top: 0.33rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__button--outlined {
+    padding-top: 0.5rem;
+  }
+}
 .action-button__button--small {
-  font-size: 0.8125rem; }
+  font-size: 0.8125rem;
+}
 
 .action-button__message {
-  font-size: 0.65278rem;
-  line-height: 1.2;
   font-style: italic;
-  text-align: center; }
-  @media (min-width: 48em) {
-    .action-button__message {
-      font-size: 0.83333rem; } }
-  @media (min-width: 62em) {
-    .action-button__message {
-      font-size: 1rem; } }
+  text-align: center;
+}
+.action-button__message {
+  font-size: 0.6527777778rem;
+}
+@media (min-width: 48rem) {
+  .action-button__message {
+    font-size: 0.8333333333rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__message {
+    font-size: 1rem;
+  }
+}
+.action-button__message {
+  line-height: 1.2;
+}
+.action-button__message:not(:first-child) {
+  margin-top: 0.25rem;
+}
+@media (min-width: 48rem) {
   .action-button__message:not(:first-child) {
-    margin-top: 0.25rem; }
-    @media (min-width: 48em) {
-      .action-button__message:not(:first-child) {
-        margin-top: 0.33rem; } }
-    @media (min-width: 62em) {
-      .action-button__message:not(:first-child) {
-        margin-top: 0.5rem; } }
+    margin-top: 0.33rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__message:not(:first-child) {
+    margin-top: 0.5rem;
+  }
+}
+.action-button__message:not(:last-child) {
+  margin-bottom: 0.25rem;
+}
+@media (min-width: 48rem) {
   .action-button__message:not(:last-child) {
-    margin-bottom: 0.25rem; }
-    @media (min-width: 48em) {
-      .action-button__message:not(:last-child) {
-        margin-bottom: 0.33rem; } }
-    @media (min-width: 62em) {
-      .action-button__message:not(:last-child) {
-        margin-bottom: 0.5rem; } }
-  .summary__content .action-button__message {
-    text-align: left; }
+    margin-bottom: 0.33rem;
+  }
+}
+@media (min-width: 62rem) {
+  .action-button__message:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+}
+.summary__content .action-button__message {
+  text-align: left;
+}
 
 .action-button__message--left {
-  text-align: left; }
+  text-align: left;
+}
 
 .flag-saved-event {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex; }
+  align-items: center;
+  display: flex;
+}

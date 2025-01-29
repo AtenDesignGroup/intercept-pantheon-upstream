@@ -197,7 +197,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#default_value' => $this->getSetting('office_hours_first_day'),
     ];
     $element['day_format'] = [
-      '#title' => $this->t('Weekday notation'),
+      '#title' => $this->t('Day notation'),
       '#type' => 'select',
       '#options' => [
         'long' => $this->t('long'),
@@ -675,8 +675,8 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       $elements = StatusUpdateController::attachStatusUpdate($items, $langcode, $view_mode, $third_party_settings, $elements);
     }
 
-    // Manipulate '#cache' max_age when page_cache module enabled.
     if ($this->currentUser->isAnonymous()) {
+      // Manipulate '#cache' max_age when page_cache module enabled.
       if ($this->moduleHandler->moduleExists('page_cache')) {
         // The Internal Page Cache module handles
         // page cache for anonymous users.

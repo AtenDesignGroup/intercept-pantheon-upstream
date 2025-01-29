@@ -9,4 +9,4 @@ existing_values_autocomplete_widget.autocomplete:
     count: 15
     entity_type_id: NULL
   requirements:
-    _permission: 'administer nodes'
+    _permission: 'access content'

@@ -1,4 +1,6 @@
-@import '_partials';
+@use "sass:math";
+
+@use 'partials' as *;
 
 .evaluation__subject {
   &:not(:last-child) {
@@ -94,8 +96,8 @@
 
     img,
     svg {
-      height: percentage(60/110);
-      width: percentage(60/110);
+      height: math.percentage(math.div(60, 110));
+      width: math.percentage(math.div(60, 110));
     }
 
     &[class*="checked"] {
@@ -161,7 +163,7 @@
 
   @include bp(large) {
     .evaluation__widget {
-      width: percentage(2/3);
+      width: math.percentage(math.div(2, 3));
     }
 
     .evaluation__app {

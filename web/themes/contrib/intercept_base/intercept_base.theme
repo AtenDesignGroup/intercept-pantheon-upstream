@@ -333,6 +333,7 @@ function intercept_base_preprocess_form(&$variables) {
     case 'views-exposed-form-intercept-events-embed':
     case 'views-exposed-form-intercept-events-events':
     case 'views-exposed-form-intercept-equipment-page':
+    case 'views-exposed-form-intercept-equipment-reservations-page':
     case 'views-exposed-form-intercept-export-equipment-reservations-page':
     case 'views-exposed-form-intercept-export-room-reservations-page':
     case 'views-exposed-form-intercept-event-attendance-by-age-group-page':

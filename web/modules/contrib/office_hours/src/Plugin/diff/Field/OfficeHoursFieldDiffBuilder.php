@@ -22,7 +22,7 @@ class OfficeHoursFieldDiffBuilder extends FieldDiffBuilderBase {
   /**
    * {@inheritdoc}
    */
-  public function build(FieldItemListInterface $items) {
+  public function build(FieldItemListInterface $items): mixed {
     $result = [];
 
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */

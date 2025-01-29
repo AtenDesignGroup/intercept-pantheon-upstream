@@ -46,7 +46,7 @@ class TimeSlot extends FieldBase {
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     // From OfficeHoursFormatterBase::settingsForm().
     $form['day'] = [
-      '#title' => $this->t('Weekday'),
+      '#title' => $this->t('Day'),
       '#type' => 'select',
       '#options' => $this->getWeekDays(),
       '#default_value' => $this->options['day'],

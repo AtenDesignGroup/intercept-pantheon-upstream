@@ -398,12 +398,10 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
   /**
    * User account reservations.
    *
-   * @param \Drupal\user\UserInterface $user
-   *
    * @return array
-   *   Page callback for user/{user}/reservations.
+   *   Page callback for user/reservations.
    */
-  public function upcoming(UserInterface $user) {
+  public function upcoming() {
     $build = [];
 
     $build['#attached']['library'][] = 'intercept_room_reservation/upcomingRoomReservations';

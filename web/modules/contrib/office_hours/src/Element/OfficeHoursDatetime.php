@@ -27,8 +27,8 @@ class OfficeHoursDatetime extends Datetime {
       '#date_time_element' => 'time', // {'none'|'time'|'text'}
       // For HTML5, only 'H:i' is supported.
       // Hence, field setting 'time_format' / '#date_time_format' is discarded.
-      /* @see www.drupal.org/project/drupal/issues/2723159 */
-      /* @see www.drupal.org/project/drupal/issues/2841297 */
+      /* @see https://www.drupal.org/project/drupal/issues/2723159 */
+      /* @see https://www.drupal.org/project/drupal/issues/2841297 */
       '#date_time_format' => 'H:i',
       // @todo Add Timezone.
       '#date_timezone' => '+0000',

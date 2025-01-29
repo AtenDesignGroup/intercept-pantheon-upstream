@@ -3,7 +3,7 @@
 // Contact Component Styles
 //
 
-@import "_partials";
+@use 'partials' as *;
 
 .contact__name {
   display: block;

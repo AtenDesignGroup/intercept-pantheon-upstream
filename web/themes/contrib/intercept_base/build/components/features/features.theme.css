@@ -1,51 +1,83 @@
 .features {
   clear: both;
-  margin-bottom: 5rem; }
-  .features__header {
-    padding-bottom: 1.25rem; }
+  margin-bottom: 5rem;
+}
+.features__header {
+  padding-bottom: 1.25rem;
+}
+.features__heading {
+  color: #03a9f4;
+}
+.features__heading {
+  font-size: 1.0347222222rem;
+}
+@media (min-width: 48rem) {
   .features__heading {
-    font-size: 1.03472rem;
-    line-height: 1.2;
-    color: #03a9f4; }
-    @media (min-width: 48em) {
-      .features__heading {
-        font-size: 1.40625rem; } }
-    @media (min-width: 62em) {
-      .features__heading {
-        font-size: 1.875rem; } }
-  .features__list {
-    -webkit-columns: 2;
-            columns: 2;
-    padding-left: 0; }
-    .features__list .feature {
-      -webkit-column-break-inside: avoid;
-              break-inside: avoid;
-      list-style: none;
-      margin-bottom: 0.9375rem; }
-      .features__list .feature article {
-        margin-bottom: 1.875rem; }
-      .features__list .feature h5:not([class]) {
-        font-size: 0.88194rem;
-        font-family: "Lato", sans-serif;
-        margin-bottom: 0.3125rem; }
-        @media (min-width: 48em) {
-          .features__list .feature h5:not([class]) {
-            font-size: 0.9375rem; } }
-        @media (min-width: 62em) {
-          .features__list .feature h5:not([class]) {
-            font-size: 1.125rem; } }
-        .features__list .feature h5:not([class]) a:not([class]) {
-          color: #03a9f4; }
-      .features__list .feature .field--label-inline {
-        line-height: 1.5;
-        font-size: 0.88194rem; }
-        @media (min-width: 48em) {
-          .features__list .feature .field--label-inline {
-            font-size: 0.9375rem; } }
-        @media (min-width: 62em) {
-          .features__list .feature .field--label-inline {
-            font-size: 1.125rem; } }
-        .features__list .feature .field--label-inline > div {
-          display: inline; }
-        .features__list .feature .field--label-inline .field__label::after {
-          content: ':'; }
+    font-size: 1.40625rem;
+  }
+}
+@media (min-width: 62rem) {
+  .features__heading {
+    font-size: 1.875rem;
+  }
+}
+.features__heading {
+  line-height: 1.2;
+}
+.features__list {
+  -moz-columns: 2;
+       columns: 2;
+  padding-left: 0;
+}
+.features__list .feature {
+  page-break-inside: avoid;
+  -moz-column-break-inside: avoid;
+       break-inside: avoid;
+  list-style: none;
+  margin-bottom: 0.9375rem;
+}
+.features__list .feature article {
+  margin-bottom: 1.875rem;
+}
+.features__list .feature h5:not([class]) {
+  font-family: "Lato", sans-serif;
+  margin-bottom: 0.3125rem;
+}
+.features__list .feature h5:not([class]) {
+  font-size: 0.8819444444rem;
+}
+@media (min-width: 48rem) {
+  .features__list .feature h5:not([class]) {
+    font-size: 0.9375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .features__list .feature h5:not([class]) {
+    font-size: 1.125rem;
+  }
+}
+.features__list .feature h5:not([class]) a:not([class]) {
+  color: #03a9f4;
+}
+.features__list .feature .field--label-inline {
+  line-height: 1.5;
+}
+.features__list .feature .field--label-inline {
+  font-size: 0.8819444444rem;
+}
+@media (min-width: 48rem) {
+  .features__list .feature .field--label-inline {
+    font-size: 0.9375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .features__list .feature .field--label-inline {
+    font-size: 1.125rem;
+  }
+}
+.features__list .feature .field--label-inline > div {
+  display: inline;
+}
+.features__list .feature .field--label-inline .field__label::after {
+  content: ":";
+}

@@ -73,7 +73,7 @@ interface DateRecurHelperInterface extends \Iterator {
    * @throws \InvalidArgumentException
    *   Exceptions thrown if ranges are invalid or undefined.
    */
-  public function getOccurrences(\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array;
+  public function getOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array;
 
   /**
    * Get excluded dates.

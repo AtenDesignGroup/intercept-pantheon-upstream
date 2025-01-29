@@ -2,9 +2,6 @@
 
 namespace Drupal\charts\Form;
 
-use Drupal\charts\ChartManager;
-use Drupal\charts\DependenciesCalculatorTrait;
-use Drupal\charts\TypeManager;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -12,6 +9,9 @@ use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\charts\ChartManager;
+use Drupal\charts\DependenciesCalculatorTrait;
+use Drupal\charts\TypeManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -65,7 +65,7 @@ class ChartsConfigForm extends ConfigFormBase {
    * @param \Drupal\Core\Extension\ModuleExtensionList|null $module_extension_list
    *   The module extension list.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, CacheTagsInvalidatorInterface $cache_tags_invalidator, ChartManager $chart_plugin_manager = NULL, TypeManager $chart_type_plugin_manager = NULL, ModuleExtensionList $module_extension_list = NULL) {
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, CacheTagsInvalidatorInterface $cache_tags_invalidator, ?ChartManager $chart_plugin_manager = NULL, ?TypeManager $chart_type_plugin_manager = NULL, ?ModuleExtensionList $module_extension_list = NULL) {
     parent::__construct($config_factory, $typedConfigManager);
     $this->cacheTagsInvalidator = $cache_tags_invalidator;
     // @todo Implement full if statement for optional parameters, and add

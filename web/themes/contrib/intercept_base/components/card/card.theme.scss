@@ -3,7 +3,7 @@
 // Cart Component Styles
 //
 
-@import "_partials";
+@use 'partials' as *;
 
 .card--gray {
   background: $gray-80;

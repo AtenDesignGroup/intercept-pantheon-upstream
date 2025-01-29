@@ -1,0 +1,156 @@
+
+//
+// Mixins - Breakpoints
+// Use these mixins mainly when defining media breakpoint specifications in theme files. Both settings and functions
+// are imported here to supplement the mixins themselves.
+//
+// - 01 - Imports
+// - 02 - Minimum Breakpoint
+// - 03 - Maximum Breakpoint
+// - 04 - Between Breakpoint
+// - 05 - Only Breakpoint
+//
+
+
+//------------------------------------
+//  01 - Imports
+//------------------------------------
+
+@use 'sass:map';
+@use "sass:string";
+@use 'sass:list';
+@use '../functions/rem' as rem;
+
+@use '../settings/breakpoints' as settings-breakpoints;
+@use '../functions/breakpoints' as functions-breakpoints;
+
+
+//------------------------------------
+//  02 - Minimum Breakpoint
+//  Media/screen-size of at least the minimum breakpoint width -- apply to screen-sizes above the breakpoint specified.
+//  - @param $name: Selected breakpoint name as defined in partials/settings/_breakpoints.scss
+//  - @param $breakpoints: Breakpoints mapping values as defined in partials/settings/_breakpoints.scss
+//  - @example = @include bp-min(lg-tablet) {}
+//------------------------------------
+
+@mixin bp-min($name, $breakpoints: settings-breakpoints.$grid-breakpoints) {
+  $min: functions-breakpoints.breakpoint-min($name, $breakpoints);
+  @if $min == 0 {
+    @content;
+  } @else if $min {
+    @media (min-width: rem.rem($min)) {
+      @content;
+    }
+  } @else {
+    @error '[ #{$name} ] is not defined in $breakpoints. Found: [ #{map.keys($breakpoints)} ]. Make sure the breakpoint you are trying to use is defined.';
+  }
+}
+
+
+
+
+//------------------------------------
+//  03 - Maximum Breakpoint
+//  Media/screen-size of at most the maximum breakpoint width -- apply to screen-sizes below the breakpoint specified.
+//  - @param $name: Selected breakpoint name as defined in partials/settings/_breakpoints.scss
+//  - @param $breakpoints: Breakpoints mapping values as defined in partials/settings/_breakpoints.scss
+//  - @example = @include bp-max(lg-tablet) {}
+//------------------------------------
+
+@mixin bp-max($name, $breakpoints: settings-breakpoints.$grid-breakpoints) {
+  $max: functions-breakpoints.breakpoint-max($name, $breakpoints);
+  @if $max {
+    @media (max-width: rem.rem($max)) {
+      @content;
+    }
+  } @else {
+    @error '[ #{$name} ] is not defined in $breakpoints. Found: [ #{map.keys($breakpoints)} ]. Make sure the breakpoint you are trying to use is defined.';
+  }
+}
+
+
+
+
+//------------------------------------
+//  04 - Between Breakpoint
+//  Media/screen-size that spans multiple breakpoint widths -- apply to screen-sizes between the breakpoints specified.
+//  - @param $lower: Selected minimum breakpoint name as defined in partials/settings/_breakpoints.scss
+//  - @param $upper: Selected maximum breakpoint name as defined in partials/settings/_breakpoints.scss
+//  - @param $breakpoints: Breakpoints mapping values as defined in partials/settings/_breakpoints.scss
+//  - @example = @include bp-between(xsmall, large) {}
+//------------------------------------
+
+@mixin bp-between($lower, $upper, $breakpoints: settings-breakpoints.$grid-breakpoints) {
+  $min: functions-breakpoints.breakpoint-min($lower, $breakpoints);
+  $max: functions-breakpoints.breakpoint-max($upper, $breakpoints);
+
+  @if ($min != null and $min != 0) and $max != null {
+    @media (min-width: rem.rem($min)) and (max-width: rem.rem($max)) {
+      @content;
+    }
+  } @else if $max == null {
+    @include bp-min($lower, $breakpoints) {
+      @content;
+    }
+  } @else if ($min == null or $min == 0) {
+    @include bp-max($upper, $breakpoints) {
+      @content;
+    }
+  }
+}
+
+
+
+
+//------------------------------------
+//  05 - Only Breakpoint
+//  Media/screen-size between the breakpoint's minimum and maximum widths -- No minimum for the smallest breakpoint, and
+//  no maximum for the largest one.
+//  - @param $name: Selected breakpoint name as defined in partials/settings/_breakpoints.scss
+//  - @param $breakpoints: Breakpoints mapping values as defined in partials/settings/_breakpoints.scss
+//  - @example = @include bp-only(large) {}
+//------------------------------------
+
+@mixin bp-only($name, $breakpoints: settings-breakpoints.$grid-breakpoints) {
+  $min: functions-breakpoints.breakpoint-min($name, $breakpoints);
+  $max: functions-breakpoints.breakpoint-max($name, $breakpoints);
+
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else if $max == null {
+    @include bp-min($name, $breakpoints) {
+      @content;
+    }
+  } @else if $min == null {
+    @include bp-max($name, $breakpoints) {
+      @content;
+    }
+  }
+}
+
+
+//
+// Create media queries based on the values in site $breakpoints map.
+// @param $breakpoint;
+//   The named breakpoint key we want to use. Can provide a list for min/max
+//   queries.
+// @param $breakpoints;
+//   The map of breakpoint key/value pairs. Defaults to the global $breakpionts
+//   map in `settings/breakpoints`.
+//
+// NOTE: This is a replacement for the original `bp` mixin that was based on the
+// `sass-breakpoint` package which is no longer maintained.
+@mixin bp($breakpoint, $breakpoints: settings-breakpoints.$grid-breakpoints) {
+  @if list.length($breakpoint) == 1 {
+    @include bp-min($breakpoint) {
+      @content;
+    }
+  }
+  @else if list.length($breakpoint) == 2 {
+    @include bp-between(list.nth($breakpoint, 1), list.nth($breakpoint, 2)) {
+      @content;
+    }
+  }
+}

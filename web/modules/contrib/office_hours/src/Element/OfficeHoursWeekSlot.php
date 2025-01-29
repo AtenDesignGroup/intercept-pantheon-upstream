@@ -39,6 +39,8 @@ class OfficeHoursWeekSlot extends OfficeHoursBaseSlot {
         ? "<div class='office-hours-more-label'>$label</div>"
         : "<div class='office-hours-label'>$label</div>",
       '#default_value' => $day,
+      // Add wrapper attribute for improved (a11y) screen reader experience.
+      '#wrapper_attributes' => ['header' => !$day_delta],
     ];
 
     return $element;

@@ -4,6 +4,8 @@
 //
 // This file outputs to global.css, the primary stylesheet for the theme
 //
+@use "partials" as *;
+
 
 // Make everything border-box
 * {
@@ -127,7 +129,10 @@ ol {
   &:first-child {
     margin-top: 0;
   }
+}
 
+ul,
+ol {
   &:last-child {
     margin-bottom: 0;
   }
@@ -154,7 +159,7 @@ hr {
 a:not([class]) {
   color: $clr-primary-dark;
   font-weight: $fw-bold;
-  text-decoration-skip: ink;
+  text-decoration-skip-ink: auto;
   transition: color 0.2s ease-out;
 
   &:visited {
@@ -468,7 +473,7 @@ thead {
       text-decoration: none;
       color: $gray-20;
       display: block;
-      background-image: inline-svg('<svg width="9" height="12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.246 7.125a.66.66 0 0 0-.465.191.64.64 0 0 0-.191.465c0 .192.055.356.191.465L4.035 11.5c.11.137.274.191.465.191a.64.64 0 0 0 .465-.191l3.254-3.254a.66.66 0 0 0 .191-.465c0-.164-.082-.328-.191-.465-.137-.109-.301-.191-.465-.191H1.246ZM8.22 4.254c.11.137.191.3.191.465a.66.66 0 0 1-.191.465.64.64 0 0 1-.465.191H1.246c-.191 0-.355-.055-.465-.191C.645 5.074.59 4.91.59 4.719a.64.64 0 0 1 .191-.465L4.035 1A.66.66 0 0 1 4.5.809c.164 0 .328.082.465.191l3.254 3.254Z" fill="#51832F"/></svg>');
+      background-image: svg-load('icons/sortable.svg');
       background-position: center right;
       background-repeat: no-repeat !important;
       padding-right: 1em;

@@ -8,17 +8,21 @@
   --fc-button-active-text-color: white;
   --fc-button-active-bg-color: #D13400;
   --fc-button-active-border-color: #D13400;
-  --fc-button-disabled-border-color: #d3d8df; }
+  --fc-button-disabled-border-color: #d3d8df;
+}
 
 .fc-h-event .fc-event-main,
 .fc-event {
-  color: inherit; }
+  color: inherit;
+}
 
 .fc-daygrid-block-event .fc-event-title {
   font-weight: 700;
-  padding-left: 10px; }
+  padding-left: 10px;
+}
 
 .fc-timeGridWeek-view .fc-event-main-frame,
 .fc-timeGridDay-view .fc-event-main-frame {
   color: #4c4d4f;
-  font-weight: 700; }
+  font-weight: 700;
+}

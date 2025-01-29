@@ -1,4 +1,6 @@
-@import "_partials";
+@use "sass:math";
+
+@use 'partials' as *;
 
 .teaser {
   display: flex;
@@ -27,21 +29,21 @@
 
   @include bp(medium) {
     margin-right: 30px;
-    width: percentage(2/6);
+    width: math.percentage(math.div(2, 6));
 
     .teaser--without-image & {
       height: 0;
-      padding-top: percentage(2/6);
+      padding-top: math.percentage(math.div(2, 6));
     }
   }
 
   @include bp(large) {
-    margin-right: percentage(1/23);
-    width: percentage(5/23);
+    margin-right: math.percentage(math.div(1, 23));
+    width: math.percentage(math.div(5, 23));
 
     .teaser--without-image & {
       height: 0;
-      padding-top: percentage(3/4 * 5/23);
+      padding-top: math.percentage(math.div(3*0.25 * 5, 23));
     }
   }
 }
@@ -164,10 +166,10 @@
 
   @include bp(large) {
     flex: none;
-    margin-left: percentage(1/23);
+    margin-left: math.percentage(math.div(1, 23));
     min-width: 8em;
     text-align: right;
-    width: percentage(4/23);
+    width: math.percentage(math.div(4, 23));
   }
 }
 
@@ -175,7 +177,7 @@
   flex: 1;
 
   @include bp(large) {
-    width: percentage(4/7);
+    width: math.percentage(math.div(4, 7));
   }
 }
 

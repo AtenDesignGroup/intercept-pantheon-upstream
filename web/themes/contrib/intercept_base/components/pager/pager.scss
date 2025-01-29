@@ -3,7 +3,7 @@
 // Progress Bar Styles
 //
 
-@import '_partials';
+@use 'partials' as *;
 
 .pager {
   @include fs(x-small);

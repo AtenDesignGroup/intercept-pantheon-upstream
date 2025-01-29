@@ -34,7 +34,7 @@ class OfficeHoursSeasonHeader extends FormElement {
    * Gets this list element's default operations.
    *
    * @param \Drupal\office_hours\OfficeHoursSeason $season
-   *   The entity the operations are for.
+   *   The element the operations are for.
    *
    * @return array
    *   The array structure is identical to the return value of

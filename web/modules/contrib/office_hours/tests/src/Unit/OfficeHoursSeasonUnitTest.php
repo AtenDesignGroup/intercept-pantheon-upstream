@@ -40,7 +40,7 @@ class OfficeHoursSeasonUnitTest extends UnitTestCase {
 
     $container->set('language_manager', $languageManager);
     $container->set('datetime.time', $time);
-   \Drupal::setContainer($container);
+    \Drupal::setContainer($container);
   }
 
   /**
@@ -51,7 +51,6 @@ class OfficeHoursSeasonUnitTest extends UnitTestCase {
     $time = \Drupal::time()->getRequestTime() ?? NULL;
     // $time ??= $this->container->get('datetime.time')->getRequestTime();
     // $time ??= \Drupal::service('datetime.time')->getRequestTime();
-
     $today = OfficeHoursDateHelper::today($time);
     $yesterday = strtotime('-1 day', $today);
     $tomorrow = strtotime('+1 day', $today);

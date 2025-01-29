@@ -1,3 +1,5 @@
+@use "partials" as *;
+
 #scroll-to-top-wrapper {
   pointer-events: none; // wrapper spans entire page and prevents elements behind from being clicked
   position: fixed;

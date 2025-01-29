@@ -1,4 +1,6 @@
-@import '_partials';
+@use "sass:math";
+
+@use 'partials' as *;
 
 //
 // Announcement bars at top of screen
@@ -65,14 +67,14 @@ label[for='nav-trigger'] {
     padding: 0;
     width: 60%;
     font-size: .9rem;
-    @include box--gutters(percentage(0.5/7), 0);
+    @include box--gutters(math.percentage(math.div(0.5, 7)), 0);
 
     @include bp(medium) {
-      @include box--gutters(percentage(1/16), 0);
+      @include box--gutters(math.percentage(math.div(1, 16)), 0);
     }
 
     @include bp(large) {
-      @include box--gutters(percentage(2/27), 0);
+      @include box--gutters(math.percentage(math.div(2, 27)), 0);
       width: 85%;
     }
 
@@ -162,14 +164,14 @@ label[for='nav-trigger'] {
   width: 40%;
   margin: unset;
   z-index: 5;
-  @include box--gutters(0, percentage(0.5/7));
+  @include box--gutters(0, math.percentage(math.div(0.5, 7)));
 
   @include bp(medium) {
-    @include box--gutters(0, percentage(1/16));
+    @include box--gutters(0, math.percentage(math.div(1, 16)));
   }
 
   @include bp(large) {
-    @include box--gutters(0, percentage(2/27));
+    @include box--gutters(0, math.percentage(math.div(2, 27)));
   }
 
   @include bp(large x-large) {
@@ -265,7 +267,7 @@ label[for='nav-trigger'] {
       label {
         display: flex;
         flex-direction: row-reverse;
-        justify-content: start;
+        justify-content: flex-start;
         margin: 22px 0;
 
         input[type="radio"] {
@@ -356,7 +358,7 @@ label[for='nav-trigger'] {
     }
 
     &::after {
-      background: url('/themes/custom/richland/images/dots/dots--vert_gray.svg') center right repeat-y;
+      background: svg-load('dots/dots--vert_gray.svg') center right repeat-y;
       content: '';
       height: 65%;
       position: absolute;
@@ -657,7 +659,7 @@ label[for='account-trigger'] {
     a, .menu__item label {
       line-height: 1.8;
       position: relative;
-  
+
       &::after {
         content: '';
         position: absolute;
@@ -668,21 +670,21 @@ label[for='account-trigger'] {
         background-color: $white;
         opacity: 0;
         transform: scale(0);
-        transition: 
-          transform $duration * 1.5 $easing, 
-          height $duration $easing, 
+        transition:
+          transform $duration * 1.5 $easing,
+          height $duration $easing,
           opacity $duration $easing;
       }
-  
+
       &:hover {
         color: $white;
       }
-  
+
       &:hover::after,
       &.is-active {
         bottom: 0;
-        height: .9px; // yes, I know sub-pixels don't exist (yet) but if you set it to 1px or higher some menu items get a 1px underline while others get 2px (or 2px and 3px if you set it to 2px). I thought it was a rounding error when the height was in ems, but it still does it in pixels. Which is odd. The only way to force it to be consistent is to trick it by using a height of less than a pixel. Which forces the browser to round up consistentely to 1px rather than rounding to 1px sometimes and 2px other times. 
-  
+        height: .9px; // yes, I know sub-pixels don't exist (yet) but if you set it to 1px or higher some menu items get a 1px underline while others get 2px (or 2px and 3px if you set it to 2px). I thought it was a rounding error when the height was in ems, but it still does it in pixels. Which is odd. The only way to force it to be consistent is to trick it by using a height of less than a pixel. Which forces the browser to round up consistentely to 1px rather than rounding to 1px sometimes and 2px other times.
+
         opacity: 1;
         transform: scale(1);
       }

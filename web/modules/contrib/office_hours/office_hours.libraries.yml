@@ -21,6 +21,7 @@ office_hours_widget:
     js/office_hours.js: {}
   dependencies:
     - core/drupal
+    - core/drupal.announce
     - core/jquery
     - core/once
 

@@ -164,7 +164,7 @@ EXDATE:20180906T010000Z';
    * @return \Drupal\date_recur\DateRecurHelper
    *   A new DateRecurHelper object.
    */
-  protected function newRule($rrule, \DateTime $startDate, \DateTime $startDateEnd = NULL): DateRecurHelper {
+  protected function newRule($rrule, \DateTime $startDate, ?\DateTime $startDateEnd = NULL): DateRecurHelper {
     return DateRecurHelper::create($rrule, $startDate, $startDateEnd);
   }
 

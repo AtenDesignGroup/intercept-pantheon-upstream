@@ -29,11 +29,25 @@ class Auth extends UserAuth {
   private $externalAuth;
 
   /**
+   * Service for managing authmap database records.
+   *
+   * @var \Drupal\externalauth\Authmap
+   */
+  private $externalAuthmap;
+
+  /**
    * The Intercept ILS Plugin.
    *
    * @var object
    */
   protected $interceptILSPlugin;
+
+  /**
+   * Validates user authentication credentials.
+   *
+   * @var \Drupal\user\UserAuth
+   */
+  private $userAuth;
 
   /**
    * {@inheritdoc}

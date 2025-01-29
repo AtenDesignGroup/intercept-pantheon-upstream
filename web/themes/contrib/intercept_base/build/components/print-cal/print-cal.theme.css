@@ -1,13 +1,16 @@
 .print-legend {
   background-color: #0277bd;
   color: #fff;
-  padding: 1.08696% 2.17391%;
-  text-align: right; }
+  padding: 1.0869565217% 2.1739130435%;
+  text-align: right;
+}
 
 .print-legend__item-title {
-  font-weight: 900; }
+  font-weight: 900;
+}
 
 .print-event--highlight {
   background-color: #0277bd;
   color: #fff;
-  padding: .75em; }
+  padding: 0.75em;
+}

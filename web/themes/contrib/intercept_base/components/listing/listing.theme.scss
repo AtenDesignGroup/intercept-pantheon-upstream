@@ -1,4 +1,4 @@
-@import '_partials';
+@use 'partials' as *;
 
 .listing__date-wrapper {
   background-color: $clr-primary;

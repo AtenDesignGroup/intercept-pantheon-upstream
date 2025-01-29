@@ -2,13 +2,58 @@
 
 namespace Drupal\clientside_validation_jquery\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Http\ClientFactory;
+use Drupal\Core\Site\Settings;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Implement Class to Validate Clientside jQuerySettingsForm.
  */
 class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
+
+  /**
+   * An http client.
+   *
+   * @var \Drupal\Core\Http\ClientFactory
+   */
+  protected $httpClient;
+
+  /**
+   * A settings object.
+   *
+   * @var \Drupal\Core\Site\Settings
+   */
+  protected $settings;
+
+  /**
+   * Constructs a ClientsideValidationjQuerySettingsForm object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\Core\Http\ClientFactory $http_client
+   *   An HTTP client.
+   * @param \Drupal\Core\Site\Settings $settings
+   *   A settings object.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, ClientFactory $http_client, Settings $settings) {
+    parent::__construct($config_factory);
+    $this->httpClient = $http_client;
+    $this->settings = $settings;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+        $container->get('config.factory'),
+        $container->get('http_client_factory'),
+        $container->get('settings')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -42,9 +87,11 @@ class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
     $form['cdn_base_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('CDN Base URL'),
-      '#description' => $this->t('CDN to use (along with version in URL). E.g. @url', [
-        '@url' => '//cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/',
-      ]),
+      '#description' => $this->t(
+          'CDN to use (along with version in URL). E.g. @url', [
+            '@url' => '//cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/',
+          ]
+      ),
       '#required' => TRUE,
       '#default_value' => $config->get('cdn_base_url'),
     ];
@@ -109,12 +156,33 @@ class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
 
     // Validate if the CDN url is proper.
     $cdn_url = $values['cdn_base_url'] . 'jquery.validate.min.js';
-    if (file_get_contents($cdn_url) === FALSE) {
-      $form_state->setErrorByName('cdn_base_url', $this->t('CDN URL seems invalid. @file not accessible on @url. Use the URL in this format @format.', [
-        '@file' => 'jquery.validate.min.js',
-        '@url' => $cdn_url,
-        '@format' => '//cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/',
-      ]));
+
+    $client = $this->httpClient->fromOptions($this->settings->get('http_client_config') ?? []);
+
+    try {
+      $request = $client->request('GET', $cdn_url);
+      if ($request->getStatusCode() != 200) {
+        $form_state->setErrorByName(
+          'cdn_base_url', $this->t(
+            'CDN URL seems invalid. @file not accessible on @url. Use the URL in this format @format.', [
+              '@file' => 'jquery.validate.min.js',
+              '@url' => $cdn_url,
+              '@format' => '//cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/',
+            ]
+          )
+        );
+      }
+    }
+    catch (\Exception $e) {
+      $form_state->setErrorByName(
+        'cdn_base_url', $this->t(
+          'CDN URL seems invalid. @file not accessible on @url. Use the URL in this format @format.', [
+            '@file' => 'jquery.validate.min.js',
+            '@url' => $cdn_url,
+            '@format' => '//cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/',
+          ]
+        )
+      );
     }
   }
 

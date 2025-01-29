@@ -1,9 +1,11 @@
-@import '_partials';
+@use "sass:math";
+
+@use 'partials' as *;
 
 .print-legend {
   background-color: $clr-primary-dark;
   color: $white;
-  padding: percentage(.25/23) percentage(0.5/23);
+  padding: math.percentage(math.div(.25, 23)) math.percentage(math.div(0.5, 23));
   text-align: right;
 }
 

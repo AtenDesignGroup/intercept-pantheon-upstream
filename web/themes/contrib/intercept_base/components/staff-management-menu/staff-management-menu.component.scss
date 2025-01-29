@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @mixin transition($trans...) {
   -webkit-transition: $trans;
   -moz-transition: $trans;
@@ -18,7 +20,7 @@
 }
 
 $toggle-background: #222;
-$toggle-background-active: lighten($toggle-background, 8);
+$toggle-background-active: color.adjust($toggle-background, $lightness: 8%);
 $accent-color: #21ccfc;
 
 #slide-menu-toggle:checked {
@@ -78,7 +80,7 @@ $left-menu-width: 240px;
   cursor: pointer;
 }
 
-details summary { 
+details summary {
   display: revert;
   cursor: pointer;
 }

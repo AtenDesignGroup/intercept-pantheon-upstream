@@ -4,6 +4,7 @@
 //
 // Classes to support form elements
 //
+@use "partials" as *;
 
 .form__heading {
   &:not(:last-child) {

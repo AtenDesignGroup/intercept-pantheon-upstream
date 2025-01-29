@@ -31,13 +31,14 @@ class OfficeHoursBaseSlot extends FormElement {
    * Gets this list element's default operations.
    *
    * @param array $element
-   *   The entity the operations are for.
+   *   The element the operations are for.
    *
-   * @return array
-   *   The array structure is identical to the return value of
-   *   self::getOperations().
+   * @return array {add?:array, clear:array, copy:array}
+   *   An array of operations (add, clear, copy).
+   *
+   * @see \Drupal\Core\Entity\EntityListBuilder::getOperations()
    */
-  public static function getDefaultOperations(array $element) {
+  public static function getDefaultOperations(array $element): array {
     $operations = [];
 
     // Add explicitly, needed when dropbuttons are used.
@@ -51,15 +52,15 @@ class OfficeHoursBaseSlot extends FormElement {
     $day = $value['day'];
     $day_delta = $element['#day_delta'];
 
-    // Note: the operations key is also using in JS, e.g., $('[id$=add]').
+    // Note: the operations key is also used in JS, e.g., $('[id$=add]').
     // Note: When using '#type' => 'operations', the weight is not used,
     // so ordering must be OK here.
-    //
-    // Add 'Add time slot' link to all-but-last slots of each day.
-    $max_delta = $element['#field_settings']['cardinality_per_day'] - 1;
     // For 'link', add dummy URL - it will be catch-ed by js.
     $url = Url::fromRoute('<front>');
     $suffix = ' ';
+
+    // Add 'Add time slot' js to all-but-last slots of each day.
+    $max_delta = $element['#field_settings']['cardinality_per_day'] - 1;
     if ($day_delta < $max_delta) {
       $operations['add'] = [
         '#type' => 'link',
@@ -73,9 +74,9 @@ class OfficeHoursBaseSlot extends FormElement {
       ];
     }
 
-    // Show a 'Clear this line' js-link to each element.
+    // Add 'Clear this line' js to each element.
     // Use text 'Clear', which has lots of translations.
-    // Show this link always, even if empty, to allow not-committed entries.
+    // Show always, even if empty, to allow not-committed entries.
     $operations['clear'] = [
       '#type' => 'link',
       '#title' => t('Clear'),
@@ -87,9 +88,9 @@ class OfficeHoursBaseSlot extends FormElement {
       ],
     ];
 
-    // Add 'Copy' link to first slot of each day.
-    // First day copies from last day.
-    if ($day_delta == 0) {
+    // Add 'Copy' js to first slot of each day.
+    // Note: First day copies from last day.
+    if ($day_delta === 0) {
       $operations['copy'] = [
         '#type' => 'link',
         '#title' => ($day !== OfficeHoursDateHelper::getFirstDay())
@@ -131,7 +132,8 @@ class OfficeHoursBaseSlot extends FormElement {
       // Add day_delta for label() or isEmpty() call.
       $day_delta = $element['#day_delta'];
       if ($value == []) {
-        $value = OfficeHoursItem::format(['day' => NULL,
+        $value = OfficeHoursItem::format([
+          'day' => NULL,
           'day_delta' => $day_delta,
         ]);
       }
@@ -173,7 +175,7 @@ class OfficeHoursBaseSlot extends FormElement {
     $element['all_day'] = !$field_settings['all_day'] ? NULL : [
       '#type' => $day_delta ? 'hidden' : 'checkbox',
       // Add a label/header/title for accessibility (a11y) screen readers.
-      '#title' => t('Indicates if the entity is opened all day'),
+      '#title' => t('Opened all day'),
       '#title_display' => 'invisible',
       '#default_value' => $value['all_day'],
     ];
@@ -211,7 +213,7 @@ class OfficeHoursBaseSlot extends FormElement {
 
     $element['#attributes']['class'][] = 'form-item';
     $element['#attributes']['class'][] = 'office-hours-slot';
-    if ($day_delta == 0) {
+    if ($day_delta === 0) {
       // This is the first slot of the day.
     }
     elseif (!OfficeHoursItem::isValueEmpty($value)) {

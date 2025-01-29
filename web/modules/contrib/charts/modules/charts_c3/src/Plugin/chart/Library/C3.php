@@ -2,7 +2,6 @@
 
 namespace Drupal\charts_c3\Plugin\chart\Library;
 
-use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
@@ -10,6 +9,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\Core\Url;
+use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -221,8 +221,9 @@ class C3 extends ChartBase implements ContainerFactoryPluginInterface {
         $element['#gauge']['green_from'],
       ];
     }
-    elseif ($type === 'line' || $type === 'spline') {
+    elseif (in_array($type, ['line', 'spline', 'step', 'area', 'area-spline'])) {
       $chart_definition['point']['show'] = !empty($element['#data_markers']);
+      $chart_definition['line']['connectNull'] = !empty($element['#connect_nulls']);
     }
     else {
       /*

@@ -160,7 +160,10 @@ field.widget.settings.*:
   mapping:
     collapsed:
       type: boolean
-      label: 'Collapsed'
+      label: 'Collapsed time slots'
+    collapsed_exceptions:
+      type: boolean
+      label: 'Collapsed exceptions'
 
 field.value.office_hours:
   type: mapping

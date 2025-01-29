@@ -1,4 +1,4 @@
-@import "_partials";
+@use "partials" as *;
 
 /**
  * @file
@@ -33,11 +33,11 @@
 
   .field--label-inline {
     display: flex;
-  
+
     &:not(:last-child) {
       margin-bottom: 1em;
     }
-  
+
     > .field__label {
       flex: none;
       font-size: inherit;
@@ -45,7 +45,7 @@
       margin-right: rem(20px);
       width: rem(140px);
     }
-  
+
     > .field__items {
       font-size: inherit;
     }
@@ -192,7 +192,7 @@
   transition: all 0.5s ease;
   border: 3px solid transparent;
   background-color: transparent;
-  background-image: inline-svg('<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg"><g fill="#6DAD44" fill-rule="evenodd"><path d="M-.02 21.192L21.191-.02l2.829 2.829L2.808 24.02z"/><path d="M21.192 24.02L-.02 2.809 2.808-.021 24.02 21.192z"/></g></svg>');
+  background-image: svg-load('icons/off-canvas-close.svg');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 18px;
@@ -201,7 +201,7 @@
 .ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close:hover,
 .ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close:focus {
   border: 3px solid #fff;
-  background-image: inline-svg('<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg"><g fill="#6DAD44" fill-rule="evenodd"><path d="M-.02 21.192L21.191-.02l2.829 2.829L2.808 24.02z"/><path d="M21.192 24.02L-.02 2.809 2.808-.021 24.02 21.192z"/></g></svg>');
+  background-image: svg-load('icons/off-canvas-close-light.svg');
 }
 
 [dir="rtl"] .ui-dialog.ui-dialog-off-canvas .ui-dialog-titlebar-close {

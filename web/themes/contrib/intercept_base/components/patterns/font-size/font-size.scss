@@ -1,7 +1,8 @@
 //
 //
 //
-@import "_partials";
+@use 'partials' as *;
+@use 'sass:list';
 
 
 .fs {
@@ -31,10 +32,10 @@
 
       @include bp($breakpoint) {
         .fs--#{$size} {
-          font-size: nth($fs, 1);
+          font-size: list.nth($fs, 1);
 
           &:after {
-            content: "#{nth($fs, 1)} ";
+            content: "#{list.nth($fs, 1)} ";
           }
         }
       }

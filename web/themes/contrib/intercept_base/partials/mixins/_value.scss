@@ -1,3 +1,8 @@
+@use 'sass:list';
+@use 'sass:map';
+
+@use './breakpoints' as breakpoints;
+
 //
 // Returns a scale for a specific breakpoint.
 //
@@ -8,8 +13,8 @@
 // @return
 //   Sass map of sizes.
 @function get-breakpoint-from-map($map, $breakpoint: "none") {
-  @if map-has-key($map, $breakpoint) {
-    @return map-get($map, $breakpoint);
+  @if map.has-key($map, $breakpoint) {
+    @return map.get($map, $breakpoint);
   }
 
   @else {
@@ -28,9 +33,9 @@
 // @return
 //   Size value.
 @function get-value($size, $map) {
-  @if map-has-key($map, $size) {
+  @if map.has-key($map, $size) {
     // Always return the first size item.
-    @return nth(map-get($map, $size), 1);
+    @return list.nth(map.get($map, $size), 1);
   }
 
   @else {
@@ -65,7 +70,7 @@
 //   The map to use.
 @mixin get-value($property, $size, $map, $breakpoint: null) {
   @if $breakpoint != null {
-    @include bp($breakpoint) {
+    @include breakpoints.bp($breakpoint) {
       #{$property}: get-value-from-breakpoint($size, $map, $breakpoint);
     }
   }
@@ -73,8 +78,8 @@
   @else {
     @each $bp, $scale in $map {
       // If the size exists in the current scale, set our styles.
-      @if map-has-key($scale, $size) {
-        @include bp($bp) {
+      @if map.has-key($scale, $size) {
+        @include breakpoints.bp($bp) {
           #{$property}: get-value-from-breakpoint($size, $map, $bp);
         }
       }

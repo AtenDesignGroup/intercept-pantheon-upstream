@@ -2,11 +2,8 @@
 // Breakpoint variables.
 //
 
-// Breakpoint settings
-@include breakpoint-set('to ems', true);
-
 // Breakpoint mapping
-$breakpoints: (
+$grid-breakpoints: (
   none:     0,
   tiny:     400px,
   default:  500px,

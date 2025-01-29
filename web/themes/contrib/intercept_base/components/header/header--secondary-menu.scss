@@ -1,4 +1,6 @@
-@import '_partials';
+@use "sass:math";
+
+@use 'partials' as *;
 
 // Utilities Menu (REGION)
 .header__utilities {
@@ -83,11 +85,11 @@
 
   li {
     @include bp(large) {
-      min-width: percentage(1/2);
+      min-width: math.percentage(1*0.5);
     }
 
     @include bp(x-large) {
-      min-width: percentage(1/3);
+      min-width: math.percentage(math.div(1, 3));
       padding-right: rem(20px);
     }
   }
@@ -135,7 +137,7 @@
     &:hover::after,
     &.is-active {
       bottom: 0;
-      height: .9px; // yes, I know sub-pixels don't exist (yet) but if you set it to 1px or higher some menu items get a 1px underline while others get 2px (or 2px and 3px if you set it to 2px). I thought it was a rounding error when the height was in ems, but it still does it in pixels. Which is odd. The only way to force it to be consistent is to trick it by using a height of less than a pixel. Which forces the browser to round up consistentely to 1px rather than rounding to 1px sometimes and 2px other times. 
+      height: .9px; // yes, I know sub-pixels don't exist (yet) but if you set it to 1px or higher some menu items get a 1px underline while others get 2px (or 2px and 3px if you set it to 2px). I thought it was a rounding error when the height was in ems, but it still does it in pixels. Which is odd. The only way to force it to be consistent is to trick it by using a height of less than a pixel. Which forces the browser to round up consistentely to 1px rather than rounding to 1px sometimes and 2px other times.
 
       opacity: 1;
       transform: scale(1);

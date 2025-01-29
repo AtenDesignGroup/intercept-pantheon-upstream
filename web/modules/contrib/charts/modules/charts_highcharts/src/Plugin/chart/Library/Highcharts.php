@@ -2,10 +2,6 @@
 
 namespace Drupal\charts_highcharts\Plugin\chart\Library;
 
-use Drupal\charts\Element\Chart as ChartElement;
-use Drupal\charts\Plugin\chart\Library\ChartBase;
-use Drupal\charts\TypeManager;
-use Drupal\charts_highcharts\Form\ColorChanger;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormBuilder;
@@ -14,6 +10,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\charts\Element\Chart as ChartElement;
+use Drupal\charts\Plugin\chart\Library\ChartBase;
+use Drupal\charts\TypeManager;
+use Drupal\charts_highcharts\Form\ColorChanger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -628,6 +628,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     $chart_definition['plotOptions']['series']['stacking'] = $element['#stacking'] ?? '';
     $chart_definition['plotOptions']['series']['dataLabels']['enabled'] = (bool) $element['#data_labels'];
     $chart_definition['plotOptions']['series']['marker']['enabled'] = (bool) $element['#data_markers'];
+    $chart_definition['plotOptions']['series']['connectNulls'] = !empty($element['#connect_nulls']);
     if ($element['#chart_type'] === 'gauge') {
       $chart_definition['yAxis']['plotBands'][] = [
         'from' => $element['#gauge']['red_from'],

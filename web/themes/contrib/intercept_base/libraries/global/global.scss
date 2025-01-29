@@ -6,22 +6,22 @@
 //
 
 // Import Partials
-@import "_partials";
+@use "partials" as *;
 
 // Browser Normalize
-@import "scss/normalize";
+@forward "scss/normalize";
 
 // The Base
-@import "scss/base";
-@import "scss/field";
-@import "scss/jquery-ui";
-@import "scss/list";
-@import "scss/layout";
-@import "scss/wysiwyg";
-@import "scss/form";
+@forward "scss/base";
+@forward "scss/field";
+@forward "scss/jquery-ui";
+@forward "scss/list";
+@forward "scss/layout";
+@forward "scss/wysiwyg";
+@forward "scss/form";
 
 // Scroll to top button
-@import "scss/scroll-to-top";
+@forward "scss/scroll-to-top";
 
 // REMOVE ME
 #block-prototype-d8-branding {

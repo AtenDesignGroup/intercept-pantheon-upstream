@@ -1,8 +1,11 @@
 .progress__track {
-  height: 16px; }
+  height: 16px;
+}
 
 .progress__bar {
-  height: 14px; }
+  height: 14px;
+}
 
 .progress__description {
-  color: #4c4d4f; }
+  color: #4c4d4f;
+}

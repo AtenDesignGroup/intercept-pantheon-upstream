@@ -1,57 +1,70 @@
 .person {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  flex-direction: column;
   position: relative;
   width: 100%;
-  margin-bottom: 1rem; }
-  @media (min-width: 37.5em) {
-    .person {
-      -webkit-box-orient: horizontal;
-      -webkit-box-direction: normal;
-          -ms-flex-direction: row;
-              flex-direction: row; } }
+  margin-bottom: 1rem;
+}
+@media (min-width: 37.5rem) {
+  .person {
+    flex-direction: row;
+  }
+}
+.person__image {
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 12.5rem;
+  min-width: 12.5rem;
+}
+@media (min-width: 62rem) {
   .person__image {
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 12.5rem;
-    min-width: 12.5rem; }
-    @media (min-width: 62em) {
-      .person__image {
-        min-width: 18.75rem; } }
-  .person__highlight {
-    left: 0;
-    position: absolute;
-    top: 0; }
-    .person__highlight .highlight {
-      position: absolute; }
-  .person__text {
-    padding: 2rem; }
-  .person__title {
-    color: #fff; }
-  .person__subtitle {
-    color: #fff;
-    margin: 0; }
+    min-width: 18.75rem;
+  }
+}
+.person__highlight {
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+.person__highlight .highlight {
+  position: absolute;
+}
+.person__text {
+  padding: 2rem;
+}
+.person__title {
+  color: #fff;
+}
+.person__subtitle {
+  color: #fff;
+  margin: 0;
+}
+.person__department {
+  font-size: 0.6527777778rem;
+}
+@media (min-width: 48rem) {
   .person__department {
-    font-size: 0.65278rem; }
-    @media (min-width: 48em) {
-      .person__department {
-        font-size: 0.83333rem; } }
-    @media (min-width: 62em) {
-      .person__department {
-        font-size: 1rem; } }
-    .person__department .field__item {
-      display: inline-block; }
-      .person__department .field__item::after {
-        content: ", "; }
-      .person__department .field__item:last-of-type::after {
-        content: none; }
-  .person__bio {
-    margin-top: 1rem; }
+    font-size: 0.8333333333rem;
+  }
+}
+@media (min-width: 62rem) {
+  .person__department {
+    font-size: 1rem;
+  }
+}
+.person__department .field__item {
+  display: inline-block;
+}
+.person__department .field__item::after {
+  content: ", ";
+}
+.person__department .field__item:last-of-type::after {
+  content: none;
+}
+.person__bio {
+  margin-top: 1rem;
+}
 
 a.person__url {
-  text-decoration: none; }
+  text-decoration: none;
+}

@@ -1,4 +1,6 @@
-@import "_partials";
+@use "sass:math";
+
+@use 'partials' as *;
 
 .save-link {
   @include fs(micro);
@@ -7,7 +9,7 @@
   color: $gray-30;
   display: flex;
   font-weight: $fw-bold;
-  letter-spacing: (2 / 16) * 1em;
+  letter-spacing: math.div(2, 16) * 1em;
   text-decoration: none;
   text-transform: uppercase;
   transition: all .2s ease-out;

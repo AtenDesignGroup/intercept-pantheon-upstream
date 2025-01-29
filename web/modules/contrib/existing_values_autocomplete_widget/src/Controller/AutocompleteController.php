@@ -39,8 +39,9 @@ class AutocompleteController extends ControllerBase {
       $results = $query->execute()->fetchAllKeyed();
 
       foreach ($results as $id => $value) {
+        /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
         $entity = $entity_type_manager->getStorage($entity_type_id)->load($id);
-        if ($entity->access('edit')) {
+        if ($entity->access('view') && $entity->get($field_name)->access('view')) {
           $existing_values[$value] = [
             'value' => $value,
             'label' => $value,

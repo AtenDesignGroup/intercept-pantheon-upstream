@@ -107,7 +107,11 @@ class OfficeHoursStatusFilter extends ManyToOne {
     }
 
     $filterValue = $filter->value;
-    if (array_key_exists(static::ANY, $filterValue)) {
+    $filterValue = array_filter($filterValue, function ($statusValue) {
+      return $statusValue !== 0;
+    });
+
+    if (in_array(static::ANY, $filterValue)) {
       return;
     }
 
@@ -128,17 +132,17 @@ class OfficeHoursStatusFilter extends ManyToOne {
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
       $items = $value->_entity->$fieldName;
       if (is_null($items) || $items->isEmpty()) {
-        if (!array_key_exists(static::NEVER, $filterValue)) {
+        if (!in_array(static::NEVER, $filterValue)) {
           unset($view->result[$key]);
         }
         continue;
       }
 
       $is_open = $items->isOpen();
-      if ($is_open && array_key_exists((int) static::OPEN, $filterValue)) {
+      if ($is_open && in_array((int) static::OPEN, $filterValue)) {
         continue;
       }
-      if ((!$is_open) && array_key_exists((int) static::CLOSED, $filterValue)) {
+      if ((!$is_open) && in_array((int) static::CLOSED, $filterValue)) {
         continue;
       }
       unset($view->result[$key]);

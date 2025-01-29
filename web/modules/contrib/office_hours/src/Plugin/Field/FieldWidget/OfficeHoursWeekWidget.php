@@ -9,7 +9,7 @@ use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 
 /**
- * Plugin implementation of the 'office_hours_default' widget.
+ * Plugin implementation of an office_hours widget.
  *
  * @FieldWidget(
  *   id = "office_hours_default",
@@ -39,9 +39,12 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
     // @todo Fix Warning: Undefined array key "translation" in EntityDisplayFormBase->copyFormValuesToEntity()
     // @todo Fix Warning: Trying to access array offset on value of type null in Drupal\field_ui\Form\EntityDisplayFormBase->copyFormValuesToEntity() (line 628 of EntityDisplayFormBase.php).
 
+    // Clear settingsform to avoid error with Paragraphs module [#3413697].
+    $form = parent::settingsForm($form, $form_state);
+
     $form['collapsed'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Collapse exceptions sub-widget'),
+      '#title' => $this->t('Collapse time slots'),
       '#default_value' => $this->getSetting('collapsed'),
     ];
 
@@ -56,7 +59,7 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-    $summary[] = $this->t('Collapsed exceptions: @collapsed', ['@collapsed' => $this->getSetting('collapsed') ? $this->t('Yes') : $this->t('No')]);
+    $summary[] = $this->t('Collapse time slots: @collapsed', ['@collapsed' => $this->getSetting('collapsed') ? $this->t('Yes') : $this->t('No')]);
     return $summary;
   }
 
@@ -88,14 +91,12 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
       return [];
     }
 
-    // @todo Parent data are lost.
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
     $items->filterEmptyItems();
 
     $field_settings = $this->getFieldSettings();
     $widget_settings = $this->getSettings();
-
-    $element = [
+    $element['value'] += [
       '#type' => 'office_hours_table',
       '#field_settings' => $field_settings,
       '#widget_settings' => $widget_settings,
@@ -103,6 +104,14 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
       '#field_type' => $this->getSeason(),
       '#default_value' => $items->getValue(),
     ];
+    // Wrap the table in a collapsible fieldset, which is the only way(?)
+    // to show the 'required' asterisk and the help text.
+    // The help text is now shown above the table, as requested by some users.
+    $element = [
+      '#type' => 'details',
+      // Controls the HTML5 'open' attribute. Defaults to FALSE.
+      '#open' => !$widget_settings['collapsed'],
+    ] + $element;
 
     /*
     // @todo Add Message.
@@ -113,7 +122,7 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
     }
      */
 
-     return $element;
+    return $element;
   }
 
   /**
@@ -146,14 +155,14 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
     $values = parent::massageFormValues($values, $form, $form_state);
 
     // @todo Correct $element['#parents'], since FormBuilder's
-    // $form_state->setValueForElement() and  $form_state->setUserInput($input)
+    // $form_state->setValueForElement() and $form_state->setUserInput($input)
     // set too much/wrong data, complicating massageFormValues().
     $new_values = [];
     $cardinality = $this->getFieldSetting('cardinality_per_day');
     foreach ($values as $value) {
       for ($day_delta = 0; $day_delta < $cardinality; $day_delta++) {
         if (isset($value[$day_delta]['day'])) {
-          if ($day_delta == 0) {
+          if ($day_delta === 0) {
             $date = $value[$day_delta]['day'];
           }
           $value[$day_delta]['day'] = $date;

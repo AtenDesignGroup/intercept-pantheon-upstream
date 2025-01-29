@@ -2,10 +2,10 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\FocusFirstCommand;
 use Drupal\Core\Ajax\InsertCommand;
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -56,7 +56,7 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
 
     if (!isset($field_state["$field_name-exceptions_count"])) {
       $field_state["$field_name-exceptions_count"] ??= $items->countExceptionDays();
-      $field_state['collapsed'] ??= $widget_settings['collapsed'];
+      $field_state['collapsed_exceptions'] ??= $widget_settings['collapsed_exceptions'];
       static::setWidgetState($parents, $field_name, $form_state, $field_state);
     }
 
@@ -89,7 +89,7 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
       '#type' => 'details',
       // Controls the HTML5 'open' attribute. Defaults to FALSE.
       // Make sure the 'details' element keeps open after 'Add exception' button.
-      '#open' => !$field_state['collapsed'],
+      '#open' => !$field_state['collapsed_exceptions'],
       '#title' => \Drupal::translation()->formatPlural($count_days, '1 exception', '@count exceptions'),
       // Add the time slot table as a sub-element.
       'value' => $element,
@@ -141,7 +141,7 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
     $field_state["$field_name-exceptions_count"]++;
     $field_state['items_count']++;
     // Make sure the 'details' element keeps open after 'Add exception' button.
-    $field_state['collapsed'] = FALSE;
+    $field_state['collapsed_exceptions'] = FALSE;
     static::setWidgetState($parents, $field_name, $form_state, $field_state);
 
     $form_state->setRebuild();

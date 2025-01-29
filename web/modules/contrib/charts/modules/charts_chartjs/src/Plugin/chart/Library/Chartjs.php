@@ -2,13 +2,13 @@
 
 namespace Drupal\charts_chartjs\Plugin\chart\Library;
 
-use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\Component\Utility\Color;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
+use Drupal\charts\Plugin\chart\Library\ChartBase;
 
 /**
  * Define a concrete class for a Chart.
@@ -206,7 +206,7 @@ class Chartjs extends ChartBase {
         ];
       }
       elseif ($type === 'chart_yaxis') {
-        $target_axes = array_column($chart_definition['data']['datasets'],'yAxisID');
+        $target_axes = array_column($chart_definition['data']['datasets'], 'yAxisID');
         $y_axis_key = in_array($child, $target_axes) ? $child : 'y';
         $axes_info[$y_axis_key] = [
           'element' => $element[$child] ?? [],
@@ -356,6 +356,10 @@ class Chartjs extends ChartBase {
       $chart_definition['options']['plugins']['dataLabels']['display'] = TRUE;
     }
     $chart_definition['options']['plugins']['legend'] = $this->buildLegend($element);
+
+    if (!empty($element['#connect_nulls'])) {
+      $chart_definition['options']['spanGaps'] = TRUE;
+    }
 
     return $chart_definition;
   }

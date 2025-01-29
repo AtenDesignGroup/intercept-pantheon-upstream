@@ -56,7 +56,9 @@ class FutureReservationConstraintValidator extends ConstraintValidator implement
       return;
     }
 
-    if (new \DateTime($dates[0]['value']) < new \DateTime()) {
+    // Event dates are stored in UTC, so we need to compare to the current time in UTC.
+    $timezone = new \DateTimeZone('UTC');
+    if (new \DateTime($dates[0]['value'], $timezone) < new \DateTime('now', $timezone)) {
       $this->context->addViolation($constraint->errorMessage);
     }
   }

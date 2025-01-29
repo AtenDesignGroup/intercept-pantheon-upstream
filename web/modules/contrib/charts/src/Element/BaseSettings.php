@@ -2,7 +2,6 @@
 
 namespace Drupal\charts\Element;
 
-use Drupal\charts\ColorHelperTrait;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -11,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\charts\ColorHelperTrait;
 use Drupal\views\Views;
 
 /**
@@ -280,6 +280,13 @@ class BaseSettings extends FormElementBase {
       '#type' => 'checkbox',
       '#default_value' => !empty($options['display']['data_markers']),
       '#description' => new TranslatableMarkup('Show data markers (points) on line charts?'),
+    ];
+
+    $element['display']['connect_nulls'] = [
+      '#title' => new TranslatableMarkup('Connect nulls'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($options['display']['connect_nulls']),
+      '#description' => new TranslatableMarkup('Connect interrupted points on line charts?'),
     ];
 
     $element['display']['legend_position'] = [

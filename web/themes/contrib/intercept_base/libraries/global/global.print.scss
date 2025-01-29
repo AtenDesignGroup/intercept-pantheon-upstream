@@ -6,7 +6,9 @@
 //
 
 // Import Partials
-@import "_partials";
+@use "sass:math";
+
+@use "partials" as *;
 
 html {
   font-size: 8pt;
@@ -29,7 +31,7 @@ nav,
 }
 
 .header {
-  margin: 0; 
+  margin: 0;
 }
 
 .header__logo {
@@ -84,7 +86,7 @@ h1 {
 .events-list {
   .teaser__image {
     background-image: none;
-    width: percentage(3/23);
+    width: math.percentage(math.div(3, 23));
 
     img {
       display: none;
@@ -120,7 +122,7 @@ h1 {
 
   .teaser__main {
     flex-wrap: nowrap;
-    width: percentage(19/23);
+    width: math.percentage(math.div(19, 23));
     display: flex;
 
     .teaser__content {
@@ -130,10 +132,10 @@ h1 {
 
     .teaser__footer {
       flex: none;
-      margin-left: percentage(1/23);
+      margin-left: math.percentage(math.div(1, 23));
       min-width: 8em;
       text-align: right;
-      width: percentage(4/23);
+      width: math.percentage(math.div(4, 23));
     }
   }
 

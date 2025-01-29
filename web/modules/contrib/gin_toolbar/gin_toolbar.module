@@ -605,3 +605,12 @@ function _gin_toolbar_module_is_active($module) {
 
   return FALSE;
 }
+
+/**
+ * Implements hook_requirements_alter().
+ */
+function gin_toolbar_requirements_alter(array &$requirements) {
+  if (isset($requirements['toolbar'])) {
+    unset($requirements['toolbar']);
+  }
+}

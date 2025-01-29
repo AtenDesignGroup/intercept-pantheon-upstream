@@ -27,7 +27,7 @@
         "drupal/clientside_validation": "^4",
         "drupal/core": "^10",
         "drush/drush": "*",
-        "npm-asset/jquery-validation": "^1.20",
+        "npm-asset/jquery-validation": "^1.21",
         "oomphinc/composer-installers-extender": "^1.1",
         "vlucas/phpdotenv": "^2.4",
         "webflo/drupal-finder": "^1.0.0",

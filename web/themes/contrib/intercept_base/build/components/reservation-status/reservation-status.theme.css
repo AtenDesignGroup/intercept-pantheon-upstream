@@ -1,12 +1,16 @@
 .reservation-status--requested::before {
   background-color: #eef1f4;
-  border: 1px solid #818487; }
+  border: 1px solid #818487;
+}
 
 .reservation-status--approved::before {
-  background-color: #0288d1; }
+  background-color: #0288d1;
+}
 
 .reservation-status--selected::before {
-  background-color: #747481; }
+  background-color: #747481;
+}
 
 .reservation-status--event::before {
-  background-color: #ff7548; }
+  background-color: #ff7548;
+}

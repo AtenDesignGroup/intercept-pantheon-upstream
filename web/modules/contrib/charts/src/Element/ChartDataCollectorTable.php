@@ -2,14 +2,14 @@
 
 namespace Drupal\charts\Element;
 
-use Drupal\charts\ColorHelperTrait;
-use Drupal\charts\Plugin\chart\Library\ChartInterface;
 use Drupal\Component\Utility\Environment;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElementBase;
+use Drupal\charts\ColorHelperTrait;
+use Drupal\charts\Plugin\chart\Library\ChartInterface;
 
 /**
  * Provides a chart data collector table form element.

@@ -176,7 +176,7 @@ class RlHelper implements DateRecurHelperInterface {
   /**
    * {@inheritdoc}
    */
-  public function getOccurrences(\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array {
+  public function getOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array {
     if ($this->isInfinite() && !isset($rangeEnd) && !isset($limit)) {
       throw new \InvalidArgumentException('An infinite rule must have a date or count limit.');
     }

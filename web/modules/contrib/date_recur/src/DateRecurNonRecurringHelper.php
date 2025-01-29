@@ -26,7 +26,7 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    */
   public function __construct(
       \DateTimeInterface $dtStart,
-      \DateTimeInterface $dtStartEnd = NULL,
+      ?\DateTimeInterface $dtStartEnd = NULL,
   ) {
     $dtStartEnd ??= clone $dtStart;
     $this->occurrences = [new DateRange($dtStart, $dtStartEnd)];
@@ -80,7 +80,7 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
   /**
    * {@inheritdoc}
    */
-  public function getOccurrences(\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array {
+  public function getOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array {
     if (isset($limit) && (!is_int($limit) || $limit < 0)) {
       // Limit must be a number and more than one.
       throw new \InvalidArgumentException('Invalid count limit.');

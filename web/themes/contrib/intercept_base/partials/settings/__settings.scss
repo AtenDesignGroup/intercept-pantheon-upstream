@@ -1,6 +1,6 @@
-@import 'breakpoints';
-@import 'colors';
-@import 'layout';
-@import 'spacing';
-@import 'typography';
-@import 'transitions';
+@forward 'breakpoints';
+@forward 'colors';
+@forward 'layout';
+@forward 'spacing';
+@forward 'typography';
+@forward 'transitions';

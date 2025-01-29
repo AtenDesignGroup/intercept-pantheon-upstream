@@ -2,50 +2,76 @@
   margin-bottom: 0.9375rem;
   margin-top: 0.9375rem;
   padding-bottom: 0.25rem;
-  padding-left: 7.14286%;
-  padding-right: 7.14286%;
-  position: relative; }
-  @media (min-width: 48em) {
-    .quote {
-      margin-bottom: 1.2375rem; } }
-  @media (min-width: 62em) {
-    .quote {
-      margin-bottom: 1.875rem; } }
-  @media (min-width: 48em) {
-    .quote {
-      margin-top: 1.2375rem; } }
-  @media (min-width: 62em) {
-    .quote {
-      margin-top: 1.875rem; } }
-  @media (min-width: 48em) {
-    .quote {
-      padding-bottom: 0.33rem; } }
-  @media (min-width: 62em) {
-    .quote {
-      padding-bottom: 0.5rem; } }
-  @media (min-width: 37.5em) {
-    .quote {
-      padding-left: 3rem;
-      padding-right: 3rem; } }
-  @media (min-width: 62em) {
-    .quote {
-      padding-left: 8rem;
-      padding-right: 8rem; } }
-  .quote::before {
-    content: "";
-    position: absolute; }
+  padding-left: 7.1428571429%;
+  padding-right: 7.1428571429%;
+  position: relative;
+}
+@media (min-width: 48rem) {
+  .quote {
+    margin-bottom: 1.2375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .quote {
+    margin-bottom: 1.875rem;
+  }
+}
+@media (min-width: 48rem) {
+  .quote {
+    margin-top: 1.2375rem;
+  }
+}
+@media (min-width: 62rem) {
+  .quote {
+    margin-top: 1.875rem;
+  }
+}
+@media (min-width: 48rem) {
+  .quote {
+    padding-bottom: 0.33rem;
+  }
+}
+@media (min-width: 62rem) {
+  .quote {
+    padding-bottom: 0.5rem;
+  }
+}
+@media (min-width: 37.5rem) {
+  .quote {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+@media (min-width: 62rem) {
+  .quote {
+    padding-left: 8rem;
+    padding-right: 8rem;
+  }
+}
+.quote::before {
+  content: "";
+  position: absolute;
+}
 
 .quote__text {
   border-top: 0.375rem solid #eef1f4;
   font-style: italic;
-  padding-top: .75rem; }
+  padding-top: 0.75rem;
+}
 
 .quote__citation {
-  font-size: 0.57639rem;
-  margin-top: 1rem; }
-  @media (min-width: 48em) {
-    .quote__citation {
-      font-size: 0.72917rem; } }
-  @media (min-width: 62em) {
-    .quote__citation {
-      font-size: 0.875rem; } }
+  margin-top: 1rem;
+}
+.quote__citation {
+  font-size: 0.5763888889rem;
+}
+@media (min-width: 48rem) {
+  .quote__citation {
+    font-size: 0.7291666667rem;
+  }
+}
+@media (min-width: 62rem) {
+  .quote__citation {
+    font-size: 0.875rem;
+  }
+}

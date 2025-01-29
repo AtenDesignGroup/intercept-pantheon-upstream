@@ -1,14 +1,19 @@
 .content-header {
-  background: #4c4d4f; }
+  background: #4c4d4f;
+}
 
 .content-header__text {
-  color: #fff; }
+  color: #fff;
+}
 
 .content-header__supertitle,
 .content-header__date-date {
-  font-weight: 900; }
+  font-weight: 900;
+}
 
 .content-header__description {
-  color: #fff; }
-  .content-header__description .intro, .content-header__description .intro a {
-    color: #fff; }
+  color: #fff;
+}
+.content-header__description .intro, .content-header__description .intro a {
+  color: #fff;
+}

@@ -1,2 +1,3 @@
-.page-spinner > [role="progressbar"] > div {
-  background-color: #0288d1; }
+.page-spinner > [role=progressbar] > div {
+  background-color: #0288d1;
+}

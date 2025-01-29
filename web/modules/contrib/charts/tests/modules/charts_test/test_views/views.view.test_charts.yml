@@ -102,6 +102,7 @@ display:
               subtitle: ''
               data_labels: true
               data_markers: true
+              connect_nulls: false
               legend_position: bottom
               background: ''
               three_dimensional: 0

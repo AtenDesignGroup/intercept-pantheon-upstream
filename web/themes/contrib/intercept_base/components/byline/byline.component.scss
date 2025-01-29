@@ -1,4 +1,4 @@
-@import "_partials";
+@use 'partials' as *;
 
 .byline {
   @include list--no-bullets;

@@ -3,10 +3,10 @@
 // Import Functions
 //
 
-@import "ce";
-@import "cp";
-@import "bp";
-@import "str";
-@import "svg";
-@import "typography";
-@import "rem";
+@forward "ce";
+@forward "cp";
+@forward "bp";
+@forward "str";
+@forward "svg";
+@forward "typography";
+@forward "rem";

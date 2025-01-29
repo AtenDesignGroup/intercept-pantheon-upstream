@@ -1,4 +1,4 @@
-@import "_partials";
+@use 'partials' as *;
 
 .more-link {
   color: $clr-primary-dark;

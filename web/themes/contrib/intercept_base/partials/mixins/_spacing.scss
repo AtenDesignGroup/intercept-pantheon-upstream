@@ -2,6 +2,9 @@
 // @file
 // Spacing mixins
 //
+@use 'value' as *;
+@use '../settings/_spacing' as spacing_settings;
+
 @mixin spacing($property, $value, $breakpoint: null) {
-  @include get-value($property, $value, $spacing, $breakpoint)
+  @include get-value($property, $value, spacing_settings.$spacing, $breakpoint)
 }

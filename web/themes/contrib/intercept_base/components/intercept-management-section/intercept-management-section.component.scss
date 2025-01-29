@@ -1,4 +1,4 @@
-@import "_partials";
+@use 'partials' as *;
 
 .intercept-management-section__actions {
   @include list--no-bullets;

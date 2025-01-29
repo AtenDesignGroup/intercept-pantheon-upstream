@@ -2,11 +2,11 @@
 
 namespace Drupal\charts\Plugin\Field\FieldFormatter;
 
-use Drupal\charts\Element\Chart;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
+use Drupal\charts\Element\Chart;
 
 /**
  * Plugin implementation of the "chart_config_default" formatter.

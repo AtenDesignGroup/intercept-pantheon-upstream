@@ -15,47 +15,10 @@ use Drupal\office_hours\OfficeHoursDateHelper;
  *   default_widget = "office_hours_exceptions",
  *   default_formatter = "office_hours_table",
  *   list_class = "\Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList",
+ *   cardinality = -1,
  * )
  */
 class OfficeHoursItem extends OfficeHoursItemBase {
-
-  /**
-   * The maximum day number for Weekday days.
-   *
-   * @var int
-   */
-  const WEEK_DAY_MAX = 7;
-
-  /**
-   * The minimum day number for Seasonal days.
-   *
-   * Usage: $items->appendItem(['day' => OfficeHoursItem::EXCEPTION_DAY]).
-   * Also used for SeasonHeader: $day = SeasonId + SEASON_DAY_MIN;
-   *
-   * @var int
-   */
-  const SEASON_DAY_MIN = 9;
-
-  /**
-   * The maximum day number for Seasonal weekdays.
-   *
-   * @var int
-   */
-  const SEASON_DAY_MAX = 1000000000;
-
-  /**
-   * The minimum day number for Exception days.
-   *
-   * @var int
-   */
-  const EXCEPTION_DAY = 1000000001;
-
-  /**
-   * The maximum horizon for Exception days in formatter.
-   *
-   * @var int
-   */
-  const EXCEPTION_HORIZON_MAX = 999;
 
   /**
    * Determines whether the item is a seasonal or regular Weekday.
@@ -84,7 +47,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    * Determines whether the item is the Exceptions header.
    *
    * @return bool
-   *   True if the day_number equals EXCEPTION_DAY.
+   *   True if the day is the specially defined ExceptionsHeader.
    */
   public function isExceptionHeader() {
     return OfficeHoursDateHelper::isExceptionHeader($this->day);
@@ -141,7 +104,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
 
     // Convert $from-$to dates to weekdays.
     // @todo Support other first_day_of_week.
-    if ($to > OfficeHoursItem::SEASON_DAY_MIN) {
+    if (!OfficeHoursDateHelper::isWeekDay($to)) {
       $from = OfficeHoursDateHelper::getWeekday($from);
       $to = OfficeHoursDateHelper::getWeekday($to);
     }
@@ -168,24 +131,25 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    *
    * @var int
    */
-  const UNDEFINED = -1;
-  const CLOSED_ALL_DAY = 0;
-  const IS_OPEN = 1;
-  const WAS_OPEN = 2;
-  const WILL_OPEN = 3;
+  public const UNDEFINED = -1;
+  public const CLOSED_ALL_DAY = 0;
+  public const IS_OPEN = 1;
+  public const WAS_OPEN = 2;
+  public const WILL_OPEN = 3;
 
   /**
    * Returns if a time slot is currently open or not.
    *
    * @param int $time
-   *   A timestamp. Might be adapted for User Timezone.
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
    *
    * @return int
    *   a predefined constant with the status.
    */
-  public function getStatus($time) {
+  public function getStatus(int $time = 0): int {
     $status = static::UNDEFINED;
 
+    $time = OfficeHoursDateHelper::getRequestTime(0, $this->getParent());
     $now_weekday = OfficeHoursDateHelper::getWeekday($time);
     // 'Hi' format, with leading zero (0900).
     $now = OfficeHoursDateHelper::format($time, 'Hi');
@@ -244,9 +208,9 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    * @return bool
    *   TRUE if open at $time.
    */
-  public function isOpen($time) {
+  public function isOpen(int $time) {
     $status = $this->getStatus($time);
-    return $status === static::IS_OPEN;
+    return $status == static::IS_OPEN;
   }
 
   /**
@@ -345,7 +309,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
     $day_delta = $value['day_delta'] ?? 0;
 
     if (OfficeHoursDateHelper::isExceptionHeader($day)) {
-      // An ExceptionItem is created with ['day' => EXCEPTION_DAY,].
+      // An ExceptionItem is created with ['day' => EXCEPTION_DAY_MIN,].
       $day = NULL;
       $value = [];
     }
@@ -434,7 +398,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
       return '';
     }
 
-    $formatted_time = $start . $separator . $end;
+    $formatted_time = "$start$separator$end";
     \Drupal::moduleHandler()->alter('office_hours_time_format', $formatted_time);
 
     return $formatted_time;
@@ -504,14 +468,7 @@ class OfficeHoursItem extends OfficeHoursItemBase {
   }
 
   /**
-   * @deprecated in version 8.x-1.12.
-   */
-  public function getLabel(array $settings) {
-    return $this->label($settings);
-  }
-
-  /**
-   * Formats the labels of a Render element, like getLabel().
+   * Formats the labels of a Render element.
    *
    * @param array $settings
    *   The formatter settings.
@@ -531,10 +488,10 @@ class OfficeHoursItem extends OfficeHoursItemBase {
     // Extend the label for Grouped days.
     if (isset($value['endday'])) {
       $day = $value['endday'];
-      $label2 = $this->formatLabel($pattern, ['day' => $day]);
+      $label_to = $this->formatLabel($pattern, ['day' => $day]);
 
       $group_separator = $settings['separator']['grouped_days'];
-      $label .= $group_separator . $label2;
+      $label .= "$group_separator$label_to";
     }
 
     // Add separator after day name. E.g., 'Monday' --> 'Monday: '.

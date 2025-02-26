@@ -148,7 +148,7 @@ class OfficeHoursSeasonHeader extends FormElement {
     ];
     $element['name'] = [
       '#type' => 'textfield',
-      '#required' => TRUE,
+      '#required' => FALSE,
       // Add a label/header/title for accessibility (a11y) screen readers.
       '#title' => $labels['season']['data'],
       // '#title_display' => 'before', // {'before' | invisible'}.
@@ -182,8 +182,8 @@ class OfficeHoursSeasonHeader extends FormElement {
       '#default_value' => $season->getToDate(OfficeHoursDateHelper::DATE_STORAGE_FORMAT),
     ];
 
-    // @todo Add better seasonal add, copy, delete JS-links.
-    // Copied from EntityListBuilder::buildOperations().
+    // @todo #3135259 Add better seasonal add, copy, delete JS-links.
+    // Copy from \Drupal\Core\Entity\EntityListBuilder::buildOperations().
     $element['operations'] = [
       'data' => self::getDefaultOperations($season),
     ];

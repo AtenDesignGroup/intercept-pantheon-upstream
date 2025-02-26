@@ -60,13 +60,9 @@ class NonOverlappingReservationConstraintValidator extends ConstraintValidator i
       return;
     }
 
-    if ($this->currentUser->hasPermission('bypass room reservation overlap constraints') && !$entity->__get('warning')) {
-      return;
-    }
-
     $owner = $entity->getOwner();
 
-    if (!$owner->hasPermission('bypass room reservation overlap constraints') || $entity->__get('warning')) {
+    if ($entity->__get('warning')) {
       $dates = $entity->field_dates->getValue();
       $room = $entity->field_room->entity;
       if (empty($dates) || empty($room) || empty($dates[0]['value']) || empty($dates[0]['end_value'])) {

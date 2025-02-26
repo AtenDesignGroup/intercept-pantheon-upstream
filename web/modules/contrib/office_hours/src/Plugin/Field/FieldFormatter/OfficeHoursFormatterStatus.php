@@ -2,9 +2,9 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursStatus;
 
 /**
  * Plugin implementation of the formatter.
@@ -13,7 +13,6 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "office_hours_status",
  *   label = @Translation("Status"),
  *   field_types = {
- *     "office_hours",
  *     "office_hours_status",
  *   },
  * )
@@ -52,16 +51,18 @@ class OfficeHoursFormatterStatus extends OfficeHoursFormatterBase {
     // Alter the default settings, to calculate the cache correctly.
     // The status formatter has no UI for this setting.
     $this->setSetting('show_closed', 'next');
-    $settings = $this->getSettings();
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
+    $formatter_settings = $this->getSettings();
+    $options = OfficeHoursStatus::getOptions(NULL, $formatter_settings);
+
     $elements[0]['#theme'] = 'office_hours_status';
     $elements[0]['#attributes'] = [
       // Empty class is needed for office-hours-status.twig.html file
       'class' => [],
     ];
     $elements[0] += [
-      '#open_text' => (string) $this->t(Html::escape($settings['current_status']['open_text'])),
-      '#closed_text' => (string) $this->t(Html::escape($settings['current_status']['closed_text'])),
+      '#open_text' => (string) $options[OfficeHoursStatus::OPEN],
+      '#closed_text' => (string) $options[OfficeHoursStatus::CLOSED],
+      '#never_text' => (string) $options[OfficeHoursStatus::NEVER],
       '#position' => $this->settings['current_status']['position'],
     ];
 

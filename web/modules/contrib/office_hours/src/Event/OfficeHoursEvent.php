@@ -48,15 +48,15 @@ class OfficeHoursEvent extends Event {
    *   The office_hours ItemList.
    * @param array $office_hours
    *   The array of already formatted office_hours.
-   * @param int $timestamp
-   *   The unix timestamp.
+   * @param int $time
+   *   The UNIX timestamp.
    * @param \Drupal\Core\Field\PluginSettingsBase|null $plugin
    *   (@todo) The formatter or widget, in order to avoid multiple processing.
    */
-  public function __construct(OfficeHoursItemListInterface $items, array $office_hours, int $timestamp, PluginSettingsBase|NULL $plugin) {
+  public function __construct(OfficeHoursItemListInterface $items, array $office_hours, int $time, PluginSettingsBase|NULL $plugin) {
     $this->items = $items;
     $this->officeHours = $office_hours;
-    $this->timestamp = $timestamp;
+    $this->timestamp = $time;
     $this->plugin = $plugin;
   }
 
@@ -94,7 +94,7 @@ class OfficeHoursEvent extends Event {
    * Returns the timestamp to be used.
    *
    * @return int
-   *   The unix timestamp.
+   *   The UNIX timestamp.
    */
   public function getTimestamp() {
     return $this->timestamp;

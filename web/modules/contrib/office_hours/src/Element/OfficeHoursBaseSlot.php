@@ -41,76 +41,58 @@ class OfficeHoursBaseSlot extends FormElement {
   public static function getDefaultOperations(array $element): array {
     $operations = [];
 
-    // Add explicitly, needed when dropbuttons are used.
-    $operations['add'] = [];
-    $operations['clear'] = [];
-    $operations['copy'] = [];
-
     // The valueCallback() has populated the #value array.
     $value = $element['#value'];
     $value = is_object($value) ? $value->getValue() : $value;
     $day = $value['day'];
     $day_delta = $element['#day_delta'];
 
-    // Note: the operations key is also used in JS, e.g., $('[id$=add]').
-    // Note: When using '#type' => 'operations', the weight is not used,
-    // so ordering must be OK here.
-    // For 'link', add dummy URL - it will be catch-ed by js.
-    $url = Url::fromRoute('<front>');
-    $suffix = ' ';
-
-    // Add 'Add time slot' js to all-but-last slots of each day.
     $max_delta = $element['#field_settings']['cardinality_per_day'] - 1;
-    if ($day_delta < $max_delta) {
-      $operations['add'] = [
-        '#type' => 'link',
-        '#title' => t('Add @type', ['@type' => t('time slot')]),
-        '#weight' => 11,
-        '#url' => $url,
-        '#suffix' => $suffix,
-        '#attributes' => [
-          'class' => ['office-hours-link'],
-        ],
-      ];
-    }
 
-    // Add 'Clear this line' js to each element.
+    // Step 1. Prepare the unique values per operation.
+    // Note: the operations key is also used in JS, e.g., $('[id$=add]').
+    //
+    // Add operation 'Add time slot' js to all-but-last slots of each day.
+    $operations['add'] = ($day_delta >= $max_delta) ? [] : [
+      'title' => t('Add @type', ['@type' => t('time slot')]),
+      'weight' => 11,
+    ];
+    // Add operation 'Clear this time slot' js to each element.
     // Use text 'Clear', which has lots of translations.
     // Show always, even if empty, to allow not-committed entries.
     $operations['clear'] = [
-      '#type' => 'link',
-      '#title' => t('Clear'),
-      '#weight' => 12,
-      '#url' => $url,
-      '#suffix' => $suffix,
-      '#attributes' => [
-        'class' => ['office-hours-link'],
-      ],
+      'title' => t('Clear'),
+      'weight' => 12,
+    ];
+    // Add operation 'Copy' js to first slot of each day.
+    // Note: First day copies from last day.
+    $operations['copy'] = $day_delta ? [] : [
+      'title' => $day !== OfficeHoursDateHelper::getFirstDay()
+        ? t('Copy previous day')
+        : t('Copy last day'),
+      'weight' => 16,
     ];
 
-    // Add 'Copy' js to first slot of each day.
-    // Note: First day copies from last day.
-    if ($day_delta === 0) {
-      $operations['copy'] = [
-        '#type' => 'link',
-        '#title' => ($day !== OfficeHoursDateHelper::getFirstDay())
-          ? t('Copy previous day') : t('Copy last day'),
-        '#weight' => 16,
-        '#url' => $url,
-        '#suffix' => $suffix,
-        '#attributes' => [
-          'class' => ['office-hours-link'],
-        ],
-      ];
+    // Step 2. Enrich each operation, to be valid in rendering.
+    // Add a dummy URL to 'link' - it will be catch-ed by js.
+    $url = Url::fromRoute('<front>');
+    $suffix = ' ';
+    foreach ($operations as $key => $value) {
+      if (!empty($value)) {
+        $operations[$key] = [
+          '#type' => 'link',
+          '#title' => $value['title'],
+          '#weight' => $value['weight'],
+          '#url' => $url,
+          '#suffix' => $suffix,
+          '#attributes' => [
+            'class' => ['office-hours-link', 'js-office-hours-operation'],
+          ],
+        ];
+      }
     }
 
-    // Wrap the operations in a div with specific class that will be used
-    // in JS to target only elements coming from this module.
-    if (!empty($operations)) {
-      $operations['#prefix'] = "<div class='js-office-hours-operations-wrapper'>";
-      $operations['#suffix'] = "</div>";
-    }
-
+    uasort($operations, '\Drupal\Component\Utility\SortArray::sortByWeightElement');
     return $operations;
   }
 
@@ -206,7 +188,7 @@ class OfficeHoursBaseSlot extends FormElement {
       '#field_settings' => $field_settings,
     ];
 
-    // Copied from EntityListBuilder::buildOperations().
+    // Copy from \Drupal\Core\Entity\EntityListBuilder::buildOperations().
     $element['operations'] = [
       'data' => self::getDefaultOperations($element),
     ];
@@ -234,11 +216,6 @@ class OfficeHoursBaseSlot extends FormElement {
     $element['#attributes']['office_hours_day'] = "$day_index";
 
     $element['#attributes']['id'] = $element['#id'];
-
-    // Wrap the columns in a div with specific class that will be used
-    // in JS to target only elements coming from this module.
-    $element['#prefix'] = "<div class='js-office-hours-columns-wrapper'>";
-    $element['#suffix'] = "</div>";
 
     return $element;
   }

@@ -63,8 +63,6 @@ Add the Field to any Views display, as you are used to do.
   - add the field to your View,
   - open the 'MULTIPLE FIELD SETTINGS' section,
   - uncheck the option 'Display all values in the same row',
-  - make also sure you display 'all' values.
-     (only valid if you have upgraded from 1.1 version.)
 
 ## USING VIEWS - FILTER CRITERIA
 

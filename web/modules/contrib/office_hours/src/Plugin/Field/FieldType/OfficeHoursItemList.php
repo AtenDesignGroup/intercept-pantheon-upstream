@@ -8,7 +8,7 @@ use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\office_hours\OfficeHoursDateHelper;
-use Drupal\office_hours\OfficeHoursFormatterTrait;
+use Drupal\office_hours\OfficeHoursItemListFormatter;
 use Drupal\office_hours\OfficeHoursSeason;
 
 /**
@@ -16,9 +16,14 @@ use Drupal\office_hours\OfficeHoursSeason;
  */
 class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListInterface {
 
-  use OfficeHoursFormatterTrait {
-    getRows as getFieldRows;
-  }
+  /**
+   * An object that formats the office_hours for viewing.
+   *
+   * This is set after assigning a value to $items, otherwise empty.
+   *
+   * @var \Drupal\office_hours\OfficeHoursItemListFormatter
+   */
+  private $formatter = NULL;
 
   /**
    * A list of seasons, for this ItemList.
@@ -30,7 +35,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   /**
    * {@inheritdoc}
    */
-  public function __construct(DataDefinitionInterface $definition, $name = NULL, TypedDataInterface $parent = NULL) {
+  public function __construct(DataDefinitionInterface $definition, $name = NULL, ?TypedDataInterface $parent = NULL) {
     parent::__construct($definition, $name, $parent);
   }
 
@@ -39,7 +44,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    *
    * {@inheritdoc}
    */
-  protected function createItem($offset = 0, $value = NULL) {
+  public function createItem($offset = 0, $value = NULL) {
     $day = $value['day'] ?? NULL;
 
     switch (TRUE) {
@@ -82,17 +87,19 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
 
   /**
    * {@inheritdoc}
-   *
-   * Make sure all (exception) days are in correct sort order,
-   * independent of database order, so formatter is correct.
-   * (Widget or other sources may store exceptions day in other sort order).
    */
   public function setValue($values, $notify = TRUE) {
     parent::setValue($values, $notify);
 
+    // Make sure all (exception) days are in correct sort order,
+    // independent of database order, so formatter is correct.
+    // (Widget or other sources may store exceptions day in other sort order).
     // Sort the database values by day number.
     // @todo In Formatter: itemList::getRows() or Widget: itemList::setValue().
     // $this->sort();
+
+    // Create the formatter AFTER setting the value.
+    $this->formatter = new OfficeHoursItemListFormatter($this);
   }
 
   /**
@@ -102,13 +109,14 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    */
   public function sort() {
     uasort($this->list, [OfficeHoursItem::class, 'sort']);
+    return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, PluginSettingsBase $plugin = NULL) {
-    return $this->getFieldRows($this->getValue(), $settings, $field_settings, $third_party_settings, $time, $plugin);
+  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, ?PluginSettingsBase $plugin = NULL) {
+    return $this->formatter->getRows($settings, $field_settings, $third_party_settings, $time, $plugin);
   }
 
   /**
@@ -214,7 +222,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     // Add New season at bottom of sorted list.
     if ($add_new_season) {
       // Add 'New season', until we have a proper 'Add season' button.
-      $season_id = $season_max + OfficeHoursSeason::SEASON_ID_FACTOR;
+      $season_id = $season_max + OfficeHoursDateHelper::SEASON_ID_FACTOR;
       $seasons[$season_id] = new OfficeHoursSeason($season_id);
     }
 
@@ -245,11 +253,14 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
 
     $list->filter(function ($item) use ($season_id) {
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-      if ($season_id == OfficeHoursItem::EXCEPTION_DAY && $item->isExceptionDay()) {
-        return TRUE;
-      }
-      if ($season_id == 0 && $item->isExceptionDay()) {
-        return FALSE;
+      if ($item->isExceptionDay()) {
+        if (OfficeHoursDateHelper::isExceptionHeader($season_id)) {
+          return TRUE;
+        }
+        if ($season_id == 0) {
+          return FALSE;
+        }
+        return $season_id == $item->getSeasonId();
       }
       return $season_id == $item->getSeasonId();
     });
@@ -272,8 +283,29 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   /**
    * {@inheritdoc}
    */
+  public function getStatus(int $time = 0): int {
+    return $this->{'status'};
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCurrentSlot(int $time = 0) {
+    return $this->formatter->getCurrentSlot($time);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNextDay(int $time = 0) {
+    return $this->formatter->getNextDay($time);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isOpen(int $time = 0): bool {
-    $current_item = $this->getCurrentSlot($time);
+    $current_item = $this->formatter->getCurrentSlot($time);
     return (bool) $current_item;
   }
 

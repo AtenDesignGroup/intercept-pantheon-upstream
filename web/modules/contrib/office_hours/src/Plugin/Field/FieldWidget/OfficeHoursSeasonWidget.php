@@ -65,13 +65,18 @@ class OfficeHoursSeasonWidget extends OfficeHoursWeekWidget {
       '#type' => 'details',
       // Controls the HTML5 'open' attribute. Defaults to FALSE.
       '#open' => (!$season_id),
-      '#title' => $season_id ? "<i>$label</i> " . $title : $element['#title'],
+      '#title' => $season_id ? "<i>$label</i> $title" : $element['#title'],
       'season' => $season_element,
     ] + $element;
 
     return $element;
   }
 
+  /**
+   * Returns the form element for the season header.
+   *
+   * {@inheritdoc}
+   */
   public function getSeasonHeader(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element = [];
 
@@ -96,15 +101,20 @@ class OfficeHoursSeasonWidget extends OfficeHoursWeekWidget {
       // Add field settings, for usage in each Element.
       '#field_settings' => $this->getFieldSettings(),
       // Add a label/header/title for accessibility (a11y) screen readers.
-      // '#title' => $label . ' (#title)',
+      // '#title' => "$label (#title)",
       // '#title_display' => 'before', // {'before' | invisible'}.
-      // '#description' => $label . ' (container #description)',
+      // '#description' => "$label (container #description)",
       // '#prefix' => "<b>$label (container #prefix)</b>",
       // .
     ];
     return $element;
   }
 
+  /**
+   * Returns the form element for the season title.
+   *
+   * {@inheritdoc}
+   */
   private function formatSeasonTitle(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $season = $this->getSeason();
     // @todo Use proper date format from field settings.

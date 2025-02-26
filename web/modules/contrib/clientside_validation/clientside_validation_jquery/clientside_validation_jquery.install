@@ -10,6 +10,18 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Implements hook_update_N().
  *
+ * Add default value for new config setting - force_html5_validation.
+ */
+function clientside_validation_jquery_update_8005() {
+  \Drupal::configFactory()
+    ->getEditable('clientside_validation_jquery.settings')
+    ->set('force_html5_validation', false)
+    ->save();
+}
+
+/**
+ * Implements hook_update_N().
+ *
  * Add default value for new config setting - force_validate_on_blur.
  */
 function clientside_validation_jquery_update_8004() {

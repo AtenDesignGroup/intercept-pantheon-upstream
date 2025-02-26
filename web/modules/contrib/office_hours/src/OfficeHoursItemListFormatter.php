@@ -4,45 +4,82 @@ namespace Drupal\office_hours;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\PluginSettingsBase;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\office_hours\Event\OfficeHoursEventDispatcher;
 use Drupal\office_hours\Event\OfficeHoursEvents;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList;
 
 /**
- * Factors out OfficeHoursItemList->getItems()->getRows().
+ * Factors out OfficeHoursItemList->getRows().
  *
  * Note: This is used in 3rd party code since #3219203.
  */
-trait OfficeHoursFormatterTrait {
+class OfficeHoursItemListFormatter {
 
-  /**
-   * An object to maintain the sorted ItemList.
-   *
-   * @var array
-   */
-  public $sortedList = NULL;
+  use StringTranslationTrait;
 
   /**
    * The DateHelper.
    *
    * @var \Drupal\office_hours\OfficeHoursDateHelper
    */
-  protected $dateHelper = NULL;
+  protected $dateHelper;
 
   /**
    * The event dispatcher service.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   * @var \Drupal\office_hours\Event\OfficeHoursEventDispatcher
    */
   private $eventDispatcher;
+
+  /**
+   * The ItemList.
+   *
+   * @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList
+   */
+  public $parent;
+
+  /**
+   * An object to maintain the sorted ItemList.
+   *
+   * @var OfficeHoursItemListSorter
+   */
+  public $sortedList;
+
+  /**
+   * Constructs a DatabaseBackend object.
+   *
+   * param \Drupal\Core\Database\Connection $connection
+   *   The database connection.
+   * param \Drupal\Core\Cache\CacheTagsChecksumInterface $checksum_provider
+   *   The cache tags checksum provider.
+   * param string $bin
+   *   The cache bin for which the object is created.
+   * param \Drupal\Component\Serialization\ObjectAwareSerializationInterface|int|string|null $serializer
+   *   (optional) The serializer to use.
+   * param \Drupal\Component\Datetime\TimeInterface|int|string|null $time
+   *   The time service.
+   * param int $max_rows
+   *   (optional) The maximum number of rows that are allowed in this cache bin
+   *   table.
+   */
+  public function __construct(OfficeHoursItemList $parent) {
+    $this->dateHelper = new OfficeHoursDateHelper();
+    $this->eventDispatcher = new OfficeHoursEventDispatcher();
+
+    // Clone the Item list, since the following code will change the items,
+    // while custom installations need complete $items in theme preprocessing.
+    $this->parent = clone $parent;
+
+    $this->sortedList = new OfficeHoursItemListSorter($parent);
+  }
 
   /**
    * Returns the items of a field.
    *
    * Note: This is used in 3rd party code since #3219203.
    *
-   * @param array $values
-   *   (obsolete) Result from FieldItemListInterface $items->getValue().
    * @param array $settings
    *   The settings.
    * @param array $field_settings
@@ -50,45 +87,38 @@ trait OfficeHoursFormatterTrait {
    * @param array $third_party_settings
    *   The third party settings.
    * @param int $time
-   *   A UNIX time stamp. Defaults to 'REQUEST_TIME'.
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
    * @param \Drupal\Core\Field\PluginSettingsBase $plugin
    *   The widget/formatter at hand.
    *
    * @return array
    *   The formatted list of slots.
    */
-  public function getRows(array $values, array $settings, array $field_settings, array $third_party_settings = [], int $time = 0, PluginSettingsBase $plugin = NULL) {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+  public function getRows(array $settings, array $field_settings, array $third_party_settings = [], int $time = 0, ?PluginSettingsBase $plugin = NULL) {
     $office_hours = [];
-
-    $time = $this->getRequestTime($time);
-
-    // Let other modules alter the $items or $office_hours.
-    $this->eventDispatcher ??= new OfficeHoursEventDispatcher();
-    $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::PRE_FORMAT, $this, $office_hours, $time, $plugin);
 
     // Sort the database values by day number, leaving slot order intact.
     // @todo In Formatter: itemList::getRows() or Widget: itemList::setValue().
-    $this->sort();
+    $items = $this->parent; // jvo
+    $items = $this->parent->sort();
+    $time = $this->dateHelper->getRequestTime($time, $items);
 
-    // Initialize the 'next' and 'current' slots for later usage,
-    // before cloning or removing excessive exception days.
-    $this->getNextDay($time);
-    // Clone the Item list, since the following code will change the items,
-    // while custom installations need complete $items in theme preprocessing.
-    $itemList = clone $this;
+    // Let other modules alter the $items or $office_hours.
+    $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::PRE_FORMAT, $items, $office_hours, $time, $plugin);
+
+    // Initialize the 'next' and 'current' slots for later usage.
+    $this->getNextDay($time);// jvo
 
     // Initialize $office_hours.
     // Create 7 empty weekdays, using date_api as key (0=Sun, 6=Sat).
-    $weekdays = OfficeHoursDateHelper::weekDays(TRUE);
+    $weekdays = $this->dateHelper->weekDays(TRUE);
     // Reorder weekdays to match the first day of the week.
-    $weekdays = OfficeHoursDateHelper::weekDaysOrdered($weekdays, $settings['office_hours_first_day']);
+    $weekdays = $this->dateHelper->weekDaysOrdered($weekdays, $settings['office_hours_first_day']);
 
     // Prepare array of empty weekdays for normal days and seasons.
     $replace_exceptions = $settings['exceptions']['replace_exceptions'] ?? FALSE;
     $horizon = $settings['exceptions']['restrict_seasons_to_num_days'];
-    $seasons = $itemList->getSeasons(TRUE, FALSE, 'ascending', $time, $horizon);
+    $seasons = $items->getSeasons(TRUE, FALSE, 'ascending', $time, $horizon);
     foreach ($seasons as $season_id => $season) {
 
       // @todo getSeasons(): A start_date with a horizon 0 is never in range.
@@ -101,8 +131,13 @@ trait OfficeHoursFormatterTrait {
       // But do not add for regular 'season'.
       // Directly replace with exception day, if needed.
       if ($season_id) {
-        $day = $season_id + OfficeHoursItem::SEASON_DAY_MIN;
+        $day = $season_id + OfficeHoursDateHelper::SEASON_DAY_MIN; // JVO NEXT
         $this->addOfficeHours($office_hours, $day, $time, $replace_exceptions);
+        // Add caption for plain text formatter. @todo Move to function.
+        $caption = $season->getName();
+        end($office_hours);
+        $lastElement = &$office_hours[key($office_hours)];
+        $lastElement['caption'] = $caption;
       }
       // Then, add season days.
       foreach ($weekdays as $day => $label) {
@@ -113,16 +148,31 @@ trait OfficeHoursFormatterTrait {
 
     // Remove excessive exception days.
     $horizon = $settings['exceptions']['restrict_exceptions_to_num_days'];
-    $itemList->keepExceptionDaysInHorizon($horizon);
+    $this->keepExceptionDaysInHorizon($items, $horizon);
 
     // Move items to $office_hours.
-    $iterator = $itemList->getIterator();
+    $iterator = $items->getIterator();
     for ($iterator->rewind(); $iterator->valid(); $iterator->next()) {
+      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
       $item = $iterator->current();
 
       // Filter on the valid seasons (past seasons have been removed).
       // Note: weekdays and exception dates have valid SeasonId = 0.
       if (isset($seasons[$item->getSeasonId()])) {
+
+        // Add caption, but only before the first Exception.
+        static $exceptionCount = 0;
+        if (!$replace_exceptions && $item->isExceptionDay()) {
+          if (++$exceptionCount == 1 && $caption = $settings['exceptions']['title']) {
+            $day = OfficeHoursDateHelper::EXCEPTION_DAY_MIN;
+            $this->addOfficeHours($office_hours, $day, $time, FALSE);
+            // Add caption for plain text formatter. @todo Move to function.
+            end($office_hours);
+            $lastElement = &$office_hours[key($office_hours)];
+            $lastElement['caption'] = $caption;
+          }
+        }
+
         // Add time slot to $office_hours.
         $this->addOfficeHours($office_hours, $item, $time, $replace_exceptions);
       }
@@ -135,7 +185,7 @@ trait OfficeHoursFormatterTrait {
     }
 
     // Mark the next time slot.
-    $next_day = $itemList->getNextDay($time);
+    $next_day = $this->getNextDay($time);
     if ($next_day) {
       $day_number = $next_day[0]->day;
       if ($office_hours[$day_number] ?? FALSE) {
@@ -150,12 +200,12 @@ trait OfficeHoursFormatterTrait {
 
     // Compress all slots of the same day into one item.
     if ($settings['compress']) {
-      $office_hours = $itemList->compressSlots($office_hours);
+      $office_hours = $this->compressSlots($office_hours);
     }
 
     // Group identical, consecutive days into one item.
     if ($settings['grouped']) {
-      $office_hours = $itemList->groupDays($office_hours, $settings, $field_settings);
+      $office_hours = $this->groupDays($office_hours, $settings, $field_settings);
     }
 
     // Return the filtered days/slots/items/rows.
@@ -165,11 +215,11 @@ trait OfficeHoursFormatterTrait {
         break;
 
       case 'open':
-        $office_hours = $itemList->keepOpenDays($office_hours);
+        $office_hours = $this->keepOpenDays($office_hours);
         break;
 
       case 'next':
-        $office_hours = $itemList->keepNextDay($office_hours);
+        $office_hours = $this->keepNextDay($office_hours);
         break;
 
       case 'none':
@@ -177,22 +227,21 @@ trait OfficeHoursFormatterTrait {
         break;
 
       case 'current':
-        $office_hours = $itemList->keepCurrentDay($office_hours);
+        $office_hours = $this->keepCurrentDay($office_hours);
         break;
     }
 
     // Format the label, start and end time into one slot.
-    $office_hours = $itemList->formatTimeSlots($office_hours, $settings, $field_settings);
+    $office_hours = $this->formatTimeSlots($office_hours, $settings, $field_settings);
 
     // Let other modules alter the $items or $office_hours.
-    $this->eventDispatcher ??= new OfficeHoursEventDispatcher();
-    $event = $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::POST_FORMAT, $itemList, $office_hours, $time, $plugin);
+    $event = $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::POST_FORMAT, $items, $office_hours, $time, $plugin);
 
     return $event->officeHours;
   }
 
   /**
-   * Formatter: Set $office_hours for $item->day.
+   * Add an item to the array.
    *
    * @param array $office_hours
    *   Office hours array.
@@ -210,22 +259,21 @@ trait OfficeHoursFormatterTrait {
     $office_hours[$day] ??= ['day' => $day] + $this->getOfficeHoursDefault();
 
     if (is_object($item)) {
-      if ((!$replace_exceptions) || ($day > OfficeHoursItem::SEASON_DAY_MIN)) {
+      if ((!$replace_exceptions) || ($day > OfficeHoursDateHelper::SEASON_DAY_MIN)) {
         // Add day data per time slot.
         // Avoid duplicates for weekdays, if replace_exceptions is set.
         $office_hours[$day]['items'][] = $item;
       }
     }
     elseif (is_int($item)) {
-      if ($replace_exceptions && $day < OfficeHoursItem::SEASON_DAY_MIN) {
+      if ($replace_exceptions && $day < OfficeHoursDateHelper::SEASON_DAY_MIN) {
         // During initial weekday setup, replace with exception data.
         // Needed, because in $items, empty days are not visited again.
         // Check for $replace_exceptions, to avoid duplicate records.
-        $this->sortedList ??= new OfficeHoursItemListSorter($this);
         $sorted_list = $this->sortedList->getSortedItemList($time);
 
         // Get today's weekday.
-        $weekday = OfficeHoursDateHelper::getWeekday($time);
+        $weekday = $this->dateHelper->getWeekday($time);
         // Determine if the $day is this or next week.
         $week = ($day >= $weekday) ? 'this' : 'next';
         // Get date of $day for the exception day lookup.
@@ -270,8 +318,7 @@ trait OfficeHoursFormatterTrait {
    * @return array
    *   Reformatted office hours array.
    */
-  protected function compressSlots(array $office_hours) {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
+  protected static function compressSlots(array $office_hours) {
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
 
     foreach ($office_hours as $key => &$info) {
@@ -331,9 +378,11 @@ trait OfficeHoursFormatterTrait {
       'comments' => 'dummy',
     ];
     // The timestamp difference between today and yesterday.
-    $yesterday = 86400;
+    $one_day = 86400;
 
     foreach ($office_hours as $key => &$info) {
+      // Wrap and unwrap $info in array,
+      // in order to get a local version of 'formatted_slots'.
       $this_day = [$info];
       $this_day = $this->formatTimeSlots($this_day, $settings, $field_settings);
       $this_day = reset($this_day);
@@ -341,15 +390,19 @@ trait OfficeHoursFormatterTrait {
       if ((string) $this_day['formatted_slots'] == (string) $previous_day['formatted_slots']
       && $this_day['comments'] == $previous_day['comments']) {
         $day = $info['day'];
-        // Check consecutive days (previous endday is yesterday).
-        if (OfficeHoursDateHelper::isExceptionDay($day)) {
-          if (($day - $previous_day['endday']) !== $yesterday) {
+        // Week/Season days are always consecutive, since days 1-7 are listed.
+        if ($this->dateHelper->isExceptionDay($day)) {
+          // Check consecutive days (previous endday is yesterday).
+          // Or should exceptions never be grouped?
+          if (($day - $one_day !== $previous_day['endday'])) {
             continue;
           }
         }
 
         $this_day['day'] = $previous_day['day'];
         $this_day['endday'] = $day;
+        $this_day['is_current_slot'] |= $previous_day['is_current_slot'];
+        $this_day['is_next_day'] |= $previous_day['is_next_day'];
 
         $info['day'] = $previous_day['day'];
         $info['endday'] = $day;
@@ -379,7 +432,7 @@ trait OfficeHoursFormatterTrait {
   protected function keepOpenDays(array $office_hours) {
     $result = [];
     foreach ($office_hours as $key => $info) {
-      if ($key >= OfficeHoursItem::EXCEPTION_DAY) {
+      if ($this->dateHelper->isValidDate($key)) {
         // Exception dates + header are always displayed.
         $result[$key] = $info;
       }
@@ -423,28 +476,23 @@ trait OfficeHoursFormatterTrait {
   protected function keepCurrentDay(array $office_hours) {
     $result = [];
 
-    $today = OfficeHoursDateHelper::today();
-    $weekday = OfficeHoursDateHelper::getWeekday($today);
+    $today = $this->dateHelper->today();
+    $weekday = $this->dateHelper->getWeekday($today);
 
-    $this->sortedList ??= new OfficeHoursItemListSorter($this);
     $sorted_days = $this->sortedList->getSortedItemList($today);
 
     $current_day = $sorted_days[$today] ?? NULL;
 
     // Mark the current day, even if it is closed.
-    // @todo Exception days.
-    // @todo Add css for office-hours__item-current.
     $day_number = $current_day ? $current_day[0]->day : $weekday;
-    foreach ($office_hours as $key => $info) {
-      if ($info['day'] == $day_number) {
-        $result[$key] = $info;
-        return $result;
-      }
-      elseif (($info['day'] <= $day_number) && ($day_number <= $info['endday'])) {
-        // Grouped days.
-        // @todo When first day of week is not Sunday.
-        $result[$key] = $info;
-        return $result;
+    $result[$day_number] = $office_hours[$day_number] ?? [];
+    if (!$result) {
+      foreach ($office_hours as $key => $info) {
+        // Because of grouped days, no direct read possible.
+        if (($info['day'] <= $day_number) && ($day_number <= $info['endday'])) {
+          // @todo When grouped and first day of week is not Sunday.
+          $result[$key] = $info;
+        }
       }
     }
     return $result;
@@ -464,7 +512,6 @@ trait OfficeHoursFormatterTrait {
    *   Reformatted office hours array.
    */
   protected function formatTimeSlots(array $office_hours, array $settings, array $field_settings) {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
 
     $slot_separator = $settings['separator']['more_hours'];
@@ -472,6 +519,12 @@ trait OfficeHoursFormatterTrait {
     foreach ($office_hours as $key => &$info) {
       // Process the time slots for this day.
       $all_day = NULL;
+
+      // @todo No $item exists for Closed days.
+      // @todo Grouped Exception days with 'current day' formatter
+      $index = 0;
+      $info['items'][$index] ??= $this->parent->createItem(0, []);
+
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
       foreach ($info['items'] as $day_delta => $item) {
 
@@ -487,22 +540,17 @@ trait OfficeHoursFormatterTrait {
 
         // Format the time slots.
         $formatted_slot = $item->formatTimeSlot($settings);
-        $item_comments = $item->comment;
-        if ($formatted_slot || $item_comments) {
+        $comment = $item->comment;
+        if ($formatted_slot || $comment) {
           // Collect the formatted time slot in the day.
           $info['formatted_slots'][] = $formatted_slot;
 
           // Collect the comment of the time slot in the day.
           // Note: compressed days are already an array.
-          $info['comments'] = array_merge($info['comments'],
-            is_array($item_comments) ? $item_comments : [$item_comments]);
+          $comment = is_array($comment) ? $comment : [$comment];
+          $info['comments'] = array_merge($info['comments'], $comment);
         }
       }
-
-      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-      // $todo No $item exists for Closed days.
-      $index = 0;
-      $item = $info['items'][$index] ?? $this->createItem(0, []);
 
       // Format the label (weekday, exception day).
       $item->set('day', $info['day'] ?? NULL, FALSE);
@@ -512,12 +560,11 @@ trait OfficeHoursFormatterTrait {
       // Convert the formatted slots array into string. Include special items.
       switch (TRUE) {
         case empty($info['formatted_slots']):
-          $info['formatted_slots'] = '';
-          $closed_text = $settings['closed_format'];
-          if (!empty($closed_text)) {
-            $closed_text = $this->t(Html::escape($closed_text));
-            $info['formatted_slots'] = $closed_text;
-          }
+          $info['formatted_slots'] = $settings['closed_format']
+            ? $this->t(Html::escape($settings['closed_format']),
+              [],
+              ['context' => 'office_hours'])
+            : '';
           break;
 
         // case $item->isExceptionDay():
@@ -534,8 +581,7 @@ trait OfficeHoursFormatterTrait {
           break;
       }
 
-      // Process comments.
-      $item_comments = $item->comment;
+      // Process comments in special cases.
       switch (TRUE) {
         case $item->isSeasonHeader():
           // Remove the Season name from comments.
@@ -546,6 +592,7 @@ trait OfficeHoursFormatterTrait {
         // case $item->isSeasonDay():
         // case $item->isWeekDay():
         default:
+          $info['comments'] ??= [];
           break;
       }
 
@@ -577,19 +624,27 @@ trait OfficeHoursFormatterTrait {
     return $office_hours;
   }
 
+  /**
+   * A hook to format the default comment.
+   */
   public function formatComments(array $items) {
     return 'dit is je comment';
   }
 
   /**
-   * {@inheritdoc}
+   * Get the current slot and the next day from the Office hours.
+   *
+   * - Attribute 'current' is set on the active slot.
+   * - Variable $this->currentSlot is set to slot data.
+   * - Variable $this->currentSlot is returned.
+   *
+   * @param int $time
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
+   *
+   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem|null
+   *   The current slot data, if any.
    */
   public function getCurrentSlot(int $time = 0) {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
-
-    $time = $this->getRequestTime($time);
-
-    $this->sortedList ??= new OfficeHoursItemListSorter($this);
     $next_day = $this->sortedList->getNextDay($time);
 
     foreach ($next_day as $date => $day) {
@@ -606,16 +661,12 @@ trait OfficeHoursFormatterTrait {
    * Returns the slots of the current/next open day.
    *
    * @param int $time
-   *   A UNIX timestamp, defaulting to current time with timezone.
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
    *
    * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem[]|null
    *   A list of time slots.
    */
   public function getNextDay(int $time = 0) {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
-    $time = $this->getRequestTime($time);
-
-    $this->sortedList ??= new OfficeHoursItemListSorter($this);
     $next_day = $this->sortedList->getNextDay($time);
 
     // Remove the date key before returning the time slots of the day.
@@ -623,45 +674,19 @@ trait OfficeHoursFormatterTrait {
   }
 
   /**
-   * Returns timestamp for current request. May be adapted for User Timezone.
-   *
-   * @param int $time
-   *   The actual UNIX date/timestamp to use.
-   *     If set, do nothing.
-   *     If not, take REQUEST_TIME and allow hook to use some timezone field.
-   *
-   * @return int
-   *   A Unix timestamp.
-   *
-   * @see hook_office_hours_current_time_alter
-   * @see \Drupal\Component\Datetime\TimeInterface
-   */
-  public function getRequestTime(int $time = 0) {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
-
-    if (!$time) {
-      $time = \Drupal::time()->getRequestTime();
-      // Call hook. Allows to alter the current time using a timezone.
-      $entity = $this->getEntity();
-      \Drupal::moduleHandler()->alter('office_hours_current_time', $time, $entity);
-    }
-
-    return $time;
-  }
-
-  /**
    * Formatter: remove all Exception days behind horizon.
    *
+   * @param $items
+   *   The ItemList.
    * @param int $horizon
    *   The number of days in the future.
    *
    * @return \Drupal\Core\Field\FieldItemListInterface
    *   Filtered Item list.
    */
-  public function keepExceptionDaysInHorizon($horizon) {
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
+  public function keepExceptionDaysInHorizon($items, $horizon) {
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $this->filter(function (OfficeHoursItem $item) use ($horizon) {
+    $items->filter(function (OfficeHoursItem $item) use ($horizon) {
       if (!$item->isExceptionDay()) {
         return TRUE;
       }
@@ -676,7 +701,7 @@ trait OfficeHoursFormatterTrait {
       return FALSE;
     });
 
-    return $this;
+    return $items;
   }
 
 }

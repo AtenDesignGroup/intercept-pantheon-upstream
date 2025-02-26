@@ -45,11 +45,11 @@ class UrlInternalExternal extends CvValidatorBase {
     // Needs patch from https://www.drupal.org/node/2613694
     switch ($element['#link_type']) {
       case LinkItemInterface::LINK_GENERIC:
-        $element['#attributes']['pattern'] = '\<front\>|\/.*|\?.*|#.*|[hH][tT][Tt][pP][sS]?://.+|.*\(\d+\)';
+        $element['#attributes']['pattern'] = '<front>|\/.*|\?.*|#.*|[hH][tT][Tt][pP][sS]?://.+|.*\(\d+\)';
         break;
 
       case LinkItemInterface::LINK_INTERNAL:
-        $element['#attributes']['pattern'] = '\<front\>|\/|\/[^\/]+.*|\?.*|#.*|.*\(\d+\)';
+        $element['#attributes']['pattern'] = '<front>|\/|\/[^\/]+.*|\?.*|#.*|.*\(\d+\)';
         break;
 
     }

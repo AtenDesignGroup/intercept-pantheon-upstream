@@ -349,8 +349,10 @@ function intercept_bulk_room_reservation_delete_ids(array $entities) {
  * @param array $variables
  */
 function intercept_bulk_room_reservation_theme_suggestions_date_recur_modular_alpha_widget_alter(array &$suggestions, array $variables) {
-  // This template will be added to the Gin theme via patch in composer.json.
-  $suggestions[] = 'date_recur_modular_alpha_widget__bulk_room_reservation';
+  if (isset($variables['widget']['#form_id']) && $variables['widget']['#form_id'] == 'bulk_room_reservation_add_form') {
+    // This template will be added to the Gin theme via patch in composer.json.
+    $suggestions[] = 'date_recur_modular_alpha_widget__bulk_room_reservation';
+  }
 }
 
 /**

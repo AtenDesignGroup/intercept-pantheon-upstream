@@ -19,7 +19,7 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
   /**
    * A warning.
    */
-  const MESSAGE_TYPE = MessengerInterface::TYPE_WARNING;
+  protected const MESSAGE_TYPE = MessengerInterface::TYPE_WARNING;
 
   /**
    * The season data. Can only be changed in SeasonWidget, not WeekWidget.
@@ -119,7 +119,7 @@ abstract class OfficeHoursWidgetBase extends WidgetBase {
    * @return \Drupal\office_hours\Plugin\Field\FieldWidget\OfficeHoursWidgetBase
    *   The widget object itself.
    */
-  public function setSeason(OfficeHoursSeason $season = NULL) {
+  public function setSeason(?OfficeHoursSeason $season = NULL) {
     $this->season = $season;
     return $this;
   }

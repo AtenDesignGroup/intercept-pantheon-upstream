@@ -48,7 +48,7 @@ class OfficeHoursSeasonUnitTest extends UnitTestCase {
    */
   public function testIsInRange(): void {
 
-    $time = \Drupal::time()->getRequestTime() ?? NULL;
+    $time = \Drupal::time()->getRequestTime() ?? 0;
     // $time ??= $this->container->get('datetime.time')->getRequestTime();
     // $time ??= \Drupal::service('datetime.time')->getRequestTime();
     $today = OfficeHoursDateHelper::today($time);

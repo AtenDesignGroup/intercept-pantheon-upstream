@@ -124,6 +124,7 @@ function clientside_validation_jquery_page_attachments(array &$page) {
   $config = \Drupal::config('clientside_validation_jquery.settings');
   $page['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = (int) $config->get('validate_all_ajax_forms');
   $page['#attached']['drupalSettings']['clientside_validation_jquery']['force_validate_on_blur'] = (bool) $config->get('force_validate_on_blur');
+  $page['#attached']['drupalSettings']['clientside_validation_jquery']['force_html5_validation'] = (bool) $config->get('force_html5_validation');
   $page['#attached']['drupalSettings']['clientside_validation_jquery']['messages'] = [
     'required' => t('This field is required.'),
     'remote' => t('Please fix this field.'),

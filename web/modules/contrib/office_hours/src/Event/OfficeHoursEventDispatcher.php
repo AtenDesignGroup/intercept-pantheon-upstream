@@ -40,7 +40,7 @@ final class OfficeHoursEventDispatcher {
    * @param array $office_hours
    *   The array of already formatted office_hours.
    * @param int $time
-   *   The unix timestamp.
+   *   The UNIX timestamp.
    * @param \Drupal\Core\Field\PluginSettingsBase|null $plugin
    *   The formatter or widget, in order to avoid multiple processing.
    *
@@ -48,7 +48,6 @@ final class OfficeHoursEventDispatcher {
    *   The dispatched Event MUST be returned.
    */
   public function dispatchEvent(string $event_name, OfficeHoursItemListInterface $items, array $office_hours, int $time, PluginSettingsBase|NULL $plugin): OfficeHoursEvent {
-    /** @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $this->eventDispatcher */
     $event = new OfficeHoursEvent($items, $office_hours, $time, $plugin);
     $event = $this->getEventDispatcher()->dispatch($event, $event_name);
 

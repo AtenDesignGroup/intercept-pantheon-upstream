@@ -1,7 +1,6 @@
 .messages {
   border-radius: 0;
   display: flex;
-  justify-content: stretch;
   align-items: stretch;
 }
 .messages:not(:last-child) {

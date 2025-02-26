@@ -32,6 +32,7 @@ class OfficeHoursExceptionsSlot extends OfficeHoursBaseSlot {
 
     // Override the hidden (Week widget) or select (List widget)
     // first time slot 'day', setting a 'date' select element + day name.
+    $format = OfficeHoursDateHelper::DATE_STORAGE_FORMAT;
     $element['day'] = [
       '#type' => $day_delta ? 'hidden' : 'date',
       // Add a label/header/title for accessibility (a11y) screen readers.
@@ -44,7 +45,7 @@ class OfficeHoursExceptionsSlot extends OfficeHoursBaseSlot {
         // Add 'day_delta' to facilitate changing and closing Exception days.
         ? 'exception_day_delta'
         // Format the numeric day number to Y-m-d format for the widget.
-        : (is_numeric($day) ? date(OfficeHoursDateHelper::DATE_STORAGE_FORMAT, $day) : ''),
+        : (is_numeric($day) ? OfficeHoursDateHelper::format($day, $format) : ''),
       // Add wrapper attribute for improved (a11y) screen reader experience.
       '#wrapper_attributes' => ['header' => !$day_delta],
     ];

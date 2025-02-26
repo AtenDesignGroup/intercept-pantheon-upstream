@@ -2,7 +2,6 @@
 
 namespace Drupal\office_hours\Plugin\views\field;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
@@ -78,6 +77,7 @@ class TimeSlot extends FieldBase {
    * {@inheritdoc}
    */
   public function preRender(&$values) {
+    /** @var \Drupal\views\ResultRow[] $values */
     $field_name = $this->configuration['field_name'];
 
     // Calculate only once.
@@ -85,7 +85,7 @@ class TimeSlot extends FieldBase {
       return;
     }
 
-    // Fail if office_hours field is not set.
+    // Fail if office_hours field is not set. We need its formatter settings.
     if (!isset($this->view->field[$field_name])) {
       $form = [];
       $form_state = new FormState();
@@ -98,10 +98,18 @@ class TimeSlot extends FieldBase {
       return;
     }
 
+    // Get the formatter settings of the main 'office_hours' field,
+    // re-using the time slot formatter settings 7 times.
+    $formatter_settings = $this->getFieldSettings($field_name);
+    // @todo no need to get $widget_settings from $items.
+    // $widget_settings = $items->getFieldDefinition()->getSettings();
+    // @todo Fetch third_party_settings.
+    $third_party_settings = [];
+
     $entity_id = NULL;
     foreach ($values as $key => $resultRow) {
       // Initialize some data, per entity.
-      $entity = $this->getEntity($resultRow);
+      $entity = $resultRow->_entity;
       // Note: $values may not be sorted per $entity_id.
       if ($entity_id !== $entity->id()) {
         $entity_id = $entity->id();
@@ -111,10 +119,13 @@ class TimeSlot extends FieldBase {
         /** @var \Drupal\Core\Entity\ContentEntityBase $entity */
         if ($entity->hasField($field_name)) {
           $items ??= $entity->get($field_name);
+          // @todo no need to get $widget_settings from $items.
+          $widget_settings = $items->getFieldDefinition()->getSettings();
           // Cache data to avoid re-calc from entity later per row.
           static::$renderIndex[$entity_id]['items'] ??= $items;
           static::$renderIndex[$entity_id]['seasons'] ??= $items->getSeasons(TRUE);
-          static::$renderIndex[$entity_id]['office_hours'] ??= $this->getRows($entity);
+          static::$renderIndex[$entity_id]['office_hours'] ??= $items->getRows($formatter_settings, $widget_settings, $third_party_settings);
+
         }
       }
 
@@ -124,7 +135,7 @@ class TimeSlot extends FieldBase {
       $office_hours = static::$renderIndex[$entity_id]['office_hours'] ?? [];
 
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-      $item = $this->getValue($resultRow);
+      $item = $this->getValue($resultRow, $field_name);
       $id = 0;
       switch (TRUE) {
         case is_null($item):
@@ -205,33 +216,6 @@ class TimeSlot extends FieldBase {
         return $day ? $day['formatted_slots'] : NULL;
     }
 
-  }
-
-  /**
-   * Returns the formatted items of a field. Wrapper of ItemList->getRows().
-   */
-  protected function getRows(EntityInterface $entity) {
-    $office_hours = [];
-
-    $field_name = $this->configuration['field_name'];
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
-    /** @var \Drupal\Core\Entity\ContentEntityBase $entity */
-    if ($entity->hasField($field_name)) {
-      $items = $entity->get($field_name);
-      $field_definition = $items->getFieldDefinition();
-
-      // Get the formatter settings of the main 'office_hours' field,
-      // re-using the time slot formatter settings 7 times.
-      $formatter_settings = $this->getFieldSettings($field_name);
-      $widget_settings = $field_definition->getSettings();
-      // @todo Fetch third_party_settings.
-      $third_party_settings = [];
-
-      // Format the items.
-      $office_hours = $items->getRows($formatter_settings, $widget_settings, $third_party_settings);
-    }
-
-    return $office_hours;
   }
 
   /**

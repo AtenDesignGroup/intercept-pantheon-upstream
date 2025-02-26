@@ -30,31 +30,20 @@ class Season extends FieldBase {
   }
 
   /**
-   * Called to add the field to a query.
-   */
-  public function query() {
-    // Do add this field to the query.
-    parent::query();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getValue(ResultRow $values, $field = NULL) {
-    return parent::getValue($values, $field);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function render(ResultRow $values) {
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface $items */
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+    /** @var \Drupal\Core\Entity\ContentEntityBase $entity */
     $field_name = $this->configuration['field_name'];
 
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
-    $item = $this->getValue($values);
-
+    $entity = $values->_entity;
+    $items = $entity->{$field_name};
+    $index = $values->index;
+    $item = is_null($items) ? NULL : $items->get($index);
     switch (TRUE) {
-      case is_null($item):
+      case $item === NULL:
         $result = NULL;
         break;
 

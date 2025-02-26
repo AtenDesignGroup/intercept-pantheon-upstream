@@ -51,7 +51,6 @@ class OfficeHoursItemTest extends FieldKernelTestBase {
       'field_name' => 'field_office_hours',
       'type' => 'office_hours',
       'entity_type' => 'entity_test',
-      'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
       'settings' => [
         'element_type' => 'office_hours_datelist',
       ],

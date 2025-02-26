@@ -41,7 +41,7 @@ function office_hours_update_8003(&$sandbox) {
 
       $table_names = $schema->findTables("%$field_name%");
       foreach ($table_names as $table_name) {
-        $schema->addField($table_name, $field_name . '_comment', $spec);
+        $schema->addField($table_name, "{$field_name}_comment", $spec);
       }
     }
   }
@@ -92,7 +92,7 @@ function office_hours_update_8005(&$sandbox) {
       $table_names = $schema->findTables("%$field_name%");
       foreach ($table_names as $table_name) {
 
-        $column_name = $field_name . '_starthours';
+        $column_name = "{$field_name}_starthours";
         if ($schema->fieldExists($table_name, $column_name)) {
           $schema->changeField($table_name, $column_name, $column_name, [
             'type' => 'int',
@@ -100,7 +100,7 @@ function office_hours_update_8005(&$sandbox) {
             'not null' => FALSE,
           ]);
         }
-        $column_name = $field_name . '_endhours';
+        $column_name = "{$field_name}_endhours";
         if ($schema->fieldExists($table_name, $column_name)) {
           $schema->changeField($table_name, $column_name, $column_name, [
             'type' => 'int',

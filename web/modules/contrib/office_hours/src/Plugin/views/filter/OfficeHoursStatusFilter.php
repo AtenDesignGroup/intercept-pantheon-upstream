@@ -2,75 +2,45 @@
 
 namespace Drupal\office_hours\Plugin\views\filter;
 
-use Drupal\field\FieldStorageConfigInterface;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursStatus;
 use Drupal\views\Plugin\views\cache\CachePluginBase;
 use Drupal\views\Plugin\views\filter\ManyToOne;
 use Drupal\views\ViewExecutable;
 
 /**
- * Filter by open/closed status.
+ * Views Filter by open/closed status.
  *
  * @ingroup views_filter_handlers
  *
- * @ViewsFilter("office_hours_is_open")
+ * @ViewsFilter("office_hours_status")
  *
  * @see README.md ## USING VIEWS - FILTER CRITERIA
  * @see office_hours.views.inc
- * @see office_hours.schema.yml~views.filter.office_hours_is_open
+ * @see office_hours.schema.yml~views.filter.office_hours_status
  * @see https://www.webomelette.com/creating-custom-views-filter-drupal-8
  * @see https://www.drupal.org/docs/drupal-apis/entity-api/dynamicvirtual-field-values-using-computed-field-property-classes
  * @see https://drupal.stackexchange.com/questions/249963/how-to-add-a-custom-views-filter-handler-for-a-specific-field
+ * @see https://drupal.stackexchange.com/questions/291236/creating-a-custom-field-with-dynamic-virtual-computed-property-value
  */
 class OfficeHoursStatusFilter extends ManyToOne {
 
   /*
-   * Duplicate of the @ViewsFilter annotation.
+   * Duplicate of the above @ViewsFilter annotation.
    */
-  const VIEWS_FILTER_ID = "office_hours_is_open";
-  const ANY = 'all';
-  const CLOSED = FALSE;
-  const OPEN = TRUE;
-  const NEVER = 2;
-
-  /**
-   * Implements hook_field_views_data().
-   *
-   * Note: When using pager on a view, less results might be displayed.
-   */
-  public static function viewsFieldData(FieldStorageConfigInterface $field_storage, array $data) {
-    // The following was called earlier:
-    // $data = views_field_default_views_data($field_storage);
-    $field_name = $field_storage->getName();
-    foreach ($data as $table_name => $table_data) {
-      if (isset($data[$table_name][$field_name])) {
-        $field_label = $data[$table_name][$field_name]['title short'];
-
-        $data[$table_name][$field_name]['filter'] = [
-          'field' => $field_name,
-          'table' => $table_name,
-          'field_name' => $field_name,
-          'id' => static::VIEWS_FILTER_ID,
-          'allow_empty' => TRUE,
-          'title' => $field_label . ' current open/closed status',
-          'title short' => $field_label . ' current open/closed status',
-        ];
-      }
-    }
-
-    return $data;
-  }
+  public const VIEWS_FILTER_ID = "office_hours_status";
 
   /**
    * {@inheritdoc}
+   *
+   * The formatter settings are taken from the main office_hours field.
+   * This field is required and its name is defined in 'real field'.
    */
   public function getValueOptions() {
-    $this->valueOptions = [
-      static::ANY => $this->t('Select all'),
-      static::OPEN => $this->t('Open now'),
-      static::CLOSED => $this->t('Temporarily closed'),
-      static::NEVER => $this->t('Permanently closed'),
-    ];
-
+    if (!isset($this->valueOptions)) {
+      $field_name = $this->configuration['real field'];
+      $formatter_settings = $this->view->field[$field_name]->options['settings'] ?? [];
+      $this->valueOptions = OfficeHoursStatus::getOptions(NULL, $formatter_settings);
+    }
     return $this->valueOptions;
   }
 
@@ -106,60 +76,56 @@ class OfficeHoursStatusFilter extends ManyToOne {
       return;
     }
 
-    $filterValue = $filter->value;
-    $filterValue = array_filter($filterValue, function ($statusValue) {
-      return $statusValue !== 0;
-    });
+    /*
+    // Remove duplicate rows from the view.
+    $previous_id = -1;
+    foreach ($view->result as $key => $value) {
+      $id = $value->_entity->id();
+      if ($previous_id === $id) {
+        // Do not remove, for sometimes we want to show day or season per row.
+        unset($view->result[$key]);
+      }
+      $previous_id = $id;
+    }
+     */
 
-    if (in_array(static::ANY, $filterValue)) {
+    $filter_value = $filter->value;
+    if (empty($filter_value)) {
+      return;
+    }
+    if (in_array('all', $filter_value)) {
       return;
     }
 
-    $fieldName = $filter->realField;
-    $previous_id = -1;
-    /** @var \Drupal\views\ResultRow $value */
+    // Remove filtered rows from the view.
+    // Since this is a calculated field, it cannot be done via query().
+    $field_name = $filter->realField;
     foreach ($view->result as $key => $value) {
-      // Remove duplicate rows from the view.
-      $id = $value->_entity->id();
-      if ($previous_id === $id) {
-        unset($view->result[$key]);
-        continue;
-      }
-      $previous_id = $id;
-
-      // Remove filtered rows from the view.
-      // Since this is a calculated field, it cannot be done via query().
-      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
-      $items = $value->_entity->$fieldName;
-      if (is_null($items) || $items->isEmpty()) {
-        if (!in_array(static::NEVER, $filterValue)) {
+      try {
+        $items = $value->_entity->$field_name;
+        $status = $items->{'status'} ?? OfficeHoursStatus::NEVER;
+        if (!in_array($status, $filter_value)) {
           unset($view->result[$key]);
         }
-        continue;
       }
-
-      $is_open = $items->isOpen();
-      if ($is_open && in_array((int) static::OPEN, $filterValue)) {
-        continue;
+      catch (\Throwable $th) {
+        // @todo Error sometimes occurs, but not reproducible.
+        $id = $value->_entity->id();
+        $entity = $value->_entity;
+        $field = $value->_entity->$field_name;
+        throw $th;
       }
-      if ((!$is_open) && in_array((int) static::CLOSED, $filterValue)) {
-        continue;
-      }
-      unset($view->result[$key]);
     }
-
   }
 
   /**
    * {@inheritdoc}
    */
   public function query() {
+    // Do not add query details for this computed field. No SQL is possible.
     // The views.inc file is not always loaded. Lazy load here.
     \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.views');
-
-    // Do not add query details, since this is a computed field,
-    // and no SQL is possible.
-    // parent::query();
+    // include_once __DIR__ . '/..\..\../../office_hours.views.inc';
   }
 
   /**
@@ -173,29 +139,32 @@ class OfficeHoursStatusFilter extends ManyToOne {
   }
 
   /**
-   * Implements hook_views_post_execute().
+   * Implements hook_views_pre_execute().
    */
-  public static function viewsPostExecute(ViewExecutable $view) {
+  public static function viewsPreExecute(ViewExecutable $view) {
     // Nothing to do here.
   }
 
   /**
-   * Implements hook_field_views_pre_render().
+   * Implements hook_views_post_execute().
    */
-  public static function viewsPreRender(ViewExecutable $view) {
+  public static function viewsPostExecute(ViewExecutable $view) {
     if (static::getFilter($view)) {
       self::filter($view);
     }
   }
 
   /**
+   * Implements hook_views_pre_render().
+   */
+  public static function viewsPreRender(ViewExecutable $view) {
+    // Nothing to do here.
+  }
+
+  /**
    * Implements hook_views_post_render().
    */
   public static function viewsPostRender(ViewExecutable $view, array &$output, CachePluginBase $cache) {
-    if (!static::getFilter($view)) {
-      return;
-    }
-
     // @todo Improve time-based caching (is_open/closed status),
     // setting $output['#cache']['max-age'] from $items->getCacheMaxAge().
     // $cache->options['results_lifespan'] = 0;

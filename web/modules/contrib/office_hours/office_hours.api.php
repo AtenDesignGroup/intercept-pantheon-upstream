@@ -16,7 +16,7 @@ use Drupal\user\EntityOwnerInterface;
  * Allows to alter the current time.
  *
  * @param int $time
- *   A Unix timestamp.
+ *   A UNIX timestamp.
  * @param object $entity
  *   Some (undeclared) EntityInterface object to be displayed with Office Hours.
  *

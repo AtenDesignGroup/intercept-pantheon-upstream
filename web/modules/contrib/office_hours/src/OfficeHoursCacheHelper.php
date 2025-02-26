@@ -4,7 +4,6 @@ namespace Drupal\office_hours;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
@@ -34,7 +33,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
    * 2: invalidateTagsUsingRenderCache() using entity-specific tag;
    * 3: invalidateTagsUsingStateService();
    */
-  const CACHE_INVALIDATION_MODE = 0;
+  private const CACHE_INVALIDATION_MODE = 0;
 
   /**
    * The entity display repository.
@@ -124,9 +123,9 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
     }
 
     // Get the current time. May be adapted for User Timezone.
-    $time = $this->items->getRequestTime();
+    $time = OfficeHoursDateHelper::getRequestTime(0, $this->items);
     // @todo Use OfficeDateHelper::today()?
-    $date = DrupalDateTime::createFromTimestamp($time);
+    $date = OfficeHoursDateHelper::createFromTimestamp($time);
 
     // Get today's weekday.
     $today_weekday = OfficeHoursDateHelper::getWeekday($time);
@@ -158,6 +157,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
       case 'next':
         // Cache expires after closing of current slot.
         $office_hours = NULL;
+        // @todo Can we do this by only calling getNextDay()?
         $currentSlot = $this->items->getCurrentSlot($time);
         if ($currentSlot) {
           $office_hours[] = $currentSlot->getValue();

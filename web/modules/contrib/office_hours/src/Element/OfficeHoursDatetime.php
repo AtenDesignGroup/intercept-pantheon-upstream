@@ -2,7 +2,6 @@
 
 namespace Drupal\office_hours\Element;
 
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Datetime\Element\Datetime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\office_hours\OfficeHoursDateHelper;
@@ -66,41 +65,14 @@ class OfficeHoursDatetime extends Datetime {
   }
 
   /**
-   * Creates an example for a date format.
-   *
-   * @param string $format
-   *   The date format.
-   *
-   * @return string
-   *
-   * @see https://www.drupal.org/node/3385058
+   * {@inheritdoc}
    */
   public static function processDatetime(&$element, FormStateInterface $form_state, &$complete_form) {
-    $time_format = $element['#date_time_format'];
-    $increment = $element['#field_settings']['increment'];
-    // Run this before parent call.
-    $time_example = static::formatExample($time_format, $increment);
-
     $element = parent::processDatetime($element, $form_state, $complete_form);
 
-    // @todo Add from-to time range, plus more details from settings.
-    $validate = $element['#field_settings']['valhrs'];
-    $required_start = $element['#field_settings']['required_start'];
-    $limit_start = $element['#field_settings']['limit_start'];
-    $required_end = $element['#field_settings']['required_end'];
-    $limit_end = $element['#field_settings']['limit_end'];
-
-    // Fix the convention: minutes vs. seconds.
+    // Fix the convention: convert minutes into seconds.
+    $increment = $element['#field_settings']['increment'];
     $element['time']['#attributes']['step'] = $increment * 60;
-    // Add a more precise hover text.
-    $element['time']['#attributes']['title'] = \Drupal::translation()->formatPlural(
-      $increment,
-      'Time, with an increment of one minute (e.g. @format)',
-      'Time, with an increment of @count minutes (e.g. @format)',
-      [
-        '@count' => $increment,
-        '@format' => $time_example,
-      ]);
     return $element;
   }
 
@@ -110,32 +82,6 @@ class OfficeHoursDatetime extends Datetime {
   public static function validateDatetime(&$element, FormStateInterface $form_state, &$complete_form) {
     // This function must exist, but can remain empty,
     // since no additional validations are needed.
-  }
-
-  /**
-   * Creates an example for a date format.
-   *
-   * This is centralized for a consistent method of creating these examples.
-   *
-   * @param string $format
-   *   The date format.
-   *
-   * @return string
-   */
-  public static function formatExample($format, $step = 5) {
-    // Overwrite parent function, to adhere to field settings.
-    // Note: make sure the parent static::$dateExample is NOT overwritten.
-    static $officeHoursTimeExample = NULL;
-    if (!$officeHoursTimeExample) {
-      // Round to a time, respecting increment. Avoid problem for '1360' time.
-      // @todo Still contains an error when rounding to i.e., 15 minutes.
-      $now = new DrupalDateTime("now + $step minutes");
-      $time_format = 'H:i';
-
-      $next_time = (int) floor($now->format('Hi') / $step) * $step;
-      $officeHoursTimeExample = OfficeHoursDateHelper::format($next_time, $time_format);
-    }
-    return $officeHoursTimeExample;
   }
 
   /**

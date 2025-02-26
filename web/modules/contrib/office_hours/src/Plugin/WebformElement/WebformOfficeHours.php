@@ -8,7 +8,6 @@ use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Mail\MailFormatHelper;
-use Drupal\office_hours\Element\OfficeHoursBaseSlot;
 use Drupal\office_hours\Plugin\Field\FieldFormatter\OfficeHoursFormatterBase;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 use Drupal\webform\Plugin\WebformElement\WebformCompositeBase;
@@ -35,6 +34,8 @@ use Drupal\webform\WebformSubmissionInterface;
  *
  * @todo Fix support for 'required' attribute in Widget.
  * @todo Fix help text, which is now not visible in Widget.
+ * @todo Add D11.1 category without translation. https://www.drupal.org/node/3375748
+ * @todo Add cardinality annotation. @see https://www.drupal.org/node/2869873
  */
 class WebformOfficeHours extends WebformCompositeBase {
 
@@ -133,7 +134,7 @@ class WebformOfficeHours extends WebformCompositeBase {
    *
    * Copied from office_hours\...\OfficeHoursWeekWidget\formElement().
    */
-  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
 
     // Save $element to better resemble getFieldDefinition() and getSettings().
@@ -168,7 +169,7 @@ class WebformOfficeHours extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  protected function prepareElementValidateCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementValidateCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepareElementValidateCallbacks($element, $webform_submission);
     $class = get_class($this);
     $element['#element_validate'][] = [$class, 'validateOfficeHoursSlot'];
@@ -177,7 +178,7 @@ class WebformOfficeHours extends WebformCompositeBase {
   /**
    * {@inheritdoc}
    */
-  protected function prepareElementPreRenderCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+  protected function prepareElementPreRenderCallbacks(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepareElementPreRenderCallbacks($element, $webform_submission);
     // Replace 'form_element' theme wrapper with composite form element.
     // @see \Drupal\Core\Render\Element\PasswordConfirm
@@ -197,8 +198,7 @@ class WebformOfficeHours extends WebformCompositeBase {
    *   The complete form structure.
    */
   public static function validateOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
-    // The validation is done directly byBaseSlot.
-    // OfficeHoursBaseSlot::validateOfficeHoursSlot($element, $form_state, $complete_form);
+    // The validation is done by OfficeHoursBaseSlot::validateOfficeHoursSlot().
 
     // The result may be empty, upon preview in build mode (when not saved).
     $office_hours = $form_state->getValue($element['#webform_key']) ?? [];
@@ -221,14 +221,14 @@ class WebformOfficeHours extends WebformCompositeBase {
    *
    * @param \Drupal\Core\Field\FieldItemList $items
    *   The field values to be rendered.
-   * @param string $langcode
+   * @param string|null $langcode
    *   The language that should be used to render the field.
    *
    * @return array
    *   A renderable array for $items, as an array of child elements keyed by
    *   consecutive numeric indexes starting from 0.
    */
-  private function viewElements(FieldItemList $items, $langcode = NULL) {
+  private function viewElements(FieldItemList $items, ?string $langcode = NULL) {
 
     /** @var \Drupal\Core\Field\FormatterInterface $formatter */
     $formatter = $this->getOfficeHoursPlugin('formatter', 'office_hours', $this->getFieldDefinition());
@@ -315,14 +315,16 @@ class WebformOfficeHours extends WebformCompositeBase {
     return $this->fieldDefinitions[$field_name] ?? NULL;
   }
 
-   /**
+  /**
    * Gets the field name of this webform_element.
+   *
    * @return string
    *   An Office Hours field name.
    */
   private function getFieldName() {
     return $this->officeHoursElement['#webform_key'] ?? '';
   }
+
   /**
    * Instantiate the widget/formatter object from the stored properties.
    *

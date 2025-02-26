@@ -17,3 +17,7 @@ clientside_validation_jquery.settings:
     force_validate_on_blur:
       type: integer
       label: 'Force validate on Blur/focusout'
+    force_html5_validation:
+      type: boolean
+      label: 'Force HTML5 validation'
+      description: 'Force HTML5 validation on form first before other validation'

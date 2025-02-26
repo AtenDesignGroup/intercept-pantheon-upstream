@@ -49,9 +49,12 @@ class OfficeHoursDatelist extends Datelist {
 
     if ($input !== FALSE) {
       // Set empty minutes field to '00' for better UX.
-      if (is_array($input) && $input['hour'] !== '' && $input['minute'] === '') {
-        $input['minute'] = '00';
+      if (is_array($input)) {
+        if (isset($input['minute']) && $input['minute'] === '' && $input['hour'] !== '') {
+          $input['minute'] = '00';
+        }
       }
+
       // Ensure that 'all_day' checkbox works correctly.
       // If there is no default value,
       // then we do not have any hours, so simply return NULL.

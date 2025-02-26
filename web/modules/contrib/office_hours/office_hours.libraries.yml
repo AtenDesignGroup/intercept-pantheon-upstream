@@ -1,3 +1,11 @@
+office_hours.custom-icon:
+  version: VERSION
+  css:
+    theme:
+      css/office_hours.css: {}
+  dependencies:
+    - field_ui/drupal.field_ui.manage_fields
+
 office_hours_formatter:
   version: VERSION
   css:

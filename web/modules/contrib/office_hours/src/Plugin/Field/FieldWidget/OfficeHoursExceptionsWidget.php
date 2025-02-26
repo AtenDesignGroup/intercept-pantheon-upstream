@@ -9,7 +9,7 @@ use Drupal\Core\Ajax\InsertCommand;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
+use Drupal\office_hours\OfficeHoursDateHelper;
 
 /**
  * Plugin implementation of the 'office_hours_exceptions' widget.
@@ -65,7 +65,7 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
     // Add empty days if we clicked "AddMore: Add exception".
     // We cannot do this in valueCallback, in case a date value is changed.
     for ($i = $filtered_items->countExceptionDays(); $i < max(0, $count_days); $i++) {
-      $filtered_items->appendItem(['day' => OfficeHoursItem::EXCEPTION_DAY]);
+      $filtered_items->appendItem(['day' => OfficeHoursDateHelper::EXCEPTION_DAY_MIN]);
     }
 
     // @todo Set better '#parents', so addMoreAjax() can adhere to core.
@@ -160,11 +160,6 @@ class OfficeHoursExceptionsWidget extends OfficeHoursWidgetBase {
 
     // Go one level up in the form, to the widgets container.
     $element = NestedArray::getValue($form, array_slice($button['#array_parents'], 0, -1));
-
-    // Ensure the widget allows adding additional items.
-    if ($element['#cardinality'] != FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED) {
-      return;
-    }
 
     // Add a DIV around the delta receiving the Ajax effect.
     $delta = $element['#max_delta'];

@@ -42,18 +42,11 @@ class OfficeHoursSeason {
   protected $to = 6;
 
   /**
-   * The Factor for a Season ID (100, 200, ...)
-   *
-   * @var int
-   */
-  const SEASON_ID_FACTOR = 100;
-
-  /**
    * The default name, label, for a new season.
    *
    * @var string
    */
-  const SEASON_DEFAULT_NAME = 'New season';
+  protected const SEASON_DEFAULT_NAME = 'New season';
 
   /**
    * OfficeHoursSeason constructor.
@@ -65,9 +58,9 @@ class OfficeHoursSeason {
    * @param string $name
    *   The Season name.
    * @param int $from
-   *   The start date of the season (unix timestamp).
+   *   The start date of the season (UNIX timestamp).
    * @param int $to
-   *   The end date of the season (unix timestamp).
+   *   The end date of the season (UNIX timestamp).
    */
   public function __construct($var = 0, $name = '', $from = 0, $to = 0) {
 
@@ -128,7 +121,7 @@ class OfficeHoursSeason {
     // From and To are Unix timestamps.
     // Solution: assign it the special day number 9 + Season ID.
     $values += [
-      'day' => OfficeHoursItem::SEASON_DAY_MIN + $this->id,
+      'day' => $this->id + OfficeHoursDateHelper::SEASON_DAY_MIN,
       'all_day' => FALSE,
       'starthours' => $this->from,
       'endhours' => $this->to,
@@ -161,10 +154,10 @@ class OfficeHoursSeason {
     // When Form is displayed the first time, date is an integer.
     // When 'Add exception' is pressed, date is a string "yyyy-mm-dd".
     if (!is_numeric($this->from)) {
-      $this->from = (int) strtotime($this->from);
+      $this->from = strtotime($this->from);
     }
     if (!is_numeric($this->to)) {
-      $this->to = (int) strtotime($this->to);
+      $this->to = strtotime($this->to);
     }
   }
 
@@ -200,12 +193,12 @@ class OfficeHoursSeason {
     }
 
     // Change start date + duration to start date + end date.
-    if ($from > OfficeHoursItem::SEASON_DAY_MIN) {
+    if ($from > OfficeHoursDateHelper::SEASON_DAY_MIN) {
       if ($to == 0) {
         // A start_date with a horizon 0 is never in range.
         return FALSE;
       }
-      if ($to < OfficeHoursItem::SEASON_DAY_MAX) {
+      if ($to < OfficeHoursDateHelper::SEASON_DAY_MAX) {
         // Convert duration to end date.
         $to = strtotime("+$to day", $from);
       }
@@ -300,21 +293,21 @@ class OfficeHoursSeason {
    * @param string $pattern
    *   The day/date formatting pattern.
    * @param int $day
-   *   A day number or unix time stamp.
+   *   A day number or UNIX timestamp.
    *
    * @return string
    *   The formatted day label, e.g., 'tuesday'.
    */
   private function formatDate(string $pattern, int $day) : string {
-    if (is_numeric($day) && $pattern) {
-      // No usage for season 0, normal weekdays.
-      if ($day <= OfficeHoursItem::SEASON_DAY_MAX) {
-        return '';
-      }
-      // @todo Return OfficeHoursDateHelper::format($pattern, ['day' => $result]).
-      return \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
+    if (!OfficeHoursDateHelper::isValidDate($day)) {
+      // No usage for season 0 or normal weekdays.
+      return '';
     }
-    return $day;
+    if (!$pattern) {
+      return $day;
+    }
+    $label = OfficeHoursDateHelper::format($day, $pattern);
+    return $label;
   }
 
   /**

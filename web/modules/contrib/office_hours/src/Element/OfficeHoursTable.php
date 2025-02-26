@@ -3,7 +3,6 @@
 namespace Drupal\office_hours\Element;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\FormElement;
 use Drupal\Core\Render\Element\Table;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
@@ -230,7 +229,7 @@ class OfficeHoursTable extends Table {
           for ($day_delta = 0; $day_delta < $cardinality; $day_delta++) {
             // Add a new empty item if it doesn't exist yet at this delta.
             $value = $indexed_items[$day][$day_delta]
-            ?? OfficeHoursItem::format(['day' => OfficeHoursItem::EXCEPTION_DAY]);
+            ?? OfficeHoursItem::format(['day' => OfficeHoursDateHelper::EXCEPTION_DAY_MIN]);
 
             $elements[] = [
               '#type' => $element_type,

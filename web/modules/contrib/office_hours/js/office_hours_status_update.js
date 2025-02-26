@@ -1,5 +1,4 @@
 (function updateOfficeHoursField(Drupal, drupalSettings, once) {
-
   function update(element) {
     const statusMetadata = JSON.parse(
       element.getAttribute('js-office-hours-status-data'),
@@ -21,9 +20,9 @@
 
     // eslint-disable-next-line no-useless-concat
     const url = [
-      drupalSettings.path.baseUrl +
-      drupalSettings.path.pathPrefix +
-      'office_hours/status_update',
+      `${
+        drupalSettings.path.baseUrl + drupalSettings.path.pathPrefix
+      }office_hours/status_update`,
       statusMetadata.entity_type,
       statusMetadata.entity_id,
       statusMetadata.field_name,
@@ -34,8 +33,8 @@
     element.parentElement.classList.add(parentClass);
 
     fetch(url)
-      .then(response => response.text())
-      .then(html => {
+      .then((response) => response.text())
+      .then((html) => {
         element.innerHTML = html;
       })
       .catch(() => {});

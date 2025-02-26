@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.10] - 2025-02-26
+
+* Removed an unused permission that allowed administrators to book overlapping room reservations
+* Prevented rooms that are not reservable online from appearing on the customer-facing room reservation calendar
+
 ## [2.0.9] - 2025-01-29
 
 * Made improvements to Google Analytics tracking for areas of the site under My Account

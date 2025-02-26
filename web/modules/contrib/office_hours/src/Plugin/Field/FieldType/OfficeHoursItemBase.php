@@ -71,6 +71,17 @@ class OfficeHoursItemBase extends FieldItemBase {
       ->addConstraint('Length', ['max' => 255])
       ->setDescription("Stores the comment.");
 
+    $name = 'status';
+    // @todo #3501772 Convert to complex datatype with key/value formatter.
+    // $properties[$name] = DataDefinition::create('field_item:list_string')
+    // $properties[$name] = DataDefinition::create('map')
+    // $properties[$name] = DataDefinition::create('office_hours_status')
+    $properties[$name] = DataDefinition::create('integer')
+      ->setLabel(t('Status'))
+      ->setDescription(t('Is the entity currently open, currently closed or never open.'))
+      ->setComputed(TRUE)
+      ->setClass('\Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursStatus');
+
     return $properties;
   }
 
@@ -162,14 +173,8 @@ class OfficeHoursItemBase extends FieldItemBase {
    * {@inheritdoc}
    */
   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data): array {
-    // admin/structure/types/manage/TYPE/fields/TYPE/storage
-    // Update cardinality.
-    // In D11, the screens for field creation have changed.
-    // @see https://www.drupal.org/node/3386675
-    self::storageSettingsFormAlter($form, $form_state, $has_data);
-
-    // Add custom office_hours field settings.
     $element = parent::storageSettingsForm($form, $form_state, $has_data);
+    // Add custom office_hours field settings.
     if ($field_definition = $this->getFieldDefinition()) {
       $settings = $field_definition
         ->getFieldStorageDefinition()
@@ -177,26 +182,6 @@ class OfficeHoursItemBase extends FieldItemBase {
       $element = $this->getStorageSettingsElement($settings);
     }
     return $element;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function storageSettingsFormAlter(array &$form, FormStateInterface $form_state, $has_data): array {
-    // admin/structure/types/manage/TYPE/fields/TYPE/storage
-    $field_type = $form_state->getFormObject()->getEntity()->getType();
-    if ($field_type == 'office_hours') {
-      if (isset($form['cardinality_container']['cardinality'])) {
-        $form['cardinality_container']['cardinality'] = [
-          '#options' => [FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED => t('Unlimited')],
-          '#default_value' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
-          '#description' => '<p>' . t("This is unlimited by this field's nature.
-             See 'Number of slots' for limiting the number of slots per day."),
-        ]
-        + $form['cardinality_container']['cardinality'];
-      }
-    }
-    return $form;
   }
 
   /**
@@ -221,8 +206,8 @@ class OfficeHoursItemBase extends FieldItemBase {
     $hours = OfficeHoursDateHelper::hours('H', FALSE);
     foreach ($hours as &$hour) {
       if (!empty($hour)) {
-        $hrs = OfficeHoursDateHelper::format($hour . '00', 'H:i');
-        $ampm = OfficeHoursDateHelper::format($hour . '00', 'g:i a');
+        $hrs = OfficeHoursDateHelper::format("{$hour}00", 'H:i');
+        $ampm = OfficeHoursDateHelper::format("{$hour}00", 'g:i a');
         $hour = "$hrs ($ampm)";
       }
     }

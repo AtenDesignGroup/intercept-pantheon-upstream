@@ -22,7 +22,7 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    * @param array $third_party_settings
    *   The formatter's third party settings.
    * @param int $time
-   *   A UNIX time stamp. Defaults to 'REQUEST_TIME'.
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
    * @param \Drupal\Core\Field\PluginSettingsBase $plugin
    *   The widget/formatter at hand.
    *
@@ -34,7 +34,7 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    * Since twig filters are static methods, a trait is not really an option.
    * Some installations are also subclassing this class.
    */
-  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, PluginSettingsBase $plugin = NULL);
+  public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, ?PluginSettingsBase $plugin = NULL);
 
   /**
    * {@inheritdoc}
@@ -60,21 +60,6 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
    *   because easier to construct.
    */
   public function getFieldDefinition($field_type = '');
-
-  /**
-   * Get the current slot and the next day from the Office hours.
-   *
-   * - Attribute 'current' is set on the active slot.
-   * - Variable $this->currentSlot is set to slot data.
-   * - Variable $this->currentSlot is returned.
-   *
-   * @param int $time
-   *   A UNIX time stamp. Defaults to 'REQUEST_TIME'.
-   *
-   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem|null
-   *   The current slot data, if any.
-   */
-  public function getCurrentSlot(int $time = 0);
 
   /**
    * Create an array of seasons. (Do not collect regular or exception days.)
@@ -123,13 +108,55 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
   public function countExceptionDays();
 
   /**
-   * Determines if the Entity is Open or Closed.
+   * Returns if an entity currently open, currently closed or never open.
+   *
+   * Decorator function for 'status' subfield.
    *
    * @param int $time
-   *   A UNIX time stamp. Defaults to 'REQUEST_TIME'.
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
+   *
+   * @return int
+   *   Indicator: CLOSED = 0, OPEN = 1, NEVER = 2.
+   */
+  public function getStatus(int $time = 0): int;
+
+  /**
+   * Get the current slot and the next day from the Office hours.
+   *
+   * Decorator function for ItemListFormatter.
+   * - Attribute 'current' is set on the active slot.
+   * - Variable $this->currentSlot is set to slot data.
+   * - Variable $this->currentSlot is returned.
+   *
+   * @param int $time
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
+   *
+   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem|null
+   *   The current slot data, if any.
+   */
+  public function getCurrentSlot(int $time = 0);
+
+  /**
+   * Returns the slots of the current/next open day.
+   *
+   * Decorator function for ItemListFormatter.
+   *
+   * @param int $time
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
+   *
+   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem[]|null
+   *   A list of time slots.
+   */
+  public function getNextDay(int $time = 0);
+
+  /**
+   * Determines if the Entity is Open or Closed at the given time.
+   *
+   * @param int $time
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
    *
    * @return bool
-   *   Indicator whether the entity is Open or Closed at the given time.
+   *   Indicator: CLOSED = FALSE, OPEN = TRUE.
    */
   public function isOpen(int $time = 0): bool;
 

@@ -93,7 +93,7 @@ field.formatter.settings.office_hours:
           label: 'Separator between time slots'
     current_status:
       type: mapping
-      label: 'Current status'
+      label: 'Current status position'
       mapping:
         position:
           type: string
@@ -185,6 +185,6 @@ field.value.office_hours:
       type: text
       label: 'Comment'
 
-views.filter.office_hours_is_open:
+views.filter.office_hours_status:
   type: views.filter.in_operator
   label: 'Office hours open/closed status filter'

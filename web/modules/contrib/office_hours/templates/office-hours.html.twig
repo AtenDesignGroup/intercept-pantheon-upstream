@@ -3,14 +3,18 @@
 <div{{ attributes.addClass(classes) }}>
   {% for item in items %}
     <div class="office-hours__item">
-      {% if item.label %}
-        <span class="office-hours__item-label" style="width: {{ label_length * 0.60 }}em;">{{ item.label }}</span>
-      {% endif %}
-      {% if item.slots['#markup'] is not empty %}
-        <span class="office-hours__item-slots">{{ item.slots }}</span>
-      {% endif %}
-      {% if item.comments['#markup'] is not empty %}
-        <span class="office-hours__item-comments">{{ item.comments }}</span>
+      {% if item.caption %}
+        <span class="office-hours__item-caption office-hours__item-label">{{ item.caption }}</span>
+      {% else %}
+        {% if item.label %}
+          <span class="office-hours__item-label">{{ item.label }}</span>
+        {% endif %}
+        {% if item.slots['#markup'] is not empty %}
+          <span class="office-hours__item-slots">{{ item.slots }}</span>
+        {% endif %}
+        {% if item.comments['#markup'] is not empty %}
+          <span class="office-hours__item-comments">{{ item.comments }}</span>
+        {% endif %}
       {% endif %}
       <span>{{ item_separator | raw }}</span>
     </div>

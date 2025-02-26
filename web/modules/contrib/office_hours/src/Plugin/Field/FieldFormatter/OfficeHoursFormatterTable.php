@@ -83,14 +83,12 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
 
     // Build/add the table rows.
     $office_hours = $hours_formatter['#office_hours'];
-    $exception_count = 0;
     foreach ($office_hours as $delta => $info) {
       $create_new_table = FALSE;
 
       $day = $info['day'];
       switch (TRUE) {
         case OfficeHoursDateHelper::isSeasonHeader($day):
-          // Seasons:
           $create_new_table = TRUE;
           $table_class = 'office-hours__table_season';
           $table_caption = $info['label'];
@@ -98,16 +96,18 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
           $info = NULL;
           break;
 
-        case OfficeHoursDateHelper::isExceptionDay($day):
-          // Exceptions ($item is NULL here):
-          $exception_count++;
-          if ($exception_count == 1) {
-            $create_new_table = TRUE;
-          }
+        case OfficeHoursDateHelper::isExceptionHeader($day):
+          $create_new_table = TRUE;
           $table_class = 'office-hours__table_exception';
-          $table_caption = t(Html::escape($settings['exceptions']['title'] ?? ''));
+          $table_caption = $settings['exceptions']['title']
+            ? $this->t(Html::escape($settings['exceptions']['title']))
+            : '';
+
+          // Remove from table, since label etc. is already in caption.
+          $info = NULL;
           break;
 
+        // Case OfficeHoursDateHelper::isExceptionDay($day):
         // Case OfficeHoursDateHelper::isSeasonDay($day):
         // Case OfficeHoursDateHelper::isWeekDay($day):
         default:
@@ -204,6 +204,7 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
     if ($row_columns['label']) {
       $element['label'] = [
         'data' => $labels['day']['data'],
+        'colspan' => 3,
         'class' => $multiple ? 'inline' : 'visually-hidden',
       ];
     }

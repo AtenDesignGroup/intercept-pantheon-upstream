@@ -21,7 +21,7 @@ final class OfficeHoursEvents {
    * @var string
    */
 
-  const UPDATE = 'office_hours.update';
+  public const UPDATE = 'office_hours.update';
 
   /**
    * Event PRE_FORMAT: e.g., adding a holiday for all locations in a region.
@@ -32,7 +32,7 @@ final class OfficeHoursEvents {
    *
    * @var string
    */
-  const PRE_FORMAT = 'office_hours.pre_format';
+  public const PRE_FORMAT = 'office_hours.pre_format';
 
   /**
    * Event POST_FORMAT: e.g., changing time format from 'am' to non-php 'A.M.'.
@@ -43,6 +43,6 @@ final class OfficeHoursEvents {
    *
    * @var string
    */
-  const POST_FORMAT = 'office_hours.post_format';
+  public const POST_FORMAT = 'office_hours.post_format';
 
 }

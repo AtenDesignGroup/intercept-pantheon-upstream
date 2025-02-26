@@ -65,22 +65,6 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
 
   /**
    * {@inheritdoc}
-   *
-   * Note: This is never called, since Annotation: multiple_values = TRUE.
-   */
-  protected function formMultipleElements(FieldItemListInterface $items, array &$form, FormStateInterface $form_state) {
-    $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
-    if ($cardinality == FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED) {
-      $this->fieldDefinition->getFieldStorageDefinition()
-        ->setCardinality($this->getFieldSetting('cardinality_per_day') * OfficeHoursDateHelper::DAYS_PER_WEEK);
-    }
-
-    $elements = parent::formMultipleElements($items, $form, $form_state);
-    return $elements;
-  }
-
-  /**
-   * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // In D8, we have a (deliberate) anomaly in the widget.

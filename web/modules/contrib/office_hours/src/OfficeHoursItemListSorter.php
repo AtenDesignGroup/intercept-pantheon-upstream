@@ -135,29 +135,64 @@ class OfficeHoursItemListSorter {
    */
   protected function addItem(array &$sorted_list, OfficeHoursItem|NULL $item, int $slot_date) {
 
-    if ($item === NULL) {
-      // No time slot given, clear the date.
-      $sorted_list[$slot_date] = [];
-    }
-    else {
-      if ($item->isSeasonDay()
-      && !$item->getSeason()->isInRange($slot_date, $slot_date)) {
-        // Do not add to list. Outside range.
-      }
-      elseif ($item->isEmpty()) {
+    // Get the time slot that already occupies this date.
+    $set_slot = $sorted_list[$slot_date][0] ?? NULL;
+
+    // Process items (switch order is important!).
+    switch (TRUE) {
+      // Part 1: no item is passed.
+      case !$item && !$set_slot:
+        // Clear the date. No time slot given.
+        $sorted_list[$slot_date] = [];
+        break;
+
+      case !$item && $set_slot->isExceptionDay():
+        // Do not overwrite an exception day. Skip item.
+        break;
+
+      // Part 2: An empty item is passed.
+      case !$item:
+        // No time slot given, clear the date.
+        // case $item->isEmpty() && $set_slot->isExceptionDay():
+        // @todo Test if this is a valid case, and what to do.
+      case $item->isEmpty():
         // Clear the date. Closed all day.
         // Assume that no other items exist for this day.
         $sorted_list[$slot_date] = [];
-      }
-      else {
-        // Clear the date if this is a new season day or exception date.
-        $set_slot = $sorted_list[$slot_date][0] ?? NULL;
-        if ($set_slot && $set_slot->day !== $item->day) {
+        break;
+
+      // Part 3: An out-of-scope item is passed.
+      case $item->isSeasonDay()
+          && !$item->getSeason()->isInRange($slot_date, $slot_date):
+        // Do not add to list. Date is out of range.
+        break;
+
+      // Part 4: a valid item is passed.
+      case !$set_slot:
+        // Add time slot to empty date.
+        $sorted_list[$slot_date][] = $item;
+        break;
+
+      case $set_slot->isExceptionDay() && !$item->isExceptionDay():
+        // Do not overwrite an exception day. Skip item.
+        break;
+
+      // case $item->isExceptionDay():
+      // case $item->isSeasonDay():
+      // case $item->isSeasonHeader():
+      // case $item->isWeekDay():
+      default:
+        // First, clear the date if this is a new season day or exception date,
+        // except when an exception date is already set (see above).
+        // @todo Test for overlapping, non-sorted seasons.
+        if ($set_slot->day !== $item->day) {
+          // Clear existing slots: season overwrites week, exceptions all.
           $this->removeItem($sorted_list, $slot_date);
         }
-        // A valid time slot, add to the date.
+        // Then, add new time slot to existing items of the date.
         $sorted_list[$slot_date][] = $item;
-      }
+        break;
+
     }
   }
 
@@ -177,12 +212,13 @@ class OfficeHoursItemListSorter {
    * Gets NextDay.
    *
    * @param int $time
-   *   A timestamp, representing a day-date.
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
    *
    * @return array
    *   The date's time slots: [date => [day_index => $item].
    */
-  public function getNextDay(int $time): array {
+  public function getNextDay(int $time = 0): array {
+    $time = OfficeHoursDateHelper::getRequestTime($time, $this->itemList);
     $sorted_list = $this->getSortedItemList($time);
 
     $today = OfficeHoursDateHelper::today($time);

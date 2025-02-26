@@ -51,6 +51,17 @@
             if (typeof this.$form !== 'undefined' && (validateAll === 1 || $(this.element).hasClass('cv-validate-before-ajax')) && $(this.element).attr("formnovalidate") == undefined) {
               $(this.$form).removeClass('ajax-submit-prevented');
 
+              // Handle for the HTML5 validation if enabled.
+              var forceHtml5Validation = drupalSettings.clientside_validation_jquery.force_html5_validation;
+              var formId = $(this.$form).attr('id');
+              if (forceHtml5Validation && formId) {
+                if (!document.getElementById(formId).reportValidity()) {
+                  this.ajaxing = false;
+                  $(this.$form).addClass('ajax-submit-prevented');
+                  return false;
+                }
+              }
+
               $(this.$form).validate();
               if (!($(this.$form).valid())) {
                 this.ajaxing = false;

@@ -2,9 +2,9 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldFormatter;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursStatus;
 
 /**
  * Plugin implementation of the formatter.
@@ -71,26 +71,30 @@ class OfficeHoursFormatterTableSelectList extends OfficeHoursFormatterTable {
    *   Title of the element.
    */
   private function getStatusTitle(OfficeHoursItemListInterface $items) {
-    $settings = $this->getSettings();
+    $formatter_settings = $this->getSettings();
+    // For this title, print only the weekday, not the exception date.
+    // $formatter_settings['exceptions']['date_format'] = $formatter_settings['day_format']; .
+    $formatter_settings['exceptions']['date_format'] = 'l';
 
-    // Use the 'open_text' and 'current' slot to set the title.
-    $current_item = $items->getCurrentSlot();
-    if ($current_item) {
-      // For this title, print only the weekday, not the exception date.
-      // $settings['exceptions']['date_format'] = $settings['day_format']; .
-      $settings['exceptions']['date_format'] = 'l';
+    // Use formatter settings 'open_text' and 'current' to set the title.
+    $options = OfficeHoursStatus::getOptions(NULL, $formatter_settings);
+    $status = $items->getStatus();
+    $title = $options[$status];
 
-      // There might be some confusion with yesterday after midnight.
-      $title = implode(' ', [
-        $this->t(Html::escape($settings['current_status']['open_text'])),
-        $current_item->label($settings),
-        $current_item->formatTimeSlot($settings),
-      ]);
+    switch ($status) {
+      case OfficeHoursStatus::OPEN:
+        $current_item = $items->getCurrentSlot();
+        $title = implode(' ', [
+          $title,
+          $current_item->label($formatter_settings),
+          $current_item->formatTimeSlot($formatter_settings),
+        ]);
+        break;
+
+      case OfficeHoursStatus::CLOSED:
+      case OfficeHoursStatus::NEVER:
+        break;
     }
-    else {
-      $title = $this->t(Html::escape($settings['current_status']['closed_text']));
-    }
-
     return $title;
   }
 

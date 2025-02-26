@@ -31,7 +31,7 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
    * {@inheritdoc}
    */
   public function formatTimeSlot(array $settings) {
-    if ($this->day == OfficeHoursItem::EXCEPTION_DAY) {
+    if ($this->isExceptionHeader()) {
       // Exceptions header does not have time slot.
       return '';
     }
@@ -85,45 +85,40 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
     }
 
     $date = OfficeHoursDateHelper::format($from, 'Y-m-d');
+    $time = OfficeHoursDateHelper::getRequestTime(0, $this->getParent());
     $today = OfficeHoursDateHelper::today();
     $yesterday = strtotime('-1 day', $today);
     $day = $this->day;
 
-    if ($to < OfficeHoursItem::EXCEPTION_HORIZON_MAX) {
-      // $from-$to is a range, e.g., 0..7 days.
-      // Time slots from yesterday with endhours after midnight are included.
-      // @todo Call parent::isInRange();
-      // @todo Support $from <> 0.
-      $last_day = strtotime($date . " +$to day");
-      if ($day == $yesterday) {
-        $time = $this->parent->getRequestTime();
-        return parent::isOpen($time);
-      }
-      elseif ($day >= $yesterday && $day <= $last_day) {
-        return TRUE;
-      }
-      return FALSE;
-    }
-    elseif (OfficeHoursDateHelper::isExceptionDay($to)) {
-      // $from-$to are calendar dates.
+    if (OfficeHoursDateHelper::isExceptionDay($to)) {
+      // $from, $to are calendar dates.
       // @todo Support not only ($from = today, $to = today).
       if ($day < $yesterday) {
         return FALSE;
       }
       elseif ($day == $yesterday) {
-        $time = $this->parent->getRequestTime();
         // If the slot is until after midnight, it could be in range.
         return parent::isOpen($time);
       }
       elseif ($day <= $to) {
         return TRUE;
       }
-      return FALSE;
+    }
+    else {
+      // $from, $to is a range, e.g., 0..90 days.
+      // Time slots from yesterday with endhours after midnight are included.
+      // @todo Call parent::isInRange();
+      // @todo Support $from <> 0.
+      $last_day = strtotime("$date +$to day");
+      if ($day == $yesterday) {
+        return parent::isOpen($time);
+      }
+      elseif ($day >= $yesterday && $day <= $last_day) {
+        return TRUE;
+      }
     }
 
-    // Undefined. $time is a real timestamp.
     return FALSE;
-
   }
 
   /**
@@ -139,7 +134,7 @@ class OfficeHoursExceptionsItem extends OfficeHoursItem {
     if ($day == $yesterday || $day == $today) {
       $is_open = parent::isOpen($time);
     }
-    return $is_open;
+    return (bool) $is_open;
   }
 
 }

@@ -481,7 +481,6 @@ class RoomReservationForm extends ContentEntityForm {
     $bypassPermissions = [
       'has_max_duration_conflict' => 'bypass room reservation maximum duration constraints',
       'has_open_hours_conflict' => 'bypass room reservation open hours constraints',
-      'has_reservation_conflict' => 'bypass room reservation overlap constraints',
       'attendee_count' => 'bypass room reservation maximum capacity constraints',
     ];
 

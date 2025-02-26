@@ -4,7 +4,7 @@ namespace Drupal\office_hours;
 
 use Drupal\Core\Datetime\DateHelper;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
+use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface;
 
 /**
  * Defines lots of helpful functions for use in massaging dates.
@@ -13,7 +13,6 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
  *
  * @todo Centralize here all calls to date().
  * @todo Centralize here all calls to format().
- * @todo Centralize here all calls to getRequestTime().
  * @todo Centralize here all calls to strtotime().
  */
 class OfficeHoursDateHelper extends DateHelper {
@@ -23,14 +22,80 @@ class OfficeHoursDateHelper extends DateHelper {
    *
    * @var int
    */
-  const DAYS_PER_WEEK = 7;
+  public const DAYS_PER_WEEK = 7;
 
   /**
    * Defines the format that dates should be stored in.
    *
    * @var \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT;
    */
-  const DATE_STORAGE_FORMAT = 'Y-m-d';
+  public const DATE_STORAGE_FORMAT = 'Y-m-d';
+
+  /**
+   * The maximum day number for Weekday days.
+   *
+   * @var int
+   */
+  protected const WEEK_DAY_MAX = 7;
+
+  /**
+   * The Factor for a Season ID (100, 200, ...)
+   *
+   * @var int
+   */
+  public const SEASON_ID_FACTOR = 100;
+
+  /**
+   * The minimum day number for Seasonal days.
+   *
+   * Usage: $items->appendItem(['day' => OfficeHoursDateHelper::EXCEPTION_DAY_MIN]).
+   * Also used for SeasonHeader: $day = SeasonId + SEASON_DAY_MIN;
+   *
+   * @var int
+   */
+  public const SEASON_DAY_MIN = 9;
+
+  /**
+   * The maximum day number for Seasonal weekdays.
+   *
+   * @var int
+   */
+  public const SEASON_DAY_MAX = 100000000;
+
+  /**
+   * The minimum day number for Exception days.
+   *
+   * @var int
+   */
+  public const EXCEPTION_DAY_MIN = 100000001;
+
+  /**
+   * Returns timestamp for current request. May be adapted for User Timezone.
+   *
+   * @param int|null $time
+   *   The actual UNIX date/timestamp to use.
+   *     If set, do nothing.
+   *     If not, take REQUEST_TIME and allow hook to use some timezone field.
+   *
+   * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface|null $items
+   *   The Itemlist::getEntity(), that may have a city, timezone, to get time.
+   *
+   * @return int
+   *   A Unix timestamp.
+   *
+   * @see hook_office_hours_current_time_alter
+   * @see \Drupal\Component\Datetime\TimeInterface
+   */
+  public static function getRequestTime(int $time = 0, OfficeHoursItemListInterface|null $items = NULL) {
+    if (!$time) {
+      $time = \Drupal::time()->getRequestTime();
+      // Call hook. Allows to alter the current time using a timezone.
+      $entity = $items ? $items->getEntity() : NULL;
+      \Drupal::moduleHandler()->alter('office_hours_current_time', $time, $entity);
+    }
+    return $time;
+  }
+
 
   /**
    * Gets the weekday number from a Item->day number.
@@ -42,13 +107,13 @@ class OfficeHoursDateHelper extends DateHelper {
    *   The weekday number(0=Sun, 6=Sat) as integer.
    */
   public static function getWeekday($day) {
-    if ($day < OfficeHoursItem::SEASON_DAY_MIN) {
+    if (OfficeHoursDateHelper::isWeekDay($day)) {
       // Regular weekday.
       return $day;
     }
-    elseif ($day < OfficeHoursItem::EXCEPTION_DAY) {
+    elseif ($day < OfficeHoursDateHelper::EXCEPTION_DAY_MIN) {
       // Seasonal Weekday: 200...206 -> 0..6 .
-      return $day % OfficeHoursSeason::SEASON_ID_FACTOR;
+      return $day % OfficeHoursDateHelper::SEASON_ID_FACTOR;
     }
     else {
       // Exception date, Unix timestamp.
@@ -186,9 +251,9 @@ class OfficeHoursDateHelper extends DateHelper {
       return NULL;
     }
 
-    if (is_numeric($time) && $time > 2400) {
+    if (self::isValidDate($time)) {
       // if (OfficeHoursDateHelper::isExceptionDay($day)) {
-      // A Unix datetimestamp.
+      // A Unix date+timestamp.
       switch ($time_format) {
         case 'l':
           // Convert date into weekday in widget.
@@ -212,14 +277,14 @@ class OfficeHoursDateHelper extends DateHelper {
     elseif (!strstr($time, ':')) {
       // Normalize time to '09:00' format before creating DateTime object.
       try {
-        $time = substr('0000' . $time, -4);
+        $time = substr("0000$time", -4);
         $date = DrupalDateTime::createFromFormat('Hi', $time);
       }
       catch (\Exception $e) {
-        $time = substr('0000' . $time, -4);
+        $time = substr("0000$time", -4);
         $hour = substr($time, 0, -2);
         $min = substr($time, -2);
-        $time = $hour . ':' . $min;
+        $time = "$hour:$min";
         $date = new DrupalDateTime($time);
       }
     }
@@ -293,15 +358,17 @@ class OfficeHoursDateHelper extends DateHelper {
   }
 
   /**
-   * Gets the unix timestamp for today.
+   * Gets the UNIX timestamp for today.
    *
    * @param int $time
-   *   A unix time stamp.
+   *   A UNIX timestamp. If 0, set to 'REQUEST_TIME', alter-hook for Timezone.
    *
    * @return int
-   *   The unix timestamp for today.
+   *   The UNIX timestamp for today.
+   *
+   * @todo Calculate today() for given time.
    */
-  public static function today($time = NULL) {
+  public static function today($time = 0) {
     // $time ??= \Drupal::time()->getRequestTime();
     // $date = OfficeHoursDateHelper::format($time, 'Y-m-d');
     // $today = strtotime($date);
@@ -392,6 +459,21 @@ class OfficeHoursDateHelper extends DateHelper {
   }
 
   /**
+   * Returns whether the day number is a valid Date.
+   *
+   * @param int $day
+   *   An Office hours 'day' number.
+   *
+   * @return bool
+   *   True if the day_number is a date (UNIX timestamp).
+   */
+  public static function isValidDate($day) {
+    return is_numeric($day)
+      && ($day >= OfficeHoursDateHelper::EXCEPTION_DAY_MIN
+      || $day < 0);
+  }
+
+  /**
    * Returns whether the day number is an Exception day.
    *
    * @param int $day
@@ -400,7 +482,7 @@ class OfficeHoursDateHelper extends DateHelper {
    *   Set to TRUE if the 'Add exception' empty day is also an Exception day.
    *
    * @return bool
-   *   True if the day_number is a date (unix timestamp).
+   *   True if the day_number is a date (UNIX timestamp).
    */
   public static function isExceptionDay($day, $include_empty_day = FALSE) {
     // Do NOT convert to integer, since day may be empty.
@@ -411,20 +493,20 @@ class OfficeHoursDateHelper extends DateHelper {
       // A following slot on an exception day.
       return TRUE;
     }
-    return (is_numeric($day) && $day >= OfficeHoursItem::EXCEPTION_DAY);
+    return self::isValidDate($day);
   }
 
   /**
-   * Returns whether the day number is the special EXCEPTION_DAY header.
+   * Returns if the day number is the inserted Exception header.
    *
    * @param int $day
    *   The Office hours 'day' element as weekday or Exception day date.
    *
    * @return bool
-   *   True if the day_number is EXCEPTION_DAY.
+   *   True if the day_number is EXCEPTION_DAY_MIN.
    */
   public static function isExceptionHeader($day) {
-    return ($day == OfficeHoursItem::EXCEPTION_DAY);
+    return $day == OfficeHoursDateHelper::EXCEPTION_DAY_MIN;
   }
 
   /**
@@ -438,7 +520,9 @@ class OfficeHoursDateHelper extends DateHelper {
    *   The season ID.
    */
   public static function getSeasonId($day) {
-    $season_id = OfficeHoursDateHelper::isSeasonDay($day) ? ($day - $day % 100) : 0;
+    $season_id = OfficeHoursDateHelper::isSeasonDay($day)
+      ? $day - $day % OfficeHoursDateHelper::SEASON_ID_FACTOR
+      : 0;
     return $season_id;
   }
 
@@ -453,8 +537,8 @@ class OfficeHoursDateHelper extends DateHelper {
    *   True if the day_number is a seasonal weekday (100 to 100....7).
    */
   public static function isSeasonDay($day) {
-    return ($day >= OfficeHoursItem::SEASON_DAY_MIN
-      && $day <= OfficeHoursItem::SEASON_DAY_MAX);
+    return $day >= OfficeHoursDateHelper::SEASON_DAY_MIN
+      && $day <= OfficeHoursDateHelper::SEASON_DAY_MAX;
   }
 
   /**
@@ -469,7 +553,7 @@ class OfficeHoursDateHelper extends DateHelper {
    *   season_id if a seasonal weekday, E.g., 301..309 -> 100..100.
    */
   public static function isSeasonHeader($day) {
-    $result = (intval($day) % OfficeHoursSeason::SEASON_ID_FACTOR) == OfficeHoursItem::SEASON_DAY_MIN;
+    $result = (intval($day) % OfficeHoursDateHelper::SEASON_ID_FACTOR) == OfficeHoursDateHelper::SEASON_DAY_MIN;
     return $result;
   }
 
@@ -484,7 +568,7 @@ class OfficeHoursDateHelper extends DateHelper {
    *   True if the day_number is a seasonal weekday (100 to 100....7).
    */
   public static function isWeekDay($day) {
-    return $day <= OfficeHoursItem::WEEK_DAY_MAX;
+    return $day <= OfficeHoursDateHelper::WEEK_DAY_MAX;
   }
 
   /**
@@ -539,4 +623,10 @@ class OfficeHoursDateHelper extends DateHelper {
     return DrupalDateTime::createFromFormat($format, $time, $timezone, $settings);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public static function createFromTimestamp($time, $timezone = NULL, array $settings = []) {
+    return DrupalDateTime::createFromTimestamp($time, $timezone, $settings);
+  }
 }

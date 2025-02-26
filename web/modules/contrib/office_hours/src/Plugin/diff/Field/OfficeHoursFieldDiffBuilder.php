@@ -25,7 +25,6 @@ class OfficeHoursFieldDiffBuilder extends FieldDiffBuilderBase {
   public function build(FieldItemListInterface $items): mixed {
     $result = [];
 
-    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $this */
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
     $items->filterEmptyItems();
     foreach ($items as $key => $item) {

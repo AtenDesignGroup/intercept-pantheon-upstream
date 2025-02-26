@@ -6,7 +6,7 @@ package: 'Intercept'
 dependencies:
   - intercept:intercept_location
 
-# Information added by Drupal.org packaging script on 2025-01-29
-version: '2.0.9'
+# Information added by Drupal.org packaging script on 2025-02-26
+version: '2.0.10'
 project: 'intercept'
-datestamp: 1738175534
+datestamp: 1740599672

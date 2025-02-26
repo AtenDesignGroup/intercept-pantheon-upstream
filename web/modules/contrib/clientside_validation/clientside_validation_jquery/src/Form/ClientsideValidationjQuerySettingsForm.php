@@ -29,30 +29,16 @@ class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
   protected $settings;
 
   /**
-   * Constructs a ClientsideValidationjQuerySettingsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Http\ClientFactory $http_client
-   *   An HTTP client.
-   * @param \Drupal\Core\Site\Settings $settings
-   *   A settings object.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, ClientFactory $http_client, Settings $settings) {
-    parent::__construct($config_factory);
-    $this->httpClient = $http_client;
-    $this->settings = $settings;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-        $container->get('config.factory'),
-        $container->get('http_client_factory'),
-        $container->get('settings')
-    );
+    /** @var ClientsideValidationjQuerySettingsForm $instance */
+    $instance = parent::create($container);
+
+    $instance->httpClient = $container->get('http_client_factory');
+    $instance->settings = $container->get('settings');
+
+    return $instance;
   }
 
   /**
@@ -108,6 +94,13 @@ class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('validate_all_ajax_forms'),
     ];
 
+    $form['force_html5_validation'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Force HTML5 validation'),
+      '#description' => $this->t('Force HTML5 validation on form first before other validation'),
+      '#default_value' => $config->get('force_html5_validation'),
+    ];
+
     $form['force_validate_on_blur'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Validate on Blur/focusout'),
@@ -126,6 +119,7 @@ class ClientsideValidationjQuerySettingsForm extends ConfigFormBase {
     $config->set('use_cdn', $form_state->getValue('use_cdn'));
     $config->set('cdn_base_url', $form_state->getValue('cdn_base_url'));
     $config->set('validate_all_ajax_forms', $form_state->getValue('validate_all_ajax_forms'));
+    $config->set('force_html5_validation', $form_state->getValue('force_html5_validation'));
     $config->set('force_validate_on_blur', $form_state->getValue('force_validate_on_blur'));
 
     $config->save();

@@ -26,6 +26,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class OfficeHoursFormatterBase extends FormatterBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The maximum horizon for Exception days in formatter.
+   *
+   * @var int
+   */
+  public const EXCEPTION_HORIZON_MAX = 999;
+
+  /**
    * Entity type manager object.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -179,13 +186,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     $element['show_closed'] = [
       '#title' => $this->t('Number of days to show'),
       '#type' => 'select',
-      '#options' => [
-        'all' => $this->t('Show all days'),
-        'open' => $this->t('Show only open days'),
-        'next' => $this->t('Show next open day'),
-        'none' => $this->t('Hide all days'),
-        'current' => $this->t('Show only current day'),
-      ],
+      '#options' => $this->getShowDaysOptions(),
       '#default_value' => $settings['show_closed'],
       '#description' => $this->t('The days to show in the formatter. Useful in combination with the Current Status block.'),
     ];
@@ -240,6 +241,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#title' => $this->t('Show the hours, even when fully empty'),
       '#type' => 'checkbox',
       '#default_value' => $settings['show_empty'],
+      // @todo #3501768 Add description about which title is displayed.
       '#description' => $this->t('If not set, the field is hidden when no time slots are maintained.'),
       '#required' => FALSE,
     ];
@@ -376,7 +378,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#type' => 'number',
       '#default_value' => $settings['exceptions']['restrict_exceptions_to_num_days'],
       '#min' => 0,
-      '#max' => OfficeHoursItem::EXCEPTION_HORIZON_MAX,
+      '#max' => OfficeHoursFormatterBase::EXCEPTION_HORIZON_MAX,
       '#step' => 1,
       '#required' => TRUE,
     ];
@@ -385,7 +387,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '#type' => 'number',
       '#default_value' => $settings['exceptions']['restrict_seasons_to_num_days'],
       '#min' => 0,
-      '#max' => OfficeHoursItem::EXCEPTION_HORIZON_MAX,
+      '#max' => OfficeHoursFormatterBase::EXCEPTION_HORIZON_MAX,
       '#step' => 1,
       '#required' => TRUE,
     ];
@@ -469,19 +471,9 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     $weekday = OfficeHoursDateHelper::getWeekday($date);
     $first_day = OfficeHoursDateHelper::getFirstDay($settings['office_hours_first_day']);
 
-    // @todo Avoid this duplicate declaration.
-    $show_options = [
-      'all' => $this->t('Show all days'),
-      'open' => $this->t('Show only open days'),
-      'next' => $this->t('Show next open day'),
-      'none' => $this->t('Hide all days'),
-      'current' => $this->t('Show only current day'),
-    ];
     $summary[] = $this->t('Display Office hours in different formats.');
-
     $summary[] = $this->t("@show and time slots as @label @time, starting with @first_day.", [
-      '@show' =>
-        $show_options[$settings['show_closed']],
+      '@show' => $this->getShowDaysOptions()[$settings['show_closed']],
       '@label' => OfficeHoursItem::formatLabel(
         $settings['day_format'], ['day' => $weekday]),
       '@time' => OfficeHoursDateHelper::format('1100', OfficeHoursDateHelper::getTimeFormat(
@@ -517,6 +509,22 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
 
     return $summary;
   }
+
+  /**
+   * Returns the possible options for.
+   *
+   * @return string[]
+   *   The possible options.
+   */
+  private function getShowDaysOptions (): array {
+  return [
+    'all' => $this->t('Show all days'),
+    'open' => $this->t('Show only open days'),
+    'next' => $this->t('Show next open day'),
+    'none' => $this->t('Hide all days'),
+    'current' => $this->t('Show only current day'),
+  ];
+}
 
   /**
    * Returns the protected field definition.
@@ -669,6 +677,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     // Attach Javascript for isolated field update,
     // when page cache is not refreshed on time.
     if ($this->currentUser->isAnonymous()) {
+      // Notes to consider for Anonymous users:
+      // - Page is cached forever when no  JS statusUpdate is triggered
+      // and caching is set in admin/config/development/performance.
+      // then page is cached Permanently for Anonymous users.
+      // - Page will not be cached after (dummmy) message, since this will
+      // trigger killSwitch().
+      // \Drupal::messenger()->addMessage($max_age .' / '. __FUNCTION__);
       $view_mode = $this->viewMode;
       // Fetch layout_builder data.
       $third_party_settings = $this->thirdPartySettings;

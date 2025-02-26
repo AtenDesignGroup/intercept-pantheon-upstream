@@ -2,7 +2,6 @@
  * @see https://www.drupal.org/docs/drupal-apis/javascript-api/javascript-api-overview
  */
 (function updateElement($, Drupal, once) {
-
   /**
    * Traverses visible rows and applies even/odd classes.
    *
@@ -79,7 +78,7 @@
     timeNames.push(name.replace('[all_day]', '[endhours][ampm]'));
 
     // Enable/Disable the start and end time depending on all_day checkbox.
-    timeNames.forEach(item => {
+    timeNames.forEach((item) => {
       $(`[name = "${item}"]`).prop('disabled', isEnabled);
     });
   }
@@ -92,6 +91,7 @@
   function addTimeSlot(e) {
     e.preventDefault();
 
+    // @todo Re-use setTimeSlotElement().
     const $this = $(this);
     // Hide the link, the user clicked upon.
     $this.hide();
@@ -127,7 +127,7 @@
     // Clear the date (in Exception days).
     slot.find('.form-date').each(clearValue);
     // Clear the all_day checkbox and set depending fields.
-    slot.find('.form-checkbox').prop('checked', FALSE);
+    slot.find('.form-checkbox').prop('checked', false);
     slot.find('.form-checkbox').each(setAllDayTimeSlot);
     // Do the following for both widgets:
     // Clear the hours, minutes in the select box.
@@ -178,9 +178,9 @@
       // Select current table.
       tbody = $(this).closest('tbody');
       // Get div's from current day using class name.
-      currentSelector = tbody.find('.js-office-hours-day-' + currentDay);
+      currentSelector = tbody.find(`.js-office-hours-day-${currentDay}`);
       // Get div's from previous day using class name.
-      previousSelector = tbody.find('.js-office-hours-day-' + previousDay);
+      previousSelector = tbody.find(`.js-office-hours-day-${previousDay}`);
     }
 
     // For better UX, first copy the comments, then hours and fadeIn.
@@ -226,7 +226,7 @@
     // $this.parents('.dropbutton-wrapper').removeClass('open');
   }
 
-  function initialize_time_slot() {
+  function initializeTimeSlot() {
     // Hide every empty slot and every slot above the max slots per day.
     const $this = $(this);
     if ($this.hasClass('js-office-hours-hide')) {
@@ -234,36 +234,57 @@
     }
 
     // For each all_day checkbox, enable/disable times if clicked upon.
-    $('[data-drupal-selector$="all-day"]', this).bind('click', setAllDayTimeSlot)
-    .each(setAllDayTimeSlot);
+    $('[data-drupal-selector$="all-day"]', this)
+      .bind('click', setAllDayTimeSlot)
+      .each(setAllDayTimeSlot);
 
     // For each add-link, show the next slot if clicked upon.
     // Show the add-link, except if the next time slot is hidden.
-    $('.js-office-hours-operations-wrapper [data-drupal-selector$=add]', this)
-    .bind('click', addTimeSlot)
-    .each(showAddLink);
+    $('.js-office-hours-operation[data-drupal-selector$=add]', this)
+      .bind('click', addTimeSlot)
+      .each(showAddLink);
 
     // For each clear-link, clear the slot if clicked upon.
-    $('.js-office-hours-operations-wrapper [data-drupal-selector$=clear]', this)
-    .bind('click', clearTimeSlot);
+    $('.js-office-hours-operation[data-drupal-selector$=clear]', this)
+      .bind('click', clearTimeSlot);
 
     // For each copy-link, copy the previous day's values if clicked upon.
     // @todo This works for Table widget, not yet for List Widget.
-    $('.js-office-hours-operations-wrapper [data-drupal-selector$=copy]', this)
-    .bind('click', copyPreviousDay);
+    $('.js-office-hours-operation[data-drupal-selector$=copy]', this)
+      .bind('click', copyPreviousDay);
   }
 
   Drupal.behaviors.office_hours = {
-    attach: function (context) {
+    attach(context) {
+      $(document).ready(function () {
+        // For the Widget element.
+        $(
+          once(
+            'office-hours-widget-once',
+            '.field--type-office-hours .office-hours-slot',
+            context,
+          ),
+        ).each(initializeTimeSlot);
+        $(
+          once(
+            'office-hours-striping',
+            '.field--type-office-hours',
+            context
+          ),
+        ).each(function () {
+          fixStriping(this);
+        });
 
-      // For the Widget element.
-      $(once('office-hours-widget-once', '.field--type-office-hours .office-hours-slot', context)).each(initialize_time_slot);
-      $(once('office-hours-striping', '.field--type-office-hours', context)).each(function () {
-        fixStriping(this);
+        // For the WebformOfficeHours element.
+        $(
+          once(
+            'office-hour-webform-once',
+            '.js-webform-type-office-hours .office-hours-slot',
+            context,
+          ),
+        ).each(initializeTimeSlot);
+        // @todo Fix Striping for WebformOfficeHours element.
       });
-      // For the WebformOfficeHours element.
-      $(once('office-hour-webform-once', '.js-webform-type-office-hours .office-hours-slot', context)).each(initialize_time_slot);
-      // @todo Fix Striping for WebformOfficeHours element.
     },
   };
 })(jQuery, Drupal, once);

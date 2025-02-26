@@ -1,0 +1,6 @@
+office_hours:
+  label: 'Office hours'
+  description: "Field to store weekly 'office hours' or 'opening hours', including seasons and exception days."
+  weight: -10
+  libraries:
+    - office_hours/office_hours.custom-icon

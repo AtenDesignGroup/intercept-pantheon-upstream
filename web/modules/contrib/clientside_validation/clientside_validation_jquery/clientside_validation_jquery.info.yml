@@ -7,7 +7,7 @@ core_version_requirement: ^9.4 || ^10 || ^11
 dependencies:
   - clientside_validation:clientside_validation
 
-# Information added by Drupal.org packaging script on 2025-01-25
-version: '4.1.1'
+# Information added by Drupal.org packaging script on 2025-02-12
+version: '4.1.2'
 project: 'clientside_validation'
-datestamp: 1737781687
+datestamp: 1739335912

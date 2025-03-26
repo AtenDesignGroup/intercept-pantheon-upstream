@@ -112,8 +112,14 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
           'overflow' => '',
         ],
       ],
+      '3d_library' => TRUE,
+      'accessibility_library' => TRUE,
+      'annotations_library' => FALSE,
+      'boost_library' => FALSE,
+      'data_library' => FALSE,
       'exporting_library' => TRUE,
-      'texture_library' => TRUE,
+      'no_data_library' => FALSE,
+      'texture_library' => FALSE,
       'global_options' => static::defaultGlobalOptions(),
     ] + parent::defaultConfiguration();
 
@@ -138,16 +144,60 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       '#markup' => $this->t('<p>Charts is designed to be generic enough to work with multiple charting libraries. If you would like settings that apply to all Highcharts charts, you can <a href="https://www.drupal.org/project/issues/charts" target="_blank">submit a ticket</a> to have a setting added here, in the Highcharts-specific settings.</p>'),
     ];
 
+    $form['3d_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "3D" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['3d_library']),
+      '#description' => $this->t('Highcharts 3D module is a separate library that enables 3D charts. See <a href="https://www.highcharts.com/docs/chart-concepts/3d-charts" target="_blank">Highcharts 3D documentation</a> for more information.'),
+    ];
+
+    $form['accessibility_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Accessibility" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['accessibility_library']),
+      '#description' => $this->t('Highcharts Accessibility module is a separate library that enables accessibility features. See <a href="https://www.highcharts.com/docs/chart-concepts/accessibility" target="_blank">Highcharts Accessibility documentation</a> for more information.'),
+    ];
+
+    $form['annotations_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Annotations" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['annotations_library']),
+      '#description' => $this->t('Highcharts Annotations module is a separate library that enables annotations. See <a href="https://www.highcharts.com/docs/advanced-chart-features/annotations-module" target="_blank">Highcharts Annotations documentation</a> for more information.'),
+    ];
+
+    $form['boost_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Boost" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['boost_library']),
+      '#description' => $this->t('Highcharts Boost module is a separate library that enables faster rendering of charts. See <a href="https://www.highcharts.com/docs/advanced-chart-features/boost-module" target="_blank">Highcharts Boost documentation</a> for more information.'),
+    ];
+
+    $form['data_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Data" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['data_library']),
+      '#description' => $this->t('Highcharts Data module is a separate library that enables data import and export. See <a href="https://www.highcharts.com/docs/working-with-data/data-module" target="_blank">Highcharts Data documentation</a> for more information.'),
+    ];
+
     $form['exporting_library'] = [
       '#title' => $this->t('Enable Highcharts\' "Exporting" library'),
       '#type' => 'checkbox',
       '#default_value' => !empty($this->configuration['exporting_library']),
+      '#description' => $this->t('Highcharts Exporting module is a separate library that enables exporting charts. See <a href="https://www.highcharts.com/docs/export-module/export-module-overview" target="_blank">Highcharts Exporting documentation</a> for more information.'),
+    ];
+
+    $form['no_data_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "No Data" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['no_data_library']),
+      '#description' => $this->t('Highcharts No Data module is a separate library that enables no data message. See <a href="https://api.highcharts.com/highcharts/noData" target="_blank">Highcharts No Data documentation</a> for more information.'),
     ];
 
     $form['texture_library'] = [
       '#title' => $this->t('Enable Highcharts\' "Texture" library'),
       '#type' => 'checkbox',
       '#default_value' => !empty($this->configuration['texture_library']),
+      '#description' => $this->t('Highcharts Texture module is a separate library that enables texture fill. See <a href="https://www.highcharts.com/docs/chart-design-and-style/pattern-fills" target="_blank">Highcharts Texture documentation</a> for more information.'),
     ];
 
     $legend_configuration = $this->configuration['legend'] ?? [];
@@ -420,7 +470,13 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     if (!$form_state->getErrors()) {
       $values = $form_state->getValue($form['#parents']);
       $this->configuration['legend'] = $values['legend'];
+      $this->configuration['3d_library'] = $values['3d_library'];
+      $this->configuration['accessibility_library'] = $values['accessibility_library'];
+      $this->configuration['annotations_library'] = $values['annotations_library'];
+      $this->configuration['boost_library'] = $values['boost_library'];
+      $this->configuration['data_library'] = $values['data_library'];
       $this->configuration['exporting_library'] = $values['exporting_library'];
+      $this->configuration['no_data_library'] = $values['no_data_library'];
       $this->configuration['texture_library'] = $values['texture_library'];
       $this->configuration['global_options'] = $values['global_options'];
     }
@@ -456,8 +512,26 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     }
 
     $element['#attached']['library'][] = 'charts_highcharts/highcharts';
+    if (!empty($this->configuration['3d_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/3d';
+    }
+    if (!empty($this->configuration['accessibility_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/accessibility';
+    }
+    if (!empty($this->configuration['annotations_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/annotations';
+    }
+    if (!empty($this->configuration['boost_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/boost';
+    }
+    if (!empty($this->configuration['data_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/data';
+    }
     if (!empty($this->configuration['exporting_library'])) {
-      $element['#attached']['library'][] = 'charts_highcharts/highcharts_exporting';
+      $element['#attached']['library'][] = 'charts_highcharts/exporting';
+    }
+    if (!empty($this->configuration['no_data_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/no_data';
     }
     if (!empty($this->configuration['texture_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/texture';

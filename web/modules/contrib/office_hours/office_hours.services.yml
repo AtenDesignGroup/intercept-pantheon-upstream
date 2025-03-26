@@ -5,6 +5,9 @@ services:
   Drupal\office_hours\Hook\OfficeHoursFieldHooks:
     class: Drupal\office_hours\Hook\OfficeHoursFieldHooks
     autowire: true
+  Drupal\office_hours\Hook\OfficeHoursHooks:
+    class: Drupal\office_hours\Hook\OfficeHoursHooks
+    autowire: true
   Drupal\office_hours\Hook\OfficeHoursThemeHooks:
     class: Drupal\office_hours\Hook\OfficeHoursThemeHooks
     autowire: true

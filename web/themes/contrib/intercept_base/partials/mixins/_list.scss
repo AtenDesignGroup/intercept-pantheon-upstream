@@ -21,10 +21,9 @@
 //
 @mixin list--bullets($item-selector: li) {
   @include list--reset;
-  padding-left: 1.25em;
+  padding-left: 1.5em;
 
   > #{$item-selector} {
-    display: block;
     margin-bottom: 1em;
     position: relative;
 
@@ -34,21 +33,21 @@
   }
 
   > #{$item-selector}:before {
-    color: $gray-40;
+    color: $gray-30;
     content: "•";
-    display: inline-block;
-    font-family: $ff-sans;
-    font-size: .825em;
-    font-weight: $fw-bold;
-    margin-left: -1.5em;
+    margin-right: -.65em;
+    width: .55em;
     position: absolute;
+    left: -1.5em;
     top: 0;
+    display: inline-block;
 
     .article__aside & {
-      color: $gray-40;
+      color: $gray-30;
     }
   }
 
+  // Second Level
   ul #{$item-selector} {
     margin-top: 1em;
 
@@ -62,20 +61,20 @@
   }
 
   ul #{$item-selector}:before {
-    color: $gray-60;
+    color: $gray-30;
     content: "\25E6";
     font-weight: $fw-book;
 
     .article__aside & {
-      color: $gray-40;
+      color: $gray-30;
     }
   }
 
-  @include bp.bp(medium) {
-    > #{$item-selector}:before {
-      margin-left: -1.5em;
-    }
-  }
+  // @include bp.bp(medium) {
+  //   > #{$item-selector}:before {
+  //     margin-left: -1.5em;
+  //   }
+  // }
 }
 
 //

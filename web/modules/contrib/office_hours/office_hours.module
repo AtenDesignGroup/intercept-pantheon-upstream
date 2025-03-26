@@ -6,16 +6,30 @@
  */
 
 use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\field\FieldStorageConfigInterface;
 use Drupal\office_hours\Hook\OfficeHoursFieldHooks;
+use Drupal\office_hours\Hook\OfficeHoursHooks;
+use Drupal\office_hours\Hook\OfficeHoursThemeHooks;
+use Drupal\office_hours\Hook\OfficeHoursViewsHooks;
+use Drupal\views\Plugin\views\cache\CachePluginBase;
+use Drupal\views\ViewExecutable;
 
-// @todo Remove hook declarations from module file in D11.1.
-// @see https://www.drupal.org/project/office_hours/issues/3505428
-// @see https://drupalize.me/blog/drupal-111-adds-hooks-classes-history-how-and-tutorials-weve-updated
-// Add hook_theme and hook_preprocess hook implementations.
-include_once __DIR__ . '/office_hours.theme.inc';
-// Add hook_views and hook_field_views hook implementations.
-include_once __DIR__ . '/office_hours.views.inc';
+/**
+ * @see https://www.drupal.org/project/office_hours/issues/3505428
+ * @see https://drupalize.me/blog/drupal-111-adds-hooks-classes-history-how-and-tutorials-weve-updated
+ * Note: Hook preprocess_field must remain procedural (message in D11.1).
+ * in Drupal\Core\Hook\HookCollectorPass::checkForProceduralOnlyHooks().
+ */
+
+/**
+ * Implements hook_field_type_category_info_alter().
+ */
+#[LegacyHook]
+function office_hours_field_type_category_info_alter(&$definitions) {
+  return \Drupal::service(OfficeHoursFieldHooks::class)->field_type_category_info_alter($definitions);
+}
 
 /**
  * Implements hook_help() on 'help.page.office_hours'.
@@ -26,11 +40,129 @@ function office_hours_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Implements hook_field_type_category_info_alter().
+ * Implements hook_preprocess_field().
+ *
+ * Note: Hook preprocess_field must remain procedural (message in D11.1).
+ * in Drupal\Core\Hook\HookCollectorPass::checkForProceduralOnlyHooks().
+ */
+function office_hours_preprocess_field(&$variables, $hook) {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->preprocess_field($variables, $hook);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Note: Hook preprocess_field must remain procedural (message in D11.1).
+ * in Drupal\Core\Hook\HookCollectorPass::checkForProceduralOnlyHooks().
+ */
+function office_hours_preprocess_office_hours(&$variables) {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->preprocess_office_hours($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Note: Hook preprocess_field must remain procedural (message in D11.1).
+ * in Drupal\Core\Hook\HookCollectorPass::checkForProceduralOnlyHooks().
+ */
+function office_hours_preprocess_office_hours_status(&$variables) {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->preprocess_office_hours_status($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Note: Hook preprocess_field must remain procedural (message in D11.1).
+ * in Drupal\Core\Hook\HookCollectorPass::checkForProceduralOnlyHooks().
+ */
+function office_hours_preprocess_office_hours_table(&$variables) {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->preprocess_office_hours_table($variables);
+}
+
+/**
+ * Implements hook_theme().
  */
 #[LegacyHook]
-function office_hours_field_type_category_info_alter(&$definitions) {
-  return \Drupal::service(OfficeHoursFieldHooks::class)->field_type_category_info_alter($definitions);
+function office_hours_theme() {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->theme();
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+#[LegacyHook]
+function office_hours_theme_suggestions_office_hours(array $variables) {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->theme_suggestions_office_hours($variables);
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function office_hours_theme_suggestions_office_hours_status(array $variables) {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->theme_suggestions_office_hours_status($variables);
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function office_hours_theme_suggestions_office_hours_table(array $variables) {
+  return \Drupal::service(OfficeHoursThemeHooks::class)->theme_suggestions_office_hours_table($variables);
+}
+
+/**
+ * Implements hook_tokens().
+ */
+#[LegacyHook]
+function office_hours_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  return \Drupal::service(OfficeHoursHooks::class)->tokens($type, $tokens, $data, $options, $bubbleable_metadata);
+}
+
+/**
+ * Implements hook_field_views_data().
+ */
+#[LegacyHook]
+function office_hours_field_views_data(FieldStorageConfigInterface $field_storage) {
+  return \Drupal::service(OfficeHoursViewsHooks::class)->fieldViewsData($field_storage);
+}
+
+/**
+ * Implements hook_views_query_substitutions().
+ */
+#[LegacyHook]
+function office_hours_views_query_substitutions(ViewExecutable $view) {
+  return \Drupal::service(OfficeHoursViewsHooks::class)->viewsQuerySubstitutions($view);
+}
+
+/**
+ * Implements hook_views_pre_execute().
+ */
+#[LegacyHook]
+function office_hours_views_pre_execute(ViewExecutable $view) {
+  return \Drupal::service(OfficeHoursViewsHooks::class)->viewsPreExecute($view);
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+#[LegacyHook]
+function office_hours_views_post_execute(ViewExecutable $view) {
+  return \Drupal::service(OfficeHoursViewsHooks::class)->viewsPostExecute($view);
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+#[LegacyHook]
+function office_hours_views_pre_render(ViewExecutable $view) {
+  return \Drupal::service(OfficeHoursViewsHooks::class)->viewsPreRender($view);
+}
+
+/**
+ * Implements hook_views_post_render().
+ */
+#[LegacyHook]
+function office_hours_views_post_render(ViewExecutable $view, array &$output, CachePluginBase $cache) {
+  return \Drupal::service(OfficeHoursViewsHooks::class)->viewsPostRender($view, $output, $cache);
 }
 
 /**

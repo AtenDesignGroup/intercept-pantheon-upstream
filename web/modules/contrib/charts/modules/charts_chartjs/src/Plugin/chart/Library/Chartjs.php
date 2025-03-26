@@ -381,6 +381,10 @@ class Chartjs extends ChartBase {
     foreach ($children as $child) {
       $type = $element[$child]['#type'];
       if ($type === 'chart_xaxis' && isset($element[$child]['#labels'])) {
+        if (in_array($element['#chart_type'], $this->getPieStyleTypes())) {
+          $categories = $element[$child]['#labels'];
+          break;
+        }
         $categories = is_array($element[$child]['#labels']) ? array_map('strip_tags', $element[$child]['#labels']) : [];
       }
       if (in_array($element['#chart_type'], $this->getPieStyleTypes())
@@ -656,6 +660,7 @@ class Chartjs extends ChartBase {
     return [
       'pie',
       'doughnut',
+      'donut',
       'polarArea',
     ];
   }

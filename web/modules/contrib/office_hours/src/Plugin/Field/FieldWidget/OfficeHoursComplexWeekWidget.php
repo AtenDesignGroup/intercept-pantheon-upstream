@@ -2,7 +2,6 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldWidget;
 
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -72,14 +71,13 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
     $form_state->setCached(FALSE);
 
     /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
-    /** @var \Drupal\office_hours\Plugin\Field\FieldWidget\OfficeHoursWeekWidget $widget */
+    /** @var \Drupal\office_hours\Plugin\Field\FieldWidget\OfficeHoursWidgetBase $widget */
 
     // First, create a Week widget for the normal weekdays.
     // Use the form we are already in, not by adding a new widget.
     $plugin_id = 'office_hours_default';
     $field_type = 'office_hours';
-    $field_definition = $items->getFieldDefinition($field_type);
-    $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
+    $widget = $items->getWidget($plugin_id, $this->getSettings());
     // Explicitly set the season 0, avoiding error upon addMoreSubmit().
     $this->setSeason();
     $id = 0;
@@ -91,37 +89,29 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
     if ($this->getFieldSetting('exceptions')) {
       $plugin_id = 'office_hours_exceptions_only';
       $field_type = 'office_hours_exceptions';
-      $field_definition = $items->getFieldDefinition($field_type);
-      if ($field_definition) {
-        // May be empty when installing field.
-        $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
-        // Explicitly set an ID/weight between 0 and first season ID.
-        $id = 10;
-        $widget_form = $widget->form($items, $form, $form_state);
-        // @todo #3335549 Decide to use complete form or only ['widget'] part.
-        $element[$field_type][$id] = ($widget_form['widget'][0] ?? []) + $widget_form['widget'];
-        unset($element[$field_type][$id][0]);
-        unset($element[$field_type][$id]['#parents']);
-      }
+      $widget = $items->getWidget($plugin_id, $this->getSettings());
+      // Explicitly set an ID/weight between weekday (0) and first season ID.
+      $id = 10;
+      $widget_form = $widget->form($items, $form, $form_state);
+      // @todo #3335549 Decide to use complete form or only ['widget'] part.
+      $element[$field_type][$id] = ($widget_form['widget'][0] ?? []) + $widget_form['widget'];
+      unset($element[$field_type][$id][0]);
+      unset($element[$field_type][$id]['#parents']);
     }
 
     // Then, add Widgets for the Season days.
     if ($this->getFieldSetting('seasons')) {
       $plugin_id = 'office_hours_season_only';
       $field_type = 'office_hours_season_header';
-      $field_definition = $items->getFieldDefinition($field_type);
-      if ($field_definition) {
-        $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
-        // Create a Widget for each season. @todo Add sorting?
-        $seasons = $items->getSeasons(FALSE, TRUE);
-        foreach ($seasons as $id => $season) {
-          $widget = $this->getOfficeHoursPlugin('widget', $plugin_id, $field_definition);
-          $widget->setSeason($season);
-          $widget_form = $widget->form($items, $form, $form_state);
-          // @todo #3335549 Decide to use complete form or only ['widget'] part.
-          $element[$field_type][$id] = $widget_form['widget'];
-          unset($element[$field_type][$id]['#parents']);
-        }
+      $widget = $items->getWidget($plugin_id, $this->getSettings());
+      // Add a Widget for each season. @todo Add sorting?
+      $seasons = $items->getSeasons(FALSE, TRUE);
+      foreach ($seasons as $id => $season) {
+        $widget->setSeason($season);
+        $widget_form = $widget->form($items, $form, $form_state);
+        // @todo #3335549 Decide to use complete form or only ['widget'] part.
+        $element[$field_type][$id] = $widget_form['widget'];
+        unset($element[$field_type][$id]['#parents']);
       }
     }
 
@@ -131,48 +121,6 @@ class OfficeHoursComplexWeekWidget extends OfficeHoursSeasonWidget {
 
     // @todo The '#required' is now on main level, not on weekday level.
     return $element;
-  }
-
-  /**
-   * Instantiate the widget/formatter object from the stored properties.
-   *
-   * @param string $plugin_type
-   *   The plugin type to retrieve: 'widget' or 'formatter'.
-   * @param string $plugin_id
-   *   The plugin id.
-   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
-   *   The field definition.
-   *
-   * @return \Drupal\Core\Field\PluginSettingsInterface|null
-   *   A widget or formatter plugin or NULL if the field does not exist.
-   */
-  protected function getOfficeHoursPlugin($plugin_type, $plugin_id, FieldDefinitionInterface $field_definition) {
-    if (!$field_definition) {
-      return NULL;
-    }
-
-    // @todo Keep aligned between WebformOfficeHours and ~Widget.
-    $label = $this->label ?? '';
-    $widget_settings = $this->getSettings();
-    $pluginManager = \Drupal::service("plugin.manager.field.$plugin_type");
-    $plugin = $pluginManager->getInstance([
-      'field_definition' => $field_definition,
-      'form_mode' => $this->originalMode ?? NULL,
-      'view_mode' => $this->viewMode ?? NULL,
-      // No need to prepare, defaults have been merged in setComponent().
-      'prepare' => FALSE,
-      'configuration' => [
-        'type' => $plugin_id,
-        'field_definition' => $field_definition,
-        'view_mode' => $this->originalMode ?? NULL,
-        'label' => $label,
-        // No need to prepare, defaults have been merged in setComponent().
-        'prepare' => FALSE,
-        'settings' => $widget_settings,
-        'third_party_settings' => [],
-      ],
-    ]);
-    return $plugin;
   }
 
   /**

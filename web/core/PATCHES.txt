@@ -10,7 +10,7 @@ Source: patches/2842525-ajax-views.patch
 
 
 3193348 Removes faulty exception related to permissions
-Source: patches/3193348-removes-faulty-exception-related-to-permissions-2.patch
+Source: patches/3193348-removes-faulty-exception-related-to-permissions-3.patch
 
 
 3238849 Fixing JS error on room reservation calendar

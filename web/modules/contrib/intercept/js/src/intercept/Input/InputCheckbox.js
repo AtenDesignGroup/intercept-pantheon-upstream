@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import Formsy, { withFormsy, propTypes, defaultProps } from 'formsy-react';
 
 import { Checkbox, FormControlLabel } from '@material-ui/core';
 
@@ -46,7 +46,7 @@ InputCheckbox.propTypes = {
 };
 
 InputCheckbox.defaultProps = {
-  ...defaultProps,
+  ...Formsy.defaultProps,
   checked: false,
   label: 'Agree',
   validators: [],

@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import Formsy, { withFormsy, propTypes } from 'formsy-react';
 
 import {
   Radio,
@@ -77,7 +77,7 @@ Radios.propTypes = {
 };
 
 Radios.defaultProps = {
-  ...defaultProps,
+  ...Formsy.defaultProps,
   value: '',
   label: '',
   ariaLabel: '',

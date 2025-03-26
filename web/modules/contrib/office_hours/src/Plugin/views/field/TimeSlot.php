@@ -131,7 +131,8 @@ class TimeSlot extends FieldBase {
 
       // Fetch from variable, for shorter code later.
       // Note: Seasons updated via reference to remove duplicate rows.
-      $seasons = &static::$renderIndex[$entity_id]['seasons'];
+      // Careful: also entities without office_hours exist.
+      $seasons = &static::$renderIndex[$entity_id]['seasons'] ?? [];
       $office_hours = static::$renderIndex[$entity_id]['office_hours'] ?? [];
 
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */

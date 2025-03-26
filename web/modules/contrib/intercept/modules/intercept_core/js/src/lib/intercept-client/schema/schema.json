@@ -411,6 +411,9 @@
     }
   },
   "node--event": {
+    "checkin_period": {
+      "type": "object"
+    },
     "drupal_internal__nid": {
       "type": "integer"
     },
@@ -443,6 +446,9 @@
     },
     "field_date_time": {
       "type": "object"
+    },
+    "field_event_designation": {
+      "type": "string"
     },
     "field_event_is_template": {
       "type": "boolean"
@@ -736,6 +742,9 @@
     }
   },
   "room_reservation--room_reservation": {
+    "notes": {
+      "type": "string"
+    },
     "title": {
       "type": "string"
     },

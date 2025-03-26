@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import { withFormsy } from 'formsy-react';
 
 import {
   Input,
@@ -11,10 +11,7 @@ import {
   ListItemText,
   Select,
   Checkbox,
-  Collapse,
 } from '@material-ui/core';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import { forEach } from 'lodash';
 
 const styles = (theme) => ({
   root: {
@@ -32,8 +29,6 @@ const styles = (theme) => ({
   },
 });
 
-const ITEM_HEIGHT = 24;
-const ITEM_PADDING_TOP = 4;
 const MenuListProps = {
   className: 'select-filter__menu-list',
 };

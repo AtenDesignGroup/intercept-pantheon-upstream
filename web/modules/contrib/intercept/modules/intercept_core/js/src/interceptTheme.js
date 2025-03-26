@@ -48,6 +48,5 @@ const interceptTheme = {
     },
   },
 };
-
 window.interceptTheme = interceptTheme;
 export default interceptTheme;

@@ -678,7 +678,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     // when page cache is not refreshed on time.
     if ($this->currentUser->isAnonymous()) {
       // Notes to consider for Anonymous users:
-      // - Page is cached forever when no  JS statusUpdate is triggered
+      // - Page is cached forever when no JS statusUpdate is triggered
       // and caching is set in admin/config/development/performance.
       // then page is cached Permanently for Anonymous users.
       // - Page will not be cached after (dummmy) message, since this will
@@ -687,7 +687,8 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       $view_mode = $this->viewMode;
       // Fetch layout_builder data.
       $third_party_settings = $this->thirdPartySettings;
-      $elements = StatusUpdateController::attachStatusUpdate($items, $langcode, $view_mode, $third_party_settings, $elements);
+      // jvo
+//      $elements = StatusUpdateController::attachStatusUpdate($items, $langcode, $view_mode, $third_party_settings, $elements);
     }
 
     if ($this->currentUser->isAnonymous()) {
@@ -706,7 +707,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
         // @see https://www.drupal.org/project/office_hours/issues/3351280
         // where js callback is implemented, to re-read the field each call.
         // @see https://www.drupal.org/project/drupal/issues/2835068
-        $max_age = 0;
+   //     $max_age = 0; // jvo
       }
     }
 

@@ -23,7 +23,7 @@ const { utils } = interceptClient;
 
 const getProp = (context, selector) => {
   const el = context.getElementsByClassName(selector);
-  return el.length > 0 ? el[0].innerHTML : null;
+  return el.length > 0 ? el[0].innerHTML.trim() : null;
 };
 
 const parseDate = date =>
@@ -32,7 +32,7 @@ const parseDate = date =>
 function renderApp(root) {
   const event = {
     title: getProp(root, 'atc_title'),
-    description: getProp(root, 'atc_description').trim(),
+    description: getProp(root, 'atc_description'),
     location: getProp(root, 'atc_location'),
     startTime: parseDate(getProp(root, 'atc_date_start')),
     endTime: parseDate(getProp(root, 'atc_date_end')),

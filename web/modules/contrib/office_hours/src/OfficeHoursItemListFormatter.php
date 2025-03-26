@@ -99,7 +99,6 @@ class OfficeHoursItemListFormatter {
 
     // Sort the database values by day number, leaving slot order intact.
     // @todo In Formatter: itemList::getRows() or Widget: itemList::setValue().
-    $items = $this->parent; // jvo
     $items = $this->parent->sort();
     $time = $this->dateHelper->getRequestTime($time, $items);
 
@@ -107,7 +106,7 @@ class OfficeHoursItemListFormatter {
     $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::PRE_FORMAT, $items, $office_hours, $time, $plugin);
 
     // Initialize the 'next' and 'current' slots for later usage.
-    $this->getNextDay($time);// jvo
+    $this->getNextDay($time);
 
     // Initialize $office_hours.
     // Create 7 empty weekdays, using date_api as key (0=Sun, 6=Sat).
@@ -116,7 +115,7 @@ class OfficeHoursItemListFormatter {
     $weekdays = $this->dateHelper->weekDaysOrdered($weekdays, $settings['office_hours_first_day']);
 
     // Prepare array of empty weekdays for normal days and seasons.
-    $replace_exceptions = $settings['exceptions']['replace_exceptions'] ?? FALSE;
+    $replace_exceptions = $settings['exceptions']['replace_exceptions'];
     $horizon = $settings['exceptions']['restrict_seasons_to_num_days'];
     $seasons = $items->getSeasons(TRUE, FALSE, 'ascending', $time, $horizon);
     foreach ($seasons as $season_id => $season) {
@@ -131,7 +130,7 @@ class OfficeHoursItemListFormatter {
       // But do not add for regular 'season'.
       // Directly replace with exception day, if needed.
       if ($season_id) {
-        $day = $season_id + OfficeHoursDateHelper::SEASON_DAY_MIN; // JVO NEXT
+        $day = $season_id + OfficeHoursDateHelper::SEASON_DAY_MIN;
         $this->addOfficeHours($office_hours, $day, $time, $replace_exceptions);
         // Add caption for plain text formatter. @todo Move to function.
         $caption = $season->getName();
@@ -160,7 +159,8 @@ class OfficeHoursItemListFormatter {
       // Note: weekdays and exception dates have valid SeasonId = 0.
       if (isset($seasons[$item->getSeasonId()])) {
 
-        // Add caption, but only before the first Exception.
+        // Add Exceptions caption, but only before the first Exception.
+        // Note: for Seasons,a separateSeasonHeader exists.
         static $exceptionCount = 0;
         if (!$replace_exceptions && $item->isExceptionDay()) {
           if (++$exceptionCount == 1 && $caption = $settings['exceptions']['title']) {
@@ -525,12 +525,13 @@ class OfficeHoursItemListFormatter {
       $index = 0;
       $info['items'][$index] ??= $this->parent->createItem(0, []);
 
-      /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
       foreach ($info['items'] as $day_delta => $item) {
 
         // Additional slots are forbidden for all_day open days.
         // @todo Disable 'more slots' for all_day in JS.
         if (($all_day |= $item->all_day) && $day_delta > 0) {
+          // Clear item, for consistent comments, etc.
+          $item->setValue([], FALSE);
           continue;
         }
 
@@ -538,28 +539,21 @@ class OfficeHoursItemListFormatter {
           continue;
         }
 
-        // Format the time slots.
-        $formatted_slot = $item->formatTimeSlot($settings);
-        $comment = $item->comment;
-        if ($formatted_slot || $comment) {
-          // Collect the formatted time slot in the day.
-          $info['formatted_slots'][] = $formatted_slot;
-
-          // Collect the comment of the time slot in the day.
-          // Note: compressed days are already an array.
-          $comment = is_array($comment) ? $comment : [$comment];
-          $info['comments'] = array_merge($info['comments'], $comment);
-        }
+        // Collect the formatted time slot in the day.
+        $info['formatted_slots'][] = $item->formatTimeSlot($settings);
       }
 
-      // Format the label (weekday, exception day).
+      // @todo 'endday' is only set on last item of the day. Not on first. Why?
       $item->set('day', $info['day'] ?? NULL, FALSE);
       $item->set('endday', $info['endday'] ?? NULL, FALSE);
+      // Format the label (weekday, exception day).
       $info['label'] = $item->label($settings);
+      // Format comments (Note: before 'formatted_slots').
+      $info['comments'] = $this->formatComments($info, $settings, $field_settings);
 
       // Convert the formatted slots array into string. Include special items.
       switch (TRUE) {
-        case empty($info['formatted_slots']):
+        case empty($info['formatted_slots']) && empty($info['comments']):
           $info['formatted_slots'] = $settings['closed_format']
             ? $this->t(Html::escape($settings['closed_format']),
               [],
@@ -581,54 +575,72 @@ class OfficeHoursItemListFormatter {
           break;
       }
 
-      // Process comments in special cases.
-      switch (TRUE) {
-        case $item->isSeasonHeader():
-          // Remove the Season name from comments.
-          $info['comments'] = [];
-          break;
-
-        // case $item->isExceptionDay():
-        // case $item->isSeasonDay():
-        // case $item->isWeekDay():
-        default:
-          $info['comments'] ??= [];
-          break;
-      }
-
-      // Format and translate comments.
-      switch ($field_settings['comment']) {
-        case 2:
-          // Translatable comments in plain text, no HTML.
-          $info['comments'] = array_map('Drupal\Component\Utility\Html::escape', $info['comments']);
-          $info['comments'] = array_map('t', $info['comments']);
-          break;
-
-        case 1:
-          // Allow comments with HTML, without translations.
-          // @todo Support translations.
-          $info['comments'] = array_map('Drupal\Component\Utility\Html::normalize', $info['comments']);
-          break;
-
-        default:
-          // Comments are not allowed, but may have been entered somehow.
-          $info['comments'] = [];
-          break;
-      }
-
-      // Concatenate the comment lines.
-      $info['comments'] = implode($slot_separator, $info['comments']);
-      // For compressed items, remove trailing separator.
-      $info['comments'] = rtrim($info['comments'], $slot_separator);
     }
     return $office_hours;
   }
 
-  /**
-   * A hook to format the default comment.
+ /**
+   * Process comments in special cases.
+   *
+   * @param array $info
+   *   The day info.
+   * @param array $settings
+   *   The formatter settings.
+   * @param array $field_settings
+   *   The field settings.
+   *
+   * @return array
+   *   The formatted comments, depending on translation option.
    */
-  public function formatComments(array $items) {
-    return 'dit is je comment';
+  private function formatComments(array $info, array $settings, array $field_settings) {
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
+
+    // Comments may not be set to an array, yet.
+    $info['comments'] ??= [];
+
+    // Remove the Season name from comments.
+    if (OfficeHoursDateHelper::isSeasonHeader($info['day'])) {
+      $info['comments'] = [];
+      return $info['comments'];
+    }
+
+    foreach ($info['items'] as $day_delta => $item) {
+      $comment = $item->comment;
+      if ($comment) {
+        // Collect the comment of the time slot in the day.
+        // Note: compressed days are already an array.
+        $comment = is_array($comment) ? $comment : [$comment];
+        $info['comments'] = array_merge($info['comments'], $comment);
+      }
+    }
+
+    // Format and translate comments.
+    switch ($field_settings['comment']) {
+      case 2:
+        // Translatable comments in plain text, no HTML.
+        $info['comments'] = array_map('Drupal\Component\Utility\Html::escape', $info['comments']);
+        $info['comments'] = array_map('t', $info['comments']);
+        break;
+
+      case 1:
+        // Allow comments with HTML, without translations.
+        // @todo Support translations.
+        $info['comments'] = array_map('Drupal\Component\Utility\Html::normalize', $info['comments']);
+        break;
+
+      default:
+        // Comments are not allowed, but may have been entered somehow.
+        $info['comments'] = [];
+        break;
+    }
+
+    // Concatenate the comment lines.
+    $slot_separator = $settings['separator']['more_hours'];
+    $info['comments'] = implode($slot_separator, $info['comments']);
+    // For compressed items, remove trailing separator.
+    $info['comments'] = rtrim($info['comments'], $slot_separator);
+
+    return $info['comments'];
   }
 
   /**

@@ -112,7 +112,6 @@ class OfficeHoursThemeHooks {
         // Enable dynamic field update in office_hours_status_update.js.
         'attributes' => NULL,
       ],
-      'file' => 'office_hours.theme.inc',
     ];
     $themes['office_hours_schema'] = [
       'variables' => [
@@ -123,7 +122,6 @@ class OfficeHoursThemeHooks {
         // Pass (unfiltered) office_hours items to twig theming.
         'office_hours_field' => [],
       ],
-      'file' => 'office_hours.theme.inc',
     ];
     $themes['office_hours_status'] = [
       'variables' => [
@@ -139,7 +137,6 @@ class OfficeHoursThemeHooks {
         // Enable dynamic field update in office_hours_status_update.js.
         'attributes' => NULL,
       ],
-      'file' => 'office_hours.theme.inc',
     ];
     $themes['office_hours_table'] = [
       'variables' => [
@@ -153,7 +150,6 @@ class OfficeHoursThemeHooks {
         // Enable dynamic field update in office_hours_status_update.js.
         'attributes' => NULL,
       ],
-      'file' => 'office_hours.theme.inc',
     ];
 
     return $themes;

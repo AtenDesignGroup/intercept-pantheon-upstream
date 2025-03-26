@@ -59,12 +59,13 @@ class UserAccount extends ControllerBase {
     elseif (($uid_current = $request->getRequestUri()) && strpos($uid_current, '?uid_current=')) {
       $options['query']['uid_current'] = @array_pop(explode('?uid_current=', $uid_current));
     }
-    if (strstr($route_name, 'management')) {
+    if (strstr($route_name, 'management') || strstr($route_name, 'account.save')) {
       $current_user = \Drupal::currentUser();
       $params->add(['user' => $current_user->id()]);
     }
     switch ($route_name) {
       case 'entity.user.customer_form':
+      case 'entity.user.edit_form':
       case 'entity.user.equipment_reservations':
       case 'intercept_event.management.event_templates':
         $current_user = \Drupal::currentUser();

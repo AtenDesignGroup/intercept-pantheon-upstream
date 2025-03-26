@@ -249,7 +249,8 @@ display:
           not: false
           entity_type: profile
           entity_field: uid
-          plugin_id: numeric
+          plugin_id: entity_target_id
+          target_entity_type_id: profile
         type:
           id: type
           table: profile
@@ -325,7 +326,8 @@ display:
           not: false
           entity_type: profile
           entity_field: status
-          plugin_id: numeric
+          plugin_id: entity_target_id
+          target_entity_type_id: profile
       display_extenders: {  }
       title: Profiles
     cache_metadata:

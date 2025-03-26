@@ -20,7 +20,7 @@ charts_chartjs:
 chartjs:
   version: 1.x
   js:
-    js/charts_chartjs.js: { weight: -1 }
+    js/charts_chartjs.js: { weight: -1, attributes: { defer: true } }
   dependencies:
     - charts/global
     - charts_chartjs/charts_chartjs

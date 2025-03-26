@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import memoize from 'lodash/memoize';
 import { withStyles } from '@material-ui/core/styles';
 import { Autocomplete } from '@material-ui/lab';
-import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import Formsy, { withFormsy, propTypes, defaultProps } from 'formsy-react';
 
 import interceptClient from 'interceptClient';
 
@@ -303,7 +303,7 @@ SelectTime.propTypes = {
 };
 
 SelectTime.defaultProps = {
-  ...defaultProps,
+  ...Formsy.defaultProps,
   value: null,
   multiple: false,
   min: '0000',

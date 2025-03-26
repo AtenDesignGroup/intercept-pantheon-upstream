@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import Formsy, { withFormsy, propTypes } from 'formsy-react';
 import RemoveIcon from '@material-ui/icons/Remove';
 import AddIcon from '@material-ui/icons/Add';
 import { withStyles } from '@material-ui/core/styles';
@@ -134,7 +134,7 @@ InputIncrementer.propTypes = {
 };
 
 InputIncrementer.defaultProps = {
-  ...defaultProps,
+  ...Formsy.defaultProps,
   value: 0,
   label: 'Number',
   step: 1,

@@ -6,7 +6,7 @@ package: Examples
 dependencies:
   - 'charts:charts'
 
-# Information added by Drupal.org packaging script on 2025-01-08
-version: '5.1.2'
+# Information added by Drupal.org packaging script on 2025-03-07
+version: '5.1.3'
 project: 'charts'
-datestamp: 1736346189
+datestamp: 1741367398

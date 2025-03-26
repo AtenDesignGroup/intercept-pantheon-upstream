@@ -333,7 +333,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
       '#tooltips' => $chart_settings['display']['tooltips'],
       '#data_labels' => $chart_settings['display']['data_labels'],
       '#data_markers' => $chart_settings['display']['data_markers'],
-      '#connect_nulls' => $chart_settings['display']['connect_nulls'],
+      '#connect_nulls' => !empty($chart_settings['display']['connect_nulls']),
       // Colors only used if a grouped view or using a type such as a pie chart.
       '#colors' => $chart_settings['display']['colors'] ?? [],
       '#background' => $chart_settings['display']['background'] ?? 'transparent',

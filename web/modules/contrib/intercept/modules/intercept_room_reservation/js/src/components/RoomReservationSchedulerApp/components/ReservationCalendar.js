@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import BigCalendar from 'intercept/BigCalendar';
-// import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
 import Toolbar from 'react-big-calendar/lib/Toolbar';
 import { Navigate } from 'react-big-calendar';
@@ -20,7 +19,6 @@ import CalendarEvent from './CalendarEvent';
 import SchedulerView from './SchedulerView';
 
 
-// const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 
 const { utils } = interceptClient;
 

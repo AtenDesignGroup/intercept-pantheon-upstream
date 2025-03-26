@@ -5,14 +5,14 @@ import { configureUrlQuery } from 'react-url-query';
 import interceptClient from 'interceptClient';
 import interceptTheme from 'interceptTheme';
 
-import { StylesProvider, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { StylesProvider, MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 
 // Redux store
 const store = interceptClient.store;
 
 // Intercept Material UI theme
 const { jss, generateClassName } = interceptClient.mui;
-const theme = createMuiTheme(interceptTheme);
+const theme = createTheme(interceptTheme);
 
 // link the history used in our app to url-query so it can update the URL with it.
 configureUrlQuery({ history: interceptClient.history });

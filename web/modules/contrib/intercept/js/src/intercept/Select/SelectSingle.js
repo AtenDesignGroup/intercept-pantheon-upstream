@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import Formsy, { withFormsy, propTypes } from 'formsy-react';
 
 import { Input, InputLabel, MenuItem, FormControl, ListItemText, Select } from '@material-ui/core';
 
@@ -108,7 +108,7 @@ SelectSingle.propTypes = {
 };
 
 SelectSingle.defaultProps = {
-  ...defaultProps,
+  ...Formsy.defaultProps,
   value: null,
   multiple: false,
   disabled: false,

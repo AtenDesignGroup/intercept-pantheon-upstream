@@ -124,12 +124,7 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
 
     // Get the current time. May be adapted for User Timezone.
     $time = OfficeHoursDateHelper::getRequestTime(0, $this->items);
-    // @todo Use OfficeDateHelper::today()?
     $date = OfficeHoursDateHelper::createFromTimestamp($time);
-
-    // Get today's weekday.
-    $today_weekday = OfficeHoursDateHelper::getWeekday($time);
-
     $now = (int) $date->format('Hi');
     $seconds = $date->format('s');
     $next_time = '0000';
@@ -157,19 +152,12 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
       case 'next':
         // Cache expires after closing of current slot.
         $office_hours = NULL;
-        // @todo Can we do this by only calling getNextDay()?
-        $currentSlot = $this->items->getCurrentSlot($time);
-        if ($currentSlot) {
-          $office_hours[] = $currentSlot->getValue();
-        }
-        else {
-          // Get next slot.
-          $next_day = $this->items->getNextDay($time);
-          foreach ($this->items->getValue() as $item) {
-            if ($item['day'] == ($next_day[0]->day ?? NULL)) {
-              $office_hours[] = $item;
-              // Do no break here. It could be a closed slot from earlier today.
-            }
+        // Get next slot (including current slot).
+        $next_day = $this->items->getNextDay($time);
+        foreach ($this->items->getValue() as $item) {
+          if ($item['day'] == ($next_day[0]->day ?? NULL)) {
+            $office_hours[] = $item;
+            // No break here. It could be a closed slot from earlier today.
           }
         }
         if (!$office_hours) {
@@ -179,16 +167,18 @@ class OfficeHoursCacheHelper implements CacheableDependencyInterface {
         // Get the difference in hours/minutes
         // between 'now' and next open/closing time.
         $first_time_slot_found = FALSE;
+        // Get today's weekday.
+        $today_weekday = OfficeHoursDateHelper::getWeekday($time);
         foreach ($office_hours as $slot) {
-          $day = $slot['day'];
+          $slot_weekday = OfficeHoursDateHelper::getWeekday($slot['day']);
           $start = $slot['starthours'];
           $end = $slot['endhours'];
 
-          if ($day != $today_weekday) {
+          if ($slot_weekday != $today_weekday) {
             // We will open tomorrow or later.
             $next_time = $start;
             $seven = OfficeHoursDateHelper::DAYS_PER_WEEK;
-            $add_days = ($day - $today_weekday + $seven) % $seven;
+            $add_days = ($slot_weekday - $today_weekday + $seven) % $seven;
             break;
           }
           elseif ($start > $now) {

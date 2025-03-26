@@ -3,7 +3,6 @@
 namespace Drupal\office_hours\Plugin\WebformElement;
 
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
@@ -35,7 +34,7 @@ use Drupal\webform\WebformSubmissionInterface;
  * @todo Fix support for 'required' attribute in Widget.
  * @todo Fix help text, which is now not visible in Widget.
  * @todo Add D11.1 category without translation. https://www.drupal.org/node/3375748
- * @todo Add cardinality annotation. @see https://www.drupal.org/node/2869873
+ * @todo Add D8.4 cardinality annotation. @see https://www.drupal.org/node/2869873
  */
 class WebformOfficeHours extends WebformCompositeBase {
 
@@ -140,23 +139,27 @@ class WebformOfficeHours extends WebformCompositeBase {
     // Save $element to better resemble getFieldDefinition() and getSettings().
     $this->officeHoursElement = $element;
 
+    // Step 1: Get the field name.
     // If the element is not properly defined, do not show the formatter/widget.
     $webform_key = $this->getFieldName();
     if (!$webform_key) {
       return;
     }
 
-    /** @var \Drupal\Core\Field\WidgetInterface $widget */
-    // @todo Use 'office_hours_exceptions' ID to add Exceptions and Seasons.
-    $widget = $this->getOfficeHoursPlugin('widget', 'office_hours_default', $this->getFieldDefinition());
     $items = $this->getItemsUnserialized($element, $webform_submission);
 
+    // Step 2: Get the widget.
+    /** @var \Drupal\Core\Field\WidgetInterface $widget */
+    // @todo Use 'office_hours_exceptions' ID to add Exceptions and Seasons.
+    $plugin_id = 'office_hours_default';
+    $widget = $items->getWidget($plugin_id, $this->getSettings());
     $form = [];
     $form_state = new FormState();
     $form_element = $widget->formElement($items, 0, $element, $form, $form_state);
-    $element[$webform_key] = $form_element;
-    // $element[$webform_key] = $form_element['value'];
-    // unset($element['value']);
+
+    // Step 4: Add widget to webform, to be fetched in validateOfficeHoursSlot().
+    $element[$webform_key] = $form_element['value'];
+    $element[$webform_key]['#office_hours_widget'] = $widget;
 
     // @todo Webform #title display defaults to invisible.
     // $element['#title_display'] = 'invisible';
@@ -201,7 +204,13 @@ class WebformOfficeHours extends WebformCompositeBase {
     // The validation is done by OfficeHoursBaseSlot::validateOfficeHoursSlot().
 
     // The result may be empty, upon preview in build mode (when not saved).
-    $office_hours = $form_state->getValue($element['#webform_key']) ?? [];
+    $values = $form_state->getValue($element['#webform_key']) ?? [];
+
+    // Fetch the widget object from the form, and massage values.
+    $field_name = $element['#webform_key'];
+    $widget = $element[$field_name]['#office_hours_widget'];
+    $office_hours = $widget->massageFormValues($values, $complete_form, $form_state);
+
     // Encode Values here always, since this is expected by prepare(),
     // and since postLoad() does not have the values, yet,
     // so we cannot use preSave() unconditionally.
@@ -229,11 +238,10 @@ class WebformOfficeHours extends WebformCompositeBase {
    *   consecutive numeric indexes starting from 0.
    */
   private function viewElements(FieldItemList $items, ?string $langcode = NULL) {
-
     /** @var \Drupal\Core\Field\FormatterInterface $formatter */
-    $formatter = $this->getOfficeHoursPlugin('formatter', 'office_hours', $this->getFieldDefinition());
+    $plugin_id = 'office_hours';
+    $formatter = $items->getFormatter($plugin_id, $this->originalMode ?? NULL, $this->getSettings());
     $elements = $formatter->viewElements($items, $langcode);
-
     return $elements;
   }
 
@@ -307,7 +315,7 @@ class WebformOfficeHours extends WebformCompositeBase {
   private function getFieldDefinition() {
     $field_name = $this->getFieldName();
     if ($field_name && !isset($this->fieldDefinitions[$field_name])) {
-      $field_type = $this->officeHoursElement['#type'];
+      $field_type = (string) $this->officeHoursElement['#type'];
       $this->fieldDefinitions[$field_name] = BaseFieldDefinition::create($field_type)
         ->setName($field_name)
         ->setSettings($this->getSettings());
@@ -326,51 +334,6 @@ class WebformOfficeHours extends WebformCompositeBase {
   }
 
   /**
-   * Instantiate the widget/formatter object from the stored properties.
-   *
-   * Note: Prerequisite is: '$this->officeHoursElement = $element;'.
-   *
-   * @param string $plugin_type
-   *   The plugin type to retrieve: 'widget' or 'formatter'.
-   * @param string $plugin_id
-   *   The plugin id.
-   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
-   *   The field definition.
-   *
-   * @return object|null
-   *   A plugin.
-   */
-  private function getOfficeHoursPlugin($plugin_type, $plugin_id, FieldDefinitionInterface $field_definition) {
-    // Note: Prerequisite is: '$this->officeHoursElement = $element;'.
-    if (!$field_definition) {
-      return NULL;
-    }
-
-    // @todo Keep aligned between WebformOfficeHours and ~Widget.
-    $label = $this->label ?? '';
-    $settings = $this->getSettings();
-    $pluginManager = \Drupal::service("plugin.manager.field.$plugin_type");
-    $plugin = $pluginManager->getInstance([
-      'field_definition' => $field_definition,
-      'form_mode' => $this->originalMode ?? NULL,
-      'view_mode' => $this->viewMode ?? NULL,
-      // No need to prepare, defaults have been merged in setComponent().
-      'prepare' => FALSE,
-      'configuration' => [
-        'type' => $plugin_id,
-        'field_definition' => $field_definition,
-        'view_mode' => $this->originalMode ?? NULL,
-        'label' => $label,
-        // No need to prepare, defaults have been merged in setComponent().
-        'prepare' => FALSE,
-        'settings' => $settings,
-        'third_party_settings' => [],
-      ],
-    ]);
-    return $plugin;
-  }
-
-  /**
    * Extracts the ItemList from the WebformElement.
    *
    * @param array $element
@@ -380,8 +343,8 @@ class WebformOfficeHours extends WebformCompositeBase {
    * @param array $options
    *   An array of options.
    *
-   * @return \Drupal\Core\Field\FieldItemListInterface
-   *   The list of items.
+   * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList
+   *   The list of office_hours items.
    */
   protected function getItemsUnserialized(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $office_hours = $this->getValue($element, $webform_submission, $options) ?? [];
@@ -431,20 +394,21 @@ class WebformOfficeHours extends WebformCompositeBase {
    * @return \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemListInterface
    *   An Item list for office hours.
    */
-  private function unserialize(array $office_hours, array $element, WebformSubmissionInterface $webform_submission) {
-    $values = [];
-    foreach ($office_hours as $key => $value) {
-      $values[] = \Drupal::service('serialization.phpserialize')
+  private function unserialize(array $values, array $element, WebformSubmissionInterface $webform_submission) {
+    $office_hours = [];
+    foreach ($values as $key => $value) {
+      $office_hours[] = \Drupal::service('serialization.phpserialize')
         ->decode($value);
     }
 
     // Save $element to better resemble getFieldDefinition() and getSettings().
     $this->officeHoursElement = $element;
-    /** @var \Drupal\Core\Field\FieldItemListInterface $items */
+    $field_name = $this->getFieldName();
+    /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $items */
     $items = \Drupal::typedDataManager()
       ->create($this->getFieldDefinition(),
-        $values,
-        $element['#webform_key'],
+        $office_hours,
+        $field_name,
         $webform_submission->getTypedData()
       );
     $items->filterEmptyItems();

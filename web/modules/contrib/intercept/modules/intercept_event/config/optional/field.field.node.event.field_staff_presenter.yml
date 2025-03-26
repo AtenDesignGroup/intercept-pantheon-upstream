@@ -9,7 +9,7 @@ field_name: field_staff_presenter
 entity_type: node
 bundle: event
 label: 'Staff Presenter'
-description: 'List the staff presenter if it someone other than yourself. This helps staff know who to contact in relation to this event.'
+description: 'List the staff presenter if it is someone other than yourself. This helps staff know who to contact in relation to this event.'
 required: false
 translatable: false
 default_value: {  }

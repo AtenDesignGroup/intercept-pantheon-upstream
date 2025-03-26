@@ -3,7 +3,7 @@ import moment from 'moment';
 import compact from 'lodash/compact';
 import forEach from 'lodash/forEach';
 import get from 'lodash/get';
-import { filter } from 'lodash';
+import filter from 'lodash/filter';
 import flatten from 'lodash/flatten';
 import groupBy from 'lodash/groupBy';
 import map from 'lodash/map';

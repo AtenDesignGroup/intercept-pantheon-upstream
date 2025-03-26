@@ -37,31 +37,6 @@ interface OfficeHoursItemListInterface extends FieldItemListInterface {
   public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, ?PluginSettingsBase $plugin = NULL);
 
   /**
-   * {@inheritdoc}
-   *
-   * Create a custom field definition for office_hours_* items.
-   *
-   * Ideally, we just use the basic 'office_hours' field definition.
-   * However, this causes either:
-   * 1- to display the 'technical' widgets (exception, season) in Field UI,
-   *   (with annotation: field_types = {"office_hours"}), or
-   * 2- to have the widget refused by WidgetPluginManager~getInstance().
-   *   (with annotation: no_ui = TRUE),
-   *   FieldType has annotation 'no_ui', FieldWidget and FieldFormatter haven't.
-   * So, the Exceptions and Season widgets are now declared for their
-   * specific type.
-   *
-   * @param string $field_type
-   *   The field type, 'office_hours' by default.
-   *   If set otherwise a new FieldDefinition is returned.
-   *
-   * @return \Drupal\Core\Field\FieldDefinitionInterface
-   *   The field definition. BaseField, not ConfigField,
-   *   because easier to construct.
-   */
-  public function getFieldDefinition($field_type = '');
-
-  /**
    * Create an array of seasons. (Do not collect regular or exception days.)
    *
    * @param bool $add_weekdays_as_season

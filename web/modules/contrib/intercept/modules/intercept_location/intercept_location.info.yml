@@ -15,7 +15,7 @@ dependencies:
   - office_hours:office_hours
   - pathauto:pathauto
 
-# Information added by Drupal.org packaging script on 2025-02-26
-version: '2.0.10'
+# Information added by Drupal.org packaging script on 2025-03-26
+version: '2.0.11'
 project: 'intercept'
-datestamp: 1740599672
+datestamp: 1743020532

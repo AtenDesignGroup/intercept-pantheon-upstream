@@ -665,6 +665,9 @@ class RoomReservationForm extends ContentEntityForm {
     if ($userIsStaff == TRUE || $userIsManager) {
       return TRUE;
     }
+    if ($advanced_limit === 0) {
+      return TRUE;
+    }
     // Check the dates.
     $now = new DrupalDateTime();
     $diff = $now->diff($start_date)->days;

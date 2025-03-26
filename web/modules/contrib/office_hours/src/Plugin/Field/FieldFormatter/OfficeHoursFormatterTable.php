@@ -61,12 +61,18 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
 
     $settings = $this->getSettings();
     $field_definition = $items->getFieldDefinition();
+    $field_settings = $this->getFieldSettings();
 
     // Determine the required columns.
     $row_columns = [];
-    $row_columns['label'] = $settings['day_format'] != 'none';
+    // The label header must be hidden if no day label,
+    // except when seasons or exceptions are displayed to separate the sections.
+    $row_columns['label'] =
+      $settings['day_format'] !== 'none'
+      || $field_settings['exceptions']
+      || $field_settings['seasons'];
     $row_columns['slots'] = TRUE;
-    $row_columns['comments'] = $this->getFieldSetting('comment');
+    $row_columns['comments'] = (bool) $field_settings['comment'];
 
     $table_weight = $hours_formatter['#weight'];
     $table_index = $key;
@@ -91,7 +97,7 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
         case OfficeHoursDateHelper::isSeasonHeader($day):
           $create_new_table = TRUE;
           $table_class = 'office-hours__table_season';
-          $table_caption = $info['label'];
+          $table_caption = $info['caption'];
           // Remove from table, since label etc. is already in caption.
           $info = NULL;
           break;
@@ -199,8 +205,9 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
     // Add a label/header/title for accessibility (a11y) screen readers.
     // Superfluous comments are removed. @see #3110755 for examples.
     $element = [];
+    $field_settings = $this->getFieldSettings() + ['slots' => TRUE];
 
-    $labels = OfficeHoursItem::getPropertyLabels('data', $this->getFieldSettings() + ['slots' => TRUE]);
+    $labels = OfficeHoursItem::getPropertyLabels('data', $field_settings);
     if ($row_columns['label']) {
       $element['label'] = [
         'data' => $labels['day']['data'],
@@ -249,23 +256,13 @@ class OfficeHoursFormatterTable extends OfficeHoursFormatterDefault {
     }
 
     $element['data'] = [];
-    if ($row_columns['label']) {
+    if ($row_columns['label'] && $this->getSettings()['day_format'] !== 'none') {
       $element['data']['label'] = [
         'data' => ['#markup' => $info['label']],
         // Switch 'Day' between <th> and <tr>.
-        'header' => !$row_columns['comments'],
+        'header' => !$row_columns['label'],
+        'class' => ['office-hours__item-label'],
       ];
-
-      $item = $info['items'][0] ?? NULL;
-      switch (TRUE) {
-        case is_null($item):
-          $element['data']['label']['class'] = ['office-hours__item-label'];
-          break;
-
-        default:
-          $element['data']['label']['class'] = ['office-hours__item-label'];
-          break;
-      }
     }
 
     if ($row_columns['slots']) {

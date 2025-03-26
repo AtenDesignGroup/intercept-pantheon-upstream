@@ -418,7 +418,8 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    *   The formatted day label, e.g., 'tuesday'.
    */
   public static function formatLabel(string $pattern, array $value, $day_delta = 0) {
-    $label = NULL;
+    $label = '';
+    $formatter = \Drupal::service('date.formatter');
 
     $day = $value['day'];
     switch (TRUE) {
@@ -429,37 +430,37 @@ class OfficeHoursItem extends OfficeHoursItemBase {
 
       case ($pattern == 'none'):
         // Return fast if weekday is not to be displayed.
-        $label = NULL;
+        $label = '';
         break;
 
       case ($day === '' || $day === NULL || $day < 0):
         // A new Exception slot.
-        $label = NULL;
+        $label = '';
         break;
 
+      case OfficeHoursDateHelper::isSeasonHeader($day):
       case OfficeHoursDateHelper::isSeasonDay($day):
       case OfficeHoursDateHelper::isWeekDay($day):
         // The day number is a weekday number + optional Season ID.
         $label = OfficeHoursDateHelper::weekDaysByFormat($pattern, $day);
         break;
 
+      case OfficeHoursDateHelper::isExceptionDay($day) && ($pattern == 'l'):
+        // Convert date into weekday in widget.
+        $label = $formatter->format($day, 'custom', $pattern);
+        break;
+
       case OfficeHoursDateHelper::isExceptionDay($day):
-        if ($pattern == 'l') {
-          // Convert date into weekday in widget.
-          $label = \Drupal::service('date.formatter')->format($day, 'custom', $pattern);
-        }
-        else {
-          $label = \Drupal::service('date.formatter')->format($day, $pattern);
-          // Remove excessive time part.
-          $label = str_replace(' - 00:00', '', $label);
-        }
+        $label = $formatter->format($day, $pattern);
+        // Remove excessive time part.
+        $label = str_replace(' - 00:00', '', $label);
         break;
 
       default:
         // This is an error. Use $item->label() instead,
         // and make sure the class is OK.
         // @todo Add Watchdog message when we land here.
-        $label = NULL;
+        $label = '';
         break;
 
     }

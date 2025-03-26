@@ -43,8 +43,7 @@ intercept_equipment.equipment_my:
 
 intercept_equipment.export_equipment_reservations:
   parent: intercept_event.export_parent
-  title: 'Export Equipment Reservations'
-  weight: 2
+  title: 'Equipment Reservations'
   route_name: view.intercept_export_equipment_reservations.page
   menu_name: intercept-manage
   class: Drupal\intercept_equipment\Plugin\Menu\ExportMenuLink

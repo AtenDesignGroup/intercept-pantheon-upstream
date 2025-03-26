@@ -27,8 +27,26 @@ charts.settings.library_plugin.highcharts:
         shadow:
           label: 'Enable legend shadow'
           type: boolean
+    3d_library:
+      label: 'Enable 3D library'
+      type: boolean
+    accessibility_library:
+      label: 'Enable accessibility library'
+      type: boolean
+    annotations_library:
+      label: 'Enable annotations library'
+      type: boolean
+    boost_library:
+      label: 'Enable boost library'
+      type: boolean
+    data_library:
+      label: 'Enable data library'
+      type: boolean
     exporting_library:
       label: 'Enable exporting library'
+      type: boolean
+    no_data_library:
+      label: 'Enable no data library'
       type: boolean
     texture_library:
       label: 'Enable texture library'

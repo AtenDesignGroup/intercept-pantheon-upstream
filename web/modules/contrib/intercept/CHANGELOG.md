@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.11] - 2025-03-26
+
+* Improved the visual consistency and spacing of bulleted lists
+* Fixed a bug where clicking the "Calendar" button from the events list mistakenly lead to a past date
+* Update tooling in the Intercept modules
+* Added Drupal core security update 10.4.5
+
 ## [2.0.10] - 2025-02-26
 
 * Removed an unused permission that allowed administrators to book overlapping room reservations

@@ -2,11 +2,10 @@
 
 namespace Drupal\office_hours\Plugin\Field\FieldType;
 
+use Drupal\Component\Plugin\Factory\DefaultFactory;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Field\PluginSettingsBase;
-use Drupal\Core\TypedData\DataDefinitionInterface;
-use Drupal\Core\TypedData\TypedDataInterface;
-use Drupal\field\Entity\FieldConfig;
 use Drupal\office_hours\OfficeHoursDateHelper;
 use Drupal\office_hours\OfficeHoursItemListFormatter;
 use Drupal\office_hours\OfficeHoursSeason;
@@ -33,13 +32,6 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   private $seasons = NULL;
 
   /**
-   * {@inheritdoc}
-   */
-  public function __construct(DataDefinitionInterface $definition, $name = NULL, ?TypedDataInterface $parent = NULL) {
-    parent::__construct($definition, $name, $parent);
-  }
-
-  /**
    * Helper for creating a list item object of several class types.
    *
    * {@inheritdoc}
@@ -47,11 +39,15 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   public function createItem($offset = 0, $value = NULL) {
     $day = $value['day'] ?? NULL;
 
+    static $plugin_type = 'field_type';
+    static $pluginManager = \Drupal::service("plugin.manager.field.$plugin_type");
+
     switch (TRUE) {
       case is_null($day):
         // Empty Item from List Widget (or added item via AddMore button?).
       case OfficeHoursDateHelper::isWeekDay($day):
         // Add Weekday Item.
+        $field_type = 'office_hours';
         $item = parent::createItem($offset, $value);
         return $item;
 
@@ -70,15 +66,13 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
         break;
     }
 
-    // Add special Item (season, exception), using quasi Factory pattern.
+    // Create special Item (season, exception).
+    $plugin_definition = $pluginManager->getDefinition($plugin_id = $field_type);
+    $class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
     // Copied from FieldTypePluginManager->createInstance().
-    $field_definition = $this->getFieldDefinition($field_type);
-    $configuration = [
-      'data_definition' => $field_definition->getItemDefinition(),
-      'name' => $this->getName(),
-      'parent' => $this,
-    ];
-    $item = $this->typedDataManager->createInstance("field_item:$field_type", $configuration);
+    $data_definition = $this->getItemDefinition();
+    $item = $class::createInstance($data_definition, $this->getName(), $this);
+    $item->setTypedDataManager($this->typedDataManager);
     $item->setValue($value);
 
     // Pass item to parent, where it appears amongst Weekdays.
@@ -99,7 +93,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     // $this->sort();
 
     // Create the formatter AFTER setting the value.
-    $this->formatter = new OfficeHoursItemListFormatter($this);
+    $this->formatter ??= new OfficeHoursItemListFormatter($this);
   }
 
   /**
@@ -116,63 +110,10 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    * {@inheritdoc}
    */
   public function getRows(array $settings, array $field_settings, array $third_party_settings, int $time = 0, ?PluginSettingsBase $plugin = NULL) {
+    // The formatter is only set when entity has values.
+    // But still render the field, due to setting 'display even when empty'.
+    $this->formatter ??= new OfficeHoursItemListFormatter($this);
     return $this->formatter->getRows($settings, $field_settings, $third_party_settings, $time, $plugin);
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * Create a custom field definition for office_hours_* items.
-   *
-   * Ideally, we just use the basic 'office_hours' field definition.
-   * However, this causes either:
-   * 1- to display the 'technical' widgets (exception, season) in Field UI,
-   *   (with annotation: field_types = {"office_hours"}), or
-   * 2- to have the widget refused by WidgetPluginManager~getInstance().
-   *   (with annotation: no_ui = TRUE),
-   *   FieldType has annotation 'no_ui', FieldWidget and FieldFormatter haven't.
-   * So, the Exceptions and Season widgets are now declared for their
-   * specific type.
-   *
-   * @param string $field_type
-   *   The field type, 'office_hours' by default.
-   *   If set otherwise a new FieldDefinition is returned.
-   *
-   * @return \Drupal\Core\Field\FieldDefinitionInterface|null
-   *   The field definition. BaseField, not ConfigField,
-   *   because easier to construct.
-   */
-  public function getFieldDefinition($field_type = '') {
-
-    switch ($field_type) {
-      case '':
-      case 'office_hours':
-        return parent::getFieldDefinition();
-
-      case 'office_hours_exceptions':
-      case 'office_hours_season_header':
-      case 'office_hours_season_item':
-      default:
-        try {
-          $field_definition = FieldConfig::create([
-            'entity_type' => $this->getEntity()->getEntityTypeId(),
-            'bundle' => $this->getEntity()->bundle(),
-            'field_name' => $this->getName(),
-            'field_type' => $field_type,
-          ]);
-          /*
-          $field_definition = BaseFieldDefinition::create($field_type)
-          ->setName($this->fieldDefinition->getName())
-          ->setSettings($this->fieldDefinition->getSettings());
-           */
-        }
-        catch (\Exception $e) {
-          echo 'Caught exception: ', $e->getMessage(), "\n";
-          $field_definition = NULL;
-        }
-    }
-
-    return $field_definition;
   }
 
   /**
@@ -284,13 +225,14 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    * {@inheritdoc}
    */
   public function getStatus(int $time = 0): int {
-    return $this->{'status'};
+    return $this->{'status'} ?? OfficeHoursStatus::NEVER;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCurrentSlot(int $time = 0) {
+    $this->formatter ??= new OfficeHoursItemListFormatter($this);
     return $this->formatter->getCurrentSlot($time);
   }
 
@@ -298,6 +240,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    * {@inheritdoc}
    */
   public function getNextDay(int $time = 0) {
+    $this->formatter ??= new OfficeHoursItemListFormatter($this);
     return $this->formatter->getNextDay($time);
   }
 
@@ -305,8 +248,64 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    * {@inheritdoc}
    */
   public function isOpen(int $time = 0): bool {
+    $this->formatter ??= new OfficeHoursItemListFormatter($this);
     $current_item = $this->formatter->getCurrentSlot($time);
     return (bool) $current_item;
+  }
+
+  /**
+   * Instantiate the widget/formatter object from the stored properties.
+   *
+   * @param string $plugin_type
+   *   The plugin type to retrieve: 'widget' or 'formatter'.
+   * @param string $plugin_id
+   *   The plugin id.
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+   *   The field definition.
+   * @param array $settings
+   *   The plugin settings.
+   *
+   * @return \Drupal\Core\Field\PluginSettingsInterface|null
+   *   A widget or formatter plugin or NULL if the field does not exist.
+   */
+  private function getPlugin($plugin_type, $plugin_id, $view_mode, FieldDefinitionInterface $field_definition, array $settings) {
+    static $plugins;
+    if (!isset($plugins[$plugin_type][$plugin_id][$view_mode])) {
+      // @todo Keep aligned between WebformOfficeHours and ~Widget.
+      $pluginManager = \Drupal::service("plugin.manager.field.$plugin_type");
+      $configuration = [
+        'type' => $plugin_id,
+        'field_definition' => $field_definition,
+        'view_mode' => $view_mode,
+        'label' => '',
+        // No need to prepare, defaults have been merged in setComponent().
+        'prepare' => FALSE,
+        'settings' => $settings,
+        'third_party_settings' => [],
+      ];
+      $plugins[$plugin_type][$plugin_id][$view_mode] = $pluginManager->createInstance($plugin_id, $configuration) ?? NULL;
+    }
+    return $plugins[$plugin_type][$plugin_id][$view_mode];
+  }
+
+  public function getFormatter(string $plugin_id, $view_mode, array $settings) {
+    return $this->getPlugin(
+      'formatter',
+      $plugin_id,
+      $view_mode,
+      $this->getFieldDefinition(),
+      $settings
+    );
+  }
+
+  public function getWidget(string $plugin_id, array $settings) {
+    return $this->getPlugin(
+      'widget',
+      $plugin_id,
+      '',
+      $this->getFieldDefinition(),
+      $settings
+    );
   }
 
 }

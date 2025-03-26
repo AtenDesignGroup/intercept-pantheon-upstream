@@ -424,12 +424,15 @@ class OfficeHoursDateHelper extends DateHelper {
         $days = self::weekDaysAbbr(TRUE);
         break;
     }
-    if ($day !== NULL) {
-      // Handle Regular/Seasonal Weekdays: $day 200...206 -> 0..6 .
-      $day = OfficeHoursDateHelper::getWeekday($day);
-      return $days[$day];
+
+    if ($day === NULL) {
+      return $days;
     }
-    return $days;
+
+    // Handle Regular/Seasonal Weekdays: $day 200...206 -> 0..6 .
+    $day = OfficeHoursDateHelper::getWeekday($day);
+    // SeasonHeader has weekday 109 -> 9, so cannot be found.
+    return $days[$day] ?? '';
   }
 
   /**

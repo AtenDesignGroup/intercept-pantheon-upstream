@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import MomentUtils from '@date-io/moment';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { withFormsy, propTypes, defaultProps } from 'formsy-react';
+import Formsy, { withFormsy, propTypes } from 'formsy-react';
 import interceptClient from 'interceptClient';
 
 const { utils } = interceptClient;
@@ -127,7 +127,7 @@ InputDate.propTypes = {
 };
 // Specifies the default values for props:
 InputDate.defaultProps = {
-  ...defaultProps,
+  ...Formsy.defaultProps,
   value: null,
   label: 'Date',
   id: 'Date',

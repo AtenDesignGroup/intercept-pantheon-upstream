@@ -1,7 +1,6 @@
 intercept_dashboard.event_data_dashboard:
   parent: intercept_event.export_parent
   title: 'Event Data'
-  weight: -10
   route_name: intercept_dashboard.event_data_dashboard
   menu_name: intercept-manage
   class: Drupal\intercept_dashboard\Plugin\Menu\InterceptDashboardLink

@@ -12,7 +12,7 @@
 
   Drupal.behaviors.chartsApiExampleCharts = {
     attach: function (context, settings) {
-      let chartContainer = document.getElementById('example-id-js');
+      let chartContainer = document.getElementById('exampleidjs');
       chartContainer.addEventListener('drupalChartsConfigsInitialization', function (e) {
         let data = e.detail;
         const id = data.drupalChartDivId;

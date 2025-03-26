@@ -204,17 +204,8 @@ class Role extends ConfigEntityBase implements RoleInterface {
     parent::calculateDependencies();
     // Load all permission definitions.
     $permission_definitions = \Drupal::service('user.permissions')->getPermissions();
-    $valid_permissions = array_intersect($this->permissions, array_keys($permission_definitions));
-    $invalid_permissions = array_diff($this->permissions, $valid_permissions);
-    if (!empty($invalid_permissions)) {
-      \Drupal::logger('user')->error('Non-existent permission(s) assigned to role "@label" (@id) were removed. Invalid permission(s): @permissions.', [
-        '@label' => $this->label(),
-        '@id' => $this->id(),
-        '@permissions' => implode(', ', $invalid_permissions),
-      ]);
-      $this->permissions = $valid_permissions;
-    }
-    foreach ($valid_permissions as $permission) {
+    $valid_permissions = $this->permissions;
+    foreach ($this->permissions as $permission) {
       // Depend on the module that is providing this permission.
       $this->addDependency('module', $permission_definitions[$permission]['provider']);
       // Depend on any other dependencies defined by permissions granted to

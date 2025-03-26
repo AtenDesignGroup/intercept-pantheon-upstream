@@ -58,8 +58,7 @@ intercept_room_reservation.room_my:
 
 intercept_event.export_room_reservations:
   parent: intercept_event.export_parent
-  title: 'Export Room Reservations'
-  weight: 2
+  title: 'Room Reservations'
   route_name: view.intercept_export_room_reservations.page
   menu_name: intercept-manage
   class: Drupal\intercept_room_reservation\Plugin\Menu\ExportMenuLink

@@ -60,7 +60,7 @@ third_party_settings:
       label: Registration
       region: content
       parent_name: ''
-      weight: 19
+      weight: 18
       format_type: fieldset
       format_settings:
         classes: ''
@@ -94,6 +94,7 @@ third_party_settings:
         - field_event_tags
         - field_event_series
         - field_staff_presenter
+        - field_presented_by_non_staff
         - field_presenter
       label: Metadata
       region: content
@@ -143,7 +144,7 @@ content:
     third_party_settings: {  }
   field_audience_primary:
     type: options_select
-    weight: 17
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -168,19 +169,19 @@ content:
     third_party_settings: {  }
   field_event_audience:
     type: options_select
-    weight: 18
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
   field_event_register_period:
     type: daterange_default
-    weight: 23
+    weight: 24
     region: content
     settings: {  }
     third_party_settings: {  }
   field_event_series:
     type: options_select
-    weight: 20
+    weight: 19
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -192,13 +193,13 @@ content:
     third_party_settings: {  }
   field_event_tags:
     type: options_select
-    weight: 19
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
   field_event_type:
     type: options_select
-    weight: 16
+    weight: 15
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -210,7 +211,7 @@ content:
     third_party_settings: {  }
   field_event_user_reg_max:
     type: number
-    weight: 22
+    weight: 23
     region: content
     settings:
       placeholder: ''
@@ -232,7 +233,7 @@ content:
     third_party_settings: {  }
   field_has_waitlist:
     type: boolean_checkbox
-    weight: 24
+    weight: 25
     region: content
     settings:
       display_label: true
@@ -256,6 +257,13 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  field_presented_by_non_staff:
+    type: boolean_checkbox
+    weight: 21
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_presenter:
     type: existing_autocomplete_field_widget
     weight: 22
@@ -273,7 +281,7 @@ content:
     third_party_settings: {  }
   field_staff_presenter:
     type: string_textfield
-    weight: 21
+    weight: 20
     region: content
     settings:
       size: 60
@@ -345,7 +353,7 @@ content:
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 26
+    weight: 25
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -385,7 +393,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   url_redirects:
-    weight: 21
+    weight: 20
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -393,7 +401,6 @@ hidden:
   field_attendees: true
   field_event_is_template: true
   field_keywords: true
-  field_presented_by_non_staff: true
   promote: true
   sticky: true
   unpublish_on: true

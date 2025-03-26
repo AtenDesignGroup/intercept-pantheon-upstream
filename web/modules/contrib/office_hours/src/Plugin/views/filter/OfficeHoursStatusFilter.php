@@ -122,10 +122,6 @@ class OfficeHoursStatusFilter extends ManyToOne {
    * {@inheritdoc}
    */
   public function query() {
-    // Do not add query details for this computed field. No SQL is possible.
-    // The views.inc file is not always loaded. Lazy load here.
-    \Drupal::moduleHandler()->loadInclude('office_hours', 'inc', 'office_hours.views');
-    // include_once __DIR__ . '/..\..\../../office_hours.views.inc';
   }
 
   /**

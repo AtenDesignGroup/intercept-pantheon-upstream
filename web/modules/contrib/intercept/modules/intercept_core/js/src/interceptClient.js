@@ -1,7 +1,7 @@
 // Polyfill: Fetch API.
 import 'whatwg-fetch';
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
-import intercept from './lib/intercept-client';
+import intercept from './lib/intercept-client/index.js';
 import drupalSettings from 'drupalSettings';
 import thunk from 'redux-thunk';
 import * as mui from './lib/mui';
@@ -32,5 +32,6 @@ const interceptClient = Object.assign(
     session,
     utils,
   });
+
 window.interceptClient = interceptClient;
 export default interceptClient;

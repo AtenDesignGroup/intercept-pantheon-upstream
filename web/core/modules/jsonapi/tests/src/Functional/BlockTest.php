@@ -45,7 +45,7 @@ class BlockTest extends ConfigEntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpAuthorization($method) {
+  protected function setUpAuthorization($method): void {
     switch ($method) {
       case 'GET':
         $this->entity->setVisibilityConfig('user_role', [])->save();
@@ -87,7 +87,7 @@ class BlockTest extends ConfigEntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getExpectedDocument() {
+  protected function getExpectedDocument(): array {
     $self_url = Url::fromUri('base:/jsonapi/block/block/' . $this->entity->uuid())->setAbsolute()->toString(TRUE)->getGeneratedUrl();
     return [
       'jsonapi' => [
@@ -108,7 +108,7 @@ class BlockTest extends ConfigEntityResourceTestBase {
           'self' => ['href' => $self_url],
         ],
         'attributes' => [
-          'weight' => NULL,
+          'weight' => 0,
           'langcode' => 'en',
           'status' => TRUE,
           'dependencies' => [
@@ -136,7 +136,7 @@ class BlockTest extends ConfigEntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getPostDocument() {
+  protected function getPostDocument(): array {
     // @todo Update once https://www.drupal.org/node/2300677 is fixed.
     return [];
   }
@@ -144,7 +144,7 @@ class BlockTest extends ConfigEntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getExpectedCacheContexts(?array $sparse_fieldset = NULL) {
+  protected function getExpectedCacheContexts(?array $sparse_fieldset = NULL): array {
     // @see ::createEntity()
     return array_values(array_diff(parent::getExpectedCacheContexts(), ['user.permissions']));
   }
@@ -152,7 +152,7 @@ class BlockTest extends ConfigEntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getExpectedCacheTags(?array $sparse_fieldset = NULL) {
+  protected function getExpectedCacheTags(?array $sparse_fieldset = NULL): array {
     // Because the 'user.permissions' cache context is missing, the cache tag
     // for the anonymous user role is never added automatically.
     return array_values(array_diff(parent::getExpectedCacheTags(), ['config:user.role.anonymous']));

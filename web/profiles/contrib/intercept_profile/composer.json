@@ -20,7 +20,7 @@
     "drupal/intercept_base": "1.x-dev",
     "drupal/intercept": "1.x-dev",
     "drupal/quick_node_clone": "^1.16",
-    "drupal/stories": "^2.0@alpha",
+    "drupal/stories": "^3.0@alpha",
     "drupal/view_unpublished": "^1.0",
     "drupal/view_user_email": "^1.0.1"
   },

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\form_test\Form;
 
 use Drupal\Component\Utility\Html;
@@ -80,21 +82,6 @@ class FormTestStorageForm extends FormBase {
       '#type' => 'submit',
       '#value' => 'Save',
     ];
-
-    // @todo Remove this in https://www.drupal.org/node/2524408, because form
-    //   cache immutability is no longer necessary, because we no longer cache
-    //   forms during safe HTTP methods. In the meantime, because
-    //   Drupal\system\Tests\Form still has test coverage for a poisoned form
-    //   cache following a GET request, trick $form_state into caching the form
-    //   to keep that test working until we either remove it or change it in
-    //   that issue.
-    if ($this->getRequest()->get('immutable')) {
-      $form_state->addBuildInfo('immutable', TRUE);
-      if ($this->getRequest()->get('cache') && $this->getRequest()->isMethodCacheable()) {
-        $form_state->setRequestMethod('FAKE');
-        $form_state->setCached();
-      }
-    }
 
     return $form;
   }

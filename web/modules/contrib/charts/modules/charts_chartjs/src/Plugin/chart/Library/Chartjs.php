@@ -2,34 +2,35 @@
 
 namespace Drupal\charts_chartjs\Plugin\chart\Library;
 
+use Drupal\charts\Attribute\Chart;
 use Drupal\Component\Utility\Color;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
 
 /**
- * Define a concrete class for a Chart.
- *
- * @Chart(
- *   id = "chartjs",
- *   name = @Translation("Chart.js"),
- *   types = {
- *     "area",
- *     "bar",
- *     "bubble",
- *     "column",
- *     "donut",
- *     "line",
- *     "pie",
- *     "polarArea",
- *     "scatter",
- *     "spline",
- *   },
- * )
+ * The 'Chartjs' chart type attribute.
  */
+#[Chart(
+  id: "chartjs",
+  name: new TranslatableMarkup("Chart.js"),
+  types: [
+    "area",
+    "bar",
+    "bubble",
+    "column",
+    "donut",
+    "line",
+    "pie",
+    "polarArea",
+    "scatter",
+    "spline",
+  ]
+)]
 class Chartjs extends ChartBase {
 
   /**

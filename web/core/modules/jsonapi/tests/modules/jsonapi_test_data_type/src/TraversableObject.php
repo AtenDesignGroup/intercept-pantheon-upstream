@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jsonapi_test_data_type;
 
 /**
@@ -12,8 +14,7 @@ class TraversableObject implements \IteratorAggregate {
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function getIterator() {
+  public function getIterator(): \ArrayIterator {
     return new \ArrayIterator();
   }
 

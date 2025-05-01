@@ -46,6 +46,7 @@ class OfficeHoursItemListSorter {
     $horizon = 14;
     $start_date = strtotime("-$past day midnight", $time);
     $end_date = strtotime("+$horizon day midnight", $time);
+    // Get a list of valid seasons (in future, within horizon).
     $seasons = $this->itemList->getSeasons(TRUE, FALSE, 'ascending', $start_date, $end_date);
 
     // Build a list of open next days. Then pick the first day.
@@ -61,7 +62,7 @@ class OfficeHoursItemListSorter {
       /** @var \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem $item */
       $item = $iterator->current();
 
-      // Do not add item in past season to sorted list.
+      // Do not add items from invalid seasons.
       if (!isset($seasons[$item->getSeasonId()])) {
         continue;
       }

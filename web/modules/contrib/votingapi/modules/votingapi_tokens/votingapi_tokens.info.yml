@@ -2,12 +2,7 @@ name: Voting API Tokens
 type: module
 description: 'Token support for Voting API'
 package: Voting
-core_version_requirement: ^9.2 || ^10
+core_version_requirement: ^10.3 || ^11
 dependencies:
   - votingapi:votingapi
   - token:token
-
-# Information added by Drupal.org packaging script on 2024-08-25
-version: '8.x-3.0-beta5'
-project: 'votingapi'
-datestamp: 1724557649

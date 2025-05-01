@@ -38,10 +38,14 @@ use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
  *   }
  * )
  *
+ * @property string|null $value
+ * @property string|null $end_value
  * @property \Drupal\Core\Datetime\DrupalDateTime|null $start_date
  * @property \Drupal\Core\Datetime\DrupalDateTime|null $end_date
  * @property string|null $timezone
  * @property string|null $rrule
+ * @property \Drupal\date_recur\Plugin\Field\DateRecurOccurrencesComputed $occurrences
+ * @property bool|null $infinite
  */
 class DateRecurItem extends DateRangeItem {
 
@@ -168,7 +172,7 @@ class DateRecurItem extends DateRangeItem {
    * {@inheritdoc}
    */
   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data): array {
-    assert(is_bool($has_data));
+    \assert(\is_bool($has_data));
     $element = parent::storageSettingsForm($form, $form_state, $has_data);
 
     $element['rrule_max_length'] = [
@@ -192,7 +196,7 @@ class DateRecurItem extends DateRangeItem {
 
     // @todo Needs UI tests.
     $options = [];
-    foreach (range(1, 5) as $i) {
+    foreach (\range(1, 5) as $i) {
       $options['P' . $i . 'Y'] = $this->formatPlural($i, '@year year', '@year years', ['@year' => $i]);
     }
     // @todo allow custom values.
@@ -217,7 +221,7 @@ class DateRecurItem extends DateRangeItem {
     ];
     $parents = [...$elementParts, 'parts', 'all'];
     // The form 'name' attribute of the 'all' parts checkbox above.
-    $allPartsCheckboxName = $parents[0] . '[' . implode('][', array_slice($parents, 1)) . ']';
+    $allPartsCheckboxName = $parents[0] . '[' . \implode('][', \array_slice($parents, 1)) . ']';
 
     $frequencyLabels = DateRecurRruleMap::frequencyLabels();
     $partLabels = DateRecurRruleMap::partLabels();
@@ -258,17 +262,17 @@ class DateRecurItem extends DateRangeItem {
       ];
       // Constructs a name that looks like
       // settings[parts][table][MINUTELY][setting].
-      $settingsCheckboxName = $parents[0] . '[' . implode('][', array_slice($parents, 1)) . ']';
+      $settingsCheckboxName = $parents[0] . '[' . \implode('][', \array_slice($parents, 1)) . ']';
 
       $enabledParts = $allPartsSettings['frequencies'][$frequency] ?? [];
       $defaultSetting = NULL;
-      if (count($enabledParts) === 0) {
+      if (\count($enabledParts) === 0) {
         $defaultSetting = static::FREQUENCY_SETTINGS_DISABLED;
       }
-      elseif (in_array(static::PART_SUPPORTS_ALL, $enabledParts, TRUE)) {
+      elseif (\in_array(static::PART_SUPPORTS_ALL, $enabledParts, TRUE)) {
         $defaultSetting = static::FREQUENCY_SETTINGS_PARTS_ALL;
       }
-      elseif (count($enabledParts) > 0) {
+      elseif (\count($enabledParts) > 0) {
         $defaultSetting = static::FREQUENCY_SETTINGS_PARTS_PARTIAL;
       }
 
@@ -284,7 +288,7 @@ class DateRecurItem extends DateRangeItem {
         $partsCheckbox['#states']['visible'][] = [
           ':input[name="' . $settingsCheckboxName . '"]' => ['value' => static::FREQUENCY_SETTINGS_PARTS_PARTIAL],
         ];
-        $partsCheckbox['#default_value'] = in_array($part, $enabledParts, TRUE);
+        $partsCheckbox['#default_value'] = \in_array($part, $enabledParts, TRUE);
       }
 
       $element['parts']['table'][$frequency] = $row;
@@ -298,7 +302,7 @@ class DateRecurItem extends DateRangeItem {
         '@description' => $partDescription,
       ]);
     }
-    $element['parts']['help']['#markup'] = '<ul><li>' . implode('</li><li>', $list) . '</li></ul></ul>';
+    $element['parts']['help']['#markup'] = '<ul><li>' . \implode('</li><li>', $list) . '</li></ul></ul>';
 
     return $element;
   }
@@ -329,7 +333,7 @@ class DateRecurItem extends DateRangeItem {
     $parts['all'] = ($values['all'] === TRUE || $values['all'] === 1);
     $parts['frequencies'] = [];
     foreach ($values['table'] as $frequency => $row) {
-      $enabledParts = array_keys(array_filter($row['parts']));
+      $enabledParts = \array_keys(\array_filter($row['parts']));
       if ($row['setting'] === static::FREQUENCY_SETTINGS_PARTS_ALL) {
         $enabledParts[] = static::PART_SUPPORTS_ALL;
       }
@@ -337,7 +341,7 @@ class DateRecurItem extends DateRangeItem {
         $enabledParts = [];
       }
       // Sort in order so config always looks consistent.
-      sort($enabledParts);
+      \sort($enabledParts);
       $parts['frequencies'][$frequency] = $enabledParts;
     }
 
@@ -358,9 +362,6 @@ class DateRecurItem extends DateRangeItem {
     return $this->getSetting('datetime_type') == static::DATETIME_TYPE_DATE ? static::DATE_STORAGE_FORMAT : static::DATETIME_STORAGE_FORMAT;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function preSave(): void {
     parent::preSave();
     try {
@@ -387,7 +388,7 @@ class DateRecurItem extends DateRangeItem {
    * {@inheritdoc}
    */
   public function onChange($property_name, $notify = TRUE) {
-    if (in_array($property_name, ['value', 'end_value', 'rrule', 'timezone'], TRUE)) {
+    if (\in_array($property_name, ['value', 'end_value', 'rrule', 'timezone'], TRUE)) {
       // Reset cached helper instance if values changed.
       $this->resetHelper();
     }
@@ -401,7 +402,7 @@ class DateRecurItem extends DateRangeItem {
    *   Whether the field value is recurring.
    */
   public function isRecurring(): bool {
-    return $this->rrule !== NULL && strlen($this->rrule) > 0;
+    return $this->rrule !== NULL && \strlen($this->rrule) > 0;
   }
 
   /**
@@ -421,14 +422,14 @@ class DateRecurItem extends DateRangeItem {
     }
 
     $timeZoneString = $this->timezone;
-    if ($timeZoneString === NULL || strlen($timeZoneString) === 0) {
+    if ($timeZoneString === NULL || \strlen($timeZoneString) === 0) {
       throw new DateRecurHelperArgumentException('Missing time zone');
     }
 
     try {
       // If its not a string then cast it so a TypeError is not thrown. An empty
       // string will cause the exception to be thrown.
-      $timeZone = new \DateTimeZone(is_string($timeZoneString) ? $timeZoneString : '');
+      $timeZone = new \DateTimeZone(\is_string($timeZoneString) ? $timeZoneString : '');
     }
     catch (\Exception) {
       throw new DateRecurHelperArgumentException('Invalid time zone');
@@ -453,16 +454,13 @@ class DateRecurItem extends DateRangeItem {
     return $this->helper;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function isEmpty(): bool {
     $start_value = $this->get('value')->getValue();
     $end_value = $this->get('end_value')->getValue();
     return (
       ($start_value === NULL || $start_value === '') &&
       ($end_value === NULL || $end_value === '') &&
-      in_array($this->get('timezone')->getValue(), ['', NULL], TRUE)
+      \in_array($this->get('timezone')->getValue(), ['', NULL], TRUE)
     );
   }
 
@@ -472,9 +470,9 @@ class DateRecurItem extends DateRangeItem {
   public static function generateSampleValue(FieldDefinitionInterface $field_definition): array {
     $values = parent::generateSampleValue($field_definition);
 
-    $timeZoneList = timezone_identifiers_list();
-    $values['timezone'] = $timeZoneList[array_rand($timeZoneList)];
-    $values['rrule'] = 'FREQ=DAILY;COUNT=' . rand(2, 10);
+    $timeZoneList = \timezone_identifiers_list();
+    $values['timezone'] = $timeZoneList[\array_rand($timeZoneList)];
+    $values['rrule'] = 'FREQ=DAILY;COUNT=' . \rand(2, 10);
     $values['infinite'] = FALSE;
 
     return $values;

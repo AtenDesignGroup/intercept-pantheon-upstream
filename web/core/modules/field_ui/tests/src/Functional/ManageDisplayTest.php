@@ -70,6 +70,7 @@ class ManageDisplayTest extends BrowserTestBase {
       'administer node display',
       'administer taxonomy',
       'administer taxonomy_term fields',
+      'administer taxonomy_term form display',
       'administer taxonomy_term display',
       'administer users',
       'administer account settings',
@@ -202,9 +203,16 @@ class ManageDisplayTest extends BrowserTestBase {
   }
 
   /**
-   * Tests hiding the view modes fieldset when there's only one available.
+   * Tests view mode management screens.
    */
-  public function testSingleViewMode(): void {
+  public function testViewModeUi(): void {
+    // Tests table headers on "Manage form" and "Manage display" screens.
+    $this->drupalGet('admin/structure/taxonomy/manage/' . $this->vocabulary . '/overview/form-display');
+    $this->assertTableHeaderExistsByLabel('field-display-overview', 'Machine name');
+    $this->drupalGet('admin/structure/taxonomy/manage/' . $this->vocabulary . '/overview/display');
+    $this->assertTableHeaderExistsByLabel('field-display-overview', 'Machine name');
+
+    // Tests hiding the view modes fieldset when there's only one available.
     $this->drupalGet('admin/structure/taxonomy/manage/' . $this->vocabulary . '/display');
     $this->assertSession()->pageTextNotContains('Use custom display settings for the following view modes');
 
@@ -390,7 +398,7 @@ class ManageDisplayTest extends BrowserTestBase {
    * @return array
    *   An array of option values as strings.
    */
-  protected function getAllOptionsList(NodeElement $element) {
+  protected function getAllOptionsList(NodeElement $element): array {
     $options = [];
     // Add all options items.
     foreach ($element->option as $option) {

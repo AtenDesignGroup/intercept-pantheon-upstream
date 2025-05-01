@@ -37,6 +37,13 @@ class SimilarEventsByEvent extends BlockBase implements ContainerFactoryPluginIn
   protected $suggestedEventsProvider;
 
   /**
+   * The current route match.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
    * Constructs a new UserSuggestedEvents object.
    *
    * @param array $configuration

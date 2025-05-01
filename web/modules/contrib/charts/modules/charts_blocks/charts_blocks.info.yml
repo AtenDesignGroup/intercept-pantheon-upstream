@@ -6,7 +6,7 @@ package: Charts
 dependencies:
   - drupal:charts
 
-# Information added by Drupal.org packaging script on 2025-03-07
-version: '5.1.3'
+# Information added by Drupal.org packaging script on 2025-04-11
+version: '5.1.5'
 project: 'charts'
-datestamp: 1741367398
+datestamp: 1744408474

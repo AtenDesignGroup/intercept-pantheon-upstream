@@ -37,13 +37,13 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
     try {
       $connection = Database::getConnection('default', 'test-runner');
     }
-    catch (ConnectionNotDefinedException $e) {
+    catch (ConnectionNotDefinedException) {
       // Check whether there is a backup of the original default connection.
       // @see FunctionalTestSetupTrait::prepareEnvironment()
       try {
         $connection = Database::getConnection('default', 'simpletest_original_default');
       }
-      catch (ConnectionNotDefinedException $e) {
+      catch (ConnectionNotDefinedException) {
         // If FunctionalTestSetupTrait::prepareEnvironment() failed, the
         // test-specific database connection does not exist yet/anymore, so
         // fall back to the default of the (UI) test runner.
@@ -133,8 +133,8 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
     // 'test_class' from {simpletest}.
     $select = $this->connection->select($max_message_id_subquery, 'st_sub');
     $select->join('simpletest', 'st', '[st].[message_id] = [st_sub].[max_message_id]');
-    $select->join('simpletest_test_id', 'sttid', '[st].[test_id] = [sttid].[test_id]');
-    $select->addField('sttid', 'last_prefix', 'db_prefix');
+    $select->join('simpletest_test_id', 'st_tid', '[st].[test_id] = [st_tid].[test_id]');
+    $select->addField('st_tid', 'last_prefix', 'db_prefix');
     $select->addField('st', 'test_class');
 
     return $select->execute()->fetchAssoc();

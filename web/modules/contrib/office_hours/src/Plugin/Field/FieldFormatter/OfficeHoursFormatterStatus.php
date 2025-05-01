@@ -56,7 +56,7 @@ class OfficeHoursFormatterStatus extends OfficeHoursFormatterBase {
 
     $elements[0]['#theme'] = 'office_hours_status';
     $elements[0]['#attributes'] = [
-      // Empty class is needed for office-hours-status.twig.html file
+      // Empty class is needed for office-hours-status.twig.html file.
       'class' => [],
     ];
     $elements[0] += [

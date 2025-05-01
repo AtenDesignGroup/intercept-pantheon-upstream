@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drupal\Tests\Component\DependencyInjection;
 
 use Drupal\Component\Utility\Crypt;
+use Drupal\TestTools\Extension\DeprecationBridge\ExpectDeprecationTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
@@ -711,24 +711,6 @@ class ContainerTest extends TestCase {
   }
 
   /**
-   * @covers \Drupal\Component\DependencyInjection\ServiceIdHashTrait::getServiceIdMappings
-   * @covers \Drupal\Component\DependencyInjection\ServiceIdHashTrait::generateServiceIdHash
-   *
-   * @group legacy
-   */
-  public function testGetServiceIdMappings(): void {
-    $this->expectDeprecation("Drupal\Component\DependencyInjection\ServiceIdHashTrait::generateServiceIdHash() is deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the 'Drupal\Component\DependencyInjection\ReverseContainer' service instead. See https://www.drupal.org/node/3327942");
-    $this->expectDeprecation("Drupal\Component\DependencyInjection\ServiceIdHashTrait::getServiceIdMappings() is deprecated in drupal:9.5.1 and is removed from drupal:11.0.0. Use the 'Drupal\Component\DependencyInjection\ReverseContainer' service instead. See https://www.drupal.org/node/3327942");
-    $this->assertEquals([], $this->container->getServiceIdMappings());
-    $s1 = $this->container->get('other.service');
-    $s2 = $this->container->get('late.service');
-    $this->assertEquals([
-      $this->container->generateServiceIdHash($s1) => 'other.service',
-      $this->container->generateServiceIdHash($s2) => 'late.service',
-    ], $this->container->getServiceIdMappings());
-  }
-
-  /**
    * Tests Container::reset().
    *
    * @covers ::reset
@@ -753,7 +735,7 @@ class ContainerTest extends TestCase {
    * @return array
    *   Associated array with parameters and services.
    */
-  protected function getMockContainerDefinition() {
+  protected function getMockContainerDefinition(): array {
     $fake_service = new \stdClass();
     $parameters = [];
     $parameters['some_parameter_class'] = get_class($fake_service);
@@ -1214,7 +1196,7 @@ class MockService {
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    *   The container to inject via setter injection.
    */
-  public function setContainer(ContainerInterface $container) {
+  public function setContainer(ContainerInterface $container): void {
     $this->container = $container;
   }
 
@@ -1254,7 +1236,7 @@ class MockService {
    * @param string $some_other_parameter
    *   The setter injected parameter.
    */
-  public function setOtherConfigParameter($some_other_parameter) {
+  public function setOtherConfigParameter($some_other_parameter): void {
     $this->someOtherParameter = $some_other_parameter;
   }
 

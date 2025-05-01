@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset name="My Coding Standard">
+<ruleset>
   <file>./date_recur.install</file>
   <file>./date_recur.module</file>
   <file>./src</file>
   <file>./tests</file>
+
+  <exclude-pattern>phpstan-baseline.php</exclude-pattern>
+
   <rule ref="PreviousNextDrupal" />
   <arg name="report" value="full"/>
+
+  <rule ref="Drupal.Commenting.ClassComment.Missing"><severity>0</severity></rule>
+  <rule ref="Drupal.Commenting.FunctionComment.Missing"><severity>0</severity></rule>
 </ruleset>

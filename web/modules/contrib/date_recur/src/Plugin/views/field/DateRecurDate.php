@@ -26,7 +26,7 @@ class DateRecurDate extends Date {
   public function getValue(ResultRow $values, $field = NULL): ?int {
     $value = parent::getValue($values, $field);
 
-    assert(isset($this->configuration['source date format']));
+    \assert(isset($this->configuration['source date format']));
     $sourceDateFormat = $this->configuration['source date format'];
     $timeZone = new \DateTimeZone($this->configuration['source time zone']);
 

@@ -1,7 +1,7 @@
 name: Intercept Demo Content
 description: Imports content for the Intercept demo.
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 package: Intercept Profile
 dependencies:
   - default_content:default_content

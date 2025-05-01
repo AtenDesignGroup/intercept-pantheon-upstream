@@ -856,7 +856,6 @@ display:
             query_param: room_id
             fallback: all
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -893,7 +892,6 @@ display:
             query_param: location_id
             fallback: all
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true

@@ -1,21 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects\Plugin\ImageEffect;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Image\ImageInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\image\Attribute\ImageEffect;
 use Drupal\image\ConfigurableImageEffectBase;
 use Drupal\image_effects\Component\Rectangle;
 
 /**
  * Rotates an image.
- *
- * @ImageEffect(
- *   id = "image_effects_rotate",
- *   label = @Translation("Rotate [by Image Effects]"),
- *   description = @Translation("Rotate the image by a specified angle, optionally setting the background color.")
- * )
  */
+#[ImageEffect(
+  id: 'image_effects_rotate',
+  label: new TranslatableMarkup('Rotate [by Image Effects]'),
+  description: new TranslatableMarkup('Rotate the image by a specified angle, optionally setting the background color.'),
+)]
 class RotateImageEffect extends ConfigurableImageEffectBase {
 
   /**
@@ -40,7 +43,7 @@ class RotateImageEffect extends ConfigurableImageEffectBase {
         break;
 
       case static::RANDOM:
-        $max = abs((float) $this->configuration['degrees']);
+        $max = (int) abs((float) $this->configuration['degrees']);
         $degrees = rand(-$max, $max);
         break;
 
@@ -72,6 +75,9 @@ class RotateImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function transformDimensions(array &$dimensions, $uri) {
+    $dimensions['width'] = $dimensions['width'] ? (int) $dimensions['width'] : NULL;
+    $dimensions['height'] = $dimensions['height'] ? (int) $dimensions['height'] : NULL;
+
     // If the current dimensions are set, then the new dimensions can be
     // determined.
     if ($dimensions['width'] && $dimensions['height']) {

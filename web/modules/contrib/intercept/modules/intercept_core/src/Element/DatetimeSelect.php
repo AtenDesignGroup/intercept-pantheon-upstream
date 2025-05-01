@@ -43,8 +43,10 @@ class DatetimeSelect extends Datetime {
       // Creating format examples on every individual date item is messy, and
       // placeholders are invalid for HTML5 date and datetime, so an example
       // format is appended to the title to appear in tooltips.
+      $date_example = new DrupalDateTime();
+      $format_example = $date_example->format($date_format);
       $extra_attributes = [
-        'title' => new TranslatableMarkup('Date (e.g. @format)', ['@format' => static::formatExample($date_format)]),
+        'title' => new TranslatableMarkup('Date (e.g. @format)', ['@format' => $format_example]),
         'type' => $element['#date_date_element'],
       ];
 

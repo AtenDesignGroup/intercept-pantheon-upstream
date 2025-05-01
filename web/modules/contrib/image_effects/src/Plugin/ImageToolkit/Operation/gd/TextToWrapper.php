@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects\Plugin\ImageToolkit\Operation\gd;
 
+use Drupal\Core\ImageToolkit\Attribute\ImageToolkitOperation;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\image_effects\Component\ColorUtility;
 use Drupal\image_effects\Component\ImageUtility;
 use Drupal\image_effects\Component\PositionedRectangle;
@@ -12,15 +16,14 @@ use Drupal\system\Plugin\ImageToolkit\Operation\gd\GDImageToolkitOperationBase;
 
 /**
  * Defines GD Text Overlay text-to-wrapper operation.
- *
- * @ImageToolkitOperation(
- *   id = "image_effects_gd_text_to_wrapper",
- *   toolkit = "gd",
- *   operation = "text_to_wrapper",
- *   label = @Translation("Overlays text over a wrapper image"),
- *   description = @Translation("Overlays text over a GD resource.")
- * )
  */
+#[ImageToolkitOperation(
+  id: 'image_effects_gd_text_to_wrapper',
+  toolkit: 'gd',
+  operation: 'text_to_wrapper',
+  label: new TranslatableMarkup('Overlays text over a wrapper image'),
+  description: new TranslatableMarkup('Overlays text over a GD image.'),
+)]
 class TextToWrapper extends GDImageToolkitOperationBase {
 
   use FontOperationTrait;
@@ -221,8 +224,8 @@ class TextToWrapper extends GDImageToolkitOperationBase {
     }
 
     // Finalise image.
-    imagealphablending($this->getToolkit()->getResource(), TRUE);
-    imagesavealpha($this->getToolkit()->getResource(), TRUE);
+    imagealphablending($this->getToolkit()->getImage(), TRUE);
+    imagesavealpha($this->getToolkit()->getImage(), TRUE);
 
     // Resize the wrapper if needed.
     if ($arguments['layout_overflow_action'] == 'scaletext') {
@@ -238,7 +241,7 @@ class TextToWrapper extends GDImageToolkitOperationBase {
    * @param array $arguments
    *   An associative array of arguments.
    */
-  protected function resizeWrapper(array $arguments) {
+  protected function resizeWrapper(array $arguments): void {
     // Wrapper image dimensions.
     $original_wrapper_width = $this->getToolkit()->getWidth();
     $original_wrapper_height = $this->getToolkit()->getHeight();
@@ -299,7 +302,7 @@ class TextToWrapper extends GDImageToolkitOperationBase {
    *
    * @see http://ruquay.com/sandbox/imagettf
    */
-  protected function drawDebugBox(PositionedRectangle $rect, $rgba, $luma = FALSE) {
+  protected function drawDebugBox(PositionedRectangle $rect, string $rgba, bool $luma = FALSE): void {
 
     // Check color.
     if (!$rgba) {
@@ -375,7 +378,7 @@ class TextToWrapper extends GDImageToolkitOperationBase {
    * @return string
    *   Text string, with newline characters to separate each line.
    */
-  protected function wrapText($text, $font_size, $font_uri, $maximum_width) {
+  protected function wrapText(string $text, int $font_size, string $font_uri, int $maximum_width): string {
     // State variables for the search interval.
     $end = 0;
     $begin = 0;
@@ -440,15 +443,15 @@ class TextToWrapper extends GDImageToolkitOperationBase {
    *
    * @param string $text
    *   A text string.
-   * @param string $font_size
+   * @param int $font_size
    *   The font size.
    * @param string $font_uri
    *   The font URI.
    *
-   * @return int
+   * @return int|null
    *   The width of the text in pixels.
    */
-  protected function getTextWidth($text, $font_size, $font_uri) {
+  protected function getTextWidth(string $text, int $font_size, string $font_uri): ?int {
     // Get fully qualified font file information.
     if (!$font_file = $this->getFontPath($font_uri)) {
       return NULL;
@@ -467,23 +470,23 @@ class TextToWrapper extends GDImageToolkitOperationBase {
    * So to have uniformity we take a dummy string with ascending and
    * descending characters to set to max height possible.
    *
-   * @param string $font_size
+   * @param int $font_size
    *   The font size.
    * @param string $font_uri
    *   The font URI.
    *
-   * @return array
+   * @return array|null
    *   An associative array with the following keys:
    *   - 'height' the text height in pixels.
    *   - 'basepoint' an array of x, y coordinates of the font's basepoint.
    */
-  protected function getTextHeightInfo($font_size, $font_uri) {
+  protected function getTextHeightInfo(int $font_size, string $font_uri): ?array {
     // Get fully qualified font file information.
     if (!$font_file = $this->getFontPath($font_uri)) {
       return NULL;
     }
     // Get the bounding box for $text to get height.
-    $points = $this->imagettfbboxWrapper($font_size, 0, $font_file, 'bdfhkltgjpqyBDFHKLTGJPQY§@çÅÀÈÉÌÒÇ');
+    $points = $this->imagettfbboxWrapper((float) $font_size, 0, $font_file, 'bdfhkltgjpqyBDFHKLTGJPQY§@çÅÀÈÉÌÒÇ');
     $height = (abs($points[5] - $points[1]) + 1);
     return [
       'height' => $height,

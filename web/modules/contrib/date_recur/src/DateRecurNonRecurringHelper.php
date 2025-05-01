@@ -25,16 +25,13 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    *   The initial occurrence end date, or NULL to use start date.
    */
   public function __construct(
-      \DateTimeInterface $dtStart,
-      ?\DateTimeInterface $dtStartEnd = NULL,
+    \DateTimeInterface $dtStart,
+    ?\DateTimeInterface $dtStartEnd = NULL,
   ) {
     $dtStartEnd ??= clone $dtStart;
     $this->occurrences = [new DateRange($dtStart, $dtStartEnd)];
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public static function createInstance(string $string, \DateTimeInterface $dtStart, ?\DateTimeInterface $dtStartEnd = NULL): DateRecurHelperInterface {
     return new static($dtStart, $dtStartEnd);
   }
@@ -46,16 +43,10 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
     return [];
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function isInfinite(): bool {
     return FALSE;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function generateOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL): \Generator {
     foreach ($this->occurrences as $occurrence) {
       $occurrenceStart = $occurrence->getStart();
@@ -81,7 +72,7 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
    * {@inheritdoc}
    */
   public function getOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL, ?int $limit = NULL): array {
-    if (isset($limit) && (!is_int($limit) || $limit < 0)) {
+    if (isset($limit) && (!\is_int($limit) || $limit < 0)) {
       // Limit must be a number and more than one.
       throw new \InvalidArgumentException('Invalid count limit.');
     }
@@ -92,7 +83,7 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
       return [];
     }
 
-    return iterator_to_array($this->generateOccurrences($rangeStart, $rangeEnd));
+    return \iterator_to_array($this->generateOccurrences($rangeStart, $rangeEnd));
   }
 
   /**
@@ -102,41 +93,26 @@ class DateRecurNonRecurringHelper implements DateRecurHelperInterface {
     return [];
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function current(): DateRange {
-    return current($this->occurrences);
+    return \current($this->occurrences);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function next(): void {
-    next($this->occurrences);
+    \next($this->occurrences);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function key(): ?int {
-    $key = key($this->occurrences);
-    assert(is_int($key));
+    $key = \key($this->occurrences);
+    \assert(\is_int($key));
     return $key;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function valid(): bool {
-    return !is_null(key($this->occurrences));
+    return !\is_null(\key($this->occurrences));
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function rewind(): void {
-    reset($this->occurrences);
+    \reset($this->occurrences);
   }
 
 }

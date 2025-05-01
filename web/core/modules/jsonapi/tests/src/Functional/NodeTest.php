@@ -81,7 +81,7 @@ class NodeTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpAuthorization($method) {
+  protected function setUpAuthorization($method): void {
     switch ($method) {
       case 'GET':
         $this->grantPermissionsToTestedRole(['access content']);
@@ -108,7 +108,7 @@ class NodeTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpRevisionAuthorization($method) {
+  protected function setUpRevisionAuthorization($method): void {
     parent::setUpRevisionAuthorization($method);
     $this->grantPermissionsToTestedRole(['view all revisions']);
   }
@@ -142,7 +142,7 @@ class NodeTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getExpectedDocument() {
+  protected function getExpectedDocument(): array {
     $author = User::load($this->entity->getOwnerId());
     $base_url = Url::fromUri('base:/jsonapi/node/camelids/' . $this->entity->uuid())->setAbsolute();
     $self_url = clone $base_url;
@@ -247,7 +247,7 @@ class NodeTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getPostDocument() {
+  protected function getPostDocument(): array {
     return [
       'data' => [
         'type' => 'node--camelids',
@@ -346,17 +346,13 @@ class NodeTest extends ResourceTestBase {
       ['4xx-response', 'http_response', 'node:1'],
       ['url.query_args', 'url.site', 'user.permissions'],
       'UNCACHEABLE (request policy)',
-      'MISS'
+      TRUE
     );
 
     // 200 after granting permission.
     $this->grantPermissionsToTestedRole(['view own unpublished content']);
     $response = $this->request('GET', $url, $request_options);
-    // The response varies by 'user', causing the 'user.permissions' cache
-    // context to be optimized away.
-    $expected_cache_contexts = Cache::mergeContexts($this->getExpectedCacheContexts(), ['user']);
-    $expected_cache_contexts = array_diff($expected_cache_contexts, ['user.permissions']);
-    $this->assertResourceResponse(200, FALSE, $response, $this->getExpectedCacheTags(), $expected_cache_contexts, 'UNCACHEABLE (request policy)', 'UNCACHEABLE (poor cacheability)');
+    $this->assertResourceResponse(200, FALSE, $response, $this->getExpectedCacheTags(), $this->getExpectedCacheContexts(), 'UNCACHEABLE (request policy)', TRUE);
   }
 
   /**
@@ -416,7 +412,30 @@ class NodeTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static function getIncludePermissions() {
+  protected function getExpectedCacheContexts(?array $sparse_fieldset = NULL) {
+    // \Drupal\Tests\jsonapi\Functional\ResourceTestBase::testRevisions()
+    // loads different revisions via query parameters, we do our best
+    // here to react to those directly, or indirectly.
+    $cache_contexts = parent::getExpectedCacheContexts($sparse_fieldset);
+
+    // This is bubbled up by
+    // \Drupal\node\NodeAccessControlHandler::checkAccess() directly.
+    if ($this->entity->isPublished()) {
+      return $cache_contexts;
+    }
+    if (!\Drupal::currentUser()->isAuthenticated()) {
+      return Cache::mergeContexts($cache_contexts, ['user.roles:authenticated']);
+    }
+    if (\Drupal::currentUser()->hasPermission('view own unpublished content')) {
+      return Cache::mergeContexts($cache_contexts, ['user']);
+    }
+    return $cache_contexts;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static function getIncludePermissions(): array {
     return [
       'uid.node_type' => ['administer users'],
       'uid.roles' => ['administer permissions'],
@@ -506,28 +525,6 @@ class NodeTest extends ResourceTestBase {
     $this->rebuildAll();
     $response = $this->request('GET', $collection_filter_url, $request_options);
     $this->assertContains('user.node_grants:view', explode(' ', $response->getHeader('X-Drupal-Cache-Contexts')[0]));
-  }
-
-  /**
-   * Tests deprecated entity reference items.
-   *
-   * @group legacy
-   */
-  public function testDeprecatedEntityReferenceFieldItem(): void {
-    \Drupal::service('module_installer')->install(['jsonapi_test_reference_types']);
-
-    $this->setUpAuthorization('GET');
-    // @todo Remove line below in favor of commented line in https://www.drupal.org/project/drupal/issues/2878463.
-    $url = Url::fromRoute(sprintf('jsonapi.%s.individual', static::$resourceTypeName), ['entity' => $this->entity->uuid()]);
-    // $url = $this->entity->toUrl('jsonapi');
-    $query = ['include' => 'deprecated_reference'];
-    $url->setOption('query', $query);
-    $request_options = [];
-    $request_options[RequestOptions::HEADERS]['Accept'] = 'application/vnd.api+json';
-    $request_options = NestedArray::mergeDeep($request_options, $this->getAuthenticationRequestOptions());
-
-    $this->expectDeprecation('Entity reference field items not implementing Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItemInterface is deprecated in drupal:10.2.0 and will be required in drupal:11.0.0. See https://www.drupal.org/node/3279140');
-    $this->request('GET', $url, $request_options);
   }
 
 }

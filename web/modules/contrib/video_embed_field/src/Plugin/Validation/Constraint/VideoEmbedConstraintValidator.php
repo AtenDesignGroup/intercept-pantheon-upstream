@@ -34,7 +34,7 @@ class VideoEmbedConstraintValidator extends ConstraintValidator implements Conta
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
+    return new self(
       $container->get('video_embed_field.provider_manager')
     );
   }

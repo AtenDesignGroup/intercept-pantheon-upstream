@@ -23,5 +23,5 @@ services:
     class: Drupal\quick_node_clone\QuickNodeCloneNodeFinder
     arguments:
       - '@request_stack'
-      - '@path_alias.manager'
       - '@entity_type.manager'
+      - '@?path_alias.manager'

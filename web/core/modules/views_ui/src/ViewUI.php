@@ -39,7 +39,7 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
   public $changed_display;
 
   /**
@@ -47,7 +47,7 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var float
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
   public $render_time;
 
   /**
@@ -72,7 +72,7 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
   public $temporary_options;
 
   /**
@@ -87,10 +87,8 @@ class ViewUI implements ViewEntityInterface {
    *
    * @var bool
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
   public $live_preview;
-
-  public $renderPreview = FALSE;
 
   /**
    * The View storage object.

@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Drupal\Tests\migrate\Unit;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\migrate\Plugin\MigrateDestinationPluginManager;
-use Drupal\migrate\Plugin\MigratePluginManagerInterface;
-use Drupal\migrate\Plugin\MigrateSourcePluginManager;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Plugin\Migration;
 use Drupal\migrate\Exception\RequirementsException;
@@ -33,8 +30,6 @@ class MigrationTest extends UnitTestCase {
    * @covers ::__construct
    *
    * @dataProvider getInvalidMigrationDependenciesProvider
-   *
-   * @group legacy
    */
   public function testMigrationDependenciesInConstructor(array $dependencies): void {
 
@@ -46,7 +41,8 @@ class MigrationTest extends UnitTestCase {
     $destination_plugin_manager = $this->createMock('\Drupal\migrate\Plugin\MigrateDestinationPluginManager');
     $id_map_plugin_manager = $this->createMock('\Drupal\migrate\Plugin\MigratePluginManagerInterface');
 
-    $this->expectDeprecation("Invalid migration dependencies for {$plugin_id} is deprecated in drupal:10.1.0 and will cause an error in drupal:11.0.0. See https://www.drupal.org/node/3266691");
+    $this->expectException(InvalidPluginDefinitionException::class);
+    $this->expectExceptionMessage("Invalid migration dependencies configuration for migration test_migration");
     new Migration($configuration, $plugin_id, [], $migration_plugin_manager, $source_plugin_manager, $process_plugin_manager, $destination_plugin_manager, $id_map_plugin_manager);
   }
 
@@ -178,7 +174,7 @@ class MigrationTest extends UnitTestCase {
     if (!is_null($source)) {
       $migration->set('migration_dependencies', $source);
     }
-    $this->assertSame($migration->getMigrationDependencies(TRUE), $expected_value);
+    $this->assertSame($migration->getMigrationDependencies(), $expected_value);
   }
 
   /**
@@ -201,12 +197,11 @@ class MigrationTest extends UnitTestCase {
     $migration->setPluginId($plugin_id);
 
     // Migration dependencies expects ['optional' => []] or ['required' => []]].
-    $this->expectDeprecation("Invalid migration dependencies for {$plugin_id} is deprecated in drupal:10.1.0 and will cause an error in drupal:11.0.0. See https://www.drupal.org/node/3266691");
     $migration->set('migration_dependencies', $dependencies);
 
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage("Invalid migration dependencies configuration for migration {$plugin_id}");
-    $migration->getMigrationDependencies(TRUE);
+    $migration->getMigrationDependencies();
   }
 
   /**
@@ -254,32 +249,6 @@ class MigrationTest extends UnitTestCase {
     ];
   }
 
-  /**
-   * Test trackLastImported deprecation message in Migration constructor.
-   *
-   * @group legacy
-   */
-  public function testTrackLastImportedDeprecation(): void {
-    $this->expectDeprecation("The key 'trackLastImported' is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. There is no replacement. See https://www.drupal.org/node/3282894");
-    $migration_plugin_manager = $this->createMock(MigrationPluginManagerInterface::class);
-    $source_plugin_manager = $this->createMock(MigrateSourcePluginManager::class);
-    $process_Plugin_manager = $this->createMock(MigratePluginManagerInterface::class);
-    $destination_plugin_manager = $this->createMock(MigrateDestinationPluginManager::class);
-    $id_map_plugin_manager = $this->createMock(MigratePluginManagerInterface::class);
-    new Migration([], 'test', ['trackLastImported' => TRUE], $migration_plugin_manager, $source_plugin_manager, $process_Plugin_manager, $destination_plugin_manager, $id_map_plugin_manager);
-  }
-
-  /**
-   * Tests deprecation of getMigrationDependencies(FALSE).
-   *
-   * @group legacy
-   */
-  public function testGetMigrationDependencies(): void {
-    $migration = new TestMigration();
-    $this->expectDeprecation('Calling Migration::getMigrationDependencies() without expanding the plugin IDs is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. In most cases, use getMigrationDependencies(TRUE). See https://www.drupal.org/node/3266691');
-    $migration->getMigrationDependencies();
-  }
-
 }
 
 /**
@@ -300,7 +269,7 @@ class TestMigration extends Migration {
    * @param string $plugin_id
    *   The plugin ID of the plugin instance.
    */
-  public function setPluginId($plugin_id) {
+  public function setPluginId($plugin_id): void {
     $this->pluginId = $plugin_id;
   }
 
@@ -310,7 +279,7 @@ class TestMigration extends Migration {
    * @param array $requirements
    *   The array of requirement values.
    */
-  public function setRequirements(array $requirements) {
+  public function setRequirements(array $requirements): void {
     $this->requirements = $requirements;
   }
 
@@ -320,7 +289,7 @@ class TestMigration extends Migration {
    * @param \Drupal\migrate\Plugin\MigrateSourceInterface $source_plugin
    *   The source Plugin.
    */
-  public function setSourcePlugin(MigrateSourceInterface $source_plugin) {
+  public function setSourcePlugin(MigrateSourceInterface $source_plugin): void {
     $this->sourcePlugin = $source_plugin;
   }
 
@@ -330,7 +299,7 @@ class TestMigration extends Migration {
    * @param \Drupal\migrate\Plugin\MigrateDestinationInterface $destination_plugin
    *   The destination Plugin.
    */
-  public function setDestinationPlugin(MigrateDestinationInterface $destination_plugin) {
+  public function setDestinationPlugin(MigrateDestinationInterface $destination_plugin): void {
     $this->destinationPlugin = $destination_plugin;
   }
 
@@ -340,7 +309,7 @@ class TestMigration extends Migration {
    * @param \Drupal\migrate\Plugin\MigrationPluginManagerInterface $plugin_manager
    *   The plugin manager service.
    */
-  public function setMigrationPluginManager(MigrationPluginManagerInterface $plugin_manager) {
+  public function setMigrationPluginManager(MigrationPluginManagerInterface $plugin_manager): void {
     $this->migrationPluginManager = $plugin_manager;
   }
 

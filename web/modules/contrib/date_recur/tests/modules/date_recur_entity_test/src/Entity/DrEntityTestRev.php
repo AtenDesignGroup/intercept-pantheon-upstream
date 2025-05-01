@@ -62,7 +62,7 @@ class DrEntityTestRev extends EntityTestRev {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['dr'] = BaseFieldDefinition::create('date_recur')
-      ->setLabel(t('Rule'))
+      ->setLabel(\t('Rule'))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE)
       ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)

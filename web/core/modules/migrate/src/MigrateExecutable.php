@@ -85,9 +85,9 @@ class MigrateExecutable implements MigrateExecutableInterface {
   /**
    * Migration message service.
    *
-   * @todo https://www.drupal.org/node/2822663 Make this protected.
-   *
    * @var \Drupal\migrate\MigrateMessageInterface
+   *
+   * @todo https://www.drupal.org/node/2822663 Make this protected.
    */
   public $message;
 
@@ -452,7 +452,7 @@ class MigrateExecutable implements MigrateExecutableInterface {
         try {
           $value = $plugin->transform($value, $this, $row, $destination);
         }
-        catch (MigrateSkipProcessException $e) {
+        catch (MigrateSkipProcessException) {
           $value = NULL;
           break;
         }
@@ -618,26 +618,6 @@ class MigrateExecutable implements MigrateExecutableInterface {
     gc_collect_cycles();
 
     return memory_get_usage();
-  }
-
-  /**
-   * Generates a string representation for the given byte count.
-   *
-   * @param int $size
-   *   A size in bytes.
-   *
-   * @return string
-   *   A translated string representation of the size.
-   *
-   * @deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use
-   *   \Drupal\Core\StringTranslation\ByteSizeMarkup::create($size, $langcode)
-   *   instead.
-   *
-   * @see https://www.drupal.org/node/2999981
-   */
-  protected function formatSize($size) {
-    @trigger_error(__METHOD__ . '() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use \Drupal\Core\StringTranslation\ByteSizeMarkup::create($size, $langcode) instead. See https://www.drupal.org/node/2999981', E_USER_DEPRECATED);
-    return format_size($size);
   }
 
 }

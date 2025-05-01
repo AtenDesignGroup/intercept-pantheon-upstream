@@ -18,7 +18,7 @@ class DefaultSingleLazyPluginCollectionTest extends LazyPluginCollectionTestBase
   /**
    * {@inheritdoc}
    */
-  protected function setupPluginCollection(?InvocationOrder $create_count = NULL) {
+  protected function setupPluginCollection(?InvocationOrder $create_count = NULL): void {
     $definitions = $this->getPluginDefinitions();
     $this->pluginInstances['apple'] = new ConfigurablePlugin(['id' => 'apple', 'key' => 'value'], 'apple', $definitions['apple']);
     $this->pluginInstances['banana'] = new ConfigurablePlugin(['id' => 'banana', 'key' => 'other_value'], 'banana', $definitions['banana']);
@@ -93,18 +93,6 @@ class DefaultSingleLazyPluginCollectionTest extends LazyPluginCollectionTestBase
     $this->assertSame($expected, $config);
   }
 
-  /**
-   * @covers ::setConfiguration
-   * @group legacy
-   */
-  public function testConfigurableSetConfigurationToNull(): void {
-    $this->setupPluginCollection($this->any());
-
-    $this->expectDeprecation('Calling Drupal\Core\Plugin\DefaultSingleLazyPluginCollection::setConfiguration() with a non-array argument is deprecated in drupal:10.3.0 and will fail in drupal:11.0.0. See https://www.drupal.org/node/3406191');
-    $this->defaultPluginCollection->setConfiguration(NULL);
-    $this->assertSame([], $this->defaultPluginCollection->getConfiguration());
-  }
-
 }
 
 class ConfigurablePlugin extends PluginBase implements ConfigurableInterface {
@@ -123,7 +111,7 @@ class ConfigurablePlugin extends PluginBase implements ConfigurableInterface {
     return $this->configuration;
   }
 
-  public function setConfiguration(array $configuration) {
+  public function setConfiguration(array $configuration): void {
     $this->configuration = $configuration;
   }
 

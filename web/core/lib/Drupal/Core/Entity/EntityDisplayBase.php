@@ -548,7 +548,7 @@ abstract class EntityDisplayBase extends ConfigEntityBase implements EntityDispl
   /**
    * {@inheritdoc}
    */
-  public function __sleep() {
+  public function __sleep(): array {
     // Only store the definition, not external objects or derived data.
     $keys = array_keys($this->toArray());
     // In addition, we need to keep the entity type and the "is new" status.
@@ -567,7 +567,7 @@ abstract class EntityDisplayBase extends ConfigEntityBase implements EntityDispl
   /**
    * {@inheritdoc}
    */
-  public function __wakeup() {
+  public function __wakeup(): void {
     // Determine what were the properties from toArray() that were saved in
     // __sleep().
     $keys = $this->_serializedKeys;

@@ -16,11 +16,8 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group date_recur
  */
-class DateRecurPartGridTest extends KernelTestBase {
+final class DateRecurPartGridTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'entity_test',
     'datetime',
@@ -37,9 +34,6 @@ class DateRecurPartGridTest extends KernelTestBase {
    */
   private FieldConfigInterface $fieldConfig;
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('entity_test');
@@ -126,7 +120,7 @@ class DateRecurPartGridTest extends KernelTestBase {
     static::assertEquals(1, $violations->count());
 
     $violation = $violations->get(0);
-    $message = strip_tags((string) $violation->getMessage());
+    $message = \strip_tags((string) $violation->getMessage());
     static::assertEquals('Weekly is not a permitted frequency.', $message);
   }
 
@@ -156,7 +150,7 @@ class DateRecurPartGridTest extends KernelTestBase {
     static::assertEquals(1, $violations->count());
 
     $violation = $violations->get(0);
-    $message = strip_tags((string) $violation->getMessage());
+    $message = \strip_tags((string) $violation->getMessage());
     static::assertEquals('Daily is not a permitted frequency.', $message);
 
     // Try an allowed frequency.
@@ -200,7 +194,7 @@ class DateRecurPartGridTest extends KernelTestBase {
     static::assertEquals(1, $violations->count());
 
     $violation = $violations->get(0);
-    $message = strip_tags((string) $violation->getMessage());
+    $message = \strip_tags((string) $violation->getMessage());
     static::assertEquals('By-day is not a permitted part.', $message);
 
     $entity = EntityTest::create();

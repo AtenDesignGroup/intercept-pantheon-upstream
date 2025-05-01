@@ -62,7 +62,7 @@ class BigPipeTest extends BrowserTestBase {
    *
    * @see setUp()
    */
-  protected function performMetaRefresh() {
+  protected function performMetaRefresh(): void {
     $this->maximumMetaRefreshCount = 1;
     $this->checkForMetaRefresh();
     $this->maximumMetaRefreshCount = 0;
@@ -217,6 +217,16 @@ class BigPipeTest extends BrowserTestBase {
     $this->assertSession()->responseNotContains('</body>');
     // The exception is expected. Do not interpret it as a test failure.
     unlink($this->root . '/' . $this->siteDirectory . '/error.log');
+
+    // Tests the enforced redirect response exception handles redirecting to
+    // a trusted redirect.
+    $this->drupalGet(Url::fromRoute('big_pipe_test_trusted_redirect'));
+    $this->assertSession()->responseContains('application/vnd.drupal-ajax');
+    $this->assertSession()->responseContains('[{"command":"redirect","url":"\/big_pipe_test"}]');
+
+    // Test that it rejects an untrusted redirect.
+    $this->drupalGet(Url::fromRoute('big_pipe_test_untrusted_redirect'));
+    $this->assertSession()->responseContains('Redirects to external URLs are not allowed by default');
   }
 
   /**
@@ -428,7 +438,7 @@ class BigPipeTest extends BrowserTestBase {
   /**
    * Ensures CSRF tokens can be generated for the current user's session.
    */
-  protected function setCsrfTokenSeedInTestEnvironment() {
+  protected function setCsrfTokenSeedInTestEnvironment(): void {
     // Retrieve the CSRF token from the child site from its serialized session
     // record in the database.
     $session_data = $this->container->get('session_handler.write_safe')->read($this->getSession()->getCookie($this->getSessionName()));

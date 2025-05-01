@@ -1126,7 +1126,7 @@ class SqlContentEntityStorageTest extends UnitTestCase {
    * @return \Drupal\Tests\Core\Field\TestBaseFieldDefinitionInterface[]|\PHPUnit\Framework\MockObject\MockObject[]
    *   An array of mock base field definitions.
    */
-  protected function mockFieldDefinitions(array $field_names, $methods = []) {
+  protected function mockFieldDefinitions(array $field_names, $methods = []): array {
     $field_definitions = [];
     $definition = $this->createMock('Drupal\Tests\Core\Field\TestBaseFieldDefinitionInterface');
 
@@ -1156,7 +1156,7 @@ class SqlContentEntityStorageTest extends UnitTestCase {
   /**
    * Sets up the content entity database storage.
    */
-  protected function setUpEntityStorage() {
+  protected function setUpEntityStorage(): void {
     $this->connection = $this->getMockBuilder('Drupal\Core\Database\Connection')
       ->disableOriginalConstructor()
       ->getMock();
@@ -1448,7 +1448,7 @@ class SqlContentEntityStorageTest extends UnitTestCase {
   /**
    * Sets up the module handler with no implementations.
    */
-  protected function setUpModuleHandlerNoImplementations() {
+  protected function setUpModuleHandlerNoImplementations(): void {
     $this->moduleHandler->expects($this->any())
       ->method('invokeAllWith')
       ->willReturnMap([

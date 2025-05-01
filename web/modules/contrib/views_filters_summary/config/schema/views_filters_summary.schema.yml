@@ -21,19 +21,22 @@ views.area.views_filters_summary:
     content:
       type: text
       label: 'The shown text of the result summary area'
+    filters_reset_link_title:
+      type: label
+      label: 'The title of the link to reset all filters'
     filters_summary_separator:
-      type: string
+      type: label
       label: 'Exposed Filter Summary Separator'
     filters_summary_prefix:
-      type: string
+      type: label
       label: 'Exposed Filters Summary Prefix'
     filters_result_label:
       type: mapping
       label: 'Filter result labels'
       mapping:
         plural:
-          type: string
+          type: label
           label: 'Plural label for the type of result being shown'
         singular:
-          type: string
+          type: label
           label: 'Singular label for the type of result being shown'

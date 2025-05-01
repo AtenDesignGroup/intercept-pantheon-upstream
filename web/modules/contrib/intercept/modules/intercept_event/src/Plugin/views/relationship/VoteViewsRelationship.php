@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\PageCache\ResponsePolicy\KillSwitch;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
+use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -149,7 +150,7 @@ to limit the results to specifically unflagged content</a>.', ['@unflagged-url' 
         'value' => '***CURRENT_USER***',
         'numeric' => TRUE,
       ];
-      $flag_roles = user_roles(FALSE, "flag " . $vote->id());
+      $flag_roles = Role::loadMultiple([], "flag " . $vote->id());
       if (isset($flag_roles[RoleInterface::ANONYMOUS_ID]) && $this->currentUser->isAnonymous()) {
         // Disable page caching for anonymous users.
         $this->pageCacheKillSwitch->trigger();

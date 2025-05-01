@@ -7,6 +7,7 @@ use Drupal\Core\Field\PluginSettingsBase;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\office_hours\Event\OfficeHoursEventDispatcher;
 use Drupal\office_hours\Event\OfficeHoursEvents;
+use Drupal\office_hours\OfficeHoursItemListSorter;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItem;
 use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList;
 
@@ -43,35 +44,20 @@ class OfficeHoursItemListFormatter {
   /**
    * An object to maintain the sorted ItemList.
    *
-   * @var OfficeHoursItemListSorter
+   * @var \Drupal\office_hours\OfficeHoursItemListSorter;
    */
   public $sortedList;
 
   /**
-   * Constructs a DatabaseBackend object.
+   * Constructs a new formatter.
    *
-   * param \Drupal\Core\Database\Connection $connection
-   *   The database connection.
-   * param \Drupal\Core\Cache\CacheTagsChecksumInterface $checksum_provider
-   *   The cache tags checksum provider.
-   * param string $bin
-   *   The cache bin for which the object is created.
-   * param \Drupal\Component\Serialization\ObjectAwareSerializationInterface|int|string|null $serializer
-   *   (optional) The serializer to use.
-   * param \Drupal\Component\Datetime\TimeInterface|int|string|null $time
-   *   The time service.
-   * param int $max_rows
-   *   (optional) The maximum number of rows that are allowed in this cache bin
-   *   table.
+   * @param \Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList $parent
+   *   The itemlist to be formatted.
    */
   public function __construct(OfficeHoursItemList $parent) {
     $this->dateHelper = new OfficeHoursDateHelper();
     $this->eventDispatcher = new OfficeHoursEventDispatcher();
-
-    // Clone the Item list, since the following code will change the items,
-    // while custom installations need complete $items in theme preprocessing.
-    $this->parent = clone $parent;
-
+    $this->parent = $parent;
     $this->sortedList = new OfficeHoursItemListSorter($parent);
   }
 
@@ -97,16 +83,19 @@ class OfficeHoursItemListFormatter {
   public function getRows(array $settings, array $field_settings, array $third_party_settings = [], int $time = 0, ?PluginSettingsBase $plugin = NULL) {
     $office_hours = [];
 
+    // Clone the Item list, since the following code will change the items,
+    // while custom installations need complete $items in theme preprocessing.
+    // Note: do NOT move this into constructor.
+    // @see https://www.drupal.org/project/office_hours/issues/3514516
+    $items = clone $this->parent;
     // Sort the database values by day number, leaving slot order intact.
+    // (Exceptions may be maintained in a random order.)
     // @todo In Formatter: itemList::getRows() or Widget: itemList::setValue().
-    $items = $this->parent->sort();
+    $items = $items->sort();
     $time = $this->dateHelper->getRequestTime($time, $items);
 
     // Let other modules alter the $items or $office_hours.
     $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::PRE_FORMAT, $items, $office_hours, $time, $plugin);
-
-    // Initialize the 'next' and 'current' slots for later usage.
-    $this->getNextDay($time);
 
     // Initialize $office_hours.
     // Create 7 empty weekdays, using date_api as key (0=Sun, 6=Sat).
@@ -116,29 +105,21 @@ class OfficeHoursItemListFormatter {
 
     // Prepare array of empty weekdays for normal days and seasons.
     $replace_exceptions = $settings['exceptions']['replace_exceptions'];
+    // Remove seasons out of scope (in the past or far future).
     $horizon = $settings['exceptions']['restrict_seasons_to_num_days'];
     $seasons = $items->getSeasons(TRUE, FALSE, 'ascending', $time, $horizon);
     foreach ($seasons as $season_id => $season) {
-
-      // @todo getSeasons(): A start_date with a horizon 0 is never in range.
-      if ($horizon == 0 && $season_id !== 0) {
-        unset($seasons[$season_id]);
-        continue;
-      }
 
       // First, add season header. It must be before the season days.
       // But do not add for regular 'season'.
       // Directly replace with exception day, if needed.
       if ($season_id) {
+        // Add caption for plain text formatter.
         $day = $season_id + OfficeHoursDateHelper::SEASON_DAY_MIN;
-        $this->addOfficeHours($office_hours, $day, $time, $replace_exceptions);
-        // Add caption for plain text formatter. @todo Move to function.
         $caption = $season->getName();
-        end($office_hours);
-        $lastElement = &$office_hours[key($office_hours)];
-        $lastElement['caption'] = $caption;
+        $this->addRowsCaption($office_hours, $day, $time, $caption);
       }
-      // Then, add season days.
+      // Then, add 7 season days, since each season has a week formatter.
       foreach ($weekdays as $day => $label) {
         $day = $season_id + $day;
         $this->addOfficeHours($office_hours, $day, $time, $replace_exceptions);
@@ -149,6 +130,15 @@ class OfficeHoursItemListFormatter {
     $horizon = $settings['exceptions']['restrict_exceptions_to_num_days'];
     $this->keepExceptionDaysInHorizon($items, $horizon);
 
+    // Add Exceptions caption. Exception slots are added after this caption.
+    if (!$replace_exceptions && $items->countExceptionDays() > 0) {
+      // Add caption for plain text formatter. @todo Move to function.
+      if ($caption = $settings['exceptions']['title']) {
+        $day = OfficeHoursDateHelper::EXCEPTION_DAY_MIN;
+        $this->addRowsCaption($office_hours, $day, $time, $caption);
+      }
+    }
+
     // Move items to $office_hours.
     $iterator = $items->getIterator();
     for ($iterator->rewind(); $iterator->valid(); $iterator->next()) {
@@ -157,25 +147,14 @@ class OfficeHoursItemListFormatter {
 
       // Filter on the valid seasons (past seasons have been removed).
       // Note: weekdays and exception dates have valid SeasonId = 0.
-      if (isset($seasons[$item->getSeasonId()])) {
-
-        // Add Exceptions caption, but only before the first Exception.
-        // Note: for Seasons,a separateSeasonHeader exists.
-        static $exceptionCount = 0;
-        if (!$replace_exceptions && $item->isExceptionDay()) {
-          if (++$exceptionCount == 1 && $caption = $settings['exceptions']['title']) {
-            $day = OfficeHoursDateHelper::EXCEPTION_DAY_MIN;
-            $this->addOfficeHours($office_hours, $day, $time, FALSE);
-            // Add caption for plain text formatter. @todo Move to function.
-            end($office_hours);
-            $lastElement = &$office_hours[key($office_hours)];
-            $lastElement['caption'] = $caption;
-          }
-        }
-
-        // Add time slot to $office_hours.
-        $this->addOfficeHours($office_hours, $item, $time, $replace_exceptions);
+      if (!isset($seasons[$item->getSeasonId()])) {
+        continue;
       }
+
+      // Add time slot to $office_hours.
+      // Week, Season slots are completing an existing array element,
+      // Exception slots are adding an element to the array.
+      $this->addOfficeHours($office_hours, $item, $time, $replace_exceptions);
     }
 
     // Mark the current time slot.
@@ -238,6 +217,14 @@ class OfficeHoursItemListFormatter {
     $event = $this->eventDispatcher->dispatchEvent(OfficeHoursEvents::POST_FORMAT, $items, $office_hours, $time, $plugin);
 
     return $event->officeHours;
+  }
+
+  protected function addRowsCaption(array &$office_hours, $day, $time, $caption) {
+    $this->addOfficeHours($office_hours, $day, $time, FALSE);
+    // Add caption for plain text formatter. @todo Move to function.
+    end($office_hours);
+    $lastElement = &$office_hours[key($office_hours)];
+    $lastElement['caption'] = $caption;
   }
 
   /**
@@ -394,7 +381,7 @@ class OfficeHoursItemListFormatter {
         if ($this->dateHelper->isExceptionDay($day)) {
           // Check consecutive days (previous endday is yesterday).
           // Or should exceptions never be grouped?
-          if (($day - $one_day !== $previous_day['endday'])) {
+          if ((($day - $one_day) !== $previous_day['endday'])) {
             continue;
           }
         }
@@ -526,24 +513,31 @@ class OfficeHoursItemListFormatter {
       $info['items'][$index] ??= $this->parent->createItem(0, []);
 
       foreach ($info['items'] as $day_delta => $item) {
+        switch (TRUE) {
+          case ($all_day |= $item->all_day) && $day_delta > 0:
+            // Additional slots are forbidden for all_day open days.
+            // @todo Disable 'more slots' for all_day in JS.
+            // Clear item, for consistent comments, etc.
+            $item->setValue([], FALSE);
+            break;
 
-        // Additional slots are forbidden for all_day open days.
-        // @todo Disable 'more slots' for all_day in JS.
-        if (($all_day |= $item->all_day) && $day_delta > 0) {
-          // Clear item, for consistent comments, etc.
-          $item->setValue([], FALSE);
-          continue;
+          case $item->isEmpty():
+            // Do nothing.
+            break;
+
+          default:
+            // Collect the formatted time slot in the day.
+            $formatted_slot = $item->formatTimeSlot($settings);
+            if (!empty($formatted_slot)) {
+              $info['formatted_slots'][] = $formatted_slot;
+            }
+            break;
         }
-
-        if ($item->isEmpty()) {
-          continue;
-        }
-
-        // Collect the formatted time slot in the day.
-        $info['formatted_slots'][] = $item->formatTimeSlot($settings);
       }
 
       // @todo 'endday' is only set on last item of the day. Not on first. Why?
+      // @todo The following should not change the $item.
+      // That is wrong. This is now solved by cloning the $items.
       $item->set('day', $info['day'] ?? NULL, FALSE);
       $item->set('endday', $info['endday'] ?? NULL, FALSE);
       // Format the label (weekday, exception day).
@@ -579,7 +573,7 @@ class OfficeHoursItemListFormatter {
     return $office_hours;
   }
 
- /**
+  /**
    * Process comments in special cases.
    *
    * @param array $info

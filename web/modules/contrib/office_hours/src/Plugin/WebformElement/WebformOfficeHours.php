@@ -191,7 +191,7 @@ class WebformOfficeHours extends WebformCompositeBase {
   }
 
   /**
-   * Form API callback: Validates one OH-slot element in Widget.
+   * Form API callback: Validates one time slot element in Widget.
    *
    * @param array $element
    *   The form element to process.
@@ -202,7 +202,6 @@ class WebformOfficeHours extends WebformCompositeBase {
    */
   public static function validateOfficeHoursSlot(array &$element, FormStateInterface $form_state, array &$complete_form) {
     // The validation is done by OfficeHoursBaseSlot::validateOfficeHoursSlot().
-
     // The result may be empty, upon preview in build mode (when not saved).
     $values = $form_state->getValue($element['#webform_key']) ?? [];
 

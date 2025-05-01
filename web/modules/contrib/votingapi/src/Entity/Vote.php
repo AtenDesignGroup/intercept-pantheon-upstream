@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\votingapi\Entity;
 
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\user\UserInterface;
 use Drupal\votingapi\VoteInterface;
 
@@ -51,142 +54,140 @@ class Vote extends ContentEntityBase implements VoteInterface {
   /**
    * {@inheritdoc}
    */
-  public function getVotedEntityType() {
+  public function getVotedEntityType(): string {
     return $this->get('entity_type')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setVotedEntityType($name) {
+  public function setVotedEntityType(string $name): static {
     return $this->set('entity_type', $name);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getVotedEntityId() {
+  public function getVotedEntityId(): string|int {
     return $this->get('entity_id')->target_id;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setVotedEntityId($id) {
+  public function setVotedEntityId(string|int $id): static {
     return $this->set('entity_id', $id);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getValue() {
-    return $this->get('value')->value;
+  public function getValue(): float {
+    return (float) $this->get('value')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setValue($value) {
+  public function setValue(float $value): static {
     return $this->set('value', $value);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getValueType() {
+  public function getValueType(): string {
     return $this->get('value_type')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setValueType($value_type) {
+  public function setValueType($value_type): static {
     return $this->set('value_type', $value_type);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOwner() {
+  public function getOwner(): UserInterface {
     return $this->get('user_id')->entity;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setOwner(UserInterface $account) {
-    $this->set('user_id', $account->id());
-    return $this;
+  public function setOwner(UserInterface $account): static {
+    return $this->set('user_id', $account->id());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOwnerId() {
-    return $this->get('user_id')->target_id;
+  public function getOwnerId(): int|null {
+    return (int) $this->get('user_id')->target_id;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setOwnerId($uid) {
-    $this->set('user_id', $uid);
-    return $this;
+    return $this->set('user_id', $uid);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getCreatedTime() {
-    return $this->get('timestamp')->value;
+  public function getCreatedTime(): int {
+    return (int) $this->get('timestamp')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setCreatedTime($timestamp) {
+  public function setCreatedTime(int $timestamp): static {
     return $this->set('timestamp', $timestamp);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSource() {
+  public function getSource(): string {
     return $this->get('vote_source')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setSource($source) {
+  public function setSource(string $source): static {
     return $this->set('vote_source', $source);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
-
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    /** @var \Drupal\Core\Field\BaseFieldDefinition[] $fields */
     $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('ID'))
-      ->setDescription(t('The vote ID.'))
+      ->setLabel(new TranslatableMarkup('ID'))
+      ->setDescription(new TranslatableMarkup('The vote ID.'))
       ->setReadOnly(TRUE)
       ->setSetting('unsigned', TRUE);
 
     $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
-      ->setDescription(t('The vote UUID.'))
+      ->setLabel(new TranslatableMarkup('UUID'))
+      ->setDescription(new TranslatableMarkup('The vote UUID.'))
       ->setReadOnly(TRUE);
 
     $fields['type'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Type'))
-      ->setDescription(t('The vote type.'))
+      ->setLabel(new TranslatableMarkup('Type'))
+      ->setDescription(new TranslatableMarkup('The vote type.'))
       ->setSetting('target_type', 'vote_type')
       ->setReadOnly(TRUE);
 
     $fields['entity_type'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Entity Type'))
-      ->setDescription(t('The type from the voted entity.'))
+      ->setLabel(new TranslatableMarkup('Entity Type'))
+      ->setDescription(new TranslatableMarkup('The type from the voted entity.'))
       ->setDefaultValue('node')
       ->setSettings([
         'max_length' => 64,
@@ -194,37 +195,37 @@ class Vote extends ContentEntityBase implements VoteInterface {
       ->setRequired(TRUE);
 
     $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Voted entity'))
-      ->setDescription(t('The ID from the voted entity'))
+      ->setLabel(new TranslatableMarkup('Voted entity'))
+      ->setDescription(new TranslatableMarkup('The ID from the voted entity'))
       ->setDefaultValue(0)
       ->setRequired(TRUE);
 
     $fields['value'] = BaseFieldDefinition::create('float')
-      ->setLabel(t('Value'))
-      ->setDescription(t('The numeric value of the vote.'))
+      ->setLabel(new TranslatableMarkup('Value'))
+      ->setDescription(new TranslatableMarkup('The numeric value of the vote.'))
       ->setDefaultValue(0)
       ->setRequired(TRUE);
 
     $fields['value_type'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Value Type'))
+      ->setLabel(new TranslatableMarkup('Value Type'))
       ->setSettings([
         'max_length' => 64,
       ])
       ->setDefaultValue('percent');
 
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Authored by'))
-      ->setDescription(t('The user who submitted the vote.'))
+      ->setLabel(new TranslatableMarkup('Authored by'))
+      ->setDescription(new TranslatableMarkup('The user who submitted the vote.'))
       ->setSetting('target_type', 'user')
       ->setDefaultValueCallback('Drupal\votingapi\Entity\Vote::getCurrentUserId');
 
     $fields['timestamp'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
+      ->setLabel(new TranslatableMarkup('Created'))
+      ->setDescription(new TranslatableMarkup('The time that the vote was created.'));
 
     $fields['vote_source'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Vote Source'))
-      ->setDescription(t('The IP address hash from the user who submitted the vote.'))
+      ->setLabel(new TranslatableMarkup('Vote Source'))
+      ->setDescription(new TranslatableMarkup('The IP address hash from the user who submitted the vote.'))
       ->setDefaultValueCallback('Drupal\votingapi\Entity\Vote::getCurrentIp')
       ->setSettings([
         'max_length' => 255,

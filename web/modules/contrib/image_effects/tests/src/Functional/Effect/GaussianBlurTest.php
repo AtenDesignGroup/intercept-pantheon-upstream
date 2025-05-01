@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\image_effects\Functional\Effect;
 
 use Drupal\Tests\image_effects\Functional\ImageEffectsTestBase;
@@ -23,7 +25,7 @@ class GaussianBlurTest extends ImageEffectsTestBase {
    *
    * @dataProvider providerToolkits
    */
-  public function testGaussianBlurEffect($toolkit_id, $toolkit_config, array $toolkit_settings) {
+  public function testGaussianBlurEffect(string $toolkit_id, string $toolkit_config, array $toolkit_settings): void {
     $this->changeToolkit($toolkit_id, $toolkit_config, $toolkit_settings);
 
     $effect = [
@@ -60,7 +62,7 @@ class GaussianBlurTest extends ImageEffectsTestBase {
     // The upper-left corner of the inner red square has been blurred.
     // For fully transparent, the background color differs by toolkit. In this
     // case, we just check for the alpha channel value equal to 80.
-    $this->assertEquals(80, imagecolorsforindex($toolkit->getResource(), imagecolorat($toolkit->getResource(), 25, 25))['alpha']);
+    $this->assertEquals(80, imagecolorsforindex($toolkit->getImage(), imagecolorat($toolkit->getImage(), 25, 25))['alpha']);
   }
 
 }

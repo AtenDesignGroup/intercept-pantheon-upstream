@@ -61,7 +61,7 @@ class PathPluginBaseTest extends UnitTestCase {
   /**
    * Setup access plugin manager and config factory in the Drupal class.
    */
-  public function setupContainer() {
+  public function setupContainer(): void {
     $this->accessPluginManager = $this->getMockBuilder('\Drupal\views\Plugin\ViewsPluginManager')
       ->disableOriginalConstructor()
       ->getMock();
@@ -557,7 +557,7 @@ class PathPluginBaseTest extends UnitTestCase {
   /**
    * Returns some mocked view entity, view executable, and access plugin.
    */
-  protected function setupViewExecutableAccessPlugin() {
+  protected function setupViewExecutableAccessPlugin(): array {
     $view_entity = $this->getMockBuilder('Drupal\views\Entity\View')
       ->disableOriginalConstructor()
       ->getMock();
@@ -576,7 +576,7 @@ class PathPluginBaseTest extends UnitTestCase {
 
     $access_plugin = $this->getMockBuilder('Drupal\views\Plugin\views\access\AccessPluginBase')
       ->disableOriginalConstructor()
-      ->getMockForAbstractClass();
+      ->getMock();
     $this->accessPluginManager->expects($this->any())
       ->method('createInstance')
       ->willReturn($access_plugin);

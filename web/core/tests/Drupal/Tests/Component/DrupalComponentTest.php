@@ -73,7 +73,7 @@ class DrupalComponentTest extends TestCase {
    * @return array
    *   An array of class paths.
    */
-  protected function findPhpClasses($dir) {
+  protected function findPhpClasses($dir): array {
     $classes = [];
     foreach (new \DirectoryIterator($dir) as $file) {
       if ($file->isDir() && !$file->isDot()) {
@@ -150,7 +150,7 @@ class DrupalComponentTest extends TestCase {
       $pass = TRUE;
       $this->assertNoCoreUsage($file_uri);
     }
-    catch (AssertionFailedError $e) {
+    catch (AssertionFailedError) {
       $pass = FALSE;
     }
     $this->assertEquals($expected_pass, $pass, $expected_pass ?

@@ -13,7 +13,6 @@ use Drupal\Core\Config\Config;
 use Drupal\Core\Config\ConfigDuplicateUUIDException;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ConfigManagerInterface;
-use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Config\Entity\ConfigEntityType;
@@ -29,6 +28,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -631,28 +631,6 @@ class ConfigEntityStorageTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::loadRevision
-   * @group legacy
-   */
-  public function testLoadRevision(): void {
-    $this->expectDeprecation('Drupal\Core\Config\Entity\ConfigEntityStorage::loadRevision() is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. Use \Drupal\Core\Entity\RevisionableStorageInterface::loadRevision instead. See https://www.drupal.org/node/3294237');
-    $this->assertNull($this->entityStorage->loadRevision(1));
-  }
-
-  /**
-   * @covers ::deleteRevision
-   * @group legacy
-   */
-  public function testDeleteRevision(): void {
-    $this->expectDeprecation('Drupal\Core\Config\Entity\ConfigEntityStorage::deleteRevision() is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. Use \Drupal\Core\Entity\RevisionableStorageInterface::deleteRevision instead. See https://www.drupal.org/node/3294237');
-
-    $this->cacheTagsInvalidator->invalidateTags(Argument::cetera())
-      ->shouldNotBeCalled();
-
-    $this->assertNull($this->entityStorage->deleteRevision(1));
-  }
-
-  /**
    * @covers ::delete
    * @covers ::doDelete
    */
@@ -717,10 +695,13 @@ class ConfigEntityStorageTest extends UnitTestCase {
    * @param array $methods
    *   (optional) The methods to mock.
    *
-   * @return \Drupal\Core\Entity\EntityInterface|\PHPUnit\Framework\MockObject\MockObject
+   * @return \Drupal\Core\Config\Entity\ConfigEntityInterface&\PHPUnit\Framework\MockObject\MockObject
    */
-  public function getMockEntity(array $values = [], $methods = []) {
-    return $this->getMockForAbstractClass(ConfigEntityBase::class, [$values, 'test_entity_type'], '', TRUE, TRUE, TRUE, $methods);
+  public function getMockEntity(array $values = [], array $methods = []): ConfigEntityInterface&MockObject {
+    return $this->getMockBuilder(StubConfigEntity::class)
+      ->setConstructorArgs([$values, 'test_entity_type'])
+      ->onlyMethods($methods)
+      ->getMock();
   }
 
 }

@@ -52,16 +52,16 @@ class RlHelper implements DateRecurHelperInterface {
    *   The initial occurrence end date, or NULL to use start date.
    */
   public function __construct(
-      string $string,
-      \DateTimeInterface $dtStart,
-      ?\DateTimeInterface $dtStartEnd = NULL,
+    string $string,
+    \DateTimeInterface $dtStart,
+    ?\DateTimeInterface $dtStartEnd = NULL,
   ) {
     $dtStartEnd ??= clone $dtStart;
     $this->recurDiff = $dtStart->diff($dtStartEnd);
     $this->timeZone = $dtStart->getTimezone();
 
     // Ensure the string is prefixed with RRULE if not multiline.
-    if (!str_contains($string, "\n") && !str_starts_with($string, 'RRULE:')) {
+    if (!\str_contains($string, "\n") && !\str_starts_with($string, 'RRULE:')) {
       $string = "RRULE:$string";
     }
 
@@ -72,21 +72,21 @@ class RlHelper implements DateRecurHelperInterface {
       'EXDATE' => [],
     ];
 
-    $lines = explode("\n", $string);
+    $lines = \explode("\n", $string);
     foreach ($lines as $n => $line) {
-      $line = trim($line);
+      $line = \trim($line);
 
-      if (str_contains($line, ':') === FALSE) {
-        throw new DateRecurHelperArgumentException(sprintf('Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line %s', $n + 1));
+      if (\str_contains($line, ':') === FALSE) {
+        throw new DateRecurHelperArgumentException(\sprintf('Multiline RRULE must be prefixed with either: RRULE, EXDATE, EXRULE, or RDATE. Missing for line %s', $n + 1));
       }
 
-      [$part, $partValue] = explode(':', $line, 2);
+      [$part, $partValue] = \explode(':', $line, 2);
       $parts[$part] ?? throw new DateRecurHelperArgumentException("Unsupported line: " . $part);
       $parts[$part][] = $partValue;
     }
 
-    if (($count = count($parts['RRULE'])) !== 1) {
-      throw new DateRecurHelperArgumentException(sprintf('One RRULE must be provided. %d provided.', $count));
+    if (($count = \count($parts['RRULE'])) !== 1) {
+      throw new DateRecurHelperArgumentException(\sprintf('One RRULE must be provided. %d provided.', $count));
     }
 
     $this->set = new RSet();
@@ -100,14 +100,14 @@ class RlHelper implements DateRecurHelperInterface {
 
           case 'RDATE':
             $dates = RfcParser::parseRDate('RDATE:' . $value);
-            array_walk($dates, function (\DateTimeInterface $value): void {
+            \array_walk($dates, function (\DateTimeInterface $value): void {
               $this->set->addDate($value);
             });
             break;
 
           case 'EXDATE':
             $dates = RfcParser::parseExDate('EXDATE:' . $value);
-            array_walk($dates, function (\DateTimeInterface $value): void {
+            \array_walk($dates, function (\DateTimeInterface $value): void {
               $this->set->addExDate($value);
             });
             break;
@@ -119,9 +119,6 @@ class RlHelper implements DateRecurHelperInterface {
     }
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public static function createInstance(string $string, \DateTimeInterface $dtStart, ?\DateTimeInterface $dtStartEnd = NULL): DateRecurHelperInterface {
     return new static($string, $dtStart, $dtStartEnd);
   }
@@ -130,27 +127,21 @@ class RlHelper implements DateRecurHelperInterface {
    * {@inheritdoc}
    */
   public function getRules(): array {
-    return array_map(
-      function (RRule $rule): RlDateRecurRule {
+    return \array_map(
+      static function (RRule $rule): RlDateRecurRule {
         // RL returns all parts, even if no values originally provided. Filter
         // out the useless parts.
-        $parts = array_filter($rule->getRule());
+        $parts = \array_filter($rule->getRule());
         return new RlDateRecurRule($parts);
       },
       $this->set->getRRules(),
     );
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function isInfinite(): bool {
     return $this->set->isInfinite();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function generateOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL): \Generator {
     foreach ($this->set as $occurrenceStart) {
       /** @var \DateTime $occurrence */
@@ -183,7 +174,7 @@ class RlHelper implements DateRecurHelperInterface {
 
     $generator = $this->generateOccurrences($rangeStart, $rangeEnd);
     if (isset($limit)) {
-      if (!is_int($limit) || $limit < 0) {
+      if (!\is_int($limit) || $limit < 0) {
         // Limit must be a number and more than zero.
         throw new \InvalidArgumentException('Invalid count limit.');
       }
@@ -191,7 +182,7 @@ class RlHelper implements DateRecurHelperInterface {
       // Generate occurrences until the limit is reached.
       $occurrences = [];
       foreach ($generator as $value) {
-        if (count($occurrences) >= $limit) {
+        if (\count($occurrences) >= $limit) {
           break;
         }
         $occurrences[] = $value;
@@ -199,7 +190,7 @@ class RlHelper implements DateRecurHelperInterface {
       return $occurrences;
     }
 
-    return iterator_to_array($generator);
+    return \iterator_to_array($generator);
   }
 
   /**
@@ -208,15 +199,12 @@ class RlHelper implements DateRecurHelperInterface {
   public function getExcluded(): array {
     // Implementation normally returns the same time zone as the EXDATE from the
     // rule string, normalize it here.
-    return array_map(
+    return \array_map(
       fn (\DateTime $date): \DateTime => $date->setTimezone($this->timeZone),
       $this->set->getExDates(),
     );
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function current(): DateRange {
     $occurrenceStart = $this->set->current();
     $occurrenceEnd = clone $occurrenceStart;
@@ -224,30 +212,18 @@ class RlHelper implements DateRecurHelperInterface {
     return new DateRange($occurrenceStart, $occurrenceEnd);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function next(): void {
     $this->set->next();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function key(): ?int {
     return $this->set->key();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function valid(): bool {
     return $this->set->valid();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function rewind(): void {
     $this->set->rewind();
   }

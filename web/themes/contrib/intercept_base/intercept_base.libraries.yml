@@ -74,12 +74,6 @@ search_form:
     theme:
       build/libraries/search-form/search-form.css: { preprocess: true }
 
-styleguide:
-  version: 1.0
-  css:
-    theme:
-      build/libraries/styleguide/styleguide.css: {}
-
 # User Events
 userEvents:
   js:
@@ -286,7 +280,6 @@ header-desktop:
     component:
       build/components/header-desktop/header-desktop.component.css: {}
   js:
-    build/components/header-desktop/header-desktop.js: {}
     https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
       external: true
       minified: true
@@ -302,7 +295,6 @@ header-mobile:
     component:
       build/components/header-mobile/header-mobile.component.css: {}
   js:
-    build/components/header-mobile/header-mobile.js: {}
     https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
       external: true
       minified: true

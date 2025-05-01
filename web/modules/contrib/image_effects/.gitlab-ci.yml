@@ -49,19 +49,27 @@ include:
 # Docs at https://git.drupalcode.org/project/gitlab_templates/-/blob/1.0.x/includes/include.drupalci.variables.yml
 ################
 variables:
-  _TARGET_CORE: '10.1.4'
   _PHPUNIT_CONCURRENT: '1'
-  SKIP_PHPUNIT: '0'
-  OPT_IN_TEST_NEXT_MINOR: '1'
+#  _PHPUNIT_EXTRA: '-c $CI_PROJECT_DIR/$_WEB_ROOT/core --testdox --colors=always'
+#  SKIP_PHPUNIT: '0'
+  BROWSERTEST_OUTPUT_VERBOSE: 'false'
+  SKIP_CSPELL: "1"
+  OPT_IN_TEST_PREVIOUS_MAJOR: '1'
+  OPT_IN_TEST_PREVIOUS_MINOR: '1'
+  OPT_IN_TEST_NEXT_MINOR: '0'
   OPT_IN_TEST_NEXT_MAJOR: '0'
 
 phpunit:
   extends: .phpunit-base
   variables:
-    SYMFONY_DEPRECATIONS_HELPER: "ignoreFile=$CI_PROJECT_DIR/$_WEB_ROOT/core/.deprecation-ignore.txt"
+    SYMFONY_DEPRECATIONS_HELPER: "ignoreFile=$CI_PROJECT_DIR/$_WEB_ROOT/modules/custom/image_effects/.deprecation-ignore.txt"
   before_script:
+    # Merge core's deprecation ignore file into module's.
+    - cat $CI_PROJECT_DIR/$_WEB_ROOT/core/.deprecation-ignore.txt >> $CI_PROJECT_DIR/$_WEB_ROOT/modules/custom/image_effects/.deprecation-ignore.txt
+    # Install both ImageMagick and GraphicsMagick packages.
     - sudo apt-get update
     - sudo apt-get install -y --no-install-recommends imagemagick graphicsmagick
+    # Print packages' versions.
     - convert -version
     - gm -version
 

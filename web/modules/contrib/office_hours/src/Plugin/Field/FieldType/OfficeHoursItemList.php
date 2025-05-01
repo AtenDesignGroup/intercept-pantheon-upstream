@@ -39,8 +39,10 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
   public function createItem($offset = 0, $value = NULL) {
     $day = $value['day'] ?? NULL;
 
-    static $plugin_type = 'field_type';
-    static $pluginManager = \Drupal::service("plugin.manager.field.$plugin_type");
+    static $pluginManager = NULL;
+    // Avoid PHP8.2 Fatal error: Constant expression contains invalid operations
+    $plugin_type = 'field_type';
+    $pluginManager ??= \Drupal::service("plugin.manager.field.$plugin_type");
 
     switch (TRUE) {
       case is_null($day):
@@ -102,7 +104,7 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    * {@inheritdoc}
    */
   public function sort() {
-    uasort($this->list, [OfficeHoursItem::class, 'sort']);
+    usort($this->list, [OfficeHoursItem::class, 'sort']);
     return $this;
   }
 
@@ -270,7 +272,9 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
    */
   private function getPlugin($plugin_type, $plugin_id, $view_mode, FieldDefinitionInterface $field_definition, array $settings) {
     static $plugins;
-    if (!isset($plugins[$plugin_type][$plugin_id][$view_mode])) {
+
+    $id = $field_definition->id();
+    if (!isset($plugins[$plugin_type][$plugin_id][$view_mode][$id])) {
       // @todo Keep aligned between WebformOfficeHours and ~Widget.
       $pluginManager = \Drupal::service("plugin.manager.field.$plugin_type");
       $configuration = [
@@ -283,11 +287,14 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
         'settings' => $settings,
         'third_party_settings' => [],
       ];
-      $plugins[$plugin_type][$plugin_id][$view_mode] = $pluginManager->createInstance($plugin_id, $configuration) ?? NULL;
+      $plugins[$plugin_type][$plugin_id][$view_mode][$id] = $pluginManager->createInstance($plugin_id, $configuration) ?? NULL;
     }
-    return $plugins[$plugin_type][$plugin_id][$view_mode];
+    return $plugins[$plugin_type][$plugin_id][$view_mode][$id];
   }
 
+  /**
+   * @see $this->getPlugin().
+   */
   public function getFormatter(string $plugin_id, $view_mode, array $settings) {
     return $this->getPlugin(
       'formatter',
@@ -298,6 +305,9 @@ class OfficeHoursItemList extends FieldItemList implements OfficeHoursItemListIn
     );
   }
 
+  /**
+   * @see $this->getPlugin().
+   */
   public function getWidget(string $plugin_id, array $settings) {
     return $this->getPlugin(
       'widget',

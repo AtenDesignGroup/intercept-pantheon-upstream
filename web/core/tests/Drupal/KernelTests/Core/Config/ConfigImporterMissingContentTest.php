@@ -56,7 +56,7 @@ class ConfigImporterMissingContentTest extends KernelTestBase implements LoggerI
   /**
    * {@inheritdoc}
    */
-  public function register(ContainerBuilder $container) {
+  public function register(ContainerBuilder $container): void {
     parent::register($container);
     $container->register('logger.ConfigImporterMissingContentTest', __CLASS__)->addTag('logger');
     $container->set('logger.ConfigImporterMissingContentTest', $this);
@@ -145,9 +145,12 @@ class ConfigImporterMissingContentTest extends KernelTestBase implements LoggerI
     $this->enableModules([
       'block',
       'block_content',
+      'field',
+      'text',
     ]);
     $this->container->get('theme_installer')->install(['stark']);
     $this->installEntitySchema('block_content');
+    $this->installConfig(['block_content']);
     // Create a block content type.
     $block_content_type = BlockContentType::create([
       'id' => 'test',

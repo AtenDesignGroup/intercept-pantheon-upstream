@@ -11,7 +11,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\date_recur\Entity\DateRecurInterpreter;
 use Drupal\date_recur\Entity\DateRecurInterpreterInterface;
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\user\Entity\User;
 
@@ -21,11 +21,8 @@ use Drupal\user\Entity\User;
  * @group date_recur
  * @coversDefaultClass \Drupal\date_recur\Plugin\Field\FieldFormatter\DateRecurBasicFormatter
  */
-class DateRecurBasicFormatterTest extends KernelTestBase {
+final class DateRecurBasicFormatterTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',
@@ -52,9 +49,6 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
    */
   private DateRecurInterpreterInterface $interpreter;
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('dr_entity_test');
@@ -115,8 +109,8 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
       'interpreter' => $this->interpreter->id(),
     ];
 
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         // 10am-4pm weekdaily.
         'value' => '2008-06-16T00:00:00',
@@ -133,7 +127,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
         'infinite' => '1',
         'timezone' => 'Australia/Sydney',
       ],
-    ];
+    ]);
     $this->renderFormatterSettings($entity, $settings);
 
     $occurrences = $this->cssSelect('.date-recur-occurrences li');
@@ -167,8 +161,8 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
       'interpreter' => $this->interpreter->id(),
     ];
 
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         // 10am-4pm weekdaily.
         'value' => '2008-06-16T00:00:00',
@@ -185,7 +179,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
         'infinite' => '1',
         'timezone' => 'Australia/Sydney',
       ],
-    ];
+    ]);
     $this->renderFormatterSettings($entity, $settings);
 
     $occurrences = $this->cssSelect('.date-recur-occurrences li');
@@ -236,8 +230,8 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
 
     /** @var array<string|\Drupal\Core\StringTranslation\TranslatableMarkup|array{'#context': array{label: \Drupal\Core\StringTranslation\TranslatableMarkup}}> $summary */
     $summary = $instance->settingsSummary();
-    $summary = array_map(function (string|TranslatableMarkup|array $summary): string {
-      return (string) (is_array($summary) ? $summary['#context']['label'] : $summary);
+    $summary = \array_map(static function (string|TranslatableMarkup|array $summary): string {
+      return (string) (\is_array($summary) ? $summary['#context']['label'] : $summary);
     }, $summary);
     static::assertContains('Format: ' . $formatSample, $summary);
     static::assertContains('Separator: <em class="placeholder">' . $separator . '</em>', $summary);
@@ -277,8 +271,8 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $instance = $fieldFormatterManager->getInstance($options);
     /** @var array<string|\Drupal\Core\StringTranslation\TranslatableMarkup|array{'#context': array{label: \Drupal\Core\StringTranslation\TranslatableMarkup}}> $summary */
     $summary = $instance->settingsSummary();
-    $summary = array_map(function (string|TranslatableMarkup|array $summary): string {
-      return (string) (is_array($summary) ? $summary['#context']['label'] : $summary);
+    $summary = \array_map(static function (string|TranslatableMarkup|array $summary): string {
+      return (string) (\is_array($summary) ? $summary['#context']['label'] : $summary);
     }, $summary);
     static::assertContains('Show maximum of 10 occurrences across all field items', $summary);
   }
@@ -324,11 +318,11 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $renderer = $this->container->get('renderer');
     $rendered = $renderer->renderRoot($summary['sample_same_day']);
     // Remove newlines from Twig templates.
-    $rendered = preg_replace('/\n/', '', (string) $rendered);
+    $rendered = \preg_replace('/\n/', '', (string) $rendered);
     $this->setRawContent($rendered);
     $this->removeWhiteSpace();
     $pattern = $this->dateFormat->getPattern();
-    static::assertEquals(sprintf('Same day range: %s-%s', $start->format($pattern), $endSameDay->format($pattern)), $this->getTextContent());
+    static::assertEquals(\sprintf('Same day range: %s-%s', $start->format($pattern), $endSameDay->format($pattern)), $this->getTextContent());
   }
 
   /**
@@ -373,11 +367,11 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
     $renderer = $this->container->get('renderer');
     $rendered = $renderer->renderRoot($summary['sample_different_day']);
     // Remove newlines from Twig templates.
-    $rendered = preg_replace('/\n/', '', (string) $rendered);
+    $rendered = \preg_replace('/\n/', '', (string) $rendered);
     $this->setRawContent($rendered);
     $this->removeWhiteSpace();
     $pattern = $this->dateFormat->getPattern();
-    static::assertEquals(sprintf('Different day range: %s-%s', $start->format($pattern), $endDifferentDay->format($pattern)), $this->getTextContent());
+    static::assertEquals(\sprintf('Different day range: %s-%s', $start->format($pattern), $endDifferentDay->format($pattern)), $this->getTextContent());
   }
 
   /**
@@ -423,7 +417,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
       'core.date_format.' . $dateFormat3->id(),
       'date_recur.interpreter.' . $this->interpreter->id(),
     ];
-    sort($expectedConfigDependencies);
+    \sort($expectedConfigDependencies);
     static::assertEquals($expectedConfigDependencies, $instance->calculateDependencies()['config']);
   }
 
@@ -452,8 +446,8 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
       'same_end_date_format_type' => $dateFormatSameDate->id(),
       'interpreter' => $this->interpreter->id(),
     ];
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       // 10pm-9:59:59pm HK time.
       'value' => '2014-06-14T14:00:00',
       'end_value' => '2014-06-15T13:59:59',
@@ -461,7 +455,7 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
       'infinite' => '0',
       // HK is UTC+8.
       'timezone' => 'Asia/Hong_Kong',
-    ];
+    ]);
     $this->renderFormatterSettings($entity, $settings);
 
     $dates = $this->cssSelect('time');
@@ -477,12 +471,12 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
   /**
    * Renders the date recur formatter and sets the HTML ready to be asserted.
    *
-   * @param \Drupal\date_recur_entity_test\Entity\DrEntityTest $entity
+   * @param \Drupal\date_recur_entity_test\Entity\DrEntityTestBasic $entity
    *   A date recur test entity.
    * @param array $settings
    *   Settings for date recur basic formatter.
    */
-  protected function renderFormatterSettings(DrEntityTest $entity, array $settings): void {
+  protected function renderFormatterSettings(DrEntityTestBasic $entity, array $settings): void {
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $field */
     $field = $entity->dr;
     $build = $field->view([
@@ -497,18 +491,18 @@ class DateRecurBasicFormatterTest extends KernelTestBase {
   /**
    * Creates a recurring entity.
    *
-   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTest
+   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTestBasic
    *   A recurring entity.
    */
-  protected function createRecurringEntity(): DrEntityTest {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+  protected function createRecurringEntity(): DrEntityTestBasic {
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
       'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
       'infinite' => '1',
       'timezone' => 'Australia/Sydney',
-    ];
+    ]);
     return $entity;
   }
 

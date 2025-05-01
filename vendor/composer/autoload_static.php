@@ -27,14 +27,11 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
         '9d2b9fc6db0f153a0a149fefb182415e' => __DIR__ . '/..' . '/symfony/polyfill-php84/bootstrap.php',
         '9e4824c5afbdc1482b6025ce3d4dfde8' => __DIR__ . '/..' . '/league/csv/src/functions_include.php',
+        '47e1160838b5e5a10346ac4084b58c23' => __DIR__ . '/..' . '/laravel/prompts/src/helpers.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'z' => 
-        array (
-            'zaporylie\\ComposerDrupalOptimizations\\' => 38,
-        ),
         'p' => 
         array (
             'phpowermove\\docblock\\' => 21,
@@ -91,12 +88,12 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
             'Socket\\Raw\\' => 11,
             'Shaper\\Tests\\' => 13,
             'Shaper\\' => 7,
-            'SelfUpdate\\' => 11,
             'Sabberworm\\CSS\\' => 15,
         ),
         'R' => 
         array (
             'Robo\\' => 5,
+            'Revolt\\' => 7,
             'RRule\\' => 6,
         ),
         'P' => 
@@ -108,17 +105,21 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
+            'PhpTuf\\ComposerStager\\' => 22,
             'PhpParser\\' => 10,
             'Peast\\' => 6,
+            'Pantheon\\Integrations\\' => 22,
         ),
         'M' => 
         array (
             'Masterminds\\' => 12,
+            'MabeEnum\\' => 9,
         ),
         'L' => 
         array (
             'League\\Csv\\' => 11,
             'League\\Container\\' => 17,
+            'Laravel\\Prompts\\' => 16,
         ),
         'J' => 
         array (
@@ -143,9 +144,9 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'D' => 
         array (
             'Drush\\' => 6,
+            'Drupal\\rat\\' => 11,
             'Drupal\\Core\\' => 12,
             'Drupal\\Component\\' => 17,
-            'DrupalFinder\\' => 13,
             'DrupalCodeGenerator\\' => 20,
             'Dompdf\\' => 7,
             'Doctrine\\Deprecations\\' => 22,
@@ -165,6 +166,7 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
             'Consolidation\\AnnotatedCommand\\' => 31,
             'Composer\\Semver\\' => 16,
             'Composer\\Installers\\' => 20,
+            'ComposerDrupalLenient\\' => 22,
             'CommerceGuys\\Addressing\\' => 24,
         ),
         'A' => 
@@ -174,10 +176,6 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
     );
 
     public static $prefixDirsPsr4 = array (
-        'zaporylie\\ComposerDrupalOptimizations\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zaporylie/composer-drupal-optimizations/src',
-        ),
         'phpowermove\\docblock\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpowermove/docblock/src',
@@ -346,10 +344,6 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         array (
             0 => __DIR__ . '/..' . '/e0ipso/shaper/src',
         ),
-        'SelfUpdate\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/consolidation/self-update/src',
-        ),
         'Sabberworm\\CSS\\' => 
         array (
             0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
@@ -357,6 +351,10 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'Robo\\' => 
         array (
             0 => __DIR__ . '/..' . '/consolidation/robo/src',
+        ),
+        'Revolt\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/revolt/event-loop/src',
         ),
         'RRule\\' => 
         array (
@@ -391,6 +389,10 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
+        'PhpTuf\\ComposerStager\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-tuf/composer-stager/src',
+        ),
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
@@ -399,9 +401,17 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         array (
             0 => __DIR__ . '/..' . '/mck89/peast/lib/Peast',
         ),
+        'Pantheon\\Integrations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pantheon-systems/drupal-integrations/src',
+        ),
         'Masterminds\\' => 
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
+        ),
+        'MabeEnum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/marc-mabe/php-enum/src',
         ),
         'League\\Csv\\' => 
         array (
@@ -410,6 +420,10 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'League\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/league/container/src',
+        ),
+        'Laravel\\Prompts\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravel/prompts/src',
         ),
         'JsonSchema\\' => 
         array (
@@ -437,8 +451,8 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         ),
         'FontLib\\' => 
         array (
-            0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
-            1 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+            1 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
         ),
         'Egulias\\EmailValidator\\' => 
         array (
@@ -448,6 +462,10 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         array (
             0 => __DIR__ . '/..' . '/drush/drush/src',
         ),
+        'Drupal\\rat\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/drupal/rat/src',
+        ),
         'Drupal\\Core\\' => 
         array (
             0 => __DIR__ . '/../..' . '/web/core/lib/Drupal/Core',
@@ -455,10 +473,6 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'Drupal\\Component\\' => 
         array (
             0 => __DIR__ . '/../..' . '/web/core/lib/Drupal/Component',
-        ),
-        'DrupalFinder\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/webflo/drupal-finder/src',
         ),
         'DrupalCodeGenerator\\' => 
         array (
@@ -523,6 +537,10 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'Composer\\Installers\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
+        ),
+        'ComposerDrupalLenient\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mglaman/composer-drupal-lenient/src',
         ),
         'CommerceGuys\\Addressing\\' => 
         array (
@@ -613,6 +631,7 @@ class ComposerStaticInitc186035ecc75924f1ca6801ef08ab348
         'SebastianBergmann\\Diff\\Output\\UnifiedDiffOutputBuilder' => __DIR__ . '/..' . '/sebastian/diff/src/Output/UnifiedDiffOutputBuilder.php',
         'SebastianBergmann\\Diff\\Parser' => __DIR__ . '/..' . '/sebastian/diff/src/Parser.php',
         'SebastianBergmann\\Diff\\TimeEfficientLongestCommonSubsequenceCalculator' => __DIR__ . '/..' . '/sebastian/diff/src/TimeEfficientLongestCommonSubsequenceCalculator.php',
+        'Stringable' => __DIR__ . '/..' . '/marc-mabe/php-enum/stubs/Stringable.php',
         'System' => __DIR__ . '/..' . '/pear/pear-core-minimal/src/System.php',
     );
 

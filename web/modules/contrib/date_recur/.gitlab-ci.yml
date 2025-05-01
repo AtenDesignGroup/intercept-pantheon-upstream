@@ -1,38 +1,22 @@
 include:
-  ################
-  # DrupalCI includes:
-  # As long as you include this, any future includes added by the Drupal Association will be accessible to your pipelines automatically.
-  # View these include files at https://git.drupalcode.org/project/gitlab_templates/
-  ################
   - project: $_GITLAB_TEMPLATES_REPO
-    ref: $_GITLAB_TEMPLATES_REF
     file:
-      # The `main` include from gitlab_templates which is normally here can
-      # instead be found in the main `.gitlab-single-pipeline.yml` file.
+      - '/includes/include.drupalci.main.yml'
       - '/includes/include.drupalci.variables.yml'
       - '/includes/include.drupalci.workflows.yml'
 
-deploystacks:
-  trigger:
-    include: .drupalci/.gitlab-single-pipeline.yml
-    strategy: depend
-  parallel:
-    matrix:
-      # Variable expansion doesn't work with Matrix so cant use the variables
-      # from `include.drupalci.variables.yml`. Until then define the strings
-      # manually https://gitlab.com/gitlab-org/gitlab/-/issues/11549
-      # Valid tags for databases are at https://git.drupalcode.org/project/drupalci_environments/-/tree/dev/db
-      - _TARGET_CORE: ["11.x-dev" ]
-        _TARGET_PHP: [ "8.3" ]
-        _TARGET_DB_TYPE: "mysql"
-        _TARGET_DB_VERSION: "8"
+variables:
+  OPT_IN_TEST_PREVIOUS_MINOR: '1'
+  OPT_IN_TEST_NEXT_MAJOR: '1'
+  OPT_IN_TEST_NEXT_MINOR: '1'
+  SKIP_ESLINT: '1'
+  SKIP_STYLELINT: 1
+  _TARGET_PHP: $CORE_PHP_MAX
 
-      - _TARGET_CORE: ["10.3.x-dev" ]
-        _TARGET_PHP: [ "8.3" ]
-        _TARGET_DB_TYPE: "pgsql"
-        _TARGET_DB_VERSION: "16"
+phpunit:
+  variables:
+    SYMFONY_DEPRECATIONS_HELPER: "ignoreFile=./.local-deprecation-ignore.txt"
 
-      - _TARGET_CORE: ["10.3.x-dev" ]
-        _TARGET_PHP: [ "8.3" ]
-        _TARGET_DB_TYPE: "sqlite"
-        _TARGET_DB_VERSION: "3"
+composer (previous minor):
+  variables:
+    PHP_VERSION: '8.3'

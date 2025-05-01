@@ -299,7 +299,7 @@ class ContactPersonalTest extends BrowserTestBase {
    * @param bool $contact_value
    *   (optional) The value the contact field should be set too.
    */
-  protected function checkContactAccess($response, $contact_value = NULL) {
+  protected function checkContactAccess($response, $contact_value = NULL): void {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('admin/people/create');
     if ($this->config('contact.settings')->get('user_default_enabled', TRUE)) {
@@ -343,7 +343,7 @@ class ContactPersonalTest extends BrowserTestBase {
    * @return array
    *   An array with the form fields being used.
    */
-  protected function submitPersonalContact(AccountInterface $account, array $message = [], bool $user_copy = FALSE) {
+  protected function submitPersonalContact(AccountInterface $account, array $message = [], bool $user_copy = FALSE): array {
     $message += [
       'subject[0][value]' => $this->randomMachineName(16) . '< " =+ >',
       'message[0][value]' => $this->randomMachineName(64) . '< " =+ >',

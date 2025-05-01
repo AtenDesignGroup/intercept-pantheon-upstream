@@ -16,11 +16,8 @@ use Drupal\field\Entity\FieldStorageConfig;
  *
  * @group date_recur
  */
-class DateRecurOccurrenceTableAttachedTest extends DateRecurOccurrenceTableTest {
+final class DateRecurOccurrenceTableAttachedTest extends DateRecurOccurrenceTableTest {
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -83,9 +80,6 @@ class DateRecurOccurrenceTableAttachedTest extends DateRecurOccurrenceTableTest 
     static::assertFalse($actualExists);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   protected function createEntity(): EntityTestRev {
     return EntityTestRev::create();
   }

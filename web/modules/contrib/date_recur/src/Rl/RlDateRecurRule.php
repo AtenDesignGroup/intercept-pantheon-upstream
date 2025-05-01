@@ -26,9 +26,6 @@ final class RlDateRecurRule implements DateRecurRuleInterface {
     $this->parts['FREQ'] ?? throw new \Exception('Frequency must be defined.');
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function getFrequency(): string {
     return $this->parts['FREQ'];
   }

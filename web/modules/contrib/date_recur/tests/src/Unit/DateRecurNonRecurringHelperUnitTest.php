@@ -14,7 +14,7 @@ use Drupal\Tests\UnitTestCase;
  * @coversDefaultClass \Drupal\date_recur\DateRecurNonRecurringHelper
  * @group date_recur
  */
-class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
+final class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
 
   /**
    * Test occurrence generation with range limiters.
@@ -116,7 +116,7 @@ class DateRecurNonRecurringHelperUnitTest extends UnitTestCase {
     }
     // There should be only one result.
     /** @var \Drupal\date_recur\DateRange $occurrence */
-    $occurrence = reset($occurrences);
+    $occurrence = \reset($occurrences);
 
     static::assertCount(1, $occurrences);
     static::assertSame($occurrence->getStart()->format($format), $start);

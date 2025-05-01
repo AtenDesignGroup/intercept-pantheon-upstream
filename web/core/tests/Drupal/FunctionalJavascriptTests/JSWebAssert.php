@@ -100,9 +100,9 @@ JS);
       $current_page_ajax_response_count = 0;
     }
 
-    // Detect unnecessary AJAX request waits and inform the test author.
+    // Detect unnecessary AJAX request waits.
     if ($drupal_ajax_request_count === $current_page_ajax_response_count) {
-      @trigger_error(sprintf('%s called unnecessarily in a test is deprecated in drupal:10.2.0 and will throw an exception in drupal:11.0.0. See https://www.drupal.org/node/3401201', __METHOD__), E_USER_DEPRECATED);
+      throw new \RuntimeException('There are no AJAX requests to wait for.');
     }
 
     // Detect untracked AJAX requests. This will alert if the detection is
@@ -398,7 +398,7 @@ JS);
    * @throws \Behat\Mink\Exception\UnsupportedDriverActionException
    *   When an invalid corner specification is given.
    */
-  private function checkNodeVisibilityInViewport(NodeElement $node, $corner = FALSE) {
+  private function checkNodeVisibilityInViewport(NodeElement $node, $corner = FALSE): bool {
     $xpath = $node->getXpath();
 
     // Build the JavaScript to test if the complete element or a specific corner
@@ -528,7 +528,7 @@ JS;
    * quotes respectively therefore we can not escape them when testing for
    * escaped HTML.
    *
-   * @param $raw
+   * @param string $raw
    *   The raw string to escape.
    *
    * @return string

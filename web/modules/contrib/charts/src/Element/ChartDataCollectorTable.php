@@ -324,8 +324,8 @@ class ChartDataCollectorTable extends FormElementBase {
         '#title_display' => 'invisible',
         '#type' => 'file',
         '#upload_validators' => [
-          'file_validate_extensions' => ['csv'],
-          'file_validate_size' => [Environment::getUploadMaxSize()],
+          'FileExtension' => ['extensions' => 'csv'],
+          'FileSizeLimit' => ['fileLimit' => Environment::getUploadMaxSize()],
         ],
       ];
       $element['import']['upload'] = [
@@ -362,22 +362,36 @@ class ChartDataCollectorTable extends FormElementBase {
    *   The form element.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
+   * @param array $form
+   *   The form array the element was added on.
    */
-  public static function validateDataCollectorTable(array $element, FormStateInterface $form_state) {
+  public static function validateDataCollectorTable(array $element, FormStateInterface $form_state, array $form) {
     $parents = $element['#parents'];
     $value = $form_state->getValue($parents);
 
     // Remove empty rows and unneeded keys.
+    $i = 0;
     foreach ($value['data_collector_table'] as $row_key => $row) {
       if (!is_numeric($row_key)) {
         unset($value['data_collector_table'][$row_key]);
+        $i++;
         continue;
       }
       foreach ($row as $column_key => $column) {
         if (!is_numeric($column_key)) {
           unset($value['data_collector_table'][$row_key][$column_key]);
         }
+
+        if ($i > 0 && is_numeric($column_key) && $column_key >= 1) {
+          $cell_value = is_array($column) && isset($column['data']) ? $column['data'] : $column;
+          if (!static::isValidCellValue($cell_value)) {
+            $form_state->setError($element['data_collector_table'][$row_key][$column_key]['data'], t('Invalid @value cell value. It should be a number or a comma separated list of numbers. E.g. 1,45,3,46,5 or 5', [
+              '@value' => $cell_value,
+            ]));
+          }
+        }
       }
+      $i++;
     }
     unset($value['import']);
     $form_state->setValue($parents, $value);
@@ -486,6 +500,34 @@ class ChartDataCollectorTable extends FormElementBase {
     }
 
     $form_state->setRebuild();
+  }
+
+  /**
+   * Checks if the provided cell value is valid.
+   *
+   * @param int|float|string $cell_value
+   *   The cell value to validate.
+   *
+   * @return bool
+   *   True if the cell value is valid. False otherwise.
+   */
+  private static function isValidCellValue(int|float|string $cell_value): bool {
+    $cell_value = trim($cell_value);
+    if (is_numeric($cell_value) || $cell_value === '') {
+      return TRUE;
+    }
+
+    if (!str_contains($cell_value, ',')) {
+      return FALSE;
+    }
+
+    $values = array_map('trim', explode(',', $cell_value));
+    foreach ($values as $value) {
+      if (!is_numeric($value)) {
+        return FALSE;
+      }
+    }
+    return TRUE;
   }
 
   /**
@@ -793,19 +835,20 @@ class ChartDataCollectorTable extends FormElementBase {
     $first_row = current($table);
     $category_col_key = key($first_row);
 
-    // Skip the first row if it's considered as the  holding categories data.
+    // Skip the first row if it's considered as the holding categories' data.
     if (!$is_first_column) {
       array_shift($table);
     }
 
     $series = [];
+    $multi_values_types = ['scatter', 'bubble', 'candlestick', 'boxplot'];
     $i = 0;
     foreach ($table as $row) {
       if (!$is_first_column) {
         $name_key = key($row);
         $series[$i]['name'] = $row[$name_key]['data'] ?? [];
         $series[$i]['color'] = $row[$name_key]['color'] ?? '';
-        // Removing the name from data array.
+        // Removing the name from a data array.
         unset($row[$name_key]);
         foreach ($row as $column) {
           // Get all the data in this column and break out of this loop.
@@ -833,50 +876,43 @@ class ChartDataCollectorTable extends FormElementBase {
           }
         }
         // Adding a couple types not currently supported but hopefully soon.
-        if (in_array($type, [
-          'scatter',
-          'bubble',
-          'candlestick',
-          'boxplot',
-        ])) {
+        if (in_array($type, $multi_values_types)) {
           // Enclose the data value in an array.
           $series[$i]['data'] = [$series[$i]['data']];
         }
+        $i++;
+        continue;
       }
-      else {
-        $j = 0;
-        foreach ($row as $column_key => $column) {
-          // Skipping the category label and it's data.
-          if ($column_key === $category_col_key || !is_numeric($column_key)) {
-            continue;
-          }
-          elseif ($i === 0) {
-            // This is the first column which holds the data names and colors.
-            $series[$j]['name'] = $column['data'] ?? $column;
-            $series[$j]['color'] = $column['color'] ?? self::randomColor();
-          }
-          else {
-            // Get all the data in this column and break out of this loop.
-            $cell_value = is_array($column) && isset($column['data']) ? $column['data'] : $column;
-            $cell_value = self::castValueToNumeric($cell_value);
-            if ($is_single_axis) {
-              $series[$j]['data'][] = [$series[$j]['name'], $cell_value];
-              $series[$j]['title'][] = $row[0]['data'];
-            }
-            elseif (in_array($type, [
-              'scatter',
-              'bubble',
-              'candlestick',
-              'boxplot',
-            ])) {
-              $series[$j]['data'][0][] = $cell_value;
-            }
-            else {
-              $series[$j]['data'][] = $cell_value;
-            }
-          }
-          $j++;
+
+      $j = 0;
+      foreach ($row as $column_key => $column) {
+        // Skipping the category label and it's data.
+        if ($column_key === $category_col_key || !is_numeric($column_key)) {
+          continue;
         }
+
+        if ($i === 0) {
+          // This is the first column that holds the data names and colors.
+          $series[$j]['name'] = $column['data'] ?? $column;
+          $series[$j]['color'] = $column['color'] ?? self::randomColor();
+          $j++;
+          continue;
+        }
+
+        // Get all the data in this column and break out of this loop.
+        $cell_value = is_array($column) && isset($column['data']) ? $column['data'] : $column;
+        $cell_value = self::castValueToNumeric($cell_value);
+        if ($is_single_axis) {
+          $series[$j]['data'][] = [$series[$j]['name'], $cell_value];
+          $series[$j]['title'][] = $row[0]['data'];
+        }
+        elseif (in_array($type, $multi_values_types) && is_numeric($cell_value)) {
+          $series[$j]['data'][0][] = $cell_value;
+        }
+        else {
+          $series[$j]['data'][] = $cell_value;
+        }
+        $j++;
       }
       $i++;
     }
@@ -887,23 +923,29 @@ class ChartDataCollectorTable extends FormElementBase {
   /**
    * Casts string value to numeric.
    *
-   * @param string $value
+   * @param string|int|float $value
    *   The value.
    *
-   * @return float|int
+   * @return float|int|null|array
    *   The numeric value.
    */
-  private static function castValueToNumeric($value) {
+  private static function castValueToNumeric(string|int|float $value): float|int|null|array {
     if (is_numeric($value)) {
-      $value = is_int($value) ? (integer) $value : (float) $value;
+      return is_int($value) ? (integer) $value : (float) $value;
     }
-    elseif ($value === '') {
-      $value = NULL;
+
+    // When a value is empty string, or it's not comma separated string let
+    // return NULL.
+    if ($value === '' || !str_contains($value, ',')) {
+      return NULL;
     }
-    else {
-      $value = 0;
-    }
-    return $value;
+
+    // Explode by comma and trim each element.
+    // And ensure values in the array are cast to numeric.
+    return array_map(
+      'floatval',
+      array_map('trim', explode(',', $value))
+    );
   }
 
 }

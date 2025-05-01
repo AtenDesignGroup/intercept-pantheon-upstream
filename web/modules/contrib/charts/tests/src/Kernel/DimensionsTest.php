@@ -43,7 +43,7 @@ class DimensionsTest extends ChartsKernelTestBase {
    * @return array[]
    *   the chart elements.
    */
-  public function provideChartElements(): array {
+  public static function provideChartElements(): array {
     // A simple chart element with no dimensions set.
     $element = [
       '#type' => 'chart',

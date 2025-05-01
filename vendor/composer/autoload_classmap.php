@@ -67,5 +67,6 @@ return array(
     'SebastianBergmann\\Diff\\Output\\UnifiedDiffOutputBuilder' => $vendorDir . '/sebastian/diff/src/Output/UnifiedDiffOutputBuilder.php',
     'SebastianBergmann\\Diff\\Parser' => $vendorDir . '/sebastian/diff/src/Parser.php',
     'SebastianBergmann\\Diff\\TimeEfficientLongestCommonSubsequenceCalculator' => $vendorDir . '/sebastian/diff/src/TimeEfficientLongestCommonSubsequenceCalculator.php',
+    'Stringable' => $vendorDir . '/marc-mabe/php-enum/stubs/Stringable.php',
     'System' => $vendorDir . '/pear/pear-core-minimal/src/System.php',
 );

@@ -28,7 +28,8 @@ without using esoteric combinations of filters.
 --------
 A new setting has been introduced -- vote result calculation can be deferred
 until cron-time. This can be useful on heavy-load sites where MANY votes are
-being cast and complex, db-intensive calculations are used to weight the results.
+being cast and complex, db-intensive calculations are used to weight the
+results.
 
 05/01/06
 --------

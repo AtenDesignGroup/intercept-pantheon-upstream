@@ -34,6 +34,9 @@
     "webpack-bundle-analyzer": "^3.9.0",
     "webpack-stream": "^6.1.0"
   },
+  "overrides": {
+    "axios": "^0.30.0"
+  },
   "scripts": {
     "build": "gulp build",
     "dev": "gulp dev --mode=development --serve",

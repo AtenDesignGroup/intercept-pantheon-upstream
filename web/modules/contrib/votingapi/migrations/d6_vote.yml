@@ -1,0 +1,31 @@
+id: d6_vote
+label: Voting API Votes
+migration_tags:
+  - Drupal 6
+  - Content
+
+source:
+  plugin: d6_vote
+  deriver: Drupal\votingapi\Plugin\migrate\D6VotingApiDeriver
+
+process:
+  vote_id: vote_id
+  type:
+    - plugin: migration_lookup
+      migration: d6_vote_type
+      no_stub: TRUE
+      source: tag
+  entity_type: content_type
+  entity_id: content_id
+  value: value
+  value_type: value_type
+  user_id: uid
+  timestamp: timestamp
+  vote_source: vote_source
+
+destination:
+  plugin: entity:vote
+  default_bundle: vote
+migration_dependencies:
+  required:
+    - d6_vote_type

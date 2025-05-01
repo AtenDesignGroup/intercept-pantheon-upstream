@@ -19,6 +19,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\TypedDataManagerInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\datetime_range\Hook\DatetimeRangeViewsHooks;
 use Drupal\field\FieldStorageConfigInterface;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -43,12 +44,16 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
    *   The entity field manager.
    * @param \Drupal\Core\TypedData\TypedDataManagerInterface $typedDataManager
    *   The typed data manager.
+   * @param \Drupal\datetime_range\Hook\DatetimeRangeViewsHooks|null $datetimeRangeViewsHooks
+   *   The views hooks class for datetime_range.
    */
-  public function __construct(protected Connection $database,
+  public function __construct(
+    protected Connection $database,
     protected ModuleHandlerInterface $moduleHandler,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected EntityFieldManagerInterface $entityFieldManager,
     protected TypedDataManagerInterface $typedDataManager,
+    protected ?DatetimeRangeViewsHooks $datetimeRangeViewsHooks,
   ) {
   }
 
@@ -62,6 +67,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager'),
       $container->get('typed_data_manager'),
+      $container->get(DatetimeRangeViewsHooks::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
     );
   }
 
@@ -156,7 +162,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
    */
   public function viewsDataAlter(array &$data): void {
     $removeFieldKeys = $this->getViewsPluginTypes();
-    $removeFieldKeys = array_flip($removeFieldKeys);
+    $removeFieldKeys = \array_flip($removeFieldKeys);
 
     // Base fields don't yet have an option to provide defaults for their type,
     // but entity views data still tries to add default views integration for
@@ -189,7 +195,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
           // Remove handler keys within each field. Keys like 'title', 'help'
           // etc are ignored. Whereas 'argument', 'field', etc are removed.
           foreach ($fieldData as &$field) {
-            $field = array_diff_key($field, $removeFieldKeys);
+            $field = \array_diff_key($field, $removeFieldKeys);
           }
         }
       }
@@ -219,7 +225,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
 
     $parentData = $this->getParentFieldViewsData($fieldDefinition);
     // If there is no views data then quit (does this happen?).
-    if (count($parentData) === 0) {
+    if (\count($parentData) === 0) {
       return $data;
     }
     $originalTable = $parentData[$fieldTableName];
@@ -231,9 +237,9 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
       // plugin.
       unset($occurrenceTable['table']['join']);
       // Unset some irrelevant fields.
-      foreach (array_keys($occurrenceTable) as $fieldId) {
+      foreach (\array_keys($occurrenceTable) as $fieldId) {
         $fieldId = (string) $fieldId;
-        if (($fieldId === 'table') || (str_contains($fieldId, $fieldName . '_value')) || (str_contains($fieldId, $fieldName . '_end_value'))) {
+        if (($fieldId === 'table') || (\str_contains($fieldId, $fieldName . '_value')) || (\str_contains($fieldId, $fieldName . '_end_value'))) {
           continue;
         }
         unset($occurrenceTable[$fieldId]);
@@ -278,23 +284,23 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
           $this->t('@field_label (@argument)', $tArgs) :
           $this->t('@field_label', $tArgs);
       }
-      elseif (str_contains($key, $fieldName . '_value')) {
+      elseif (\str_contains($key, $fieldName . '_value')) {
         $definitions['title'] = isset($tArgs['@argument']) ?
           $this->t('@field_label: first occurrence start date (@argument)', $tArgs) :
           $this->t('@field_label: first occurrence start date', $tArgs);
       }
-      elseif (str_contains($key, $fieldName . '_end_value')) {
+      elseif (\str_contains($key, $fieldName . '_end_value')) {
         $definitions['title'] = isset($tArgs['@argument']) ?
           $this->t('@field_label: first occurrence end date (@argument)', $tArgs) :
           $this->t('@field_label: first occurrence end date', $tArgs);
       }
-      elseif (str_contains($key, $fieldName . '_rrule')) {
+      elseif (\str_contains($key, $fieldName . '_rrule')) {
         $definitions['title'] = $this->t('@field_label: recurring rule', $tArgs);
       }
-      elseif (str_contains($key, $fieldName . '_timezone')) {
+      elseif (\str_contains($key, $fieldName . '_timezone')) {
         $definitions['title'] = $this->t('@field_label: time zone', $tArgs);
       }
-      elseif (str_contains($key, $fieldName . '_infinite')) {
+      elseif (\str_contains($key, $fieldName . '_infinite')) {
         $definitions['title'] = $this->t('@field_label: is infinite', $tArgs);
       }
       elseif ('delta' === $key) {
@@ -326,7 +332,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
           $this->entityTypeManager->getStorage($entityType->id()) instanceof SqlEntityStorageInterface &&
           $entityType->hasHandlerClass('views_data') &&
           $entityType->entityClassImplements(FieldableEntityInterface::class)) {
-          $fields[$entityType->id()] = array_filter(
+          $fields[$entityType->id()] = \array_filter(
             $this->entityFieldManager->getFieldStorageDefinitions($entityType->id()),
             function (FieldStorageDefinitionInterface $field): bool {
               $typeDefinition = $this->typedDataManager->getDefinition('field_item:' . $field->getType());
@@ -344,7 +350,7 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
     }
 
     // Remove entity types with no date recur fields.
-    $fields = array_filter($fields);
+    $fields = \array_filter($fields);
 
     return $fields;
   }
@@ -374,8 +380,10 @@ class DateRecurViewsHooks implements ContainerInjectionInterface {
    *   The views data for a field.
    */
   protected function getParentFieldViewsData(FieldStorageConfigInterface $fieldDefinition): array {
-    $this->moduleHandler->loadInclude('datetime_range', 'inc', 'datetime_range.views');
-    return \datetime_range_field_views_data($fieldDefinition);
+    if ($this->datetimeRangeViewsHooks === NULL) {
+      $this->moduleHandler->loadInclude('datetime_range', 'inc', 'datetime_range.views');
+    }
+    return $this->datetimeRangeViewsHooks?->fieldViewsData($fieldDefinition) ?? \datetime_range_field_views_data($fieldDefinition);
   }
 
   /**

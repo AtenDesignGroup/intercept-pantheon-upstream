@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\votingapi\Entity;
 
 use Drupal\views\EntityViewsData;

@@ -24,19 +24,19 @@ highcharts:
     - charts_highcharts/charts_highcharts
 
 3d:
-    remote: https://code.highcharts.com/12.1.1/highcharts-3d.js
-    version: VERSION
-    license:
-        name: Non-commercial
-        url: https://creativecommons.org/licenses/by-nc/3.0/
-        gpl-compatible: false
-    cdn:
-        /libraries/highcharts_3d/highcharts-3d.js: https://code.highcharts.com/12.1.1/highcharts-3d.js
-    js:
-        /libraries/highcharts_3d/highcharts-3d.js: { minified: true }
-    dependencies:
-        - charts_highcharts/charts_highcharts
-        - charts_highcharts/highcharts
+  remote: https://code.highcharts.com/12.1.1/highcharts-3d.js
+  version: VERSION
+  license:
+    name: Non-commercial
+    url: https://creativecommons.org/licenses/by-nc/3.0/
+    gpl-compatible: false
+  cdn:
+    /libraries/highcharts_3d/highcharts-3d.js: https://code.highcharts.com/12.1.1/highcharts-3d.js
+  js:
+    /libraries/highcharts_3d/highcharts-3d.js: { minified: true }
+  dependencies:
+    - charts_highcharts/charts_highcharts
+    - charts_highcharts/highcharts
 
 accessibility:
   remote: https://code.highcharts.com/12.1.1/modules/accessibility.js
@@ -115,6 +115,21 @@ exporting:
     - charts_highcharts/charts_highcharts
     - charts_highcharts/highcharts
 
+heatmap:
+  remote: https://code.highcharts.com/12.1.1/modules/heatmap.js
+  version: VERSION
+  license:
+    name: Non-commercial
+    url: https://creativecommons.org/licenses/by-nc/3.0/
+    gpl-compatible: false
+  cdn:
+    /libraries/highcharts_heatmap/heatmap.js: https://code.highcharts.com/12.1.1/modules/heatmap.js
+  js:
+    /libraries/highcharts_heatmap/heatmap.js: { minified: true }
+  dependencies:
+    - charts_highcharts/charts_highcharts
+    - charts_highcharts/highcharts
+
 no_data:
   remote: https://code.highcharts.com/12.1.1/modules/no-data-to-display.js
   version: VERSION
@@ -125,7 +140,8 @@ no_data:
   cdn:
     /libraries/highcharts_no-data-to-display/no-data-to-display.js: https://code.highcharts.com/12.1.1/modules/no-data-to-display.js
   js:
-    /libraries/highcharts_no-data-to-display/no-data-to-display.js: { minified: true }
+    /libraries/highcharts_no-data-to-display/no-data-to-display.js:
+      { minified: true }
   dependencies:
     - charts_highcharts/charts_highcharts
     - charts_highcharts/highcharts
@@ -142,7 +158,8 @@ texture:
     /libraries/highcharts_high-contrast-light/high-contrast-light.js: https://code.highcharts.com/12.1.1/themes/high-contrast-light.js
   js:
     /libraries/highcharts_pattern-fill/pattern-fill.js: { minified: true }
-    /libraries/highcharts_high-contrast-light/high-contrast-light.js: { minified: true }
+    /libraries/highcharts_high-contrast-light/high-contrast-light.js:
+      { minified: true }
     js/textures.js: { weight: -5 }
   dependencies:
     - charts/global
@@ -152,7 +169,7 @@ texture:
 color_changer:
   version: VERSION
   js:
-    js/color_changer.js: { }
+    js/color_changer.js: {}
   dependencies:
     - charts/global
     - core/once

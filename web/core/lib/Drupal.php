@@ -75,7 +75,7 @@ class Drupal {
   /**
    * The current system version.
    */
-  const VERSION = '10.4.5';
+  const VERSION = '11.1.6';
 
   /**
    * Core API compatibility.
@@ -113,7 +113,7 @@ class Drupal {
    * - Once in the error message printed to the user immediately after.
    * Remember to update both whenever this constant is updated.
    */
-  const MINIMUM_PHP = '8.1.0';
+  const MINIMUM_PHP = '8.3.0';
 
   /**
    * Minimum recommended value of PHP memory_limit.

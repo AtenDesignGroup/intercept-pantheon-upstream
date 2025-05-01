@@ -32,8 +32,8 @@ class DateRange {
    *   The end date.
    */
   public function __construct(
-      \DateTimeInterface $start,
-      \DateTimeInterface $end,
+    \DateTimeInterface $start,
+    \DateTimeInterface $end,
   ) {
     $this->start = clone $start;
     $this->end = clone $end;

@@ -94,21 +94,21 @@ class StatusUpdateController implements ContainerInjectionInterface {
 
     $renderable = $items->view($view_mode);
     /*
-      @see https://www.drupal.org/project/office_hours/issues/3397009
-      Here, we tried in vain to use the layout_builder third_party_settings.
-      This is not possible, as per core\modules\layout_builder\src\Entity\LayoutBuilderEntityViewDisplay.php::buildMultiple().
-      "Layout Builder can not be enabled for the '_custom' view mode that is
-      "used for on-the-fly rendering of fields in isolation from the entity.
+    @see https://www.drupal.org/project/office_hours/issues/3397009
+    Here, we tried in vain to use the layout_builder third_party_settings.
+    This is not possible, as per core\modules\layout_builder\src\Entity\LayoutBuilderEntityViewDisplay.php::buildMultiple().
+    "Layout Builder can not be enabled for the '_custom' view mode that is
+    "used for on-the-fly rendering of fields in isolation from the entity.
 
-      @see also https://www.drupal.org/project/drupal/issues/3023220 :
-      "Performance: Prevent extra Layout Builder code from running
-      "when rendering fields in isolation (Views results, FieldBlock, etc)"
+    @see also https://www.drupal.org/project/drupal/issues/3023220 :
+    "Performance: Prevent extra Layout Builder code from running
+    "when rendering fields in isolation (Views results, FieldBlock, etc)"
 
-        $entity_bundle = $entity->bundle();
-        $entity_display = EntityViewDisplay::collectRenderDisplay($entity, $view_mode);
-        $display_settings = $entity_display->getComponent($field_name);
-        $display_settings['view_mode'] = $view_mode;
-        $renderable = $items->view($display_settings);
+    $entity_bundle = $entity->bundle();
+    $entity_display = EntityViewDisplay::collectRenderDisplay($entity, $view_mode);
+    $display_settings = $entity_display->getComponent($field_name);
+    $display_settings['view_mode'] = $view_mode;
+    $renderable = $items->view($display_settings);
      */
 
     $response = new Response();

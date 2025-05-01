@@ -26,7 +26,7 @@ class ViewsDataProvider {
       $field_name = $field_storage->getName();
 
       // Set the id for the main 'office_hours' ViewsField.
-      // $table_data[$field_name]['field']['id'] = 'office_hours';
+      // $table_data[$field_name]['field']['id'] = 'office_hours';.
 
       foreach ($columns as $column => $plugin_id) {
         $table_data["{$field_name}_$column"]['field'] = [
@@ -69,7 +69,7 @@ class ViewsDataProvider {
         $column = 'season';
         $label = $field_label;
         // Better use a higher-level field, perhaps better filtering later.
-        // $real_field = 'delta';
+        // $real_field = 'delta';.
         $real_field = 'entity_id';
         $title = t('@label (@name:@column)',
           ['@label' => $label, '@name' => $field_name, '@column' => $column]

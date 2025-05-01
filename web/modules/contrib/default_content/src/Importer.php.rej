@@ -1,0 +1,54 @@
+--- src/Importer.php
++++ src/Importer.php
+@@ -143,16 +152,25 @@ class Importer implements ImporterInterface {
+    *   The account switcher.
+    * @param \Drupal\default_content\Normalizer\ContentEntityNormalizerInterface $content_entity_normaler
+    *   The YAML normalizer.
++   * @param \Psr\Log\LoggerInterface $logger
++   *   The logger.
+    *
+    * @see https://www.drupal.org/node/3296226
+    */
+-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EventDispatcherInterface $event_dispatcher, ContentFileStorageInterface $content_file_storage,AccountSwitcherInterface $account_switcher, ContentEntityNormalizerInterface $content_entity_normaler, $link_domain) {
++  public function __construct(EntityTypeManagerInterface $entity_type_manager,
++                              EventDispatcherInterface $event_dispatcher,
++                              ContentFileStorageInterface $content_file_storage,
++                              AccountSwitcherInterface $account_switcher,
++                              ContentEntityNormalizerInterface $content_entity_normaler,
++                              $link_domain,
++                              LoggerInterface $logger = NULL) {
+     $this->entityTypeManager = $entity_type_manager;
+     $this->eventDispatcher = $event_dispatcher;
+     $this->contentFileStorage = $content_file_storage;
+     $this->accountSwitcher = $account_switcher;
+     $this->contentEntityNormalizer = $content_entity_normaler;
+     $this->linkDomain = $link_domain;
++    $this->logger = $logger;
+   }
+ 
+   /**
+@@ -281,9 +299,21 @@ class Importer implements ImporterInterface {
+             }
+           }
+ 
+-          $entity->save();
+-
+-          $created[$entity->uuid()] = $entity;
++          try {
++            $entity->save();
++
++            $created[$entity->uuid()] = $entity;
++          }
++          catch (EntityStorageException $e) {
++            $saved_entity_log_info = [
++              '@type' => $entity->getEntityTypeId(),
++              '@bundle' => $entity->bundle(),
++              '@id' => $entity->id(),
++              '@file' => $file->name,
++              '@exception' => $e->getMessage(),
++            ];
++            $this->logger->error('Entity @type/@bundle, ID: @id, File: @file, Exception: @exception', $saved_entity_log_info);
++          }
+         }
+       }
+       $this->eventDispatcher->dispatch(new ImportEvent($created, $module), DefaultContentEvents::IMPORT);

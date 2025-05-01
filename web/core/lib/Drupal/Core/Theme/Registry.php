@@ -180,12 +180,12 @@ class Registry implements DestructableInterface {
    *   The cache backend interface to use for the runtime theme registry data.
    * @param \Drupal\Core\Extension\ModuleExtensionList $module_list
    *   The module list.
-   * @param \Symfony\Component\HttpKernel\HttpKernelInterface|null $kernel
+   * @param \Symfony\Component\HttpKernel\HttpKernelInterface $kernel
    *   The kernel.
    * @param string $theme_name
    *   (optional) The name of the theme for which to construct the registry.
    */
-  public function __construct($root, CacheBackendInterface $cache, LockBackendInterface $lock, ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler, ThemeInitializationInterface $theme_initialization, CacheBackendInterface $runtime_cache, ModuleExtensionList $module_list, protected ?HttpKernelInterface $kernel = NULL, $theme_name = NULL) {
+  public function __construct($root, CacheBackendInterface $cache, LockBackendInterface $lock, ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler, ThemeInitializationInterface $theme_initialization, CacheBackendInterface $runtime_cache, ModuleExtensionList $module_list, protected HttpKernelInterface $kernel, $theme_name = NULL) {
     $this->root = $root;
     $this->cache = $cache;
     $this->lock = $lock;
@@ -195,11 +195,6 @@ class Registry implements DestructableInterface {
     $this->runtimeCache = $runtime_cache;
     $this->moduleList = $module_list;
     $this->themeName = $theme_name;
-    if (!isset($kernel) || is_string($kernel)) {
-      @trigger_error('Calling ' . __METHOD__ . '() without the $kernel argument is deprecated in drupal:10.3.0 and will be required in drupal:11.0.0. See https://www.drupal.org/node/3445054', E_USER_DEPRECATED);
-      $this->themeName = $kernel;
-      $this->kernel = \Drupal::service('kernel');
-    }
   }
 
   /**
@@ -396,9 +391,16 @@ class Registry implements DestructableInterface {
       $cache = $cached->data;
     }
     else {
-      $this->moduleHandler->invokeAllWith('theme', function (callable $callback, string $module) use (&$cache) {
-        $this->processExtension($cache, $module, 'module', $module, $this->moduleList->getPath($module));
-      });
+      if (defined('MAINTENANCE_MODE') && constant('MAINTENANCE_MODE') === 'install') {
+        // System is still set here so preprocess can be updated in install.
+        $this->processExtension($cache, 'system', 'install', 'system', $this->moduleList->getPath('system'));
+      }
+      else {
+        $this->moduleHandler->invokeAllWith('theme', function (callable $callback, string $module) use (&$cache) {
+          $this->processExtension($cache, $module, 'module', $module, $this->moduleList->getPath($module));
+        });
+      }
+
       // Only cache this registry if all modules are loaded.
       if ($this->moduleHandler->isLoaded()) {
         $this->cache->set("theme_registry:build:modules", $cache);
@@ -469,12 +471,12 @@ class Registry implements DestructableInterface {
    *   The name of the module, theme engine, base theme engine, theme or base
    *   theme implementing hook_theme().
    * @param string $type
-   *   One of 'module', 'theme_engine', 'base_theme_engine', 'theme', or
-   *   'base_theme'. Unlike regular hooks that can only be implemented by
-   *   modules, each of these can implement hook_theme(). This function is
-   *   called in aforementioned order and new entries override older ones. For
-   *   example, if a theme hook is both defined by a module and a theme, then
-   *   the definition in the theme will be used.
+   *   One of 'module', 'theme_engine', 'base_theme_engine', 'theme',
+   *   'base_theme', or 'install'. Unlike regular hooks that can only be
+   *   implemented by modules, each of these can implement hook_theme(). This
+   *   function is called in aforementioned order and new entries override
+   *   older ones. For example, if a theme hook is both defined by a module and
+   *   a theme, then the definition in the theme will be used.
    * @param string $theme
    *   The actual name of theme, module, etc. that is being processed.
    * @param string $path
@@ -502,9 +504,24 @@ class Registry implements DestructableInterface {
 
     // Invoke the hook_theme() implementation, preprocess what is returned, and
     // merge it into $cache.
-    $function = $name . '_theme';
-    if (function_exists($function)) {
-      $result = $function($cache, $type, $theme, $path);
+    $args = [$cache, $type, $theme, $path];
+    $result = [];
+    if ($type === 'module') {
+      $result = $this->moduleHandler->invoke($name, 'theme', $args);
+    }
+    elseif ($type === 'install') {
+      $result = ThemeCommonElements::commonElements();
+      // Reset to module so that preprocess hooks are handled in install.
+      $type = 'module';
+      $args = [$cache, $type, $theme, $path];
+    }
+    else {
+      $function = $name . '_theme';
+      if (function_exists($function)) {
+        $result = $function(... $args);
+      }
+    }
+    if ($result) {
       foreach ($result as $hook => $info) {
         // When a theme or engine overrides a module's theme function
         // $result[$hook] will only contain key/value pairs for information being

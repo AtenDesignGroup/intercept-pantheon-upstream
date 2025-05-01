@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\image_effects\Functional\Effect;
 
 use Drupal\Tests\image_effects\Functional\ImageEffectsTestBase;
@@ -14,7 +16,7 @@ class ImagemagickArgumentsTest extends ImageEffectsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function providerToolkits() {
+  public static function providerToolkits(): array {
     $toolkits = parent::providerToolkits();
     // This effect is irrelevant on GD toolkit.
     unset($toolkits['GD']);
@@ -33,7 +35,7 @@ class ImagemagickArgumentsTest extends ImageEffectsTestBase {
    *
    * @dataProvider providerToolkits
    */
-  public function testImagemagickArgumentsEffect($toolkit_id, $toolkit_config, array $toolkit_settings) {
+  public function testImagemagickArgumentsEffect(string $toolkit_id, string $toolkit_config, array $toolkit_settings): void {
     $this->changeToolkit($toolkit_id, $toolkit_config, $toolkit_settings);
 
     $original_uri = $this->getTestImageCopyUri('/tests/images/portrait-painting.jpg', 'image_effects');

@@ -554,7 +554,7 @@
         // Sanity check for browser support (object expected).
         // When using iFrame uploads, responses must be returned as a string.
         if (typeof response === 'string') {
-          response = $.parseJSON(response);
+          response = JSON.parse(response);
         }
 
         // Prior to invoking the response's commands, verify that they can be
@@ -1436,7 +1436,7 @@
      *   The JSON response object from the Ajax request.
      * @param {string} response.selector
      *   A jQuery selector string.
-     * @param {boolean} [response.asterisk]
+     * @param {string} [response.asterisk]
      *   An optional CSS selector. If specified, an asterisk will be
      *   appended to the HTML inside the provided selector.
      * @param {number} [status]
@@ -1713,21 +1713,12 @@
      *   {@link Drupal.Ajax} object created by {@link Drupal.ajax}.
      * @param {object} response
      *   The response from the Ajax request.
-     * @param {object[]|string} response.data
+     * @param {object[]} response.data
      *   An array of styles to be added.
      * @param {number} [status]
      *   The XMLHttpRequest status.
      */
     add_css(ajax, response, status) {
-      if (typeof response.data === 'string') {
-        Drupal.deprecationError({
-          message:
-            'Passing a string to the Drupal.ajax.add_css() method is deprecated in 10.1.0 and is removed from drupal:11.0.0. See https://www.drupal.org/node/3154948.',
-        });
-        $('head').prepend(response.data);
-        return;
-      }
-
       const allUniqueBundleIds = response.data.map(function (style) {
         const uniqueBundleId = style.href;
         // Force file to load as a CSS stylesheet using 'css!' flag.

@@ -35,7 +35,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
-    assert($items instanceof DateRecurFieldItemList);
+    \assert($items instanceof DateRecurFieldItemList);
 
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
     $element['#theme'] = 'date_recur_basic_widget';
@@ -68,7 +68,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
     // The end date is never required. Start date is copied over if end date is
     // empty.
     $element['end_value']['#required'] = FALSE;
-    $element['value']['#group'] = $element['end_value']['#group'] = implode('][', $firstOccurrenceParents);
+    $element['value']['#group'] = $element['end_value']['#group'] = \implode('][', $firstOccurrenceParents);
 
     // Add custom value callbacks to correctly form a date from time zone field.
     // @codingStandardsIgnoreLine
@@ -119,7 +119,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    */
   public function dateValueCallback(array &$element, $input, FormStateInterface $form_state): array {
     if ($input !== FALSE) {
-      $timeZonePath = array_slice($element['#parents'], 0, -1);
+      $timeZonePath = \array_slice($element['#parents'], 0, -1);
       $timeZonePath[] = 'timezone';
 
       // Warning: The time zone is not yet validated, make sure it is valid
@@ -130,7 +130,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
         // If no time zone was submitted, such as when the 'timezone' field is
         // set to #access => FALSE, its necessary to fall back to the fields
         // default value.
-        $timeZoneFieldPath = array_slice($element['#array_parents'], 0, -1);
+        $timeZoneFieldPath = \array_slice($element['#array_parents'], 0, -1);
         $timeZoneFieldPath[] = 'timezone';
         $timeZoneField = NestedArray::getValue($form_state->getCompleteForm(), $timeZoneFieldPath);
         $submittedTimeZone = $timeZoneField['#value'] ?? ($timeZoneField['#default_value'] ?? NULL);
@@ -138,7 +138,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
 
       $allTimeZones = \DateTimeZone::listIdentifiers();
       // @todo Add test for invalid submitted time zone.
-      if (!in_array($submittedTimeZone, $allTimeZones, TRUE)) {
+      if (!\in_array($submittedTimeZone, $allTimeZones, TRUE)) {
         // A date is invalid if the time zone is invalid.
         // Need to kill inputs otherwise
         // \Drupal\Core\Datetime\Element\Datetime::validateDatetime thinks there
@@ -184,7 +184,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
     $input = NestedArray::getValue($form_state->getValues(), $element['#parents'], $input_exists);
     if ($input_exists) {
       if ((!empty($input['date']) || !empty($input['time'])) && isset($element['#date_recur_basic_widget__invalid_timezone'])) {
-        $timeZoneFieldPath = array_slice($element['#array_parents'], 0, -1);
+        $timeZoneFieldPath = \array_slice($element['#array_parents'], 0, -1);
         $timeZoneFieldPath[] = 'timezone';
         $timeZoneField = NestedArray::getValue($form_state->getCompleteForm(), $timeZoneFieldPath);
         $form_state->setError($timeZoneField, $this->t('Missing time zone for date.'));
@@ -212,7 +212,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
     $startDate = $input['value'];
     /** @var \Drupal\Core\Datetime\DrupalDateTime|array|null $startDateEnd */
     $startDateEnd = $input['end_value'];
-    if (is_array($startDate) || is_array($startDateEnd)) {
+    if (\is_array($startDate) || \is_array($startDateEnd)) {
       // Dates are an array if invalid input was submitted (e.g date:
       // 80616-02-01).
       return;
@@ -233,7 +233,7 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
 
     // Validate RRULE.
     // Only ensure start date is set, as end date is optional.
-    if (strlen($rrule) > 0 && $startDate) {
+    if (\strlen($rrule) > 0 && $startDate) {
       try {
         DateRecurHelper::create(
           $rrule,
@@ -272,8 +272,8 @@ class DateRecurBasicWidget extends DateRangeDefaultWidget {
    * {@inheritdoc}
    */
   protected function createDefaultValue($date, $timezone): DrupalDateTime {
-    assert($date instanceof DrupalDateTime);
-    assert(is_string($timezone));
+    \assert($date instanceof DrupalDateTime);
+    \assert(\is_string($timezone));
     // Cannot set time zone here as field item contains time zone.
     if ($this->getFieldSetting('datetime_type') == DateTimeItem::DATETIME_TYPE_DATE) {
       $date->setDefaultDateTime();

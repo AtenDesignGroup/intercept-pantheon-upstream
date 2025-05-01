@@ -13,7 +13,7 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\contextual\FunctionalJavascript\ContextualLinkClickTrait;
 use Drupal\Tests\system\Traits\OffCanvasTestTrait;
 
-// cspell:ignore fieldbody
+// cspell:ignore blocknodebundle fieldbody
 
 /**
  * Tests the Layout Builder disables interactions of rendered blocks.
@@ -156,7 +156,7 @@ class LayoutBuilderDisableInteractionsTest extends WebDriverTestBase {
    * @param string $rendered_locator
    *   The CSS locator to confirm the block was rendered.
    */
-  protected function addBlock($block_link_text, $rendered_locator) {
+  protected function addBlock($block_link_text, $rendered_locator): void {
     $assert_session = $this->assertSession();
     $page = $this->getSession()->getPage();
 
@@ -285,7 +285,7 @@ class LayoutBuilderDisableInteractionsTest extends WebDriverTestBase {
     // After the contextual link opens the dialog, move the mouse pointer
     // elsewhere on the page. If mouse up were not working correctly this would
     // actually drag the body field too.
-    $this->movePointerTo('#iframe-that-should-be-disabled');
+    $this->getSession()->getDriver()->mouseOver('.//*[@id="iframe-that-should-be-disabled"]');
 
     $new_body_block_bottom_position = $this->getElementVerticalPosition($body_field_selector, 'bottom');
     $iframe_top_position = $this->getElementVerticalPosition('#iframe-that-should-be-disabled', 'top');
@@ -315,7 +315,7 @@ class LayoutBuilderDisableInteractionsTest extends WebDriverTestBase {
    * @return int
    *   The element position.
    */
-  protected function getElementVerticalPosition($css_selector, $position_type) {
+  protected function getElementVerticalPosition($css_selector, $position_type): int {
     $this->assertContains($position_type, ['top', 'bottom'], 'Expected position type.');
     return (int) $this->getSession()->evaluateScript("document.querySelector('$css_selector').getBoundingClientRect().$position_type + window.pageYOffset");
   }
@@ -325,8 +325,14 @@ class LayoutBuilderDisableInteractionsTest extends WebDriverTestBase {
    *
    * @param string $selector
    *   CSS selector.
+   *
+   * @deprecated in drupal:11.1.0 and is removed from drupal:12.0.0. Use
+   *   $this->getSession()->getDriver()->mouseOver() instead.
+   *
+   * @see https://www.drupal.org/node/3460567
    */
-  protected function movePointerTo($selector) {
+  protected function movePointerTo($selector): void {
+    @trigger_error(__METHOD__ . '() is deprecated in drupal:11.1.0 and is removed from drupal:12.0.0. Use $this->getSession()->getDriver()->mouseOver() instead. See https://www.drupal.org/node/3460567', E_USER_DEPRECATED);
     $driver_session = $this->getSession()->getDriver()->getWebDriverSession();
     $element = $driver_session->element('css selector', $selector);
     $driver_session->moveto(['element' => $element->getID()]);

@@ -76,18 +76,16 @@ class OfficeHoursStatusFilter extends ManyToOne {
       return;
     }
 
-    /*
-    // Remove duplicate rows from the view.
+    // @todo Remove duplicate rows from the view.
     $previous_id = -1;
     foreach ($view->result as $key => $value) {
       $id = $value->_entity->id();
       if ($previous_id === $id) {
         // Do not remove, for sometimes we want to show day or season per row.
-        unset($view->result[$key]);
+        // unset($view->result[$key]);
       }
       $previous_id = $id;
     }
-     */
 
     $filter_value = $filter->value;
     if (empty($filter_value)) {

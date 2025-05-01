@@ -1,0 +1,31 @@
+# Group-specific terminology.
+cpath
+csvg
+endday
+endhours
+itemlist
+ltbr
+ltdiv
+lthr
+ltspan
+microdata
+morehours
+settingsform
+starthours
+subelement
+subformatters
+subwidget
+timeslot
+tzfield
+valhrs
+webform
+weekwidget
+
+# Names.
+johnv
+jonhattan
+mikkel
+mikl
+ozeuss
+voskuilen
+skwashd

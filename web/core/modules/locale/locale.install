@@ -13,7 +13,7 @@ use Drupal\Core\Url;
 /**
  * Implements hook_install().
  */
-function locale_install() {
+function locale_install(): void {
   // Create the interface translations directory and ensure it's writable.
   if (!$directory = \Drupal::config('locale.settings')->get('translation.path')) {
     $site_path = \Drupal::getContainer()->getParameter('site.path');
@@ -32,7 +32,7 @@ function locale_install() {
 /**
  * Implements hook_uninstall().
  */
-function locale_uninstall() {
+function locale_uninstall(): void {
   $config = \Drupal::config('locale.settings');
   // Delete all JavaScript translation files.
   $locale_js_directory = 'public://' . $config->get('javascript.directory');
@@ -46,7 +46,7 @@ function locale_uninstall() {
         try {
           $file_system->delete($locale_js_directory . '/' . $langcode . '_' . $file_suffix . '.js');
         }
-        catch (FileException $e) {
+        catch (FileException) {
           // Ignore and continue.
         }
       }
@@ -68,7 +68,7 @@ function locale_uninstall() {
 /**
  * Implements hook_schema().
  */
-function locale_schema() {
+function locale_schema(): array {
   $schema['locales_source'] = [
     'description' => 'List of English source strings.',
     'fields' => [
@@ -319,40 +319,14 @@ function locale_requirements($phase) {
 /**
  * Implements hook_update_last_removed().
  */
-function locale_update_last_removed() {
-  return 9101;
-}
-
-/**
- * Remove the year 2038 date limitation.
- */
-function locale_update_10100(&$sandbox = NULL) {
-  $connection = \Drupal::database();
-  if ($connection->schema()->tableExists('locale_file') && $connection->databaseType() != 'sqlite') {
-    $new = [
-      'type' => 'int',
-      'not null' => FALSE,
-      'default' => 0,
-      'description' => 'Unix timestamp of the imported file.',
-      'size' => 'big',
-    ];
-    $connection->schema()->changeField('locale_file', 'timestamp', 'timestamp', $new);
-
-    $new = [
-      'type' => 'int',
-      'not null' => FALSE,
-      'default' => 0,
-      'description' => 'Unix timestamp of the last time this translation was confirmed to be the most recent release available.',
-      'size' => 'big',
-    ];
-    $connection->schema()->changeField('locale_file', 'last_checked', 'last_checked', $new);
-  }
+function locale_update_last_removed(): int {
+  return 10100;
 }
 
 /**
  * Add an index on locales_location on type and name.
  */
-function locale_update_10300() {
+function locale_update_10300(): void {
   $spec = [];
   $spec['locales_location'] = [
     'description' => 'Location information for source strings.',

@@ -12,9 +12,9 @@
 
 
 ## Introduction
-_A default content solution for Drupal 8_
+_A default content solution for Drupal_
 
-[Default Content][1] allows you to export content along with site configuration information. It supports entity-references between content as well as files if you have File entity. Content export works with a set of drush commands (more on those below). Content import happens automatically as part of site installation. The import process scans all modules and imports any content found that is located in the expected file path and using the expected .json file structure. (See detailed information below)
+[Default Content][1] allows you to export content along with site configuration information. It supports entity-references between content as well as files if you have File entity. Content export works with a set of drush commands (more on those below). Content import happens automatically as part of site installation. The import process scans all modules and imports any content found that is located in the expected file path and using the expected .yml file structure. (See detailed information below)
 
 ###  Features
 
@@ -33,11 +33,11 @@ _A default content solution for Drupal 8_
 
 
 ## Requirements
-* Drupal 8
+* Drupal 9 or 10
 
 ## Installation
 Install as you would normally install a contributed Drupal module. Visit:
-https://www.drupal.org/docs/8/extending-drupal-8/installing-drupal-8-modules
+https://www.drupal.org/docs/extending-drupal/installing-modules
 for further information.
 
 ## Configuration
@@ -47,30 +47,21 @@ The module has no menu or modifiable settings. There is no configuration. If the
 ## Usage
 
 For any module that requires default content, the export process is as follows:
-1) Generate a hal+json file for each entity to be exported using the drush commands described below.
-2) The entity .json files must be stored in module subdirectories using the following structure: `content/{entity type}/{filename}`, where `{entity type}` will be one of node, taxonomy_term, etc. Filename should be `{entity ID}.json`. For example, a Basic Page with the node ID of 23 would be stored in:
-`.../modules/custom/someCustomModule/node/23.json`
+1) Generate a YAML file for each entity to be exported using the drush commands described below.
+2) The entity .yml files must be stored in module subdirectories using the following structure: `content/{entity type}/{filename}`, where `{entity type}` will be one of node, taxonomy_term, etc. Filename should be `{entity ID}.yml` or `{entity UUID}.yml`. For example, a Basic Page with the node ID of 23 would be stored in:
+`.../modules/custom/someCustomModule/content/node/23.yml`
 
 Other examples:
 
- - `modules/default_content_test/content`
- - `modules/default_content_test/content/node`
- - `modules/default_content_test/content/node/imported.json`
- -  `modules/default_content_test/content/taxonomy_term`
- - `modules/default_content_test/content/taxonomy_term/tag.json`
+ - `tests/modules/default_content_test_yaml/content`
+ - `tests/modules/default_content_test_yaml/content/node`
+ - `tests/modules/default_content_test_yaml/content/taxonomy_term`
 
 3) Once your custom module is enabled, the entities you exported will be imported to the new environment during new site installation.
 
 ### Note
 
-At the moment these files need to be hand-created or exported using the Rest, Hal and Serialization modules.
-Note that the default functionality of the Hal module is to make all links point to the origin site's FDQN.
-
-The default_content module expects these (at this stage) to be relative to http://drupal.org as there is no point in having default content that can only be re-imported on the originating site.
-
-Note that imported.json contains a node with a term reference field that includes a reference to the term in tag.json.
-
-The Gliph library (in 8.x core) is used to resolve the dependency graph, so in this case the term is imported first so that the reference to it is created in the node.
+The Gliph library (in Drupal core) is used to resolve the dependency graph, so in this case the term is imported first so that the reference to it is created in the node.
 
 ### Drush Commands
 
@@ -153,9 +144,30 @@ default_content:
     - a608987c-1b74-442b-b900-a54f40cda661
 ```
 
+#### Exports all content and it's references defined in a module info file.
+
+##### default-content-export-module-with-references
+
+Arguments:
+- module: The name of the module.
+- aliases: dcemr
+- required-arguments: 1
+
+Example:
+```
+$ drush dcemr my_default_content_module
+```
+
+And add the UUID of entities in my_default_content_module.info.yml file.
+
+```
+default_content:
+  node:
+    - c9a89616-7057-4971-8337-555e425ed782
+    - b6d6d9fd-4f28-4918-b100-ffcfb15c9374
+
 ## To do
 
 UI for easily exporting?
 
 [1]: https://www.drupal.org/project/default_content "Default Content"
-[3]: https://www.drupal.org/docs/8/core/modules/serialization "Serialization module"

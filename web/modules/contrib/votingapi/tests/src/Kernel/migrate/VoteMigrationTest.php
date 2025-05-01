@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\votingapi\Kernel\migrate;
 
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -8,7 +10,7 @@ use Drupal\Tests\migrate_drupal\Kernel\d7\MigrateDrupal7TestBase;
 /**
  * Tests D7 rate source plugin.
  *
- * @group votingapi
+ * @group VotingAPI
  */
 class VoteMigrationTest extends MigrateDrupal7TestBase {
 

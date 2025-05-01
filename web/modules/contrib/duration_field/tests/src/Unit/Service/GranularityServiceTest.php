@@ -23,7 +23,7 @@ class GranularityServiceTest extends UnitTestCase {
   /**
    * Data provider for testconvertGranularityArrayToGranularityString().
    */
-  public function convertGranularityArrayToGranularityStringDataProvider() {
+  public static function convertGranularityArrayToGranularityStringDataProvider() {
     return [
       [
         [
@@ -77,7 +77,7 @@ class GranularityServiceTest extends UnitTestCase {
   /**
    * Data provider for testconvertGranularityStringToGranularityArray().
    */
-  public function convertGranularityStringToGranularityArrayDataProvider() {
+  public static function convertGranularityStringToGranularityArrayDataProvider() {
     return [
       [
         'y:m:d:h:i:s',
@@ -131,7 +131,7 @@ class GranularityServiceTest extends UnitTestCase {
   /**
    * Data provider for testincludeGranularityElement().
    */
-  public function includeGranularityElementDataProvider() {
+  public static function includeGranularityElementDataProvider() {
     return [
       [
         [

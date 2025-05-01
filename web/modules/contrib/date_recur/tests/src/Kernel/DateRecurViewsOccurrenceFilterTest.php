@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
 use Drupal\user\Entity\User;
 use Drupal\views\Entity\View;
@@ -21,9 +21,6 @@ use Drupal\views\Tests\ViewTestData;
  */
 class DateRecurViewsOccurrenceFilterTest extends ViewsKernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'date_recur_views_test',
@@ -35,9 +32,6 @@ class DateRecurViewsOccurrenceFilterTest extends ViewsKernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   public static $testViews = [
     'dr_entity_test_list',
   ];
@@ -772,11 +766,11 @@ class DateRecurViewsOccurrenceFilterTest extends ViewsKernelTestBase {
   /**
    * Creates an unsaved test entity.
    *
-   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTest
+   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTestBasic
    *   A test entity.
    */
-  protected function createEntity(): DrEntityTest {
-    return DrEntityTest::create();
+  protected function createEntity(): DrEntityTestBasic {
+    return DrEntityTestBasic::create();
   }
 
   /**
@@ -799,7 +793,7 @@ class DateRecurViewsOccurrenceFilterTest extends ViewsKernelTestBase {
     $executable->setExposedInput($input);
     $this->executeView($executable);
 
-    static::assertCount(count($expectedResult), $executable->result);
+    static::assertCount(\count($expectedResult), $executable->result);
     static::assertIdenticalResultset($executable, $expectedResult, $this->map, $message);
 
     // Must be destroyed after each run.

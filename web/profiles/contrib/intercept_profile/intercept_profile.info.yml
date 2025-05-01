@@ -1,7 +1,7 @@
 name: Intercept Profile
 type: profile
 description: 'The Intercept profile helps setup Drupal with the Intercept modules and theme.'
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 distribution:
   name: Intercept Profile
 dependencies:

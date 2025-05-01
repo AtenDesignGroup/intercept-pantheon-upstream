@@ -13,7 +13,7 @@ use Drupal\Tests\UnitTestCase;
  * @coversDefaultClass \Drupal\date_recur\DateRange
  * @group date_recur
  */
-class DateRecurDateRangeUnitTest extends UnitTestCase {
+final class DateRecurDateRangeUnitTest extends UnitTestCase {
 
   /**
    * Tests start and end getters.

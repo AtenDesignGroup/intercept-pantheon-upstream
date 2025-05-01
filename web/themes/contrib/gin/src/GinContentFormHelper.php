@@ -3,6 +3,7 @@
 namespace Drupal\gin;
 
 use Drupal\Core\Ajax\AjaxHelperTrait;
+use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -22,60 +23,29 @@ class GinContentFormHelper implements ContainerInjectionInterface {
   use StringTranslationTrait;
 
   /**
-   * The current user object.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
-
-  /**
-   * The module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
-   * The current route match.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected $routeMatch;
-
-  /**
-   * The theme manager.
-   *
-   * @var \Drupal\Core\Theme\ThemeManagerInterface
-   */
-  protected $themeManager;
-
-  /**
-   * The HTTP request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  protected $requestStack;
-
-  /**
    * GinContentFormHelper constructor.
    *
-   * @param \Drupal\Core\Session\AccountInterface $current_user
+   * @param \Drupal\Core\Session\AccountInterface $currentUser
    *   The current user.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
    *   The current route match.
-   * @param \Drupal\Core\Theme\ThemeManagerInterface $theme_manager
+   * @param \Drupal\Core\Theme\ThemeManagerInterface $themeManager
    *   The theme manager.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
    *   The HTTP request stack.
+   * @param \Drupal\Core\DependencyInjection\ClassResolverInterface $classResolver
+   *   The class resolver.
    */
-  public function __construct(AccountInterface $current_user, ModuleHandlerInterface $module_handler, RouteMatchInterface $route_match, ThemeManagerInterface $theme_manager, RequestStack $request_stack) {
-    $this->currentUser = $current_user;
-    $this->moduleHandler = $module_handler;
-    $this->routeMatch = $route_match;
-    $this->themeManager = $theme_manager;
-    $this->requestStack = $request_stack;
+  public function __construct(
+    protected AccountInterface $currentUser,
+    protected ModuleHandlerInterface $moduleHandler,
+    protected RouteMatchInterface $routeMatch,
+    protected ThemeManagerInterface $themeManager,
+    protected RequestStack $requestStack,
+    protected ClassResolverInterface $classResolver,
+  ) {
   }
 
   /**
@@ -88,6 +58,7 @@ class GinContentFormHelper implements ContainerInjectionInterface {
       $container->get('current_route_match'),
       $container->get('theme.manager'),
       $container->get('request_stack'),
+      $container->get('class_resolver'),
     );
   }
 
@@ -116,9 +87,6 @@ class GinContentFormHelper implements ContainerInjectionInterface {
     // Sticky action buttons.
     if (($use_sticky_action_buttons || $is_content_form) && isset($form['actions'])) {
 
-      // Add sticky class.
-      $form['actions']['#attributes']['class'][] = 'gin-sticky-form-actions';
-
       // Add a class to identify modified forms.
       if (!isset($form['#attributes']['class'])) {
         $form['#attributes']['class'] = [];
@@ -126,70 +94,6 @@ class GinContentFormHelper implements ContainerInjectionInterface {
       elseif (is_string($form['#attributes']['class'])) {
         $form['#attributes']['class'] = [$form['#attributes']['class']];
       }
-      $form['#attributes']['class'][] = 'gin--has-sticky-form-actions';
-
-      // Sticky action container.
-      $form['gin_sticky_actions'] = [
-        '#type' => 'container',
-        '#weight' => -1,
-        '#multilingual' => TRUE,
-        '#attributes' => [
-          'class' => ['gin-sticky-form-actions'],
-        ],
-      ];
-
-      // Create gin_more_actions group.
-      // $toggle_more_actions = t('More actions');
-      // $form['gin_sticky_actions']['more_actions'] = [
-      //   '#type' => 'container',
-      //   '#multilingual' => TRUE,
-      //   '#weight' => 998,
-      //   '#attributes' => [
-      //     'class' => ['gin-more-actions'],
-      //   ],
-      //   'more_actions_toggle' => [
-      //     '#markup' => '<a href="#toggle-more-actions" class="gin-more-actions__trigger trigger" data-gin-tooltip role="button" title="' . $toggle_more_actions . '" aria-controls="gin_more_actions"><span class="visually-hidden">' . $toggle_more_actions . '</span></a>',
-      //     '#weight' => 1,
-      //   ],
-      //   'more_actions_items' => [
-      //     '#type' => 'container',
-      //     '#multilingual' => TRUE,
-      //   ],
-      // ];
-
-      // Assign status to gin_actions.
-      // $form['gin_sticky_actions']['status'] = [
-      //   '#type' => 'container',
-      //   '#weight' => -1,
-      //   '#multilingual' => TRUE,
-      // ];
-
-      // Only alter the status field on content forms.
-      // if ($is_content_form) {
-
-      //   // Set form id to status field.
-      //   if (isset($form['status']['widget']) && isset($form['status']['widget']['value'])) {
-      //     $form['status']['widget']['value']['#attributes']['form'] = $form['#id'];
-      //     $widget_type = $form['status']['widget']['value']['#type'] ?? FALSE;
-      //   }
-      //   else {
-      //     $widget_type = $form['status']['widget']['#type'] ?? FALSE;
-      //   }
-      //   // Only move status to status group if it is a checkbox.
-      //   if ($widget_type === 'checkbox' && isset($form['status']['#group'])) {
-      //     $form['status']['#group'] = 'status';
-      //   }
-
-      // }
-
-      // Helper item to move focus to sticky header.
-      // $form['gin_move_focus_to_sticky_bar'] = [
-      //   '#markup' => '<a href="#" class="visually-hidden" role="button" gin-move-focus-to-sticky-bar>Moves focus to sticky header actions</a>',
-      //   '#weight' => 999,
-      // ];
-
-      // Attach library.
-      // $form['#attached']['library'][] = 'gin/more_actions';
 
       $form['#after_build'][] = 'gin_form_after_build';
     }
@@ -225,7 +129,7 @@ class GinContentFormHelper implements ContainerInjectionInterface {
     // Action buttons.
     if (isset($form['actions'])) {
       // Add sidebar toggle.
-      $hide_panel = t('Hide sidebar panel');
+      $hide_panel = $this->t('Hide sidebar panel');
       $form['gin_sticky_actions']['gin_sidebar_toggle'] = [
         '#markup' => '<a href="#toggle-sidebar" class="meta-sidebar__trigger trigger" data-gin-tooltip role="button" title="' . $hide_panel . '" aria-controls="gin_sidebar"><span class="visually-hidden">' . $hide_panel . '</span></a>',
         '#weight' => 1000,
@@ -248,7 +152,7 @@ class GinContentFormHelper implements ContainerInjectionInterface {
       $form['gin_sidebar']['footer'] = ($form['footer']) ?? [];
 
       // Sidebar close button.
-      $close_sidebar_translation = t('Close sidebar panel');
+      $close_sidebar_translation = $this->t('Close sidebar panel');
       $form['gin_sidebar']['gin_sidebar_close'] = [
         '#markup' => '<a href="#close-sidebar" class="meta-sidebar__close trigger" data-gin-tooltip role="button" title="' . $close_sidebar_translation . '"><span class="visually-hidden">' . $close_sidebar_translation . '</span></a>',
       ];
@@ -291,7 +195,7 @@ class GinContentFormHelper implements ContainerInjectionInterface {
    */
   private function stickyActionButtons(?array $form = NULL, ?FormStateInterface $form_state = NULL, $form_id = NULL): bool {
     /** @var \Drupal\gin\GinSettings $settings */
-    $settings = \Drupal::classResolver(GinSettings::class);
+    $settings = $this->classResolver->getInstanceFromDefinition(GinSettings::class);
 
     // Get route name.
     $route_name = $this->routeMatch->getRouteName();
@@ -370,6 +274,7 @@ class GinContentFormHelper implements ContainerInjectionInterface {
       'entity.block_content.canonical',
       'entity.media.add_form',
       'entity.media.canonical',
+      'entity.media.edit_form',
       'entity.node.content_translation_add',
       'entity.node.content_translation_edit',
       'quick_node_clone.node.quick_clone',

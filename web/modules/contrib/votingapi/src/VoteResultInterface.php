@@ -5,7 +5,7 @@ namespace Drupal\votingapi;
 use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
- * Provides an interface defining a vote entity.
+ * Provides an interface defining a vote result entity.
  */
 interface VoteResultInterface extends ContentEntityInterface {
 
@@ -15,7 +15,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    * @return string
    *   The entity type.
    */
-  public function getVotedEntityType();
+  public function getVotedEntityType(): string;
 
   /**
    * Sets the type of entity that the vote was cast on.
@@ -25,25 +25,25 @@ interface VoteResultInterface extends ContentEntityInterface {
    *
    * @return $this
    */
-  public function setVotedEntityType($name);
+  public function setVotedEntityType(string $name): static;
 
   /**
    * Returns the ID of the entity that the vote was cast on.
    *
-   * @return int
+   * @return string|int
    *   The entity ID.
    */
-  public function getVotedEntityId();
+  public function getVotedEntityId(): string|int;
 
   /**
    * Sets the ID of the entity that the vote was cast on.
    *
-   * @param int $id
+   * @param string|int $id
    *   The entity ID.
    *
    * @return $this
    */
-  public function setVotedEntityId($id);
+  public function setVotedEntityId(string|int $id): static;
 
   /**
    * Returns the vote value.
@@ -51,7 +51,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    * @return float
    *   The numeric value of the vote.
    */
-  public function getValue();
+  public function getValue(): float;
 
   /**
    * Sets the vote value.
@@ -61,7 +61,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    *
    * @return $this
    */
-  public function setValue($value);
+  public function setValue(float $value): static;
 
   /**
    * Returns the vote value type.
@@ -69,7 +69,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    * @return string
    *   The value type of the vote.
    */
-  public function getValueType();
+  public function getValueType(): string;
 
   /**
    * Sets the vote value type.
@@ -79,7 +79,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    *
    * @return $this
    */
-  public function setValueType($value_type);
+  public function setValueType(string $value_type): static;
 
   /**
    * Gets the vote creation timestamp.
@@ -87,7 +87,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    * @return int
    *   Creation timestamp of the vote.
    */
-  public function getCreatedTime();
+  public function getCreatedTime(): int;
 
   /**
    * Sets the vote creation timestamp.
@@ -97,7 +97,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    *
    * @return $this
    */
-  public function setCreatedTime($timestamp);
+  public function setCreatedTime(int $timestamp): static;
 
   /**
    * Returns the name of the function to apply to the numbers.
@@ -105,7 +105,7 @@ interface VoteResultInterface extends ContentEntityInterface {
    * @return string
    *   Name of the function to apply.
    */
-  public function getFunction();
+  public function getFunction(): string;
 
   /**
    * Sets the function to apply to the numbers.
@@ -115,6 +115,6 @@ interface VoteResultInterface extends ContentEntityInterface {
    *
    * @return $this
    */
-  public function setFunction($function);
+  public function setFunction(string $function): static;
 
 }

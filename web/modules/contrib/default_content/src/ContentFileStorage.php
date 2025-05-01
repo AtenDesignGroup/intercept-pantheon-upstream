@@ -64,7 +64,7 @@ class ContentFileStorage implements ContentFileStorageInterface {
   /**
    * {@inheritdoc}
    */
-  public function writeEntity(string $folder, string $encoded, ContentEntityInterface $entity, string $filename = NULL) {
+  public function writeEntity(string $folder, string $encoded, ContentEntityInterface $entity, ?string $filename = NULL) {
     // Ensure that the folder per entity type exists.
     $entity_type_folder = "$folder/" . $entity->getEntityTypeId();
     $this->fileSystem->prepareDirectory($entity_type_folder, FileSystemInterface::CREATE_DIRECTORY);
@@ -76,20 +76,6 @@ class ContentFileStorage implements ContentFileStorageInterface {
     if ($entity instanceof FileInterface) {
       $this->fileSystem->copy($entity->getFileUri(), $entity_type_folder . '/' . $entity->getFilename(), FileSystemInterface::EXISTS_REPLACE);
     }
-  }
-
-  /**
-   * Helper for ::writeDefaultContent to wrap file_put_contents.
-   *
-   * @param string $path
-   *   Content directory + entity directory to which to write the file.
-   * @param string $uuid
-   *   Entity UUID, to be used as filename.
-   * @param string $serialized_entity
-   *   The serialized entity to write.
-   */
-  protected function putFile($path, $uuid, $serialized_entity) {
-    file_put_contents($path . '/' . $uuid . '.yml', $serialized_entity);
   }
 
 }

@@ -1,7 +1,7 @@
 name: Intercept Event
 description: 'Provides Event content type and related configuration. '
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 package: 'Intercept'
 dependencies:
   - addtocalendar:addtocalendar
@@ -23,8 +23,3 @@ dependencies:
   - webform:webform_image_select
   - webform_views:webform_views
   - webformautosave:webformautosave
-
-# Information added by Drupal.org packaging script on 2025-03-26
-version: '2.0.11'
-project: 'intercept'
-datestamp: 1743020532

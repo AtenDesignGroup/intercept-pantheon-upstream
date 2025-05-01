@@ -136,7 +136,9 @@ use Drupal\node\Entity\NodeType;
  * $entity->save();
  * @endcode
  * There is also a shortcut method on entity classes, which creates an entity
- * with an array of provided property values: \Drupal\Core\Entity::create().
+ * with an array of provided property values. It is the create method. To create
+ * an Action entity one would use Drupal\system\Entity\Action::create(). For a
+ * custom entity use $yourEntityTypeClass::create().
  *
  * Hooks invoked during the create operation:
  * - hook_ENTITY_TYPE_create()
@@ -365,8 +367,9 @@ use Drupal\node\Entity\NodeType;
  *   for more information.
  * - Define a class for your entity, implementing your interface and extending
  *   either \Drupal\Core\Config\Entity\ConfigEntityBase or
- *   \Drupal\Core\Entity\ContentEntityBase, with annotation for
- *   \@ConfigEntityType or \@ContentEntityType in its documentation block.
+ *   \Drupal\Core\Entity\ContentEntityBase, with a
+ *   \Drupal\Core\Entity\Attribute\ConfigEntityType or
+ *   \Drupal\Core\Entity\Attribute\ContentEntityType attribute set on the class.
  *   If you are defining a content entity type, it is recommended to extend the
  *   \Drupal\Core\Entity\EditorialContentEntityBase base class in order to get
  *   out-of-the-box support for Entity API's revisioning and publishing
@@ -842,7 +845,7 @@ function hook_entity_type_build(array &$entity_types) {
  * @see \Drupal\Core\Entity\Entity
  * @see \Drupal\Core\Entity\EntityTypeInterface
  */
-function hook_entity_type_alter(array &$entity_types) {
+function hook_entity_type_alter(array &$entity_types): void {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   // Set the controller class for nodes to an alternate implementation of the
   // Drupal\Core\Entity\EntityStorageInterface interface.

@@ -70,12 +70,12 @@ class DateRecurFilter extends FilterPluginBase {
    *   The current user.
    */
   final public function __construct(
-      array $configuration,
-      $plugin_id,
-      $plugin_definition,
-      protected Connection $database,
-      protected EntityFieldManagerInterface $entityFieldManager,
-      protected AccountInterface $currentUser,
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected Connection $database,
+    protected EntityFieldManagerInterface $entityFieldManager,
+    protected AccountInterface $currentUser,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
@@ -109,9 +109,6 @@ class DateRecurFilter extends FilterPluginBase {
     return $options;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function query(): void {
     $this->ensureMyTable();
 
@@ -140,7 +137,8 @@ class DateRecurFilter extends FilterPluginBase {
   }
 
   /**
-   * {@inheritdoc}
+   * @phpstan-param array<string, mixed> $form
+   * @phpstan-ignore-next-line
    */
   protected function valueForm(&$form, FormStateInterface $form_state): array {
     $timezone = $this->currentUser->getTimeZone();
@@ -155,13 +153,14 @@ class DateRecurFilter extends FilterPluginBase {
       ],
       // Pass along the plugin options so validator is aware.
       '#filter_plugin_options' => $this->options,
-      '#filter_plugin_user_timezone' => strlen($timezone) > 0 ? $timezone : date_default_timezone_get(),
+      '#filter_plugin_user_timezone' => \strlen($timezone) > 0 ? $timezone : \date_default_timezone_get(),
     ];
     return $form;
   }
 
   /**
-   * {@inheritdoc}
+   * @phpstan-param array<string, mixed> $form
+   * @phpstan-ignore-next-line
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
     parent::buildOptionsForm($form, $form_state);
@@ -197,7 +196,8 @@ class DateRecurFilter extends FilterPluginBase {
   }
 
   /**
-   * {@inheritdoc}
+   * @phpstan-param array<string, mixed> $form
+   * @phpstan-ignore-next-line
    */
   public function submitOptionsForm(&$form, FormStateInterface $form_state): void {
     parent::submitOptionsForm($form, $form_state);
@@ -219,7 +219,7 @@ class DateRecurFilter extends FilterPluginBase {
   /**
    * Form field validator.
    *
-   * @param array $element
+   * @param array<string, mixed> $element
    *   The form element.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
@@ -250,7 +250,7 @@ class DateRecurFilter extends FilterPluginBase {
     $value = $element['#value'];
     // Use the current users timezone.
     $timezone = new \DateTimeZone($element['#filter_plugin_user_timezone']);
-    if (preg_match($regex, $value)) {
+    if (\preg_match($regex, $value)) {
       // Validate value against minimum and maximums.
       if ($valueMin) {
         $largest = DateRecurUtility::createLargestDateFromInput($granularity, $value, $timezone);
@@ -285,7 +285,8 @@ class DateRecurFilter extends FilterPluginBase {
   }
 
   /**
-   * {@inheritdoc}
+   * @phpstan-param array<string, mixed> $form
+   * @phpstan-ignore-next-line
    */
   public function validateExposed(&$form, FormStateInterface $form_state): void {
     if (empty($this->options['exposed'])) {
@@ -301,6 +302,7 @@ class DateRecurFilter extends FilterPluginBase {
       return;
     }
 
+    /** @var string $input */
     $input = $form_state->getValue($identifier);
 
     // Check if element validator created errors.
@@ -313,9 +315,6 @@ class DateRecurFilter extends FilterPluginBase {
     }
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function adminSummary(): TranslatableMarkup {
     $granularityLabels = DateRecurGranularityMap::granularityLabels();
     $granularity = $this->options['value_granularity'];

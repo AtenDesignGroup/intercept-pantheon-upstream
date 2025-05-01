@@ -14,13 +14,15 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\inline_entity_form\ElementSubmit;
-use Drupal\inline_entity_form\WidgetSubmit;
 use Drupal\inline_entity_form\Form\EntityInlineForm;
-use Drupal\inline_entity_form\Plugin\Field\FieldWidget\InlineEntityFormComplex;
 use Drupal\inline_entity_form\MigrationHelper;
+use Drupal\inline_entity_form\Plugin\Field\FieldWidget\InlineEntityFormComplex;
+use Drupal\inline_entity_form\WidgetSubmit;
 use Drupal\migrate\Plugin\MigrateSourceInterface;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Row;
+use Drupal\node\NodeForm;
+use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_entity_type_build().
@@ -47,6 +49,56 @@ function inline_entity_form_form_alter(&$form, FormStateInterface $form_state, $
   if (!is_null($widget_state)) {
     ElementSubmit::attach($form, $form_state);
     WidgetSubmit::attach($form, $form_state);
+  }
+
+  $formObject = $form_state->getFormObject();
+
+  if ($formObject instanceof NodeForm && !empty($form['actions']['preview'])) {
+    $form['#entity_builders'][] = 'inline_entity_form_node_preview_builder';
+  }
+}
+
+/**
+ * Entity builder for node preview operation.
+ *
+ * @param $entity_type
+ *   Required for entity builder, will always be 'node'.
+ * @param \Drupal\node\NodeInterface $node
+ *   The node object.
+ * @param $form
+ *   The form object.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state object.
+ */
+function inline_entity_form_node_preview_builder($entity_type, NodeInterface $node, &$form, FormStateInterface $form_state) {
+  if (\Drupal::request()->request->get('op') == t('Preview')) {
+
+    $inline_entity_form_widgets = $form_state->get('inline_entity_form');
+
+    if (empty($inline_entity_form_widgets)) {
+      return;
+    }
+
+    foreach ($inline_entity_form_widgets as &$widget_state) {
+      foreach ($node as $field) {
+        /** @var \Drupal\Core\Field\FieldDefinitionInterface $definition */
+        $definition = $field->getFieldDefinition();
+
+        // Only act on entity_reference fields.
+        if ($definition->getType() != 'entity_reference') {
+          continue;
+        }
+
+        // Skip empty fields.
+        if (empty($widget_state['instance'])) {
+          continue;
+        }
+
+        if ($field->getName() === $widget_state['instance']->getName()) {
+          $node->{$field->getName()}->setValue($widget_state['entities']);
+        }
+      }
+    }
   }
 }
 
@@ -132,8 +184,9 @@ function inline_entity_form_reference_form(array $reference_form, FormStateInter
   $reference_form['#element_validate'][] = 'inline_entity_form_reference_form_validate';
   $reference_form['#ief_element_submit'][] = 'inline_entity_form_reference_form_submit';
 
-  // Allow other modules to alter the form.
+  // Allow other modules and themes to alter the form.
   \Drupal::moduleHandler()->alter('inline_entity_form_reference_form', $reference_form, $form_state);
+  \Drupal::theme()->alter('inline_entity_form_reference_form', $reference_form, $form_state);
 
   return $reference_form;
 }

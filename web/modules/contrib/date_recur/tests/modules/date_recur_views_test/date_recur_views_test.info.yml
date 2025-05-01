@@ -5,7 +5,7 @@ package: Testing
 dependencies:
   - drupal:views
 
-# Information added by Drupal.org packaging script on 2025-01-23
-version: '3.8.1'
+# Information added by Drupal.org packaging script on 2025-02-12
+version: '3.9.3'
 project: 'date_recur'
-datestamp: 1737608456
+datestamp: 1739360448

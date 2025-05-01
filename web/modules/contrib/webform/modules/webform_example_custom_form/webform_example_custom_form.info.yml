@@ -2,7 +2,7 @@ name: 'Webform Custom Form Example'
 type: module
 description: 'Provides an example of custom configuration form built using the Webform module.'
 package: 'Webform example'
-core_version_requirement: ^10.2
+core_version_requirement: ^10.3 || ^11.0
 configure: webform_example_custom_form.settings
 dependencies:
   - 'webform:webform'

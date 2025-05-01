@@ -96,7 +96,6 @@ class OfficeHoursDateHelper extends DateHelper {
     return $time;
   }
 
-
   /**
    * Gets the weekday number from a Item->day number.
    *
@@ -209,6 +208,10 @@ class OfficeHoursDateHelper extends DateHelper {
       return NULL;
     }
 
+    static $formatter = NULL;
+    // Avoid PHP8.2 Fatal error: Constant expression contains invalid operations
+    $formatter ??= \Drupal::service('date.formatter');
+
     // Normalize $element into a 4-digit time.
     if (is_array($element) && array_key_exists('time', $element)) {
       // HTML5 'datetime' element.
@@ -257,12 +260,12 @@ class OfficeHoursDateHelper extends DateHelper {
       switch ($time_format) {
         case 'l':
           // Convert date into weekday in widget.
-          $formatted_time = \Drupal::service('date.formatter')->format($time, 'custom', $time_format);
+          $formatted_time = $formatter->format($time, 'custom', $time_format);
           break;
 
         case 'long':
-          // On field settings admin/structure/types/manage/TYPE/display
-          $formatted_time = \Drupal::service('date.formatter')->format($time, $time_format);
+          // On field settings admin/structure/types/manage/TYPE/display page.
+          $formatted_time = $formatter->format($time, $time_format);
           // Remove excessive time part.
           $formatted_time = str_replace(' - 00:00', '', $formatted_time);
           break;
@@ -632,4 +635,5 @@ class OfficeHoursDateHelper extends DateHelper {
   public static function createFromTimestamp($time, $timezone = NULL, array $settings = []) {
     return DrupalDateTime::createFromTimestamp($time, $timezone, $settings);
   }
+
 }

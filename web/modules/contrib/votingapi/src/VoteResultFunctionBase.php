@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\votingapi;
 
 use Drupal\Core\Plugin\PluginBase;
@@ -12,15 +14,22 @@ abstract class VoteResultFunctionBase extends PluginBase implements VoteResultFu
   /**
    * {@inheritdoc}
    */
-  public function getLabel() {
+  public function getLabel(): string {
+    // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
     return $this->t($this->pluginDefinition['label']);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDescription() {
+  public function getDescription(): string {
+    // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
     return $this->t($this->pluginDefinition['description']);
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  abstract public function calculateResult(array $votes): float;
 
 }

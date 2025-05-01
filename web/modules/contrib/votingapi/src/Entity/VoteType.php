@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\votingapi\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
@@ -99,7 +101,7 @@ class VoteType extends ConfigEntityBundleBase implements VoteTypeInterface {
 
     // Clear the vote type cache to reflect the removal.
     $storage->resetCache(array_keys($entities));
-    // TODO: needed?
+    // @todo Is this needed?
   }
 
 }

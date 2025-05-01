@@ -202,7 +202,7 @@ class FilterInOperatorTest extends ViewsKernelTestBase {
     $this->assertIdenticalResultset($view, $expected_result, $this->columnMap);
   }
 
-  protected function getGroupedExposedFilters() {
+  protected function getGroupedExposedFilters(): array {
     $filters = [
       'age' => [
         'id' => 'age',

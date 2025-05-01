@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\votingapi;
 
 use Drupal\Core\Access\AccessResult;
@@ -20,7 +22,22 @@ class VoteAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    return $operation == 'delete' ? AccessResult::allowedIfHasPermission($account, 'delete votes') : AccessResult::allowed();
+    switch ($operation) {
+      case 'delete':
+        return AccessResult::allowedIfHasPermission($account, 'delete votes');
+
+      case 'view':
+        if ($account->hasPermission('view any vote')) {
+          return AccessResult::allowed()->cachePerPermissions();
+        }
+        if ($account->hasPermission('view own vote') && $account->id() == $entity->getOwnerId()) {
+          return AccessResult::allowed()->cachePerUser();
+        }
+        return parent::checkAccess($entity, $operation, $account);
+
+      default:
+        return parent::checkAccess($entity, $operation, $account);
+    }
   }
 
   /**
@@ -33,7 +50,7 @@ class VoteAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  protected function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
     return AccessResult::allowed();
   }
 

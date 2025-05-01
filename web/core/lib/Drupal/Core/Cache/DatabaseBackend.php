@@ -42,9 +42,9 @@ class DatabaseBackend implements CacheBackendInterface {
   /**
    * The maximum number of rows that this cache bin table is allowed to store.
    *
-   * @see ::MAXIMUM_NONE
-   *
    * @var int
+   *
+   * @see ::MAXIMUM_NONE
    */
   protected $maxRows;
 
@@ -89,8 +89,8 @@ class DatabaseBackend implements CacheBackendInterface {
     Connection $connection,
     CacheTagsChecksumInterface $checksum_provider,
     $bin,
-    protected ObjectAwareSerializationInterface|int|string|null $serializer = NULL,
-    protected TimeInterface|int|string|null $time = NULL,
+    protected ObjectAwareSerializationInterface $serializer,
+    protected TimeInterface $time,
     $max_rows = NULL,
   ) {
     // All cache tables should be prefixed with 'cache_'.
@@ -99,22 +99,6 @@ class DatabaseBackend implements CacheBackendInterface {
     $this->bin = $bin;
     $this->connection = $connection;
     $this->checksumProvider = $checksum_provider;
-    if (is_int($this->serializer) || is_string($this->serializer)) {
-      @trigger_error('Calling ' . __METHOD__ . ' with the $max_rows as 3rd argument is deprecated in drupal:10.3.0 and it will be the 4th argument in drupal:11.0.0. See https://www.drupal.org/node/3014684', E_USER_DEPRECATED);
-      $max_rows = $this->serializer;
-      $this->serializer = \Drupal::service('serialization.phpserialize');
-    }
-    elseif ($this->serializer === NULL) {
-      @trigger_error('Calling ' . __METHOD__ . ' without the $serializer argument is deprecated in drupal:10.3.0 and it will be required in drupal:11.0.0. See https://www.drupal.org/node/3014684', E_USER_DEPRECATED);
-      $this->serializer = \Drupal::service('serialization.phpserialize');
-    }
-    if (!$this->time instanceof TimeInterface) {
-      @trigger_error('Calling ' . __METHOD__ . '() without the $time argument is deprecated in drupal:10.3.0 and it will be the 5th argument in drupal:11.0.0. See https://www.drupal.org/node/3387233', E_USER_DEPRECATED);
-      if (is_int($time) || is_string($time)) {
-        $max_rows = $time;
-      }
-      $this->time = \Drupal::service(TimeInterface::class);
-    }
     $this->maxRows = $max_rows ?? static::DEFAULT_MAX_ROWS;
   }
 
@@ -146,7 +130,7 @@ class DatabaseBackend implements CacheBackendInterface {
     try {
       $result = $this->connection->query('SELECT [cid], [data], [created], [expire], [serialized], [tags], [checksum] FROM {' . $this->connection->escapeTable($this->bin) . '} WHERE [cid] IN ( :cids[] ) ORDER BY [cid]', [':cids[]' => array_keys($cid_mapping)]);
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       // Nothing to do.
     }
     $cache = [];
@@ -427,7 +411,7 @@ class DatabaseBackend implements CacheBackendInterface {
         ->condition('expire', $this->time->getRequestTime(), '<')
         ->execute();
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       // If the table does not exist, it surely does not have garbage in it.
       // If the table exists, the next garbage collection will clean up.
       // There is nothing to do.
@@ -461,7 +445,7 @@ class DatabaseBackend implements CacheBackendInterface {
     // If another process has already created the cache table, attempting to
     // recreate it will throw an exception. In this case just catch the
     // exception and do nothing.
-    catch (DatabaseException $e) {
+    catch (DatabaseException) {
       return TRUE;
     }
     return FALSE;

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\votingapi\Functional;
 
-use Drupal\node\Entity\Node;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\node\Entity\Node;
 use Drupal\votingapi\Entity\Vote;
 
 /**

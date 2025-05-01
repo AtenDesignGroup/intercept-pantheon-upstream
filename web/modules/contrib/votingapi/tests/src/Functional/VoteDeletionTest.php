@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\votingapi\Functional;
 
 use Drupal\Tests\BrowserTestBase;
@@ -56,6 +58,7 @@ class VoteDeletionTest extends BrowserTestBase {
    */
   public function testVoteDeletion(): void {
     $session = $this->assertSession();
+    /** @var \Drupal\votingapi\VoteStorageInterface $vote_storage */
     $vote_storage = $this->container->get('entity_type.manager')->getStorage('vote');
 
     // Save a few votes.
@@ -82,6 +85,7 @@ class VoteDeletionTest extends BrowserTestBase {
       ->accessCheck(TRUE)
       ->execute();
 
+    /** @var \Drupal\votingapi\VoteInterface $vote */
     $vote = $vote_storage->load(reset($vote_id));
     $vote_owner = $vote->getOwner()->getDisplayName();
     $entity_type = $this->node->getEntityType()->getSingularLabel();

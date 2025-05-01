@@ -3,22 +3,21 @@
 namespace Drupal\charts\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\charts\Element\Chart;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
- * Plugin implementation of the "chart_config_default" formatter.
- *
- * @FieldFormatter(
- *   id = "chart_config_default",
- *   label = @Translation("Default"),
- *   field_types = {
- *     "chart_config",
- *   },
- * )
+ * Defines the default field formatter for chart configurations.
  */
+#[FieldFormatter(
+  id: "chart_config_default",
+  label: new TranslatableMarkup("Default"),
+  field_types: ["chart_config"]
+)]
 class ChartConfigItemDefaultFormatter extends FormatterBase {
 
   /**

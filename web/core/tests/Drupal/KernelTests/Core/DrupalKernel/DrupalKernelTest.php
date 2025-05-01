@@ -7,6 +7,7 @@ namespace Drupal\KernelTests\Core\DrupalKernel;
 use Composer\Autoload\ClassLoader;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\DrupalKernelInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\KernelTests\KernelTestBase;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
@@ -25,7 +26,18 @@ class DrupalKernelTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function bootKernel() {
+  protected function tearDown(): void {
+    $currentErrorHandler = Error::currentErrorHandler();
+    if (is_string($currentErrorHandler) && $currentErrorHandler === '_drupal_error_handler') {
+      restore_error_handler();
+    }
+    parent::tearDown();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function bootKernel(): void {
     // Do not boot the kernel, because we are testing aspects of this process.
   }
 
@@ -178,7 +190,7 @@ class DrupalKernelTest extends KernelTestBase {
     try {
       $kernel->setSitePath('/dev/null');
     }
-    catch (\LogicException $e) {
+    catch (\LogicException) {
       $pass = TRUE;
     }
     $this->assertTrue($pass, 'Throws LogicException if DrupalKernel::setSitePath() is called after boot');

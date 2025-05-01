@@ -16,11 +16,8 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group date_recur
  */
-class DateRecurSubFieldTest extends KernelTestBase {
+final class DateRecurSubFieldTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_subfield',
     'entity_test',
@@ -31,9 +28,6 @@ class DateRecurSubFieldTest extends KernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('entity_test');

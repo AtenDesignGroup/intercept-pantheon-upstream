@@ -2,7 +2,6 @@
 
 namespace Drupal\office_hours\Hook;
 
-use Drupal\Core\Field\FieldTypeCategoryManagerInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\office_hours\OfficeHoursDateHelper;
@@ -12,6 +11,7 @@ use Drupal\office_hours\Plugin\Field\FieldType\OfficeHoursItemList;
  * Contains Field and Help hooks.
  *
  * Class is declared as a service in services.yml file.
+ *
  * @see https://drupalize.me/blog/drupal-111-adds-hooks-classes-history-how-and-tutorials-weve-updated
  */
 class OfficeHoursHooks {

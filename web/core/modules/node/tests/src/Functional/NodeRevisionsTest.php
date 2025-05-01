@@ -467,10 +467,10 @@ class NodeRevisionsTest extends NodeTestBase {
    *
    * @param \Drupal\node\NodeInterface $node
    *   The node object.
-   * @param $count
+   * @param int $count
    *   The number of revisions to be created.
    */
-  protected function createRevisions(NodeInterface $node, $count) {
+  protected function createRevisions(NodeInterface $node, $count): void {
     for ($i = 0; $i < $count; $i++) {
       $node->title = $this->randomString();
       $node->untranslatable_string_field->value = $this->randomString();

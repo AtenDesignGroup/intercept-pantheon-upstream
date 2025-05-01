@@ -18,8 +18,8 @@ class DateRecurRruleConstraintValidator extends ConstraintValidator {
    * {@inheritdoc}
    */
   public function validate($value, Constraint $constraint): void {
-    assert($value instanceof DateRecurItem);
-    assert($constraint instanceof DateRecurRruleConstraint);
+    \assert($value instanceof DateRecurItem);
+    \assert($constraint instanceof DateRecurRruleConstraint);
 
     // Validator do not apply to field values without RRULE.
     if ($value->rrule === NULL || $value->rrule === '') {

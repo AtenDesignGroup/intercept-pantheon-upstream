@@ -28,7 +28,7 @@ class ThemeInstallerTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function register(ContainerBuilder $container) {
+  public function register(ContainerBuilder $container): void {
     parent::register($container);
     // Some test methods involve ModuleHandler operations, which attempt to
     // rebuild and dump routes.
@@ -64,7 +64,7 @@ class ThemeInstallerTest extends KernelTestBase {
    * Tests installing a theme.
    */
   public function testInstall(): void {
-    $name = 'test_basetheme';
+    $name = 'test_base_theme';
 
     $themes = $this->themeHandler()->listInfo();
     $this->assertFalse(isset($themes[$name]));
@@ -77,7 +77,7 @@ class ThemeInstallerTest extends KernelTestBase {
     $this->assertTrue(isset($themes[$name]));
     $this->assertEquals($name, $themes[$name]->getName());
 
-    // Verify that test_basetheme.settings is active.
+    // Verify that test_base_theme.settings is active.
     $this->assertFalse(theme_get_setting('features.favicon', $name));
     $this->assertEquals('only', theme_get_setting('base', $name));
     $this->assertEquals('base', theme_get_setting('override', $name));
@@ -313,7 +313,7 @@ class ThemeInstallerTest extends KernelTestBase {
    */
   public function testUninstallSubTheme(): void {
     $name = 'test_subtheme';
-    $base_name = 'test_basetheme';
+    $base_name = 'test_base_theme';
 
     $this->themeInstaller()->install([$name]);
     $this->themeInstaller()->uninstall([$name]);
@@ -327,7 +327,7 @@ class ThemeInstallerTest extends KernelTestBase {
    * Tests uninstalling a base theme before its sub-theme.
    */
   public function testUninstallBaseBeforeSubTheme(): void {
-    $name = 'test_basetheme';
+    $name = 'test_base_theme';
     $sub_name = 'test_subtheme';
 
     $this->themeInstaller()->install([$sub_name]);
@@ -370,7 +370,7 @@ class ThemeInstallerTest extends KernelTestBase {
    * Tests uninstalling a theme.
    */
   public function testUninstall(): void {
-    $name = 'test_basetheme';
+    $name = 'test_base_theme';
 
     $this->themeInstaller()->install([$name]);
     $this->assertNotEmpty($this->config("$name.settings")->get());
@@ -393,7 +393,7 @@ class ThemeInstallerTest extends KernelTestBase {
    * Tests uninstalling a theme that is not installed.
    */
   public function testUninstallNotInstalled(): void {
-    $name = 'test_basetheme';
+    $name = 'test_base_theme';
 
     $themes = $this->themeHandler()->listInfo();
     $this->assertEmpty(array_keys($themes));
@@ -481,7 +481,7 @@ class ThemeInstallerTest extends KernelTestBase {
    *
    * @return \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  protected function moduleHandler() {
+  protected function moduleHandler(): ?object {
     return $this->container->get('module_handler');
   }
 
@@ -490,7 +490,7 @@ class ThemeInstallerTest extends KernelTestBase {
    *
    * @return \Drupal\Core\Extension\ModuleInstallerInterface
    */
-  protected function moduleInstaller() {
+  protected function moduleInstaller(): ?object {
     return $this->container->get('module_installer');
   }
 

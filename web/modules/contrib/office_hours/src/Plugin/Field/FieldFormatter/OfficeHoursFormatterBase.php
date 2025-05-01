@@ -470,6 +470,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
     $date = strtotime('today midnight');
     $weekday = OfficeHoursDateHelper::getWeekday($date);
     $first_day = OfficeHoursDateHelper::getFirstDay($settings['office_hours_first_day']);
+    $current_status = $settings['current_status']['position'];
 
     $summary[] = $this->t('Display Office hours in different formats.');
     $summary[] = $this->t("@show and time slots as @label @time, starting with @first_day.", [
@@ -481,30 +482,22 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       '@first_day' => OfficeHoursItem::formatLabel(
         $settings['day_format'], ['day' => $first_day]),
     ]);
-
     $summary[] = $this->t("Show '@title' until @time days in the future. Example: @label.", [
-      '@time' =>
-        $settings['exceptions']['restrict_exceptions_to_num_days'],
-      '@title' => $this->t(
-        $settings['exceptions']['title'] ?: 'Exception days'),
+      '@time' => $settings['exceptions']['restrict_exceptions_to_num_days'],
+      '@title' => $this->t($settings['exceptions']['title'] ?: 'Exception days'),
       '@label' => OfficeHoursItem::formatLabel(
         $settings['exceptions']['date_format'], ['day' => $date]),
     ]);
     $summary[] = $this->t("Show '@title' until @time days in the future.", [
-      '@time' =>
-        $settings['exceptions']['restrict_seasons_to_num_days'],
+      '@time' => $settings['exceptions']['restrict_seasons_to_num_days'],
       '@title' => $this->t('Seasons'),
     ]);
-
-    $current_status = $settings['current_status']['position'];
     $summary[] = $this->t("Show @yesno current opening status @status the time slots.", [
       '@yesno' => $current_status == '' ? $this->t('no') : '',
       '@status' => $current_status == 'after' ? $this->t($current_status) : $this->t('before'),
     ]);
-
     $summary[] = $this->t("A schema.org/openingHours formatter is @yesno added.", [
-      '@yesno' =>
-        $settings['schema']['enabled'] ? '' : $this->t('not'),
+      '@yesno' => $settings['schema']['enabled'] ? '' : $this->t('not'),
     ]);
 
     return $summary;
@@ -516,15 +509,15 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
    * @return string[]
    *   The possible options.
    */
-  private function getShowDaysOptions (): array {
-  return [
-    'all' => $this->t('Show all days'),
-    'open' => $this->t('Show only open days'),
-    'next' => $this->t('Show next open day'),
-    'none' => $this->t('Hide all days'),
-    'current' => $this->t('Show only current day'),
-  ];
-}
+  private function getShowDaysOptions(): array {
+    return [
+      'all' => $this->t('Show all days'),
+      'open' => $this->t('Show only open days'),
+      'next' => $this->t('Show next open day'),
+      'none' => $this->t('Hide all days'),
+      'current' => $this->t('Show only current day'),
+    ];
+  }
 
   /**
    * Returns the protected field definition.
@@ -681,14 +674,13 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
       // - Page is cached forever when no JS statusUpdate is triggered
       // and caching is set in admin/config/development/performance.
       // then page is cached Permanently for Anonymous users.
-      // - Page will not be cached after (dummmy) message, since this will
+      // - Page will not be cached after (dummy) message, since this will
       // trigger killSwitch().
       // \Drupal::messenger()->addMessage($max_age .' / '. __FUNCTION__);
       $view_mode = $this->viewMode;
       // Fetch layout_builder data.
       $third_party_settings = $this->thirdPartySettings;
-      // jvo
-//      $elements = StatusUpdateController::attachStatusUpdate($items, $langcode, $view_mode, $third_party_settings, $elements);
+      $elements = StatusUpdateController::attachStatusUpdate($items, $langcode, $view_mode, $third_party_settings, $elements);
     }
 
     if ($this->currentUser->isAnonymous()) {
@@ -707,7 +699,7 @@ abstract class OfficeHoursFormatterBase extends FormatterBase implements Contain
         // @see https://www.drupal.org/project/office_hours/issues/3351280
         // where js callback is implemented, to re-read the field each call.
         // @see https://www.drupal.org/project/drupal/issues/2835068
-   //     $max_age = 0; // jvo
+        $max_age = 0;
       }
     }
 

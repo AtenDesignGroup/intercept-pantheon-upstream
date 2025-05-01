@@ -114,7 +114,7 @@ class JsonApiDocumentTopLevelNormalizer extends NormalizerBase implements Denorm
         try {
           $entity_storage = $this->entityTypeManager->getStorage($entity_type_id);
         }
-        catch (PluginNotFoundException $e) {
+        catch (PluginNotFoundException) {
           throw new BadRequestHttpException("Invalid type specified for related resource: '" . $relationship['data'][0]['type'] . "'");
         }
         // In order to maintain the order ($delta) of the relationships, we need
@@ -325,15 +325,6 @@ class JsonApiDocumentTopLevelNormalizer extends NormalizerBase implements Denorm
    */
   protected static function getLinkHash($salt, $link_href) {
     return substr(str_replace(['-', '_'], '', Crypt::hashBase64($salt . $link_href)), 0, 7);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function hasCacheableSupportsMethod(): bool {
-    @trigger_error(__METHOD__ . '() is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. Use getSupportedTypes() instead. See https://www.drupal.org/node/3359695', E_USER_DEPRECATED);
-
-    return TRUE;
   }
 
   /**

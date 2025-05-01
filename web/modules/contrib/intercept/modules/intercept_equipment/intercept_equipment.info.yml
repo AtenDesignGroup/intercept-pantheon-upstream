@@ -1,14 +1,9 @@
 name: Intercept Equipment
 description: 'Provides Equipment content type and related configuration. Equipment for use.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 package: 'Intercept'
 dependencies:
   - drupal:datetime_range
   - duration_field:duration_field
   - intercept:intercept_location
-
-# Information added by Drupal.org packaging script on 2025-03-26
-version: '2.0.11'
-project: 'intercept'
-datestamp: 1743020532

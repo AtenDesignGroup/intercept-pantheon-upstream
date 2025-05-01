@@ -18,7 +18,7 @@ interface VoteResultStorageInterface extends EntityStorageInterface {
    *
    * @param string $entity_type_id
    *   The entity type id.
-   * @param int $entity_id
+   * @param string|int $entity_id
    *   The node id of the node for which number of votes is requested.
    * @param string $vote_type
    *   Plugin implementing \Drupal\votingapi\Plugin\VoteType.
@@ -28,6 +28,6 @@ interface VoteResultStorageInterface extends EntityStorageInterface {
    * @return \Drupal\votingapi\Entity\VoteResult[]
    *   The number of votes for the entity.
    */
-  public function getEntityResults($entity_type_id, $entity_id, $vote_type, $function);
+  public function getEntityResults(string $entity_type_id, string|int $entity_id, string $vote_type, string $function): array;
 
 }

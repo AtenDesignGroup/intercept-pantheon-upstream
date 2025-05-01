@@ -85,17 +85,17 @@ class Exporter implements ExporterInterface {
    *   The info file parser.
    * @param \Drupal\default_content\ContentFileStorageInterface $content_file_storage
    *   The content file storage service.
-   * @param \Drupal\default_content\Normalizer\ContentEntityNormalizerInterface $content_entity_normaler
+   * @param \Drupal\default_content\Normalizer\ContentEntityNormalizerInterface $content_entity_normalizer
    *   The content entity normalizer.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, EventDispatcherInterface $event_dispatcher, ModuleHandlerInterface $module_handler, InfoParserInterface $info_parser, ContentFileStorageInterface $content_file_storage, ContentEntityNormalizerInterface $content_entity_normaler) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityRepositoryInterface $entity_repository, EventDispatcherInterface $event_dispatcher, ModuleHandlerInterface $module_handler, InfoParserInterface $info_parser, ContentFileStorageInterface $content_file_storage, ContentEntityNormalizerInterface $content_entity_normalizer) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityRepository = $entity_repository;
     $this->eventDispatcher = $event_dispatcher;
     $this->moduleHandler = $module_handler;
     $this->infoParser = $info_parser;
     $this->contentFileStorage = $content_file_storage;
-    $this->contentEntityNormalizer = $content_entity_normaler;
+    $this->contentEntityNormalizer = $content_entity_normalizer;
   }
 
   /**
@@ -174,6 +174,33 @@ class Exporter implements ExporterInterface {
 
         if ($folder) {
           $this->contentFileStorage->writeEntity($folder, $exported_content[$entity_type][$uuid], $entity);
+        }
+      }
+    }
+    return $exported_content;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function exportModuleContentWithReferences($module_name, $folder = NULL) {
+    $info_file = $this->moduleHandler->getModule($module_name)->getPathname();
+    $info = $this->infoParser->parse($info_file);
+    $exported_content = [];
+    if (empty($info['default_content'])) {
+      return $exported_content;
+    }
+    foreach ($info['default_content'] as $entity_type => $uuids) {
+      foreach ($uuids as $uuid) {
+        $entity = $this->entityRepository->loadEntityByUuid($entity_type, $uuid);
+        if (!$entity) {
+          throw new \InvalidArgumentException(sprintf('Entity "%s" with UUID "%s" does not exist', $entity_type, $uuid));
+        }
+        $exported_content_with_references = $this->exportContentWithReferences($entity_type, $entity->id(), $folder);
+        foreach ($exported_content_with_references as $ref_entity_type => $entities) {
+          foreach ($entities as $ref_uuid => $entity) {
+            $exported_content[$ref_entity_type][$ref_uuid] = $entity;
+          }
         }
       }
     }

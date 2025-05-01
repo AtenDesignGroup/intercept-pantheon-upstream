@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\driver_test\Driver\Database\DrivertestMysql\Install;
+declare(strict_types=1);
+
+namespace Drupal\driver_test\Driver\Database\DriverTestMysql\Install;
 
 use Drupal\mysql\Driver\Database\mysql\Install\Tasks as CoreTasks;
 

@@ -26,7 +26,7 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    *   The date recur helper.
    */
   public function __construct(
-      protected DateRecurHelperInterface $dateRecurHelper,
+    protected DateRecurHelperInterface $dateRecurHelper,
   ) {
   }
 
@@ -53,9 +53,6 @@ final class DateRecurHelper implements DateRecurHelperInterface {
     return new static($dateRecurHelper);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public static function createInstance(string $string, \DateTimeInterface $dtStart, ?\DateTimeInterface $dtStartEnd = NULL): DateRecurHelperInterface {
     throw new \LogicException('Create instance must not be called on this helper.');
   }
@@ -65,21 +62,15 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    */
   public function getRules(): array {
     $rules = $this->dateRecurHelper->getRules();
-    assert(is_array($rules));
-    assert(Inspector::assertAllObjects($rules, DateRecurRuleInterface::class));
+    \assert(\is_array($rules));
+    \assert(Inspector::assertAllObjects($rules, DateRecurRuleInterface::class));
     return $rules;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function isInfinite(): bool {
     return $this->dateRecurHelper->isInfinite();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function generateOccurrences(?\DateTimeInterface $rangeStart = NULL, ?\DateTimeInterface $rangeEnd = NULL): \Generator {
     return $this->dateRecurHelper->generateOccurrences($rangeStart, $rangeEnd);
   }
@@ -96,41 +87,26 @@ final class DateRecurHelper implements DateRecurHelperInterface {
    */
   public function getExcluded(): array {
     $exDates = $this->dateRecurHelper->getExcluded();
-    assert(Inspector::assertAllObjects($exDates, \DateTimeInterface::class));
+    \assert(Inspector::assertAllObjects($exDates, \DateTimeInterface::class));
     return $exDates;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function current(): DateRange {
     return $this->dateRecurHelper->current();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function next(): void {
     $this->dateRecurHelper->next();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function key(): ?int {
     return $this->dateRecurHelper->key();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function valid(): bool {
     return $this->dateRecurHelper->valid();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function rewind(): void {
     $this->dateRecurHelper->rewind();
   }

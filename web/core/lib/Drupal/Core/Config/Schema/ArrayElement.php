@@ -133,8 +133,7 @@ abstract class ArrayElement extends Element implements \IteratorAggregate, Typed
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function getIterator() {
+  public function getIterator(): \ArrayIterator {
     return new \ArrayIterator($this->getElements());
   }
 

@@ -35,11 +35,11 @@ parameters:
     strictCalls: true
     switchConditionsMatchingType: false
     noVariableVariables: true
-  scanFiles:
-    - web/core/includes/install.inc
-  scanDirectories:
-    - vendor/rlanvin/php-rrule/
-    - web/core/
+#  scanFiles:
+#    - web/core/includes/install.inc
+#  scanDirectories:
+#    - vendor/rlanvin/php-rrule/
+#    - web/core/
   ignoreErrors:
     -
       identifier: missingType.generics

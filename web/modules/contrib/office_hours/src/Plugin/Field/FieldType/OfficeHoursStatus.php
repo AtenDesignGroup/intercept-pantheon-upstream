@@ -92,7 +92,7 @@ class OfficeHoursStatus extends TypedData implements OptionsProviderInterface {
    * @param mixed $account
    *   An optional user account.
    * @param array $formatter_settings
-   *  The formatter settings with text values for each key.
+   *   The formatter settings with text values for each key.
    *
    * @return array
    *   An array of key-value pairs with status options for ItemList.
@@ -118,7 +118,7 @@ class OfficeHoursStatus extends TypedData implements OptionsProviderInterface {
         ]
       ),
       OfficeHoursStatus::NEVER => t(
-        Html::escape($settings['closed_format'] ?? 'Permanently closed' ),
+        Html::escape($settings['closed_format'] ?? 'Permanently closed'),
         [],
         [
           'langcode' => $account ? $account->getPreferredLangcode() : NULL,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\views_test_data\Plugin\views\display;
 
 use Drupal\Component\Utility\Unicode;
@@ -149,7 +151,8 @@ class DisplayTest extends DisplayPluginBase {
    */
   public function validate() {
     $errors = parent::validate();
-    foreach ($this->view->displayHandlers as $display_handler) {
+    $displayHandlersCount = count($this->view->displayHandlers);
+    for ($i = 0; $i < $displayHandlersCount; $i++) {
       $errors[] = 'error';
     }
     return $errors;

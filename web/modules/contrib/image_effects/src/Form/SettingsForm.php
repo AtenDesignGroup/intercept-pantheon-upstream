@@ -1,63 +1,36 @@
 <?php
-// @codingStandardsIgnoreFile
+
+declare(strict_types=1);
 
 namespace Drupal\image_effects\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\image_effects\Plugin\ImageEffectsPluginManager;
+use Drupal\image_effects\Plugin\ColorSelectorPluginManager;
+use Drupal\image_effects\Plugin\FontSelectorPluginManager;
+use Drupal\image_effects\Plugin\ImageSelectorPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Main image_effects settings admin form.
- *
- * @todo the array syntax for $form_state->getValue([...]) fails code style
- * checking, but this is quite inconvenient. See if sniff gets adjusted or
- * a different way to access nested keys will be available.
  */
 class SettingsForm extends ConfigFormBase {
 
-  /**
-   * The color selector plugin manager.
-   *
-   * @var \Drupal\image_effects\Plugin\ImageEffectsPluginManager
-   */
-  protected $colorManager;
-
-  /**
-   * The image selector plugin manager.
-   *
-   * @var \Drupal\image_effects\Plugin\ImageEffectsPluginManager
-   */
-  protected $imageManager;
-
-  /**
-   * The font selector plugin manager.
-   *
-   * @var \Drupal\image_effects\Plugin\ImageEffectsPluginManager
-   */
-  protected $fontManager;
-
-  /**
-   * Constructs the class for image_effects settings form.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\image_effects\Plugin\ImageEffectsPluginManager $color_plugin_manager
-   *   The color selector plugin manager.
-   * @param \Drupal\image_effects\Plugin\ImageEffectsPluginManager $image_plugin_manager
-   *   The image selector plugin manager.
-   * @param \Drupal\image_effects\Plugin\ImageEffectsPluginManager $font_plugin_manager
-   *   The font selector plugin manager.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, ImageEffectsPluginManager $color_plugin_manager, ImageEffectsPluginManager $image_plugin_manager, ImageEffectsPluginManager $font_plugin_manager) {
-    parent::__construct($config_factory);
-    $this->colorManager = $color_plugin_manager;
-    $this->imageManager = $image_plugin_manager;
-    $this->fontManager = $font_plugin_manager;
+  public function __construct(
+    ConfigFactoryInterface $configFactory,
+    TypedConfigManagerInterface $typedConfigManager,
+    protected ColorSelectorPluginManager $colorManager,
+    protected ImageSelectorPluginManager $imageManager,
+    protected FontSelectorPluginManager $fontManager,
+  ) {
+    parent::__construct(
+      $configFactory,
+      $typedConfigManager,
+    );
   }
 
   /**
@@ -65,10 +38,11 @@ class SettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory'),
-      $container->get('plugin.manager.image_effects.color_selector'),
-      $container->get('plugin.manager.image_effects.image_selector'),
-      $container->get('plugin.manager.image_effects.font_selector')
+      $container->get(ConfigFactoryInterface::class),
+      $container->get(TypedConfigManagerInterface::class),
+      $container->get(ColorSelectorPluginManager::class),
+      $container->get(ImageSelectorPluginManager::class),
+      $container->get(FontSelectorPluginManager::class),
     );
   }
 
@@ -240,7 +214,7 @@ class SettingsForm extends ConfigFormBase {
   /**
    * AJAX callback.
    */
-  public function processAjax($form, FormStateInterface $form_state) {
+  public function processAjax(array $form, FormStateInterface $form_state): AjaxResponse {
     $response = new AjaxResponse();
     $status_messages = ['#type' => 'status_messages'];
     $response->addCommand(new HtmlCommand('#image-effects-ajax-messages', $status_messages));

@@ -15,11 +15,8 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group date_recur
  */
-class DateRecurFieldTest extends KernelTestBase {
+final class DateRecurFieldTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'entity_test',
     'datetime',
@@ -29,9 +26,6 @@ class DateRecurFieldTest extends KernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('entity_test');
@@ -60,7 +54,7 @@ class DateRecurFieldTest extends KernelTestBase {
    */
   public function testOccurrencesTimezone(): void {
     // Set the timezone to something different than UTC or storage.
-    date_default_timezone_set('Pacific/Wake');
+    \date_default_timezone_set('Pacific/Wake');
 
     $tzChristmas = new \DateTimeZone('Indian/Christmas');
     $entity = EntityTest::create();

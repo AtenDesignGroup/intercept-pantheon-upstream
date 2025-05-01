@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\votingapi;
 
-use Drupal\votingapi\Entity\VoteResult;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 
 /**
- * Storage class for vote entities.
+ * Storage class for vote_result entities.
  *
  * This extends the \Drupal\entity\EntityDatabaseStorage class, adding
- * required special handling for vote entities.
+ * required special handling for vote_result entities.
  */
 class VoteResultStorage extends SqlContentEntityStorage implements VoteResultStorageInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function getEntityResults($entity_type_id, $entity_id, $vote_type, $function) {
-    $query = \Drupal::entityQuery('vote_result')
+  public function getEntityResults(string $entity_type_id, string|int $entity_id, string $vote_type, string $function): array {
+    $query = $this->getQuery()
       ->condition('entity_type', $entity_type_id)
       ->condition('entity_id', $entity_id)
       ->condition('type', $vote_type);
@@ -27,7 +28,7 @@ class VoteResultStorage extends SqlContentEntityStorage implements VoteResultSto
     $query->sort('type');
     $query->accessCheck(TRUE);
     $vote_ids = $query->execute();
-    return VoteResult::loadMultiple($vote_ids);
+    return $this->loadMultiple($vote_ids);
   }
 
 }

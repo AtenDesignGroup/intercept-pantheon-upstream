@@ -33,6 +33,6 @@ interface ContentFileStorageInterface {
    *   (optional) The name of the file, defaults to UUID.yml. Must end with
    *   .yml.
    */
-  public function writeEntity(string $folder, string $encoded, ContentEntityInterface $entity, string $filename = NULL);
+  public function writeEntity(string $folder, string $encoded, ContentEntityInterface $entity, ?string $filename = NULL);
 
 }

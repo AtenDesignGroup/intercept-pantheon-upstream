@@ -27,8 +27,8 @@ class DateRecurInterpreterEditForm extends EntityForm {
    *   Date recur interpreter plugin manager.
    */
   public function __construct(
-      protected PluginFormFactoryInterface $pluginFormFactory,
-      protected DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager,
+    protected PluginFormFactoryInterface $pluginFormFactory,
+    protected DateRecurInterpreterManagerInterface $dateRecurInterpreterPluginManager,
   ) {
   }
 

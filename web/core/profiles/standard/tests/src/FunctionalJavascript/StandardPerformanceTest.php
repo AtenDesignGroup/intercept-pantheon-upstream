@@ -120,16 +120,16 @@ class StandardPerformanceTest extends PerformanceTestBase {
       'DELETE FROM "semaphore"  WHERE ("name" = "theme_registry:runtime:stark:Drupal\Core\Utility\ThemeRegistry") AND ("value" = "LOCK_ID")',
       'INSERT INTO "semaphore" ("name", "value", "expire") VALUES ("library_info:stark:Drupal\Core\Cache\CacheCollector", "LOCK_ID", "EXPIRE")',
       'DELETE FROM "semaphore"  WHERE ("name" = "library_info:stark:Drupal\Core\Cache\CacheCollector") AND ("value" = "LOCK_ID")',
-      'INSERT INTO "semaphore" ("name", "value", "expire") VALUES ("path_alias_whitelist:Drupal\Core\Cache\CacheCollector", "LOCK_ID", "EXPIRE")',
-      'DELETE FROM "semaphore"  WHERE ("name" = "path_alias_whitelist:Drupal\Core\Cache\CacheCollector") AND ("value" = "LOCK_ID")',
+      'INSERT INTO "semaphore" ("name", "value", "expire") VALUES ("path_alias_prefix_list:Drupal\Core\Cache\CacheCollector", "LOCK_ID", "EXPIRE")',
+      'DELETE FROM "semaphore"  WHERE ("name" = "path_alias_prefix_list:Drupal\Core\Cache\CacheCollector") AND ("value" = "LOCK_ID")',
       'INSERT INTO "semaphore" ("name", "value", "expire") VALUES ("active-trail:route:view.frontpage.page_1:route_parameters:a:2:{s:10:"display_id";s:6:"page_1";s:7:"view_id";s:9:"frontpage";}:Drupal\Core\Cache\CacheCollector", "LOCK_ID", "EXPIRE")',
       'DELETE FROM "semaphore"  WHERE ("name" = "active-trail:route:view.frontpage.page_1:route_parameters:a:2:{s:10:"display_id";s:6:"page_1";s:7:"view_id";s:9:"frontpage";}:Drupal\Core\Cache\CacheCollector") AND ("value" = "LOCK_ID")',
     ];
     $recorded_queries = $performance_data->getQueries();
     $this->assertSame($expected_queries, $recorded_queries);
     $this->assertSame(36, $performance_data->getQueryCount());
-    $this->assertSame(125, $performance_data->getCacheGetCount());
-    $this->assertSame(46, $performance_data->getCacheSetCount());
+    $this->assertSame(123, $performance_data->getCacheGetCount());
+    $this->assertSame(45, $performance_data->getCacheSetCount());
     $this->assertSame(0, $performance_data->getCacheDeleteCount());
     $this->assertSame(37, $performance_data->getCacheTagChecksumCount());
     $this->assertSame(43, $performance_data->getCacheTagIsValidCount());
@@ -158,8 +158,8 @@ class StandardPerformanceTest extends PerformanceTestBase {
     $recorded_queries = $performance_data->getQueries();
     $this->assertSame($expected_queries, $recorded_queries);
     $this->assertSame(10, $performance_data->getQueryCount());
-    $this->assertSame(95, $performance_data->getCacheGetCount());
-    $this->assertSame(17, $performance_data->getCacheSetCount());
+    $this->assertSame(93, $performance_data->getCacheGetCount());
+    $this->assertSame(16, $performance_data->getCacheSetCount());
     $this->assertSame(0, $performance_data->getCacheDeleteCount());
     $this->assertCountBetween(24, 25, $performance_data->getCacheTagChecksumCount());
     $this->assertCountBetween(39, 40, $performance_data->getCacheTagIsValidCount());
@@ -193,7 +193,7 @@ class StandardPerformanceTest extends PerformanceTestBase {
     $recorded_queries = $performance_data->getQueries();
     $this->assertSame($expected_queries, $recorded_queries);
     $this->assertSame(14, $performance_data->getQueryCount());
-    $this->assertSame(79, $performance_data->getCacheGetCount());
+    $this->assertSame(78, $performance_data->getCacheGetCount());
     $this->assertSame(17, $performance_data->getCacheSetCount());
     $this->assertSame(0, $performance_data->getCacheDeleteCount());
     $this->assertSame(23, $performance_data->getCacheTagChecksumCount());
@@ -244,7 +244,7 @@ class StandardPerformanceTest extends PerformanceTestBase {
     $recorded_queries = $performance_data->getQueries();
     $this->assertSame($expected_queries, $recorded_queries);
     $this->assertSame(17, $performance_data->getQueryCount());
-    $this->assertSame(86, $performance_data->getCacheGetCount());
+    $this->assertSame(84, $performance_data->getCacheGetCount());
     $this->assertSame(1, $performance_data->getCacheSetCount());
     $this->assertSame(1, $performance_data->getCacheDeleteCount());
     $this->assertSame(1, $performance_data->getCacheTagChecksumCount());
@@ -298,7 +298,7 @@ class StandardPerformanceTest extends PerformanceTestBase {
     $recorded_queries = $performance_data->getQueries();
     $this->assertSame($expected_queries, $recorded_queries);
     $this->assertSame(18, $performance_data->getQueryCount());
-    $this->assertSame(107, $performance_data->getCacheGetCount());
+    $this->assertSame(105, $performance_data->getCacheGetCount());
     $this->assertSame(1, $performance_data->getCacheSetCount());
     $this->assertSame(1, $performance_data->getCacheDeleteCount());
     $this->assertSame(1, $performance_data->getCacheTagChecksumCount());
@@ -309,7 +309,7 @@ class StandardPerformanceTest extends PerformanceTestBase {
   /**
    * Submit the user login form.
    */
-  protected function submitLoginForm($account) {
+  protected function submitLoginForm($account): void {
     $this->submitForm([
       'name' => $account->getAccountName(),
       'pass' => $account->passRaw,

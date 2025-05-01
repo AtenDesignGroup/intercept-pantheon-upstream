@@ -33,7 +33,7 @@ class DurationServiceTest extends UnitTestCase {
   /**
    * Data provider for testCheckDurationInvalid().
    */
-  public function checkDurationInvalidDataProvider() {
+  public static function checkDurationInvalidDataProvider() {
     return [
       ['PY1D', TRUE, 'PY1D correctly tested as invalid'],
       ['P1Y2M3DT4H', FALSE, 'P1Y2M3DT4H correctly tested as valid'],
@@ -53,7 +53,7 @@ class DurationServiceTest extends UnitTestCase {
   /**
    * Data provider for testconvertDateArrayToDurationString().
    */
-  public function convertDateArrayToDurationStringDataProvider() {
+  public static function convertDateArrayToDurationStringDataProvider() {
     return [
       [
         [
@@ -103,7 +103,7 @@ class DurationServiceTest extends UnitTestCase {
   /**
    * Data provider for testgetDurationStringFromDateInterval().
    */
-  public function getDurationStringFromDateIntervalDataProvider() {
+  public static function getDurationStringFromDateIntervalDataProvider() {
     return [
       [
         new DateInterval('P0M'),
@@ -132,7 +132,7 @@ class DurationServiceTest extends UnitTestCase {
   /**
    * Data provider for testgetDurationStringFromDateInterval().
    */
-  public function convertDateArrayToDateIntervalDataProvider() {
+  public static function convertDateArrayToDateIntervalDataProvider() {
     return [
       [
         [
@@ -190,7 +190,7 @@ class DurationServiceTest extends UnitTestCase {
   /**
    * Data provider for testgetHumanReadableStringFromDateInterval().
    */
-  public function getHumanReadableStringFromDateIntervalDataProvider() {
+  public static function getHumanReadableStringFromDateIntervalDataProvider() {
     return [
       [
         [
@@ -269,7 +269,7 @@ class DurationServiceTest extends UnitTestCase {
   /**
    * Data provider for testgetSecondsFromDateInterval().
    */
-  public function getSecondsFromDateIntervalDataProvider() {
+  public static function getSecondsFromDateIntervalDataProvider() {
     return [
       [
         new DateInterval('P0M'),

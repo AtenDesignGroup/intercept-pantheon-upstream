@@ -1,0 +1,1 @@
+%Since twig/twig 3.12: Twig Filter "spaceless" is deprecated%

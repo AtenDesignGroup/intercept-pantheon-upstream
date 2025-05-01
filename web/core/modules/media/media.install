@@ -17,7 +17,7 @@ use Drupal\user\RoleInterface;
 /**
  * Implements hook_install().
  */
-function media_install() {
+function media_install(): void {
   $source = \Drupal::service('extension.list.module')->getPath('media') . '/images/icons';
   $destination = \Drupal::config('media.settings')->get('icon_base_uri');
   /** @var \Drupal\Core\File\FileSystemInterface $file_system */
@@ -36,7 +36,7 @@ function media_install() {
       try {
         $file_system->copy($file->uri, $destination, FileExists::Error);
       }
-      catch (FileException $e) {
+      catch (FileException) {
         // Ignore and continue.
       }
 
@@ -147,6 +147,6 @@ function media_requirements($phase) {
 /**
  * Implements hook_update_last_removed().
  */
-function media_update_last_removed() {
+function media_update_last_removed(): int {
   return 8700;
 }

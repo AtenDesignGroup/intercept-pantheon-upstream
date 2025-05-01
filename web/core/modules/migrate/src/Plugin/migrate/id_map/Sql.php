@@ -187,11 +187,6 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
     $this->mapTableName = mb_substr($this->mapTableName, 0, 63 - $prefix_length);
     $this->messageTableName = 'migrate_message_' . mb_strtolower($machine_name);
     $this->messageTableName = mb_substr($this->messageTableName, 0, 63 - $prefix_length);
-
-    if (!$migration_plugin_manager) {
-      @trigger_error('Calling Sql::__construct() without the $migration_manager argument is deprecated in drupal:9.5.0 and the $migration_manager argument will be required in drupal:11.0.0. See https://www.drupal.org/node/3277306', E_USER_DEPRECATED);
-      $migration_plugin_manager = \Drupal::service('plugin.manager.migration');
-    }
     $this->migrationPluginManager = $migration_plugin_manager;
   }
 
@@ -662,7 +657,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
     try {
       return $query->execute()->fetchAll(\PDO::FETCH_NUM);
     }
-    catch (DatabaseExceptionWrapper $e) {
+    catch (DatabaseExceptionWrapper) {
       // It's possible that the query will cause an exception to be thrown. For
       // example, the URL alias migration uses a dummy node ID of 'INVALID_NID'
       // to cause the lookup to return no results. On PostgreSQL this causes an
@@ -829,7 +824,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
     try {
       $count = (int) $query->countQuery()->execute()->fetchField();
     }
-    catch (DatabaseException $e) {
+    catch (DatabaseException) {
       // The table does not exist, therefore there are no records.
       $count = 0;
     }
@@ -913,8 +908,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
    *
    * This is called before beginning a foreach loop.
    */
-  #[\ReturnTypeWillChange]
-  public function rewind() {
+  public function rewind(): void {
     $this->currentRow = NULL;
     $fields = [];
     foreach ($this->sourceIdFields() as $field) {
@@ -935,8 +929,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
    *
    * This is called when entering a loop iteration, returning the current row.
    */
-  #[\ReturnTypeWillChange]
-  public function current() {
+  public function current(): mixed {
     return $this->currentRow;
   }
 
@@ -947,8 +940,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
    * current row. It must be a scalar - we will serialize to fulfill the
    * requirement, but using getCurrentKey() is preferable.
    */
-  #[\ReturnTypeWillChange]
-  public function key() {
+  public function key(): mixed {
     return serialize($this->currentKey);
   }
 
@@ -992,8 +984,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
    * This is called at the bottom of the loop implicitly, as well as explicitly
    * from rewind().
    */
-  #[\ReturnTypeWillChange]
-  public function next() {
+  public function next(): void {
     $this->currentRow = $this->result->fetchAssoc();
     $this->currentKey = [];
     if ($this->currentRow) {
@@ -1011,25 +1002,8 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
    * This is called at the top of the loop, returning TRUE to process the loop
    * and FALSE to terminate it.
    */
-  #[\ReturnTypeWillChange]
-  public function valid() {
+  public function valid(): bool {
     return $this->currentRow !== FALSE;
-  }
-
-  /**
-   * Returns the migration plugin manager.
-   *
-   * @return \Drupal\migrate\Plugin\MigrationPluginManagerInterface
-   *   The migration plugin manager.
-   *
-   * @deprecated in drupal:9.5.0 and is removed from drupal:11.0.0. Use
-   *   $this->migrationPluginManager instead.
-   *
-   * @see https://www.drupal.org/node/3277306
-   */
-  protected function getMigrationPluginManager() {
-    @trigger_error(__METHOD__ . '() is deprecated in drupal:9.5.0 and is removed from drupal:11.0.0. Use $this->migrationPluginManager instead. See https://www.drupal.org/node/3277306', E_USER_DEPRECATED);
-    return $this->migrationPluginManager;
   }
 
   /**

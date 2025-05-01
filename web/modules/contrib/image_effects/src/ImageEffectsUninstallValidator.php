@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -14,23 +16,10 @@ class ImageEffectsUninstallValidator implements ModuleUninstallValidatorInterfac
 
   use StringTranslationTrait;
 
-  /**
-   * The configuration factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
-   * Constructs a new ImageEffectsUninstallValidator.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration factory.
-   * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
-   *   The string translation service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, TranslationInterface $string_translation) {
-    $this->configFactory = $config_factory;
+  public function __construct(
+    protected readonly ConfigFactoryInterface $configFactory,
+    TranslationInterface $string_translation,
+  ) {
     $this->stringTranslation = $string_translation;
   }
 
@@ -39,11 +28,6 @@ class ImageEffectsUninstallValidator implements ModuleUninstallValidatorInterfac
    */
   public function validate($module) {
     $reasons = [];
-    // Prevents uninstalling 'jquery_colorpicker' if its color selector plugin
-    // is in use.
-    if ($module == 'jquery_colorpicker' && $this->configFactory->get('image_effects.settings')->get('color_selector.plugin_id') === 'jquery_colorpicker') {
-      $reasons[] = $this->t('The <em>Image Effects</em> module is using the <em>JQuery Colorpicker</em> color selector.');
-    }
     // Prevents uninstalling 'color' if the farbtastic color selector plugin
     // is in use.
     if ($module == 'color' && $this->configFactory->get('image_effects.settings')->get('color_selector.plugin_id') === 'farbtastic') {

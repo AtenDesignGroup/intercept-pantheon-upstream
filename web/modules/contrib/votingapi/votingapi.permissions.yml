@@ -6,6 +6,14 @@ administer vote types:
   title: 'Administer Vote Types'
   description: 'Allow access to create/edit vote types.'
 
+view own vote:
+  title: 'View own voting data'
+  description: 'Allow user to view their own voting data.'
+
+view any vote:
+  title: 'View any voting data'
+  description: 'Allow user to view voting data from any user.'
+
 delete votes:
   title: 'Delete Votes'
   description: 'Allow access to delete any vote.'

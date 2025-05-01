@@ -1494,7 +1494,7 @@ class BaseSettings extends FormElementBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   private static function buildColorsSelectionSubFormByEntities(array $metadata, EntityTypeManagerInterface $entity_type_manager): array {
-    $empty_entity_colors = new TranslatableMarkup("No grouping by an entity reference field was detected or the selected field didnt have any entity or color field attached.");
+    $empty_entity_colors = new TranslatableMarkup("No grouping by an entity reference field was detected or the selected field did not have any entity or color field attached.");
     $colors = [
       '#markup' => '<p>' . $empty_entity_colors . '</p>',
     ];

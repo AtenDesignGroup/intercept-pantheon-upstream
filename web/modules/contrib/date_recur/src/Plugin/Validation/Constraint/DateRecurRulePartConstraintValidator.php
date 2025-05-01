@@ -34,8 +34,8 @@ class DateRecurRulePartConstraintValidator extends ConstraintValidator {
    * {@inheritdoc}
    */
   public function validate($value, Constraint $constraint): void {
-    assert($value instanceof DateRecurItem);
-    assert($constraint instanceof DateRecurRulePartConstraint);
+    \assert($value instanceof DateRecurItem);
+    \assert($constraint instanceof DateRecurRulePartConstraint);
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $fieldList */
     $fieldList = $value->getParent();
     $grid = $fieldList->getPartGrid();
@@ -71,7 +71,7 @@ class DateRecurRulePartConstraintValidator extends ConstraintValidator {
 
       $parts = $rule->getParts();
       unset($parts['FREQ']);
-      foreach (array_keys($parts) as $part) {
+      foreach (\array_keys($parts) as $part) {
         try {
           // Check if a part is supported.
           if (!$grid->isPartAllowed($frequency, $part)) {

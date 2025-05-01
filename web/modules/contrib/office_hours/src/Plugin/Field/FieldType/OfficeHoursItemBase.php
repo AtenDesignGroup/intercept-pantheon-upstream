@@ -399,19 +399,9 @@ class OfficeHoursItemBase extends FieldItemBase {
     // Sort the item on date (but leave hours untouched).
     // @see https://www.php.net/manual/en/array.sorting.php
     // "If any of these sort functions evaluates two members as equal
-    // then they retain their original order. Prior to PHP 8.0.0,
-    // their order were undefined (the sorting was not stable)."
-    $a_day = $a->day;
-    $b_day = $b->day;
-    if ($a_day < $b_day) {
-      return -1;
-    }
-    if ($a_day > $b_day) {
-      return +1;
-    }
-
-    // Leave same day time slots in the same order, as maintained by user.
-    return 0;
+    // then they retain their original order.
+    $sort_order = $a->day <=> $b->day;
+    return $sort_order;
   }
 
   /**

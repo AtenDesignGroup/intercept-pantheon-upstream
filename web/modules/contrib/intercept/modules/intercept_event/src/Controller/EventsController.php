@@ -106,6 +106,13 @@ class EventsController extends ControllerBase {
   protected $viewBuilder;
 
   /**
+   * ILS client object.
+   *
+   * @var object
+   */
+  protected $client;
+
+  /**
    * Constructs an EventsController object.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
@@ -1016,7 +1023,6 @@ class EventsController extends ControllerBase {
 
       $query = \Drupal::entityQuery('node');
       $query->condition('type', 'event')
-        ->accessCheck(FALSE)
         ->condition('status', 1)
         ->condition('nid', $nids, 'IN')
         ->pager(30);
@@ -1039,6 +1045,7 @@ class EventsController extends ControllerBase {
         $query->condition('field_date_time.end_value', date(DateTimeItemInterface::DATETIME_STORAGE_FORMAT, strtotime('now')), '>=');
         $query->sort('field_date_time.value', 'ASC');
       }
+      $query->accessCheck();
       $events = $query->execute();
     }
     // See if we still have any after specifying upcoming/past.
@@ -1372,10 +1379,9 @@ class EventsController extends ControllerBase {
     // End debugging.
     $dompdf = new Dompdf();
     $options = $dompdf->getOptions();
-    $options->setIsHtml5ParserEnabled(TRUE);
     $dompdf->setOptions($options);
     $dompdf->setPaper('letter', 'landscape');
-    $dompdf->load_html($strHTML);
+    $dompdf->loadHtml($strHTML);
     $dompdf->render();
 
     // Set PDF File name.

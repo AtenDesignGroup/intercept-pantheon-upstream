@@ -18,7 +18,7 @@ use Drupal\field\Entity\FieldStorageConfig;
  *
  * @group date_recur
  */
-class DateRecurViewsFieldAttachedTest extends DateRecurViewsFieldTest {
+final class DateRecurViewsFieldAttachedTest extends DateRecurViewsFieldTest {
 
   /**
    * {@inheritdoc}

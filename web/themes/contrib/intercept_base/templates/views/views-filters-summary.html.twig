@@ -22,32 +22,30 @@
   'views-filters-summary',
   options.use_ajax ? 'views-filters-summary--use-ajax'
 ] %}
-{% apply spaceless %}
-  <div{{ attributes.addClass(classes) }}>
-    <div class="current-filters__wrapper">
-      {% for filter in summary %}
-      <div class="current-filter">
-        <span class="current-filter__label">{{filter.label}}:</span>
-        {% if options.has_group_values and filter.groups is not empty %}
-          {% for value in filter.groups %}
-          {% set link_attributes = create_attribute(value.link['#attributes']) %}
-          <a href="{{value.link['#url']}}" {{ link_attributes.addClass('option-chip') }}>
-            <span class="visually-hidden">{{'Remove'|t}} </span><span class="option-chip__label">{{value.value}}</span>
-          </a>
-          {% endfor %}
-        {% else %}
-          {% set link_attributes = create_attribute(filter.link['#attributes']) %}
-          <a href="{{filter.link['#url']}}" {{ link_attributes.addClass('option-chip') }}>
-            <span class="visually-hidden">{{'Remove'|t}} </span><span class="option-chip__label">{{filter.value}}</span>
-          </a>
-        {% endif %}
-      </div>
-      {% endfor %}
+<div{{ attributes.addClass(classes) }}>
+  <div class="current-filters__wrapper">
+    {% for filter in summary %}
+    <div class="current-filter">
+      <span class="current-filter__label">{{filter.label}}:</span>
+      {% if options.has_group_values and filter.groups is not empty %}
+        {% for value in filter.groups %}
+        {% set link_attributes = create_attribute(value.link['#attributes']) %}
+        <a href="{{value.link['#url']}}" {{ link_attributes.addClass('option-chip') }}>
+          <span class="visually-hidden">{{'Remove'|t}} </span><span class="option-chip__label">{{value.value}}</span>
+        </a>
+        {% endfor %}
+      {% else %}
+        {% set link_attributes = create_attribute(filter.link['#attributes']) %}
+        <a href="{{filter.link['#url']}}" {{ link_attributes.addClass('option-chip') }}>
+          <span class="visually-hidden">{{'Remove'|t}} </span><span class="option-chip__label">{{filter.value}}</span>
+        </a>
+      {% endif %}
     </div>
-    {% if summary and options.show_reset_link and options.reset_link.title %}
-      <a class="reset" href='/'>
-        {{ options.reset_link.title }}
-      </a>
-    {% endif %}
+    {% endfor %}
   </div>
-{% endapply %}
+  {% if summary and options.show_reset_link and options.reset_link.title %}
+    <a class="reset" href='/'>
+      {{ options.reset_link.title }}
+    </a>
+  {% endif %}
+</div>

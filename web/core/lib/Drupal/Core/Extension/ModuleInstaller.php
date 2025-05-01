@@ -14,6 +14,8 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Update\UpdateHookRegistry;
 use Drupal\Core\Utility\Error;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 /**
  * Default implementation of the module installer.
@@ -64,13 +66,6 @@ class ModuleInstaller implements ModuleInstallerInterface {
   protected $updateRegistry;
 
   /**
-   * The uninstall validators.
-   *
-   * @var \Drupal\Core\Extension\ModuleUninstallValidatorInterface[]
-   */
-  protected $uninstallValidators;
-
-  /**
    * Constructs a new ModuleInstaller instance.
    *
    * @param string $root
@@ -85,19 +80,31 @@ class ModuleInstaller implements ModuleInstallerInterface {
    *   The update registry service.
    * @param \Psr\Log\LoggerInterface|null $logger
    *   The logger.
+   * @param \Traversable|null $uninstallValidators
+   *   The uninstall validator services.
    *
    * @see \Drupal\Core\DrupalKernel
    * @see \Drupal\Core\CoreServiceProvider
    */
-  public function __construct($root, ModuleHandlerInterface $module_handler, DrupalKernelInterface $kernel, Connection $connection, UpdateHookRegistry $update_registry, protected ?LoggerInterface $logger = NULL) {
+  public function __construct(
+    #[Autowire(param: 'app.root')]
+    string $root,
+    ModuleHandlerInterface $module_handler,
+    DrupalKernelInterface $kernel,
+    Connection $connection,
+    UpdateHookRegistry $update_registry,
+    #[Autowire(service: 'logger.channel.default')]
+    protected LoggerInterface $logger,
+    #[AutowireIterator(tag: 'module_install.uninstall_validator')]
+    protected ?\Traversable $uninstallValidators = NULL,
+  ) {
     $this->root = $root;
     $this->moduleHandler = $module_handler;
     $this->kernel = $kernel;
     $this->connection = $connection;
     $this->updateRegistry = $update_registry;
-    if ($this->logger === NULL) {
-      @trigger_error('Calling ' . __METHOD__ . ' without the $logger argument is deprecated in drupal:10.1.0 and it will be required in drupal:11.0.0. See https://www.drupal.org/node/2932520', E_USER_DEPRECATED);
-      $this->logger = \Drupal::service('logger.channel.system');
+    if ($this->uninstallValidators === NULL) {
+      $this->uninstallValidators = \Drupal::service('module_installer.uninstall_validators');
     }
   }
 
@@ -105,7 +112,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
    * {@inheritdoc}
    */
   public function addUninstallValidator(ModuleUninstallValidatorInterface $uninstall_validator) {
-    $this->uninstallValidators[] = $uninstall_validator;
+    @trigger_error(__METHOD__ . ' is deprecated in drupal:11.1.0 and is removed from drupal:12.0.0. Inject the uninstall validators into the constructor instead. See https://www.drupal.org/node/3432595', E_USER_DEPRECATED);
   }
 
   /**
@@ -265,7 +272,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
         }
 
         // Allow modules to react prior to the installation of a module.
-        $this->moduleHandler->invokeAll('module_preinstall', [$module, $sync_status]);
+        $this->invokeAll('module_preinstall', [$module, $sync_status]);
 
         // Now install the module's schema if necessary.
         $this->installSchema($module);
@@ -328,7 +335,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
         // If the module has no current updates, but has some that were
         // previously removed, set the version to the value of
         // hook_update_last_removed().
-        if ($last_removed = $this->moduleHandler->invoke($module, 'update_last_removed')) {
+        if ($last_removed = $this->invoke($module, 'update_last_removed')) {
           $version = max($version, $last_removed);
         }
         $this->updateRegistry->setInstalledVersion($module, $version);
@@ -355,10 +362,10 @@ class ModuleInstaller implements ModuleInstallerInterface {
         // Modules may provide single directory components which are added to
         // the core library definitions rather than the module itself, this
         // requires the library discovery cache to be rebuilt.
-        \Drupal::service('library.discovery')->clearCachedDefinitions();
+        \Drupal::service('library.discovery')->clear();
 
         // Allow the module to perform install tasks.
-        $this->moduleHandler->invoke($module, 'install', [$sync_status]);
+        $this->invoke($module, 'install', [$sync_status]);
 
         // Record the fact that it was installed.
         \Drupal::logger('system')->info('%module module installed.', ['%module' => $module]);
@@ -382,7 +389,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
         }
       }
 
-      $this->moduleHandler->invokeAll('modules_installed', [$modules_installed, $sync_status]);
+      $this->invokeAll('modules_installed', [$modules_installed, $sync_status]);
     }
 
     return TRUE;
@@ -464,11 +471,11 @@ class ModuleInstaller implements ModuleInstallerInterface {
       }
 
       // Allow modules to react prior to the uninstallation of a module.
-      $this->moduleHandler->invokeAll('module_preuninstall', [$module, $sync_status]);
+      $this->invokeAll('module_preuninstall', [$module, $sync_status]);
 
       // Uninstall the module.
       $this->moduleHandler->loadInclude($module, 'install');
-      $this->moduleHandler->invoke($module, 'uninstall', [$sync_status]);
+      $this->invoke($module, 'uninstall', [$sync_status]);
 
       // Remove all configuration belonging to the module.
       \Drupal::service('config.manager')->uninstall('module', $module);
@@ -558,12 +565,12 @@ class ModuleInstaller implements ModuleInstallerInterface {
     \Drupal::service('router.builder')->rebuild();
 
     // Let other modules react.
-    $this->moduleHandler->invokeAll('modules_uninstalled', [$module_list, $sync_status]);
+    $this->invokeAll('modules_uninstalled', [$module_list, $sync_status]);
 
     // Flush all persistent caches.
     // Any cache entry might implicitly depend on the uninstalled modules,
     // so clear all of them explicitly.
-    $this->moduleHandler->invokeAll('cache_flush');
+    $this->invokeAll('cache_flush');
     foreach (Cache::getBins() as $cache_backend) {
       $cache_backend->deleteAll();
     }
@@ -668,7 +675,7 @@ class ModuleInstaller implements ModuleInstallerInterface {
    * @internal
    */
   protected function installSchema(string $module): void {
-    $tables = $this->moduleHandler->invoke($module, 'schema') ?? [];
+    $tables = $this->invoke($module, 'schema') ?? [];
     $schema = $this->connection->schema();
     foreach ($tables as $name => $table) {
       $schema->createTable($name, $table);
@@ -684,13 +691,57 @@ class ModuleInstaller implements ModuleInstallerInterface {
    * @internal
    */
   protected function uninstallSchema(string $module): void {
-    $tables = $this->moduleHandler->invoke($module, 'schema') ?? [];
+    $tables = $this->invoke($module, 'schema') ?? [];
     $schema = $this->connection->schema();
     foreach (array_keys($tables) as $table) {
       if ($schema->tableExists($table)) {
         $schema->dropTable($table);
       }
     }
+  }
+
+  /**
+   * Call procedural hooks in all installed modules during installation.
+   *
+   * Hooks called during install will remain procedural.
+   * - hook_install()
+   * - hook_install_tasks()
+   * - hook_install_tasks_alter()
+   * - hook_post_update_NAME()
+   * - hook_schema()
+   * - hook_uninstall()
+   * - hook_update_last_removed()
+   * - hook_update_N()
+   *
+   * @param string $hook
+   *   The name of the hook to invoke.
+   * @param array $args
+   *   Arguments to pass to the hook.
+   *
+   * @return void
+   */
+  protected function invokeAll($hook, $args = []): void {
+    $this->moduleHandler->loadAll();
+    $this->moduleHandler->invokeAll($hook, $args);
+  }
+
+  /**
+   * Call a procedural hook in an installed module during installation.
+   *
+   * Hook_install(), hook_uninstall() etc. will remain procedural.
+   *
+   * @param string $module
+   *   The module (it can be a profile, too).
+   * @param string $hook
+   *   The name of the hook to invoke.
+   * @param array $args
+   *   Arguments to pass to the hook.
+   *
+   * @return mixed
+   */
+  protected function invoke(string $module, string $hook, array $args = []): mixed {
+    $function = $module . '_' . $hook;
+    return function_exists($function) ? $function(... $args) : NULL;
   }
 
 }

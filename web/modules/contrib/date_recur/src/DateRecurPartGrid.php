@@ -37,7 +37,7 @@ class DateRecurPartGrid {
    * Determines whether all parts and frequencies are supported.
    */
   public function isAllowEverything(): bool {
-    return count($this->allowedParts) === 0;
+    return \count($this->allowedParts) === 0;
   }
 
   /**
@@ -70,12 +70,12 @@ class DateRecurPartGrid {
    *   Whether a frequency is supported.
    */
   public function isFrequencyAllowed(string $frequency): bool {
-    assert(in_array($frequency, DateRecurRruleMap::FREQUENCIES, TRUE));
+    \assert(\in_array($frequency, DateRecurRruleMap::FREQUENCIES, TRUE));
     if ($this->isAllowEverything()) {
       return TRUE;
     }
 
-    return isset($this->allowedParts[$frequency]) && count($this->allowedParts[$frequency]) > 0;
+    return isset($this->allowedParts[$frequency]) && \count($this->allowedParts[$frequency]) > 0;
   }
 
   /**
@@ -93,8 +93,8 @@ class DateRecurPartGrid {
    *   Part is incompatible with frequency.
    */
   public function isPartAllowed(string $frequency, string $part): bool {
-    assert(in_array($frequency, DateRecurRruleMap::FREQUENCIES, TRUE) && in_array($part, DateRecurRruleMap::PARTS, TRUE));
-    if (in_array($part, DateRecurRruleMap::INCOMPATIBLE_PARTS[$frequency], TRUE)) {
+    \assert(\in_array($frequency, DateRecurRruleMap::FREQUENCIES, TRUE) && \in_array($part, DateRecurRruleMap::PARTS, TRUE));
+    if (\in_array($part, DateRecurRruleMap::INCOMPATIBLE_PARTS[$frequency], TRUE)) {
       throw new DateRecurRulePartIncompatible();
     }
 
@@ -104,7 +104,7 @@ class DateRecurPartGrid {
 
     $partsInFrequency = $this->allowedParts[$frequency] ?? [];
     // Supports the part, or everything in this frequency.
-    return in_array($part, $partsInFrequency, TRUE) || in_array(DateRecurItem::PART_SUPPORTS_ALL, $partsInFrequency, TRUE);
+    return \in_array($part, $partsInFrequency, TRUE) || \in_array(DateRecurItem::PART_SUPPORTS_ALL, $partsInFrequency, TRUE);
   }
 
   /**

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\votingapi_tokens\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\token\Functional\TokenTestTrait;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\Tests\token\Functional\TokenTestTrait;
 use Drupal\votingapi\Entity\Vote;
 
 /**

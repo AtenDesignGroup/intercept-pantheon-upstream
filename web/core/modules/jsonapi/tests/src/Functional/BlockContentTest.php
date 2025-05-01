@@ -66,7 +66,7 @@ class BlockContentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpAuthorization($method) {
+  protected function setUpAuthorization($method): void {
     switch ($method) {
       case 'GET':
         $this->grantPermissionsToTestedRole([
@@ -82,7 +82,7 @@ class BlockContentTest extends ResourceTestBase {
         break;
 
       case 'POST':
-        $this->grantPermissionsToTestedRole(['access block library', 'create basic block content']);
+        $this->grantPermissionsToTestedRole(['create basic block content']);
         break;
 
       case 'DELETE':
@@ -94,7 +94,7 @@ class BlockContentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpRevisionAuthorization($method) {
+  protected function setUpRevisionAuthorization($method): void {
     parent::setUpRevisionAuthorization($method);
     $this->grantPermissionsToTestedRole(['view any basic block content history']);
   }
@@ -130,7 +130,7 @@ class BlockContentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getExpectedDocument() {
+  protected function getExpectedDocument(): array {
     $base_url = Url::fromUri('base:/jsonapi/block_content/basic/' . $this->entity->uuid())->setAbsolute();
     $self_url = clone $base_url;
     $version_identifier = 'id:' . $this->entity->getRevisionId();
@@ -201,7 +201,7 @@ class BlockContentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getPostDocument() {
+  protected function getPostDocument(): array {
     return [
       'data' => [
         'type' => 'block_content--basic',
@@ -219,7 +219,7 @@ class BlockContentTest extends ResourceTestBase {
     return match ($method) {
       'GET' => "The 'access block library' permission is required.",
       'PATCH' => "The 'edit any basic block content' permission is required.",
-      'POST' => "The following permissions are required: 'create basic block content' AND 'access block library'.",
+      'POST' => "The following permissions are required: 'create basic block content' OR 'administer block content'.",
       'DELETE' => "The 'delete any basic block content' permission is required.",
       default => parent::getExpectedUnauthorizedAccessMessage($method),
     };

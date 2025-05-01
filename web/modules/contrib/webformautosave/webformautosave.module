@@ -220,34 +220,10 @@ function webformautosave_webform_presave(WebformInterface $webform) {
   }
   // Set default auto-save settings for both checkboxes.
   if ($optimistic_locking || $auto_save) {
-    // Set an appropriate default purge setting.
-    if ($purge_setting = $webform->getSetting('purge')) {
-      switch ($purge_setting) {
-        // We need to make sure drafts are purged as well.
-        case WebformSubmissionStorageInterface::PURGE_COMPLETED:
-          $purge = WebformSubmissionStorageInterface::PURGE_ALL;
-          break;
-
-        default:
-          $purge = WebformSubmissionStorageInterface::PURGE_DRAFT;
-          break;
-      }
-    }
-    else {
-      $purge = WebformSubmissionStorageInterface::PURGE_DRAFT;
-    }
     // Enable the draft save if not already set.
     $draft_setting = $webform->getSetting('draft');
     if ($draft_setting == WebformInterface::DRAFT_NONE) {
       $webform->setSetting('draft', WebformInterface::DRAFT_ALL);
-    }
-    // Set purge status to prevent clutter in the db.
-    if ($purge_setting == WebformSubmissionStorageInterface::PURGE_NONE) {
-      $webform->setSetting('purge', $purge);
-    }
-    // Add a purge time frame if not set.
-    if (empty($webform->getSetting('purge_days'))) {
-      $webform->setSetting('purge_days', 182);
     }
   }
 }

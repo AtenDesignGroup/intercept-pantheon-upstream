@@ -15,22 +15,13 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  */
 final class DateRecurInterpreterTest extends WebDriverTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected $defaultTheme = 'starterkit_theme';
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_interpreter_test',
     'date_recur',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->drupalLogin($this->drupalCreateUser([

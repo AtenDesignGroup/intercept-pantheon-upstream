@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects\Plugin\ImageToolkit\Operation;
 
 use Drupal\file_mdm\FileMetadataManagerInterface;
@@ -21,11 +23,7 @@ trait FontOperationTrait {
    * @return string
    *   The local path of the font file.
    */
-  protected function getFontPath($font_uri) {
-    if (!$font_uri) {
-      throw new \InvalidArgumentException('Font file not specified');
-    }
-
+  protected function getFontPath(string $font_uri): string {
     // Determine if the $font_uri is a real URI or a local path.
     $uri_wrapper = \Drupal::service('stream_wrapper_manager')->getViaUri($font_uri);
 

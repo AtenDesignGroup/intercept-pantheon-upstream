@@ -45,7 +45,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   field_ui_base_route = "entity.dr_entity_test_single.admin_form",
  * )
  */
-class DrEntityTestSingleCardinality extends DrEntityTest {
+class DrEntityTestSingleCardinality extends DrEntityTestBasic {
 
   /**
    * {@inheritdoc}

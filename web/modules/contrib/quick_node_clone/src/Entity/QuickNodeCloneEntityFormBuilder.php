@@ -17,6 +17,7 @@ use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\GroupRelationship;
 use Drupal\node\Entity\Node;
+use Drupal\Core\Render\Markup;
 
 /**
  * Builds entity forms.
@@ -130,7 +131,6 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
       /** @var \Drupal\node\Entity\Node $translated_node */
       $translated_node = $new_node->getTranslation($langcode);
       $translated_node = $this->cloneParagraphs($translated_node);
-      $this->moduleHandler->alter('cloned_node', $translated_node, $original_entity);
 
       // Unset excluded fields.
       $config_name = 'exclude.node.' . $translated_node->getType();
@@ -145,22 +145,40 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
       if (!empty($title_prepend_config)) {
         $prepend_text = $title_prepend_config . " ";
       }
+
       $clone_status_config = $this->getConfigSettings('clone_status');
-      if (!$clone_status_config) {
-        $key = $translated_node->getEntityType()->getKey('published');
-        $translated_node->set($key, $default_bundle_status);
+      switch ($clone_status_config) {
+        case 'original':
+          break;
+
+        case 'published':
+          $translated_node->setPublished();
+          break;
+
+        case 'unpublished':
+          $translated_node->setUnpublished();
+          break;
+
+        case 'default':
+        default:
+          $key = $translated_node->getEntityType()->getKey('published');
+          $translated_node->set($key, $default_bundle_status);
+          break;
+
       }
 
       $translated_node->setTitle($this->t('@prepend_text@title',
         [
-          '@prepend_text' => $prepend_text,
-          '@title' => $translated_node->getTitle(),
+          '@prepend_text' => Markup::create($prepend_text),
+          '@title' => Markup::create($translated_node->getTitle()),
         ],
         [
           'langcode' => $langcode,
         ]
       )
       );
+
+      $this->moduleHandler->alter('cloned_node', $translated_node, $original_entity);
     }
 
     // Get the form object for the entity defined in entity definition.
@@ -206,15 +224,15 @@ class QuickNodeCloneEntityFormBuilder extends EntityFormBuilder {
               $value->entity = $value->entity->createDuplicate();
               foreach ($value->entity->getFieldDefinitions() as $field_definition) {
                 $field_storage_definition = $field_definition->getFieldStorageDefinition();
-                $pfield_settings = $field_storage_definition->getSettings();
-                $pfield_name = $field_storage_definition->getName();
+                $paragraph_field_settings = $field_storage_definition->getSettings();
+                $paragraph_field_name = $field_storage_definition->getName();
 
                 // Check whether this field is excluded and if so unset.
-                if ($this->excludeParagraphField($pfield_name, $value->entity->bundle())) {
-                  unset($value->entity->{$pfield_name});
+                if ($this->excludeParagraphField($paragraph_field_name, $value->entity->bundle())) {
+                  unset($value->entity->{$paragraph_field_name});
                 }
 
-                $this->moduleHandler->alter('cloned_node_paragraph_field', $value->entity, $pfield_name, $pfield_settings);
+                $this->moduleHandler->alter('cloned_node_paragraph_field', $value->entity, $paragraph_field_name, $paragraph_field_settings);
               }
             }
           }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\image_effects\Functional\Effect;
 
 use Drupal\Tests\image_effects\Functional\ImageEffectsTestBase;
@@ -14,7 +16,7 @@ class BackgroundTest extends ImageEffectsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function providerToolkits() {
+  public static function providerToolkits(): array {
     $toolkits = parent::providerToolkits();
     // @todo This effect does not work on GraphicsMagick.
     unset($toolkits['ImageMagick-graphicsmagick']);
@@ -33,7 +35,7 @@ class BackgroundTest extends ImageEffectsTestBase {
    *
    * @dataProvider providerToolkits
    */
-  public function testBackgroundEffect($toolkit_id, $toolkit_config, array $toolkit_settings) {
+  public function testBackgroundEffect(string $toolkit_id, string $toolkit_config, array $toolkit_settings): void {
     $this->changeToolkit($toolkit_id, $toolkit_config, $toolkit_settings);
 
     $original_uri = $this->getTestImageCopyUri('core/tests/fixtures/files/image-test.png');
@@ -85,7 +87,7 @@ class BackgroundTest extends ImageEffectsTestBase {
     // Toolkit-specific tests.
     switch ($this->imageFactory->getToolkitId()) {
       case 'gd':
-        // For the GD toolkit, test we are not left with orphan resource after
+        // For the GD toolkit, test we are not left with orphan image after
         // applying the operation.
         $image = $this->imageFactory->get($original_uri);
         // Apply the operation.

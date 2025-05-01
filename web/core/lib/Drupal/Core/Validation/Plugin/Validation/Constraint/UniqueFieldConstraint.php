@@ -28,11 +28,9 @@ class UniqueFieldConstraint extends SymfonyConstraint {
   public $caseSensitive = FALSE;
 
   /**
-   * Returns the name of the class that validates this constraint.
-   *
-   * @return string
+   * {@inheritdoc}
    */
-  public function validatedBy() {
+  public function validatedBy(): string {
     return '\Drupal\Core\Validation\Plugin\Validation\Constraint\UniqueFieldValueValidator';
   }
 

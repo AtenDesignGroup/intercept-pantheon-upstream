@@ -8,7 +8,7 @@
 /**
  * Implements hook_schema().
  */
-function file_schema() {
+function file_schema(): array {
   $schema['file_usage'] = [
     'description' => 'Track where a file is used.',
     'fields' => [
@@ -108,6 +108,6 @@ function file_requirements($phase) {
 /**
  * Implements hook_update_last_removed().
  */
-function file_update_last_removed() {
+function file_update_last_removed(): int {
   return 8700;
 }

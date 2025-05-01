@@ -10,6 +10,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
  * Contains Field and Help hooks.
  *
  * Class is declared as a service in services.yml file.
+ *
  * @see https://drupalize.me/blog/drupal-111-adds-hooks-classes-history-how-and-tutorials-weve-updated
  */
 class OfficeHoursFieldHooks {

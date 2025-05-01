@@ -7,7 +7,7 @@ namespace Drupal\Tests\date_recur\Kernel;
 use Drupal\Core\Field\Entity\BaseFieldOverride;
 use Drupal\date_recur\DateRange;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -23,11 +23,8 @@ use Drupal\KernelTests\KernelTestBase;
  * @covers \DateRecurRlOccurrenceHandler::occurrencePropertyDefinition
  * @coversDefaultClass \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList
  */
-class DateRecurFieldItemListTest extends KernelTestBase {
+final class DateRecurFieldItemListTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',
@@ -45,9 +42,6 @@ class DateRecurFieldItemListTest extends KernelTestBase {
    */
   private EntityTest $entity;
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('entity_test');
@@ -115,8 +109,8 @@ class DateRecurFieldItemListTest extends KernelTestBase {
     $baseFieldOverride->setDefaultValue([['default_rrule' => $defaultRrule]]);
     $baseFieldOverride->save();
 
-    $entity = DrEntityTest::create();
-    static::assertEquals($defaultRrule, $entity->dr->rrule);
+    $entity = DrEntityTestBasic::create();
+    static::assertEquals($defaultRrule, $entity->dr->first()->rrule);
   }
 
   /**
@@ -125,18 +119,18 @@ class DateRecurFieldItemListTest extends KernelTestBase {
    * @covers ::onChange
    */
   public function testHelperResetAfterItemOverwritten(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2014-06-15T23:00:01',
         'end_value' => '2014-06-16T07:00:02',
         'timezone' => 'Indian/Christmas',
         'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=5',
       ],
-    ];
+    ]);
 
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper1 */
-    $helper1 = $entity->dr[0]->getHelper();
+    $helper1 = $entity->dr->first()?->getHelper();
     $firstOccurrence = $helper1->getOccurrences(NULL, NULL, 1)[0];
     static::assertEquals('Mon, 16 Jun 2014 06:00:01 +0700', $firstOccurrence->getStart()->format('r'));
     static::assertEquals('Mon, 16 Jun 2014 14:00:02 +0700', $firstOccurrence->getEnd()->format('r'));
@@ -151,7 +145,7 @@ class DateRecurFieldItemListTest extends KernelTestBase {
     ];
 
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper2 */
-    $helper2 = $entity->dr[0]->getHelper();
+    $helper2 = $entity->dr->first()?->getHelper();
     $firstOccurrence = $helper2->getOccurrences(NULL, NULL, 1)[0];
     static::assertEquals('Thu, 16 Jul 2015 06:00:03 +0700', $firstOccurrence->getStart()->format('r'));
     static::assertEquals('Thu, 16 Jul 2015 14:00:04 +0700', $firstOccurrence->getEnd()->format('r'));

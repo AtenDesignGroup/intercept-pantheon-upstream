@@ -1,112 +1,200 @@
-(function ($, Drupal, window) {
-  'use strict';
+((Drupal, once) => {
   Drupal.behaviors.viewsFiltersSummary = {
-    attach: function (context) {
-
+    attach(context) {
       /**
-       * Reset all form inputs to an empty value/default state.
+       * Reset all exposed form inputs to an empty value/default state.
+       *
+       * @param {Element} exposedForm
+       *   The exposed form to reset.
        */
-      function reset(selector) {
-        $(selector).find(':input').each(function () {
-          switch (this.type) {
+      function reset(exposedForm) {
+        const inputs = exposedForm.querySelectorAll('input');
+        inputs.forEach((input) => {
+          switch (input.type) {
             case 'password':
             case 'select-multiple':
             case 'select-one':
             case 'text':
             case 'textarea':
-              $(this).val('');
+            case 'date':
+              input.value = '';
               break;
             case 'checkbox':
             case 'radio':
-              this.checked = false;
+              input.checked = false;
+              break;
+            case 'hidden':
+              // BEF links widget handling.
+              input.remove();
+              break;
+            default:
               break;
           }
+        });
+        const selects = exposedForm.querySelectorAll('select');
+        selects.forEach((select) => {
+          Array.from(select.options).forEach((option) => {
+            option.selected = false;
+          });
         });
       }
 
       /**
        * Check if the views exposed form uses AJAX.
-       * @returns {boolean|jQuery|*}
+       *
+       * @return {boolean}
+       *   true if Ajax is used, false otherwise.
        */
       function usesAjax() {
-        return $('.views-filters-summary', context)
-          .hasClass('views-filters-summary--use-ajax');
+        const summary = context.querySelector('.views-filters-summary');
+        return summary.classList.contains('views-filters-summary--use-ajax');
       }
 
       /**
-       * Remove a specific filter from the views exposed filters.
+       * Returns the current view exposed form.
        *
-       * @param {Event} MouseEvent
+       * @return {Element|*}
+       *   The view exposed form.
+       */
+      function getExposedForm() {
+        const summaryElt = context.querySelector('[data-exposed-form-id]');
+        const exposedFormId = summaryElt.getAttribute('data-exposed-form-id');
+        let form = context.querySelector(`form#${exposedFormId}`);
+        if (!form) {
+          // When the form is not found in the context (e.g. as a block), use document instead.
+          form = document.querySelector(`form#${exposedFormId}`);
+        }
+        return form;
+      }
+
+      /**
+       * Returns the exposed form filter button.
+       *
+       * @param {Element} exposedForm
+       *   The exposed form jQuery object.
+       * @return {Element|*}
+       *   The exposed form filter button.
+       */
+      function getFilterSubmit(exposedForm) {
+        // Some exposed forms can have multiple "filter" buttons.
+        return exposedForm.querySelector(
+          ':is(button, input)[type="submit"]:first-of-type',
+        );
+      }
+
+      /**
+       * Execute exposed form Ajax submit.
+       */
+      function ajaxSubmit() {
+        const exposedForm = getExposedForm();
+        const submit = getFilterSubmit(exposedForm);
+        submit.click();
+      }
+
+      /**
+       * Simulate a form submit using history and reload.
+       *
+       * @param {Element} exposedForm
+       *   The exposed form element.
+       */
+      function historySubmit(exposedForm) {
+        const formData = new FormData(exposedForm); // Gather form data.
+        const { action } = exposedForm; // Get the action URL.
+        const params = new URLSearchParams(formData).toString(); // Convert form data to query string.
+        const url = action + (action.includes('?') ? '&' : '?') + params;
+        window.history.replaceState({}, document.title, url);
+        window.location.reload();
+      }
+
+      /**
+       * Click the views exposed form submit button or reload the page if
+       * filters existed in the URL.
+       *
+       * @param {MouseEvent} event
        *   The click event.
        */
       function onRemoveClick(event) {
         event.preventDefault();
-        const [selector, value] = $(this).data('removeSelector').split(':');
-
-        // If there are filters in the URL, remove the specific key value pair
-        // and refresh the page.
-        if (window.location.search.length > 0) {
-          const url = new URL(window.location);
-          // Remove the single value selector.
-          url.searchParams.delete(selector);
-          // Remove keyed element.
-          url.searchParams.delete(`${selector}[${value}]`);
-          // Remove the multi value selector, then add back in the ones that don't match the value.
-          const multiValueParams = url.searchParams.getAll(`${selector}[]`);
-          multiValueParams.forEach((param) => {
-            if (param !== value) {
-              url.searchParams.append(`${selector}[]`, param);
+        const removeSelector = this.getAttribute('data-remove-selector');
+        const [selector, value] = removeSelector.split(':');
+        const form = getExposedForm();
+        const inputs = form.querySelectorAll(`[name^="${selector}"]`);
+        inputs.forEach((input) => {
+          if (input.tagName === 'INPUT') {
+            switch (input.type) {
+              case 'radio':
+              case 'checkbox':
+                if (input.value === value) {
+                  input.checked = false;
+                }
+                break;
+              case 'hidden':
+                // BEF links widget handling.
+                if (input.value === value) {
+                  input.remove();
+                }
+                break;
+              default:
+                // Handle the special case of an autocomplete field.
+                if (input.hasAttribute('data-autocomplete-path')) {
+                  const originalValues = input.value.split(',');
+                  const updatedValues = originalValues.filter((v) => {
+                    const match = v.match(/.+\s\(([^)]+)\)/);
+                    return match && match[1] !== value;
+                  });
+                  input.value = updatedValues.join(', ');
+                } else {
+                  input.value = '';
+                }
+                break;
             }
-          });
-          window.location = url.toString();
-        }
-        // Else, clear the specific input and submit the form.
-        else {
-          const $input = $(`[name^="${selector}"]`);
-
-          if ($input !== undefined) {
-            if ($input.is('input')) {
-              switch ($input.attr('type')) {
-                case 'radio':
-                case 'checkbox':
-                  $input.filter(`[value="${value}"]`).prop('checked', false);
-                  break;
-                default:
-                  $input.val('');
-                  break;
-              }
-            } else {
-              $input.children(`[value="${value}"]`).prop('selected', false);
-            }
-            $('.views-exposed-form input[type="submit"]:nth-child(1)').trigger('click');
+          } else {
+            input.querySelectorAll(`[value="${value}"]`).forEach((element) => {
+              element.selected = false;
+            });
           }
+        });
+        if (usesAjax()) {
+          ajaxSubmit();
+        } else {
+          historySubmit(form);
         }
       }
 
       /**
        * Reset all views exposed form filters.
        *
-       * @param {Event} MouseEvent
+       * @param {MouseEvent} event
        *   The click event.
        */
       function onResetClick(event) {
         event.preventDefault();
-        let uri = window.location.toString();
-        if (window.location.search) {
-          let base_url = uri.substring(0, uri.indexOf("?"));
-          window.history.pushState({}, "", base_url);
-          window.location.reload();
+        const form = getExposedForm();
+        reset(form);
+        if (usesAjax()) {
+          ajaxSubmit();
         } else {
-          reset('form[id^="views-exposed-form"]');
-          $('.views-exposed-form input[type="submit"]:nth-child(1)').trigger('click');
+          historySubmit(form);
         }
       }
 
       /**
        * Bind the remove and reset click events.
        */
-      $('.views-filters-summary a.remove-filter', context).one('click', onRemoveClick);
-      $('.views-filters-summary a.reset', context).one('click', onResetClick);
+      once(
+        'views-filters-summary-remove-filter',
+        '.views-filters-summary a.remove-filter',
+        context,
+      ).forEach((element) => {
+        element.addEventListener('click', onRemoveClick);
+      });
+      once(
+        'views-filters-summary-reset',
+        '.views-filters-summary a.reset',
+        context,
+      ).forEach((element) => {
+        element.addEventListener('click', onResetClick);
+      });
     },
   };
-})(jQuery, Drupal, window);
+})(Drupal, once);

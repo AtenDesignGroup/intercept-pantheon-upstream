@@ -56,4 +56,21 @@ interface ExporterInterface {
    */
   public function exportModuleContent($module_name, $folder = NULL);
 
+  /**
+   * Exports all content and referenced entities in a module's info file.
+   *
+   * @param string $module_name
+   *   The name of the module.
+   * @param string|null $folder
+   *   (optional) A folder to write the exported entities into, grouped by
+   *   entity type. File entities also export their files into the same folder.
+   *
+   * @return string[][]
+   *   The serialized entities keyed by entity type and UUID.
+   *
+   * @throws \InvalidArgumentException
+   *   If any UUID is not found.
+   */
+  public function exportModuleContentWithReferences($module_name, $folder = NULL);
+
 }

@@ -125,7 +125,6 @@ class TimeSlot extends FieldBase {
           static::$renderIndex[$entity_id]['items'] ??= $items;
           static::$renderIndex[$entity_id]['seasons'] ??= $items->getSeasons(TRUE);
           static::$renderIndex[$entity_id]['office_hours'] ??= $items->getRows($formatter_settings, $widget_settings, $third_party_settings);
-
         }
       }
 

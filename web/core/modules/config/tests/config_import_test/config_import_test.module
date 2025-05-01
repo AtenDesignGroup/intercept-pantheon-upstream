@@ -5,14 +5,9 @@
  * Provides configuration import test helpers.
  */
 
-use Drupal\Core\Config\ConfigImporter;
+declare(strict_types=1);
 
-/**
- * Implements hook_config_import_steps_alter().
- */
-function config_import_test_config_import_steps_alter(&$sync_steps) {
-  $sync_steps[] = '_config_import_test_config_import_steps_alter';
-}
+use Drupal\Core\Config\ConfigImporter;
 
 /**
  * Implements configuration synchronization step added by an alter for testing.

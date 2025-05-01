@@ -143,7 +143,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
       $this->entityDefinitionUpdateManager->updateEntityType($entity_type);
       $this->fail('EntityStorageException thrown when trying to apply an update that requires shared table schema changes.');
     }
-    catch (EntityStorageException $e) {
+    catch (EntityStorageException) {
       // Expected exception; just continue testing.
     }
   }
@@ -501,7 +501,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
         ->execute();
       $this->fail($message);
     }
-    catch (IntegrityConstraintViolationException $e) {
+    catch (IntegrityConstraintViolationException) {
       // Now provide a value for the 'not null' column. This is expected to
       // succeed.
       $values['new_bundle_field_shape'] = $this->randomString();
@@ -604,7 +604,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
       $this->applyEntityUpdates();
       $this->fail('FieldStorageDefinitionUpdateForbiddenException thrown when trying to update a field schema that has data.');
     }
-    catch (FieldStorageDefinitionUpdateForbiddenException $e) {
+    catch (FieldStorageDefinitionUpdateForbiddenException) {
       // Expected exception; just continue testing.
     }
   }
@@ -628,7 +628,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
       $this->applyEntityUpdates();
       $this->fail('FieldStorageDefinitionUpdateForbiddenException thrown when trying to update a field schema that has data.');
     }
-    catch (FieldStorageDefinitionUpdateForbiddenException $e) {
+    catch (FieldStorageDefinitionUpdateForbiddenException) {
       // Expected exception; just continue testing.
     }
   }
@@ -813,7 +813,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
       $this->entityDefinitionUpdateManager->installEntityType(new ContentEntityType(['id' => 'foo']));
       $this->fail($message);
     }
-    catch (PluginNotFoundException $e) {
+    catch (PluginNotFoundException) {
       // Expected exception; just continue testing.
     }
 
@@ -826,7 +826,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
       $this->entityDefinitionUpdateManager->installFieldStorageDefinition('bar', 'foo', 'entity_test', $storage_definition);
       $this->fail($message);
     }
-    catch (PluginNotFoundException $e) {
+    catch (PluginNotFoundException) {
       // Expected exception; just continue testing.
     }
 
@@ -955,7 +955,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
       $this->applyEntityUpdates();
       $this->fail($message);
     }
-    catch (EntityStorageException $e) {
+    catch (EntityStorageException) {
       // Expected exception; just continue testing.
     }
 
@@ -971,7 +971,7 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
       $entity->save();
       $this->fail($message);
     }
-    catch (EntityStorageException $e) {
+    catch (EntityStorageException) {
       // Expected exception; just continue testing.
     }
   }
@@ -997,7 +997,6 @@ class EntityDefinitionUpdateTest extends EntityKernelTestBase {
     $db_schema = $this->database->schema();
 
     // Create two entities before adding the base field.
-    /** @var \Drupal\entity_test\Entity\EntityTestUpdate $entity */
     $storage->create()->save();
     $storage->create()->save();
 

@@ -3,7 +3,7 @@ type: theme
 description: Base theme for Intercept sites
 package: Intercept
 base theme: stable9
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 
 regions:
   header: Header
@@ -42,7 +42,6 @@ libraries-override:
         misc/dialog/off-canvas/css/titlebar.css: false
         # misc/dialog/off-canvas/css/wrapper.css: {}
   intercept_core/bigCalendar: intercept_base/bigCalendar
-  styleguide/styleguide_css: intercept_base/styleguide
   views_filters_summary/views_filters_summary:
     css:
       theme:
@@ -120,8 +119,3 @@ components:
       - components
     intercept-base-icons:
       - images/icons
-
-# Information added by Drupal.org packaging script on 2025-03-26
-version: '2.0.11'
-project: 'intercept_base'
-datestamp: 1743020575

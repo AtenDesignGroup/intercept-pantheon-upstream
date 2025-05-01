@@ -114,7 +114,7 @@ class ComponentNodeVisitor implements NodeVisitorInterface {
     try {
       return $this->pluginManager->find($component_id);
     }
-    catch (ComponentNotFoundException $e) {
+    catch (ComponentNotFoundException) {
       return NULL;
     }
   }
@@ -149,7 +149,7 @@ class ComponentNodeVisitor implements NodeVisitorInterface {
     try {
       $it = $node->getIterator();
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       return;
     }
     if ($it instanceof \SeekableIterator) {

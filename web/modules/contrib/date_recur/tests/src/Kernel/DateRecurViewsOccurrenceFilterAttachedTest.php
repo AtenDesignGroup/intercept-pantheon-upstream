@@ -17,7 +17,7 @@ use Drupal\field\Entity\FieldStorageConfig;
  *
  * @group date_recur
  */
-class DateRecurViewsOccurrenceFilterAttachedTest extends DateRecurViewsOccurrenceFilterTest {
+final class DateRecurViewsOccurrenceFilterAttachedTest extends DateRecurViewsOccurrenceFilterTest {
 
   /**
    * {@inheritdoc}

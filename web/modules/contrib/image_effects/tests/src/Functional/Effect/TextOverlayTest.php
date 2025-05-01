@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\image_effects\Functional\Effect;
 
-use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\File\FileExists;
 use Drupal\Tests\image_effects\Functional\ImageEffectsTestBase;
 
 /**
@@ -28,7 +30,7 @@ class TextOverlayTest extends ImageEffectsTestBase {
   /**
    * {@inheritdoc}
    */
-  public function providerToolkits() {
+  public static function providerToolkits(): array {
     $toolkits = parent::providerToolkits();
     // @todo This effect does not work on GraphicsMagick.
     unset($toolkits['ImageMagick-graphicsmagick']);
@@ -47,11 +49,11 @@ class TextOverlayTest extends ImageEffectsTestBase {
    *
    * @dataProvider providerToolkits
    */
-  public function testTextOverlayEffect($toolkit_id, $toolkit_config, array $toolkit_settings) {
+  public function testTextOverlayEffect(string $toolkit_id, string $toolkit_config, array $toolkit_settings): void {
     $this->changeToolkit($toolkit_id, $toolkit_config, $toolkit_settings);
 
     // Copy the font file to the test path.
-    $this->fileSystem->copy('vendor://fileeye/linuxlibertine-fonts/LinLibertine_Rah.ttf', 'dummy-remote://', FileSystemInterface::EXISTS_REPLACE);
+    $this->fileSystem->copy('vendor://fileeye/linuxlibertine-fonts/LinLibertine_Rah.ttf', 'dummy-remote://', FileExists::Replace);
 
     // Add Text overlay effects to the test image style.
     // Different ways to access the same font file, via URI (local and remote),
@@ -96,7 +98,7 @@ class TextOverlayTest extends ImageEffectsTestBase {
     // Check that no temporary files are left in Imagemagick.
     if ($toolkit_id === 'imagemagick') {
       $directory_scan = $this->fileSystem->scanDirectory('temporary://', '/ifx.*/');
-      $this->assertEquals(0, count($directory_scan));
+      $this->assertCount(0, $directory_scan);
     }
 
     $test_data = [
@@ -143,7 +145,7 @@ class TextOverlayTest extends ImageEffectsTestBase {
   /**
    * Text alteration test.
    */
-  public function testTextAlter() {
+  public function testTextAlter(): void {
     // Add Text overlay effect to the test image style.
     $effect_config = [
       'id' => 'image_effects_text_overlay',

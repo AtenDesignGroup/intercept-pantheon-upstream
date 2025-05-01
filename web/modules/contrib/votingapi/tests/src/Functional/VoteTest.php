@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\votingapi\Functional;
 
 use Drupal\Tests\BrowserTestBase;
@@ -14,7 +16,11 @@ class VoteTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['node', 'votingapi', 'votingapi_test'];
+  protected static $modules = [
+    'node',
+    'votingapi',
+    'votingapi_test',
+  ];
 
   /**
    * {@inheritdoc}
@@ -49,6 +55,7 @@ class VoteTest extends BrowserTestBase {
     $vote->save();
     $votes = $query->execute();
     $this->assertCount(1, $votes, 'After a vote is cast on a node, it can be retrieved.');
+    /** @var \Drupal\votingapi\VoteInterface $vote */
     $vote = $vote_storage->load(reset($votes));
     $this->assertNotNull($vote, 'Node vote was loaded.');
     $this->assertEquals($user->id(), $vote->getOwnerId(), 'Node vote has correct user.');
@@ -69,6 +76,7 @@ class VoteTest extends BrowserTestBase {
       ->accessCheck(TRUE);
     $votes = $query->execute();
     $this->assertCount(1, $votes, 'After a vote is cast on a user, it can be retrieved.');
+    /** @var \Drupal\votingapi\VoteInterface $vote */
     $vote = $vote_storage->load(reset($votes));
     $this->assertNotNull($vote, 'User vote was loaded.');
     $this->assertEquals(0, $vote->getOwnerId(), 'A vote with no explicit user received the default value.');
@@ -103,7 +111,7 @@ class VoteTest extends BrowserTestBase {
       ])->save();
     }
 
-    $results = $manager->getResults('node', $node->id());
+    $results = $manager->getResults('node', (int) $node->id());
 
     // Standard results are available and correct.
     $this->assertNotEmpty($results['vote'], 'Results for test vote type are available.');
@@ -129,7 +137,7 @@ class VoteTest extends BrowserTestBase {
     $storage_handler = \Drupal::entityTypeManager()->getStorage('node');
     $entities = $storage_handler->loadMultiple([$node->id()]);
     $storage_handler->delete($entities);
-    $results = $manager->getResults('node', $node->id());
+    $results = $manager->getResults('node', (int) $node->id());
     $this->assertEmpty($results, 'When an entity is deleted, the voting results are also deleted.');
   }
 
@@ -137,6 +145,7 @@ class VoteTest extends BrowserTestBase {
    * Test voting by anonymous users.
    */
   public function testAnonymousVoting(): void {
+    /** @var \Drupal\votingapi\VoteStorageInterface $vote_storage */
     $vote_storage = $this->container->get('entity_type.manager')->getStorage('vote');
     $node = $this->drupalCreateNode();
 

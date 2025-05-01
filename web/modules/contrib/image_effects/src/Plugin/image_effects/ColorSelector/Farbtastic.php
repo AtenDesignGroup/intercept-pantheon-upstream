@@ -1,25 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects\Plugin\image_effects\ColorSelector;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\image_effects\Plugin\Attribute\ColorSelector;
 use Drupal\image_effects\Plugin\ImageEffectsPluginBase;
 
 /**
  * Farbtastic color selector plugin.
- *
- * @Plugin(
- *   id = "farbtastic",
- *   title = @Translation("Farbtastic color selector"),
- *   short_title = @Translation("Farbtastic"),
- *   help = @Translation("Use a Farbtastic color picker to select colors.")
- * )
  */
+#[ColorSelector(
+  id: "farbtastic",
+  title: new TranslatableMarkup("Farbtastic color selector"),
+  shortTitle: new TranslatableMarkup("Farbtastic"),
+  help: new TranslatableMarkup("Use a Farbtastic color picker to select colors."),
+)]
 class Farbtastic extends ImageEffectsPluginBase {
 
   /**
    * {@inheritdoc}
    */
-  public function selectionElement(array $options = []) {
+  public function selectionElement(array $options = []): array {
     return [
       '#type' => 'textfield',
       '#title' => $options['#title'] ?? $this->t('Color'),
@@ -37,7 +40,7 @@ class Farbtastic extends ImageEffectsPluginBase {
   /**
    * {@inheritdoc}
    */
-  public static function isAvailable() {
+  public static function isAvailable(): bool {
     return \Drupal::service('module_handler')->moduleExists('color');
   }
 

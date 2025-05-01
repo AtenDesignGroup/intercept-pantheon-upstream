@@ -14,7 +14,7 @@ use Drupal\Tests\UnitTestCase;
  * @coversDefaultClass \Drupal\date_recur\DateRecurPartGrid
  * @group date_recur
  */
-class DateRecurPartGridUnitTest extends UnitTestCase {
+final class DateRecurPartGridUnitTest extends UnitTestCase {
 
   /**
    * Tests a part grid object without making changes to it.

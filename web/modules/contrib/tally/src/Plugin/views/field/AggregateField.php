@@ -70,7 +70,7 @@ class AggregateField extends EntityField {
       return NULL;
     }
     // Retrieve the translated object.
-    $translated_entity = $this->getEntityFieldRenderer()->getEntityTranslation($entity, $values);
+    $translated_entity = $this->getEntityFieldRenderer()->getEntityTranslationByRelationship($entity, $values);
 
     // Some bundles might not have a specific field, in which case the entity
     // (potentially a fake one) doesn't have it either.

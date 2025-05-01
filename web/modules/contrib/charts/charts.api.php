@@ -2,6 +2,13 @@
 
 /**
  * @file
+ * Hook definitions for charts module.
+ */
+
+use Drupal\node\NodeInterface;
+
+/**
+ * @file
  * Documentation on hooks provided by the Charts module.
  *
  * Charts module provides 4 element types that can be used to construct a chart.
@@ -122,7 +129,7 @@ function hook_chart_definition_alter(array &$definition, array $element, $chart_
     $definition['title']['style']['fontSize'] = 20;
     // Add a caption based on a field on your node containing a Chart field.
     $node = $element['#entity'];
-    if ($node instanceof \Drupal\node\NodeInterface && $node->hasField('field_caption')) {
+    if ($node instanceof NodeInterface && $node->hasField('field_caption')) {
       $definition['caption']['text'] = $node->field_caption->value;
     }
   }

@@ -12,7 +12,7 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group date_recur
  */
-class DateRecurOccurrenceTableSchemaTest extends KernelTestBase {
+final class DateRecurOccurrenceTableSchemaTest extends KernelTestBase {
 
   /**
    * Name of field for testing.
@@ -21,9 +21,6 @@ class DateRecurOccurrenceTableSchemaTest extends KernelTestBase {
    */
   private string $fieldName;
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',
@@ -34,9 +31,6 @@ class DateRecurOccurrenceTableSchemaTest extends KernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     // This is the name of the base field.

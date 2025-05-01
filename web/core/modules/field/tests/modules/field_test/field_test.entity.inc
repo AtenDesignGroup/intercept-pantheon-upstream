@@ -5,15 +5,7 @@
  * Defines an entity type.
  */
 
-/**
- * Implements hook_entity_type_alter().
- */
-function field_test_entity_type_alter(array &$entity_types) {
-  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
-  foreach (field_test_entity_info_translatable() as $entity_type => $translatable) {
-    $entity_types[$entity_type]->set('translatable', $translatable);
-  }
-}
+declare(strict_types=1);
 
 /**
  * Helper function to enable entity translations.

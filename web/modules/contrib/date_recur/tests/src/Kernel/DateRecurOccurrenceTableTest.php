@@ -42,9 +42,6 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
    */
   protected ?FieldStorageDefinitionInterface $fieldDefinition;
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',
@@ -55,9 +52,6 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -112,7 +106,7 @@ class DateRecurOccurrenceTableTest extends KernelTestBase {
     $countDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
     $count = 0;
     while ($day <= $until) {
-      if (in_array($day->format('D'), $countDays, TRUE)) {
+      if (\in_array($day->format('D'), $countDays, TRUE)) {
         $count++;
       }
       $day->modify('+1 day');

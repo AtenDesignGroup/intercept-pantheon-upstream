@@ -1,22 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects\Plugin\ImageToolkit\Operation\imagemagick;
 
-use Drupal\image_effects\Plugin\ImageToolkit\Operation\gd\GDOperationTrait;
+use Drupal\Core\ImageToolkit\Attribute\ImageToolkitOperation;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\image_effects\Plugin\ImageToolkit\Operation\SmartCropTrait;
+use Drupal\image_effects\Plugin\ImageToolkit\Operation\gd\GDOperationTrait;
 use Drupal\imagemagick\Plugin\ImageToolkit\Operation\imagemagick\ImagemagickImageToolkitOperationBase;
 
 /**
  * Defines Imagemagick Scale and Smart Crop operation.
- *
- * @ImageToolkitOperation(
- *   id = "image_effects_imagemagick_smart_crop",
- *   toolkit = "imagemagick",
- *   operation = "smart_crop",
- *   label = @Translation("Smart Crop"),
- *   description = @Translation("Similar to Crop, but preserves the portion of the image with the most entropy.")
- * )
  */
+#[ImageToolkitOperation(
+  id: 'image_effects_imagemagick_smart_crop',
+  toolkit: 'imagemagick',
+  operation: 'smart_crop',
+  label: new TranslatableMarkup('Smart Crop'),
+  description: new TranslatableMarkup('Similar to Crop, but preserves the portion of the image with the most entropy.'),
+)]
 class SmartCrop extends ImagemagickImageToolkitOperationBase {
 
   use SmartCropTrait;
@@ -41,8 +44,9 @@ class SmartCrop extends ImagemagickImageToolkitOperationBase {
     /** @var \Drupal\system\Plugin\ImageToolkit\GDToolkit $temp_toolkit */
     $temp_toolkit = $temp_image->getToolkit();
     $rect = match ($arguments['algorithm']) {
-      'entropy_slice' => $this->getEntropyCropBySlicing($temp_toolkit->getResource(), $arguments['width'], $arguments['height']),
-      'entropy_grid' => $this->getEntropyCropByGridding($temp_toolkit->getResource(), $arguments['width'], $arguments['height'], $arguments['simulate'], $arguments['algorithm_params']['grid_width'], $arguments['algorithm_params']['grid_height'], $arguments['algorithm_params']['grid_rows'], $arguments['algorithm_params']['grid_cols'], $arguments['algorithm_params']['grid_sub_rows'], $arguments['algorithm_params']['grid_sub_cols']),
+      'entropy_grid' => $this->getEntropyCropByGridding($temp_toolkit->getImage(), $arguments['width'], $arguments['height'], $arguments['simulate'], $arguments['algorithm_params']['grid_width'], $arguments['algorithm_params']['grid_height'], $arguments['algorithm_params']['grid_rows'], $arguments['algorithm_params']['grid_cols'], $arguments['algorithm_params']['grid_sub_rows'], $arguments['algorithm_params']['grid_sub_cols']),
+      // 'entropy_slice' is the default.
+      default => $this->getEntropyCropBySlicing($temp_toolkit->getImage(), $arguments['width'], $arguments['height']),
     };
     $points = $this->getRectangleCorners($rect);
 

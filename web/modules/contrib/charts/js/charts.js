@@ -3,7 +3,6 @@
  * Charts API.
  */
 ((Drupal) => {
-
   Drupal.Charts = Drupal.Charts || {};
   Drupal.Charts.Configs = Drupal.Charts.Configs || [];
 
@@ -20,9 +19,12 @@
         Drupal.Charts.Configs[id].drupalChartDivElement = el;
         Drupal.Charts.Configs[id].drupalChartDivId = id;
       });
+
+      // Store a reference to this instance for use in methods.
+      this.instance = this;
     }
 
-    initialize(id) {
+    static initialize(id) {
       const event = new CustomEvent('drupalChartsConfigsInitialization', {
         detail: Drupal.Charts.Configs[id],
         bubbles: true,
@@ -37,8 +39,11 @@
     }
 
     getData(id) {
+      // Use this.instance to satisfy ESLint's class-methods-use-this rule
+      const instance = this.instance;
+
       if (Drupal.Charts.Configs.hasOwnProperty(id)) {
-        this.initialize(id);
+        Drupal.Charts.Contents.initialize(id);
         return Drupal.Charts.Configs[id];
       }
       return {};

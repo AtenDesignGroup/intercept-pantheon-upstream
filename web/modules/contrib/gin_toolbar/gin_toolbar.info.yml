@@ -7,6 +7,6 @@ dependencies:
   - drupal:toolbar
 
 # Information added by Drupal.org packaging script on 2024-12-20
-version: '8.x-1.0'
+version: '2.0.0'
 project: 'gin_toolbar'
-datestamp: 1734698812
+datestamp: 1734698923

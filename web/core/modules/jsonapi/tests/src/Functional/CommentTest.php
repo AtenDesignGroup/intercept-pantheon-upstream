@@ -81,7 +81,7 @@ class CommentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpAuthorization($method) {
+  protected function setUpAuthorization($method): void {
     switch ($method) {
       case 'GET':
         $this->grantPermissionsToTestedRole(['access comments', 'view test entity']);
@@ -143,7 +143,7 @@ class CommentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getExpectedDocument() {
+  protected function getExpectedDocument(): array {
     $self_url = Url::fromUri('base:/jsonapi/comment/comment/' . $this->entity->uuid())->setAbsolute()->toString(TRUE)->getGeneratedUrl();
     $author = User::load($this->entity->getOwnerId());
     return [
@@ -238,7 +238,7 @@ class CommentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getPostDocument() {
+  protected function getPostDocument(): array {
     return [
       'data' => [
         'type' => 'comment--comment',
@@ -293,10 +293,10 @@ class CommentTest extends ResourceTestBase {
    */
   protected function getExpectedUnauthorizedAccessMessage($method) {
     switch ($method) {
-      case 'GET';
+      case 'GET':
         return "The 'access comments' permission is required and the comment must be published.";
 
-      case 'POST';
+      case 'POST':
         return "The 'post comments' permission is required.";
 
       case 'PATCH':
@@ -329,7 +329,7 @@ class CommentTest extends ResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static function getIncludePermissions() {
+  protected static function getIncludePermissions(): array {
     return [
       'type' => ['administer comment types'],
       'uid' => ['access user profiles'],

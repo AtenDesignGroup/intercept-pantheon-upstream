@@ -17,18 +17,16 @@ use Drupal\Tests\UnitTestCase;
  * @coversDefaultClass \Drupal\date_recur\DateRecurHelper
  * @group date_recur
  */
-class DateRecurRruleUnitTest extends UnitTestCase {
+final class DateRecurRruleUnitTest extends UnitTestCase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     // DrupalDateTime wants to access the language manager.
-    $languageManager = $this->getMockForAbstractClass(LanguageManagerInterface::class);
-    $languageManager->expects($this::any())
+    $languageManager = $this->getMockBuilder(LanguageManagerInterface::class)
+      ->getMock()
+      ->expects($this::any())
       ->method('getCurrentLanguage')
-      ->will($this::returnValue(new Language(['id' => 'en'])));
+      ->willReturn(new Language(['id' => 'en']));
 
     $container = new ContainerBuilder();
     $container->set('language_manager', $languageManager);
@@ -118,7 +116,7 @@ class DateRecurRruleUnitTest extends UnitTestCase {
     // Iterate over it a bit, because this is an infinite RRULE it will go
     // forever.
     $iterationCount = 0;
-    $maxIterations = count($assertOccurrences);
+    $maxIterations = \count($assertOccurrences);
     foreach ($generator as $occurrence) {
       static::assertTrue($occurrence instanceof DateRange);
 

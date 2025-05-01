@@ -6,7 +6,7 @@ includes:
 
 parameters:
 
-  level: 2
+  level: 5
 
   paths:
     - .
@@ -14,3 +14,9 @@ parameters:
   ignoreErrors:
     - "#^Unsafe usage of new static#"
     - "#Drupal calls should be avoided in classes, use dependency injection instead#"
+    -
+      # This is due to Drush 13 doing runtime conditional classloading.
+      message: "#^Call to method choice\\(\\) on an unknown class Drush\\\\Style\\\\DrushStyle\\.$#"
+      count: 1
+      path: src/Commands/ImageEffectsCommands.php
+      reportUnmatched: false

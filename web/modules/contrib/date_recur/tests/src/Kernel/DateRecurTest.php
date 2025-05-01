@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\date_recur_entity_test\Entity\DrEntityTestSingleCardinality;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
@@ -17,11 +17,8 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group date_recur
  */
-class DateRecurTest extends KernelTestBase {
+final class DateRecurTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',
@@ -32,9 +29,6 @@ class DateRecurTest extends KernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('dr_entity_test');
@@ -47,7 +41,7 @@ class DateRecurTest extends KernelTestBase {
     $this->installEntitySchema('dr_entity_test_single');
 
     $entity = DrEntityTestSingleCardinality::create();
-    $entity->dr = [
+    $entity->dr->setValue([
       [
         'value' => '2014-06-15T23:00:00',
         'end_value' => '2014-06-16T07:00:00',
@@ -62,7 +56,7 @@ class DateRecurTest extends KernelTestBase {
         'infinite' => '1',
         'timezone' => 'Australia/Sydney',
       ],
-    ];
+    ]);
 
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $fieldList */
     $fieldList = $entity->dr;
@@ -102,18 +96,20 @@ class DateRecurTest extends KernelTestBase {
     FieldConfig::create($field)->save();
 
     $entity = EntityTest::create();
-    $entity->abc = [
-      'value' => '2014-06-15T23:00:00',
-      'end_value' => '2014-06-16T07:00:00',
-      'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
-      'infinite' => '1',
-      'timezone' => 'Australia/Sydney',
-    ];
+    $entity->abc->setValue([
+      [
+        'value' => '2014-06-15T23:00:00',
+        'end_value' => '2014-06-16T07:00:00',
+        'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
+        'infinite' => '1',
+        'timezone' => 'Australia/Sydney',
+      ],
+    ]);
 
     // No need to save the entity.
     static::assertTrue($entity->isNew());
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item */
-    $item = $entity->abc[0];
+    $item = $entity->abc->first();
     $occurrences = $item->getHelper()
       ->getOccurrences(NULL, NULL, 2);
     static::assertEquals('Mon, 16 Jun 2014 09:00:00 +1000', $occurrences[0]->getStart()->format('r'));
@@ -126,18 +122,19 @@ class DateRecurTest extends KernelTestBase {
    * Tests accessing occurrences with fields with no end date or rule.
    */
   public function testHelperNonRecurringWithNoEnd(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       'value' => '2014-06-15T23:00:00',
       'end_value' => '',
       'rrule' => '',
       'infinite' => '0',
       'timezone' => 'Australia/Sydney',
-    ];
+    ]);
 
     // Ensure a non repeating field value generates a single occurrence.
-    /** @var \Drupal\date_recur\DateRange[] $occurrences */
-    $occurrences = iterator_to_array($entity->dr->occurrences);
+    /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $first */
+    $first = $entity->dr->first();
+    $occurrences = \iterator_to_array($first->occurrences);
     static::assertCount(1, $occurrences);
 
     $tz = new \DateTimeZone('Australia/Sydney');
@@ -150,18 +147,19 @@ class DateRecurTest extends KernelTestBase {
    * Tests accessing occurrences with fields with end date or rule.
    */
   public function testHelperNonRecurringWithEnd(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
       'rrule' => '',
       'infinite' => '0',
       'timezone' => 'Australia/Sydney',
-    ];
+    ]);
 
     // Ensure a non repeating field value generates a single occurrence.
-    /** @var \Drupal\date_recur\DateRange[] $occurrences */
-    $occurrences = iterator_to_array($entity->dr->occurrences);
+    /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $first */
+    $first = $entity->dr->first();
+    $occurrences = \iterator_to_array($first->occurrences);
     static::assertCount(1, $occurrences);
 
     $tz = new \DateTimeZone('Australia/Sydney');

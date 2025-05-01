@@ -22,7 +22,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 /**
  * Implements hook_requirements().
  */
-function date_recur_requirements($phase): array {
+function date_recur_requirements(string $phase): array {
   $requirements = [];
 
   if (!class_exists('\RRule\RRule')) {
@@ -40,8 +40,10 @@ function date_recur_requirements($phase): array {
 
 /**
  * Update date recur fields with new column schema for 'rrule' property.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
-function date_recur_update_8201(&$sandbox): void {
+function date_recur_update_8201(array &$sandbox): void {
   // The process is:
   // 1. Determine all entity types with date recur fields and load their
   //    definitions.
@@ -124,6 +126,8 @@ function date_recur_update_8201(&$sandbox): void {
  * Add a default value for new 'rrule_max_length' setting on date recur fields.
  *
  * Applies to attached fields only.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
 function date_recur_update_8202(&$sandbox): void {
   $fieldType = 'date_recur';
@@ -158,6 +162,8 @@ function date_recur_update_8202(&$sandbox): void {
 
 /**
  * Checks for invalid time zones in storage.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
 function date_recur_update_8203(&$sandbox): void {
   $timeZoneList = timezone_identifiers_list();
@@ -195,13 +201,13 @@ function date_recur_update_8203(&$sandbox): void {
       $select->addField('field_table', $timeZoneColumnName);
       $select->distinct();
       $result = $select->execute();
-      if (!$result) {
+      if (NULL === $result) {
         throw new \Exception('Problem executing query.');
       }
       $allTimeZones = $result->fetchCol($timeZoneColumnName);
       $diff = array_diff($allTimeZones, $timeZoneList);
 
-      if (count($diff)) {
+      if (count($diff) > 0) {
         // This exception prevents further updates from happening until it is
         // resolved.
         throw new UpdateException(sprintf('Invalid time zones found for field `%s` in table `%s`: `%s`. Please resolve these invalid values manually before continuing.', $fieldName, $table, implode(', ', $diff)));
@@ -212,6 +218,8 @@ function date_recur_update_8203(&$sandbox): void {
 
 /**
  * Update view and form display configurations.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
 function date_recur_update_8204(&$sandbox): void {
   /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface[] $displays */
@@ -270,9 +278,11 @@ function date_recur_update_8204(&$sandbox): void {
 
 /**
  * Add a default interpreter.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
 function date_recur_update_8205(&$sandbox): void {
-  if (DateFormat::load('long') && !DateRecurInterpreter::load('default_interpreter')) {
+  if (DateFormat::load('long') !== NULL && NULL === DateRecurInterpreter::load('default_interpreter')) {
     $configFactory = \Drupal::configFactory();
     $interpreter = $configFactory->getEditable('date_recur.interpreter.default_interpreter');
     $interpreter->setData([
@@ -292,15 +302,18 @@ function date_recur_update_8205(&$sandbox): void {
 
 /**
  * Removes default time zone setting from widgets extending basic widget.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
 function date_recur_update_8206(&$sandbox): void {
   // Get widgets implementing the same class as basic widget.
-  /** @var \Drupal\Core\Field\WidgetPluginManager $fieldWidgetPluginManager */
   $basicWidgetClass = DateRecurBasicWidget::class;
   $basicWidgetDerivativeWidgetIds = [];
   $basicWidgetDerivativeWidgetIds[] = 'date_recur_basic_widget';
+  /** @var \Drupal\Core\Field\WidgetPluginManager $fieldWidgetPluginManager */
   $fieldWidgetPluginManager = \Drupal::service('plugin.manager.field.widget');
   foreach ($fieldWidgetPluginManager->getDefinitions() as $widgetId => $definition) {
+    /** @var array{class: string} $definition */
     $class = $definition['class'];
     if (class_exists($class) && (new \ReflectionClass($class))->isSubclassOf($basicWidgetClass)) {
       $basicWidgetDerivativeWidgetIds[] = $widgetId;
@@ -331,6 +344,8 @@ function date_recur_update_8206(&$sandbox): void {
 
 /**
  * Updates default time zone configuration.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
 function date_recur_update_8207(&$sandbox): void {
   /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
@@ -344,7 +359,7 @@ function date_recur_update_8207(&$sandbox): void {
     foreach ($fields as $fieldName => ['bundles' => $bundles]) {
       foreach ($bundles as $bundle) {
         $field = FieldConfig::loadByName($entityTypeId, $bundle, $fieldName);
-        if ($field) {
+        if ($field !== NULL) {
           array_push($drFields, $field);
         }
       }
@@ -355,11 +370,13 @@ function date_recur_update_8207(&$sandbox): void {
     $defaultValue = $fieldConfig->getDefaultValueLiteral();
     // Skip if the whole value is empty.
     // Don't bother updating install functions, these will be removed.
+    // @phpstan-ignore-next-line
     if (empty($defaultValue)) {
       continue;
     }
 
     // Don't bother updating install functions, these will be removed.
+    // @phpstan-ignore-next-line
     $defaultValue[0]['default_time_zone_source'] = !empty($defaultValue[0]['default_time_zone'])
       ? 'fixed'
       : 'current_user';
@@ -370,6 +387,8 @@ function date_recur_update_8207(&$sandbox): void {
 
 /**
  * Update date recur occurrence table schemas to add a primary key.
+ *
+ * @phpstan-param array<string, mixed> $sandbox
  */
 function date_recur_update_8208(&$sandbox): void {
   // The process is:
@@ -389,7 +408,7 @@ function date_recur_update_8208(&$sandbox): void {
       continue;
     }
 
-    $entityType = $entityTypeManager->getDefinition($entityTypeId);
+    $entityType = $entityTypeManager->getDefinition($entityTypeId) ?? throw new \LogicException();
     $primaryKey = [
       $entityType->isRevisionable() ? 'revision_id' : 'entity_id',
       'field_delta',

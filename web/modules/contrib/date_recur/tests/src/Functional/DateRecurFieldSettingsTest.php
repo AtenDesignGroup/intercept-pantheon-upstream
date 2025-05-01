@@ -16,16 +16,10 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  *
  * @group date_recur
  */
-class DateRecurFieldSettingsTest extends WebDriverTestBase {
+final class DateRecurFieldSettingsTest extends WebDriverTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected $defaultTheme = 'starterkit_theme';
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'entity_test',
     'datetime',
@@ -44,9 +38,6 @@ class DateRecurFieldSettingsTest extends WebDriverTestBase {
    */
   protected FieldConfigInterface $fieldConfig;
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 

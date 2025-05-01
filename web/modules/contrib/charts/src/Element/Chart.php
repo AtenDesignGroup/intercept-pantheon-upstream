@@ -183,7 +183,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
       }
     }
 
-    self::castElementIntergerValues($element);
+    self::castElementIntegerValues($element);
 
     // Generic theme function assuming it will be suitable for most chart types.
     $element['#theme'] = 'charts_chart';
@@ -238,7 +238,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
    * @param array $element
    *   The element.
    */
-  public static function castElementIntergerValues(array &$element) {
+  public static function castElementIntegerValues(array &$element) {
     // Cast options to integers to avoid redundant library fixing problems.
     $integer_options = [
       // Chart options.
@@ -260,7 +260,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
 
     foreach ($element as $property_name => $value) {
       if (is_array($element[$property_name])) {
-        self::castElementIntergerValues($element[$property_name]);
+        self::castElementIntegerValues($element[$property_name]);
       }
       elseif ($property_name && in_array($property_name, $integer_options)) {
         $element[$property_name] = (is_null($element[$property_name]) || strlen($element[$property_name]) === 0) ? NULL : (int) $element[$property_name];

@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\votingapi;
 
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\votingapi\Entity\VoteType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -79,7 +82,7 @@ class VoteTypeForm extends EntityForm {
       '#default_value' => $type->id(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#machine_name' => [
-        'exists' => ['Drupal\votingapi\Entity\VoteType', 'load'],
+        'exists' => [VoteType::class, 'load'],
         'source' => ['label'],
       ],
       '#description' => $this->t('A unique machine-readable name for this vote type. It must only contain lowercase letters, numbers, and underscores.', [
@@ -120,7 +123,7 @@ class VoteTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): int {
     $type = $this->entity;
     $type->set('id', trim($type->id()));
     $type->set('label', trim($type->label()));
@@ -145,6 +148,7 @@ class VoteTypeForm extends EntityForm {
 
     $this->entityFieldManager->clearCachedFieldDefinitions();
     $form_state->setRedirectUrl($type->toUrl('collection'));
+    return $status;
   }
 
 }

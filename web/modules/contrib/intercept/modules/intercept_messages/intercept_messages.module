@@ -370,6 +370,7 @@ function intercept_messages_cron() {
             ->condition('status', 1)
             ->condition('type', 'person')
             ->condition('field_associated_user_account', $uid);
+          $query->accessCheck();
           $nids = $query->execute();
           if (!empty($nids)) {
             $node = \Drupal::entityTypeManager()->getStorage('node')->load(array_pop($nids));

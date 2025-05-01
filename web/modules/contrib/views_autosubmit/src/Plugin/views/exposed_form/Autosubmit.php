@@ -55,6 +55,12 @@ class Autosubmit extends ExposedFormPluginBase {
     $form['actions']['submit']['#attributes']['class'][] = 'views-auto-submit-click';
     $form['#attached']['library'][] = 'views_autosubmit/autosubmit';
 
+    // Add a message to inform users that the results will automatically refresh.
+    $form['autosubmit_message'] = [
+      '#markup' => '<p class="visually-hidden">' . t('The results will automatically refresh as filter values change.') . '</p>',
+      '#weight' => -10,
+    ];
+
     if (!empty($this->options['autosubmit_hide'])) {
       $form['actions']['submit']['#attributes']['class'][] = 'js-hide';
     }

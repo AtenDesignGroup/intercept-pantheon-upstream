@@ -6,7 +6,7 @@ namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\Core\Field\Entity\BaseFieldOverride;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList;
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\user\Entity\User;
 
@@ -24,11 +24,8 @@ use Drupal\user\Entity\User;
  * @group date_recur
  * @coversDefaultClass \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem
  */
-class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
+final class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',
@@ -42,14 +39,9 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
 
   /**
    * An unsaved base field override entity for 'dr' field.
-   *
-   * @var \Drupal\Core\Field\Entity\BaseFieldOverride
    */
   private BaseFieldOverride $baseFieldOverride;
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('dr_entity_test');
@@ -57,6 +49,7 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
 
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
     $entityFieldManager = \Drupal::service('entity_field.manager');
+    /** @var \Drupal\Core\Field\BaseFieldDefinition[] $baseFields */
     $baseFields = $entityFieldManager->getBaseFieldDefinitions('dr_entity_test');
     $this->baseFieldOverride = BaseFieldOverride::createFromBaseFieldDefinition($baseFields['dr'], 'dr_entity_test');
 
@@ -85,11 +78,13 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
     ]);
     $this->baseFieldOverride->save();
 
-    $entity = DrEntityTest::create();
-    static::assertEquals('2013-04-12T13:00:00', $entity->dr->value);
-    static::assertEquals('2013-04-12T14:00:00', $entity->dr->end_value);
-    static::assertEquals('Indian/Christmas', $entity->dr->timezone);
-    static::assertEquals('FREQ=DAILY;COUNT=100', $entity->dr->rrule);
+    $entity = DrEntityTestBasic::create();
+    $first = $entity->dr->first();
+    self::assertNotNull($first);
+    static::assertEquals('2013-04-12T13:00:00', $first->value);
+    static::assertEquals('2013-04-12T14:00:00', $first->end_value);
+    static::assertEquals('Indian/Christmas', $first->timezone);
+    static::assertEquals('FREQ=DAILY;COUNT=100', $first->rrule);
 
     $entity->save();
     // Value is kept after save.
@@ -113,10 +108,12 @@ class DateRecurFieldItemDefaultValuesTest extends KernelTestBase {
     ]);
     $this->baseFieldOverride->save();
 
-    $entity = DrEntityTest::create();
-    static::assertEquals('2013-04-12T13:00:00', $entity->dr->value);
-    static::assertEquals('2013-04-12T14:00:00', $entity->dr->end_value);
-    static::assertEquals('Asia/Singapore', $entity->dr->timezone);
+    $entity = DrEntityTestBasic::create();
+    $first = $entity->dr->first();
+    self::assertNotNull($first);
+    static::assertEquals('2013-04-12T13:00:00', $first->value);
+    static::assertEquals('2013-04-12T14:00:00', $first->end_value);
+    static::assertEquals('Asia/Singapore', $first->timezone);
   }
 
 }

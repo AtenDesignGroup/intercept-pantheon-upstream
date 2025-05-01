@@ -11,11 +11,8 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group date_recur
  */
-class DateRecurDefaultInterpreterTest extends KernelTestBase {
+final class DateRecurDefaultInterpreterTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'datetime',
     'datetime_range',
@@ -25,9 +22,6 @@ class DateRecurDefaultInterpreterTest extends KernelTestBase {
     'system',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installConfig(['system', 'date_recur']);

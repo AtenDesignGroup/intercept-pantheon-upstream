@@ -1,25 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects\Plugin\image_effects\ColorSelector;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\image_effects\Plugin\Attribute\ColorSelector;
 use Drupal\image_effects\Plugin\ImageEffectsPluginBase;
 
 /**
  * HTML color selector plugin.
- *
- * @Plugin(
- *   id = "html_color",
- *   title = @Translation("HTML color selector"),
- *   short_title = @Translation("HTML color"),
- *   help = @Translation("Use an HTML5 color element to select colors.")
- * )
  */
+#[ColorSelector(
+  id: "html_color",
+  title: new TranslatableMarkup("HTML color selector"),
+  shortTitle: new TranslatableMarkup("HTML color"),
+  help: new TranslatableMarkup("Use an HTML5 color element to select colors."),
+)]
 class HtmlColor extends ImageEffectsPluginBase {
 
   /**
    * {@inheritdoc}
    */
-  public function selectionElement(array $options = []) {
+  public function selectionElement(array $options = []): array {
     return [
       '#type' => 'color',
       '#title'   => $options['#title'] ?? $this->t('Color'),

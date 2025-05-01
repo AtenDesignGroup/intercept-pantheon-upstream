@@ -127,7 +127,7 @@ class FieldWebTest extends ViewTestBase {
    * @return array
    *   A list of beatle ids.
    */
-  protected function clickSortLoadIdsFromOutput() {
+  protected function clickSortLoadIdsFromOutput(): array {
     $fields = $this->xpath("//td[contains(@class, 'views-field-id')]");
     $ids = [];
     foreach ($fields as $field) {
@@ -206,7 +206,7 @@ class FieldWebTest extends ViewTestBase {
       $xpath = $this->assertSession()->buildXPathQuery($xpath, $arguments);
       $result = $elements->xpath($xpath);
       // Some combinations of PHP / libxml versions return an empty array
-      // instead of the documented FALSE. Forcefully convert any falsish values
+      // instead of the documented FALSE. Forcefully convert any falsy values
       // to an empty array to allow foreach(...) constructions.
       return $result ? $result : [];
     }

@@ -9,7 +9,6 @@ use Drupal\Core\Hook\Attribute\Hook;
  *
  * @todo Remove hook declarations from module file in D11.1.
  * @see https://www.drupal.org/project/office_hours/issues/3505428
- *
  * @see https://drupalize.me/blog/drupal-111-adds-hooks-classes-history-how-and-tutorials-weve-updated
  */
 class OfficeHoursThemeHooks {

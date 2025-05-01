@@ -5,12 +5,16 @@
  * Handles integration of Nyan cat templates because we love kittens.
  */
 
+declare(strict_types=1);
+
 use Drupal\Component\Utility\Html;
+
+// cspell:ignore nyan nyancat
 
 /**
  * Implements hook_theme().
  */
-function nyan_cat_theme($existing, $type, $theme, $path) {
+function nyan_cat_theme($existing, $type, $theme, $path): array {
   return drupal_find_theme_templates($existing, '.nyan-cat.html', $path);
 }
 

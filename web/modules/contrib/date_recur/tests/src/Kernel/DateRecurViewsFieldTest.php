@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\date_recur\Kernel;
 
+use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\date_recur\DateRecurOccurrences;
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
 use Drupal\user\Entity\User;
 use Drupal\views\Entity\View;
@@ -23,9 +24,6 @@ use Drupal\views\Tests\ViewTestData;
  */
 class DateRecurViewsFieldTest extends ViewsKernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'date_recur_views_test',
@@ -37,9 +35,6 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   public static $testViews = [
     'dr_entity_test_list',
   ];
@@ -83,6 +78,7 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
       'timezone' => 'Australia/Sydney',
     ]);
     $this->container->get('current_user')->setAccount($user);
+    DateFormat::load('long')?->setPattern('l, j F Y - H:i')->save();
   }
 
   /**
@@ -187,28 +183,28 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
     // Render the dates.
     $assertRendered = [
       [
-        'start' => 'Tuesday, November 6, 2018 - 09:00',
-        'end' => 'Tuesday, November 6, 2018 - 17:00',
+        'start' => 'Tuesday, 6 November 2018 - 09:00',
+        'end' => 'Tuesday, 6 November 2018 - 17:00',
       ],
       [
-        'start' => 'Tuesday, November 6, 2018 - 09:05',
-        'end' => 'Tuesday, November 6, 2018 - 17:05',
+        'start' => 'Tuesday, 6 November 2018 - 09:05',
+        'end' => 'Tuesday, 6 November 2018 - 17:05',
       ],
       [
-        'start' => 'Wednesday, November 7, 2018 - 09:00',
-        'end' => 'Wednesday, November 7, 2018 - 17:00',
+        'start' => 'Wednesday, 7 November 2018 - 09:00',
+        'end' => 'Wednesday, 7 November 2018 - 17:00',
       ],
       [
-        'start' => 'Wednesday, November 7, 2018 - 09:05',
-        'end' => 'Wednesday, November 7, 2018 - 17:05',
+        'start' => 'Wednesday, 7 November 2018 - 09:05',
+        'end' => 'Wednesday, 7 November 2018 - 17:05',
       ],
       [
-        'start' => 'Thursday, November 8, 2018 - 09:00',
-        'end' => 'Thursday, November 8, 2018 - 17:00',
+        'start' => 'Thursday, 8 November 2018 - 09:00',
+        'end' => 'Thursday, 8 November 2018 - 17:00',
       ],
       [
-        'start' => 'Thursday, November 8, 2018 - 09:05',
-        'end' => 'Thursday, November 8, 2018 - 17:05',
+        'start' => 'Thursday, 8 November 2018 - 09:05',
+        'end' => 'Thursday, 8 November 2018 - 17:05',
       ],
     ];
     $result = $executable->result;
@@ -223,11 +219,11 @@ class DateRecurViewsFieldTest extends ViewsKernelTestBase {
   /**
    * Creates an unsaved test entity.
    *
-   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTest
+   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTestBasic
    *   A test entity.
    */
-  protected function createEntity(): DrEntityTest {
-    return DrEntityTest::create();
+  protected function createEntity(): DrEntityTestBasic {
+    return DrEntityTestBasic::create();
   }
 
 }

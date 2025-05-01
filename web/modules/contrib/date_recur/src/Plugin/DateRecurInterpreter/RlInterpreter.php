@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\date_recur\Attribute\DateRecurInterpreter;
 use Drupal\date_recur\Plugin\DateRecurInterpreterPluginBase;
 use RRule\RRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,14 +21,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides an interpreter implemented by rlanvin/php-rrule.
  *
- * @DateRecurInterpreter(
- *  id = "rl",
- *  label = @Translation("RL interpreter"),
- * )
- *
  * @ingroup RLanvinPhpRrule
  * @phpstan-property array{show_start_date: bool, show_until: bool, date_format: string, show_infinite: bool} $configuration
  */
+#[DateRecurInterpreter(
+  id: 'rl',
+  label: new TranslatableMarkup('RL interpreter'),
+)]
 class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use DependencyTrait;
@@ -47,11 +47,11 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
    *   The date format storage.
    */
   public function __construct(
-      array $configuration,
-      $plugin_id,
-      $plugin_definition,
-      protected DateFormatterInterface $dateFormatter,
-      protected EntityStorageInterface $dateFormatStorage,
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected DateFormatterInterface $dateFormatter,
+    protected EntityStorageInterface $dateFormatStorage,
   ) {
     parent::__construct([], $plugin_id, $plugin_definition);
     $this->setConfiguration($configuration);
@@ -88,7 +88,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
   public function interpret(array $rules, string $language, ?\DateTimeZone $timeZone = NULL): string {
     $pluginConfig = $this->getConfiguration();
 
-    if (in_array($language, $this->supportedLanguages(), TRUE) === FALSE) {
+    if (\in_array($language, $this->supportedLanguages(), TRUE) === FALSE) {
       throw new \Exception('Language not supported.');
     }
 
@@ -117,7 +117,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
       $strings[] = $rrule->humanReadable($options);
     }
 
-    return implode(', ', $strings);
+    return \implode(', ', $strings);
   }
 
   /**
@@ -143,7 +143,7 @@ class RlInterpreter extends DateRecurInterpreterPluginBase implements ContainerF
     ];
 
     $exampleDate = new DrupalDateTime();
-    $dateFormatOptions = array_map(
+    $dateFormatOptions = \array_map(
       fn (DateFormatInterface $dateFormat): TranslatableMarkup => $this->t('@name (@date)', [
         '@name' => $dateFormat->label(),
         '@date' => $this->dateFormatter->format($exampleDate->getTimestamp(), (string) $dateFormat->id()),

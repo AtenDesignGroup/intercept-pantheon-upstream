@@ -16,24 +16,23 @@ use Drupal\charts\Element\BaseSettings;
 use Drupal\charts\Plugin\chart\Library\ChartInterface;
 use Drupal\charts\Plugin\chart\Library\LibraryRetrieverTrait;
 use Drupal\charts\TypeManager;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\views\Attribute\ViewsStyle;
 use Drupal\views\Plugin\views\field\EntityField;
 use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Style plugin to render view as a chart.
- *
- * @ingroup views_style_plugins
- *
- * @ViewsStyle(
- *   id = "chart",
- *   title = @Translation("Chart"),
- *   help = @Translation("Render a chart of your data."),
- *   theme = "views_view_charts",
- *   display_types = { "normal" }
- * )
+ * Defines a Views style plugin for rendering charts.
  */
+#[ViewsStyle(
+  id: "chart",
+  title: new TranslatableMarkup("Chart"),
+  help: new TranslatableMarkup("Render a chart of your data."),
+  theme: "views_view_charts",
+  display_types: ["normal"]
+)]
 class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactoryPluginInterface {
 
   use LibraryRetrieverTrait;
@@ -463,7 +462,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
     // Check if this display has any children charts that should be applied
     // on top of it.
     $children_displays = $this->getChildrenChartDisplays();
-    // Contains the different subviews of the attachments.
+    // Contains the different sub views of the attachments.
     $attachments = [];
 
     foreach ($children_displays as $child_display) {
@@ -472,7 +471,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
         continue;
       }
 
-      // Generate the subchart by executing the child display. We load a fresh
+      // Generate the sub chart by executing the child display. We load a fresh
       // view here to avoid collisions in shifting the current display while in
       // a display.
       $subview = $this->view->createDuplicate();
@@ -502,32 +501,32 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
         continue;
       }
 
-      $subchart = $subview->style_plugin->render();
+      $sub_chart = $subview->style_plugin->render();
       // Add attachment views to attachments array.
       array_push($attachments, $subview);
 
       // Create a secondary axis if needed.
-      if ($child_display_handler->options['inherit_yaxis'] !== '1' && isset($subchart['yaxis'])) {
-        $chart['secondary_yaxis'] = $subchart['yaxis'];
+      if ($child_display_handler->options['inherit_yaxis'] !== '1' && isset($sub_chart['yaxis'])) {
+        $chart['secondary_yaxis'] = $sub_chart['yaxis'];
         $chart['secondary_yaxis']['#opposite'] = TRUE;
       }
 
       // Merge in the child chart data.
-      foreach (Element::children($subchart) as $key) {
-        if ($subchart[$key]['#type'] === 'chart_data') {
+      foreach (Element::children($sub_chart) as $key) {
+        if ($sub_chart[$key]['#type'] === 'chart_data') {
           // This ensures that chart attachment data are placed correctly,
           // but it doesn't allow for chart attachment data to have x-axis
           // labels not already present in the parent chart.
           if (!empty($chart['xaxis']['#labels'])) {
-            $processed_data = $this->alignSubchartData($chart['xaxis']['#labels'], $subchart[$key]['#mapped_data'], $subchart[$key]['#data']);
-            $subchart[$key]['#data'] = $processed_data;
+            $processed_data = $this->alignSubChartData($chart['xaxis']['#labels'], $sub_chart[$key]['#mapped_data'], $sub_chart[$key]['#data']);
+            $sub_chart[$key]['#data'] = $processed_data;
           }
-          $chart[$key] = $subchart[$key];
+          $chart[$key] = $sub_chart[$key];
           $chart[$key]['#chart_attachment_id'] = $child_display_handler->display['id'];
-          // If the subchart is a different type than the parent chart, set
+          // If the sub chart is a different type than the parent chart, set
           // the #chart_type property on the individual chart data elements.
-          if ($subchart['#chart_type'] !== $chart['#chart_type']) {
-            $chart[$key]['#chart_type'] = $subchart['#chart_type'];
+          if ($sub_chart['#chart_type'] !== $chart['#chart_type']) {
+            $chart[$key]['#chart_type'] = $sub_chart['#chart_type'];
           }
           if ($child_display_handler->options['inherit_yaxis'] !== '1') {
             $chart[$key]['#target_axis'] = 'secondary_yaxis';
@@ -883,7 +882,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
    * @return array
    *   $processed_data
    */
-  private function alignSubchartData(array $parent_labels, array $child_mapped_data, array $data) {
+  private function alignSubChartData(array $parent_labels, array $child_mapped_data, array $data) {
     $child_labels = array_keys($child_mapped_data);
     if ($parent_labels === $child_labels) {
       return $data;

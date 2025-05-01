@@ -6,6 +6,7 @@ use Drupal\Component\Graph\Graph;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Session\AccountSwitcherInterface;
@@ -117,6 +118,20 @@ class Importer implements ImporterInterface {
   protected $contentEntityNormalizer;
 
   /**
+   * The module extension list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   */
+  protected $extensionList;
+
+  /**
+   * The file system.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
    * List of HAL-JSON serialized files.
    *
    * @var string[]
@@ -137,31 +152,37 @@ class Importer implements ImporterInterface {
    *   The event dispatcher.
    * @param \Drupal\default_content\ContentFileStorageInterface $content_file_storage
    *   The file scanner.
-   * @param string $link_domain
-   *   (deprecated) Defines relation domain URI for entity links. The $link_domain parameter is deprecated in default_content:2.0.0-alpha2 and is removed from default_content:3.0.0.
    * @param \Drupal\Core\Session\AccountSwitcherInterface $account_switcher
    *   The account switcher.
-   * @param \Drupal\default_content\Normalizer\ContentEntityNormalizerInterface $content_entity_normaler
+   * @param \Drupal\default_content\Normalizer\ContentEntityNormalizerInterface $content_entity_normalizer
    *   The YAML normalizer.
-   * @param \Psr\Log\LoggerInterface $logger
-   *   The logger.
+   * @param \Drupal\Core\Extension\ModuleExtensionList $extension_list
+   *   The module extension list.
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
+   *   The file system.
+   * @param string $link_domain
+   *   (deprecated) Defines relation domain URI for entity links. The $link_domain parameter is deprecated in default_content:2.0.0-alpha2 and is removed from default_content:3.0.0.
    *
    * @see https://www.drupal.org/node/3296226
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager,
-                              EventDispatcherInterface $event_dispatcher,
-                              ContentFileStorageInterface $content_file_storage,
-                              AccountSwitcherInterface $account_switcher,
-                              ContentEntityNormalizerInterface $content_entity_normaler,
-                              $link_domain,
-                              LoggerInterface $logger = NULL) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EventDispatcherInterface $event_dispatcher, ContentFileStorageInterface $content_file_storage, AccountSwitcherInterface $account_switcher, ContentEntityNormalizerInterface $content_entity_normalizer, $extension_list, ?FileSystemInterface $file_system = NULL, $link_domain = NULL) {
     $this->entityTypeManager = $entity_type_manager;
     $this->eventDispatcher = $event_dispatcher;
     $this->contentFileStorage = $content_file_storage;
     $this->accountSwitcher = $account_switcher;
-    $this->contentEntityNormalizer = $content_entity_normaler;
+    $this->contentEntityNormalizer = $content_entity_normalizer;
+    if (!$extension_list instanceof ModuleExtensionList) {
+      @trigger_error('Calling the ' . __METHOD__ . '() without $extension_list argument is deprecated in default_content:2.0.0-alpha3 and is removed from default_content:3.0.0 instead. See https://www.drupal.org/node/3250388', E_USER_DEPRECATED);
+      $link_domain = $extension_list;
+      $extension_list = \Drupal::service('extension.list.module');
+    }
+    $this->extensionList = $extension_list;
+    if ($file_system === NULL) {
+      @trigger_error('Calling the ' . __METHOD__ . '() without $extension_list argument is deprecated in default_content:2.0.0-alpha3 and is removed from default_content:3.0.0 instead. See https://www.drupal.org/node/3296226', E_USER_DEPRECATED);
+      $file_system = \Drupal::service('file_system');
+    }
+    $this->fileSystem = $file_system;
     $this->linkDomain = $link_domain;
-    $this->logger = $logger;
   }
 
   /**
@@ -169,7 +190,7 @@ class Importer implements ImporterInterface {
    */
   public function importContent($module) {
     $created = [];
-    $folder = \Drupal::service('extension.list.module')->getPath($module) . "/content";
+    $folder = $this->extensionList->getPath($module) . "/content";
 
     if (file_exists($folder)) {
       $root_user = $this->entityTypeManager->getStorage('user')->load(1);
@@ -229,6 +250,10 @@ class Importer implements ImporterInterface {
             // Here we need to resolve our dependencies:
             foreach ($decoded['_embedded'] as $embedded) {
               foreach ($embedded as $item) {
+                if (empty($item)) {
+                  // Empty dependency such as zero-level parent term.
+                  continue;
+                }
                 $uuid = $item['uuid'][0]['value'];
                 $edge = $this->getVertex($uuid);
                 $this->graph[$vertex->id]['edges'][$edge->id] = TRUE;
@@ -284,27 +309,16 @@ class Importer implements ImporterInterface {
             $file_source = \dirname($file->uri) . '/' . $entity->getFilename();
             if (\file_exists($file_source)) {
               $target_directory = dirname($entity->getFileUri());
-              \Drupal::service('file_system')->prepareDirectory($target_directory, FileSystemInterface::CREATE_DIRECTORY);
-              $new_uri = \Drupal::service('file_system')->copy($file_source, $entity->getFileUri());
+              $this->fileSystem->prepareDirectory($target_directory, FileSystemInterface::CREATE_DIRECTORY);
+              $new_uri = $this->fileSystem->copy($file_source, $entity->getFileUri());
               $entity->setFileUri($new_uri);
             }
           }
 
-          try {
-            $entity->save();
+          $entity->setSyncing(TRUE);
+          $entity->save();
 
-            $created[$entity->uuid()] = $entity;
-          }
-          catch (EntityStorageException $e) {
-            $saved_entity_log_info = [
-              '@type' => $entity->getEntityTypeId(),
-              '@bundle' => $entity->bundle(),
-              '@id' => $entity->id(),
-              '@file' => $file->name,
-              '@exception' => $e->getMessage(),
-            ];
-            $this->logger->error('Entity @type/@bundle, ID: @id, File: @file, Exception: @exception', $saved_entity_log_info);
-          }
+          $created[$entity->uuid()] = $entity;
         }
       }
       $this->eventDispatcher->dispatch(new ImportEvent($created, $module), DefaultContentEvents::IMPORT);

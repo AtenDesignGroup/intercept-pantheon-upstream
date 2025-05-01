@@ -1,9 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @file
+ * Hook implementations for views_filters_summary module.
+ *
  * Provides the ability to show which filters are used in Views Result.
  */
 
@@ -16,6 +16,7 @@ function views_filters_summary_theme($existing, $type, $theme, $path): array {
       'variables' => [
         'summary' => NULL,
         'options' => [],
+        'exposed_form_id' => NULL,
       ],
     ],
   ];

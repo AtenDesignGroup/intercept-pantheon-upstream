@@ -2,33 +2,34 @@
 
 namespace Drupal\charts_test\Plugin\chart\Library;
 
+use Drupal\charts\Attribute\Chart;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Define a library to use for testing purposes.
- *
- * @Chart(
- *   id = "charts_test_library",
- *   name = @Translation("Charts Test Library"),
- *   types = {
- *     "area",
- *     "bar",
- *     "bubble",
- *     "column",
- *     "donut",
- *     "gauge",
- *     "line",
- *     "pie",
- *     "scatter",
- *   },
- * )
+* Defines a test chart library for rendering various chart types.
  */
+#[Chart(
+  id: "charts_test_library",
+  name: new TranslatableMarkup("Charts Test Library"),
+  types: [
+    "area",
+    "bar",
+    "bubble",
+    "column",
+    "donut",
+    "gauge",
+    "line",
+    "pie",
+    "scatter",
+  ]
+)]
 class ChartsTestLibrary extends ChartBase implements ContainerFactoryPluginInterface {
 
   /**

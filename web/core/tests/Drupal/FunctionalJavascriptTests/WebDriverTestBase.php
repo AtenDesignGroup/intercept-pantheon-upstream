@@ -7,11 +7,18 @@ namespace Drupal\FunctionalJavascriptTests;
 use Behat\Mink\Exception\DriverException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Tests\BrowserTestBase;
-use PHPUnit\Runner\BaseTestRunner;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Runs a browser test using a driver that supports JavaScript.
+ *
+ * Module tests extending WebDriverTestBase must exist in the
+ * Drupal\Tests\your_module\FunctionalJavascript namespace and live in the
+ * modules/your_module/tests/src/FunctionalJavascript directory.
+ *
+ * Tests for core/lib/Drupal classes extending WebDriverTestBase must exist in
+ * the \Drupal\FunctionalJavascriptTests\Core namespace and live in the
+ * core/tests/Drupal/FunctionalJavascriptTests directory.
  *
  * Base class for testing browser interaction implemented in JavaScript.
  *
@@ -96,11 +103,6 @@ abstract class WebDriverTestBase extends BrowserTestBase {
    */
   protected function tearDown(): void {
     if ($this->mink) {
-      $status = $this->getStatus();
-      if ($status === BaseTestRunner::STATUS_ERROR || $status === BaseTestRunner::STATUS_WARNING || $status === BaseTestRunner::STATUS_FAILURE) {
-        // Ensure we capture the output at point of failure.
-        @$this->htmlOutput();
-      }
       // Wait for all requests to finish. It is possible that an AJAX request is
       // still on-going.
       $result = $this->getSession()->wait(5000, 'window.drupalActiveXhrCount === 0 || typeof window.drupalActiveXhrCount === "undefined"');
@@ -148,11 +150,6 @@ abstract class WebDriverTestBase extends BrowserTestBase {
       $json = getenv('MINK_DRIVER_ARGS_WEBDRIVER') ?: parent::getMinkDriverArgs();
       if (!($json === FALSE || $json === '')) {
         $args = json_decode($json, TRUE);
-        if (isset($args[1]['chromeOptions'])) {
-          @trigger_error('The "chromeOptions" array key is deprecated in drupal:10.3.0 and is removed from drupal:11.0.0. Use "goog:chromeOptions instead. See https://www.drupal.org/node/3422624', E_USER_DEPRECATED);
-          $args[1]['goog:chromeOptions'] = $args[1]['chromeOptions'];
-          unset($args[1]['chromeOptions']);
-        }
         if (isset($args[0]) && $args[0] === 'chrome' && !isset($args[1]['goog:chromeOptions']['w3c'])) {
           // @todo https://www.drupal.org/project/drupal/issues/3421202
           //   Deprecate defaulting behavior and require w3c to be set.

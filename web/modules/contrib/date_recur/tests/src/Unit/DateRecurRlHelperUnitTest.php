@@ -17,7 +17,7 @@ use Drupal\Tests\UnitTestCase;
  *
  * @ingroup RLanvinPhpRrule
  */
-class DateRecurRlHelperUnitTest extends UnitTestCase {
+final class DateRecurRlHelperUnitTest extends UnitTestCase {
 
   /**
    * Test occurrence generation with range limiters.
@@ -310,7 +310,7 @@ EXDATE:20180906T010000Z';
    * @see \Drupal\date_recur\DateRecurHelperInterface::createInstance
    */
   protected function createHelper(...$args): DateRecurHelperInterface {
-    return RlHelper::createInstance(...func_get_args());
+    return RlHelper::createInstance(...\func_get_args());
   }
 
 }

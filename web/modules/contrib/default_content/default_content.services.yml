@@ -7,7 +7,7 @@ services:
     arguments: ['@file_system']
   default_content.importer:
     class: Drupal\default_content\Importer
-    arguments: ['@entity_type.manager', '@event_dispatcher', '@default_content.content_file_storage', '@account_switcher', '@default_content.content_entity_normalizer', '%default_content.link_domain%', '@logger.channel.default_content']
+    arguments: ['@entity_type.manager', '@event_dispatcher', '@default_content.content_file_storage', '@account_switcher', '@default_content.content_entity_normalizer', '@extension.list.module', '@file_system', '%default_content.link_domain%']
   default_content.exporter:
     class: Drupal\default_content\Exporter
     arguments: ['@entity_type.manager', '@entity.repository', '@event_dispatcher', '@module_handler', '@info_parser', '@default_content.content_file_storage', '@default_content.content_entity_normalizer']

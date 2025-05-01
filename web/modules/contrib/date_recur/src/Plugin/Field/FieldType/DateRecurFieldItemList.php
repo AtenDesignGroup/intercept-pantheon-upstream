@@ -19,6 +19,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Recurring date field item list.
+ *
+ * @method \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem|null first()
  */
 class DateRecurFieldItemList extends DateRangeFieldItemList {
 
@@ -49,18 +51,12 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
     return FALSE;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function delete(): void {
     parent::delete();
     $event = new DateRecurValueEvent($this, FALSE);
     $this->getDispatcher()->dispatch($event, DateRecurEvents::FIELD_ENTITY_DELETE);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function deleteRevision(): void {
     parent::deleteRevision();
     $event = new DateRecurValueEvent($this, FALSE);
@@ -136,16 +132,16 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
   public function defaultValuesFormValidate(array $element, array &$form, FormStateInterface $form_state): void {
     /** @var string|null $defaultDateTimeZone */
     $defaultDateTimeZone = $form_state->getValue(['default_value_input', 'default_date_time_zone']);
-    if ($defaultDateTimeZone === NULL || strlen($defaultDateTimeZone) === '') {
+    if ($defaultDateTimeZone === NULL || \strlen($defaultDateTimeZone) === '') {
       /** @var string|null $defaultStartType */
       $defaultStartType = $form_state->getValue(['default_value_input', 'default_date_type']);
-      if ($defaultStartType !== NULL && strlen($defaultStartType) > 0) {
+      if ($defaultStartType !== NULL && \strlen($defaultStartType) > 0) {
         $form_state->setErrorByName('default_value_input][default_date_time_zone', (string) $this->t('Time zone must be provided if a default start date is provided.'));
       }
 
       /** @var string|null $defaultEndType */
       $defaultEndType = $form_state->getValue(['default_value_input', 'default_end_date_type']);
-      if ($defaultEndType !== NULL && strlen($defaultEndType) > 0) {
+      if ($defaultEndType !== NULL && \strlen($defaultEndType) > 0) {
         $form_state->setErrorByName('default_value_input][default_date_time_zone', (string) $this->t('Time zone must be provided if a default end date is provided.'));
       }
     }
@@ -161,19 +157,19 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
 
     /** @var string|null $rrule */
     $rrule = $form_state->getValue(['default_value_input', 'default_rrule']);
-    if ($rrule !== NULL && strlen($rrule) > 0) {
+    if ($rrule !== NULL && \strlen($rrule) > 0) {
       $values[0]['default_rrule'] = $rrule;
     }
 
     /** @var string|null $defaultDateTimeZone */
     $defaultDateTimeZone = $form_state->getValue(['default_value_input', 'default_date_time_zone']);
-    if ($defaultDateTimeZone !== NULL && strlen($defaultDateTimeZone) > 0) {
+    if ($defaultDateTimeZone !== NULL && \strlen($defaultDateTimeZone) > 0) {
       $values[0]['default_date_time_zone'] = $defaultDateTimeZone;
     }
 
     /** @var string|null $defaultTimeZone */
     $defaultTimeZone = $form_state->getValue(['default_value_input', 'default_time_zone']);
-    if ($defaultTimeZone !== NULL && strlen($defaultTimeZone) > 0) {
+    if ($defaultTimeZone !== NULL && \strlen($defaultTimeZone) > 0) {
       if ($defaultTimeZone === 'current_user') {
         $values[0]['default_time_zone_source'] = 'current_user';
       }
@@ -190,16 +186,16 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
    * {@inheritdoc}
    */
   public static function processDefaultValue($default_value, FieldableEntityInterface $entity, FieldDefinitionInterface $definition): array {
-    assert(is_array($default_value));
+    \assert(\is_array($default_value));
     $defaultDateTimeZone = $default_value[0]['default_date_time_zone'] ?? NULL;
 
     $defaultValue = FieldItemList::processDefaultValue($default_value, $entity, $definition);
 
     $defaultValues = [[]];
 
-    $hasDefaultStartDateType = isset($defaultValue[0]['default_date_type']) && is_string($defaultValue[0]['default_date_type']) && strlen($defaultValue[0]['default_date_type']) > 0;
-    $hasDefaultEndDateType = isset($defaultValue[0]['default_end_date_type']) && is_string($defaultValue[0]['default_end_date_type']) && strlen($defaultValue[0]['default_end_date_type']) > 0;
-    $hasDefaultDateTimeZone = is_string($defaultDateTimeZone) && strlen($defaultDateTimeZone) > 0;
+    $hasDefaultStartDateType = isset($defaultValue[0]['default_date_type']) && \is_string($defaultValue[0]['default_date_type']) && \strlen($defaultValue[0]['default_date_type']) > 0;
+    $hasDefaultEndDateType = isset($defaultValue[0]['default_end_date_type']) && \is_string($defaultValue[0]['default_end_date_type']) && \strlen($defaultValue[0]['default_end_date_type']) > 0;
+    $hasDefaultDateTimeZone = \is_string($defaultDateTimeZone) && \strlen($defaultDateTimeZone) > 0;
     if ($hasDefaultDateTimeZone && ($hasDefaultStartDateType || $hasDefaultEndDateType)) {
       $storageFormat = $definition->getSetting('datetime_type') == DateRecurItem::DATETIME_TYPE_DATE ? DateRecurItem::DATE_STORAGE_FORMAT : DateRecurItem::DATETIME_STORAGE_FORMAT;
 
@@ -225,7 +221,7 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
     }
 
     $rrule = $default_value[0]['default_rrule'] ?? NULL;
-    if (is_string($rrule) && strlen($rrule) > 0) {
+    if (\is_string($rrule) && \strlen($rrule) > 0) {
       $defaultValue[0]['rrule'] = $rrule;
     }
 
@@ -235,7 +231,7 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
     }
     elseif ($timeZoneSource === static::DEFAULT_TIME_ZONE_SOURCE_CURRENT_USER) {
       $timeZone = \date_default_timezone_get();
-      if (strlen($timeZone) === 0) {
+      if (\strlen($timeZone) === 0) {
         throw new \Exception('Something went wrong. User has no time zone.');
       }
       $defaultValue[0]['timezone'] = $timeZone;
@@ -287,7 +283,7 @@ class DateRecurFieldItemList extends DateRangeFieldItemList {
    */
   public function onChange($delta): void {
     foreach ($this->list as $item) {
-      assert($item instanceof DateRecurItem);
+      \assert($item instanceof DateRecurItem);
       $item->resetHelper();
     }
     parent::onChange($delta);

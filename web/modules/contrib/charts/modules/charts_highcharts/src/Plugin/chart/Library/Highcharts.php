@@ -2,6 +2,7 @@
 
 namespace Drupal\charts_highcharts\Plugin\chart\Library;
 
+use Drupal\charts\Attribute\Chart;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormBuilder;
@@ -14,29 +15,32 @@ use Drupal\charts\Element\Chart as ChartElement;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\charts\TypeManager;
 use Drupal\charts_highcharts\Form\ColorChanger;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a concrete class for a Highcharts.
- *
- * @Chart(
- *   id = "highcharts",
- *   name = @Translation("Highcharts"),
- *   types = {
- *     "area",
- *     "bar",
- *     "bubble",
- *     "column",
- *     "donut",
- *     "gauge",
- *     "line",
- *     "pie",
- *     "scatter",
- *     "solidgauge",
- *     "spline",
- *   },
- * )
+ * The 'Highcharts' chart type attribute.
  */
+#[Chart(
+  id: "highcharts",
+  name: new TranslatableMarkup("Highcharts"),
+  types: [
+    "area",
+    "arearange",
+    "bar",
+    "boxplot",
+    "bubble",
+    "column",
+    "donut",
+    "gauge",
+    "heatmap",
+    "line",
+    "pie",
+    "scatter",
+    "solidgauge",
+    "spline",
+  ]
+)]
 class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -118,6 +122,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       'boost_library' => FALSE,
       'data_library' => FALSE,
       'exporting_library' => TRUE,
+      'heatmap_library' => FALSE,
       'no_data_library' => FALSE,
       'texture_library' => FALSE,
       'global_options' => static::defaultGlobalOptions(),
@@ -186,6 +191,13 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       '#description' => $this->t('Highcharts Exporting module is a separate library that enables exporting charts. See <a href="https://www.highcharts.com/docs/export-module/export-module-overview" target="_blank">Highcharts Exporting documentation</a> for more information.'),
     ];
 
+    $form['heatmap_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Heatmap" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['heatmap_library']),
+      '#description' => $this->t('Highcharts Heatmap module is a separate library that enables heatmap charts. See <a href="https://www.highcharts.com/docs/chart-and-series-types/heatmap-series" target="_blank">Highcharts Heatmap documentation</a> for more information.'),
+    ];
+
     $form['no_data_library'] = [
       '#title' => $this->t('Enable Highcharts\' "No Data" library'),
       '#type' => 'checkbox',
@@ -209,6 +221,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       '#title' => $this->t('Legend layout'),
       '#type' => 'select',
       '#options' => [
+        '' => $this->t('Auto'),
         'vertical' => $this->t('Vertical'),
         'horizontal' => $this->t('Horizontal'),
       ],
@@ -438,7 +451,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     $form['global_options']['lang']['numeric_symbols'] = [
       '#type' => 'details',
       '#title' => 'Numeric symbols',
-      '#description' => 'The numeric symbols.',
+      '#description' => t('The numeric symbols.'),
       '#collapsible' => TRUE,
       '#tree' => TRUE,
     ];
@@ -476,6 +489,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       $this->configuration['boost_library'] = $values['boost_library'];
       $this->configuration['data_library'] = $values['data_library'];
       $this->configuration['exporting_library'] = $values['exporting_library'];
+      $this->configuration['heatmap_library'] = $values['heatmap_library'];
       $this->configuration['no_data_library'] = $values['no_data_library'];
       $this->configuration['texture_library'] = $values['texture_library'];
       $this->configuration['global_options'] = $values['global_options'];
@@ -529,6 +543,9 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     }
     if (!empty($this->configuration['exporting_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/exporting';
+    }
+    if (!empty($this->configuration['heatmap_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/heatmap';
     }
     if (!empty($this->configuration['no_data_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/no_data';
@@ -627,7 +644,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
           'Tue',
           'Wed',
           'Thurs',
-          'Frid',
+          'Fri',
           'Sat',
         ],
         'export_data' => [
@@ -705,18 +722,18 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     $chart_definition['plotOptions']['series']['connectNulls'] = !empty($element['#connect_nulls']);
     if ($element['#chart_type'] === 'gauge') {
       $chart_definition['yAxis']['plotBands'][] = [
-        'from' => $element['#gauge']['red_from'],
-        'to' => $element['#gauge']['red_to'],
+        'from' => (int) $element['#gauge']['red_from'],
+        'to' => (int) $element['#gauge']['red_to'],
         'color' => 'red',
       ];
       $chart_definition['yAxis']['plotBands'][] = [
-        'from' => $element['#gauge']['yellow_from'],
-        'to' => $element['#gauge']['yellow_to'],
+        'from' => (int) $element['#gauge']['yellow_from'],
+        'to' => (int) $element['#gauge']['yellow_to'],
         'color' => 'yellow',
       ];
       $chart_definition['yAxis']['plotBands'][] = [
-        'from' => $element['#gauge']['green_from'],
-        'to' => $element['#gauge']['green_to'],
+        'from' => (int) $element['#gauge']['green_from'],
+        'to' => (int) $element['#gauge']['green_to'],
         'color' => 'green',
       ];
       $chart_definition['yAxis']['min'] = (int) $element['#gauge']['min'];

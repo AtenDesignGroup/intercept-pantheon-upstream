@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\image_effects\Plugin\ImageToolkit\Operation\gd;
 
 use Drupal\Component\Utility\Color;
@@ -17,17 +19,17 @@ trait GDOperationTrait {
   /**
    * Allocates a GD color from an RGBA hexadecimal.
    *
+   * @param \GDImage $image
+   *   An image.
    * @param string $rgba_hex
    *   A string specifing an RGBA color in the format '#RRGGBBAA'.
    *
    * @return int
    *   A GD color index.
    */
-  protected function allocateColorFromRgba($rgba_hex) {
-    /** @var \Drupal\system\Plugin\ImageToolkit\GDToolkit $toolkit */
-    $toolkit = $this->getToolkit();
+  protected function allocateColorFromRgba(\GDImage $image, string $rgba_hex): int {
     [$r, $g, $b, $alpha] = array_values($this->hexToRgba($rgba_hex));
-    return imagecolorallocatealpha($toolkit->getResource(), $r, $g, $b, $alpha);
+    return imagecolorallocatealpha($image, $r, $g, $b, $alpha);
   }
 
   /**
@@ -41,15 +43,15 @@ trait GDOperationTrait {
    * @param string $rgba_hex
    *   A string specifing an RGBA color in the format '#RRGGBBAA'.
    *
-   * @return array
+   * @return array|false
    *   An array with four elements for red, green, blue, and alpha.
    */
-  protected function hexToRgba($rgba_hex) {
+  protected function hexToRgba(string $rgba_hex): array|FALSE {
     $rgbHex = mb_substr($rgba_hex, 0, 7);
     try {
       $rgb = Color::hexToRgb($rgbHex);
       $opacity = ColorUtility::rgbaToOpacity($rgba_hex);
-      $alpha = 127 - floor(($opacity / 100) * 127);
+      $alpha = 127 - (int) floor(($opacity / 100) * 127);
       $rgb['alpha'] = $alpha;
       return $rgb;
     }
@@ -70,7 +72,7 @@ trait GDOperationTrait {
    * @return array
    *   A simple array of 8 point coordinates.
    */
-  protected function getRectangleCorners(PositionedRectangle $rect) {
+  protected function getRectangleCorners(PositionedRectangle $rect): array {
     $points = [];
     foreach (['c_d', 'c_c', 'c_b', 'c_a'] as $c) {
       $point = $rect->getPoint($c);
@@ -88,10 +90,10 @@ trait GDOperationTrait {
    * workaround described in
    * http://php.net/manual/en/function.imagecopymerge.php#92787
    *
-   * @param resource $dst_im
-   *   Destination image link resource.
-   * @param resource $src_im
-   *   Source image link resource.
+   * @param \GDImage $dst_im
+   *   Destination image.
+   * @param \GDImage $src_im
+   *   Source image.
    * @param int $dst_x
    *   X-coordinate of destination point.
    * @param int $dst_y
@@ -112,7 +114,7 @@ trait GDOperationTrait {
    *
    * @see http://php.net/manual/en/function.imagecopymerge.php#92787
    */
-  protected function imageCopyMergeAlpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct) {
+  protected function imageCopyMergeAlpha(\GDImage $dst_im, \GDImage $src_im, int $dst_x, int $dst_y, int $src_x, int $src_y, int $src_w, int $src_h, int $pct): bool {
     if ($pct === 100) {
       // Use imagecopy() if opacity is 100%.
       return imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
@@ -122,28 +124,24 @@ trait GDOperationTrait {
       // http://php.net/manual/it/function.imagecopymerge.php#92787
       // to preserve watermark alpha.
       // --------------------------------------
-      // Create a cut resource.
+      // Create a cut \GDImage.
       $cut = imagecreatetruecolor($src_w, $src_h);
       if (!is_object($cut)) {
         return FALSE;
       }
 
-      // Copy relevant section from destination image to the cut resource.
+      // Copy relevant section from destination image to the cut image.
       if (!imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h)) {
-        imagedestroy($cut);
         return FALSE;
       }
 
-      // Copy relevant section from merged image to the cut resource.
+      // Copy relevant section from merged image to the cut image.
       if (!imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h)) {
-        imagedestroy($cut);
         return FALSE;
       }
 
-      // Insert cut resource to destination image.
-      $success = imagecopymerge($dst_im, $cut, $dst_x, $dst_y, 0, 0, $src_w, $src_h, $pct);
-      imagedestroy($cut);
-      return $success;
+      // Insert cut image to destination image.
+      return imagecopymerge($dst_im, $cut, $dst_x, $dst_y, 0, 0, $src_w, $src_h, $pct);
     }
   }
 
@@ -153,8 +151,8 @@ trait GDOperationTrait {
    * If imagettftext() is missing, throw an exception instead of failing
    * fatally.
    *
-   * @param resource $image
-   *   An image resource.
+   * @param \GDImage $image
+   *   An image.
    * @param float $size
    *   The font size.
    * @param float $angle
@@ -178,7 +176,7 @@ trait GDOperationTrait {
    *
    * @see http://php.net/manual/en/function.imagettftext.php
    */
-  protected function imagettftextWrapper($image, $size, $angle, $x, $y, $color, $fontfile, $text) {
+  protected function imagettftextWrapper(\GDImage $image, float $size, float $angle, int $x, int $y, int $color, string $fontfile, string $text): array {
     if (function_exists('imagettftext')) {
       return imagettftext($image, $size, $angle, $x, $y, $color, $fontfile, $text);
     }
@@ -208,7 +206,7 @@ trait GDOperationTrait {
    *
    * @see http://php.net/manual/en/function.imagettfbbox.php
    */
-  protected function imagettfbboxWrapper($size, $angle, $fontfile, $text) {
+  protected function imagettfbboxWrapper(float $size, float $angle, string $fontfile, string $text): array|FALSE {
     if (function_exists('imagettfbbox')) {
       return imagettfbbox($size, $angle, $fontfile, $text);
     }
@@ -223,8 +221,8 @@ trait GDOperationTrait {
    * This method implements the algorithm described in
    * http://php.net/manual/en/function.imagefilter.php#82162
    *
-   * @param resource $img
-   *   Image resource id.
+   * @param \GDImage $img
+   *   Image.
    * @param int $pct
    *   Opacity of the source image in percentage.
    *
@@ -233,7 +231,7 @@ trait GDOperationTrait {
    *
    * @see http://php.net/manual/en/function.imagefilter.php#82162
    */
-  protected function filterOpacity($img, $pct) {
+  protected function filterOpacity(\GDImage $img, int $pct): bool {
     $pct /= 100;
 
     // Get image width and height.
@@ -307,17 +305,17 @@ trait GDOperationTrait {
    * flatter curves.
    * Currently, the default sigma is computed as (2/3)*radius.
    *
-   * @param resource $src
-   *   The source image resource.
+   * @param \GDImage $src
+   *   The source image.
    * @param int $radius
    *   The blur radius (*not* diameter: range is 2*radius + 1).
-   * @param float $sigma
+   * @param float|null $sigma
    *   (optional) The sigma value or NULL to use the computed default.
    *
-   * @return resource
-   *   The computed new image resource, or NULL if an error occurred.
+   * @return \GDImage|null
+   *   The computed new image, or NULL if an error occurred.
    */
-  protected function imageCopyGaussianBlurred($src, $radius, $sigma = NULL) {
+  protected function imageCopyGaussianBlurred(\GDImage $src, int $radius, ?float $sigma = NULL): ?\GDImage {
     // Radius must be a positive integer.
     if ($radius < 1) {
       return NULL;
@@ -348,50 +346,46 @@ trait GDOperationTrait {
       GdGaussianBlur::applyCoeffs($tmp, $result, $coeffs, $radius, 'VERTICAL');
     }
 
-    // Destroy temp resource and return result.
-    imagedestroy($tmp);
     return $result;
   }
 
   /**
    * Computes the entropy of the area of an image.
    *
-   * @param resource $src
-   *   The source image resource.
-   * @param string $x
+   * @param \GDImage $src
+   *   The source image.
+   * @param int $x
    *   Starting X coordinate.
-   * @param string $y
+   * @param int $y
    *   Starting Y coordinate.
-   * @param string $width
+   * @param int $width
    *   The width of the area.
-   * @param string $height
+   * @param int $height
    *   The height of the area.
    *
    * @return float
    *   The entropy of the selected area image.
    */
-  protected function getAreaEntropy($src, $x, $y, $width, $height) {
+  protected function getAreaEntropy(\GDImage $src, int $x, int $y, int $width, int $height): float {
     $window = imagecreatetruecolor($width, $height);
     imagecopy($window, $src, 0, 0, $x, $y, $width, $height);
-    $entropy = GdImageAnalysis::entropy($window);
-    imagedestroy($window);
-    return $entropy;
+    return GdImageAnalysis::entropy($window);
   }
 
   /**
    * Computes the entropy crop of an image, using slices.
    *
-   * @param resource $src
-   *   The source image resource.
-   * @param string $width
+   * @param \GDImage $src
+   *   The source image.
+   * @param int $width
    *   The width of the crop.
-   * @param string $height
+   * @param int $height
    *   The height of the crop.
    *
    * @return \Drupal\image_effects\Component\PositionedRectangle
    *   The PositionedRectangle object marking the crop area.
    */
-  protected function getEntropyCropBySlicing($src, $width, $height) {
+  protected function getEntropyCropBySlicing(\GDImage $src, int $width, int $height): PositionedRectangle {
     $dx = imagesx($src) - min(imagesx($src), $width);
     $dy = imagesy($src) - min(imagesy($src), $height);
     $left = $top = 0;
@@ -455,8 +449,8 @@ trait GDOperationTrait {
   /**
    * Computes the entropy crop of an image, using recursive gridding.
    *
-   * @param resource $src
-   *   The source image resource.
+   * @param \GDImage $src
+   *   The source image.
    * @param int $crop_width
    *   The width of the crop.
    * @param int $crop_height
@@ -480,7 +474,7 @@ trait GDOperationTrait {
    * @return \Drupal\image_effects\Component\PositionedRectangle
    *   The PositionedRectangle object marking the crop area.
    */
-  protected function getEntropyCropByGridding($src, $crop_width, $crop_height, $simulate, $grid_width, $grid_height, $grid_rows, $grid_columns, $grid_sub_rows, $grid_sub_columns) {
+  protected function getEntropyCropByGridding(\GDImage $src, int $crop_width, int $crop_height, bool $simulate, int $grid_width, int $grid_height, int $grid_rows, int $grid_columns, int $grid_sub_rows, int $grid_sub_columns): PositionedRectangle {
     // Source image data.
     $source_rect = new PositionedRectangle(imagesx($src), imagesy($src));
     $source_image_aspect = imagesy($src) / imagesx($src);
@@ -488,8 +482,8 @@ trait GDOperationTrait {
     // If simulating, create an image serving as the layer for the visual
     // markers.
     if ($simulate) {
-      $marker_layer_resource = imagecreatetruecolor(imagesx($src), imagesy($src));
-      imagefill($marker_layer_resource, 0, 0, imagecolorallocatealpha($marker_layer_resource, 0, 0, 0, 127));
+      $marker_layer_image = imagecreatetruecolor(imagesx($src), imagesy($src));
+      imagefill($marker_layer_image, 0, 0, imagecolorallocatealpha($marker_layer_image, 0, 0, 0, 127));
     }
 
     // Determine dimensions of the grid window. The window dimensions are
@@ -534,9 +528,9 @@ trait GDOperationTrait {
       // Create the grid window.
       $grid_rect = new PositionedRectangle($work_window_width, $work_window_height);
       $grid_rect->addGrid('grid_0', 0, 0, $work_window_width, $work_window_height, $grid_rows, $grid_columns);
-      $grid_resource = imagecreatetruecolor($work_window_width, $work_window_height);
-      imagefill($grid_resource, 0, 0, imagecolorallocatealpha($grid_resource, 0, 0, 0, 127));
-      imagecopyresampled($grid_resource, $src, 0, 0, $window_x_offset, $window_y_offset, $work_window_width, $work_window_height, $window_width, $window_height);
+      $grid_image = imagecreatetruecolor($work_window_width, $work_window_height);
+      imagefill($grid_image, 0, 0, imagecolorallocatealpha($grid_image, 0, 0, 0, 127));
+      imagecopyresampled($grid_image, $src, 0, 0, $window_x_offset, $window_y_offset, $work_window_width, $work_window_height, $window_width, $window_height);
 
       // Build the entropy matrix of the window.
       $entropy_matrix = [];
@@ -544,7 +538,7 @@ trait GDOperationTrait {
         for ($column = 0; $column < $grid_columns; $column++) {
           $cell_top_left = $grid_rect->getPoint('grid_0_' . $row . '_' . $column);
           $cell_dimensions = $grid_rect->getSubGridDimensions('grid_0', $row, $column, 1, 1);
-          $entropy_matrix[$row][$column] = $this->getAreaEntropy($grid_resource, $cell_top_left[0], $cell_top_left[1], $cell_dimensions[0], $cell_dimensions[1]);
+          $entropy_matrix[$row][$column] = $this->getAreaEntropy($grid_image, $cell_top_left[0], $cell_top_left[1], $cell_dimensions[0], $cell_dimensions[1]);
         }
       }
 
@@ -559,15 +553,15 @@ trait GDOperationTrait {
       if ($simulate) {
         switch ($window_nesting % 3) {
           case 0:
-            $color = imagecolorallocatealpha($marker_layer_resource, 255, 0, 0, 0);
+            $color = imagecolorallocatealpha($marker_layer_image, 255, 0, 0, 0);
             break;
 
           case 1:
-            $color = imagecolorallocatealpha($marker_layer_resource, 0, 255, 255, 0);
+            $color = imagecolorallocatealpha($marker_layer_image, 0, 255, 255, 0);
             break;
 
           case 2:
-            $color = imagecolorallocatealpha($marker_layer_resource, 255, 255, 0, 0);
+            $color = imagecolorallocatealpha($marker_layer_image, 255, 255, 0, 0);
             break;
 
         }
@@ -576,7 +570,7 @@ trait GDOperationTrait {
         for ($row = 0; $row <= $grid_rows; $row++) {
           for ($column = 0; $column <= $grid_columns; $column++) {
             $coord = $source_rect->getPoint('grid_' . $window_nesting . '_' . $row . '_' . $column);
-            imagefilledellipse($marker_layer_resource, $coord[0], $coord[1], 6, 6, $color);
+            imagefilledellipse($marker_layer_image, $coord[0], $coord[1], 6, 6, $color);
           }
         }
 
@@ -585,21 +579,17 @@ trait GDOperationTrait {
         $rect->translate([$window_x_offset, $window_y_offset]);
         $rect->translate([-2, -2]);
         for ($i = -2; $i <= 2; $i++) {
-          imagepolygon($marker_layer_resource, $this->getRectangleCorners($rect), 4, $color);
+          imagepolygon($marker_layer_image, $this->getRectangleCorners($rect), $color);
           $rect->translate([1, 1]);
         }
       }
-
-      // Destroy the window.
-      imagedestroy($grid_resource);
 
       $window_nesting++;
     }
 
     // Overlay marker layer onto source at 70% transparency.
     if ($simulate) {
-      $this->imageCopyMergeAlpha($src, $marker_layer_resource, 0, 0, 0, 0, imagesx($src), imagesy($src), 70);
-      imagedestroy($marker_layer_resource);
+      $this->imageCopyMergeAlpha($src, $marker_layer_image, 0, 0, 0, 0, imagesx($src), imagesy($src), 70);
     }
 
     // Determine the Rectangle containing the crop.

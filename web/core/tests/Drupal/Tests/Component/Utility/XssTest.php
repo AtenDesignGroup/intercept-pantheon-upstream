@@ -16,16 +16,14 @@ use PHPUnit\Framework\TestCase;
 /**
  * XSS Filtering tests.
  *
- * @group Utility
- *
- * @coversDefaultClass \Drupal\Component\Utility\Xss
- *
  * Script injection vectors mostly adopted from http://ha.ckers.org/xss.html.
  *
  * Relevant CVEs:
  * - CVE-2002-1806, ~CVE-2005-0682, ~CVE-2005-2106, CVE-2005-3973,
  *   CVE-2006-1226 (= rev. 1.112?), CVE-2008-0273, CVE-2008-3740.
  *
+ * @group Utility
+ * @coversDefaultClass \Drupal\Component\Utility\Xss
  * @runTestsInSeparateProcesses
  */
 class XssTest extends TestCase {
@@ -301,7 +299,7 @@ class XssTest extends TestCase {
         'HTML filter attributes removal evasion -- breaking with nulls.',
         ['img'],
       ],
-      // Only whitelisted scheme names allowed in attributes.
+      // Only allowed scheme names allowed in attributes.
       [
         '<img src="javascript:alert(0)">',
         'javascript',

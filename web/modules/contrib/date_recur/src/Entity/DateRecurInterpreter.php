@@ -106,9 +106,6 @@ class DateRecurInterpreter extends ConfigEntityBase implements DateRecurInterpre
     return ['settings' => $this->getPluginCollection()];
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function getPlugin(): DateRecurInterpreterPluginInterface {
     return $this->getPluginCollection()->get($this->plugin);
   }

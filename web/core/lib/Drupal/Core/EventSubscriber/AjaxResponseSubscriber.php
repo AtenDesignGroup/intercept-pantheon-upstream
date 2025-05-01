@@ -4,7 +4,6 @@ namespace Drupal\Core\EventSubscriber;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\DependencyInjection\DeprecatedServicePropertyTrait;
 use Symfony\Component\DependencyInjection\Attribute\AutowireServiceClosure;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -15,15 +14,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Response subscriber to handle AJAX responses.
  */
 class AjaxResponseSubscriber implements EventSubscriberInterface {
-
-  use DeprecatedServicePropertyTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected array $deprecatedProperties = [
-    'ajaxResponseAttachmentsProcessor' => 'ajax_response.attachments_processor',
-  ];
 
   /**
    * Constructs an AjaxResponseSubscriber object.

@@ -1,5 +1,19 @@
 services:
   plugin.manager.votingapi.resultfunction:
-    class: Drupal\votingapi\VoteResultFunctionManager
+    class: \Drupal\votingapi\VoteResultFunctionManager
     parent: default_plugin_manager
-    arguments: ['@database', '@entity_type.manager', '@datetime.time']
+    autowire: true
+  Drupal\votingapi\VoteResultFunctionManagerInterface: '@plugin.manager.votingapi.resultfunction'
+
+  Drupal\votingapi\Hook\VotingApiCronHooks:
+    class: \Drupal\votingapi\Hook\VotingApiCronHooks
+    autowire: true
+  Drupal\votingapi\Hook\VotingApiEntityHooks:
+    class: \Drupal\votingapi\Hook\VotingApiEntityHooks
+    autowire: true
+  Drupal\votingapi\Hook\VotingApiHelpHooks:
+    class: \Drupal\votingapi\Hook\VotingApiHelpHooks
+    autowire: true
+  Drupal\votingapi\Hook\VotingApiViewsHooks:
+    class: \Drupal\votingapi\Hook\VotingApiViewsHooks
+    autowire: true

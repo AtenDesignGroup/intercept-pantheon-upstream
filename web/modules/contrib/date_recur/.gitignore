@@ -1,3 +1,7 @@
-vendor/
-composer.lock
+vendor
 web
+modules
+composer.lock
+profiles
+sites
+themes

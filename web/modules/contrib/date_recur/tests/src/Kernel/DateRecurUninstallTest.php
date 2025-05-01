@@ -15,9 +15,6 @@ use Drupal\KernelTests\KernelTestBase;
  */
 final class DateRecurUninstallTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',

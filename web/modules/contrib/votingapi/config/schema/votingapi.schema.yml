@@ -5,12 +5,18 @@ votingapi.settings:
     anonymous_window:
       type: integer
       label: 'Anonymous vote rollover'
+      constraints:
+        AllowedValues: [-1, 0, 300, 900, 1800, 3600, 10800, 21600, 32400, 43200, 86400, 172800, 345600, 604800]
     user_window:
       type: integer
       label: 'Registered user vote rollover'
+      constraints:
+        AllowedValues: [-1, 0, 300, 900, 1800, 3600, 10800, 21600, 32400, 43200, 86400, 172800, 345600, 604800]
     calculation_schedule:
       type: string
       label: 'Vote tallying'
+      constraints:
+        AllowedValues: ['immediate', 'cron', 'manual']
     delete_everywhere:
       type: boolean
       label: 'Delete everywhere'
@@ -20,10 +26,10 @@ votingapi.vote_type.*:
   label: 'Vote Type'
   mapping:
     id:
-      type: string
+      type: machine_name
       label: 'Machine-readable name'
     label:
-      type: label
+      type: required_label
       label: 'Name'
     value_type:
       type: string

@@ -79,7 +79,7 @@
       // Remove the question mark and Drupal path component if any.
       queryString = queryString
         .slice(1)
-        .replace(/q=[^&]+&?|&?render=[^&]+/, '');
+        .replace(/q=[^&]+&?|page=[^&]+&?|&?render=[^&]+/, '');
       if (queryString !== '') {
         // If there is a '?' in ajaxPath, clean URL are on and & should be
         // used to add parameters.
@@ -206,24 +206,5 @@
       httpMethod: 'GET',
     });
     this.pagerAjax = Drupal.ajax(selfSettings);
-  };
-
-  /**
-   * Views scroll to top ajax command.
-   *
-   * @param {Drupal.Ajax} [ajax]
-   *   A {@link Drupal.ajax} object.
-   * @param {object} response
-   *   Ajax response.
-   * @param {string} response.selector
-   *   Selector to use.
-   *
-   * @deprecated in drupal:10.1.0 and is removed from drupal:11.0.0.
-   *   Use Drupal.AjaxCommands.prototype.scrollTop().
-   *
-   * @see https://www.drupal.org/node/3344141
-   */
-  Drupal.AjaxCommands.prototype.viewsScrollTop = function (ajax, response) {
-    Drupal.AjaxCommands.prototype.scrollTop(ajax, response);
   };
 })(jQuery, Drupal, drupalSettings);

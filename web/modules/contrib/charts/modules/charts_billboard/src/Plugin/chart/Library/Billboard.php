@@ -2,36 +2,39 @@
 
 namespace Drupal\charts_billboard\Plugin\chart\Library;
 
+use Drupal\charts\Attribute\Chart;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Define a concrete class for a Chart.
- *
- * @Chart(
- *   id = "billboard",
- *   name = @Translation("Billboard.js"),
- *   types = {
- *     "area",
- *     "bar",
- *     "bubble",
- *     "column",
- *     "donut",
- *     "gauge",
- *     "line",
- *     "pie",
- *     "scatter",
- *     "spline",
- *   },
- * )
+ * The 'Billboard' chart type attribute.
  */
+#[Chart(
+  id: "billboard",
+  name: new TranslatableMarkup("Billboard.js"),
+  types: [
+    "area",
+    "arearange",
+    "bar",
+    "bubble",
+    "candlestick",
+    "column",
+    "donut",
+    "gauge",
+    "line",
+    "pie",
+    "scatter",
+    "spline",
+  ]
+)]
 class Billboard extends ChartBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -126,6 +129,9 @@ class Billboard extends ChartBase implements ContainerFactoryPluginInterface {
     // If Polar is checked, then convert to Radar chart type.
     if ($is_polar) {
       $type = 'radar';
+    }
+    elseif ($chart_type === 'arearange') {
+      $type = 'area-line-range';
     }
     else {
       $type = $chart_type == 'column' ? 'bar' : $chart_type;
@@ -371,7 +377,7 @@ class Billboard extends ChartBase implements ContainerFactoryPluginInterface {
                 array_shift($datum);
               }
               $columns[$columns_key_start][] = array_map(function ($item) {
-                return isset($item) ? strip_tags($item) : NULL;
+                return isset($item) ? (float) strip_tags($item) : NULL;
               }, $datum);
             }
             else {

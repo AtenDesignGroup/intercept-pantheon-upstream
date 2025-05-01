@@ -2,6 +2,8 @@
 
 namespace Drupal\views\Entity;
 
+use Drupal\Core\Entity\Attribute\ConfigEntityType;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
@@ -13,36 +15,34 @@ use Drupal\views\ViewEntityInterface;
 
 /**
  * Defines a View configuration entity class.
- *
- * @ConfigEntityType(
- *   id = "view",
- *   label = @Translation("View", context = "View entity type"),
- *   label_collection = @Translation("Views", context = "View entity type"),
- *   label_singular = @Translation("view", context = "View entity type"),
- *   label_plural = @Translation("views", context = "View entity type"),
- *   label_count = @PluralTranslation(
- *     singular = "@count view",
- *     plural = "@count views",
- *     context = "View entity type",
- *   ),
- *   admin_permission = "administer views",
- *   entity_keys = {
- *     "id" = "id",
- *     "label" = "label",
- *     "status" = "status"
- *   },
- *   config_export = {
- *     "id",
- *     "label",
- *     "module",
- *     "description",
- *     "tag",
- *     "base_table",
- *     "base_field",
- *     "display",
- *   }
- * )
  */
+#[ConfigEntityType(
+  id: 'view',
+  label: new TranslatableMarkup('View', ['context' => 'View entity type']),
+  label_collection: new TranslatableMarkup('Views', ['context' => 'View entity type']),
+  label_singular: new TranslatableMarkup('view', ['context' => 'View entity type']),
+  label_plural: new TranslatableMarkup('views', ['context' => 'View entity type']),
+  entity_keys: [
+    'id' => 'id',
+    'label' => 'label',
+    'status' => 'status',
+  ],
+  admin_permission: 'administer views',
+  label_count: [
+    'singular' => '@count view',
+    'plural' => '@count views',
+  ],
+  config_export: [
+    'id',
+    'label',
+    'module',
+    'description',
+    'tag',
+    'base_table',
+    'base_field',
+    'display',
+  ],
+)]
 class View extends ConfigEntityBase implements ViewEntityInterface {
 
   /**
@@ -139,11 +139,7 @@ class View extends ConfigEntityBase implements ViewEntityInterface {
    * {@inheritdoc}
    */
   public function label() {
-    if (!$label = $this->get('label')) {
-      @trigger_error('Saving a view without an explicit label is deprecated in drupal:10.2.0 and will raise an error in drupal:11.0.0. See https://www.drupal.org/node/3381669', E_USER_DEPRECATED);
-      $label = $this->id();
-    }
-    return $label;
+    return $this->get('label');
   }
 
   /**
@@ -462,7 +458,7 @@ class View extends ConfigEntityBase implements ViewEntityInterface {
   /**
    * {@inheritdoc}
    */
-  public function __sleep() {
+  public function __sleep(): array {
     $keys = parent::__sleep();
     unset($keys[array_search('executable', $keys)]);
     return $keys;

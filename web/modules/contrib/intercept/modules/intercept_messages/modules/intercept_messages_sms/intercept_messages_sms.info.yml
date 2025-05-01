@@ -1,13 +1,8 @@
 name: 'Intercept Messages - SMS Framework'
 type: module
 description: 'Provides SMS Framework integration for Intercept Messages.'
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 package: 'Intercept'
 dependencies:
   - intercept:intercept_messages
   - smsframework:sms
-
-# Information added by Drupal.org packaging script on 2025-03-26
-version: '2.0.11'
-project: 'intercept'
-datestamp: 1743020532

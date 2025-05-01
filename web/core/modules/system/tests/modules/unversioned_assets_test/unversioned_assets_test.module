@@ -5,10 +5,12 @@
  * Helper module for unversioned asset test.
  */
 
+declare(strict_types=1);
+
 /**
  * Implements hook_library_info_build().
  */
-function unversioned_assets_test_library_info_alter(&$libraries, $extension) {
+function unversioned_assets_test_library_info_alter(&$libraries, $extension): void {
   if ($extension === 'system') {
     // Remove the version and provide an additional CSS file we can alter the
     // contents of .

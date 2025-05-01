@@ -2,36 +2,37 @@
 
 namespace Drupal\charts_c3\Plugin\chart\Library;
 
+use Drupal\charts\Attribute\Chart;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Define a concrete class for a Chart.
- *
- * @Chart(
- *   id = "c3",
- *   name = @Translation("C3"),
- *   types = {
- *     "area",
- *     "bar",
- *     "bubble",
- *     "column",
- *     "donut",
- *     "gauge",
- *     "line",
- *     "pie",
- *     "scatter",
- *     "spline",
- *   },
- * )
+ * The 'C3' chart type attribute.
  */
+#[Chart(
+  id: "c3",
+  name: new TranslatableMarkup("C3"),
+  types: [
+    "area",
+    "bar",
+    "bubble",
+    "column",
+    "donut",
+    "gauge",
+    "line",
+    "pie",
+    "scatter",
+    "spline",
+  ]
+)]
 class C3 extends ChartBase implements ContainerFactoryPluginInterface {
 
   /**

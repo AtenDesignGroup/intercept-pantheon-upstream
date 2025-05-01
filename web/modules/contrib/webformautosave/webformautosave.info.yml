@@ -2,7 +2,7 @@ type: module
 name: 'Webform Autosave'
 description: 'This module allows for an auto-saving and optimistic locking on webform submissions.'
 package: Webform
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - webform:webform
   - webform:webform_submission_log

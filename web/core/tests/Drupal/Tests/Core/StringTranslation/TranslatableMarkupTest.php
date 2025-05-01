@@ -43,7 +43,7 @@ class TranslatableMarkupTest extends UnitTestCase {
    * @param string $error_message
    *   The error message.
    */
-  public function errorHandler($error_number, $error_message) {
+  public function errorHandler($error_number, $error_message): void {
     $this->lastErrorNumber = $error_number;
     $this->lastErrorMessage = $error_message;
   }
@@ -80,7 +80,7 @@ class TranslatableMarkupTest extends UnitTestCase {
     restore_error_handler();
 
     $this->assertEquals(E_USER_WARNING, $this->lastErrorNumber);
-    $this->assertMatchesRegularExpression('/Exception thrown while calling __toString on a .*Mock_TranslatableMarkup_.* object in .*TranslatableMarkupTest.php on line [0-9]+: Yes you may./', $this->lastErrorMessage);
+    $this->assertMatchesRegularExpression('/Exception thrown while calling __toString on a .*MockObject_TranslatableMarkup_.* object in .*TranslatableMarkupTest.php on line [0-9]+: Yes you may./', $this->lastErrorMessage);
   }
 
   /**

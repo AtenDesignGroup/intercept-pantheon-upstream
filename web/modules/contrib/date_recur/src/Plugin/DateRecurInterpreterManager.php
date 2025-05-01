@@ -7,6 +7,7 @@ namespace Drupal\date_recur\Plugin;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\date_recur\Attribute\DateRecurInterpreter;
 
 //@codingStandardsIgnoreStart
 /**
@@ -26,6 +27,7 @@ class DateRecurInterpreterManager extends DefaultPluginManager implements DateRe
       $namespaces,
       $module_handler,
       'Drupal\date_recur\Plugin\DateRecurInterpreterPluginInterface',
+      DateRecurInterpreter::class,
       'Drupal\date_recur\Annotation\DateRecurInterpreter',
     );
     $this->setCacheBackend($cache_backend, 'date_recur_interpreter_info', ['config:date_recur_interpreter_list']);

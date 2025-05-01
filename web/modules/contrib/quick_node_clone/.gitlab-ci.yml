@@ -64,7 +64,7 @@ group_integration:
     _PHPUNIT_TESTGROUPS: group_integration
   parallel:
     matrix:
-      - GROUP_VERSION: [ '^1', '^2' ]
+      - GROUP_VERSION: [ '^2', '^3']
 
 ###################################################################################
 #

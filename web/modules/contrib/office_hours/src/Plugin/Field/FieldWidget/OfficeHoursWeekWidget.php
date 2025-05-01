@@ -34,11 +34,11 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo Fix Warning: Undefined array key "translation" in EntityDisplayFormBase->copyFormValuesToEntity()
+   * @todo Fix Warning: Trying to access array offset on value of type null in Drupal\field_ui\Form\EntityDisplayFormBase->copyFormValuesToEntity() (line 628 of EntityDisplayFormBase.php).
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-    // @todo Fix Warning: Undefined array key "translation" in EntityDisplayFormBase->copyFormValuesToEntity()
-    // @todo Fix Warning: Trying to access array offset on value of type null in Drupal\field_ui\Form\EntityDisplayFormBase->copyFormValuesToEntity() (line 628 of EntityDisplayFormBase.php).
-
     // Clear settingsform to avoid error with Paragraphs module [#3413697].
     $form = parent::settingsForm($form, $form_state);
 
@@ -97,8 +97,8 @@ class OfficeHoursWeekWidget extends OfficeHoursWidgetBase {
       '#open' => !$widget_settings['collapsed'],
     ] + $element;
 
+    // @todo Add message.
     /*
-    // @todo Add Message.
     if (Weekwidget && contains exceptions or season) {
       // Add a user message, in case normal weekday widget is used.
       // In complex widget, this message is removed, again.

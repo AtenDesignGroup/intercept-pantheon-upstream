@@ -193,7 +193,7 @@ class FieldApiDataTest extends ViewsKernelTestBase {
    * @return array
    *   Views data.
    */
-  protected function getViewsData($field_storage_key = 'field_string') {
+  protected function getViewsData($field_storage_key = 'field_string'): array {
     $views_data = $this->container->get('views.views_data');
     $data = [];
 
@@ -267,7 +267,6 @@ class FieldApiDataTest extends ViewsKernelTestBase {
       'field_name_3' => 'field name 3: es',
     ]);
     $node1->save();
-    /** @var \Drupal\node\NodeInterface $translation */
     $node1->addTranslation('fr', [
       'title' => $node1->title->value,
       'field_name_1' => 'field name 1: fr',

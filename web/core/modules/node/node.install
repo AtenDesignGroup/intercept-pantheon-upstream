@@ -40,7 +40,7 @@ function node_requirements($phase) {
 /**
  * Implements hook_schema().
  */
-function node_schema() {
+function node_schema(): array {
   $schema['node_access'] = [
     'description' => 'Identifies which realm/grant pairs a user must possess in order to view, update, or delete specific nodes.',
     'fields' => [
@@ -120,7 +120,7 @@ function node_schema() {
 /**
  * Implements hook_install().
  */
-function node_install() {
+function node_install(): void {
   // Enable default permissions for system roles.
   // IMPORTANT: Modules SHOULD NOT automatically grant any user role access
   // permissions in hook_install().
@@ -149,7 +149,7 @@ function node_install() {
 /**
  * Implements hook_uninstall().
  */
-function node_uninstall() {
+function node_uninstall(): void {
   // Delete remaining general module variables.
   \Drupal::state()->delete('node.node_access_needs_rebuild');
 }
@@ -157,6 +157,6 @@ function node_uninstall() {
 /**
  * Implements hook_update_last_removed().
  */
-function node_update_last_removed() {
+function node_update_last_removed(): int {
   return 8700;
 }

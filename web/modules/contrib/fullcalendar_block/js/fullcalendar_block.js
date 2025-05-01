@@ -409,15 +409,21 @@
                 calendarOptions.initialView = query.get(initialViewParam);
               }
 
-              specialParams.forEach((specialParam) => {
-                if (specialParam === startParam) {
-                  // Provide a default initial date if it's specified in the query string.
-                  const date = new Date(query.get(startParam));
-                  if (date instanceof Date && !Number.isNaN(date.getTime())) {
-                    // Valid date string.
-                    calendarOptions.initialDate = date.toISOString();
-                  }
+              // Initial date from query parameter.
+              // The start parameter here is not the one
+              // fed to the event data source endpoint.
+              const initialDate = query.get('start');
+              if (initialDate) {
+                // Provide a default initial date if it's specified in the query string.
+                const date = new Date(initialDate);
+                if (date instanceof Date && !Number.isNaN(date.getTime())) {
+                  // Valid date string.
+                  calendarOptions.initialDate = date.toISOString();
                 }
+              }
+
+              // Remove all special parameters.
+              specialParams.forEach((specialParam) => {
                 query.delete(specialParam);
               });
               queryString = query.toString();

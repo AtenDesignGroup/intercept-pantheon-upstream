@@ -14,69 +14,63 @@ interface VoteStorageInterface extends EntityStorageInterface {
    *
    * @param int $uid
    *   User ID.
-   * @param string $vote_type_id
-   *   The vote type ID.
-   * @param string $entity_type_id
-   *   The entity type ID.
-   * @param int $entity_id
-   *   The entity ID.
-   * @param string $vote_source
-   *   The vote source, only used if $uid == 0.
+   * @param ?string $vote_type_id
+   *   (optional) The vote type ID.
+   * @param ?string $entity_type_id
+   *   (optional) The voted entity type ID.
+   * @param string|int|null $entity_id
+   *   (optional) The voted entity ID.
+   * @param ?string $vote_source
+   *   (optional) The vote source, only used if $uid == 0.
    *
-   * @return mixed
+   * @return \Drupal\votingapi\VoteInterface[]
    *   Returns the user votes.
    */
-  public function getUserVotes($uid, $vote_type_id = NULL, $entity_type_id = NULL, $entity_id = NULL, $vote_source = NULL);
+  public function getUserVotes(int $uid, ?string $vote_type_id = NULL, ?string $entity_type_id = NULL, string|int|null $entity_id = NULL, ?string $vote_source = NULL): array;
 
   /**
    * Deletes votes for a user.
    *
    * @param int $uid
    *   The User ID.
-   * @param string $vote_type_id
-   *   The vote type ID.
-   * @param string $entity_type_id
-   *   The entity type ID.
-   * @param int $entity_id
-   *   The entity ID.
-   * @param string $vote_source
-   *   The vote source, only used if $uid == 0.
-   *
-   * @return bool
-   *   TRUE if the votes were deleted.
+   * @param ?string $vote_type_id
+   *   (optional) The vote type ID.
+   * @param ?string $entity_type_id
+   *   (optional) The voted entity type ID.
+   * @param string|int|null $entity_id
+   *   (optional) The voted entity ID.
+   * @param ?string $vote_source
+   *   (optional) The vote source, only used if $uid == 0.
    */
-  public function deleteUserVotes($uid, $vote_type_id = NULL, $entity_type_id = NULL, $entity_id = NULL, $vote_source = NULL);
+  public function deleteUserVotes(int $uid, ?string $vote_type_id = NULL, ?string $entity_type_id = NULL, string|int|null $entity_id = NULL, ?string $vote_source = NULL): void;
 
   /**
    * Returns the default vote source.
    *
-   * @param string $vote_source
-   *   The vote source.
+   * @param ?string $vote_source
+   *   (optional) The vote source.
    *
    * @return string
    *   The $vote_source parameter or, if it is NULL, the default vote source.
    */
-  public static function defaultVoteSource($vote_source = NULL);
+  public static function defaultVoteSource(?string $vote_source = NULL): string;
 
   /**
    * Gets votes since a determined moment.
    *
-   * @return mixed
-   *   Returns the votes since last cron run.
+   * @return \Drupal\votingapi\VoteInterface[]
+   *   Returns array of votes since last cron run.
    */
-  public function getVotesSinceMoment();
+  public function getVotesSinceMoment(): array;
 
   /**
    * Deletes votes for deleted entity everywhere in the database.
    *
    * @param string $entity_type_id
-   *   The entity type ID.
-   * @param int $entity_id
-   *   The entity ID.
-   *
-   * @return bool
-   *   TRUE if the votes were deleted.
+   *   The voted entity type ID.
+   * @param string|int $entity_id
+   *   The voted entity ID.
    */
-  public function deleteVotesForDeletedEntity($entity_type_id, $entity_id);
+  public function deleteVotesForDeletedEntity(string $entity_type_id, string|int $entity_id): void;
 
 }

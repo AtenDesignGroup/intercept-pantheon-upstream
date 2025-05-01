@@ -76,8 +76,7 @@ trait PerformanceTestTrait {
       'performanceTimeline' => 'ALL',
     ];
     // Support legacy key.
-    $chrome_options_key = isset($driver_args[1]['chromeOptions']) ? 'chromeOptions' : 'goog:chromeOptions';
-    $driver_args[1][$chrome_options_key]['perfLoggingPrefs'] = [
+    $driver_args[1]['goog:chromeOptions']['perfLoggingPrefs'] = [
       'traceCategories' => 'timeline,devtools.timeline,browser',
     ];
 
@@ -376,7 +375,7 @@ trait PerformanceTestTrait {
     // 'encodedDataLength' for network requests, however in the case that the
     // file has already been requested by the browser, this will be the length
     // of a HEAD response for 304 not modified or similar. Additionally, core's
-    // aggregation adds the basepath to CSS aggregates, resulting in slightly
+    // aggregation adds the base path to CSS aggregates, resulting in slightly
     // different file sizes depending on whether tests run in a subdirectory or
     // not.
     foreach ($stylesheet_urls as $url) {
@@ -387,7 +386,7 @@ trait PerformanceTestTrait {
       }
       else {
         $filename = str_replace($GLOBALS['base_path'], '', parse_url($url, PHP_URL_PATH));
-        // Strip the basepath from the contents of the file so that tests
+        // Strip the base path from the contents of the file so that tests
         // running in a subdirectory get the same results.
         $stylesheet_bytes += strlen(str_replace($GLOBALS['base_path'], '/', file_get_contents($filename)));
       }
@@ -614,8 +613,12 @@ trait PerformanceTestTrait {
    *   Whether the event was triggered by the database cache implementation.
    */
   protected static function isDatabaseCache(DatabaseEvent $event): bool {
-    $class = str_replace('\\\\', '\\', $event->caller['class']);
-    return is_a($class, '\Drupal\Core\Cache\DatabaseBackend', TRUE) || is_a($class, '\Drupal\Core\Cache\DatabaseCacheTagsChecksum', TRUE);
+    // If there is no class, then this is called from a procedural function.
+    if (isset($event->caller['class'])) {
+      $class = str_replace('\\\\', '\\', $event->caller['class']);
+      return is_a($class, '\Drupal\Core\Cache\DatabaseBackend', TRUE) || is_a($class, '\Drupal\Core\Cache\DatabaseCacheTagsChecksum', TRUE);
+    }
+    return FALSE;
   }
 
 }

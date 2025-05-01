@@ -383,7 +383,7 @@ function install_begin_request($class_loader, &$install_state) {
     $sync_directory = Settings::get('config_sync_directory', FALSE);
     $install_state['config_verified'] = file_exists($sync_directory);
   }
-  catch (Exception $e) {
+  catch (Exception) {
     $install_state['config_verified'] = FALSE;
   }
   $install_state['database_verified'] = install_verify_database_settings($site_path);
@@ -397,7 +397,7 @@ function install_begin_request($class_loader, &$install_state) {
       $table = array_key_last($system_schema);
       $install_state['base_system_verified'] = Database::getConnection()->schema()->tableExists($table);
     }
-    catch (DatabaseExceptionWrapper $e) {
+    catch (DatabaseExceptionWrapper) {
       // The last defined table of the base system_schema() does not exist yet.
       // $install_state['base_system_verified'] defaults to FALSE, so the code
       // following below will use the minimal installer service container.
@@ -980,16 +980,7 @@ function install_get_form($form_id, array &$install_state) {
     // values taken from the installation state.
     $install_form_id = $form_builder->getFormId($form_id, $form_state);
     if (!empty($install_state['forms'][$install_form_id])) {
-      $values = $install_state['forms'][$install_form_id];
-      if ($install_form_id === 'install_settings_form' && isset($values['driver']) && !str_contains($values['driver'], "\\")) {
-        @trigger_error("Passing a database driver name '{$values['driver']}' to " . __FUNCTION__ . '() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Pass a database driver namespace instead. See https://www.drupal.org/node/3258175', E_USER_DEPRECATED);
-        $driverExtension = Database::getDriverList()->getFromDriverName($values['driver']);
-        $tmp = [];
-        $tmp['driver'] = $driverExtension->getName();
-        $tmp[$driverExtension->getName()] = $values[$values['driver']];
-        $values = $tmp;
-      }
-      $form_state->setValues($values);
+      $form_state->setValues($install_state['forms'][$install_form_id]);
     }
     $form_builder->submitForm($form_id, $form_state);
 
@@ -1149,7 +1140,7 @@ function install_verify_completed_task() {
   }
   // Do not trigger an error if the database query fails, since the database
   // might not be set up yet.
-  catch (\Exception $e) {
+  catch (\Exception) {
   }
   if (isset($task)) {
     if ($task == 'done') {
@@ -1198,7 +1189,7 @@ function install_verify_database_ready() {
     }
     // Do not trigger an error if the database query fails, since the database
     // might not be set up yet.
-    catch (\Exception $e) {
+    catch (\Exception) {
     }
   }
   if ($existing_install) {
@@ -1225,7 +1216,7 @@ function install_database_errors($database, $settings_file) {
     Database::addConnectionInfo('default', 'default', $database);
     $errors = $driverExtension->getInstallTasks()->runTasks();
   }
-  catch (UnknownExtensionException $e) {
+  catch (UnknownExtensionException) {
     $errors['driver'] = t("In your %settings_file file you have configured @drupal to use a %driver server, however your PHP installation currently does not support this database type.", ['%settings_file' => $settings_file, '@drupal' => drupal_install_profile_distribution_name(), '%driver' => $database['driver']]);
   }
   return $errors;
@@ -1494,7 +1485,7 @@ function install_check_localization_server($uri) {
 }
 
 /**
- * Extracts version information from a drupal core version string.
+ * Extracts version information from a Drupal core version string.
  *
  * @param string $version
  *   Version info string (e.g., 8.0.0, 8.1.0, 8.0.0-dev, 8.0.0-unstable1,
@@ -1504,10 +1495,10 @@ function install_check_localization_server($uri) {
  *   Associative array of version info:
  *   - major: Major version (e.g., "8").
  *   - minor: Minor version (e.g., "0").
- *   - patch: Patch version (e.g., "0").
- *   - extra: Extra version info (e.g., "alpha2").
- *   - extra_text: The text part of "extra" (e.g., "alpha").
- *   - extra_number: The number part of "extra" (e.g., "2").
+ *   - (optional) patch: Patch version (e.g., "0").
+ *   - (optional) extra: Extra version info (e.g., "alpha2").
+ *   - (optional) extra_text: The text part of "extra" (e.g., "alpha").
+ *   - (optional) extra_number: The number part of "extra" (e.g., "2").
  */
 function _install_get_version_info($version) {
   preg_match('/
@@ -1515,8 +1506,11 @@ function _install_get_version_info($version) {
       (?P<major>[0-9]+)    # Major release number.
       \.          # .
       (?P<minor>[0-9]+)    # Minor release number.
-      \.          # .
-      (?P<patch>[0-9]+|x)  # Patch release number.
+      (
+        \.        # .
+        (?P<patch>[0-9]+|x) # Patch release number.
+        |         # OR no patch release.
+      )
     )             #
     (             #
       -           # - separator for "extra" version information.
@@ -1697,6 +1691,13 @@ function install_download_additional_translations_operations(&$install_state) {
   if (!($language = ConfigurableLanguage::load($langcode))) {
     // Create the language if not already shipped with a profile.
     $language = ConfigurableLanguage::createFromLangcode($langcode);
+
+    $standard_languages = LanguageManager::getStandardLanguageList();
+    if (isset($standard_languages[$langcode])) {
+      // Use the localized language label since the site is being installed
+      // with that language.
+      $language->setName($standard_languages[$langcode][1]);
+    }
   }
   $language->save();
 
@@ -2405,7 +2406,7 @@ function install_config_import_batch() {
 
     return $batch_builder->toArray();
   }
-  catch (ConfigImporterException $e) {
+  catch (ConfigImporterException) {
     global $install_state;
     // There are validation errors.
     $messenger = \Drupal::messenger();
@@ -2464,7 +2465,7 @@ function install_config_revert_install_changes() {
     try {
       $config_importer->import();
     }
-    catch (ConfigImporterException $e) {
+    catch (ConfigImporterException) {
       $messenger = \Drupal::messenger();
       // There are validation errors.
       $messenger->addError(t('The configuration synchronization failed validation.'));

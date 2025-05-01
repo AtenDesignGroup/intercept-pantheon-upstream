@@ -6,7 +6,7 @@ namespace Drupal\Tests\date_recur\Kernel;
 
 use Drupal\date_recur\Exception\DateRecurHelperArgumentException;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -18,11 +18,8 @@ use Drupal\KernelTests\KernelTestBase;
  * @group date_recur
  * @coversDefaultClass \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem
  */
-class DateRecurFieldItemTest extends KernelTestBase {
+final class DateRecurFieldItemTest extends KernelTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_entity_test',
     'entity_test',
@@ -33,9 +30,6 @@ class DateRecurFieldItemTest extends KernelTestBase {
     'user',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('dr_entity_test');
@@ -45,48 +39,48 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Tests infinite flag is set if an infinite RRULE is set.
    */
   public function testInfinite(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2008-06-16T00:00:00',
         'end_value' => '2008-06-16T06:00:00',
         'rrule' => 'FREQ=DAILY',
         'timezone' => 'Australia/Sydney',
       ],
-    ];
+    ]);
     $entity->save();
-    static::assertTrue($entity->dr[0]->infinite === TRUE);
+    static::assertTrue($entity->dr->first()?->infinite);
   }
 
   /**
    * Tests infinite flag is set if an non-infinite RRULE is set.
    */
   public function testNonInfinite(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2008-06-16T00:00:00',
         'end_value' => '2008-06-16T06:00:00',
         'rrule' => 'FREQ=DAILY;COUNT=100',
         'timezone' => 'Australia/Sydney',
       ],
-    ];
+    ]);
     $entity->save();
-    static::assertTrue($entity->dr[0]->infinite === FALSE);
+    static::assertFalse($entity->dr->first()?->infinite);
   }
 
   /**
    * Tests no violations when time zone is recognized by PHP.
    */
   public function testTimeZoneConstraintValid(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
       'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=3',
       'infinite' => '0',
       'timezone' => 'Australia/Sydney',
-    ];
+    ]);
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->dr->validate();
@@ -97,14 +91,14 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Tests violations when time zone is not a recognized by PHP.
    */
   public function testTimeZoneConstraintInvalidZone(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
       'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=3',
       'infinite' => '0',
       'timezone' => 'Mars/Mariner',
-    ];
+    ]);
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->dr->validate();
@@ -119,14 +113,14 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Tests violations when time zone is not a string.
    */
   public function testTimeZoneConstraintInvalidFormat(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
       'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=3',
       'infinite' => '0',
       'timezone' => new \stdClass(),
-    ];
+    ]);
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->dr->validate();
@@ -168,20 +162,24 @@ class DateRecurFieldItemTest extends KernelTestBase {
     FieldConfig::create($field)->save();
 
     $entity = EntityTest::create();
-    $entity->foo = [
-      'value' => '2014-06-15T23:00:00',
-      'end_value' => '2014-06-16T07:00:00',
-      'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=3',
-      'infinite' => '0',
-      'timezone' => 'Australia/Sydney',
-    ];
+    /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList $list */
+    $list = $entity->foo;
+    $list->setValue([
+      [
+        'value' => '2014-06-15T23:00:00',
+        'end_value' => '2014-06-16T07:00:00',
+        'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=3',
+        'infinite' => '0',
+        'timezone' => 'Australia/Sydney',
+      ],
+    ]);
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
-    $violations = $entity->foo->validate();
+    $violations = $list->validate();
     static::assertEquals(1, $violations->count());
 
     $violation = $violations->get(0);
-    $message = strip_tags((string) $violation->getMessage());
+    $message = \strip_tags((string) $violation->getMessage());
     static::assertEquals('This value is too long. It should have 20 characters or less.', $message);
   }
 
@@ -189,14 +187,14 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Tests when an invalid RRULE is passed.
    */
   public function testRruleInvalidConstraint(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       'value' => '2014-06-15T23:00:00',
       'end_value' => '2014-06-16T07:00:00',
       'rrule' => $this->randomMachineName(),
       'infinite' => '0',
       'timezone' => 'Australia/Sydney',
-    ];
+    ]);
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->dr->validate();
@@ -216,36 +214,36 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Test exception thrown if time zone is missing when getting a item helper.
    */
   public function testTimeZoneMissing(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2008-06-16T00:00:00',
         'end_value' => '2008-06-16T06:00:00',
         'rrule' => 'FREQ=DAILY;COUNT=100',
         'timezone' => '',
       ],
-    ];
+    ]);
     $this->expectException(DateRecurHelperArgumentException::class);
     $this->expectExceptionMessage('Missing time zone');
-    $entity->dr[0]->getHelper();
+    $entity->dr->first()?->getHelper();
   }
 
   /**
    * Test exception thrown for invalid time zones when getting a item helper.
    */
   public function testTimeZoneInvalid(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2008-06-16T00:00:00',
         'end_value' => '2008-06-16T06:00:00',
         'rrule' => 'FREQ=DAILY;COUNT=100',
         'timezone' => 'Mars/Mariner',
       ],
-    ];
+    ]);
     $this->expectException(DateRecurHelperArgumentException::class);
     $this->expectExceptionMessage('Invalid time zone');
-    $entity->dr[0]->getHelper();
+    $entity->dr->first()?->getHelper();
   }
 
   /**
@@ -254,11 +252,14 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * @covers ::generateSampleValue
    */
   public function testGenerateSampleValue(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $entity->dr->generateSampleItems();
-    static::assertMatchesRegularExpression('/^FREQ=DAILY;COUNT=\d{1,2}$/', $entity->dr->rrule);
-    static::assertFalse($entity->dr->infinite);
-    static::assertTrue(in_array($entity->dr->timezone, timezone_identifiers_list(), TRUE));
+    $item = $entity->dr->first();
+    self::assertNotNull($item);
+    self::assertNotNull($item->rrule);
+    static::assertMatchesRegularExpression('/^FREQ=DAILY;COUNT=\d{1,2}$/', $item->rrule);
+    static::assertFalse($item->infinite);
+    static::assertTrue(\in_array($item->timezone, \timezone_identifiers_list(), TRUE));
 
     /** @var \Symfony\Component\Validator\ConstraintViolationListInterface $violations */
     $violations = $entity->dr->validate();
@@ -271,14 +272,14 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Either use validate() before save and fix errors or set correct time zone.
    */
   public function testNoTimeZone(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2008-06-16T00:00:00',
         'end_value' => '2008-06-16T06:00:00',
         'rrule' => 'FREQ=DAILY;COUNT=100',
       ],
-    ];
+    ]);
 
     // Cannot assert message as it differs between DB engines.
     $this->expectException(\Exception::class);
@@ -291,13 +292,13 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Either use validate() before or use correct value.
    */
   public function testMissingStart(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'end_value' => '2008-06-16T06:00:00',
         'timezone' => 'Pacific/Chuuk',
       ],
-    ];
+    ]);
 
     // Cannot assert message as it differs between DB engines.
     $this->expectException(\Exception::class);
@@ -310,13 +311,13 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Either use validate() before or use correct value.
    */
   public function testMissingEnd(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2008-06-16T00:00:00',
         'timezone' => 'Pacific/Chuuk',
       ],
-    ];
+    ]);
 
     // Cannot assert message as it differs between DB engines.
     $this->expectException(\Exception::class);
@@ -329,30 +330,32 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * @covers ::onChange
    */
   public function testHelperResetAfterValueChange(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2014-06-15T23:00:01',
         'end_value' => '2014-06-16T07:00:02',
         'timezone' => 'Indian/Christmas',
         'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=5',
       ],
-    ];
+    ]);
 
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper1 */
-    $helper1 = $entity->dr[0]->getHelper();
+    $helper1 = $entity->dr->first()?->getHelper();
     $firstOccurrence = $helper1->getOccurrences(NULL, NULL, 1)[0];
     static::assertEquals('Mon, 16 Jun 2014 06:00:01 +0700', $firstOccurrence->getStart()->format('r'));
     static::assertEquals('Mon, 16 Jun 2014 14:00:02 +0700', $firstOccurrence->getEnd()->format('r'));
     static::assertEquals('WEEKLY', $helper1->getRules()[0]->getFrequency());
 
     // Change some values.
-    $entity->dr[0]->value = '2015-07-15T23:00:03';
-    $entity->dr[0]->end_value = '2015-07-16T07:00:04';
-    $entity->dr[0]->rrule = 'FREQ=DAILY;COUNT=3';
+    /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item */
+    $item = $entity->dr->first();
+    $item->value = '2015-07-15T23:00:03';
+    $item->end_value = '2015-07-16T07:00:04';
+    $item->rrule = 'FREQ=DAILY;COUNT=3';
 
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper2 */
-    $helper2 = $entity->dr[0]->getHelper();
+    $helper2 = $entity->dr->first()?->getHelper();
     $firstOccurrence = $helper2->getOccurrences(NULL, NULL, 1)[0];
     static::assertEquals('Thu, 16 Jul 2015 06:00:03 +0700', $firstOccurrence->getStart()->format('r'));
     static::assertEquals('Thu, 16 Jul 2015 14:00:04 +0700', $firstOccurrence->getEnd()->format('r'));
@@ -365,35 +368,35 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * @covers ::setValue
    */
   public function testHelperResetAfterListOverwritten(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2014-06-15T23:00:01',
         'end_value' => '2014-06-16T07:00:02',
         'timezone' => 'Indian/Christmas',
         'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=5',
       ],
-    ];
+    ]);
 
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper1 */
-    $helper1 = $entity->dr[0]->getHelper();
+    $helper1 = $entity->dr->first()?->getHelper();
     $firstOccurrence = $helper1->getOccurrences(NULL, NULL, 1)[0];
     static::assertEquals('Mon, 16 Jun 2014 06:00:01 +0700', $firstOccurrence->getStart()->format('r'));
     static::assertEquals('Mon, 16 Jun 2014 14:00:02 +0700', $firstOccurrence->getEnd()->format('r'));
     static::assertEquals('WEEKLY', $helper1->getRules()[0]->getFrequency());
 
     // Change full list.
-    $entity->dr = [
+    $entity->dr->setValue([
       [
         'value' => '2015-07-15T23:00:03',
         'end_value' => '2015-07-16T07:00:04',
         'timezone' => 'Indian/Christmas',
         'rrule' => 'FREQ=DAILY;COUNT=3',
       ],
-    ];
+    ]);
 
     /** @var \Drupal\date_recur\DateRecurHelperInterface $helper2 */
-    $helper2 = $entity->dr[0]->getHelper();
+    $helper2 = $entity->dr->first()?->getHelper();
     $firstOccurrence = $helper2->getOccurrences(NULL, NULL, 1)[0];
     static::assertEquals('Thu, 16 Jul 2015 06:00:03 +0700', $firstOccurrence->getStart()->format('r'));
     static::assertEquals('Thu, 16 Jul 2015 14:00:04 +0700', $firstOccurrence->getEnd()->format('r'));
@@ -404,18 +407,18 @@ class DateRecurFieldItemTest extends KernelTestBase {
    * Tests magic properties have the correct time zone.
    */
   public function testStartEndDateTimeZone(): void {
-    $entity = DrEntityTest::create();
-    $entity->dr = [
+    $entity = DrEntityTestBasic::create();
+    $entity->dr->setValue([
       [
         'value' => '2014-06-15T23:00:01',
         'end_value' => '2014-06-16T07:00:02',
         'timezone' => 'Indian/Christmas',
         'rrule' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=5',
       ],
-    ];
+    ]);
 
     /** @var \Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem $item */
-    $item = $entity->dr[0];
+    $item = $entity->dr->first();
     /** @var \Drupal\Core\Datetime\DrupalDateTime $startDate */
     $startDate = $item->start_date;
     static::assertEquals('Mon, 16 Jun 2014 06:00:01 +0700', $startDate->format('r'));

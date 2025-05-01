@@ -1,0 +1,18 @@
+parameters:
+  level: 1
+
+  ignoreErrors:
+    -
+      message: '#\Drupal calls should be avoided in classes, use dependency injection instead#'
+      path: src/VoteStorage.php
+      count: 2
+
+    # new static() is a best practice in Drupal, so we cannot fix that.
+    # @see https://www.drupal.org/docs/develop/development-tools/phpstan/handling-unsafe-usage-of-new-static
+    -
+      message: "#^Unsafe usage of new static#"
+      paths:
+        - src/Form/SettingsForm.php
+        - src/Form/VoteDeleteConfirm.php
+        - src/Form/VoteTypeDeleteConfirm.php
+        - src/VoteTypeForm.php

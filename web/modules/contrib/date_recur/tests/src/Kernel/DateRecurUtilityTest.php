@@ -13,7 +13,7 @@ use Drupal\KernelTests\KernelTestBase;
  * @group date_recur
  * @coversDefaultClass \Drupal\date_recur\DateRecurUtility
  */
-class DateRecurUtilityTest extends KernelTestBase {
+final class DateRecurUtilityTest extends KernelTestBase {
 
   /**
    * Tests smallest date utility.

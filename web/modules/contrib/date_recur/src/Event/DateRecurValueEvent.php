@@ -21,8 +21,8 @@ class DateRecurValueEvent extends Event {
    *   Specifies whether the entity was created.
    */
   public function __construct(
-      protected DateRecurFieldItemList $field,
-      protected bool $insert,
+    protected DateRecurFieldItemList $field,
+    protected bool $insert,
   ) {
   }
 

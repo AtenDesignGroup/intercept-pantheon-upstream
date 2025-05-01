@@ -3,7 +3,9 @@
 namespace Drupal\navigation;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -17,7 +19,10 @@ use Drupal\Core\Image\ImageFactory;
 use Drupal\Core\Menu\LocalTaskManagerInterface;
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextDefinition;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Security\Attribute\TrustedCallback;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\layout_builder\SectionStorage\SectionStorageManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -71,6 +76,7 @@ final class NavigationRenderer {
     private SectionStorageManagerInterface $sectionStorageManager,
     private RequestStack $requestStack,
     private ModuleExtensionList $moduleExtensionList,
+    private AccountInterface $currentUser,
   ) {}
 
   /**
@@ -98,6 +104,20 @@ final class NavigationRenderer {
    * @see hook_page_top()
    */
   public function buildNavigation(array &$page_top): void {
+    $page_top['navigation'] = [
+      '#cache' => [
+        'keys' => ['navigation', 'navigation'],
+        'max-age' => CacheBackendInterface::CACHE_PERMANENT,
+      ],
+      '#pre_render' => ['navigation.renderer:doBuildNavigation'],
+    ];
+  }
+
+  /**
+   * Pre-render callback for ::buildNavigation.
+   */
+  #[TrustedCallback]
+  public function doBuildNavigation($build): array {
     $logo_settings = $this->configFactory->get('navigation.settings');
     $logo_provider = $logo_settings->get('logo.provider');
 
@@ -107,10 +127,10 @@ final class NavigationRenderer {
     ];
     $storage = $this->sectionStorageManager->findByContext($contexts, $cacheability);
 
-    $build = [];
     if ($storage) {
       foreach ($storage->getSections() as $delta => $section) {
         $build[$delta] = $section->toRenderArray([]);
+        $build[$delta]['#cache']['contexts'] = ['user.permissions', 'theme', 'languages:language_interface'];
       }
     }
     // The render array is built based on decisions made by SectionStorage
@@ -139,20 +159,49 @@ final class NavigationRenderer {
       ],
     ];
     $build[0] = NestedArray::mergeDeepArray([$build[0], $defaults]);
-    $page_top['navigation'] = $build;
+
+    $build[0]['content_top'] = $this->getContentTop();
 
     if ($logo_provider === self::LOGO_PROVIDER_CUSTOM) {
       $logo_path = $logo_settings->get('logo.path');
       if (!empty($logo_path) && is_file($logo_path)) {
         $logo_managed_url = $this->fileUrlGenerator->generateAbsoluteString($logo_path);
         $image = $this->imageFactory->get($logo_path);
-        $page_top['navigation'][0]['settings']['logo_path'] = $logo_managed_url;
+        $build[0]['settings']['logo_path'] = $logo_managed_url;
         if ($image->isValid()) {
-          $page_top['navigation'][0]['settings']['logo_width'] = $image->getWidth();
-          $page_top['navigation'][0]['settings']['logo_height'] = $image->getHeight();
+          $build[0]['settings']['logo_width'] = $image->getWidth();
+          $build[0]['settings']['logo_height'] = $image->getHeight();
         }
       }
     }
+    return $build;
+  }
+
+  /**
+   * Gets the content for content_top section.
+   *
+   * @return array
+   *   The content_top section content.
+   */
+  protected function getContentTop(): array {
+    $content_top = [
+      '#theme' => 'navigation_content_top',
+    ];
+    $content_top_items = $this->moduleHandler->invokeAll('navigation_content_top');
+    $this->moduleHandler->alter('navigation_content_top', $content_top_items);
+    uasort($content_top_items, [SortArray::class, 'sortByWeightElement']);
+    // Filter out empty items, taking care to merge any cacheability metadata.
+    $cacheability = new CacheableMetadata();
+    $content_top_items = array_filter($content_top_items, function ($item) use (&$cacheability) {
+      if (Element::isEmpty($item)) {
+        $cacheability = $cacheability->merge(CacheableMetadata::createFromRenderArray($item));
+        return FALSE;
+      }
+      return TRUE;
+    });
+    $cacheability->applyTo($content_top);
+    $content_top['#items'] = $content_top_items;
+    return $content_top;
   }
 
   /**
@@ -170,32 +219,13 @@ final class NavigationRenderer {
     }
 
     $page_top['top_bar'] = [
-      '#theme' => 'top_bar',
-      '#attached' => [
-        'library' => [
-          'navigation/internal.navigation',
-        ],
-      ],
+      '#type' => 'top_bar',
+      '#access' => $this->currentUser->hasPermission('access navigation'),
       '#cache' => [
-        'contexts' => [
-          'url.path',
-          'user.permissions',
-        ],
+        'keys' => ['top_bar'],
+        'contexts' => ['user.permissions'],
       ],
     ];
-
-    // Local tasks for content entities.
-    if ($this->hasLocalTasks()) {
-      $local_tasks = $this->getLocalTasks();
-      $page_top['top_bar']['#local_tasks'] = [
-        '#theme' => 'top_bar_local_tasks',
-        '#local_tasks' => $local_tasks['tasks'],
-      ];
-      assert($local_tasks['cacheability'] instanceof CacheableMetadata);
-      CacheableMetadata::createFromRenderArray($page_top['top_bar'])
-        ->addCacheableDependency($local_tasks['cacheability'])
-        ->applyTo($page_top['top_bar']);
-    }
   }
 
   /**
@@ -227,7 +257,7 @@ final class NavigationRenderer {
    * @return array
    *   Local tasks keyed by route name.
    */
-  private function getLocalTasks(): array {
+  public function getLocalTasks(): array {
     if (isset($this->localTasks)) {
       return $this->localTasks;
     }
@@ -279,7 +309,7 @@ final class NavigationRenderer {
    * @return bool
    *   TRUE if there are local tasks available for the top bar, FALSE otherwise.
    */
-  private function hasLocalTasks(): bool {
+  public function hasLocalTasks(): bool {
     $local_tasks = $this->getLocalTasks();
     return !empty($local_tasks['tasks']);
   }

@@ -37,6 +37,7 @@ class UpdateMiscTest extends UpdateTestBase {
       ],
     ];
     $this->config('update_test.settings')->set('system_info', $setting)->save();
+    $this->drupalPlaceBlock('local_actions_block');
   }
 
   /**

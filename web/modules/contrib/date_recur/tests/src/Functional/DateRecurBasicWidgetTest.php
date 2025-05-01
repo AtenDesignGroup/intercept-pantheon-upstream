@@ -8,7 +8,7 @@ use Drupal\Core\Field\Entity\BaseFieldOverride;
 use Drupal\Core\Url;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurFieldItemList;
 use Drupal\date_recur\Plugin\Field\FieldType\DateRecurItem;
-use Drupal\date_recur_entity_test\Entity\DrEntityTest;
+use Drupal\date_recur_entity_test\Entity\DrEntityTestBasic;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\BrowserTestBase;
@@ -22,16 +22,10 @@ use Drupal\Tests\BrowserTestBase;
  * @group date_recur
  * @coversDefaultClass \Drupal\date_recur\Plugin\Field\FieldWidget\DateRecurBasicWidget
  */
-class DateRecurBasicWidgetTest extends BrowserTestBase {
+final class DateRecurBasicWidgetTest extends BrowserTestBase {
 
-  /**
-   * {@inheritdoc}
-   */
   protected $defaultTheme = 'stark';
 
-  /**
-   * {@inheritdoc}
-   */
   protected static $modules = [
     'date_recur_basic_widget_test',
     'date_recur_entity_test',
@@ -44,9 +38,6 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
     'system',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -68,10 +59,10 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
    * Test value from DB displays correctly.
    */
   public function testEditForm(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $rrule = 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR';
     $timeZone = 'Indian/Christmas';
-    $entity->dr = [
+    $entity->dr->setValue([
       [
         // 10am-4pm weekdaily.
         'value' => '2008-06-15T22:00:00',
@@ -80,7 +71,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
         // UTC+7.
         'timezone' => $timeZone,
       ],
-    ];
+    ]);
     $entity->save();
 
     $this->drupalGet($entity->toUrl('edit-form'));
@@ -109,7 +100,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'dr[0][rrule]' => $rrule,
     ];
 
-    $url = Url::fromRoute('entity.dr_entity_test.add_form');
+    $url = Url::fromRoute('entity.dr_entity_test.add_form', ['type' => 'dr_entity_test']);
     $this->drupalGet($url);
     $this->submitForm($edit, 'Save');
     $this->assertSession()->pageTextContains('has been created.');
@@ -129,7 +120,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
    * Tests submitted values make it into database for pre-existing entities.
    */
   public function testSavedFormEdit(): void {
-    $entity = DrEntityTest::create();
+    $entity = DrEntityTestBasic::create();
     $rrule = 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR';
     $timeZone = 'America/Bogota';
     $value = [
@@ -139,7 +130,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'timezone' => $timeZone,
       'infinite' => TRUE,
     ];
-    $entity->dr = [$value];
+    $entity->dr->setValue($value);
     $entity->save();
 
     $this->drupalGet($entity->toUrl('edit-form'));
@@ -149,7 +140,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
 
     // Reload the entity from storage.
     $entity = $this->getLastSavedDrEntityTest();
-    static::assertEquals($value, $entity->dr[0]->toArray());
+    static::assertEquals($value, $entity->dr->first()?->toArray());
   }
 
   /**
@@ -167,7 +158,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
    * @dataProvider providerFields
    */
   public function testFields(array $edit, bool $isSuccess, ?string $errorMessage = NULL): void {
-    $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form'));
+    $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form', ['type' => 'dr_entity_test']));
     $this->submitForm($edit, 'Save');
 
     if ($isSuccess) {
@@ -182,13 +173,10 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
   /**
    * Data provider for testFields.
    *
-   * @return array
-   *   Data for testing.
+   * @phpstan-return \Generator<array{0: array<mixed>, 1: bool, 2?: string|null}>
    */
-  public function providerFields(): array {
-    $scenarios = [];
-
-    $scenarios['Test no failures if nothing is filled.'] = [
+  public static function providerFields(): \Generator {
+    yield 'Test no failures if nothing is filled.' => [
       [
         'dr[0][value][date]' => '',
         'dr[0][value][time]' => '',
@@ -200,7 +188,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       TRUE,
     ];
 
-    $scenarios['Test failure when only start date field filled.'] = [
+    yield 'Test failure when only start date field filled.' => [
       [
         'dr[0][value][date]' => '2008-06-17',
         'dr[0][value][time]' => '',
@@ -213,7 +201,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'Missing time zone for date.',
     ];
 
-    $scenarios['Test failure when only start time field filled.'] = [
+    yield 'Test failure when only start time field filled.' => [
       [
         'dr[0][value][date]' => '',
         'dr[0][value][time]' => '10:00:00',
@@ -226,7 +214,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'Missing time zone for date.',
     ];
 
-    $scenarios['Test failure when start date and time field filled.'] = [
+    yield 'Test failure when start date and time field filled.' => [
       [
         'dr[0][value][date]' => '2008-06-17',
         'dr[0][value][time]' => '10:00:00',
@@ -239,7 +227,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'Missing time zone for date.',
     ];
 
-    $scenarios['Test failure when end date filled.'] = [
+    yield 'Test failure when end date filled.' => [
       [
         'dr[0][value][date]' => '',
         'dr[0][value][time]' => '',
@@ -252,7 +240,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'Missing time zone for date.',
     ];
 
-    $scenarios['Test failure when end time filled.'] = [
+    yield 'Test failure when end time filled.' => [
       [
         'dr[0][value][date]' => '',
         'dr[0][value][time]' => '',
@@ -265,7 +253,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'Missing time zone for date.',
     ];
 
-    $scenarios['Test success when start date and time and time zone field filled.'] = [
+    yield 'Test success when start date and time and time zone field filled.' => [
       [
         'dr[0][value][date]' => '2008-06-17',
         'dr[0][value][time]' => '10:00:00',
@@ -277,7 +265,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       TRUE,
     ];
 
-    $scenarios['Test failure when end date and time and time zone field filled.'] = [
+    yield 'Test failure when end date and time and time zone field filled.' => [
       [
         'dr[0][value][date]' => '',
         'dr[0][value][time]' => '',
@@ -290,14 +278,14 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'Start date must be set if end date is set.',
     ];
 
-    $scenarios['Tests failure on invalid rule.'] = [
+    yield 'Tests failure on invalid rule.' => [
       [
         'dr[0][value][date]' => '2008-06-17',
         'dr[0][value][time]' => '12:00:00',
         'dr[0][end_value][date]' => '2008-06-17',
         'dr[0][end_value][time]' => '12:00:00',
         'dr[0][timezone]' => 'America/Chicago',
-        'dr[0][rrule]' => $this->randomMachineName(),
+        'dr[0][rrule]' => '123FAKE_RRULE321',
       ],
       FALSE,
       'Repeat rule is formatted incorrectly.',
@@ -305,7 +293,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
 
     // Tests validation that comes automatically from date range. Specifically,
     // assert end date comes on or after start date.
-    $scenarios['Tests inherited validation: end before start'] = [
+    yield 'Tests inherited validation: end before start' => [
       [
         'dr[0][value][date]' => '2008-06-17',
         'dr[0][value][time]' => '03:00:00',
@@ -317,8 +305,6 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       FALSE,
       'end date cannot be before the start date',
     ];
-
-    return $scenarios;
   }
 
   /**
@@ -336,7 +322,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
     $baseFieldOverride->setDefaultValue($baseFieldValue);
     $baseFieldOverride->save();
 
-    $url = Url::fromRoute('entity.dr_entity_test.add_form');
+    $url = Url::fromRoute('entity.dr_entity_test.add_form', ['type' => 'dr_entity_test']);
     $this->drupalGet($url);
 
     foreach ($assertFieldValues as [$fieldName, $fieldValue]) {
@@ -459,7 +445,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'foo[0][rrule]' => 'FREQ=DAILY',
     ];
 
-    $this->drupalGet(Url::fromRoute('entity.entity_test.add_form'));
+    $this->drupalGet(Url::fromRoute('entity.entity_test.add_form', ['type' => 'entity_test']));
     $this->submitForm($edit, 'Save');
 
     $this->assertSession()->pageTextContains('The Start date is required.');
@@ -486,7 +472,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
 
     \Drupal::state()->set('DATE_RECUR_BASIC_WIDGET_TEST_HIDDEN_TIMEZONE_FIELD_HOOK_FORM_ALTER', TRUE);
 
-    $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form'));
+    $this->drupalGet(Url::fromRoute('entity.dr_entity_test.add_form', ['type' => 'dr_entity_test']));
 
     // Time zone field should be hidden.
     $this->assertSession()->fieldNotExists('dr[0][timezone]');
@@ -556,7 +542,7 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
       'foo[0][timezone]' => 'America/Chicago',
       'foo[0][rrule]' => 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=3',
     ];
-    $this->drupalGet(Url::fromRoute('entity.entity_test.add_form'));
+    $this->drupalGet(Url::fromRoute('entity.entity_test.add_form', ['type' => 'entity_test']));
     $this->submitForm($edit, 'Save');
 
     $this->assertSession()->pageTextContains('This value is too long. It should have 20 characters or less.');
@@ -565,14 +551,14 @@ class DateRecurBasicWidgetTest extends BrowserTestBase {
   /**
    * Get last saved Dr Entity Test entity.
    *
-   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTest|null
+   * @return \Drupal\date_recur_entity_test\Entity\DrEntityTestBasic|null
    *   The entity or null if none exist.
    */
-  protected function getLastSavedDrEntityTest(): ?DrEntityTest {
+  protected function getLastSavedDrEntityTest(): ?DrEntityTestBasic {
     $query = \Drupal::database()->query('SELECT MAX(id) FROM {dr_entity_test}');
     $query->execute();
     $maxId = $query->fetchField();
-    return DrEntityTest::load($maxId);
+    return DrEntityTestBasic::load($maxId);
   }
 
 }

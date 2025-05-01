@@ -35,7 +35,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    * @param string $entity_type
    *   The entity type to run the tests with.
    */
-  protected function doTestEntityLanguageMethods($entity_type) {
+  protected function doTestEntityLanguageMethods($entity_type): void {
     $langcode_key = $this->entityTypeManager->getDefinition($entity_type)->getKey('langcode');
     $entity = $this->container->get('entity_type.manager')
       ->getStorage($entity_type)
@@ -67,7 +67,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       $entity->addTranslation($this->langcodes[1]);
       $this->fail('Adding a translation to a language-neutral entity results in an error.');
     }
-    catch (\InvalidArgumentException $e) {
+    catch (\InvalidArgumentException) {
       // Expected exception; just continue testing.
     }
 
@@ -105,7 +105,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       $entity->getTranslation($this->langcodes[2])->get($this->fieldName)->value;
       $this->fail('Getting a non existing translation results in an error.');
     }
-    catch (\InvalidArgumentException $e) {
+    catch (\InvalidArgumentException) {
       // Expected exception; just continue testing.
     }
 
@@ -117,7 +117,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       $entity->getTranslation('invalid')->get($this->fieldName)->value;
       $this->fail('Getting an invalid translation results in an error.');
     }
-    catch (\InvalidArgumentException $e) {
+    catch (\InvalidArgumentException) {
       // Expected exception; just continue testing.
     }
 
@@ -126,7 +126,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       $entity->getTranslation('invalid')->set($this->fieldName, NULL);
       $this->fail("$entity_type: Setting a translation for an invalid language throws an exception.");
     }
-    catch (\InvalidArgumentException $e) {
+    catch (\InvalidArgumentException) {
       // Expected exception; just continue testing.
     }
 
@@ -155,7 +155,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    * @param string $entity_type
    *   The entity type to run the tests with.
    */
-  protected function doTestMultilingualProperties($entity_type) {
+  protected function doTestMultilingualProperties($entity_type): void {
     $langcode_key = $this->entityTypeManager->getDefinition($entity_type)->getKey('langcode');
     $default_langcode_key = $this->entityTypeManager->getDefinition($entity_type)->getKey('default_langcode');
     $name = $this->randomMachineName();
@@ -318,7 +318,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    * @param string $entity_type
    *   The entity type to run the tests with.
    */
-  protected function doTestEntityTranslationAPI($entity_type) {
+  protected function doTestEntityTranslationAPI($entity_type): void {
     $default_langcode = $this->langcodes[0];
     $langcode = $this->langcodes[1];
     $langcode_key = $this->entityTypeManager->getDefinition($entity_type)->getKey('langcode');
@@ -351,7 +351,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       $entity->getTranslation(LanguageInterface::LANGCODE_NOT_SPECIFIED);
       $this->fail('A language-neutral translation cannot be retrieved.');
     }
-    catch (\LogicException $e) {
+    catch (\LogicException) {
       // Expected exception; just continue testing.
     }
 
@@ -389,7 +389,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       $translation->{$langcode_key}->value = $this->langcodes[2];
       $this->fail('The translation language cannot be changed.');
     }
-    catch (\LogicException $e) {
+    catch (\LogicException) {
       // Expected exception; just continue testing.
     }
 
@@ -397,7 +397,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
     try {
       $translation->{$langcode_key}->value = $langcode;
     }
-    catch (\LogicException $e) {
+    catch (\LogicException) {
       $this->fail('The translation language can be reassigned the same value.');
     }
 
@@ -410,7 +410,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       try {
         $translation->{$default_langcode_key}->value = $default;
       }
-      catch (\LogicException $e) {
+      catch (\LogicException) {
         $this->fail('The default translation flag can be reassigned the same value.');
       }
 
@@ -418,7 +418,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
         $translation->{$default_langcode_key}->value = !$default;
         $this->fail('The default translation flag cannot be changed.');
       }
-      catch (\LogicException $e) {
+      catch (\LogicException) {
         // Expected exception; just continue testing.
       }
 
@@ -456,7 +456,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
         $translation->{$method}('name', $this->randomMachineName());
         $this->fail("The $method method raises an exception when trying to manipulate a removed translation.");
       }
-      catch (\Exception $e) {
+      catch (\Exception) {
         // Expected exception; just continue testing.
       }
     }
@@ -477,7 +477,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
         $entity->removeTranslation($invalid_langcode);
         $this->fail("Removing an invalid translation ($invalid_langcode) causes an exception to be thrown.");
       }
-      catch (\Exception $e) {
+      catch (\Exception) {
         // Expected exception; just continue testing.
       }
     }
@@ -586,7 +586,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    * @param string $entity_type
    *   The entity type to run the tests with.
    */
-  protected function doTestLanguageFallback($entity_type) {
+  protected function doTestLanguageFallback($entity_type): void {
     /** @var \Drupal\Core\Render\RendererInterface $renderer */
     $renderer = $this->container->get('renderer');
 
@@ -705,7 +705,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
         $entity_field_manager->getBaseFieldDefinitions($entity_type);
         $this->fail("Field $name cannot be translatable.");
       }
-      catch (\LogicException $e) {
+      catch (\LogicException) {
         // Expected exception; just continue testing.
       }
     }
@@ -727,7 +727,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    * @param string $entity_type
    *   The entity type to run the tests with.
    */
-  protected function doTestLanguageChange($entity_type) {
+  protected function doTestLanguageChange($entity_type): void {
     $langcode_key = $this->entityTypeManager->getDefinition($entity_type)->getKey('langcode');
     $controller = $this->entityTypeManager->getStorage($entity_type);
     $langcode = $this->langcodes[0];
@@ -767,7 +767,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
       $entity->{$langcode_key}->value = $this->langcodes[2];
       $this->fail('An exception is thrown when setting the default language to an existing translation language');
     }
-    catch (\InvalidArgumentException $e) {
+    catch (\InvalidArgumentException) {
       // Expected exception; just continue testing.
     }
   }

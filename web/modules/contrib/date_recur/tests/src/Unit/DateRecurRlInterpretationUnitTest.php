@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup RLanvinPhpRrule
  */
-class DateRecurRlInterpretationUnitTest extends UnitTestCase {
+final class DateRecurRlInterpretationUnitTest extends UnitTestCase {
 
   /**
    * A test container.
@@ -33,9 +33,6 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
    */
   protected ContainerInterface $testContainer;
 
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -61,10 +58,10 @@ class DateRecurRlInterpretationUnitTest extends UnitTestCase {
       ->method('format')
       ->with($this::anything())
       // See \Drupal\Core\Datetime\DateFormatterInterface::format.
-      ->willReturnCallback(function ($timestamp, $type = 'medium', $format = '', ?string $timezone = NULL, $langcode = NULL) {
+      ->willReturnCallback(static function ($timestamp, $type = 'medium', $format = '', ?string $timezone = NULL, $langcode = NULL) {
         $date = new \DateTime('@' . $timestamp);
         if (!$timezone) {
-          $timezone = date_default_timezone_get();
+          $timezone = \date_default_timezone_get();
         }
         $date->setTimezone(new \DateTimeZone($timezone));
         return $date->format('r');

@@ -70,16 +70,16 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
    *   The date recur interpreter entity storage.
    */
   public function __construct(
-      $plugin_id,
-      $plugin_definition,
-      FieldDefinitionInterface $field_definition,
-      array $settings,
-      $label,
-      $view_mode,
-      array $third_party_settings,
-      DateFormatterInterface $dateFormatter,
-      EntityStorageInterface $dateFormatStorage,
-      protected EntityStorageInterface $dateRecurInterpreterStorage,
+    $plugin_id,
+    $plugin_definition,
+    FieldDefinitionInterface $field_definition,
+    array $settings,
+    $label,
+    $view_mode,
+    array $third_party_settings,
+    DateFormatterInterface $dateFormatter,
+    EntityStorageInterface $dateFormatStorage,
+    protected EntityStorageInterface $dateRecurInterpreterStorage,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, $dateFormatter, $dateFormatStorage);
   }
@@ -184,7 +184,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
     $form['timezone_override']['#empty_option'] = $this->t('Use current user timezone');
     $form['timezone_override']['#description'] = $this->t('Change the timezone used for displaying dates (not recommended).');
 
-    $interpreterOptions = array_map(
+    $interpreterOptions = \array_map(
       fn (DateRecurInterpreterInterface $interpreter): string => $interpreter->label() ?? (string) $this->t('- Missing label -'),
       $this->dateRecurInterpreterStorage->loadMultiple(),
     );
@@ -239,7 +239,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
    */
   public static function validateSettingsCountPerItem(array &$element, FormStateInterface $form_state, array &$complete_form): void {
     $countPerItem = $element['#value'] == static::COUNT_PER_ITEM_ITEM;
-    $arrayParents = array_slice($element['#array_parents'], 0, -2);
+    $arrayParents = \array_slice($element['#array_parents'], 0, -2);
     $formatterForm = NestedArray::getValue($complete_form, $arrayParents);
     $parents = $formatterForm['#parents'];
     $parents[] = 'count_per_item';
@@ -257,7 +257,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
    *   The complete form structure.
    */
   public static function validateSettingsShowNext(array &$element, FormStateInterface $form_state, array &$complete_form): void {
-    $arrayParents = array_slice($element['#array_parents'], 0, -2);
+    $arrayParents = \array_slice($element['#array_parents'], 0, -2);
     $formatterForm = NestedArray::getValue($complete_form, $arrayParents);
     $parents = $formatterForm['#parents'];
     $parents[] = 'show_next';
@@ -319,7 +319,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
     $elements = [];
     foreach ($items as $delta => $item) {
       $value = $this->viewItem($item, $occurrenceQuota);
-      $occurrenceQuota -= ($isSharedMaximum ? count($value['#occurrences']) : 0);
+      $occurrenceQuota -= ($isSharedMaximum ? \count($value['#occurrences']) : 0);
       $elements[$delta] = $value;
       if ($occurrenceQuota <= 0) {
         break;
@@ -361,7 +361,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
       /** @var string|null $interpreterId */
       $interpreterId = $this->getSetting('interpreter');
       if ($interpreterId && ($interpreter = $this->dateRecurInterpreterStorage->load($interpreterId))) {
-        assert($interpreter instanceof DateRecurInterpreterInterface);
+        \assert($interpreter instanceof DateRecurInterpreterInterface);
         $rules = $item->getHelper()->getRules();
         $plugin = $interpreter->getPlugin();
         $cacheability->addCacheableDependency($interpreter);
@@ -370,7 +370,7 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
     }
 
     // Occurrences are generated even if the item is not recurring.
-    $build['#occurrences'] = array_map(
+    $build['#occurrences'] = \array_map(
       function (DateRange $occurrence): array {
         $startDate = DrupalDateTime::createFromDateTime($occurrence->getStart());
         $endDate = DrupalDateTime::createFromDateTime($occurrence->getEnd());
@@ -426,8 +426,8 @@ class DateRecurBasicFormatter extends DateRangeDefaultFormatter {
    * {@inheritdoc}
    */
   protected function formatDate($date): string {
-    assert($date instanceof DrupalDateTime);
-    is_string($this->formatType) ?: throw new \LogicException('Date format must be set.');
+    \assert($date instanceof DrupalDateTime);
+    \is_string($this->formatType) ?: throw new \LogicException('Date format must be set.');
     $timezone = $this->getSetting('timezone_override') ?: $date->getTimezone()->getName();
     return $this->dateFormatter->format($date->getTimestamp(), $this->formatType, '', $timezone);
   }

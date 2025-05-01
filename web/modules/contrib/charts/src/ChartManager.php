@@ -26,7 +26,7 @@ class ChartManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/chart/Library', $namespaces, $module_handler, 'Drupal\charts\Plugin\chart\Library\ChartInterface', 'Drupal\charts\Annotation\Chart');
+    parent::__construct('Plugin/chart/Library', $namespaces, $module_handler, 'Drupal\charts\Plugin\chart\Library\ChartInterface', 'Drupal\charts\Attribute\Chart', 'Drupal\charts\Annotation\Chart');
 
     $this->setCacheBackend($cache_backend, 'chart');
     $this->alterInfo('charts_chart_library');

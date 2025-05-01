@@ -419,7 +419,6 @@ class OfficeHoursItem extends OfficeHoursItemBase {
    */
   public static function formatLabel(string $pattern, array $value, $day_delta = 0) {
     $label = '';
-    $formatter = \Drupal::service('date.formatter');
 
     $day = $value['day'];
     switch (TRUE) {
@@ -447,13 +446,11 @@ class OfficeHoursItem extends OfficeHoursItemBase {
 
       case OfficeHoursDateHelper::isExceptionDay($day) && ($pattern == 'l'):
         // Convert date into weekday in widget.
-        $label = $formatter->format($day, 'custom', $pattern);
+        $label = OfficeHoursDateHelper::format($day, $pattern);
         break;
 
       case OfficeHoursDateHelper::isExceptionDay($day):
-        $label = $formatter->format($day, $pattern);
-        // Remove excessive time part.
-        $label = str_replace(' - 00:00', '', $label);
+        $label = OfficeHoursDateHelper::format($day, $pattern);
         break;
 
       default:
@@ -464,7 +461,6 @@ class OfficeHoursItem extends OfficeHoursItemBase {
         break;
 
     }
-
     return $label;
   }
 

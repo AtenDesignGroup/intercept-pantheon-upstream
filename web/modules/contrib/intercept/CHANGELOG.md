@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.13] - 2025-06-03
+
+* Fixed an issue with apostrophes in customer names not being handled well in the room reservation edit form
+* Fixed an error when viewing list of event registrations
+
 ## [2.0.12] - 2025-04-30
 
 * Added code to delete outdated event reminder SMS messages to prevent them from going out after an event has passed

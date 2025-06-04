@@ -1,4 +1,4 @@
 {% include '@intercept-base-components/contact/contact.twig' with {
-  name: content.field_first_name|field_value|render ~ ' ' ~ content.field_last_name|field_value|render,
+  name: content.field_first_name|field_value|render|html_entity_decode ~ ' ' ~ content.field_last_name|field_value|render|html_entity_decode,
   content: content|without('field_first_name', 'field_last_name')
 } only %}

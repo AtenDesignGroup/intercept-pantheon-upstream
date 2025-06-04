@@ -513,7 +513,7 @@ slick:
     component:
       https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css: { type: external, minified: true }
   js:
-    https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js: { type: external, minified: true }
+    build/components/slideshow/slick.js: {}
   dependencies:
     - core/jquery
 

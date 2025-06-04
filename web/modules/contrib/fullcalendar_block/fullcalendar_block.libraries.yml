@@ -72,7 +72,7 @@ libraries.fullcalendar_rrule:
 
 libraries.dompurify:
   remote: https://github.com/cure53/DOMPurify
-  version: '2.4.5'
+  version: '2.5.8'
   license:
     name: MPL-2.0 OR Apache-2.0
     url: https://github.com/cure53/DOMPurify/blob/main/LICENSE

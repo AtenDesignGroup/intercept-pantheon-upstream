@@ -606,7 +606,7 @@ class AdministrativeArea extends CountryAwareInOperatorBase {
    * @return array
    *   An array of country names, keyed by country code.
    */
-  public function getAdministrativeAreaCountries(array $available_countries = NULL) {
+  public function getAdministrativeAreaCountries(?array $available_countries = NULL) {
     if (!isset($available_countries)) {
       $available_countries = $this->getAvailableCountries();
     }

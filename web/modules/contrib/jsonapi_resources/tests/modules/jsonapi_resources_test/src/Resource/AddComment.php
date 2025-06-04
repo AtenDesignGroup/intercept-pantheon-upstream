@@ -2,10 +2,10 @@
 
 namespace Drupal\jsonapi_resources_test\Resource;
 
-use Drupal\comment\CommentInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\comment\CommentInterface;
 use Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel;
 use Drupal\jsonapi\ResourceResponse;
 use Drupal\jsonapi_resources\Resource\EntityQueryResourceBase;

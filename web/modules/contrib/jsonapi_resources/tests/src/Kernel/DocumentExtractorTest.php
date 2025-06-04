@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi_resources\Kernel;
 
+use Drupal\KernelTests\KernelTestBase;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi_resources\Unstable\Value\NewResourceObject;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\Request;
 

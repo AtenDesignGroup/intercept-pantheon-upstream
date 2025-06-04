@@ -11,6 +11,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Utility\TableSort;
 use Drupal\user\Entity\User;
+use Twig\TwigFilter;
 
 /**
  * Implements hook_preprocess_HOOK() for html.
@@ -846,4 +847,11 @@ function intercept_base_js_alter(&$js) {
     unset($js['themes/contrib/intercept_base/build/libraries/materialize-src/js/select.js']);
     unset($js['themes/contrib/intercept_base/build/libraries/global/global.js']);
   }
+}
+
+/**
+ * Implements hook_twig_tweak_filters_alter().
+ */
+function intercept_base_twig_tweak_filters_alter(array &$filters): void {
+  $filters[] = new TwigFilter('html_entity_decode', 'html_entity_decode');
 }

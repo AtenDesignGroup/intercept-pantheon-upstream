@@ -34,9 +34,9 @@ final class DocumentResolver implements ValueResolverInterface {
    *
    * @todo Remove when all supported versions of Drupal require Symfony 7.
    *
-   * @param Request $request
+   * @param \Symfony\Component\HttpFoundation\Request $request
    *   Request.
-   * @param ArgumentMetadata $argument
+   * @param \Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata $argument
    *   Argument metadata.
    *
    * @return bool

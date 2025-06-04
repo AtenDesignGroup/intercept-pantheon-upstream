@@ -13,7 +13,7 @@ use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 /**
  * Add the "Wrapper type" setting to the default widget.
  */
-function address_post_update_default_widget_wrapper(array &$sandbox = NULL): void {
+function address_post_update_default_widget_wrapper(?array &$sandbox = NULL): void {
   \Drupal::classResolver(ConfigEntityUpdater::class)->update($sandbox, 'entity_form_display', function (EntityFormDisplayInterface $form_display): bool {
     $changed = FALSE;
     foreach ($form_display->getComponents() as $field => $component) {

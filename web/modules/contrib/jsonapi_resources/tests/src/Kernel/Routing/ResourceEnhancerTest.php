@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi_resources\Kernel;
 
-use Drupal\jsonapi_resources\Unstable\Routing\Enhancer\ResourceEnhancer;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\jsonapi_resources\Unstable\Routing\Enhancer\ResourceEnhancer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 

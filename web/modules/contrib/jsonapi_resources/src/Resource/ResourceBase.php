@@ -106,7 +106,7 @@ abstract class ResourceBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function createJsonapiResponse(ResourceObjectData $data, Request $request, $response_code = 200, array $headers = [], LinkCollection $links = NULL, array $meta = []): ResourceResponse {
+  protected function createJsonapiResponse(ResourceObjectData $data, Request $request, $response_code = 200, array $headers = [], ?LinkCollection $links = NULL, array $meta = []): ResourceResponse {
     return $this->resourceResponseFactory->create($data, $request, $response_code, $headers, $links, $meta);
   }
 

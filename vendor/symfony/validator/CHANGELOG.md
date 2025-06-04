@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+7.3
+---
+
+ * Add the `filenameCharset` and `filenameCountUnit` options to the `File` constraint
+ * Deprecate defining custom constraints not supporting named arguments
+ * Deprecate passing an array of options to the constructors of the constraint classes, pass each option as a dedicated argument instead
+ * Add support for ratio checks for SVG files to the `Image` constraint
+ * Add support for the `otherwise` option in the `When` constraint
+ * Add support for multiple fields containing nested constraints in `Composite` constraints
+ * Add the `stopOnFirstError` option to the `Unique` constraint to validate all elements
+ * Add support for closures in the `When` constraint
+
 7.2
 ---
 
@@ -13,6 +25,7 @@ CHANGELOG
  * Add the `Week` constraint
  * Add `CompoundConstraintTestCase` to ease testing Compound Constraints
  * Add context variable to `WhenValidator`
+ * Add `format` parameter to `DateTime` constraint violation message
 
 7.1
 ---

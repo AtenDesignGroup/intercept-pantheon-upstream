@@ -6,7 +6,7 @@ package: 'Views'
 dependencies:
   - drupal:views
 
-# Information added by Drupal.org packaging script on 2024-12-10
-version: '8.x-1.4'
+# Information added by Drupal.org packaging script on 2025-05-19
+version: '8.x-1.5'
 project: 'views_exposed_filter_blocks'
-datestamp: 1733818547
+datestamp: 1747646174

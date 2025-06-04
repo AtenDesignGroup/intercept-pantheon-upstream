@@ -5,3 +5,6 @@ block.settings.views_exposed_filter_blocks_block:
     view_display:
       type: string
       label: 'View & Display'
+    form_state_always_process:
+      type: boolean
+      label: 'Always process the form state (on block build)'

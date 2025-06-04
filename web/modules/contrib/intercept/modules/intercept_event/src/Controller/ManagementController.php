@@ -127,7 +127,7 @@ class ManagementController extends ManagementControllerBase implements RenderCal
     $link = $this->getButton('Event Series', 'system.admin_content', [
       'type' => 'event_series',
     ]);
-    $lists->row($link, $this->t('List of all Event Series, a method for grouping events together (e.g. Summer Reading Challenge).'));
+    $lists->row($link, $this->t('List of all Event Series, a method for grouping events together (e.g. Summer Learning Challenge).'));
     $link = $this->getButton('Event Templates', 'intercept_event.management.event_templates', [
       'user' => $this->currentUser()->id(),
     ]);

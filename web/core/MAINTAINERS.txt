@@ -31,10 +31,11 @@ Framework managers
   - Lee Rowlands 'larowlan' https://www.drupal.org/u/larowlan
 
   Frontend
-  - Ben Mullins 'bnjmnm' https://www.drupal.org/u/bnjmnm
   - Théodore Biadala 'nod_' https://www.drupal.org/u/nod_
   - Cristina Chumillas 'ckrina' https://www.drupal.org/u/ckrina
+  - Ben Mullins 'bnjmnm' https://www.drupal.org/u/bnjmnm
   - Sally Young 'justafish' https://www.drupal.org/u/justafish
+  - (provisional) Pierre Dureau 'pdureau' https://www.drupal.org/u/pdureau
 
 Release managers
 - Nathaniel Catchpole 'catch' https://www.drupal.org/u/catch
@@ -306,7 +307,7 @@ Navigation
 - Pablo López 'plopesc' https://www.drupal.org/u/plopesc
 
 Node
-- ?
+- Adam Bramley 'acbramley' https://www.drupal.org/u/acbramley
 
 Node Access
 - Ken Rickard 'agentrickard' https://www.drupal.org/u/agentrickard
@@ -408,6 +409,7 @@ Theme API
   Single-Directory Components
   - Mateu Aguiló Bosch 'e0ipso' https://www.drupal.org/u/e0ipso
   - Pierre Dureau 'pdureau' https://www.drupal.org/u/pdureau
+  - Jean Valverde 'mogtofu33' https://www.drupal.org/u/mogtofu33
 
 Token
 - ?
@@ -518,12 +520,10 @@ get involved. They organize communications and logistics, and actively
 participate in mentoring.
 
 - Chris Darke 'chrisdarke' https://www.drupal.org/u/chrisdarke
-- Mauricio Dinarte 'dinarcon' https://www.drupal.org/u/dinarcon
 - Brian Gilbert 'realityloop' https://www.drupal.org/u/realityloop
 - Lucas Hedding 'heddn' https://www.drupal.org/u/heddn
-- AmyJune Hineline 'volkswagenchick' https://www.drupal.org/u/volkswagenchick
-- Tara King 'sparklingrobots' https://www.drupal.org/u/sparklingrobots
 - Rachel Lawson 'rachel_norfolk' https://www.drupal.org/u/rachel_norfolk
 - Elli Ludwigson 'ekl1773' https://www.drupal.org/u/ekl1773
 - Jess Myrbo 'xjm' https://www.drupal.org/u/xjm
 - Matthew Radcliffe 'mradcliffe' https://www.drupal.org/u/mradcliffe
+- James Shields 'lostcarpark' https://www.drupal.org/u/lostcarpark

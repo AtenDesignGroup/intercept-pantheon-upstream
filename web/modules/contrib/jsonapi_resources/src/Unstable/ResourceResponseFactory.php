@@ -69,7 +69,7 @@ final class ResourceResponseFactory {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function create(ResourceObjectData $data, Request $request, $response_code = 200, array $headers = [], LinkCollection $links = NULL, array $meta = []) {
+  public function create(ResourceObjectData $data, Request $request, $response_code = 200, array $headers = [], ?LinkCollection $links = NULL, array $meta = []) {
     $links = ($links ?: new LinkCollection([]));
     if (!$links->hasLinkWithKey('self')) {
       $self_link = new Link(new CacheableMetadata(), Url::fromUri($request->getUri()), 'self');

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Drupal\Tests\jsonapi_resources\Unit\Routing;
 
 use Drupal\Core\Routing\RouteBuildEvent;
+use Drupal\Tests\UnitTestCase;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\jsonapi_resources\Exception\RouteDefinitionException;
 use Drupal\jsonapi_resources\Unstable\Routing\ResourceRoutes;
-use Drupal\Tests\UnitTestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;

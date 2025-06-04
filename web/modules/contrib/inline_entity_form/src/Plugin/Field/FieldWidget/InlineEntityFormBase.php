@@ -424,7 +424,7 @@ abstract class InlineEntityFormBase extends WidgetBase implements ContainerFacto
    * @return array
    *   IEF form element structure.
    */
-  protected function getInlineEntityForm($operation, $bundle, $langcode, $delta, array $parents, EntityInterface $entity = NULL) {
+  protected function getInlineEntityForm($operation, $bundle, $langcode, $delta, array $parents, ?EntityInterface $entity = NULL) {
     $element = [
       '#type' => 'inline_entity_form',
       '#entity_type' => $this->getFieldSetting('target_type'),

@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Validator\Constraints;
 
+use Symfony\Component\Validator\Attribute\HasNamedArguments;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
@@ -38,10 +39,11 @@ class Regex extends Constraint
     /**
      * @param string|array<string,mixed>|null $pattern     The regular expression to match
      * @param string|null                     $htmlPattern The pattern to use in the HTML5 pattern attribute
-     * @param bool|null                       $match       Whether to validate the value matches the configured pattern or not (defaults to false)
+     * @param bool|null                       $match       Whether to validate the value matches the configured pattern or not (defaults to true)
      * @param string[]|null                   $groups
-     * @param array<string,mixed>             $options
+     * @param array<string,mixed>|null        $options
      */
+    #[HasNamedArguments]
     public function __construct(
         string|array|null $pattern,
         ?string $message = null,
@@ -50,11 +52,19 @@ class Regex extends Constraint
         ?callable $normalizer = null,
         ?array $groups = null,
         mixed $payload = null,
-        array $options = [],
+        ?array $options = null,
     ) {
         if (\is_array($pattern)) {
-            $options = array_merge($pattern, $options);
+            trigger_deprecation('symfony/validator', '7.3', 'Passing an array of options to configure the "%s" constraint is deprecated, use named arguments instead.', static::class);
+
+            $options = array_merge($pattern, $options ?? []);
         } elseif (null !== $pattern) {
+            if (\is_array($options)) {
+                trigger_deprecation('symfony/validator', '7.3', 'Passing an array of options to configure the "%s" constraint is deprecated, use named arguments instead.', static::class);
+            } else {
+                $options = [];
+            }
+
             $options['value'] = $pattern;
         }
 

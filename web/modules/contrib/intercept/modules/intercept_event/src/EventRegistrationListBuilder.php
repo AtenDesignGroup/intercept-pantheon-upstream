@@ -135,10 +135,9 @@ class EventRegistrationListBuilder extends EntityListBuilder {
     if ($user = $entity->getRegistrant()) {
       if ($authdata = $this->getAuthdata($user->id())) {
         // Use the UID now to get the barcode and name of the customer.
-        $email_link = Link::fromTextAndUrl($authdata->EmailAddress, Url::fromUri('mailto:' . $authdata->EmailAddress))->toString();
         return [
           'data' => [
-            '#markup' => $authdata->NameFirst . ' ' . $authdata->NameLast . ' (' . $authdata->Barcode . ')<br>' . $authdata->PhoneNumber . ' ' . $email_link,
+            '#markup' => $authdata->NameFirst . ' ' . $authdata->NameLast . ' (' . $authdata->Barcode . ')<br>' . $authdata->PhoneNumber . ' <a href="mailto:' . $authdata->EmailAddress . '">' . $authdata->EmailAddress . '</a>',
           ],
         ];
       }

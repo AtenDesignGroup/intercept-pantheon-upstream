@@ -76,6 +76,7 @@ class ViewsExposedFilterBlocksBlock extends BlockBase implements ContainerFactor
   public function defaultConfiguration() {
     return [
       'view_display' => NULL,
+      'form_state_always_process' => TRUE,
     ];
   }
 
@@ -91,6 +92,13 @@ class ViewsExposedFilterBlocksBlock extends BlockBase implements ContainerFactor
       '#default_value' => $this->configuration['view_display'],
       '#required' => TRUE,
     ];
+    $form['form_state_always_process'] = [
+      '#title' => $this->t('View & Display'),
+      '#description' => $this->t("Always process the form state (on block build). You'll only need this, if the exposed form block should show & handle submitted values. If you're using the form only to submit values to a view, this can and should be disabled."),
+      '#type' => 'checkbox',
+      '#default_value' => $this->configuration['form_state_always_process'],
+    ];
+
     return $form;
   }
 
@@ -146,8 +154,12 @@ class ViewsExposedFilterBlocksBlock extends BlockBase implements ContainerFactor
             'rerender' => TRUE,
           ])
           ->setMethod('get')
-          ->setAlwaysProcess()
           ->disableRedirect();
+        if ($this->configuration['form_state_always_process']) {
+          // Process input on build already, for example to show submitted
+          // values:
+          $form_state->setAlwaysProcess();
+        }
         $form_state->set('rerender', NULL);
         $form = $this->formBuilder->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
         // Override form action URL in order to allow to place

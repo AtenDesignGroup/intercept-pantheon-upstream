@@ -390,6 +390,8 @@
               // Remove the question mark and any Drupal path component,
               // existing fullcalendar search filters if any.
               const startParam = calendarOptions.startParam || 'start';
+              const initialDateParam =
+                calendarOptions.initialDateParam || startParam;
               const specialParams = [
                 // Internal Drupal paths.
                 'q',
@@ -398,6 +400,8 @@
                 startParam,
                 calendarOptions.endParam || 'end',
                 calendarOptions.timeZoneParam || 'timeZone',
+                // Remove custom fullcalendar block parameters.
+                initialDateParam,
               ];
 
               const query = new URLSearchParams(queryString);
@@ -409,12 +413,9 @@
                 calendarOptions.initialView = query.get(initialViewParam);
               }
 
-              // Initial date from query parameter.
-              // The start parameter here is not the one
-              // fed to the event data source endpoint.
-              const initialDate = query.get('start');
+              // Specify the default initial date.
+              const initialDate = query.get(initialDateParam);
               if (initialDate) {
-                // Provide a default initial date if it's specified in the query string.
                 const date = new Date(initialDate);
                 if (date instanceof Date && !Number.isNaN(date.getTime())) {
                   // Valid date string.

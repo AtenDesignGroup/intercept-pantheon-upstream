@@ -22,7 +22,7 @@
   'views-filters-summary',
   options.use_ajax ? 'views-filters-summary--use-ajax'
 ] %}
-<div{{ attributes.addClass(classes) }}>
+<div{{ attributes.addClass(classes) }} data-exposed-form-id={{ exposed_form_id }}>
   <div class="current-filters__wrapper">
     {% for filter in summary %}
     <div class="current-filter">

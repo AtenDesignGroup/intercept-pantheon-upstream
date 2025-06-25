@@ -436,7 +436,7 @@ class ChartsApiExample extends ControllerBase {
       ];
       if ($library === 'highcharts') {
         // Check if the 'charts_highcharts/heatmap' library is available.
-        $libraries = \Drupal::service('extension.list.module')->getList();
+        $libraries = $this->moduleList->getList();
         $highcharts_heatmap = array_filter($libraries, function ($library) {
           return str_contains($library->getName(), 'charts_highcharts_heatmap');
         });

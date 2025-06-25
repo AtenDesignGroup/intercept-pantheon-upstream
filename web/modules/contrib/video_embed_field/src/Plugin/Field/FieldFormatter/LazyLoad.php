@@ -81,7 +81,7 @@ class LazyLoad extends FormatterBase implements ContainerFactoryPluginInterface 
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $formatter_manager = $container->get('plugin.manager.field.formatter');
-    return new self(
+    return new static(
       $plugin_id,
       $plugin_definition,
       $configuration['field_definition'],

@@ -25,6 +25,9 @@ youtu
 iframe
 uninstallation
 Zmkxg
+ZDAS
 timeindex
 preprocess
 modestbranding
+fontawesome
+driesnote

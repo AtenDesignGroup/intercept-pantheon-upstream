@@ -3,12 +3,13 @@
 namespace Drupal\charts_test\Plugin\chart\Library;
 
 use Drupal\charts\Attribute\Chart;
+use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
-use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -50,9 +51,11 @@ class ChartsTestLibrary extends ChartBase implements ContainerFactoryPluginInter
    *   The plugin implementation definition.
    * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
    *   The element info manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface|null $module_handler
+   *   The module handler service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ElementInfoManagerInterface $element_info) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ElementInfoManagerInterface $element_info, ?ModuleHandlerInterface $module_handler = NULL) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler);
     $this->elementInfo = $element_info;
   }
 
@@ -64,7 +67,8 @@ class ChartsTestLibrary extends ChartBase implements ContainerFactoryPluginInter
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('element_info')
+      $container->get('element_info'),
+      $container->get('module_handler'),
     );
   }
 

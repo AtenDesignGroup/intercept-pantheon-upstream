@@ -222,7 +222,7 @@ class CheckinPeriodInvalidator implements CheckinPeriodInvalidatorInterface {
         'end' => $current->add($this->durationService->getDateIntervalFromDurationString($this->config->get('checkin_start')))->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
       ];
 
-      // Clone the dates so we don't manaipulate the originals.
+      // Clone the dates so we don't manipulate the originals.
       $previous = DrupalDateTime::createFromTimestamp($lastRun);
       $previous->setTimezone(new \DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE));
       $current = DrupalDateTime::createFromTimestamp($now);

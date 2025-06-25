@@ -59,10 +59,10 @@
       function getExposedForm() {
         const summaryElt = context.querySelector('[data-exposed-form-id]');
         const exposedFormId = summaryElt.getAttribute('data-exposed-form-id');
-        let form = context.querySelector(`form#${exposedFormId}`);
+        let form = context.querySelector(`form[id^="${exposedFormId}"]`);
         if (!form) {
           // When the form is not found in the context (e.g. as a block), use document instead.
-          form = document.querySelector(`form#${exposedFormId}`);
+          form = document.querySelector(`form[id^="${exposedFormId}"]`);
         }
         return form;
       }
@@ -116,7 +116,9 @@
       function onRemoveClick(event) {
         event.preventDefault();
         const removeSelector = this.getAttribute('data-remove-selector');
-        const [selector, value] = removeSelector.split(':');
+        const colonIndex = removeSelector.indexOf(':');
+        const selector = removeSelector.substring(0, colonIndex);
+        const value = removeSelector.substring(colonIndex + 1);
         const form = getExposedForm();
         const inputs = form.querySelectorAll(`[name^="${selector}"]`);
         inputs.forEach((input) => {

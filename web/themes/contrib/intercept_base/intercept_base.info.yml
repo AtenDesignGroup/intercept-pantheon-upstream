@@ -112,6 +112,8 @@ libraries-extend:
   addtocalendar/base:
     - intercept_base/action-button
     - intercept_base/addtocalendar
+  views_filters_summary/views_filters_summary:
+    - intercept_base/current-filters
 
 components:
   namespaces:

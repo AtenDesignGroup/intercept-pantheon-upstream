@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.14] - 2025-06-25
+
+* Updated Room Reservations so that customers are not able to edit a room reservation once it starts
+
 ## [2.0.13] - 2025-06-03
 
 * Fixed an issue with apostrophes in customer names not being handled well in the room reservation edit form

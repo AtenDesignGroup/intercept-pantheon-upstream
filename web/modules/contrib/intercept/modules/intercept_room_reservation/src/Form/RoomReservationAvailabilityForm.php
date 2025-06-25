@@ -4,7 +4,7 @@ namespace Drupal\intercept_room_reservation\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\DateTime\DrupalDateTime;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\intercept_core\ReservationManager;
 use Drupal\intercept_core\Utility\Dates;
 use Drupal\intercept_room_reservation\Entity\RoomReservation;

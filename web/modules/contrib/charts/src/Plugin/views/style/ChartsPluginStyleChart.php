@@ -133,8 +133,8 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
     $options['chart_settings'] = [
       'default' => $charts_default_settings,
     ];
+    $options['chart_settings']['library_type_options'] = [];
     $options['chart_settings']['fields']['allow_advanced_rendering'] = FALSE;
-
     $options['chart_settings']['library'] = '';
 
     // @todo ensure that chart extensions inherit defaults from parent
@@ -320,6 +320,7 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
       '#type' => 'chart',
       '#chart_type' => $chart_settings['type'],
       '#chart_library' => $chart_settings['library'],
+      '#library_type_options' => $chart_settings['library_type_options'] ?? [],
       '#chart_id' => $chart_id,
       '#id' => Html::getUniqueId('chart_' . $chart_id),
       '#stacking' => $chart_settings['fields']['stacking'] ?? '0',

@@ -5,7 +5,7 @@ package: Charts
 core_version_requirement: ^10.3 || ^11
 configure: charts.settings
 
-# Information added by Drupal.org packaging script on 2025-04-11
-version: '5.1.5'
+# Information added by Drupal.org packaging script on 2025-06-11
+version: '5.1.6'
 project: 'charts'
-datestamp: 1744408474
+datestamp: 1749676958

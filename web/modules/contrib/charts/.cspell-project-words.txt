@@ -6,6 +6,7 @@ billboardjs
 bindto
 boxplot
 chartable
+coloraxis
 corechart
 datalabels
 exampleidjs
@@ -21,6 +22,7 @@ kendo_ui
 maintainance
 oomphinc
 solidgauge
+stacklabels
 webform
 xaxis
 yaxes

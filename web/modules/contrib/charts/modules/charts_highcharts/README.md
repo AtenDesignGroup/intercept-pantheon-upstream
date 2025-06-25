@@ -161,6 +161,24 @@ file as follows.
         {
             "type": "package",
             "package": {
+                "name": "highcharts/coloraxis",
+                "version": "12.1.1",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "highcharts_coloraxis"
+                },
+                "dist": {
+                    "url": "https://code.highcharts.com/12.1.1/modules/coloraxis.js",
+                    "type": "file"
+                },
+                "require": {
+                    "composer/installers": "^1.0 || ^2.0"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
                 "name": "highcharts/data",
                 "version": "12.1.1",
                 "type": "drupal-library",
@@ -229,11 +247,31 @@ file as follows.
                     "composer/installers": "^1.0 || ^2.0"
                 }
             }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "highcharts/solid-gauge",
+                "version": "12.1.1",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "highcharts_solid-gauge"
+                },
+                "dist": {
+                    "url": "https://code.highcharts.com/12.1.1/modules/solid-gauge.js",
+                    "type": "file"
+                },
+                "require": {
+                    "composer/installers": "^1.0 || ^2.0"
+                }
+            }
+        }
 
 4. Run `composer require --prefer-dist highcharts/highcharts:12.1.1
 highcharts/more:12.1.1 highcharts/exporting:12.1.1
 highcharts/export-data:12.1.1 highcharts/accessibility:12.1.1
 highcharts/3d:12.1.1 highcharts/annotations:12.1.1 highcharts/boost:12.1.1
-highcharts/data:12.1.1 highcharts/high-contrast-light:12.1.1
-highcharts/pattern-fill:12.1.1 highcharts/no-data-to-display:12.1.1` - you should find that new directories have been
-   created under "/libraries"
+highcharts/coloraxis:12.1.1 highcharts/data:12.1.1
+highcharts/high-contrast-light:12.1.1 highcharts/pattern-fill:12.1.1
+highcharts/no-data-to-display:12.1.1 highcharts/solidgauge:12.1.1`
+- you should find that new directories have been created under "/libraries"

@@ -2,12 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\my_module\Plugin\views\filter\InterceptDateRangeFilter.
+ * Contains \Drupal\intercept_event\Plugin\views\filter\InterceptDateRangeFilter.
  */
 
-namespace Drupal\my_module\Plugin\views\filter;
+namespace Drupal\intercept_event\Plugin\views\filter;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\filter\InOperator;
 use Drupal\views\ViewExecutable;
@@ -63,7 +64,7 @@ class InterceptDateRangeFilter extends InOperator {
   /**
    * {@inheritdoc}
    */
-  public function valueForm(&$form, &$form_state) {
+  public function valueForm(&$form, FormStateInterface $form_state) {
     $form['min'] = [
       '#type' => 'date',
       '#title' => $this->t('Minimum date'),

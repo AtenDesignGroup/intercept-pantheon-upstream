@@ -142,6 +142,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
       '#raw_options' => [],
       '#content_prefix' => [],
       '#content_suffix' => [],
+      '#library_type_options' => [],
     ];
   }
 
@@ -305,6 +306,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
       '#type' => 'chart',
       '#chart_type' => $type,
       '#chart_library' => $settings['library'],
+      '#library_type_options' => $settings['library_type_options'] ?? [],
       '#title' => $settings['display']['title'],
       '#title_position' => $settings['display']['title_position'],
       '#subtitle' => $settings['display']['subtitle'] ?? '',

@@ -96,7 +96,7 @@ class BaseSettings extends FormElementBase {
     $parents = $element['#parents'];
     $id_prefix = implode('-', $parents);
     $wrapper_id = Html::getUniqueId($id_prefix . '-ajax-wrapper');
-    $value = $element['#value'] ?? [];
+    $value = $element['#value'];
 
     // Collect the main prefix and suffix just in case this element is wrapped
     // with one.
@@ -179,6 +179,11 @@ class BaseSettings extends FormElementBase {
           'container-inline',
         ],
       ],
+      '#value' => $selected_chart_type,
+      '#ajax' => [
+        'callback' => [get_called_class(), 'ajaxRefresh'],
+        'wrapper' => $wrapper_id,
+      ],
     ];
 
     if (!$chart_type_options) {
@@ -192,6 +197,9 @@ class BaseSettings extends FormElementBase {
       ];
       return $element;
     }
+
+    // Adding settings related to the library and the selected chart type.
+    $element = static::addLibraryElementOptions($element, $form_state, $complete_form);
 
     if (!empty($element['#series'])) {
       $element = self::processSeriesForm($element, $options, $form_state);
@@ -555,6 +563,26 @@ class BaseSettings extends FormElementBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
+    if ($input === FALSE || $input === NULL) {
+      return parent::valueCallback($element, $input, $form_state);
+    }
+
+    $library = $input['library'] ?? '';
+    // Making sure that the selected chart type is part of chart type options
+    // associated with the library.
+    $chart_type_options = self::getChartTypes($library);
+    $chart_type = $input['type'] ?? '';
+    if (!isset($chart_type_options[$chart_type])) {
+      $chart_type = array_key_first($chart_type_options);
+      $input['type'] = $chart_type;
+    }
+    return $input;
+  }
+
+  /**
    * Validates the chart library plugin configuration.
    *
    * @param array $element
@@ -611,7 +639,11 @@ class BaseSettings extends FormElementBase {
    */
   public static function ajaxRefresh(array $form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
-    return NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, -1));
+    $length = -1;
+    if ($triggering_element['#type'] == 'radio') {
+      $length = -2;
+    }
+    return NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, $length));
   }
 
   /**
@@ -759,6 +791,51 @@ class BaseSettings extends FormElementBase {
         call_user_func_array($callback, [&$element, &$form_state]);
       }
     }
+  }
+
+  /**
+   * Adds the library element options form.
+   *
+   * @param array $element
+   *   The element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param array $complete_form
+   *   The complete form.
+   *
+   * @return array
+   *   The element.
+   */
+  private static function addLibraryElementOptions(array $element, FormStateInterface $form_state, array &$complete_form = []) {
+    $used_in = $element['#used_in'] ?: '';
+    if ($used_in === 'config_form') {
+      return $element;
+    }
+
+    // @todo get the configuration from the config form.
+    $plugin_configuration = $element['#value']['library_config'] ?? [];
+    /** @var \Drupal\charts\ChartManager $plugin_manager */
+    $plugin_manager = \Drupal::service('plugin.manager.charts');
+    /** @var \Drupal\charts\Plugin\chart\Library\ChartInterface $plugin */
+    $plugin = $plugin_manager->createInstance($element['#value']['library'], $plugin_configuration);
+    $element['library_type_options'] = [
+      '#type' => 'fieldset',
+      '#title' => new TranslatableMarkup('Library and chart type-specific options'),
+      '#description' => new TranslatableMarkup('These options are specific to the @library library in combination with the @type chart type.', [
+        '@library' => $plugin->getPluginDefinition()['name'],
+        '@type' => $element['type']['#options'][$element['#value']['type']],
+      ]),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#tree' => TRUE,
+      '#weight' => 5,
+      '#chart_type' => $element['#value']['type'],
+    ];
+    $type_element = &$element['library_type_options'];
+    $type_options = $element['#value']['library_type_options'] ?? [];
+    $plugin->addBaseSettingsElementOptions($type_element, $type_options, $form_state, $complete_form);
+
+    return $element;
   }
 
   /**

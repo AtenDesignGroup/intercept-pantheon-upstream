@@ -153,6 +153,7 @@ class NumericArrayField extends FieldPluginBase implements ContainerFactoryPlugi
         'wrapper'  => 'ordinal-fields-wrapper',
         'event'    => 'change',
         // Use the Views UI-specific URL builder.
+        // @phpstan-ignore-next-line
         'url' => views_ui_build_form_url($form_state),
       ],
       // Still need this to prevent full validation during AJAX.

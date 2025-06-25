@@ -271,6 +271,9 @@ class ViewsFiltersSummary extends Result {
             array_values($replacements),
             (string) $this->options['content']
           ),
+          '#attached' => [
+            'library' => ['views_filters_summary/views_filters_summary'],
+          ],
         ];
       }
     }
@@ -488,13 +491,15 @@ class ViewsFiltersSummary extends Result {
         '#exposed_form_id' => Html::cleanCssIdentifier(
           'views-exposed-form-' . $this->view->id() . '-' . $this->view->current_display
         ),
-        '#attached' => [
-          'library' => ['views_filters_summary/views_filters_summary'],
-        ],
       ];
-      return $this->getRenderer()->render(
-        $element
-      );
+      // Handle backward compatibility.
+      if (version_compare(\Drupal::VERSION, '10.3', '>=')) {
+        return $this->getRenderer()->renderInIsolation($element);
+      }
+      else {
+        // @phpstan-ignore-next-line as it is deprecated in D10.3 and removed from D12.
+        return $this->getRenderer()->renderPlain($element);
+      }
     }
 
     return NULL;

@@ -42,7 +42,7 @@ class VideoEmbedField extends FieldItemBase {
    */
   public static function createInstance($definition, $name = NULL, ?TraversableTypedDataInterface $parent = NULL) {
     $provider_manager = \Drupal::service('video_embed_field.provider_manager');
-    return new self($definition, $name, $parent, $provider_manager);
+    return new static($definition, $name, $parent, $provider_manager);
   }
 
   /**

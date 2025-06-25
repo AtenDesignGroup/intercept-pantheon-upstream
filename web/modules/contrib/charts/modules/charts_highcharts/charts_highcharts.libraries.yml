@@ -83,6 +83,21 @@ boost:
     - charts_highcharts/charts_highcharts
     - charts_highcharts/highcharts
 
+coloraxis:
+  remote: https://code.highcharts.com/12.1.1/modules/coloraxis.js
+  version: VERSION
+  license:
+    name: Non-commercial
+    url: https://creativecommons.org/licenses/by-nc/3.0/
+    gpl-compatible: false
+  cdn:
+    /libraries/highcharts_coloraxis/coloraxis.js: https://code.highcharts.com/12.1.1/modules/coloraxis.js
+  js:
+    /libraries/highcharts_coloraxis/coloraxis.js: { minified: true }
+  dependencies:
+    - charts_highcharts/charts_highcharts
+    - charts_highcharts/highcharts
+
 data:
   remote: https://code.highcharts.com/12.1.1/modules/data.js
   version: VERSION
@@ -165,6 +180,21 @@ texture:
     - charts/global
     - core/once
     - charts_highcharts/charts_highcharts
+
+solidgauge:
+  remote: https://code.highcharts.com/12.1.1/modules/solid-gauge.js
+  version: VERSION
+  license:
+    name: Non-commercial
+    url: https://creativecommons.org/licenses/by-nc/3.0/
+    gpl-compatible: false
+  cdn:
+    /libraries/highcharts_solid-gauge/solid-gauge.js: https://code.highcharts.com/12.1.1/modules/solid-gauge.js
+  js:
+    /libraries/highcharts_solid-gauge/solid-gauge.js: { minified: true }
+  dependencies:
+    - charts_highcharts/charts_highcharts
+    - charts_highcharts/highcharts
 
 color_changer:
   version: VERSION

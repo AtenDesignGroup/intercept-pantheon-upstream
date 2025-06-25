@@ -27,3 +27,9 @@ variables:
   OPT_IN_TEST_PREVIOUS_MAJOR: 1
   OPT_IN_TEST_NEXT_MINOR: 0
   OPT_IN_TEST_NEXT_MAJOR: 0
+  _PHPCS_EXTRA: '--ignore=*/node_modules/*'
+
+# For eslint, we need to install the module's package.json dependencies so that JS references can resolve.
+composer:
+  after_script:
+    - yarn --cwd=modules/video_embed_wysiwyg install

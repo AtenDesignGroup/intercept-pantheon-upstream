@@ -12,6 +12,12 @@ views.area.views_filters_summary:
     show_labels:
       type: boolean
       label: 'Show labels'
+    show_remove_link:
+      type: boolean
+      label: 'Show remove link'
+    show_reset_link:
+      type: boolean
+      label: 'Show reset link'
     group_values:
       type: boolean
       label: 'Group values'

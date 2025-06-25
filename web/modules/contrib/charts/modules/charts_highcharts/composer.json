@@ -12,6 +12,7 @@
         "highcharts/accessibility": "12.1.1",
         "highcharts/annotations": "12.1.1",
         "highcharts/boost": "12.1.1",
+        "highcharts/coloraxis": "12.1.1",
         "highcharts/data": "12.1.1",
         "highcharts/export-data": "12.1.1",
         "highcharts/exporting": "12.1.1",
@@ -105,6 +106,24 @@
                 },
                 "dist": {
                     "url": "https://code.highcharts.com/12.1.1/modules/boost.js",
+                    "type": "file"
+                },
+                "require": {
+                    "composer/installers": "^1.0 || ^2.0"
+                }
+            }
+        },
+        "highcharts_coloraxis": {
+            "type": "package",
+            "package": {
+                "name": "highcharts/coloraxis",
+                "version": "12.1.1",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "highcharts_coloraxis"
+                },
+                "dist": {
+                    "url": "https://code.highcharts.com/12.1.1/modules/coloraxis.js",
                     "type": "file"
                 },
                 "require": {

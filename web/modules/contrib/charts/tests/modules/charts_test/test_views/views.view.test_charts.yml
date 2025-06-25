@@ -76,6 +76,7 @@ display:
           chart_settings:
             library: charts_test_library
             type: column
+            library_type_options: {  }
             fields:
               label: name
               stacking: false

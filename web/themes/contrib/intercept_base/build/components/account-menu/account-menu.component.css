@@ -69,15 +69,6 @@
 .account-menu__content .menu--account label[for=slide-menu-toggle].is-active {
   color: #D13400;
 }
-.account-menu__content .menu--account a:focus, .account-menu__content .menu--account a:active {
-  color: #4C4D4F;
-  margin-left: 3px;
-  padding: 3px;
-  outline-width: 3px;
-  outline-style: dashed;
-  outline-color: #008db1;
-  outline-color: rgba(0, 141, 177, 0.6);
-}
 .account-menu__content .menu--heading-group {
   color: #4C4D4F;
   cursor: none;

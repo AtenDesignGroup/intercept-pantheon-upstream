@@ -41,13 +41,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class Google extends ChartBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The module handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
    * The element info manager.
    *
    * @var \Drupal\Core\Render\ElementInfoManagerInterface
@@ -78,8 +71,7 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
    *   The chart type manager.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler, ElementInfoManagerInterface $element_info, TypeManager $chart_type_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->moduleHandler = $module_handler;
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler);
     $this->elementInfo = $element_info;
     $this->chartTypeManager = $chart_type_manager;
   }
@@ -572,6 +564,9 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
       ];
     }
     else {
+      if (!isset($data[0])) {
+        $data[0] = [];
+      }
       array_unshift($data[0], '');
     }
     // Ensure consistent column count.

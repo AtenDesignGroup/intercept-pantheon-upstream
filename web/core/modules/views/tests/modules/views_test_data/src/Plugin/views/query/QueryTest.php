@@ -21,9 +21,33 @@ use Drupal\views\ViewExecutable;
   help: new TranslatableMarkup('Defines a query test plugin.')
 )]
 class QueryTest extends QueryPluginBase {
+
+  /**
+   * The conditions to apply to the query.
+   *
+   * @var array
+   */
   protected $conditions = [];
+
+  /**
+   * The list of fields.
+   *
+   * @var string[][]
+   */
   protected $fields = [];
+
+  /**
+   * An array of stdClasses.
+   *
+   * @var \stdClass[]
+   */
   protected $allItems = [];
+
+  /**
+   * The field to order and the direction.
+   *
+   * @var array
+   */
   protected $orderBy = [];
 
   /**
@@ -43,7 +67,7 @@ class QueryTest extends QueryPluginBase {
     parent::buildOptionsForm($form, $form_state);
 
     $form['test_setting'] = [
-      '#title' => $this->t('Test setting'),
+      '#title' => 'Test setting',
       '#type' => 'textfield',
       '#default_value' => $this->options['test_setting'],
     ];
@@ -59,6 +83,9 @@ class QueryTest extends QueryPluginBase {
     $this->allItems = $allItems;
   }
 
+  /**
+   * Adds a simple WHERE clause to the query.
+   */
   public function addWhere($group, $field, $value = NULL, $operator = NULL) {
     $this->conditions[] = [
       'field' => $field,
@@ -68,15 +95,24 @@ class QueryTest extends QueryPluginBase {
 
   }
 
+  /**
+   * Adds a new field to a table.
+   */
   public function addField($table, $field, $alias = '', $params = []) {
     $this->fields[$field] = $field;
     return $field;
   }
 
+  /**
+   * Adds an ORDER BY clause to the query.
+   */
   public function addOrderBy($table, $field = NULL, $order = 'ASC', $alias = '', $params = []) {
     $this->orderBy = ['field' => $field, 'order' => $order];
   }
 
+  /**
+   * Ensures a table exists in the queue.
+   */
   public function ensureTable($table, $relationship = NULL, ?JoinPluginBase $join = NULL) {
     // There is no concept of joins.
   }

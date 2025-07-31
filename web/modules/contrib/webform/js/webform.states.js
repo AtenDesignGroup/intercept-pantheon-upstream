@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.states = Drupal.webform.states || {};
   Drupal.webform.states.slideDown = Drupal.webform.states.slideDown || {};
@@ -320,7 +322,7 @@
    * @see https://www.drupal.org/project/webform/issues/3068998
    */
   Drupal.behaviors.webformCheckboxesRequired = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-checkboxes-required', '.js-form-type-checkboxes.required, .webform-term-checkboxes.required, .js-form-type-webform-checkboxes-other.required, .js-webform-type-checkboxes.required, .js-webform-type-webform-checkboxes-other.required, .js-webform-type-webform-radios-other.checkboxes', context))
         .each(function () {
           var $element = $(this);
@@ -338,7 +340,7 @@
    * @see https://www.drupal.org/project/webform/issues/2856795
    */
   Drupal.behaviors.webformRadiosRequired = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-radios-required', '.js-form-type-radios, .js-form-type-webform-radios-other, .js-webform-type-radios, .js-webform-type-webform-radios-other, .js-webform-type-webform-entity-radios, .js-webform-type-webform-scale', context))
         .each(function () {
           var $element = $(this);
@@ -355,7 +357,7 @@
    * @see https://www.drupal.org/project/webform/issues/2856795
    */
   Drupal.behaviors.webformTableSelectRequired = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-tableselect-required','.js-webform-tableselect.required', context))
         .each(function () {
           var $element = $(this);

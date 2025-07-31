@@ -10,13 +10,13 @@ use Drupal\block_content\BlockContentTranslationHandler;
 use Drupal\block_content\BlockContentViewBuilder;
 use Drupal\block_content\BlockContentViewsData;
 use Drupal\block_content\Form\BlockContentDeleteForm;
+use Drupal\Core\Access\RefinableDependentAccessTrait;
 use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\Routing\RevisionHtmlRouteProvider;
 use Drupal\Core\Entity\Form\RevisionRevertForm;
 use Drupal\Core\Entity\Form\RevisionDeleteForm;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\block_content\Access\RefinableDependentAccessTrait;
 use Drupal\Core\Entity\EditorialContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -141,7 +141,7 @@ class BlockContent extends EditorialContentEntityBase implements BlockContentInt
    */
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
-    if ($this->isReusable() || (isset($this->original) && $this->original->isReusable())) {
+    if ($this->isReusable() || $this->getOriginal()?->isReusable()) {
       static::invalidateBlockPluginCache();
     }
   }
@@ -188,11 +188,11 @@ class BlockContent extends EditorialContentEntityBase implements BlockContentInt
   public function preSaveRevision(EntityStorageInterface $storage, \stdClass $record) {
     parent::preSaveRevision($storage, $record);
 
-    if (!$this->isNewRevision() && isset($this->original) && empty($record->revision_log_message)) {
+    if (!$this->isNewRevision() && $this->getOriginal() && empty($record->revision_log_message)) {
       // If we are updating an existing block_content without adding a new
       // revision and the user did not supply a revision log, keep the existing
       // one.
-      $record->revision_log = $this->original->getRevisionLogMessage();
+      $record->revision_log = $this->getOriginal()->getRevisionLogMessage();
     }
   }
 

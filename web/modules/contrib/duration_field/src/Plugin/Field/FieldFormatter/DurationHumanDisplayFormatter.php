@@ -79,7 +79,7 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
     array $third_party_settings,
     ModuleHandlerInterface $moduleHandler,
     GranularityServiceInterface $granularityService,
-    DurationServiceInterface $durationService
+    DurationServiceInterface $durationService,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_config, $settings, $label, $view_mode, $third_party_settings);
 
@@ -182,7 +182,8 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
           $item->get('duration')->getCastedValue(),
           $this->granularityService->convertGranularityStringToGranularityArray($this->getFieldSetting('granularity')),
           $this->getSeparator(),
-          $this->getSetting('text_length')
+          $this->getSetting('text_length'),
+          $item->get('weeks')->getCastedValue()
         ),
       ];
     }
@@ -233,7 +234,7 @@ class DurationHumanDisplayFormatter extends FormatterBase implements ContainerFa
       ] + $custom_labels['lowercase'];
     }
 
-    return isset($values[$key]) ? $values[$key] : $key;
+    return $values[$key] ?? $key;
   }
 
   /**

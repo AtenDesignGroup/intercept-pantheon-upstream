@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // @see https://harvesthq.github.io/chosen/options.html
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.chosen = Drupal.webform.chosen || {};
@@ -18,7 +20,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformChosen = {
-    attach: function (context) {
+    attach(context) {
       if (!$.fn.chosen) {
         return;
       }

@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\Attribute\PluginID;
 use Drupal\Core\Database\DatabaseException;
 use Drupal\Core\Database\DatabaseExceptionWrapper;
 use Drupal\Core\Database\Exception\SchemaTableKeyTooLargeException;
+use Drupal\Core\Database\Statement\FetchAs;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
@@ -207,13 +208,13 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
   /**
    * Retrieves the hash of the source identifier values.
    *
-   * @internal
-   *
    * @param array $source_id_values
-   *   The source identifiers
+   *   The source identifiers.
    *
    * @return string
    *   A hash containing the hashed values of the source identifiers.
+   *
+   * @internal
    */
   public function getSourceIdsHash(array $source_id_values) {
     // When looking up the destination ID we require an array with both the
@@ -560,7 +561,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
       $query->condition("map.$destination_id", $destination_id_values[$field_name], '=');
     }
     $result = $query->execute()->fetchAssoc();
-    return $result ? $result : [];
+    return $result ?: [];
   }
 
   /**
@@ -655,7 +656,7 @@ class Sql extends PluginBase implements MigrateIdMapInterface, ContainerFactoryP
     }
 
     try {
-      return $query->execute()->fetchAll(\PDO::FETCH_NUM);
+      return $query->execute()->fetchAll(FetchAs::List);
     }
     catch (DatabaseExceptionWrapper) {
       // It's possible that the query will cause an exception to be thrown. For

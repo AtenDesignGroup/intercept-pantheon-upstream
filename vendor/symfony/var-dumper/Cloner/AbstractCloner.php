@@ -183,7 +183,7 @@ abstract class AbstractCloner implements ClonerInterface
         ':dba' => ['Symfony\Component\VarDumper\Caster\ResourceCaster', 'castDba'],
         ':dba persistent' => ['Symfony\Component\VarDumper\Caster\ResourceCaster', 'castDba'],
 
-        'GdImage' => ['Symfony\Component\VarDumper\Caster\ResourceCaster', 'castGd'],
+        'GdImage' => ['Symfony\Component\VarDumper\Caster\GdCaster', 'castGd'],
 
         'SQLite3Result' => ['Symfony\Component\VarDumper\Caster\SqliteCaster', 'castSqlite3Result'],
 
@@ -202,8 +202,6 @@ abstract class AbstractCloner implements ClonerInterface
         ':stream-context' => ['Symfony\Component\VarDumper\Caster\ResourceCaster', 'castStreamContext'],
 
         'XmlParser' => ['Symfony\Component\VarDumper\Caster\XmlResourceCaster', 'castXml'],
-
-        'Socket' => ['Symfony\Component\VarDumper\Caster\SocketCaster', 'castSocket'],
 
         'RdKafka' => ['Symfony\Component\VarDumper\Caster\RdKafkaCaster', 'castRdKafka'],
         'RdKafka\Conf' => ['Symfony\Component\VarDumper\Caster\RdKafkaCaster', 'castConf'],

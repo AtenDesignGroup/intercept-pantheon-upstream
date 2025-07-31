@@ -4,6 +4,7 @@ namespace Drupal\settings_tray\Hook;
 
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Asset\AttachedAssetsInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\settings_tray\Block\BlockEntitySettingTrayForm;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -14,15 +15,17 @@ use Drupal\Core\Hook\Attribute\Hook;
  */
 class SettingsTrayHooks {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?array {
     switch ($route_name) {
       case 'help.page.settings_tray':
-        $output = '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('The Settings Tray module allows users with the <a href=":administer_block_permission">Administer blocks</a> and <a href=":contextual_permission">Use contextual links</a> permissions to edit blocks without visiting a separate page. For more information, see the <a href=":handbook_url">online documentation for the Settings Tray module</a>.', [
+        $output = '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('The Settings Tray module allows users with the <a href=":administer_block_permission">Administer blocks</a> and <a href=":contextual_permission">Use contextual links</a> permissions to edit blocks without visiting a separate page. For more information, see the <a href=":handbook_url">online documentation for the Settings Tray module</a>.', [
           ':handbook_url' => 'https://www.drupal.org/documentation/modules/settings_tray',
           ':administer_block_permission' => Url::fromRoute('user.admin_permissions.module', [
             'modules' => 'block',
@@ -31,21 +34,22 @@ class SettingsTrayHooks {
             'modules' => 'contextual',
           ])->toString(),
         ]) . '</p>';
-        $output .= '<h2>' . t('Uses') . '</h2>';
+        $output .= '<h2>' . $this->t('Uses') . '</h2>';
         $output .= '<dl>';
-        $output .= '<dt>' . t('Editing blocks in place') . '</dt>';
+        $output .= '<dt>' . $this->t('Editing blocks in place') . '</dt>';
         $output .= '<dd>';
-        $output .= '<p>' . t('To edit blocks in place, either click the <strong>Edit</strong> button in the toolbar and then click on the block, or choose "Quick edit" from the block\'s contextual link. (See the <a href=":contextual">Contextual Links module help</a> for more information about how to use contextual links.)', [
+        $output .= '<p>' . $this->t('To edit blocks in place, either click the <strong>Edit</strong> button in the toolbar and then click on the block, or choose "Quick edit" from the block\'s contextual link. (See the <a href=":contextual">Contextual Links module help</a> for more information about how to use contextual links.)', [
           ':contextual' => Url::fromRoute('help.page', [
             'name' => 'contextual',
           ])->toString(),
         ]) . '</p>';
-        $output .= '<p>' . t('The Settings Tray for the block will open in a sidebar, with a compact form for configuring what the block shows.') . '</p>';
-        $output .= '<p>' . t('Save the form and the changes will be immediately visible on the page.') . '</p>';
+        $output .= '<p>' . $this->t('The Settings Tray for the block will open in a sidebar, with a compact form for configuring what the block shows.') . '</p>';
+        $output .= '<p>' . $this->t('Save the form and the changes will be immediately visible on the page.') . '</p>';
         $output .= '</dd>';
         $output .= '</dl>';
         return ['#markup' => $output];
     }
+    return NULL;
   }
 
   /**
@@ -62,7 +66,7 @@ class SettingsTrayHooks {
       $element['#links'] = ['settings-trayblock-configure' => $settings_tray_link] + $element['#links'];
       // If this is content block change title to avoid duplicate "Quick Edit".
       if (isset($element['#links']['block-contentblock-edit'])) {
-        $element['#links']['settings-trayblock-configure']['title'] = t('Quick edit settings');
+        $element['#links']['settings-trayblock-configure']['title'] = $this->t('Quick edit settings');
       }
       $element['#attached']['library'][] = 'core/drupal.dialog.off_canvas';
     }
@@ -74,8 +78,8 @@ class SettingsTrayHooks {
   #[Hook('block_view_alter')]
   public function blockViewAlter(array &$build): void {
     if (isset($build['#contextual_links']['block'])) {
-      // Ensure that contextual links vary by whether the block has config overrides
-      // or not.
+      // Ensure that contextual links vary by whether the block has config
+      // overrides or not.
       // @see _contextual_links_to_id()
       $build['#contextual_links']['block']['metadata']['has_overrides'] = _settings_tray_has_block_overrides($build['#block']) ? 1 : 0;
     }
@@ -89,7 +93,7 @@ class SettingsTrayHooks {
    * Implements hook_entity_type_build().
    */
   #[Hook('entity_type_build')]
-  public function entityTypeBuild(array &$entity_types) {
+  public function entityTypeBuild(array &$entity_types): void {
     /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
     $entity_types['block']->setFormClass('settings_tray', BlockEntitySettingTrayForm::class)->setLinkTemplate('settings_tray-form', '/admin/structure/block/manage/{block}/settings-tray');
   }
@@ -97,8 +101,8 @@ class SettingsTrayHooks {
   /**
    * Implements hook_toolbar_alter().
    *
-   * Alters the 'contextual' toolbar tab if it exists (meaning the user is allowed
-   * to use contextual links) and if they can administer blocks.
+   * Alters the 'contextual' toolbar tab if it exists (meaning the user is
+   * allowed to use contextual links) and if they can administer blocks.
    *
    * @todo Remove the "administer blocks" requirement in
    *   https://www.drupal.org/node/2822965.
@@ -112,7 +116,8 @@ class SettingsTrayHooks {
       $items['contextual']['#weight'] = -1000;
       $items['contextual']['#attached']['library'][] = 'settings_tray/drupal.settings_tray';
       $items['contextual']['tab']['#attributes']['data-drupal-settingstray'] = 'toggle';
-      // Set a class on items to mark whether they should be active in edit mode.
+      // Set a class on items to mark whether they should be active in edit
+      // mode.
       // @todo Create a dynamic method for modules to set their own items.
       //   https://www.drupal.org/node/2784589.
       $edit_mode_items = ['contextual'];
@@ -127,7 +132,8 @@ class SettingsTrayHooks {
   /**
    * Implements hook_block_alter().
    *
-   * Ensures every block plugin definition has an 'settings_tray' form specified.
+   * Ensures every block plugin definition has an 'settings_tray' form
+   * specified.
    *
    * @see \Drupal\settings_tray\Access\BlockPluginHasSettingsTrayFormAccessCheck
    */

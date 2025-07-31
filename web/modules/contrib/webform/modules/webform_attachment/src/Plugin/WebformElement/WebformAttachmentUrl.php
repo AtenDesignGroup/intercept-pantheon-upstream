@@ -46,6 +46,7 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
       '#title' => $this->t('URL/path'),
       '#description' => $this->t("Make sure the attachment URL/Path is publicly accessible. The attachment's URL/path will never be displayed to end users."),
       '#required' => TRUE,
+      '#maxlength' => 2048,
       '#element_validate' => [[get_class($this), 'validateAttachmentUrl']],
     ];
     if (function_exists('imce_process_url_element')) {

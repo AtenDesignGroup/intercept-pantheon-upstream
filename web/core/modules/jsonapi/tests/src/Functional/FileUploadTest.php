@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi\Functional;
 
+use Drupal\jsonapi\JsonApiSpec;
 use Drupal\Component\Render\PlainTextOutput;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\NestedArray;
@@ -264,7 +265,7 @@ class FileUploadTest extends ResourceTestBase {
       ->set('field_rest_file_test', ['target_id' => $existing_file->id()])
       ->save();
 
-    $uri = Url::fromUri('base:' . '/jsonapi/entity_test/entity_test/' . $this->entity->uuid() . '/field_rest_file_test');
+    $uri = Url::fromUri('base:/jsonapi/entity_test/entity_test/' . $this->entity->uuid() . '/field_rest_file_test');
 
     // DX: 405 when read-only mode is enabled.
     $response = $this->fileRequest($uri, $this->testFileData);
@@ -299,10 +300,10 @@ class FileUploadTest extends ResourceTestBase {
       'jsonapi' => [
         'meta' => [
           'links' => [
-            'self' => ['href' => 'http://jsonapi.org/format/1.0/'],
+            'self' => ['href' => JsonApiSpec::SUPPORTED_SPECIFICATION_PERMALINK],
           ],
         ],
-        'version' => '1.0',
+        'version' => JsonApiSpec::SUPPORTED_SPECIFICATION_VERSION,
       ],
       'links' => [
         'self' => ['href' => Url::fromUri('base:/jsonapi/entity_test/entity_test/' . $this->entity->uuid() . '/field_rest_file_test')->setAbsolute(TRUE)->toString()],
@@ -760,10 +761,10 @@ class FileUploadTest extends ResourceTestBase {
       'jsonapi' => [
         'meta' => [
           'links' => [
-            'self' => ['href' => 'http://jsonapi.org/format/1.0/'],
+            'self' => ['href' => JsonApiSpec::SUPPORTED_SPECIFICATION_PERMALINK],
           ],
         ],
-        'version' => '1.0',
+        'version' => JsonApiSpec::SUPPORTED_SPECIFICATION_VERSION,
       ],
       'links' => [
         'self' => ['href' => $self_url],
@@ -873,9 +874,9 @@ class FileUploadTest extends ResourceTestBase {
    * @internal
    */
   protected function assertResponseData(array $expected, ResponseInterface $response): void {
-    static::recursiveKSort($expected);
+    static::recursiveKsort($expected);
     $actual = $this->getDocumentFromResponse($response);
-    static::recursiveKSort($actual);
+    static::recursiveKsort($actual);
 
     $this->assertSame($expected, $actual);
   }

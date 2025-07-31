@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // @see https://github.com/ractoon/jQuery-Text-Counter#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.counter = Drupal.webform.counter || {};
@@ -16,7 +18,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformCounter = {
-    attach: function (context) {
+    attach(context) {
       if (!$.fn.textcounter) {
         return;
       }

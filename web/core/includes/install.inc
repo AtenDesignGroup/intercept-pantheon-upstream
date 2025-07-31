@@ -9,27 +9,50 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Extension\Dependency;
+use Drupal\Core\Extension\Extension;
 use Drupal\Core\Extension\ExtensionDiscovery;
+use Drupal\Core\Extension\InstallRequirementsInterface;
+use Drupal\Core\Extension\Requirement\RequirementSeverity;
 use Drupal\Core\Installer\InstallerKernel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Requirement severity -- Informational message only.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Use
+ * \Drupal\Core\Extension\Requirement\RequirementSeverity::Info instead.
+ *
+ * @see https://www.drupal.org/node/3410939
  */
 const REQUIREMENT_INFO = -1;
 
 /**
  * Requirement severity -- Requirement successfully met.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Use
+ *   \Drupal\Core\Extension\Requirement\RequirementSeverity::OK instead.
+ *
+ * @see https://www.drupal.org/node/3410939
  */
 const REQUIREMENT_OK = 0;
 
 /**
  * Requirement severity -- Warning condition; proceed but flag warning.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Use
+ * \Drupal\Core\Extension\Requirement\RequirementSeverity::Warning instead.
+ *
+ * @see https://www.drupal.org/node/3410939
  */
 const REQUIREMENT_WARNING = 1;
 
 /**
  * Requirement severity -- Error condition; abort installation.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Use
+ * \Drupal\Core\Extension\Requirement\RequirementSeverity::Error instead.
+ *
+ * @see https://www.drupal.org/node/3410939
  */
 const REQUIREMENT_ERROR = 2;
 
@@ -76,7 +99,7 @@ const FILE_NOT_EXECUTABLE = 128;
 /**
  * Loads .install files for installed modules to initialize the update system.
  */
-function drupal_load_updates() {
+function drupal_load_updates(): void {
   /** @var \Drupal\Core\Extension\ModuleExtensionList $extension_list_module */
   $extension_list_module = \Drupal::service('extension.list.module');
   foreach (\Drupal::service('update.update_hook_registry')->getAllInstalledVersions() as $module => $schema_version) {
@@ -142,7 +165,7 @@ function drupal_install_profile_distribution_version() {
 /**
  * Verifies that all dependencies are met for a given installation profile.
  *
- * @param $install_state
+ * @param array $install_state
  *   An array of information about the current installation state.
  *
  * @return array
@@ -151,7 +174,7 @@ function drupal_install_profile_distribution_version() {
  * @todo https://www.drupal.org/i/3005959 Rework this method as it is not only
  *   about profiles.
  */
-function drupal_verify_profile($install_state) {
+function drupal_verify_profile($install_state): array {
   $profile = $install_state['parameters']['profile'];
   if ($profile === FALSE) {
     return [];
@@ -188,7 +211,7 @@ function drupal_verify_profile($install_state) {
     $requirements['required_modules'] = [
       'title' => t('Required modules'),
       'value' => t('Required modules not found.'),
-      'severity' => REQUIREMENT_ERROR,
+      'severity' => RequirementSeverity::Error,
       'description' => t('The following modules are required but were not found. Move them into the appropriate modules subdirectory, such as <em>/modules</em>. Missing modules: @modules', ['@modules' => $modules_list]),
     ];
   }
@@ -205,7 +228,7 @@ function drupal_verify_profile($install_state) {
  *   An array of information about the current installation state. This is used
  *   to set the default language.
  */
-function drupal_install_system($install_state) {
+function drupal_install_system($install_state): void {
   // Remove the service provider of the early installer.
   unset($GLOBALS['conf']['container_service_providers']['InstallerServiceProvider']);
   // Add the normal installer service provider.
@@ -280,11 +303,11 @@ function drupal_install_system($install_state) {
 /**
  * Verifies the state of the specified file.
  *
- * @param $file
+ * @param string $file
  *   The file to check for.
- * @param $mask
+ * @param int $mask
  *   An optional bitmask created from various FILE_* constants.
- * @param $type
+ * @param string|null $type
  *   The type of file. Can be file (default), dir, or link.
  * @param bool $auto_fix
  *   (optional) Determines whether to attempt fixing the permissions according
@@ -372,11 +395,11 @@ function drupal_verify_install_file($file, $mask = NULL, $type = 'file', $auto_f
 /**
  * Creates a directory with the specified permissions.
  *
- * @param $file
- *   The name of the directory to create;
- * @param $mask
+ * @param string $file
+ *   The name of the directory to create.
+ * @param int $mask
  *   The permissions of the directory to create.
- * @param $message
+ * @param bool $message
  *   (optional) Whether to output messages. Defaults to TRUE.
  *
  * @return bool
@@ -423,11 +446,11 @@ function drupal_install_mkdir($file, $mask, $message = TRUE) {
  * using bitwise operations. This lets us remove, for example, 0222 from
  * 0700 and get the correct value of 0500.
  *
- * @param $file
+ * @param string $file
  *   The name of the file with permissions to fix.
- * @param $mask
+ * @param int $mask
  *   The desired permissions for the file.
- * @param $message
+ * @param bool $message
  *   (optional) Whether to output messages. Defaults to TRUE.
  *
  * @return bool
@@ -502,10 +525,10 @@ function drupal_install_fix_file($file, $mask, $message = TRUE) {
  *
  * This issues an on-site HTTP redirect. Messages (and errors) are erased.
  *
- * @param $path
+ * @param string $path
  *   An installer path.
  */
-function install_goto($path) {
+function install_goto($path): void {
   global $base_url;
   $headers = [
     // Not a permanent redirect.
@@ -530,14 +553,14 @@ function install_goto($path) {
  * that need to be bypassed), using this function to generate the URL for links
  * to the next steps of the script ensures that the links will work correctly.
  *
- * @param $query
+ * @param array $query
  *   (optional) An array of query parameters to merge in to the existing ones.
  *
  * @return string
  *   The URL of the current script, with query parameters modified by the
  *   passed-in $query. The URL is not sanitized, so it still needs to be run
- *   through \Drupal\Component\Utility\UrlHelper::filterBadProtocol() if it will be
- *   used as an HTML attribute value.
+ *   through \Drupal\Component\Utility\UrlHelper::filterBadProtocol() if it will
+ *   be used as an HTML attribute value.
  *
  * @see drupal_requirements_url()
  * @see Drupal\Component\Utility\UrlHelper::filterBadProtocol()
@@ -558,7 +581,7 @@ function drupal_current_script_url($query = []) {
  * update.php) and returns a URL that can be used to attempt to proceed to the
  * next step of the script.
  *
- * @param $severity
+ * @param int|\Drupal\Core\Extension\Requirement\RequirementSeverity $severity
  *   The severity of the requirements problem, as returned by
  *   drupal_requirements_severity().
  *
@@ -571,11 +594,18 @@ function drupal_current_script_url($query = []) {
  * @see drupal_current_script_url()
  * @see \Drupal\Component\Utility\UrlHelper::filterBadProtocol()
  */
-function drupal_requirements_url($severity) {
+function drupal_requirements_url(/* int|RequirementSeverity */ $severity): string {
+  if (!$severity instanceof RequirementSeverity) {
+    @trigger_error('Passing a type other than ' . RequirementSeverity::class . ' to ' . __FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Pass a ' . RequirementSeverity::class . ' enum instead. See https://www.drupal.org/node/3410939', E_USER_DEPRECATED);
+    $severity = RequirementSeverity::from($severity);
+  }
+  if (is_null($severity)) {
+    $severity = RequirementSeverity::Info;
+  }
   $query = [];
   // If there are no errors, only warnings, append 'continue=1' to the URL so
   // the user can bypass this screen on the next page load.
-  if ($severity == REQUIREMENT_WARNING) {
+  if ($severity === RequirementSeverity::Warning) {
     $query['continue'] = 1;
   }
   return drupal_current_script_url($query);
@@ -590,7 +620,7 @@ function drupal_requirements_url($severity) {
  * @return array
  *   Array of the installation profile's requirements.
  */
-function drupal_check_profile($profile) {
+function drupal_check_profile($profile): array {
   $info = install_profile_info($profile);
   // Collect requirement testing results.
   $requirements = [];
@@ -613,11 +643,11 @@ function drupal_check_profile($profile) {
         require_once $install_file;
       }
 
-      \Drupal::service('class_loader')->addPsr4('Drupal\\' . $module . '\\', \Drupal::root() . "/$module_path/src");
-
       if (function_exists($function)) {
         $requirements = array_merge($requirements, $function('install'));
       }
+
+      $requirements = array_merge($requirements, install_check_class_requirements($module_list[$module]));
     }
   }
 
@@ -627,33 +657,37 @@ function drupal_check_profile($profile) {
     $requirements = array_merge($requirements, $function('install'));
   }
 
+  $extension = \Drupal::service('extension.list.profile')->get($profile);
+  $requirements = array_merge($requirements, install_check_class_requirements($extension));
+
   return $requirements;
 }
 
 /**
  * Extracts the highest severity from the requirements array.
  *
- * @param $requirements
+ * @param array $requirements
  *   An array of requirements, in the same format as is returned by
  *   hook_requirements().
  *
  * @return int
  *   The highest severity in the array.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Use
+ *   \Drupal\Core\Extension\Requirement\RequirementSeverity::getMaxSeverity()
+ *   instead.
+ *
+ * @see https://www.drupal.org/node/3410939
  */
 function drupal_requirements_severity(&$requirements) {
-  $severity = REQUIREMENT_OK;
-  foreach ($requirements as $requirement) {
-    if (isset($requirement['severity'])) {
-      $severity = max($severity, $requirement['severity']);
-    }
-  }
-  return $severity;
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Use ' . RequirementSeverity::class . '::maxSeverityFromRequirements() instead. See https://www.drupal.org/node/3410939', E_USER_DEPRECATED);
+  return RequirementSeverity::maxSeverityFromRequirements($requirements)->value;
 }
 
 /**
  * Checks a module's requirements.
  *
- * @param $module
+ * @param string $module
  *   Machine name of module to check.
  *
  * @return bool
@@ -662,16 +696,19 @@ function drupal_requirements_severity(&$requirements) {
 function drupal_check_module($module) {
   /** @var \Drupal\Core\Extension\ModuleExtensionList $module_list */
   $module_list = \Drupal::service('extension.list.module');
-  $file = DRUPAL_ROOT . '/' . $module_list->getPath($module) . "/$module.install";
+  $extension = $module_list->get($module);
+  $file = \Drupal::root() . '/' . $extension->getPath() . "/$module.install";
   if (is_file($file)) {
     require_once $file;
   }
   // Check requirements
-  $requirements = \Drupal::moduleHandler()->invoke($module, 'requirements', ['install']);
-  if (is_array($requirements) && drupal_requirements_severity($requirements) == REQUIREMENT_ERROR) {
+  $requirements = \Drupal::moduleHandler()->invoke($module, 'requirements', ['install']) ?? [];
+  $requirements = array_merge($requirements, install_check_class_requirements($extension));
+
+  if (!empty($requirements) && RequirementSeverity::maxSeverityFromRequirements($requirements) === RequirementSeverity::Error) {
     // Print any error messages
     foreach ($requirements as $requirement) {
-      if (isset($requirement['severity']) && $requirement['severity'] == REQUIREMENT_ERROR) {
+      if (isset($requirement['severity']) && $requirement['severity'] === RequirementSeverity::Error) {
         $message = $requirement['description'];
         if (isset($requirement['value']) && $requirement['value']) {
           $message = t('@requirements_message (Currently using @item version @version)', ['@requirements_message' => $requirement['description'], '@item' => $requirement['title'], '@version' => $requirement['value']]);
@@ -729,9 +766,9 @@ function drupal_check_module($module) {
  *      - dblog
  * @endcode
  *
- * @param $profile
+ * @param string $profile
  *   Name of profile.
- * @param $langcode
+ * @param string $langcode
  *   Language code (if any).
  *
  * @return array
@@ -791,4 +828,42 @@ function install_profile_info($profile, $langcode = 'en') {
     $cache[$profile][$langcode] = $info;
   }
   return $cache[$profile][$langcode];
+}
+
+/**
+ * Checks a module or profile requirements.
+ *
+ * See \Drupal\Core\Extension\InstallRequirementsInterface for more information.
+ *
+ * @param \Drupal\Core\Extension $extension
+ *   The extension to check install requirements for.
+ *
+ * @return array
+ *   The requirements.
+ *
+ * @internal
+ */
+function install_check_class_requirements(Extension $extension): array {
+  $extension_path = $extension->getPath();
+  $extension_name = $extension->getName();
+  $dir = \Drupal::root() . "/$extension_path/src/Install/Requirements";
+  $requirements = [];
+  if (is_dir($dir)) {
+    $fileSystemIterator = new FilesystemIterator($dir);
+    foreach ($fileSystemIterator as $fileInfo) {
+      if ($fileInfo->isFile() && $fileInfo->getExtension() === 'php') {
+        $filename = $fileInfo->getFilename();
+        $requirements_path = $dir . '/' . $filename;
+        require_once $requirements_path;
+
+        $namespace = "Drupal\\$extension_name\\Install\\Requirements";
+        $class_name = $namespace . '\\' . $fileInfo->getBasename('.php');
+        if (class_exists($class_name) && class_implements($class_name, InstallRequirementsInterface::class)) {
+          $requirements = $class_name::getRequirements();
+        }
+      }
+    }
+
+  }
+  return $requirements;
 }

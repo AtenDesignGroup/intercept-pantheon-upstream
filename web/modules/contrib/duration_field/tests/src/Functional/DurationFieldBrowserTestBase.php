@@ -10,6 +10,34 @@ use Drupal\Tests\BrowserTestBase;
 abstract class DurationFieldBrowserTestBase extends BrowserTestBase {
 
   /**
+   * The granularity options of the duration field.
+   *
+   * @var array
+   */
+  const DURATION_GRANULARITY = [
+    'y',
+    'm',
+    'd',
+    'h',
+    'i',
+    's',
+  ];
+
+  /**
+   * Admin user for testing.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $adminUser;
+
+  /**
+   * The custom content type created for testing.
+   *
+   * @var \Drupal\node\Entity\NodeType
+   */
+  protected $contentType;
+
+  /**
    * Asserts that a status code is what it is supposed to be.
    */
   public function assertStatusCodeEquals($statusCode) {
@@ -150,6 +178,109 @@ abstract class DurationFieldBrowserTestBase extends BrowserTestBase {
    */
   public function assertTextNotExists($text) {
     $this->assertSession()->pageTextNotContains($text);
+  }
+
+  /**
+   * Sets up a date.
+   */
+  protected function createDefaultSetup($granularity = self::DURATION_GRANULARITY, $include_weeks = FALSE) {
+    $this->adminUser = $this->createUser([], 'Admin User', TRUE);
+    $admin_role = $this->createAdminRole();
+    $this->adminUser->addRole($admin_role);
+    $this->drupalLogin($this->adminUser);
+    $this->contentType = $this->createContentType(['type' => 'test_type', 'name' => 'Test Type']);
+    $this->drupalGet('admin/structure/types/manage/test_type/fields/add-field');
+    $this->assertStatusCodeEquals(200);
+
+    if (version_compare(\Drupal::VERSION, '11.2.2', '<')) {
+      $this->getSession()
+        ->getPage()
+        ->selectFieldOption('new_storage_type', 'duration');
+      // Starting in 10.2, we have to click "Continue" to land on the form to
+      // define the field label.
+      if (version_compare(\Drupal::VERSION, '10.2', '>=')) {
+        $this->click('#edit-submit');
+      }
+    }
+    // 11.2.2 and higher can immediately click on the "Duration" link to pick
+    // the field type.
+    else {
+      $this->getSession()->getPage()
+        ->findLink('Duration')
+        ->click();
+    }
+
+    $this->fillTextValue('#edit-label', 'Duration');
+    $this->fillTextValue('#edit-field-name', 'duration');
+    $this->click('#edit-submit');
+    $this->assertStatusCodeEquals(200);
+
+    // Before Drupal 10.2, we first land on the cardinality (storage) form, and
+    // we need to click "Continue" again to land on the field settings form.
+    if (version_compare(\Drupal::VERSION, '10.2', '<')) {
+      $this->click('#edit-submit');
+      $this->assertSession()->addressMatches('/^\/admin\/structure\/types\/manage\/test_type\/fields\/node.test_type.field_duration$/');
+    }
+    else {
+      // /admin/structure/types/manage/test_type/add-field/node/field_duration
+      $this->assertSession()->addressMatches('/^\/admin\/structure\/types\/manage\/test_type\/add-field\/node\/field_duration$/');
+    }
+
+    $check = array_diff(['y', 'm', 'd', 'h', 'i', 's'], $granularity);
+    foreach ($check as $field) {
+      $this->checkCheckbox('#edit-settings-granularity-' . $field);
+    }
+
+    if ($include_weeks) {
+      $this->checkCheckbox('#edit-settings-include-weeks');
+      $this->assertCheckboxChecked('#edit-settings-include-weeks');
+    }
+
+    foreach ($granularity as $field) {
+      $this->assertCheckboxChecked('#edit-settings-granularity-' . $field);
+    }
+    $this->click('#edit-submit');
+    $this->assertSession()->addressMatches('/^\/admin\/structure\/types\/manage\/test_type\/fields$/');
+    $this->assertStatusCodeEquals(200);
+    $this->assertElementExistsXpath('//table[@id="field-overview"]//td[text()="Duration"]');
+    $this->drupalGet('node/add/test_type');
+    $this->assertStatusCodeEquals(200);
+    $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
+    foreach ($granularity as $field) {
+      $this->assertElementExists('input#edit-field-duration-0-duration-' . $field . '[type="number"]');
+    }
+  }
+
+  /**
+   * Sets some human readable options.
+   */
+  protected function setHumanReadableOptions($text_length = 'full', $separator = 'space') {
+    $this->drupalGet('/admin/structure/types/manage/test_type/display');
+    $this->assertStatusCodeEquals(200);
+    $this->click('#edit-fields-field-duration-settings-edit');
+    $this->assertStatusCodeEquals(200);
+    $this->selectSelectOption('#edit-fields-field-duration-settings-edit-form-settings-text-length', $text_length);
+    $this->selectSelectOption('#edit-fields-field-duration-settings-edit-form-settings-separator', $separator);
+    $this->click('#edit-fields-field-duration-settings-edit-form-actions-save-settings');
+    $this->assertStatusCodeEquals(200);
+    $this->click('#edit-submit');
+    $this->assertStatusCodeEquals(200);
+  }
+
+  /**
+   * Sets the formatter to be tested.
+   */
+  protected function setFormatter($formatter) {
+    $types = [
+      'raw' => 'duration_string_display',
+      'human' => 'duration_human_display',
+      'time' => 'duration_time_display',
+    ];
+
+    $this->drupalGet('/admin/structure/types/manage/test_type/display');
+    $this->assertStatusCodeEquals(200);
+    $this->selectSelectOption('#edit-fields-field-duration-type', $types[$formatter]);
+    $this->click('#edit-submit');
   }
 
 }

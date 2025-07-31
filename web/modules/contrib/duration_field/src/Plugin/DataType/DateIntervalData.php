@@ -2,7 +2,6 @@
 
 namespace Drupal\duration_field\Plugin\DataType;
 
-use DateInterval;
 use Drupal\Core\TypedData\PrimitiveBase;
 
 /**
@@ -42,7 +41,7 @@ class DateIntervalData extends PrimitiveBase implements DateIntervalInterface {
     // The casted value will be a PHP DateInterval object. The value of the
     // object is an ISO 8601 Duration string, used to create the
     // DateInterval object.
-    return new DateInterval($this->getString());
+    return new \DateInterval($this->getString());
   }
 
   /**

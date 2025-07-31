@@ -131,7 +131,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     $this->moduleHandler->expects($this->any())
       ->method('moduleExists')
       ->with('webform_templates')
-      ->will($this->returnValue(TRUE));
+      ->willReturn(TRUE);
 
     // Add a translation manager for t().
     $translation_manager = $this->getStringTranslationStub();
@@ -148,10 +148,6 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     $container->set('cache_contexts_manager', $cache_contexts_manager);
     \Drupal::setContainer($container);
   }
-
-  /* ************************************************************************ */
-  // Below test is passing locally but failing on Drupal.org.
-  /* ************************************************************************ */
 
   /**
    * Tests WebformBreadcrumbBuilder::applies().
@@ -321,9 +317,9 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     $webform_submission_access = $this->createMock('Drupal\webform\WebformSubmissionInterface');
     $webform_submission_access->expects($this->any())
       ->method('access')
-      ->will($this->returnCallback(function ($operation) {
+      ->willReturnCallback(function ($operation) {
         return ($operation === 'view_own');
-      }));
+      });
     $route_match = $this->getMockRouteMatch('entity.node.webform_submission.canonical', [
       ['webform_submission', $webform_submission_access],
       ['webform', $this->webform],
@@ -475,7 +471,7 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     // Set the node as the request handler's source entity.
     $this->requestHandler->expects($this->any())
       ->method('getCurrentSourceEntity')
-      ->will($this->returnValue($entity));
+      ->willReturn($entity);
   }
 
   /**
@@ -493,10 +489,10 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     $route_match = $this->createMock('Drupal\Core\Routing\RouteMatchInterface');
     $route_match->expects($this->any())
       ->method('getRouteName')
-      ->will($this->returnValue($route_name));
+      ->willReturn($route_name);
     $route_match->expects($this->any())
       ->method('getParameter')
-      ->will($this->returnValueMap($parameter_map));
+      ->willReturnMap($parameter_map);
 
     /** @var \Drupal\Core\Routing\RouteMatchInterface $route_match */
     return $route_match;
@@ -518,59 +514,59 @@ class WebformBreadcrumbBuilderTest extends UnitTestCase {
     $this->node = $this->createMock('Drupal\node\NodeInterface');
     $this->node->expects($this->any())
       ->method('label')
-      ->will($this->returnValue('{node}'));
+      ->willReturn('{node}');
     $this->node->expects($this->any())
       ->method('getEntityTypeId')
-      ->will($this->returnValue('node'));
+      ->willReturn('node');
     $this->node->expects($this->any())
       ->method('id')
-      ->will($this->returnValue('1'));
+      ->willReturn('1');
     $this->node->expects($this->any())
       ->method('toLink')
-      ->will($this->returnValue(Link::createFromRoute('{node}', 'entity.node.canonical', ['node' => 1])));
+      ->willReturn(Link::createFromRoute('{node}', 'entity.node.canonical', ['node' => 1]));
 
     $this->nodeAccess = clone $this->node;
     $this->nodeAccess->expects($this->any())
       ->method('access')
-      ->will($this->returnValue(TRUE));
+      ->willReturn(TRUE);
 
     /* webform entities */
 
     $this->webform = $this->createMock('Drupal\webform\WebformInterface');
     $this->webform->expects($this->any())
       ->method('label')
-      ->will($this->returnValue('{webform}'));
+      ->willReturn('{webform}');
     $this->webform->expects($this->any())
       ->method('id')
-      ->will($this->returnValue(1));
+      ->willReturn(1);
 
     $this->webformAccess = clone $this->webform;
     $this->webformAccess->expects($this->any())
       ->method('access')
-      ->will($this->returnValue(TRUE));
+      ->willReturn(TRUE);
 
     $this->webformTemplate = clone $this->webformAccess;
     $this->webformTemplate->expects($this->any())
       ->method('isTemplate')
-      ->will($this->returnValue(TRUE));
+      ->willReturn(TRUE);
 
     /* webform submission entities */
 
     $this->webformSubmission = $this->createMock('Drupal\webform\WebformSubmissionInterface');
     $this->webformSubmission->expects($this->any())
       ->method('getWebform')
-      ->will($this->returnValue($this->webform));
+      ->willReturn($this->webform);
     $this->webformSubmission->expects($this->any())
       ->method('label')
-      ->will($this->returnValue('{webform_submission}'));
+      ->willReturn('{webform_submission}');
     $this->webformSubmission->expects($this->any())
       ->method('id')
-      ->will($this->returnValue(1));
+      ->willReturn(1);
 
     $this->webformSubmissionAccess = clone $this->webformSubmission;
     $this->webformSubmissionAccess->expects($this->any())
       ->method('access')
-      ->will($this->returnValue(TRUE));
+      ->willReturn(TRUE);
   }
 
 }

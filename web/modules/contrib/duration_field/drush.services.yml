@@ -1,6 +1,6 @@
 services:
   duration_field.commands:
-    class: '\Drupal\duration_field\Drush\DurationFieldCommand'
+    class: '\Drupal\duration_field\Commands\DurationFieldCommand'
     tags:
       - { name: drush.command }
     arguments:

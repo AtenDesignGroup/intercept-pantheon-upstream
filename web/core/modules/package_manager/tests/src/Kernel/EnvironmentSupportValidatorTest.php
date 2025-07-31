@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\package_manager\Kernel;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\package_manager\Event\PreApplyEvent;
 use Drupal\package_manager\Event\PreCreateEvent;
 use Drupal\package_manager\Event\StatusCheckEvent;
@@ -17,6 +18,8 @@ use Drupal\package_manager\Validator\EnvironmentSupportValidator;
  */
 class EnvironmentSupportValidatorTest extends PackageManagerKernelTestBase {
 
+  use StringTranslationTrait;
+
   /**
    * Tests handling of an invalid URL in the environment support variable.
    */
@@ -24,10 +27,15 @@ class EnvironmentSupportValidatorTest extends PackageManagerKernelTestBase {
     putenv(EnvironmentSupportValidator::VARIABLE_NAME . '=broken/url.org');
 
     $result = ValidationResult::createError([
-      t('Package Manager is not supported by your environment.'),
+      $this->t('Package Manager is not supported by your environment.'),
     ]);
     foreach ([PreCreateEvent::class, StatusCheckEvent::class] as $event_class) {
-      $this->assertEventPropagationStopped($event_class, [$this->container->get(EnvironmentSupportValidator::class), 'validate']);
+      $this->assertEventPropagationStopped(
+        $event_class,
+        [
+          $this->container->get(EnvironmentSupportValidator::class),
+          'validate',
+        ]);
     }
     $this->assertStatusCheckResults([$result]);
     $this->assertResults([$result], PreCreateEvent::class);
@@ -42,10 +50,12 @@ class EnvironmentSupportValidatorTest extends PackageManagerKernelTestBase {
     });
 
     $result = ValidationResult::createError([
-      t('Package Manager is not supported by your environment.'),
+      $this->t('Package Manager is not supported by your environment.'),
     ]);
 
-    $this->assertEventPropagationStopped(PreApplyEvent::class, [$this->container->get(EnvironmentSupportValidator::class), 'validate']);
+    $this->assertEventPropagationStopped(
+      PreApplyEvent::class,
+      [$this->container->get(EnvironmentSupportValidator::class), 'validate']);
     $this->assertResults([$result], PreApplyEvent::class);
   }
 
@@ -57,7 +67,7 @@ class EnvironmentSupportValidatorTest extends PackageManagerKernelTestBase {
     putenv(EnvironmentSupportValidator::VARIABLE_NAME . '=' . $url);
 
     $result = ValidationResult::createError([
-      t('<a href=":url">Package Manager is not supported by your environment.</a>', [':url' => $url]),
+      $this->t('<a href=":url">Package Manager is not supported by your environment.</a>', [':url' => $url]),
     ]);
     $this->assertStatusCheckResults([$result]);
     $this->assertResults([$result], PreCreateEvent::class);
@@ -73,7 +83,7 @@ class EnvironmentSupportValidatorTest extends PackageManagerKernelTestBase {
     });
 
     $result = ValidationResult::createError([
-      t('<a href=":url">Package Manager is not supported by your environment.</a>', [':url' => $url]),
+      $this->t('<a href=":url">Package Manager is not supported by your environment.</a>', [':url' => $url]),
     ]);
     $this->assertResults([$result], PreApplyEvent::class);
   }

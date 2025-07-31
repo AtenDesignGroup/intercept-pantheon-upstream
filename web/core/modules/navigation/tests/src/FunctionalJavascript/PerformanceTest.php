@@ -68,20 +68,34 @@ class PerformanceTest extends PerformanceTestBase {
       'SELECT "roles_target_id" FROM "user__roles" WHERE "entity_id" = "2"',
       'SELECT "name", "value" FROM "key_value" WHERE "name" IN ( "theme:stark" ) AND "collection" = "config.entity.key_store.block"',
     ];
-
     $recorded_queries = $performance_data->getQueries();
     $this->assertSame($expected_queries, $recorded_queries);
-    $this->assertSame(4, $performance_data->getQueryCount());
-    $this->assertSame(61, $performance_data->getCacheGetCount());
-    $this->assertSame(2, $performance_data->getCacheSetCount());
-    $this->assertSame(0, $performance_data->getCacheDeleteCount());
-    $this->assertSame(2, $performance_data->getCacheTagChecksumCount());
-    $this->assertSame(29, $performance_data->getCacheTagIsValidCount());
-    $this->assertSame(0, $performance_data->getCacheTagInvalidationCount());
-    $this->assertSame(1, $performance_data->getStyleSheetCount());
-    $this->assertSame(2, $performance_data->getScriptCount());
-    $this->assertLessThan(90200, $performance_data->getStylesheetBytes());
-    $this->assertLessThan(220000, $performance_data->getScriptBytes());
+
+    $expected = [
+      'QueryCount' => 4,
+      'CacheGetCount' => 47,
+      'CacheGetCountByBin' => [
+        'config' => 11,
+        'data' => 4,
+        'discovery' => 10,
+        'bootstrap' => 6,
+        'dynamic_page_cache' => 1,
+        'render' => 14,
+        'menu' => 1,
+      ],
+      'CacheSetCount' => 2,
+      'CacheSetCountByBin' => [
+        'dynamic_page_cache' => 2,
+      ],
+      'CacheDeleteCount' => 0,
+      'CacheTagInvalidationCount' => 0,
+      'CacheTagLookupQueryCount' => 13,
+      'ScriptCount' => 3,
+      'ScriptBytes' => 167569,
+      'StylesheetCount' => 2,
+      'StylesheetBytes' => 46000,
+    ];
+    $this->assertMetrics($expected, $performance_data);
 
     // Check that the navigation toolbar is cached without any high-cardinality
     // cache contexts (user, route, query parameters etc.).

@@ -7,6 +7,9 @@ namespace Drupal\container_rebuild_test;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DrupalKernelInterface;
 
+/**
+ * Controller for testing module information and container reset functionality.
+ */
 class TestController extends ControllerBase {
 
   /**
@@ -53,11 +56,11 @@ class TestController extends ControllerBase {
    *   A render array.
    */
   public function containerReset() {
-    $this->messenger()->addMessage(t('Before the container was reset.'));
+    $this->messenger()->addMessage($this->t('Before the container was reset.'));
     $this->kernel->resetContainer();
     // The container has been reset, therefore we need to get the new service.
     $this->messenger = NULL;
-    $this->messenger()->addMessage(t('After the container was reset.'));
+    $this->messenger()->addMessage($this->t('After the container was reset.'));
     return [];
   }
 

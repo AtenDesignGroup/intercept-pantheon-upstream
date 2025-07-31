@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\file_test\Hook;
 
-use Drupal\file\Entity\File;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\file\Entity\File;
+use Drupal\file_test\FileTestCdn;
+use Drupal\file_test\FileTestHelper;
 
 // cspell:ignore tarz
 // cspell:ignore garply
@@ -19,11 +21,11 @@ class FileTestHooks {
    * Implements hook_ENTITY_TYPE_load() for file entities.
    */
   #[Hook('file_load')]
-  public function fileLoad($files) {
+  public function fileLoad($files): void {
     foreach ($files as $file) {
-      _file_test_log_call('load', [$file->id()]);
-      // Assign a value on the object so that we can test that the $file is passed
-      // by reference.
+      FileTestHelper::logCall('load', [$file->id()]);
+      // Assign a value on the object so that we can test that the $file is
+      // passed by reference.
       $file->file_test['loaded'] = TRUE;
     }
   }
@@ -32,54 +34,54 @@ class FileTestHooks {
    * Implements hook_file_download().
    */
   #[Hook('file_download')]
-  public function fileDownload($uri) {
+  public function fileDownload($uri): array|int|null {
     if (\Drupal::state()->get('file_test.allow_all', FALSE)) {
       $files = \Drupal::entityTypeManager()->getStorage('file')->loadByProperties(['uri' => $uri]);
       $file = reset($files);
-      return file_get_content_headers($file);
+      return $file->getDownloadHeaders();
     }
-    _file_test_log_call('download', [$uri]);
-    return _file_test_get_return('download');
+    FileTestHelper::logCall('download', [$uri]);
+    return $this->getReturn('download');
   }
 
   /**
    * Implements hook_ENTITY_TYPE_insert() for file entities.
    */
   #[Hook('file_insert')]
-  public function fileInsert(File $file) {
-    _file_test_log_call('insert', [$file->id()]);
+  public function fileInsert(File $file): void {
+    FileTestHelper::logCall('insert', [$file->id()]);
   }
 
   /**
    * Implements hook_ENTITY_TYPE_update() for file entities.
    */
   #[Hook('file_update')]
-  public function fileUpdate(File $file) {
-    _file_test_log_call('update', [$file->id()]);
+  public function fileUpdate(File $file): void {
+    FileTestHelper::logCall('update', [$file->id()]);
   }
 
   /**
    * Implements hook_file_copy().
    */
   #[Hook('file_copy')]
-  public function fileCopy(File $file, $source) {
-    _file_test_log_call('copy', [$file->id(), $source->id()]);
+  public function fileCopy(File $file, $source): void {
+    FileTestHelper::logCall('copy', [$file->id(), $source->id()]);
   }
 
   /**
    * Implements hook_file_move().
    */
   #[Hook('file_move')]
-  public function fileMove(File $file, File $source) {
-    _file_test_log_call('move', [$file->id(), $source->id()]);
+  public function fileMove(File $file, File $source): void {
+    FileTestHelper::logCall('move', [$file->id(), $source->id()]);
   }
 
   /**
    * Implements hook_ENTITY_TYPE_predelete() for file entities.
    */
   #[Hook('file_predelete')]
-  public function filePredelete(File $file) {
-    _file_test_log_call('delete', [$file->id()]);
+  public function filePredelete(File $file): void {
+    FileTestHelper::logCall('delete', [$file->id()]);
   }
 
   /**
@@ -113,14 +115,14 @@ class FileTestHooks {
         }
         // Clean up Windows paths.
         $path = str_replace('\\', '/', $path);
-        // Serve files with one of the CDN extensions from CDN 1, all others from
-        // CDN 2.
+        // Serve files with one of the CDN extensions from CDN 1, all others
+        // from CDN 2.
         $pathinfo = pathinfo($path);
         if (array_key_exists('extension', $pathinfo) && in_array($pathinfo['extension'], $cdn_extensions)) {
-          $uri = FILE_URL_TEST_CDN_1 . '/' . $path;
+          $uri = FileTestCdn::First->value . '/' . $path;
         }
         else {
-          $uri = FILE_URL_TEST_CDN_2 . '/' . $path;
+          $uri = FileTestCdn::Second->value . '/' . $path;
         }
       }
     }
@@ -144,8 +146,8 @@ class FileTestHooks {
       }
     }
     elseif ($alter_mode == 'protocol-relative') {
-      // Only serve shipped files and public created files with protocol-relative
-      // URLs.
+      // Only serve shipped files and public created files with
+      // protocol-relative URLs.
       $scheme = $stream_wrapper_manager::getScheme($uri);
       if (!$scheme || $scheme == 'public') {
         // Shipped files.
@@ -165,28 +167,6 @@ class FileTestHooks {
   }
 
   /**
-   * Implements hook_file_mimetype_mapping_alter().
-   */
-  #[Hook('file_mimetype_mapping_alter')]
-  public function fileMimetypeMappingAlter(&$mapping): void {
-    // Add new mappings.
-    $mapping['mimetypes']['file_test_mimetype_1'] = 'made_up/file_test_1';
-    $mapping['mimetypes']['file_test_mimetype_2'] = 'made_up/file_test_2';
-    $mapping['mimetypes']['file_test_mimetype_3'] = 'made_up/doc';
-    $mapping['mimetypes']['application-x-compress'] = 'application/x-compress';
-    $mapping['mimetypes']['application-x-tarz'] = 'application/x-tarz';
-    $mapping['mimetypes']['application-x-garply-waldo'] = 'application/x-garply-waldo';
-    $mapping['extensions']['file_test_1'] = 'file_test_mimetype_1';
-    $mapping['extensions']['file_test_2'] = 'file_test_mimetype_2';
-    $mapping['extensions']['file_test_3'] = 'file_test_mimetype_2';
-    $mapping['extensions']['z'] = 'application-x-compress';
-    $mapping['extensions']['tar.z'] = 'application-x-tarz';
-    $mapping['extensions']['garply.waldo'] = 'application-x-garply-waldo';
-    // Override existing mapping.
-    $mapping['extensions']['doc'] = 'file_test_mimetype_3';
-  }
-
-  /**
    * Implements hook_entity_type_alter().
    */
   #[Hook('entity_type_alter')]
@@ -195,6 +175,23 @@ class FileTestHooks {
       /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
       $entity_types['file']->setAccessClass('Drupal\file_test\FileTestAccessControlHandler');
     }
+  }
+
+  /**
+   * Load the appropriate return value.
+   *
+   * @param string $op
+   *   One of the hook_file_[validate,download] operations.
+   *
+   * @return array|int|null
+   *   Value set by Drupal\file_test\FileTestHelper::setReturn().
+   *
+   * @see \Drupal\file_test\FileTestHelper::setReturn()
+   * @see Drupal\file_test\FileTestHelper::reset()
+   */
+  public function getReturn($op): array|int|null {
+    $return = \Drupal::keyValue('file_test')->get('return', [$op => NULL]);
+    return $return[$op];
   }
 
 }

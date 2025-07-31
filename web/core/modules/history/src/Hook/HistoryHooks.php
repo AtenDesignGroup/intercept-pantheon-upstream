@@ -2,6 +2,7 @@
 
 namespace Drupal\history\Hook;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\user\UserInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -14,15 +15,17 @@ use Drupal\Core\Hook\Attribute\Hook;
  */
 class HistoryHooks {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?string {
     switch ($route_name) {
       case 'help.page.history':
-        $output = '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('The History module keeps track of which content a user has read. It marks content as <em>new</em> or <em>updated</em> depending on the last time the user viewed it. History records that are older than one month are removed during cron, which means that content older than one month is always considered <em>read</em>. The History module does not have a user interface but it provides a filter to <a href=":views-help">Views</a> to show new or updated content. For more information, see the <a href=":url">online documentation for the History module</a>.', [
+        $output = '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('The History module keeps track of which content a user has read. It marks content as <em>new</em> or <em>updated</em> depending on the last time the user viewed it. History records that are older than one month are removed during cron, which means that content older than one month is always considered <em>read</em>. The History module does not have a user interface but it provides a filter to <a href=":views-help">Views</a> to show new or updated content. For more information, see the <a href=":url">online documentation for the History module</a>.', [
           ':views-help' => \Drupal::moduleHandler()->moduleExists('views') ? Url::fromRoute('help.page', [
             'name' => 'views',
           ])->toString() : '#',
@@ -30,6 +33,7 @@ class HistoryHooks {
         ]) . '</p>';
         return $output;
     }
+    return NULL;
   }
 
   /**
@@ -65,7 +69,7 @@ class HistoryHooks {
    * Implements hook_ENTITY_TYPE_delete() for node entities.
    */
   #[Hook('node_delete')]
-  public function nodeDelete(EntityInterface $node) {
+  public function nodeDelete(EntityInterface $node): void {
     \Drupal::database()->delete('history')->condition('nid', $node->id())->execute();
   }
 
@@ -73,7 +77,7 @@ class HistoryHooks {
    * Implements hook_user_cancel().
    */
   #[Hook('user_cancel')]
-  public function userCancel($edit, UserInterface $account, $method) {
+  public function userCancel($edit, UserInterface $account, $method): void {
     switch ($method) {
       case 'user_cancel_reassign':
         \Drupal::database()->delete('history')->condition('uid', $account->id())->execute();
@@ -85,7 +89,7 @@ class HistoryHooks {
    * Implements hook_ENTITY_TYPE_delete() for user entities.
    */
   #[Hook('user_delete')]
-  public function userDelete($account) {
+  public function userDelete($account): void {
     \Drupal::database()->delete('history')->condition('uid', $account->id())->execute();
   }
 

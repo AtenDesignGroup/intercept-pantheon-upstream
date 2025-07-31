@@ -79,6 +79,7 @@ class PhpBackend implements CacheBackendInterface {
    *   has been invalidated.
    *
    * @return bool|mixed
+   *   The requested cached item. Defaults to FALSE when the cache is not set.
    */
   protected function getByHash($cidhash, $allow_invalid = FALSE) {
     if ($file = $this->storage()->getFullPath($cidhash)) {
@@ -224,6 +225,7 @@ class PhpBackend implements CacheBackendInterface {
    * {@inheritdoc}
    */
   public function invalidateAll() {
+    @trigger_error("CacheBackendInterface::invalidateAll() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Use CacheBackendInterface::deleteAll() or cache tag invalidation instead. See https://www.drupal.org/node/3500622", E_USER_DEPRECATED);
     foreach ($this->storage()->listAll() as $cidhash) {
       $this->invalidateByHash($cidhash);
     }
@@ -260,6 +262,7 @@ class PhpBackend implements CacheBackendInterface {
    * Gets the PHP code storage object to use.
    *
    * @return \Drupal\Component\PhpStorage\PhpStorageInterface
+   *   The PHP storage.
    */
   protected function storage() {
     if (!isset($this->storage)) {

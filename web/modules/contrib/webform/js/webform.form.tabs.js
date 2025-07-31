@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // @see https://github.com/cferdinandi/tabby
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.formTabs = Drupal.webform.formTabs || {};
@@ -21,7 +23,7 @@
    * @see \Drupal\webform\Utility\WebformFormHelper::buildTabs
    */
   Drupal.behaviors.webformFormTabs = {
-    attach: function (context) {
+    attach(context) {
       if (!window.Tabby) {
         return;
       }

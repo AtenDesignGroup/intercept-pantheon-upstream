@@ -2,8 +2,8 @@
     "name": "drupal/phpstan-testing",
     "description": "Tests Drupal core's PHPStan rules",
     "require-dev": {
-        "phpunit/phpunit": "^10",
-        "phpstan/phpstan": "1.12.12"
+        "phpunit/phpunit": "^11",
+        "phpstan/phpstan": "2.1.17"
     },
     "license": "GPL-2.0-or-later",
     "autoload": {

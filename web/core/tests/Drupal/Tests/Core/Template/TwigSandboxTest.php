@@ -57,6 +57,7 @@ class TwigSandboxTest extends UnitTestCase {
    * Data provider for ::testEntityDangerousMethods.
    *
    * @return array
+   *   An array of dangerous methods.
    */
   public static function getTwigEntityDangerousMethods() {
     return [
@@ -157,4 +158,7 @@ class TwigSandboxTest extends UnitTestCase {
 
 }
 
+/**
+ * Test class for HTML attributes collector, sanitizer, and renderer.
+ */
 class TestAttribute extends Attribute {}

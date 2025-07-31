@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi\Functional;
 
+use Drupal\entity_test\EntityTestHelper;
+use Drupal\jsonapi\JsonApiSpec;
 use Drupal\comment\Entity\Comment;
 use Drupal\comment\Entity\CommentType;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
@@ -107,7 +109,7 @@ class CommentTest extends ResourceTestBase {
   protected function createEntity() {
     // Create a "bar" bundle for the "entity_test" entity type and create.
     $bundle = 'bar';
-    entity_test_create_bundle($bundle, NULL, 'entity_test');
+    EntityTestHelper::createBundle($bundle, NULL, 'entity_test');
 
     // Create a comment field on this bundle.
     $this->addDefaultCommentField('entity_test', 'bar', 'comment');
@@ -150,10 +152,10 @@ class CommentTest extends ResourceTestBase {
       'jsonapi' => [
         'meta' => [
           'links' => [
-            'self' => ['href' => 'http://jsonapi.org/format/1.0/'],
+            'self' => ['href' => JsonApiSpec::SUPPORTED_SPECIFICATION_PERMALINK],
           ],
         ],
-        'version' => '1.0',
+        'version' => JsonApiSpec::SUPPORTED_SPECIFICATION_VERSION,
       ],
       'links' => [
         'self' => ['href' => $self_url],
@@ -360,8 +362,8 @@ class CommentTest extends ResourceTestBase {
     $doc = $this->getDocumentFromResponse($response);
     $this->assertCount(1, $doc['data']);
     // Mark the commented entity as inaccessible.
-    \Drupal::state()->set('jsonapi__entity_test_filter_access_blacklist', [$this->entity->getCommentedEntityId()]);
-    Cache::invalidateTags(['state:jsonapi__entity_test_filter_access_blacklist']);
+    \Drupal::state()->set('jsonapi__entity_test_filter_access_deny_list', [$this->entity->getCommentedEntityId()]);
+    Cache::invalidateTags(['state:jsonapi__entity_test_filter_access_deny_list']);
     // ?filter[spotlight.LABEL]: 0 results.
     $response = $this->request('GET', $collection_filter_url, $request_options);
     $doc = $this->getDocumentFromResponse($response);
@@ -374,7 +376,7 @@ class CommentTest extends ResourceTestBase {
   protected static function getExpectedCollectionCacheability(AccountInterface $account, array $collection, ?array $sparse_fieldset = NULL, $filtered = FALSE) {
     $cacheability = parent::getExpectedCollectionCacheability($account, $collection, $sparse_fieldset, $filtered);
     if ($filtered) {
-      $cacheability->addCacheTags(['state:jsonapi__entity_test_filter_access_blacklist']);
+      $cacheability->addCacheTags(['state:jsonapi__entity_test_filter_access_deny_list']);
     }
     return $cacheability;
   }

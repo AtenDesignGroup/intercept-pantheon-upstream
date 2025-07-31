@@ -110,14 +110,18 @@ class FiberPlaceholderTest extends UnitTestCase {
 
 }
 
+/**
+ * Test class for testing fiber placeholders.
+ */
 class TurtleLazyBuilder implements TrustedCallbackInterface {
 
   /**
-   * #lazy_builder callback.
+   * Render API callback: Suspends execution twice to simulate a long operation.
    *
-   * Suspends its own execution twice to simulate long operation.
+   * This function is assigned as a #lazy_builder callback.
    *
    * @return array
+   *   The lazy builder callback.
    */
   public static function turtle(): array {
     if (\Fiber::getCurrent() !== NULL) {

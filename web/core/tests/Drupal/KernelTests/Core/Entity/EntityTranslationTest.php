@@ -8,6 +8,8 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslationStatusInterface;
 use Drupal\entity_test\Entity\EntityTestMul;
 use Drupal\entity_test\Entity\EntityTestMulRev;
+use Drupal\entity_test\EntityTestHelper;
+use Drupal\entity_test\EntityTestTypesFilter;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
@@ -24,7 +26,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    */
   public function testEntityLanguageMethods(): void {
     // All entity variations have to have the same results.
-    foreach (entity_test_entity_types() as $entity_type) {
+    foreach (EntityTestHelper::getEntityTypes() as $entity_type) {
       $this->doTestEntityLanguageMethods($entity_type);
     }
   }
@@ -144,7 +146,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    */
   public function testMultilingualProperties(): void {
     // Test all entity variations with data table support.
-    foreach (entity_test_entity_types(ENTITY_TEST_TYPES_MULTILINGUAL) as $entity_type) {
+    foreach (EntityTestHelper::getEntityTypes(EntityTestTypesFilter::Multilingual) as $entity_type) {
       $this->doTestMultilingualProperties($entity_type);
     }
   }
@@ -307,7 +309,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    */
   public function testEntityTranslationAPI(): void {
     // Test all entity variations with data table support.
-    foreach (entity_test_entity_types(ENTITY_TEST_TYPES_MULTILINGUAL) as $entity_type) {
+    foreach (EntityTestHelper::getEntityTypes(EntityTestTypesFilter::Multilingual) as $entity_type) {
       $this->doTestEntityTranslationAPI($entity_type);
     }
   }
@@ -547,8 +549,8 @@ class EntityTranslationTest extends EntityLanguageTestBase {
 
     // Check that per-language defaults are properly populated. The
     // 'entity_test_mul_default_value' entity type is translatable and uses
-    // entity_test_field_default_value() as a "default value callback" for its
-    // 'description' field.
+    // \Drupal\entity_test\Entity\EntityTestDefaultValue::descriptionDefaultValue()
+    // as a "default value callback" for its 'description' field.
     $entity = $this->entityTypeManager
       ->getStorage('entity_test_mul_default_value')
       ->create(['name' => $this->randomMachineName(), 'langcode' => $langcode]);
@@ -575,7 +577,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    */
   public function testLanguageFallback(): void {
     // Test all entity variations with data table support.
-    foreach (entity_test_entity_types(ENTITY_TEST_TYPES_MULTILINGUAL) as $entity_type) {
+    foreach (EntityTestHelper::getEntityTypes(EntityTestTypesFilter::Multilingual) as $entity_type) {
       $this->doTestLanguageFallback($entity_type);
     }
   }
@@ -716,7 +718,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
    */
   public function testLanguageChange(): void {
     // Test all entity variations with data table support.
-    foreach (entity_test_entity_types(ENTITY_TEST_TYPES_MULTILINGUAL) as $entity_type) {
+    foreach (EntityTestHelper::getEntityTypes(EntityTestTypesFilter::Multilingual) as $entity_type) {
       $this->doTestLanguageChange($entity_type);
     }
   }
@@ -946,7 +948,7 @@ class EntityTranslationTest extends EntityLanguageTestBase {
     $entity = $storage->load($entity->id());
     $this->assertEquals(TranslationStatusInterface::TRANSLATION_EXISTING, $entity->getTranslationStatus($entity->language()->getId()));
 
-    foreach ($this->langcodes as $key => $langcode) {
+    foreach ($this->langcodes as $langcode) {
       // Test that after adding a new translation it has the translation status
       // TRANSLATION_CREATED.
       $entity->addTranslation($langcode, $values);

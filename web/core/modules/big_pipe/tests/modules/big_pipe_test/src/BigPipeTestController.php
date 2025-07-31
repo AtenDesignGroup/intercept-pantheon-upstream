@@ -19,6 +19,7 @@ class BigPipeTestController implements TrustedCallbackInterface {
    * Returns all BigPipe placeholder test case render arrays.
    *
    * @return array
+   *   Render array containing various Big Pipe placeholder test cases.
    */
   public function test() {
     $has_session = \Drupal::service('session_configuration')->hasSession(\Drupal::requestStack()->getMainRequest());
@@ -63,6 +64,7 @@ class BigPipeTestController implements TrustedCallbackInterface {
 
   /**
    * @return array
+   *   List of all BigPipe placeholder test cases.
    */
   public static function nope() {
     return ['#markup' => '<p>Nope.</p>'];
@@ -74,6 +76,7 @@ class BigPipeTestController implements TrustedCallbackInterface {
    * @see \Drupal\Tests\big_pipe\Functional\BigPipeTest::testBigPipeMultiOccurrencePlaceholders()
    *
    * @return array
+   *   Render array with multiple placeholders using a lazy builder.
    */
   public function multiOccurrence() {
     return [
@@ -96,6 +99,9 @@ class BigPipeTestController implements TrustedCallbackInterface {
    * A page with placeholder preview.
    *
    * @return array[]
+   *   A render array with two containers:
+   *   - 'user_container': Loads the user’s display name via a lazy builder.
+   *   - 'user_links_container': Loads user links with a placeholder preview.
    */
   public function placeholderPreview() {
     return [
@@ -124,11 +130,15 @@ class BigPipeTestController implements TrustedCallbackInterface {
   }
 
   /**
-   * #lazy_builder callback; builds <time> markup with current time.
+   * Render API callback: Builds <time> markup with current time.
+   *
+   * This function is assigned as a #lazy_builder callback.
    *
    * Note: does not actually use current time, that would complicate testing.
    *
    * @return array
+   *   A render array containing a <time> element with a predefined date
+   *   and disabled caching for dynamic rendering.
    */
   public static function currentTime() {
     return [
@@ -138,9 +148,13 @@ class BigPipeTestController implements TrustedCallbackInterface {
   }
 
   /**
-   * #lazy_builder callback; suspends its own execution then returns markup.
+   * Render API callback: Suspends its own execution then returns markup.
+   *
+   * This function is assigned as a #lazy_builder callback.
    *
    * @return array
+   *   A render array with a pig-themed message wrapped in a <span>,
+   *   and caching disabled to ensure dynamic rendering.
    */
   public static function piggy(): array {
     // Immediately call Fiber::suspend(), so that other placeholders are
@@ -156,9 +170,13 @@ class BigPipeTestController implements TrustedCallbackInterface {
   }
 
   /**
-   * #lazy_builder callback; says "hello" or "hi".
+   * Render API callback: Says "hello" or "hi".
+   *
+   * This function is assigned as a #lazy_builder callback.
    *
    * @return array
+   *   A render array with a marquee message using BigPipeMarkup,
+   *   with caching disabled and a custom cache tag.
    */
   public static function helloOrHi() {
     return [
@@ -171,7 +189,7 @@ class BigPipeTestController implements TrustedCallbackInterface {
   }
 
   /**
-   * #lazy_builder callback; throws exception.
+   * The #lazy_builder callback; throws exception.
    *
    * @throws \Exception
    */
@@ -180,18 +198,19 @@ class BigPipeTestController implements TrustedCallbackInterface {
   }
 
   /**
-   * #lazy_builder callback; returns content that will trigger an exception.
+   * The #lazy_builder callback; returns content that will trigger an exception.
    *
    * @see \Drupal\big_pipe_test\EventSubscriber\BigPipeTestSubscriber::onRespondTriggerException()
    *
    * @return array
+   *   A render array with plain text for testing BigPipe error handling.
    */
   public static function responseException() {
     return ['#plain_text' => BigPipeTestSubscriber::CONTENT_TRIGGER_EXCEPTION];
   }
 
   /**
-   * #lazy_builder callback; returns the current count.
+   * The #lazy_builder callback; returns the current count.
    *
    * @see \Drupal\Tests\big_pipe\Functional\BigPipeTest::testBigPipeMultiOccurrencePlaceholders()
    *
@@ -273,7 +292,16 @@ class BigPipeTestController implements TrustedCallbackInterface {
    * {@inheritdoc}
    */
   public static function trustedCallbacks() {
-    return ['currentTime', 'piggy', 'helloOrHi', 'exception', 'responseException', 'counter', 'redirectTrusted', 'redirectUntrusted'];
+    return [
+      'currentTime',
+      'piggy',
+      'helloOrHi',
+      'exception',
+      'responseException',
+      'counter',
+      'redirectTrusted',
+      'redirectUntrusted',
+    ];
   }
 
 }

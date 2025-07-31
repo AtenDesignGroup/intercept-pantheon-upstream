@@ -150,7 +150,7 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       '#type' => 'textfield',
       '#title' => $this->t('Default base path for webform URLs'),
       '#description' => $this->t('Leave blank to disable the automatic generation of URL aliases for all webforms.')
-        . ' ' . $this->t('The base path has to start with a slash and cannot end with a slash.'),
+      . ' ' . $this->t('The base path has to start with a slash and cannot end with a slash.'),
       '#pattern' => '^/.+(?<!/)$',
       '#default_value' => $settings['default_page_base_path'],
     ];
@@ -632,8 +632,8 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       '#type' => 'checkbox',
       '#title' => $this->t('Enable site-wide dialog support'),
       '#description' => $this->t('If checked, the webform dialog library will be added to every page on your website, this allows any webform to be opened in a modal dialog.')
-        . '<br /><br />'
-        . $this->t('Webform specific dialog links will be included on all webform settings form.'),
+      . '<br /><br />'
+      . $this->t('Webform specific dialog links will be included on all webform settings form.'),
       '#return_value' => TRUE,
       '#default_value' => $settings['dialog'],
     ];

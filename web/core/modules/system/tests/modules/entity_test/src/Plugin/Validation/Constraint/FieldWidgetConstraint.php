@@ -17,6 +17,9 @@ use Symfony\Component\Validator\Constraint as SymfonyConstraint;
 )]
 class FieldWidgetConstraint extends SymfonyConstraint {
 
-  public $message = 'Widget constraint has failed.';
+  /**
+   * The default violation message.
+   */
+  public string $message = 'Widget constraint has failed.';
 
 }

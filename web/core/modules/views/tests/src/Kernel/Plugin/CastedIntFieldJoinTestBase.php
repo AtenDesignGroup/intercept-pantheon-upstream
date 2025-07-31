@@ -169,7 +169,10 @@ abstract class CastedIntFieldJoinTestBase extends DriverSpecificKernelTestBase {
     $this->assertStringContainsString("views_test_data.uid = CAST(users4.uid AS $this->castingType)", $join_info['condition']);
     $this->assertStringContainsString('users4.name = :views_join_condition_0', $join_info['condition']);
     $this->assertStringContainsString('users4.name IN ( :views_join_condition_1[] )', $join_info['condition']);
-    $this->assertSame($join_info['arguments'][':views_join_condition_1[]'], [$random_name_2, $random_name_3, $random_name_4]);
+    $this->assertSame(
+      $join_info['arguments'][':views_join_condition_1[]'],
+      [$random_name_2, $random_name_3, $random_name_4]
+    );
   }
 
   /**
@@ -177,9 +180,9 @@ abstract class CastedIntFieldJoinTestBase extends DriverSpecificKernelTestBase {
    *
    * @param \Drupal\views\ViewExecutable $view
    *   The view used in this test.
-   * @param $configuration
+   * @param array $configuration
    *   The join plugin configuration.
-   * @param $table_alias
+   * @param string $table_alias
    *   The table alias to use for the join.
    *
    * @return array

@@ -32,6 +32,7 @@ class ToolbarController extends ControllerBase implements TrustedCallbackInterfa
    * Returns an AJAX response to render the toolbar subtrees.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
+   *   The AJAX response containing the rendered toolbar subtrees.
    */
   public function subtreesAjax() {
     [$subtrees] = toolbar_get_rendered_subtrees();
@@ -98,7 +99,9 @@ class ToolbarController extends ControllerBase implements TrustedCallbackInterfa
   }
 
   /**
-   * #pre_render callback for toolbar_get_rendered_subtrees().
+   * Render API callback: Prepares the subtrees.
+   *
+   * This function is assigned as a #pre_render callback.
    *
    * @internal
    */

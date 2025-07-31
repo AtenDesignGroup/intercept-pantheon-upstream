@@ -5,6 +5,9 @@
  * Post update functions for System.
  */
 
+use Drupal\Core\Config\Entity\ConfigEntityUpdater;
+use Drupal\Core\Entity\EntityFormModeInterface;
+
 /**
  * Implements hook_removed_post_updates().
  */
@@ -80,7 +83,7 @@ function system_post_update_convert_empty_country_and_timezone_settings_to_null(
 /**
  * Uninstall the sdc module if installed.
  */
-function system_post_update_sdc_uninstall() {
+function system_post_update_sdc_uninstall(): void {
   if (\Drupal::moduleHandler()->moduleExists('sdc')) {
     \Drupal::service('module_installer')->uninstall(['sdc'], FALSE);
   }
@@ -91,4 +94,32 @@ function system_post_update_sdc_uninstall() {
  */
 function system_post_update_remove_rss_cdata_subscriber(): void {
   // Empty update to trigger container rebuild.
+}
+
+/**
+ * Remove path key in system.file.
+ */
+function system_post_update_remove_path_key(): void {
+  if (\Drupal::config('system.file')->get('path') !== NULL) {
+    \Drupal::configFactory()->getEditable('system.file')
+      ->clear('path')
+      ->save();
+  }
+}
+
+/**
+ * Updates entity_form_mode descriptions from empty string to null.
+ */
+function system_post_update_convert_empty_description_entity_form_modes_to_null(array &$sandbox): void {
+  \Drupal::classResolver(ConfigEntityUpdater::class)
+    ->update($sandbox, 'entity_form_mode', function (EntityFormModeInterface $form_mode): bool {
+      // Entity form mode's `description` field must be stored as NULL at the
+      // config level if they are empty.
+      if ($form_mode->get('description') !== NULL && trim($form_mode->get('description')) === '') {
+        $form_mode->set('description', NULL);
+        return TRUE;
+      }
+      return FALSE;
+    });
+
 }

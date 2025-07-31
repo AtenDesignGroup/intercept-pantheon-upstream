@@ -5,13 +5,9 @@ namespace Drupal\navigation;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Block\BlockPluginInterface;
-use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
@@ -49,13 +45,6 @@ final class NavigationRenderer {
   const LOGO_PROVIDER_CUSTOM = 'custom';
 
   /**
-   * A list of all the link paths of enabled content entities.
-   *
-   * @var array
-   */
-  protected array $contentEntityPaths;
-
-  /**
    * The navigation local tasks render array.
    *
    * @var array
@@ -70,13 +59,13 @@ final class NavigationRenderer {
     private ModuleHandlerInterface $moduleHandler,
     private RouteMatchInterface $routeMatch,
     private LocalTaskManagerInterface $localTaskManager,
-    private EntityTypeManagerInterface $entityTypeManager,
     private ImageFactory $imageFactory,
     private FileUrlGeneratorInterface $fileUrlGenerator,
     private SectionStorageManagerInterface $sectionStorageManager,
     private RequestStack $requestStack,
     private ModuleExtensionList $moduleExtensionList,
     private AccountInterface $currentUser,
+    private EntityRouteHelper $entityRouteHelper,
   ) {}
 
   /**
@@ -109,7 +98,8 @@ final class NavigationRenderer {
         'keys' => ['navigation', 'navigation'],
         'max-age' => CacheBackendInterface::CACHE_PERMANENT,
       ],
-      '#pre_render' => ['navigation.renderer:doBuildNavigation'],
+      '#lazy_builder' => ['navigation.renderer:doBuildNavigation', []],
+      '#create_placeholder' => TRUE,
     ];
   }
 
@@ -117,7 +107,8 @@ final class NavigationRenderer {
    * Pre-render callback for ::buildNavigation.
    */
   #[TrustedCallback]
-  public function doBuildNavigation($build): array {
+  public function doBuildNavigation(): array {
+    $build = [];
     $logo_settings = $this->configFactory->get('navigation.settings');
     $logo_provider = $logo_settings->get('logo.provider');
 
@@ -130,7 +121,6 @@ final class NavigationRenderer {
     if ($storage) {
       foreach ($storage->getSections() as $delta => $section) {
         $build[$delta] = $section->toRenderArray([]);
-        $build[$delta]['#cache']['contexts'] = ['user.permissions', 'theme', 'languages:language_interface'];
       }
     }
     // The render array is built based on decisions made by SectionStorage
@@ -214,10 +204,6 @@ final class NavigationRenderer {
    * @see hook_page_top()
    */
   public function buildTopBar(array &$page_top): void {
-    if (!$this->moduleHandler->moduleExists('navigation_top_bar')) {
-      return;
-    }
-
     $page_top['top_bar'] = [
       '#type' => 'top_bar',
       '#access' => $this->currentUser->hasPermission('access navigation'),
@@ -246,7 +232,7 @@ final class NavigationRenderer {
     if ($block->getPluginId() !== 'local_tasks_block') {
       return;
     }
-    if ($this->hasLocalTasks() && $this->moduleHandler->moduleExists('navigation_top_bar')) {
+    if ($this->hasLocalTasks()) {
       $build['#access'] = FALSE;
     }
   }
@@ -265,16 +251,23 @@ final class NavigationRenderer {
     $cacheability = new CacheableMetadata();
     $cacheability->addCacheableDependency($this->localTaskManager);
     $this->localTasks = [
-      'tasks' => [],
+      'page_actions' => [],
       'cacheability' => $cacheability,
     ];
     // For now, we're only interested in local tasks corresponding to a content
     // entity.
-    if (!$this->meetsContentEntityRoutesCondition()) {
+    if (!$this->entityRouteHelper->isContentEntityRoute()) {
       return $this->localTasks;
     }
     $entity_local_tasks = $this->localTaskManager->getLocalTasks($this->routeMatch->getRouteName());
-    foreach ($entity_local_tasks['tabs'] as $route_name => $local_task) {
+    uasort($entity_local_tasks['tabs'], [SortArray::class, 'sortByWeightProperty']);
+    foreach ($entity_local_tasks['tabs'] as $local_task_name => $local_task) {
+      // Exclude current route local task, since it is not going to be included
+      // in the page actions link list.
+      $url = $local_task['#link']['url'] ?? NULL;
+      if ($url?->getRouteName() === $entity_local_tasks['route_name']) {
+        continue;
+      }
       // The $local_task array that we get here is tailor-made for use
       // with the menu-local-tasks.html.twig, eg. the menu_local_task
       // theme hook. It has all the information we need, but we're not
@@ -287,8 +280,8 @@ final class NavigationRenderer {
       $link['localized_options'] += [
         'set_active_class' => TRUE,
       ];
-      $this->localTasks['tasks'][$route_name] = [
-        '#theme' => 'top_bar_local_task',
+      $this->localTasks['page_actions'][$local_task_name] = [
+        '#theme' => 'top_bar_page_action',
         '#link' => [
           '#type' => 'link',
           '#title' => $link['title'],
@@ -311,73 +304,7 @@ final class NavigationRenderer {
    */
   public function hasLocalTasks(): bool {
     $local_tasks = $this->getLocalTasks();
-    return !empty($local_tasks['tasks']);
-  }
-
-  /**
-   * Determines if content entity route condition is met.
-   *
-   * @return bool
-   *   TRUE if the content entity route condition is met, FALSE otherwise.
-   */
-  protected function meetsContentEntityRoutesCondition(): bool {
-    return array_key_exists($this->routeMatch->getRouteObject()->getPath(), $this->getContentEntityPaths());
-  }
-
-  /**
-   * Returns the paths for the link templates of all content entities.
-   *
-   * @return array
-   *   An array of all content entity type IDs, keyed by the corresponding link
-   *   template paths.
-   */
-  protected function getContentEntityPaths(): array {
-    if (isset($this->contentEntityPaths)) {
-      return $this->contentEntityPaths;
-    }
-
-    $this->contentEntityPaths = [];
-    $entity_types = $this->entityTypeManager->getDefinitions();
-    foreach ($entity_types as $entity_type) {
-      if ($entity_type->entityClassImplements(ContentEntityInterface::class)) {
-        $entity_paths = $this->getContentEntityTypePaths($entity_type);
-        $this->contentEntityPaths = array_merge($this->contentEntityPaths, $entity_paths);
-      }
-    }
-
-    return $this->contentEntityPaths;
-  }
-
-  /**
-   * Returns the path for the link template for a given content entity type.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   *
-   * @return array
-   *   Array containing the paths for the given content entity type.
-   */
-  protected function getContentEntityTypePaths(EntityTypeInterface $entity_type): array {
-    $paths = array_filter($entity_type->getLinkTemplates(), fn ($template) => $template !== 'collection', ARRAY_FILTER_USE_KEY);
-    if ($this->isLayoutBuilderEntityType($entity_type)) {
-      $paths[] = $entity_type->getLinkTemplate('canonical') . '/layout';
-    }
-    return array_fill_keys($paths, $entity_type->id());
-  }
-
-  /**
-   * Determines if a given entity type is layout builder relevant or not.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type.
-   *
-   * @return bool
-   *   Whether this entity type is a Layout builder candidate or not
-   *
-   * @see \Drupal\layout_builder\Plugin\SectionStorage\OverridesSectionStorage::getEntityTypes()
-   */
-  protected function isLayoutBuilderEntityType(EntityTypeInterface $entity_type): bool {
-    return $entity_type->entityClassImplements(FieldableEntityInterface::class) && $entity_type->hasHandlerClass('form', 'layout_builder') && $entity_type->hasViewBuilderClass() && $entity_type->hasLinkTemplate('canonical');
+    return !empty($local_tasks['page_actions']);
   }
 
 }

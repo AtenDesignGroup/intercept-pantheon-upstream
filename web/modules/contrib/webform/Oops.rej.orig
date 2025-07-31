@@ -1,0 +1,34 @@
+@@ -670,15 +670,15 @@
+          *   The event triggered.
+          */
+         function nextButtonClickEventHandler(event) {
+-          var validator = $form.validate(drupalSettings.cvJqueryValidateOptions);
+-          if (!$form.valid()) {
+-            // Focus first invalid input.
+-            validator.focusInvalid();
+-            // Shake the invalid card.
+-            var $activeCard = $allCards.filter('.webform-card--active');
+-            shake($activeCard);
+-          }
+-          else {
++          // var validator = $form.validate(drupalSettings.cvJqueryValidateOptions);
++          // if (!$form.valid()) {
++          //   // Focus first invalid input.
++          //   validator.focusInvalid();
++          //   // Shake the invalid card.
++          //   var $activeCard = $allCards.filter('.webform-card--active');
++          //   shake($activeCard);
++          // }
++          // else {
+             // Get next visible card (not "display: none").
+             var $nextCard = $allCards.filter('.webform-card--active')
+               .nextAll('.webform-card:not([style*="display: none"])')
+@@ -692,7 +692,7 @@
+             else {
+               $submitButton.trigger('click');
+             }
+-          }
++          // }
+           // Prevent the button's default behavior.
+           event.preventDefault();
+         }

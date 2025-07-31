@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\consumers\Kernel;
 
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\consumers\Entity\Consumer;
 use Drupal\Core\Access\AccessException;
 use Drupal\Core\Logger\LoggerChannelFactory;
@@ -23,7 +24,7 @@ class ConsumerTest extends KernelTestBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected \Drupal\Core\Entity\EntityStorageInterface $consumerStorage;
+  protected EntityStorageInterface $consumerStorage;
 
   /**
    * {@inheritdoc}

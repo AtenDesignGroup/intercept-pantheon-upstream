@@ -84,10 +84,10 @@ function duration_field_alter_query_recursive(array &$conditions, array $tables)
     // Conditions can be nested. Test if the element contains nested conditions.
     if (is_a($conditions[$index]['field'], '\Drupal\Core\Database\Query\Condition')) {
       // Get the nested conditions.
-      $subconditions =& $conditions[$index]['field']->conditions();
+      $sub_conditions =& $conditions[$index]['field']->conditions();
       // Recursively call the function with the sub conditions, to swap their
       // values.
-      duration_field_alter_query_recursive($subconditions, $tables);
+      duration_field_alter_query_recursive($sub_conditions, $tables);
     }
     else {
       $duration_service = \Drupal::service('duration_field.service');
@@ -145,7 +145,7 @@ function duration_field_get_duration_fields() {
     foreach (array_keys($entity_types) as $entity_type) {
       // Check if the entity type has fields:
       if ($entity_types[$entity_type]->getBundleEntityType()) {
-        // Get all the bundles for the entity type, and loop throug them.
+        // Get all the bundles for the entity type, and loop through them.
         $bundles = $bundle_manager->getBundleInfo($entity_type);
         foreach (array_keys($bundles) as $bundle) {
           // Get all the fields on the bundle and loop through them.

@@ -81,7 +81,8 @@ class BareHtmlPageRenderer implements BareHtmlPageRendererInterface {
    *
    * SystemPageAttachment needs to be on BareHtmlPageRenderer.
    * When BareHtmlPageRenderer is called, the system module is not available.
-   * PageAttachmentsHook can inject BareHtmlPageRenderer to use for system_page_attachments.
+   * PageAttachmentsHook can inject BareHtmlPageRenderer to use for
+   * system_page_attachments.
    *
    * @param array $page
    *   The page to attach to.
@@ -167,7 +168,7 @@ class BareHtmlPageRenderer implements BareHtmlPageRendererInterface {
     // - applying a response filter if the current user is anonymous.
     // @see \Drupal\Core\Link
     // @see \Drupal\Core\Utility\LinkGenerator::generate()
-    // @see template_preprocess_links()
+    // @see \Drupal\Core\Theme\ThemePreprocess::preprocessLinks()
     // @see \Drupal\Core\EventSubscriber\ActiveLinkResponseFilter
     $page['#cache']['contexts'][] = 'user.roles:authenticated';
     if (\Drupal::currentUser()->isAuthenticated()) {

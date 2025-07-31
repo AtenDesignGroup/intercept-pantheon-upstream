@@ -13,6 +13,7 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Installer\InstallerKernel;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\file\FileInterface;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\user\EntityOwnerInterface;
@@ -61,13 +62,16 @@ final class Importer implements LoggerAwareInterface {
    *   - \Drupal\Core\DefaultContent\Existing::Error: Throw an exception.
    *   - \Drupal\Core\DefaultContent\Existing::Skip: Leave the existing entity
    *     as-is.
+   * @param \Drupal\Core\Session\AccountInterface|null $account
+   *   (optional) The account to use when importing the entities. Defaults to
+   *   the administrator account.
    *
    * @throws \Drupal\Core\DefaultContent\ImportException
    *   - If any of the entities being imported are not content entities.
    *   - If any of the entities being imported already exists, by UUID, and
    *     $existing is \Drupal\Core\DefaultContent\Existing::Error.
    */
-  public function importContent(Finder $content, Existing $existing = Existing::Error): void {
+  public function importContent(Finder $content, Existing $existing = Existing::Error, ?AccountInterface $account = NULL): void {
     if (count($content->data) === 0) {
       return;
     }
@@ -75,7 +79,12 @@ final class Importer implements LoggerAwareInterface {
     $event = new PreImportEvent($content, $existing);
     $skip = $this->eventDispatcher->dispatch($event)->getSkipList();
 
-    $account = $this->accountSwitcher->switchToAdministrator();
+    if ($account !== NULL) {
+      $this->accountSwitcher->switchTo($account);
+    }
+    else {
+      $account = $this->accountSwitcher->switchToAdministrator();
+    }
 
     try {
       /** @var array{_meta: array<mixed>} $decoded */
@@ -368,12 +377,11 @@ final class Importer implements LoggerAwareInterface {
   private function verifyNormalizedLanguage(array $data): array {
     $default_langcode = $data['_meta']['default_langcode'];
     $default_language = $this->languageManager->getDefaultLanguage();
-    // Check the language. If the default language isn't known, import as one
-    // of the available translations if one exists with those values. If none
-    // exists, create the entity in the default language.
-    // During the installer, when installing with an alternative language,
-    // `en` is still the default when modules are installed so check the default language
-    // instead.
+    // Check the language. If the default language isn't known, import as one of
+    // the available translations if one exists with those values. If none
+    // exists, create the entity in the default language. During the installer,
+    // when installing with an alternative language, `en` is still the default
+    // when modules are installed so check the default language instead.
     if (!$this->languageManager->getLanguage($default_langcode) || (InstallerKernel::installationAttempted() && $default_language->getId() !== $default_langcode)) {
       $use_default = TRUE;
       foreach ($data['translations'] ?? [] as $langcode => $translation_data) {

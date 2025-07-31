@@ -41,6 +41,10 @@ services:
   intercept_event.evaluation_manager:
     class: Drupal\intercept_event\EventEvaluationManager
     arguments: ['@class_resolver', '@current_user', '@entity_type.manager', '@form_builder', '@intercept_event.manager']
+  
+  intercept_event.event_registration_event_lock:
+    class: Drupal\intercept_event\Service\EventRegistrationEventLock
+    arguments: ['@lock']
 
   intercept_event.queue:
     class: Drupal\intercept_event\EventQueue

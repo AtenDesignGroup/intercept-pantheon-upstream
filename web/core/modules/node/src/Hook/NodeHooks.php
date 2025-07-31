@@ -28,7 +28,7 @@ class NodeHooks {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-   *   The module handler
+   *   The module handler.
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
@@ -64,6 +64,15 @@ class NodeHooks {
       $vids = $this->nodeStorage->userRevisionIds($account);
       $this->moduleHandler->invoke('node', 'mass_update', [$vids, ['uid' => 0, 'revision_uid' => 0], NULL, TRUE, TRUE]);
     }
+  }
+
+  /**
+   * Implements hook_block_alter().
+   */
+  #[Hook('block_alter')]
+  public function blockAlter(&$definitions): void {
+    // Hide the deprecated Syndicate block from the UI.
+    $definitions['node_syndicate_block']['_block_ui_hidden'] = TRUE;
   }
 
 }

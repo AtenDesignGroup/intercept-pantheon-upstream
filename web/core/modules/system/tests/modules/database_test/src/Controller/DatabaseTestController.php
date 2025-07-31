@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\PagerSelectExtender;
 use Drupal\Core\Database\Query\TableSortExtender;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -15,6 +16,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * Controller routines for database_test routes.
  */
 class DatabaseTestController extends ControllerBase {
+
+  use StringTranslationTrait;
 
   /**
    * The database connection.
@@ -49,6 +52,7 @@ class DatabaseTestController extends ControllerBase {
    * test HTTP call.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JSON response containing the names of the test entries.
    */
   public function pagerQueryEven($limit) {
     $query = $this->connection->select('test', 't');
@@ -75,6 +79,7 @@ class DatabaseTestController extends ControllerBase {
    * test HTTP call.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JSON response containing the names of the test entries.
    */
   public function pagerQueryOdd($limit) {
     $query = $this->connection->select('test_task', 't');
@@ -101,13 +106,14 @@ class DatabaseTestController extends ControllerBase {
    * test HTTP call.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JSON response containing the test tasks.
    */
   public function testTablesort() {
     $header = [
-      'tid' => ['data' => t('Task ID'), 'field' => 'tid', 'sort' => 'desc'],
-      'pid' => ['data' => t('Person ID'), 'field' => 'pid'],
-      'task' => ['data' => t('Task'), 'field' => 'task'],
-      'priority' => ['data' => t('Priority'), 'field' => 'priority'],
+      'tid' => ['data' => $this->t('Task ID'), 'field' => 'tid', 'sort' => 'desc'],
+      'pid' => ['data' => $this->t('Person ID'), 'field' => 'pid'],
+      'task' => ['data' => $this->t('Task'), 'field' => 'task'],
+      'priority' => ['data' => $this->t('Priority'), 'field' => 'priority'],
     ];
 
     $query = $this->connection->select('test_task', 't');
@@ -133,13 +139,14 @@ class DatabaseTestController extends ControllerBase {
    * test HTTP call.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JSON response containing the test tasks.
    */
   public function testTablesortFirst() {
     $header = [
-      'tid' => ['data' => t('Task ID'), 'field' => 'tid', 'sort' => 'desc'],
-      'pid' => ['data' => t('Person ID'), 'field' => 'pid'],
-      'task' => ['data' => t('Task'), 'field' => 'task'],
-      'priority' => ['data' => t('Priority'), 'field' => 'priority'],
+      'tid' => ['data' => $this->t('Task ID'), 'field' => 'tid', 'sort' => 'desc'],
+      'pid' => ['data' => $this->t('Person ID'), 'field' => 'pid'],
+      'task' => ['data' => $this->t('Task'), 'field' => 'task'],
+      'priority' => ['data' => $this->t('Priority'), 'field' => 'priority'],
     ];
 
     $query = $this->connection->select('test_task', 't');

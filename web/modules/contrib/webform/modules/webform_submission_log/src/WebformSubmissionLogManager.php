@@ -135,14 +135,14 @@ class WebformSubmissionLogManager implements WebformSubmissionLogManagerInterfac
     $records = [];
     while ($record = $result->fetchObject()) {
       $record->variables = unserialize($record->variables, [
-      'allowed_classes' => [
-        'Drupal\Core\StringTranslation\TranslatableMarkup',
-      ],
+        'allowed_classes' => [
+          'Drupal\Core\StringTranslation\TranslatableMarkup',
+        ],
       ]);
       $record->data = unserialize($record->data, [
-      'allowed_classes' => [
-        'Drupal\Core\StringTranslation\TranslatableMarkup',
-      ],
+        'allowed_classes' => [
+          'Drupal\Core\StringTranslation\TranslatableMarkup',
+        ],
       ]);
       $records[] = $record;
     }

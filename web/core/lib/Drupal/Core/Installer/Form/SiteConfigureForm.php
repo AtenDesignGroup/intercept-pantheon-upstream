@@ -98,9 +98,15 @@ class SiteConfigureForm extends ConfigFormBase {
     // successfully.)
     $post_params = $this->getRequest()->request->all();
     if (empty($post_params) && (Settings::get('skip_permissions_hardening') || !drupal_verify_install_file($this->root . '/' . $settings_file, FILE_EXIST | FILE_READABLE | FILE_NOT_WRITABLE) || !drupal_verify_install_file($this->root . '/' . $settings_dir, FILE_NOT_WRITABLE, 'dir'))) {
-      $this->messenger()->addWarning($this->t('All necessary changes to %dir and %file have been made, so you should remove write permissions to them now in order to avoid security risks. If you are unsure how to do so, consult the <a href=":handbook_url">online handbook</a>.', ['%dir' => $settings_dir, '%file' => $settings_file, ':handbook_url' => 'https://www.drupal.org/server-permissions']));
+      $this->messenger()
+        ->addWarning($this->t('All necessary changes to %dir and %file have been made, so you should remove write permissions to them now in order to avoid security risks. If you are unsure how to do so, consult the <a href=":handbook_url">online handbook</a>.', [
+          '%dir' => $settings_dir,
+          '%file' => $settings_file,
+          ':handbook_url' => 'https://www.drupal.org/server-permissions',
+        ]));
     }
 
+    $form['#attached']['library'][] = 'core/drupal.fieldgroup';
     $form['#attached']['library'][] = 'system/drupal.system';
     // Add JavaScript time zone detection.
     $form['#attached']['library'][] = 'core/drupal.timezone';
@@ -109,7 +115,8 @@ class SiteConfigureForm extends ConfigFormBase {
     $form['#attached']['drupalSettings']['copyFieldValue']['edit-site-mail'] = ['edit-account-mail'];
 
     $form['site_information'] = [
-      '#type' => 'fieldgroup',
+      '#type' => 'fieldset',
+      '#attributes' => ['class' => ['fieldgroup']],
       '#title' => $this->t('Site information'),
       '#access' => empty($install_state['config_install_path']),
     ];
@@ -141,7 +148,8 @@ class SiteConfigureForm extends ConfigFormBase {
     }
 
     $form['admin_account'] = [
-      '#type' => 'fieldgroup',
+      '#type' => 'fieldset',
+      '#attributes' => ['class' => ['fieldgroup']],
       '#title' => $account_label,
     ];
     $form['admin_account']['account']['name'] = [
@@ -165,7 +173,8 @@ class SiteConfigureForm extends ConfigFormBase {
     ];
 
     $form['regional_settings'] = [
-      '#type' => 'fieldgroup',
+      '#type' => 'fieldset',
+      '#attributes' => ['class' => ['fieldgroup']],
       '#title' => $this->t('Regional settings'),
       '#access' => empty($install_state['config_install_path']),
     ];
@@ -184,9 +193,10 @@ class SiteConfigureForm extends ConfigFormBase {
     ];
 
     $form['update_notifications'] = [
-      '#type' => 'fieldgroup',
+      '#type' => 'fieldset',
+      '#attributes' => ['class' => ['fieldgroup']],
       '#title' => $this->t('Update notifications'),
-      '#description' => $this->t('When checking for updates, your site automatically sends anonymous information to Drupal.org. See the <a href="@update-module-docs" target="_blank">Update module documentation</a> for details.', ['@update-module-docs' => 'https://www.drupal.org/node/178772']),
+      '#description' => $this->t('When checking for updates, your site automatically sends anonymous information to Drupal.org. See the <a href="@update-status-module-docs" target="_blank">Update Status module documentation</a> for details.', ['@update-status-module-docs' => 'https://www.drupal.org/node/178772']),
       '#access' => empty($install_state['config_install_path']),
     ];
     $form['update_notifications']['enable_update_status_module'] = [

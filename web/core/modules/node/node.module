@@ -29,8 +29,9 @@ use Drupal\node\NodeTypeInterface;
  *   query joins the {comment_entity_statistics} table so that the comment_count
  *   field is available, a title attribute will be added to show the number of
  *   comments.
- * @param $title
- *   (optional) A heading for the resulting list.
+ * @param string|null $title
+ *   (optional) A heading for the resulting list. NULL results in no heading.
+ *   Defaults to NULL.
  *
  * @return array|false
  *   A renderable array containing a list of linked node titles fetched from
@@ -62,8 +63,12 @@ function node_title_list(StatementInterface $result, $title = NULL) {
  *
  * @return int
  *   One of the MARK constants.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement.
+ * @see https://www.drupal.org/node/3514189
  */
 function node_mark($nid, $timestamp) {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. See https://www.drupal.org/node/3514189', E_USER_DEPRECATED);
   if (\Drupal::currentUser()->isAnonymous() || !\Drupal::moduleHandler()->moduleExists('history')) {
     return MARK_READ;
   }
@@ -252,33 +257,9 @@ function node_preprocess_block(&$variables): void {
 }
 
 /**
- * Implements hook_preprocess_HOOK() for node field templates.
- */
-function node_preprocess_field__node(&$variables): void {
-  // Set a variable 'is_inline' in cases where inline markup is required,
-  // without any block elements such as <div>.
-
-  if ($variables['element']['#is_page_title'] ?? FALSE) {
-    // Page title is always inline because it will be displayed inside <h1>.
-    $variables['is_inline'] = TRUE;
-  }
-  elseif (in_array($variables['field_name'], ['created', 'uid', 'title'], TRUE)) {
-    // Display created, uid and title fields inline because they will be
-    // displayed inline by node.html.twig. Skip this if the field
-    // display is configurable and skipping has been enabled.
-    // @todo Delete as part of https://www.drupal.org/node/3015623
-
-    /** @var \Drupal\node\NodeInterface $node */
-    $node = $variables['element']['#object'];
-    $skip_custom_preprocessing = $node->getEntityType()->get('enable_base_field_custom_preprocess_skipping');
-    $variables['is_inline'] = !$skip_custom_preprocessing || !$node->getFieldDefinition($variables['field_name'])->isDisplayConfigurable('view');
-  }
-}
-
-/**
  * Implements hook_theme_suggestions_HOOK().
  */
-function node_theme_suggestions_node(array $variables) {
+function node_theme_suggestions_node(array $variables): array {
   $suggestions = [];
   $node = $variables['elements']['#node'];
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
@@ -399,11 +380,16 @@ function template_preprocess_node(&$variables): void {
  *
  * @see node_form_system_themes_admin_form_alter()
  */
-function node_form_system_themes_admin_form_submit($form, FormStateInterface $form_state) {
+function node_form_system_themes_admin_form_submit($form, FormStateInterface $form_state): void {
   \Drupal::configFactory()->getEditable('node.settings')
     ->set('use_admin_theme', $form_state->getValue('use_admin_theme'))
     ->save();
 }
+
+/**
+ * @addtogroup node_access
+ * @{
+ */
 
 /**
  * Fetches an array of permission IDs granted to the given user ID.
@@ -446,7 +432,7 @@ function node_access_grants($operation, AccountInterface $account) {
  * 'node_access'; when this function returns TRUE, no node access joins are
  * added to the query.
  *
- * @param $account
+ * @param \Drupal\Core\Session\AccountProxyInterface|null $account
  *   (optional) The user object for the user whose access is being checked. If
  *   omitted, the current user is used. Defaults to NULL.
  *
@@ -491,8 +477,9 @@ function node_access_view_all_nodes($account = NULL) {
  * When unsure if the current user is an administrator, node_access_rebuild()
  * should be used instead.
  *
- * @param $rebuild
- *   (optional) The boolean value to be written.
+ * @param bool|null $rebuild
+ *   (optional) The boolean value to be written. Defaults to NULL, which returns
+ *   the current value.
  *
  * @return bool|null
  *   The current value of the flag if no value was provided for $rebuild. If a
@@ -524,29 +511,42 @@ function node_access_needs_rebuild($rebuild = NULL) {
  * Note : As of Drupal 6, node access modules are not required to (and actually
  * should not) call node_access_rebuild() in hook_install/uninstall anymore.
  *
- * @param $batch_mode
+ * @param bool $batch_mode
  *   (optional) Set to TRUE to process in 'batch' mode, spawning processing over
  *   several HTTP requests (thus avoiding the risk of PHP timeout if the site
  *   has a large number of nodes). hook_update_N() and any form submit handler
  *   are safe contexts to use the 'batch mode'. Less decidable cases (such as
  *   calls from hook_user(), hook_taxonomy(), etc.) might consider using the
- *   non-batch mode. Defaults to FALSE.
+ *   non-batch mode. Defaults to FALSE. Calling this method multiple times in
+ *   the same request with $batch_mode set to TRUE will only result in one batch
+ *   set being added.
  *
  * @see node_access_needs_rebuild()
  */
-function node_access_rebuild($batch_mode = FALSE) {
+function node_access_rebuild($batch_mode = FALSE): void {
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
   /** @var \Drupal\node\NodeAccessControlHandlerInterface $access_control_handler */
   $access_control_handler = \Drupal::entityTypeManager()->getAccessControlHandler('node');
+
+  // If node_access_rebuild() fails to complete, and node_access_needs_rebuild
+  // is not set to TRUE, the node_access table is left in an incomplete state.
+  // Force node_access_needs_rebuild to TRUE once existing grants are deleted,
+  // to signal that the node access table still needs to be rebuilt if this
+  // function does not finish.
+  node_access_needs_rebuild(TRUE);
   $access_control_handler->deleteGrants();
+
   // Only recalculate if the site is using a node_access module.
   if (\Drupal::moduleHandler()->hasImplementations('node_grants')) {
     if ($batch_mode) {
-      $batch_builder = (new BatchBuilder())
-        ->setTitle(t('Rebuilding content access permissions'))
-        ->addOperation('_node_access_rebuild_batch_operation', [])
-        ->setFinishCallback('_node_access_rebuild_batch_finished');
-      batch_set($batch_builder->toArray());
+      if (!BatchBuilder::isSetIdRegistered(__FUNCTION__)) {
+        $batch_builder = (new BatchBuilder())
+          ->setTitle(t('Rebuilding content access permissions'))
+          ->addOperation('_node_access_rebuild_batch_operation', [])
+          ->setFinishCallback('_node_access_rebuild_batch_finished')
+          ->registerSetId(__FUNCTION__);
+        batch_set($batch_builder->toArray());
+      }
     }
     else {
       // Try to allocate enough time to rebuild node grants
@@ -597,7 +597,7 @@ function node_access_rebuild($batch_mode = FALSE) {
  * @param array $context
  *   An array of contextual key/value information for rebuild batch process.
  */
-function _node_access_rebuild_batch_operation(&$context) {
+function _node_access_rebuild_batch_operation(&$context): void {
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
   if (empty($context['sandbox'])) {
     // Initiate multistep processing.
@@ -652,7 +652,7 @@ function _node_access_rebuild_batch_operation(&$context) {
  * @param array $operations
  *   An array of function calls (not used in this function).
  */
-function _node_access_rebuild_batch_finished($success, $results, $operations) {
+function _node_access_rebuild_batch_finished($success, $results, $operations): void {
   if ($success) {
     \Drupal::messenger()->addStatus(t('The content access permissions have been rebuilt.'));
     node_access_needs_rebuild(FALSE);
@@ -663,12 +663,16 @@ function _node_access_rebuild_batch_finished($success, $results, $operations) {
 }
 
 /**
+ * @} End of "addtogroup node_access".
+ */
+
+/**
  * Marks a node to be re-indexed by the node_search plugin.
  *
  * @param int $nid
  *   The node ID.
  */
-function node_reindex_node_search($nid) {
+function node_reindex_node_search($nid): void {
   if (\Drupal::moduleHandler()->moduleExists('search')) {
     // Reindex node context indexed by the node module search plugin.
     \Drupal::service('search.index')->markForReindex('node_search', $nid);

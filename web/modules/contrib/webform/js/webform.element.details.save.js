@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // Determine if local storage exists and is enabled.
   // This approach is copied from Modernizr.
   // @see https://github.com/Modernizr/Modernizr/blob/c56fb8b09515f629806ca44742932902ac145302/modernizr.js#L696-731
@@ -25,7 +27,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformDetailsSave = {
-    attach: function (context) {
+    attach(context) {
       if (!hasLocalStorage) {
         return;
       }

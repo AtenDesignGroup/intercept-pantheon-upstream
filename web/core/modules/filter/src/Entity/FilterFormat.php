@@ -99,7 +99,7 @@ class FilterFormat extends ConfigEntityBase implements FilterFormatInterface, En
   protected $weight = 0;
 
   /**
-   * List of user role IDs to grant access to use this format on initial creation.
+   * List of role IDs to grant access to use this format on initial creation.
    *
    * This property is always empty and unused for existing text formats.
    *
@@ -322,8 +322,8 @@ class FilterFormat extends ConfigEntityBase implements FilterFormatInterface, En
           return $new_restrictions;
         }
         // Subsequent filters with an "allowed html" setting must be intersected
-        // with the existing set, to ensure we only end up with the tags that are
-        // allowed by *all* filters with an "allowed html" setting.
+        // with the existing set, to ensure we only end up with the tags that
+        // are allowed by *all* filters with an "allowed html" setting.
         else {
           // Track the intersection of allowed tags.
           if (isset($restrictions['allowed'])) {
@@ -334,7 +334,8 @@ class FilterFormat extends ConfigEntityBase implements FilterFormatInterface, En
               if (!array_key_exists($tag, $new_restrictions['allowed'])) {
                 // The exception is the asterisk (which applies to all tags): it
                 // does not need to be allowed by every filter in order to be
-                // used; not every filter needs attribute restrictions on all tags.
+                // used; not every filter needs attribute restrictions on all
+                // tags.
                 if ($tag === '*') {
                   continue;
                 }

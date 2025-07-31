@@ -58,6 +58,10 @@ Team facilitators
 Initiative facilitators
 - Gábor Hojtsy 'Gábor Hojtsy' https://www.drupal.org/u/gábor-hojtsy
 
+General core committers
+- Drew Webber 'mcdruid' https://www.drupal.org/u/mcdruid
+- Juraj Nemec 'poker10' https://www.drupal.org/u/poker10
+
 Subsystem maintainers
 ---------------------
 
@@ -210,7 +214,7 @@ Entity API
 - Sascha Grossenbacher 'Berdir' https://www.drupal.org/u/berdir
 
 Extension API
-- ?
+- Nic Laflin 'nicxvan' https://www.drupal.org/u/nicxvan
 
 Field API
 - Andrei Mateescu 'amateescu' https://www.drupal.org/u/amateescu
@@ -228,6 +232,7 @@ Filter
 Form API
 - Alex Bronstein 'effulgentsia' https://www.drupal.org/u/effulgentsia
 - Tim Plunkett 'tim.plunkett' https://www.drupal.org/u/tim.plunkett
+- Lee Rowlands 'larowlan' https://www.drupal.org/u/larowlan
 
 History
 - Andrey Postnikov 'andypost' https://www.drupal.org/u/andypost
@@ -333,7 +338,7 @@ Page Cache
 - Fabian Franz 'Fabianx' https://www.drupal.org/u/fabianx
 
 Path
-- Nathaniel Catchpole 'catch' https://www.drupal.org/u/catch
+- ?
 
 Path Alias
 - Nathaniel Catchpole 'catch' https://www.drupal.org/u/catch
@@ -354,6 +359,7 @@ Recipes
 Render API
 - Alex Bronstein 'effulgentsia' https://www.drupal.org/u/effulgentsia
 - Moshe Weitzman 'moshe weitzman' https://www.drupal.org/u/moshe-weitzman
+- Lee Rowlands 'larowlan' https://www.drupal.org/u/larowlan
 
 Request Processing
 - ?
@@ -396,7 +402,6 @@ System (module)
 
 Taxonomy
 - Jess Myrbo 'xjm' https://www.drupal.org/u/xjm
-- Nathaniel Catchpole 'catch' https://www.drupal.org/u/catch
 
 Telephone
 - Stephen Mustgrave 'smustgrave' https://www.drupal.org/u/smustgrave
@@ -407,7 +412,6 @@ Text Field
 Theme API
 - Alex Bronstein 'effulgentsia' https://www.drupal.org/u/effulgentsia
 - Fabian Franz 'Fabianx' https://www.drupal.org/u/fabianx
-- Joël Pittet 'joelpittet' https://www.drupal.org/u/joelpittet
 - Lauri Timmanee 'lauriii' https://www.drupal.org/u/lauriii
 
   Single-Directory Components
@@ -434,7 +438,7 @@ Umami demo
 - Ofer Shaal 'shaal' https://www.drupal.org/u/shaal
 - Ivan Berdinsky 'finnsky' https://www.drupal.org/u/finnsky
 
-Update Manager
+Update Status
 - Ted Bowman 'tedbow' https://www.drupal.org/u/tedbow
 - Derek Wright 'dww' https://www.drupal.org/u/dww
 

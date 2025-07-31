@@ -86,7 +86,10 @@ class DatabaseStorage implements StorageInterface {
   public function read($name) {
     $data = FALSE;
     try {
-      $raw = $this->connection->query('SELECT [data] FROM {' . $this->connection->escapeTable($this->table) . '} WHERE [collection] = :collection AND [name] = :name', [':collection' => $this->collection, ':name' => $name], $this->options)->fetchField();
+      $raw = $this->connection->query('SELECT [data] FROM {' . $this->connection->escapeTable($this->table) . '} WHERE [collection] = :collection AND [name] = :name', [
+        ':collection' => $this->collection,
+        ':name' => $name,
+      ], $this->options)->fetchField();
       if ($raw !== FALSE) {
         $data = $this->decode($raw);
       }
@@ -111,7 +114,12 @@ class DatabaseStorage implements StorageInterface {
 
     $list = [];
     try {
-      $list = $this->connection->query('SELECT [name], [data] FROM {' . $this->connection->escapeTable($this->table) . '} WHERE [collection] = :collection AND [name] IN ( :names[] )', [':collection' => $this->collection, ':names[]' => $names], $this->options)->fetchAllKeyed();
+      $list = $this->connection
+        ->query('SELECT [name], [data] FROM {' . $this->connection->escapeTable($this->table) . '} WHERE [collection] = :collection AND [name] IN ( :names[] )', [
+          ':collection' => $this->collection,
+          ':names[]' => $names,
+        ], $this->options)
+        ->fetchAllKeyed();
       foreach ($list as &$data) {
         $data = $this->decode($data);
       }
@@ -153,6 +161,7 @@ class DatabaseStorage implements StorageInterface {
    *   The config data, already dumped to a string.
    *
    * @return bool
+   *   TRUE when the write was successful, FALSE otherwise.
    */
   protected function doWrite($name, $data) {
     return (bool) $this->connection->merge($this->table, $this->options)
@@ -263,7 +272,7 @@ class DatabaseStorage implements StorageInterface {
    *   be unserialized.
    */
   public function decode($raw) {
-    $data = @unserialize($raw);
+    $data = @unserialize($raw, ['allowed_classes' => FALSE]);
     return is_array($data) ? $data : FALSE;
   }
 

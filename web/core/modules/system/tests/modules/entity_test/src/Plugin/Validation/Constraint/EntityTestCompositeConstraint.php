@@ -18,7 +18,10 @@ use Drupal\Core\Validation\Attribute\Constraint;
 )]
 class EntityTestCompositeConstraint extends CompositeConstraintBase {
 
-  public $message = 'Multiple fields are validated';
+  /**
+   * The default violation message.
+   */
+  public string $message = 'Multiple fields are validated';
 
   /**
    * {@inheritdoc}

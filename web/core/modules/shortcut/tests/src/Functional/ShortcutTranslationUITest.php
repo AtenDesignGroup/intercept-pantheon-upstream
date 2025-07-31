@@ -68,12 +68,14 @@ class ShortcutTranslationUITest extends ContentTranslationUITestBase {
     return ['title' => [['value' => $this->randomMachineName()]]] + parent::getNewEntityValues($langcode);
   }
 
+  /**
+   * Tests basic translation functionality for an entity.
+   */
   protected function doTestBasicTranslation(): void {
     parent::doTestBasicTranslation();
 
     $storage = $this->container->get('entity_type.manager')
       ->getStorage($this->entityTypeId);
-    $storage->resetCache([$this->entityId]);
     $entity = $storage->load($this->entityId);
     foreach ($this->langcodes as $langcode) {
       if ($entity->hasTranslation($langcode)) {
@@ -94,7 +96,6 @@ class ShortcutTranslationUITest extends ContentTranslationUITestBase {
   protected function doTestTranslationEdit(): void {
     $storage = $this->container->get('entity_type.manager')
       ->getStorage($this->entityTypeId);
-    $storage->resetCache([$this->entityId]);
     $entity = $storage->load($this->entityId);
     $languages = $this->container->get('language_manager')->getLanguages();
 
@@ -115,7 +116,6 @@ class ShortcutTranslationUITest extends ContentTranslationUITestBase {
   protected function doTestTranslationChanged(): void {
     $storage = $this->container->get('entity_type.manager')
       ->getStorage($this->entityTypeId);
-    $storage->resetCache([$this->entityId]);
     $entity = $storage->load($this->entityId);
 
     $this->assertFalse(

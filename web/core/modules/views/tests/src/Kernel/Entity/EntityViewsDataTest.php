@@ -145,7 +145,7 @@ class EntityViewsDataTest extends KernelTestBase {
    * @param \Drupal\Core\Entity\EntityTypeInterface $definition
    *   An entity type definition to add to the entity type manager.
    * @param \Drupal\Core\Field\BaseFieldDefinition[] $base_fields
-   *   An array of base field definitions
+   *   An array of base field definitions.
    */
   protected function setUpEntityType(EntityTypeInterface $definition, array $base_fields = []): void {
     // Replace the cache backend in the entity type manager so it returns
@@ -154,7 +154,7 @@ class EntityViewsDataTest extends KernelTestBase {
     $definitions[$definition->id()] = $definition;
 
     $cache_backend = $this->prophesize(CacheBackendInterface::class);
-    $cache_data = new \StdClass();
+    $cache_data = new \stdClass();
     $cache_data->data = $definitions;
     $cache_backend->get('entity_type')->willReturn($cache_data);
     $this->entityTypeManager->setCacheBackend($cache_backend->reveal(), 'entity_type', ['entity_types']);
@@ -428,6 +428,14 @@ class EntityViewsDataTest extends KernelTestBase {
         ],
       ],
     ], $data['entity_test__string']['table']['join']['entity_test']);
+
+    // Check the "allow empty" option for non-required fields.
+    $this->assertArrayHasKey('allow empty', $data['entity_test']['name']['filter']);
+    $this->assertTrue($data['entity_test']['name']['filter']['allow empty']);
+    // Reconfigure the field to be required.
+    $this->commonBaseFields['name']->setRequired(TRUE);
+    $data = $this->entityTypeManager->getHandler('entity_test', 'views_data')->getViewsData();
+    $this->assertArrayNotHasKey('allow empty', $data['entity_test']['name']['filter']);
   }
 
   /**
@@ -575,7 +583,8 @@ class EntityViewsDataTest extends KernelTestBase {
     // table.
     $this->assertFalse(isset($data['entity_test_mulrev_revision']['revision_id']));
 
-    // Also ensure that field_data only fields don't appear on the revision table.
+    // Also ensure that field_data only fields don't appear on the revision
+    // table.
     $this->assertFalse(isset($data['entity_test_mulrev_revision']['id']));
     $this->assertFalse(isset($data['entity_test_mulrev_revision']['name']));
     $this->assertFalse(isset($data['entity_test_mulrev_revision']['description']));
@@ -662,6 +671,18 @@ class EntityViewsDataTest extends KernelTestBase {
         ],
       ],
     ], $data['entity_test_mulrev_revision__string']['table']['join']['entity_test_mulrev_property_revision']);
+  }
+
+  /**
+   * Tests EntityViewsData deprecations.
+   *
+   * @group legacy
+   */
+  public function testDeprecations(): void {
+    $this->baseEntityType->setHandlerClass('views_data', EntityViewsDataWithDeprecations::class);
+    $this->setUpEntityType($this->baseEntityType, $this->commonBaseFields);
+    $this->expectDeprecation('Drupal\views\EntityViewsData::getFieldStorageDefinitions() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. No replacement is provided. See https://www.drupal.org/node/3240278');
+    $this->entityTypeManager->getHandler('entity_test', 'views_data')->getViewsData();
   }
 
   /**
@@ -822,6 +843,25 @@ class TestEntityType extends ContentEntityType {
   public function setKey($key, $value) {
     $this->entity_keys[$key] = $value;
     return $this;
+  }
+
+}
+
+/**
+ * Extend EntityViewsData as a module would do.
+ *
+ * Include calls to deprecated methods.
+ */
+class EntityViewsDataWithDeprecations extends EntityViewsData {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getViewsData() {
+    // Deprecated method.
+    // @phpstan-ignore-next-line
+    $this->getFieldStorageDefinitions();
+    return [];
   }
 
 }

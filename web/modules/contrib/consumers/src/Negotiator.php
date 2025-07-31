@@ -109,7 +109,7 @@ class Negotiator {
    *
    * @throws \Drupal\consumers\MissingConsumer
    */
-  public function negotiateFromRequest(Request $request = NULL) {
+  public function negotiateFromRequest(?Request $request = NULL) {
     // If the request is not provided, use the request from the stack.
     $request = $request ? $request : $this->requestStack->getCurrentRequest();
     $consumer = $this->doNegotiateFromRequest($request);

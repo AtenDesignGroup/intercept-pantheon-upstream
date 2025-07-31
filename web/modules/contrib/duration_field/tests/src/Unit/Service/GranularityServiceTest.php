@@ -14,14 +14,14 @@ class GranularityServiceTest extends UnitTestCase {
    * @covers ::convertGranularityArrayToGranularityString
    * @dataProvider convertGranularityArrayToGranularityStringDataProvider
    */
-  public function testconvertGranularityArrayToGranularityString($input, $expectedResponse, $message) {
+  public function testConvertGranularityArrayToGranularityString($input, $expectedResponse, $message) {
     $service = new GranularityService();
     $result = $service->convertGranularityArrayToGranularityString($input);
     $this->assertSame($result, $expectedResponse, $message);
   }
 
   /**
-   * Data provider for testconvertGranularityArrayToGranularityString().
+   * Data provider for testConvertGranularityArrayToGranularityString().
    */
   public static function convertGranularityArrayToGranularityStringDataProvider() {
     return [
@@ -68,14 +68,14 @@ class GranularityServiceTest extends UnitTestCase {
    * @covers ::convertGranularityStringToGranularityArray
    * @dataProvider convertGranularityStringToGranularityArrayDataProvider
    */
-  public function testconvertGranularityStringToGranularityArray($input, $expectedResponse, $message) {
+  public function testConvertGranularityStringToGranularityArray($input, $expectedResponse, $message) {
     $service = new GranularityService();
     $result = $service->convertGranularityStringToGranularityArray($input);
     $this->assertSame($result, $expectedResponse, $message);
   }
 
   /**
-   * Data provider for testconvertGranularityStringToGranularityArray().
+   * Data provider for testConvertGranularityStringToGranularityArray().
    */
   public static function convertGranularityStringToGranularityArrayDataProvider() {
     return [
@@ -122,14 +122,14 @@ class GranularityServiceTest extends UnitTestCase {
    * @covers ::includeGranularityElement
    * @dataProvider includeGranularityElementDataProvider
    */
-  public function testincludeGranularityElement($input, $expectedResponse, $message) {
+  public function testIncludeGranularityElement($input, $expectedResponse, $message) {
     $service = new GranularityService();
     $result = $service->includeGranularityElement($input['granularity_element'], $input['granularity_string']);
     $this->assertSame($result, $expectedResponse, $message);
   }
 
   /**
-   * Data provider for testincludeGranularityElement().
+   * Data provider for testIncludeGranularityElement().
    */
   public static function includeGranularityElementDataProvider() {
     return [

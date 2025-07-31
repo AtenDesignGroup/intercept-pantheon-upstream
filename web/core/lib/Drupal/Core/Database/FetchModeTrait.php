@@ -2,6 +2,8 @@
 
 namespace Drupal\Core\Database;
 
+use Drupal\Core\Database\Statement\FetchAs;
+
 /**
  * Provide helper methods for statement fetching.
  */
@@ -99,11 +101,43 @@ trait FetchModeTrait {
    * @param int $columnIndex
    *   The index of the column to fetch the value of.
    *
-   * @return string|false
-   *   The value of the column, or FALSE if the column is not defined.
+   * @return string
+   *   The value of the column.
+   *
+   * @throws \ValueError
+   *   If the column index is not defined.
    */
   protected function assocToColumn(array $rowAssoc, array $columnNames, int $columnIndex): mixed {
-    return $rowAssoc[$columnNames[$columnIndex]] ?? FALSE;
+    if (!isset($columnNames[$columnIndex])) {
+      throw new \ValueError('Invalid column index');
+    }
+    return $rowAssoc[$columnNames[$columnIndex]];
+  }
+
+  /**
+   * Converts a row of data in associative format to a specified format.
+   *
+   * @param array $rowAssoc
+   *   A row of data in FetchAs::Associative format.
+   * @param \Drupal\Core\Database\Statement\FetchAs $mode
+   *   The target target mode.
+   * @param array $fetchOptions
+   *   The fetch mode options.
+   *
+   * @return array<scalar|null>|object|scalar|null|false
+   *   The data in the target mode.
+   *
+   * @throws \ValueError
+   *   If the column index is not defined.
+   */
+  protected function assocToFetchMode(array $rowAssoc, FetchAs $mode, array $fetchOptions): array|object|int|float|string|bool|NULL {
+    return match($mode) {
+      FetchAs::Associative => $rowAssoc,
+      FetchAs::ClassObject => $this->assocToClass($rowAssoc, $fetchOptions['class'], $fetchOptions['constructor_args']),
+      FetchAs::Column => $this->assocToColumn($rowAssoc, array_keys($rowAssoc), $fetchOptions['column']),
+      FetchAs::List => $this->assocToNum($rowAssoc),
+      FetchAs::Object => $this->assocToObj($rowAssoc),
+    };
   }
 
 }

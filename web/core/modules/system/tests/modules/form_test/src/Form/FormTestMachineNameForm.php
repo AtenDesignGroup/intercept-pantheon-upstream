@@ -83,10 +83,11 @@ class FormTestMachineNameForm extends FormBase {
   /**
    * Loading stub for machine name.
    *
-   * @param $machine_name
+   * @param string $machine_name
    *   The machine name.
    *
    * @return bool
+   *   TRUE if the machine name is a duplicate, FALSE otherwise.
    */
   public function load($machine_name) {
     return str_contains($machine_name, 'duplicate');

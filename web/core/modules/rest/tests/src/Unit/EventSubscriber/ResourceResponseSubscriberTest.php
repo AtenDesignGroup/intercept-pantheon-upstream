@@ -53,6 +53,9 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
     $this->assertEquals($expected_response !== FALSE ? $expected_response : Json::encode($data), $event->getResponse()->getContent());
   }
 
+  /**
+   * Provides data to testSerialization().
+   */
   public static function providerTestSerialization() {
     return [
       // The default data for \Drupal\rest\ResourceResponse.
@@ -209,6 +212,8 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
   }
 
   /**
+   * Provides data for testing the response format.
+   *
    * @return array
    *   0. methods to test
    *   1. supported formats for route requirements
@@ -379,7 +384,10 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
   }
 
   /**
+   * Gets the resource response subscriber.
+   *
    * @return \Drupal\rest\EventSubscriber\ResourceResponseSubscriber
+   *   A functioning ResourceResponseSubscriber.
    */
   protected function getFunctioningResourceResponseSubscriber(RouteMatchInterface $route_match) {
     // Create a dummy of the renderer service.

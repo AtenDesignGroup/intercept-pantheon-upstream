@@ -6,6 +6,9 @@ namespace Drupal\jswebassert_test\Controller;
 
 use Drupal\Core\Render\Markup;
 
+/**
+ * Provides a test page for JavaScript assertions.
+ */
 class TestController {
 
   public function page() {
@@ -14,9 +17,9 @@ class TestController {
 var timesRun = 0;
 var interval = setInterval(function() {
   timesRun += 1;
-  // Clear the interval after 1.1 seconds as this is shorter than the 10 seconds
-  // JSWebAssert::waitForElementVisible() waits for.
-  if (timesRun === 1100) {
+  // Clear the interval after ~1500ms seconds as this is shorter than the 10
+  // seconds JSWebAssert::waitForElementVisible() waits for.
+  if (timesRun === 3) {
     clearInterval(interval);
   }
   var p = document.createElement("p");
@@ -26,7 +29,7 @@ var interval = setInterval(function() {
 
   var div = document.getElementById("test_container");
   div.replaceChild(p, div.childNodes[0]);
-}, 1);
+}, 500);
 </script>
 <div id="test_container">
   <p id="test_text"></p>

@@ -323,14 +323,14 @@ class RemotePostWebformHandler extends WebformHandlerBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Cast posted element value and custom data'),
       '#description' => $this->t('If checked, posted element values will be cast to integers, floats, and booleans as needed. Custom data can be cast by placing the desired type in parentheses before the value or token. (i.e. "(int) [webform_submission:value:total]" or "(int) 100")') .
-        '<br/>' .
-        '<br/>' .
-        $this->t('For custom data, the casts allowed are:') .
-        '<ul>' .
-        '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(int), (integer)', '@type' => 'integer']) . '</li>' .
-        '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(float), (double), (real)', '@type' => 'float']) . '</li>' .
-        '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(bool), (boolean)', '@type' => 'boolean']) . '</li>' .
-        '</ul>',
+      '<br/>' .
+      '<br/>' .
+      $this->t('For custom data, the casts allowed are:') .
+      '<ul>' .
+      '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(int), (integer)', '@type' => 'integer']) . '</li>' .
+      '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(float), (double), (real)', '@type' => 'float']) . '</li>' .
+      '<li>' . $this->t('@cast - cast to @type', ['@cast' => '(bool), (boolean)', '@type' => 'boolean']) . '</li>' .
+      '</ul>',
       '#return_value' => TRUE,
       '#default_value' => $this->configuration['cast'],
     ];

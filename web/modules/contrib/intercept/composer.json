@@ -29,7 +29,7 @@
     "drupal/clientside_validation": "^4.0",
     "drupal/consumer_image_styles": "^4.0.8",
     "drupal/csv_serialization": "^4.0",
-    "drupal/date_recur": "^3.5",
+    "drupal/date_recur": "^3.9",
     "drupal/date_recur_modular": "^3.1",
     "drupal/duration_field": "^2.1",
     "drupal/entity_browser": "^2.0",
@@ -59,8 +59,8 @@
   },
   "extra": {
     "patches": {
-      "drupal/duration_field": {
-        "D11 compatibility fixes": "https://www.drupal.org/files/issues/2025-01-24/duration_field-d11-3429986-mr12.patch"
+      "drupal/date_recur": {
+        "Fixes error when clicking Preview during event creation and then returning to content editing": "https://www.drupal.org/files/issues/2025-07-30/3417915-date_recur-unknown-timezone-6.patch"
       },
       "drupal/webformautosave": {
         "Disables automatic purging of submissions": "https://www.drupal.org/files/issues/2025-02-06/3504940-webform_autosave-disables-automatic-purging.patch"

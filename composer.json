@@ -20,13 +20,13 @@
     "drupal/admin_toolbar": "^3.1.0",
     "drupal/block_field": "^1.0@RC",
     "drupal/config_direct_save": "^1.0",
-    "drupal/core": "11.1.8",
+    "drupal/core": "^11.2.2",
     "drupal/date_popup": "^2.0",
     "drupal/date_recur": "^3.9",
     "drupal/date_recur_modular": "^3.2.1",
     "drupal/default_content": "2.0.x-dev",
-    "drupal/gin": "^4.0.x-dev",
-    "drupal/gin_toolbar": "^2.0",
+    "drupal/gin": "^5.0",
+    "drupal/gin_toolbar": "^3.0",
     "drupal/image_effects": "^4.0",
     "drupal/intercept_base": "2.0.x-dev",
     "drupal/intercept": "2.0.x-dev",
@@ -129,6 +129,9 @@
         "3193348 Removes faulty exception related to permissions": "patches/3193348-removes-faulty-exception-related-to-permissions-3.patch",
         "3238849 Fixing JS error on room reservation calendar": "patches/3238849-fix-js-error-room-reservation-calendar.patch",
         "3411040 Replaces UserAuthentication with UserAuth as before": "patches/3411040-fix-user-auth.patch"
+      },
+      "drupal/date_recur": {
+        "Fixes error when clicking Preview during event creation and then returning to content editing": "https://www.drupal.org/files/issues/2025-07-30/3417915-date_recur-unknown-timezone-6.patch"
       },
       "drupal/date_recur_modular": {
         "Add #type to DateRecurModularAlphaWidget::formElement": "https://www.drupal.org/files/issues/2024-11-14/3124197-add-type-to-widget.patch"

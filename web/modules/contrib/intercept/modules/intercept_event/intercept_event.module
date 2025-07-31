@@ -32,6 +32,7 @@ use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\intercept_core\EntityImageThumbnailUriField;
 use Drupal\intercept_event\CheckinPeriodField;
+use Drupal\intercept_event\Entity\EventRegistrationInterface;
 use Drupal\intercept_event\EventRegistrationField;
 
 /**
@@ -440,6 +441,24 @@ function intercept_event_entity_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function intercept_event_event_registration_update(EventRegistrationInterface $event_registration) {
+  // Release the lock for the event registration.
+  \Drupal::service('intercept_event.event_registration_event_lock')
+    ->releaseLock($event_registration->getEvent());
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function intercept_event_event_registration_insert(EventRegistrationInterface $event_registration) {
+  // Release the lock for the event registration.
+  \Drupal::service('intercept_event.event_registration_event_lock')
+    ->releaseLock($event_registration->getEvent());
+}
+
+/**
  * Implements hook_cloned_node_alter().
  */
 function intercept_event_cloned_node_alter(&$node) {
@@ -824,15 +843,17 @@ function intercept_event_node_view(array &$build, EntityInterface $entity, Entit
 
     // Invalidate this $entity's cache based on field_event_register_period.
     // Start and end points are standardized to UTC.
-    $start = new DateTime($entity->checkin_period->start);
-    $end = new DateTime($entity->checkin_period->end);
-    $now = new DateTime();
-    $time_zone = new DateTimeZone('UTC');
-    $now->setTimeZone($time_zone);
-    // Invalidate tags if we passed either endpoint in the last hour.
-    if (($start->getTimestamp() >= $now->getTimestamp() - 60 * 60)
-      || ($end->getTimestamp() >= $now->getTimestamp() - 60 * 60)) {
-      Cache::invalidateTags($entity->getCacheTags());
+    if ($entity->checkin_period->start) {
+      $start = new DateTime($entity->checkin_period->start);
+      $end = new DateTime($entity->checkin_period->end);
+      $now = new DateTime();
+      $time_zone = new DateTimeZone('UTC');
+      $now->setTimeZone($time_zone);
+      // Invalidate tags if we passed either endpoint in the last hour.
+      if (($start->getTimestamp() >= $now->getTimestamp() - 60 * 60)
+        || ($end->getTimestamp() >= $now->getTimestamp() - 60 * 60)) {
+        Cache::invalidateTags($entity->getCacheTags());
+      }
     }
   }
 }
@@ -916,7 +937,12 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
   // This is largely reused code from EventRecurrenceEventsForm.php.
   $new_node = ($form['#form_id'] == 'node_event_form') ? TRUE : FALSE;
   $ajax_form = \Drupal::request()->query->get('ajax_form');
-  $room_id = $values['field_room'][0]['target_id'];
+  if (isset($values['field_room']) && isset($values['field_room'][0])) {
+    $room_id = $values['field_room'][0]['target_id'];
+  }
+  else {
+    $room_id = NULL;
+  }
   if (!empty($values['event_recurrence']) && !empty($values['reservation']) && $ajax_form != TRUE && $room_id && $new_node == TRUE) {
     // Check for conflicts.
     $date_utility = \Drupal::service('intercept_core.utility.dates');

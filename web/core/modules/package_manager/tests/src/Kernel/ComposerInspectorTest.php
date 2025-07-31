@@ -230,7 +230,7 @@ class ComposerInspectorTest extends PackageManagerKernelTestBase {
    *   ["2.5.0", "<default>"]
    *   ["2.5.5", "<default>"]
    *   ["2.5.11", "<default>"]
-   *   ["2.6.0", null]
+   *   ["2.7.0", null]
    *   ["2.2.11", "<default>"]
    *   ["2.2.0-dev", "<default>"]
    *   ["2.3.6", "<default>"]
@@ -528,7 +528,7 @@ class ComposerInspectorTest extends PackageManagerKernelTestBase {
    * @param string|null $reported_version
    *   The version number that `composer --format=json` should return.
    *
-   * @return \Prophecy\Prophecy\ObjectProphecy
+   * @return \Prophecy\Prophecy\ObjectProphecy<\PhpTuf\ComposerStager\API\Process\Service\ComposerProcessRunnerInterface>
    *   The configurator for the mocked Composer runner.
    */
   private function mockComposerRunner(?string $reported_version): ObjectProphecy {

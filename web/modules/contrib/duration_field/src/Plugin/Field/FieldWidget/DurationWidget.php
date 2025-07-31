@@ -2,6 +2,7 @@
 
 namespace Drupal\duration_field\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
@@ -53,7 +54,7 @@ class DurationWidget extends WidgetBase implements WidgetInterface, ContainerFac
     FieldDefinitionInterface $field_definition,
     array $settings,
     array $third_party_settings,
-    DurationServiceInterface $duration_service
+    DurationServiceInterface $duration_service,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
@@ -78,10 +79,16 @@ class DurationWidget extends WidgetBase implements WidgetInterface, ContainerFac
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-
     $values = $items[$delta]->getValue();
-    $duration = isset($values['duration']) ? $values['duration'] : FALSE;
-    $seconds = isset($values['seconds']) ? $values['seconds'] : 0;
+    $duration = $values['duration'] ?? FALSE;
+    $weeks = $values['weeks'] ?? 0;
+
+    // We need to extract the weeks from the duration and seconds.
+    if ($weeks) {
+      $duration = new \DateInterval($duration);
+      $duration = $this->durationService->removeWeeksFromDateInterval($duration, $weeks);
+      $duration = $this->durationService->getDurationStringFromDateInterval($duration);
+    }
 
     $element['duration'] = $element + [
       '#type' => 'duration',
@@ -89,33 +96,72 @@ class DurationWidget extends WidgetBase implements WidgetInterface, ContainerFac
       '#description' => $element['#description'],
       '#cardinality' => $this->fieldDefinition->getFieldStorageDefinition()->getCardinality(),
       '#granularity' => $this->getFieldSetting('granularity'),
+      '#weeks_default_value' => $weeks,
+      '#include_weeks' => $this->getFieldSetting('include_weeks'),
+      '#after_build' => $this->getFieldSetting('include_weeks')
+        ? [[__CLASS__, 'durationElementAfterBuild']]
+        : [],
     ];
-
-    // Set a default value for seconds. This is over written in
-    // ::formElementValidate based on the submitted values for date_interval.
-    $element['seconds'] = [
-      '#type' => 'value',
-      '#value' => $seconds,
-    ];
-
-    // Add submit handler to validate a form element. Values for duration_string
-    // and seconds will be inserted in this submit handler. These will become
-    // the values saved for the field.
-    $element['#element_validate'][] = [$this, 'formElementValidate'];
 
     return $element;
   }
 
   /**
-   * Validation handler, sets the number of seconds for the submitted duration.
+   * After build callback for the duration element.
+   *
+   * @param array $element
+   *   The form element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @return array
+   *   The form element.
    */
-  public function formElementValidate(array &$element, FormStateInterface $form_state) {
-    // Get the submitted DateInterval.
-    $date_interval = $form_state->getValue($element['duration']['#parents']);
-    // Get the number of seconds for the duration.
-    $seconds = $this->durationService->getSecondsFromDateInterval($date_interval);
-    // Save the values to the form state.
-    $form_state->setValueForElement($element['seconds'], $seconds);
+  public static function durationElementAfterBuild(array $element, FormStateInterface $form_state) {
+    // Check for existing date elements to pick weight.
+    $weight = 0;
+    if (!empty($element['d'])) {
+      $weight = $element['d']['#weight'] - 0.5;
+    }
+    elseif (!empty($element['m'])) {
+      $weight = $element['m']['#weight'] + 0.5;
+    }
+    elseif (!empty($element['y'])) {
+      $weight = $element['y']['#weight'] + 0.5;
+    }
+
+    // Add weeks textfield to duration element.
+    $parents = $element['#parents'];
+    array_pop($parents);
+    $parents[] = 'weeks';
+    $element['weeks'] = [
+      '#type' => 'number',
+      '#title' => t('Weeks'),
+      '#value' => $element['#weeks_default_value'],
+      '#min' => 0,
+      '#weight' => $weight,
+      '#parents' => $parents,
+      '#name' => str_replace('[duration]', '[weeks]', $element['#name']),
+      '#element_validate' => [[static::class, 'formWeeksElementValidate']],
+    ];
+
+    // Adjust step to support weeks as well.
+    if (!empty($element['#date_increment']) && (int) $element['#date_increment'] > 604800) {
+      $element['weeks']['#step'] = (int) ($element['#date_increment'] / 604800);
+      if (!empty($element['d'])) {
+        unset($element['d']['#step']);
+      }
+    }
+    return $element;
+  }
+
+  /**
+   * Validation handler, sets the number of weeks.
+   */
+  public static function formWeeksElementValidate(array &$element, FormStateInterface $form_state) {
+    // Get the submitted weeks into values.
+    $input = $form_state->getUserInput();
+    $form_state->setValueForElement($element, NestedArray::getValue($input, $element['#parents']));
   }
 
 }

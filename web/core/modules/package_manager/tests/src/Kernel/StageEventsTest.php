@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Drupal\Tests\package_manager\Kernel;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\package_manager\Event\PostApplyEvent;
 use Drupal\package_manager\Event\PostCreateEvent;
 use Drupal\package_manager\Event\PostRequireEvent;
 use Drupal\package_manager\Event\PreApplyEvent;
 use Drupal\package_manager\Event\PreCreateEvent;
-use Drupal\package_manager\Event\PreOperationStageEvent;
+use Drupal\package_manager\Event\SandboxValidationEvent;
 use Drupal\package_manager\Event\PreRequireEvent;
-use Drupal\package_manager\Event\StageEvent;
+use Drupal\package_manager\Event\SandboxEvent;
 use Drupal\package_manager\Event\StatusCheckEvent;
-use Drupal\package_manager\Exception\StageEventException;
+use Drupal\package_manager\Exception\SandboxEventException;
 use Drupal\package_manager\ValidationResult;
 use PhpTuf\ComposerStager\API\Path\Value\PathListInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,11 +23,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Tests that the stage fires events during its lifecycle.
  *
- * @covers \Drupal\package_manager\Event\StageEvent
+ * @covers \Drupal\package_manager\Event\SandboxEvent
  * @group package_manager
  * @internal
  */
 class StageEventsTest extends PackageManagerKernelTestBase implements EventSubscriberInterface {
+
+  use StringTranslationTrait;
 
   /**
    * The events that were fired, in the order they were fired.
@@ -38,7 +41,7 @@ class StageEventsTest extends PackageManagerKernelTestBase implements EventSubsc
   /**
    * The stage under test.
    *
-   * @var \Drupal\package_manager\StageBase
+   * @var \Drupal\package_manager\SandboxManagerBase
    */
   private $stage;
 
@@ -79,14 +82,14 @@ class StageEventsTest extends PackageManagerKernelTestBase implements EventSubsc
   /**
    * Handles a stage life cycle event.
    *
-   * @param \Drupal\package_manager\Event\StageEvent $event
+   * @param \Drupal\package_manager\Event\SandboxEvent $event
    *   The event object.
    */
-  public function handleEvent(StageEvent $event): void {
+  public function handleEvent(SandboxEvent $event): void {
     $this->events[] = get_class($event);
 
     // The event should have a reference to the stage which fired it.
-    $this->assertSame($event->stage, $this->stage);
+    $this->assertSame($event->sandboxManager, $this->stage);
   }
 
   /**
@@ -134,12 +137,12 @@ class StageEventsTest extends PackageManagerKernelTestBase implements EventSubsc
    * @dataProvider providerValidationResults
    */
   public function testValidationResults(string $event_class): void {
-    $error_messages = [t('Burn, baby, burn')];
+    $error_messages = [$this->t('Burn, baby, burn')];
     // Set up an event listener which will only flag an error for the event
     // class under test.
-    $handler = function (StageEvent $event) use ($event_class, $error_messages): void {
+    $handler = function (SandboxEvent $event) use ($event_class, $error_messages): void {
       if (get_class($event) === $event_class) {
-        if ($event instanceof PreOperationStageEvent) {
+        if ($event instanceof SandboxValidationEvent) {
           $event->addError($error_messages);
         }
       }
@@ -157,10 +160,10 @@ class StageEventsTest extends PackageManagerKernelTestBase implements EventSubsc
     $stage = $this->createStage();
 
     $error = ValidationResult::createError([
-      t('Burn, baby, burn!'),
+      $this->t('Burn, baby, burn!'),
     ]);
     $warning = ValidationResult::createWarning([
-      t('The path ahead is scary...'),
+      $this->t('The path ahead is scary...'),
     ]);
     $excluded_paths = $this->createMock(PathListInterface::class);
 
@@ -208,7 +211,7 @@ class StageEventsTest extends PackageManagerKernelTestBase implements EventSubsc
     };
     $this->addEventTestListener($listener, PreCreateEvent::class);
 
-    $this->expectException(StageEventException::class);
+    $this->expectException(SandboxEventException::class);
     $this->expectExceptionMessage('Event propagation stopped without any errors added to the event. This bypasses the package_manager validation system.');
     $stage = $this->createStage();
     $stage->create();

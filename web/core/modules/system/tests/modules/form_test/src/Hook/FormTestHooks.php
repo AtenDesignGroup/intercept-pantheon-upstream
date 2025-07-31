@@ -6,11 +6,15 @@ namespace Drupal\form_test\Hook;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\form_test\Callbacks;
 
 /**
  * Hook implementations for form_test.
  */
 class FormTestHooks {
+
+  use StringTranslationTrait;
 
   /**
    * Implements hook_form_FORM_ID_alter().
@@ -53,9 +57,9 @@ class FormTestHooks {
   public function formUserRegisterFormAlter(&$form, FormStateInterface $form_state) : void {
     $form['test_rebuild'] = [
       '#type' => 'submit',
-      '#value' => t('Rebuild'),
+      '#value' => $this->t('Rebuild'),
       '#submit' => [
-        'form_test_user_register_form_rebuild',
+        [Callbacks::class, 'userRegisterFormRebuild'],
       ],
     ];
   }

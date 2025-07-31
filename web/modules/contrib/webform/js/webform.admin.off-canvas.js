@@ -7,6 +7,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   /**
    * Attaches webform off-canvas behaviors.
    *

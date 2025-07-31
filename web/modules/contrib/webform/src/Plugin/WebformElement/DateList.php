@@ -184,7 +184,7 @@ class DateList extends DateBase implements TrustedCallbackInterface {
       '#type' => 'textfield',
       '#title' => $this->t('Date year range'),
       '#description' => $this->t("A description of the range of years to allow, like '1900:2050', '-3:+3' or '2000:+3', where the first value describes the earliest year and the second the latest year in the range.") . ' ' .
-        $this->t('Use min/max validation to define a more specific date range.'),
+      $this->t('Use min/max validation to define a more specific date range.'),
     ];
     $form['date']['date_year_range_reverse'] = [
       '#type' => 'checkbox',

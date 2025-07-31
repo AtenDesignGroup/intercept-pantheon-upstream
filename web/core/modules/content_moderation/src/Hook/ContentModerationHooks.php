@@ -2,6 +2,8 @@
 
 namespace Drupal\content_moderation\Hook;
 
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\views\Plugin\views\filter\Broken;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
@@ -33,26 +35,28 @@ use Drupal\Core\Hook\Attribute\Hook;
  */
 class ContentModerationHooks {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?string {
     switch ($route_name) {
       // Main module help for the content_moderation module.
       case 'help.page.content_moderation':
         $output = '';
-        $output .= '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('The Content Moderation module allows you to expand on Drupal\'s "unpublished" and "published" states for content. It allows you to have a published version that is live, but have a separate working copy that is undergoing review before it is published. This is achieved by using <a href=":workflows">Workflows</a> to apply different states and transitions to entities as needed. For more information, see the <a href=":content_moderation">online documentation for the Content Moderation module</a>.', [
+        $output .= '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('The Content Moderation module allows you to expand on Drupal\'s "unpublished" and "published" states for content. It allows you to have a published version that is live, but have a separate working copy that is undergoing review before it is published. This is achieved by using <a href=":workflows">Workflows</a> to apply different states and transitions to entities as needed. For more information, see the <a href=":content_moderation">online documentation for the Content Moderation module</a>.', [
           ':content_moderation' => 'https://www.drupal.org/documentation/modules/content_moderation',
           ':workflows' => Url::fromRoute('help.page', [
             'name' => 'workflows',
           ])->toString(),
         ]) . '</p>';
-        $output .= '<h2>' . t('Uses') . '</h2>';
+        $output .= '<h2>' . $this->t('Uses') . '</h2>';
         $output .= '<dl>';
-        $output .= '<dt>' . t('Applying workflows') . '</dt>';
-        $output .= '<dd>' . t('Content Moderation allows you to apply <a href=":workflows">Workflows</a> to content, content blocks, and other <a href=":field_help" title="Field module help, with background on content entities">content entities</a>, to provide more fine-grained publishing options. For example, a Basic page might have states such as Draft and Published, with allowed transitions such as Draft to Published (making the current revision "live"), and Published to Draft (making a new draft revision of published content).', [
+        $output .= '<dt>' . $this->t('Applying workflows') . '</dt>';
+        $output .= '<dd>' . $this->t('Content Moderation allows you to apply <a href=":workflows">Workflows</a> to content, content blocks, and other <a href=":field_help" title="Field module help, with background on content entities">content entities</a>, to provide more fine-grained publishing options. For example, a Basic page might have states such as Draft and Published, with allowed transitions such as Draft to Published (making the current revision "live"), and Published to Draft (making a new draft revision of published content).', [
           ':workflows' => Url::fromRoute('help.page', [
             'name' => 'workflows',
           ])->toString(),
@@ -63,24 +67,25 @@ class ContentModerationHooks {
         if (\Drupal::moduleHandler()->moduleExists('views')) {
           $moderated_content_view = View::load('moderated_content');
           if (isset($moderated_content_view) && $moderated_content_view->status() === TRUE) {
-            $output .= '<dt>' . t('Moderating content') . '</dt>';
-            $output .= '<dd>' . t('You can view a list of content awaiting moderation on the <a href=":moderated">moderated content page</a>. This will show any content in an unpublished state, such as Draft or Archived, to help surface content that requires more work from content editors.', [
+            $output .= '<dt>' . $this->t('Moderating content') . '</dt>';
+            $output .= '<dd>' . $this->t('You can view a list of content awaiting moderation on the <a href=":moderated">moderated content page</a>. This will show any content in an unpublished state, such as Draft or Archived, to help surface content that requires more work from content editors.', [
               ':moderated' => Url::fromRoute('view.moderated_content.moderated_content')->toString(),
             ]) . '</dd>';
           }
         }
-        $output .= '<dt>' . t('Configure Content Moderation permissions') . '</dt>';
-        $output .= '<dd>' . t('Each transition is exposed as a permission. If a user has the permission for a transition, they can use the transition to change the state of the content item, from Draft to Published.') . '</dd>';
+        $output .= '<dt>' . $this->t('Configure Content Moderation permissions') . '</dt>';
+        $output .= '<dd>' . $this->t('Each transition is exposed as a permission. If a user has the permission for a transition, they can use the transition to change the state of the content item, from Draft to Published.') . '</dd>';
         $output .= '</dl>';
         return $output;
     }
+    return NULL;
   }
 
   /**
    * Implements hook_entity_base_field_info().
    */
   #[Hook('entity_base_field_info')]
-  public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
+  public function entityBaseFieldInfo(EntityTypeInterface $entity_type): array {
     return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityTypeInfo::class)->entityBaseFieldInfo($entity_type);
   }
 
@@ -88,15 +93,16 @@ class ContentModerationHooks {
    * Implements hook_entity_bundle_field_info().
    */
   #[Hook('entity_bundle_field_info')]
-  public function entityBundleFieldInfo(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  public function entityBundleFieldInfo(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions): array {
     if (isset($base_field_definitions['moderation_state'])) {
       // Add the target bundle to the moderation state field. Since each bundle
       // can be attached to a different moderation workflow, adding this
-      // information to the field definition allows the associated workflow to be
-      // derived where a field definition is present.
+      // information to the field definition allows the associated workflow to
+      // be derived where a field definition is present.
       $base_field_definitions['moderation_state']->setTargetBundle($bundle);
       return ['moderation_state' => $base_field_definitions['moderation_state']];
     }
+    return [];
   }
 
   /**
@@ -111,55 +117,55 @@ class ContentModerationHooks {
    * Implements hook_entity_presave().
    */
   #[Hook('entity_presave')]
-  public function entityPresave(EntityInterface $entity) {
-    return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityPresave($entity);
+  public function entityPresave(EntityInterface $entity): void {
+    \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityPresave($entity);
   }
 
   /**
    * Implements hook_entity_insert().
    */
   #[Hook('entity_insert')]
-  public function entityInsert(EntityInterface $entity) {
-    return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityInsert($entity);
+  public function entityInsert(EntityInterface $entity): void {
+    \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityInsert($entity);
   }
 
   /**
    * Implements hook_entity_update().
    */
   #[Hook('entity_update')]
-  public function entityUpdate(EntityInterface $entity) {
-    return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityUpdate($entity);
+  public function entityUpdate(EntityInterface $entity): void {
+    \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityUpdate($entity);
   }
 
   /**
    * Implements hook_entity_delete().
    */
   #[Hook('entity_delete')]
-  public function entityDelete(EntityInterface $entity) {
-    return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityDelete($entity);
+  public function entityDelete(EntityInterface $entity): void {
+    \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityDelete($entity);
   }
 
   /**
    * Implements hook_entity_revision_delete().
    */
   #[Hook('entity_revision_delete')]
-  public function entityRevisionDelete(EntityInterface $entity) {
-    return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityRevisionDelete($entity);
+  public function entityRevisionDelete(EntityInterface $entity): void {
+    \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityRevisionDelete($entity);
   }
 
   /**
    * Implements hook_entity_translation_delete().
    */
   #[Hook('entity_translation_delete')]
-  public function entityTranslationDelete(EntityInterface $translation) {
-    return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityTranslationDelete($translation);
+  public function entityTranslationDelete(EntityInterface $translation): void {
+    \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityTranslationDelete($translation);
   }
 
   /**
    * Implements hook_entity_prepare_form().
    */
   #[Hook('entity_prepare_form')]
-  public function entityPrepareForm(EntityInterface $entity, $operation, FormStateInterface $form_state) {
+  public function entityPrepareForm(EntityInterface $entity, $operation, FormStateInterface $form_state): void {
     \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityTypeInfo::class)->entityPrepareForm($entity, $operation, $form_state);
   }
 
@@ -175,7 +181,7 @@ class ContentModerationHooks {
    * Implements hook_entity_extra_field_info().
    */
   #[Hook('entity_extra_field_info')]
-  public function entityExtraFieldInfo() {
+  public function entityExtraFieldInfo(): array {
     return \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityTypeInfo::class)->entityExtraFieldInfo();
   }
 
@@ -183,7 +189,7 @@ class ContentModerationHooks {
    * Implements hook_entity_view().
    */
   #[Hook('entity_view')]
-  public function entityView(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  public function entityView(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode): void {
     \Drupal::service('class_resolver')->getInstanceFromDefinition(EntityOperations::class)->entityView($build, $entity, $display, $view_mode);
   }
 
@@ -205,10 +211,10 @@ class ContentModerationHooks {
    * that wants to moderate things.
    */
   #[Hook('entity_access')]
-  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     /** @var \Drupal\content_moderation\ModerationInformationInterface $moderation_info */
     $moderation_info = \Drupal::service('content_moderation.moderation_information');
-    $access_result = NULL;
+    $access_result = AccessResult::neutral();
     if ($operation === 'view') {
       $access_result = $entity instanceof EntityPublishedInterface && !$entity->isPublished() ? AccessResult::allowedIfHasPermission($account, 'view any unpublished content') : AccessResult::neutral();
       $access_result->addCacheableDependency($entity);
@@ -240,13 +246,14 @@ class ContentModerationHooks {
    * Implements hook_entity_field_access().
    */
   #[Hook('entity_field_access')]
-  public function entityFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+  public function entityFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
     if ($items && $operation === 'edit') {
       /** @var \Drupal\content_moderation\ModerationInformationInterface $moderation_info */
       $moderation_info = \Drupal::service('content_moderation.moderation_information');
       $entity_type = \Drupal::entityTypeManager()->getDefinition($field_definition->getTargetEntityTypeId());
       $entity = $items->getEntity();
-      // Deny edit access to the published field if the entity is being moderated.
+      // Deny edit access to the published field if the entity is being
+      // moderated.
       if ($entity_type->hasKey('published') && $moderation_info->isModeratedEntity($entity) && $entity->moderation_state && $field_definition->getName() == $entity_type->getKey('published')) {
         return AccessResult::forbidden('Cannot edit the published field of moderated entities.');
       }
@@ -267,10 +274,10 @@ class ContentModerationHooks {
    */
   #[Hook('action_info_alter')]
   public function actionInfoAlter(&$definitions): void {
-    // The publish/unpublish actions are not valid on moderated entities. So swap
-    // their implementations out for alternates that will become a no-op on a
-    // moderated entity. If another module has already swapped out those classes,
-    // though, we'll be polite and do nothing.
+    // The publish/unpublish actions are not valid on moderated entities. So
+    // swap their implementations out for alternates that will become a no-op on
+    // a moderated entity. If another module has already swapped out those
+    // classes, though, we'll be polite and do nothing.
     foreach ($definitions as &$definition) {
       if ($definition['id'] === 'entity:publish_action' && $definition['class'] == PublishAction::class) {
         $definition['class'] = ModerationOptOutPublish::class;
@@ -295,10 +302,10 @@ class ContentModerationHooks {
         foreach ($plugin->getBundlesForEntityType($entity_type_id) as $bundle_id) {
           if (isset($bundles[$entity_type_id][$bundle_id])) {
             $bundles[$entity_type_id][$bundle_id]['workflow'] = $workflow->id();
-            // If we have even one moderation-enabled translatable bundle, we need
-            // to make the moderation state bundle translatable as well, to enable
-            // the revision translation merge logic also for content moderation
-            // state revisions.
+            // If we have even one moderation-enabled translatable bundle, we
+            // need to make the moderation state bundle translatable as well, to
+            // enable the revision translation merge logic also for content
+            // moderation state revisions.
             if (!empty($bundles[$entity_type_id][$bundle_id]['translatable'])) {
               $translatable = TRUE;
             }
@@ -313,7 +320,7 @@ class ContentModerationHooks {
    * Implements hook_entity_bundle_delete().
    */
   #[Hook('entity_bundle_delete')]
-  public function entityBundleDelete($entity_type_id, $bundle_id) {
+  public function entityBundleDelete($entity_type_id, $bundle_id): void {
     // Remove non-configuration based bundles from content moderation based
     // workflows when they are removed.
     foreach (Workflow::loadMultipleByType('content_moderation') as $workflow) {
@@ -328,7 +335,7 @@ class ContentModerationHooks {
    * Implements hook_ENTITY_TYPE_insert().
    */
   #[Hook('workflow_insert')]
-  public function workflowInsert(WorkflowInterface $entity) {
+  public function workflowInsert(WorkflowInterface $entity): void {
     // Clear bundle cache so workflow gets added or removed from the bundle
     // information.
     \Drupal::service('entity_type.bundle.info')->clearCachedBundles();
@@ -344,7 +351,7 @@ class ContentModerationHooks {
    * Implements hook_ENTITY_TYPE_update().
    */
   #[Hook('workflow_update')]
-  public function workflowUpdate(WorkflowInterface $entity) {
+  public function workflowUpdate(WorkflowInterface $entity): void {
     // Clear bundle cache so workflow gets added or removed from the bundle
     // information.
     \Drupal::service('entity_type.bundle.info')->clearCachedBundles();
@@ -360,9 +367,9 @@ class ContentModerationHooks {
    * Implements hook_views_post_execute().
    */
   #[Hook('views_post_execute')]
-  public function viewsPostExecute(ViewExecutable $view) {
+  public function viewsPostExecute(ViewExecutable $view): void {
     // @todo Remove this once broken handlers in views configuration result in
-    //   a view no longer returning results. https://www.drupal.org/node/2907954.
+    //   a view no longer returning results. https://www.drupal.org/i/2907954.
     foreach ($view->filter as $id => $filter) {
       if (str_starts_with($id, 'moderation_state') && $filter instanceof Broken) {
         $view->result = [];

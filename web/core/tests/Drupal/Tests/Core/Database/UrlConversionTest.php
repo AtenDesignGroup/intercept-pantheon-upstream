@@ -8,6 +8,8 @@ use Drupal\Core\Database\Database;
 use Drupal\Core\Extension\Exception\UnknownExtensionException;
 use Drupal\Tests\UnitTestCase;
 
+// cspell:ignore dummydb
+
 /**
  * Tests for database URL to/from database connection array conversions.
  *
@@ -296,12 +298,32 @@ class UrlConversionTest extends UnitTestCase {
     return [
       ['foo', '', "Missing scheme in URL 'foo'"],
       ['foo', 'bar', "Missing scheme in URL 'foo'"],
-      ['foo://', 'bar', "Can not convert 'foo://' to a database connection, the module providing the driver 'foo' is not specified"],
-      ['foo://bar', 'baz', "Can not convert 'foo://bar' to a database connection, the module providing the driver 'foo' is not specified"],
-      ['foo://bar:port', 'baz', "Can not convert 'foo://bar:port' to a database connection, the module providing the driver 'foo' is not specified"],
       ['foo/bar/baz', 'bar2', "Missing scheme in URL 'foo/bar/baz'"],
-      ['foo://bar:baz@test1', 'test2', "Can not convert 'foo://bar:baz@test1' to a database connection, the module providing the driver 'foo' is not specified"],
     ];
+  }
+
+  /**
+   * Tests that connection URL with no module name defaults to driver name.
+   */
+  public function testNoModuleSpecifiedDefaultsToDriverName(): void {
+    $url = 'dummydb://test_user:test_pass@test_host/test_database';
+    $connection_info = Database::convertDbUrlToConnectionInfo($url, $this->root, TRUE);
+    $expected = [
+      'driver' => 'dummydb',
+      'username' => 'test_user',
+      'password' => 'test_pass',
+      'host' => 'test_host',
+      'database' => 'test_database',
+      'namespace' => 'Drupal\dummydb\Driver\Database\dummydb',
+      'autoload' => 'core/modules/system/tests/modules/dummydb/src/Driver/Database/dummydb/',
+      'dependencies' => [
+        'mysql' => [
+          'namespace' => 'Drupal\mysql',
+          'autoload' => 'core/modules/mysql/src/',
+        ],
+      ],
+    ];
+    $this->assertSame($expected, $connection_info);
   }
 
   /**
@@ -451,12 +473,12 @@ class UrlConversionTest extends UnitTestCase {
   /**
    * Tests ::getConnectionInfoAsUrl() exception for invalid arguments.
    *
-   * @covers ::getConnectionInfoAsUrl
-   *
    * @param array $connection_options
    *   The database connection information.
    * @param string $expected_exception_message
    *   The expected exception message.
+   *
+   * @covers ::getConnectionInfoAsUrl
    *
    * @dataProvider providerInvalidArgumentGetConnectionInfoAsUrl
    */
@@ -464,7 +486,7 @@ class UrlConversionTest extends UnitTestCase {
     Database::addConnectionInfo('default', 'default', $connection_options);
     $this->expectException(\InvalidArgumentException::class);
     $this->expectExceptionMessage($expected_exception_message);
-    $url = Database::getConnectionInfoAsUrl();
+    Database::getConnectionInfoAsUrl();
   }
 
   /**

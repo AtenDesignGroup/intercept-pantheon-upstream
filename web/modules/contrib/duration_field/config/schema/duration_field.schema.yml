@@ -5,10 +5,13 @@ field.field_settings.duration:
     granularity:
       type: granularity
       label: 'Granularity'
+    include_weeks:
+      type: boolean
+      label: 'Include weeks'
 
 field.value.duration:
   type: mapping
-  lable: 'Default value'
+  label: 'Default value'
   mapping:
     duration:
       type: iso_8601_string
@@ -16,6 +19,9 @@ field.value.duration:
     seconds:
       type: integer
       label: 'Number of seconds the duration represents'
+    weeks:
+      type: integer
+      label: 'Number of weeks additional to the duration'
 
 field.formatter.settings.duration_human_display:
   type: mapping

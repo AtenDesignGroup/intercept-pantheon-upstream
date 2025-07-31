@@ -2,10 +2,10 @@
 
 namespace Drupal\duration_field\Service;
 
-use DateInterval;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\duration_field\Exception\InvalidDurationException;
 use Drupal\duration_field\Plugin\DataType\Iso8601StringInterface;
+use Drupal\Component\Datetime\TimeInterface;
 
 /**
  * Provides services for the Duration Field module.
@@ -13,6 +13,11 @@ use Drupal\duration_field\Plugin\DataType\Iso8601StringInterface;
 class DurationService implements DurationServiceInterface {
 
   use StringTranslationTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(protected TimeInterface $time) {}
 
   /**
    * {@inheritdoc}
@@ -78,7 +83,7 @@ class DurationService implements DurationServiceInterface {
     $this->checkDurationInvalid($durationString);
 
     if (!empty($durationString)) {
-      return new DateInterval($durationString);
+      return new \DateInterval($durationString);
     }
     else {
       return $this->createEmptyDateInterval();
@@ -88,7 +93,7 @@ class DurationService implements DurationServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDurationStringFromDateInterval(DateInterval $dateInterval) {
+  public function getDurationStringFromDateInterval(\DateInterval $dateInterval) {
     return $this->convertDateArrayToDurationString([
       'y' => $dateInterval->format('%y'),
       'm' => $dateInterval->format('%m'),
@@ -113,13 +118,13 @@ class DurationService implements DurationServiceInterface {
    * {@inheritdoc}
    */
   public function createEmptyDateInterval() {
-    return new DateInterval(Iso8601StringInterface::EMPTY_DURATION);
+    return new \DateInterval(Iso8601StringInterface::EMPTY_DURATION);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getHumanReadableStringFromDateInterval(DateInterval $dateInterval, array $granularity, $separator = ' ', $textLength = 'full') {
+  public function getHumanReadableStringFromDateInterval(\DateInterval $dateInterval, array $granularity, $separator = ' ', $textLength = 'full', int $weeks = 0) {
 
     $output = [];
     if ($granularity['y'] && $years = $dateInterval->format('%y')) {
@@ -128,6 +133,10 @@ class DurationService implements DurationServiceInterface {
 
     if ($granularity['m'] && $months = $dateInterval->format('%m')) {
       $output[] = $this->getTimePeriod('month', $months, $textLength);
+    }
+
+    if ($weeks) {
+      $output[] = $this->getTimePeriod('week', $weeks, $textLength);
     }
 
     if ($granularity['d'] && $days = $dateInterval->format('%d')) {
@@ -152,7 +161,7 @@ class DurationService implements DurationServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSecondsFromDateInterval(DateInterval $dateInterval) {
+  public function getSecondsFromDateInterval(\DateInterval $dateInterval) {
     return date_create('@0')->add($dateInterval)->getTimestamp();
   }
 
@@ -179,50 +188,86 @@ class DurationService implements DurationServiceInterface {
    *   The translated text value of the given type.
    */
   protected function getTimePeriod($type, $value, $textLength) {
-
+    $period = NULL;
     if ($type == 'year') {
       if ($textLength == 'full') {
-        return $this->formatPlural($value, '1 year', '@count years');
+        $period = $this->formatPlural($value, '1 year', '@count years');
       }
       elseif ($textLength == 'short') {
-        return $this->formatPlural($value, '1 yr', '@count yr');
+        $period = $this->formatPlural($value, '1 yr', '@count yr');
       }
     }
     elseif ($type == 'month') {
       if ($textLength == 'full') {
-        return $this->formatPlural($value, '1 month', '@count months');
+        $period = $this->formatPlural($value, '1 month', '@count months');
       }
       elseif ($textLength == 'short') {
-        return $this->formatPlural($value, '1 mo', '@count mo');
+        $period = $this->formatPlural($value, '1 mo', '@count mo');
+      }
+    }
+    elseif ($type == 'week') {
+      if ($textLength == 'full') {
+        $period = $this->formatPlural($value, '1 week', '@count weeks');
+      }
+      elseif ($textLength == 'short') {
+        $period = $this->formatPlural($value, '1 wk', '@count wks');
       }
     }
     elseif ($type == 'day') {
-      return $this->formatPlural($value, '1 day', '@count days');
+      $period = $this->formatPlural($value, '1 day', '@count days');
     }
     elseif ($type == 'hour') {
       if ($textLength == 'full') {
-        return $this->formatPlural($value, '1 hour', '@count hours');
+        $period = $this->formatPlural($value, '1 hour', '@count hours');
       }
       elseif ($textLength == 'short') {
-        return $this->formatPlural($value, '1 hr', '@count hr');
+        $period = $this->formatPlural($value, '1 hr', '@count hr');
       }
     }
     elseif ($type == 'minute') {
       if ($textLength == 'full') {
-        return $this->formatPlural($value, '1 minute', '@count minutes');
+        $period = $this->formatPlural($value, '1 minute', '@count minutes');
       }
       elseif ($textLength == 'short') {
-        return $this->formatPlural($value, '1 min', '@count min');
+        $period = $this->formatPlural($value, '1 min', '@count min');
       }
     }
     elseif ($type == 'second') {
       if ($textLength == 'full') {
-        return $this->formatPlural($value, '1 second', '@count seconds');
+        $period = $this->formatPlural($value, '1 second', '@count seconds');
       }
       elseif ($textLength == 'short') {
-        return $this->formatPlural($value, '1 s', '@count s');
+        $period = $this->formatPlural($value, '1 s', '@count s');
       }
     }
+
+    return $period;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function addWeeksToDateInterval(\DateInterval $dateInterval, int $weeks = 0) {
+    $duration = new \DateTime();
+    $duration->setTimestamp($this->time->getRequestTime());
+    $duration->add($dateInterval);
+    $duration->add(\DateInterval::createFromDateString($weeks . ' weeks'));
+    $now = new \DateTime();
+    $now->setTimestamp($this->time->getRequestTime());
+    return $now->diff($duration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function removeWeeksFromDateInterval(\DateInterval $dateInterval, int $weeks = 0) {
+    $duration = new \DateTime();
+    $duration->setTimestamp($this->time->getRequestTime());
+    $duration->add($dateInterval);
+    $duration->sub(\DateInterval::createFromDateString($weeks . ' weeks'));
+    $now = new \DateTime();
+    $now->setTimestamp($this->time->getRequestTime());
+    return $now->diff($duration);
   }
 
 }

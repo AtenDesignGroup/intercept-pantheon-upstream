@@ -4,7 +4,6 @@ namespace Drupal\duration_field\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
 
 /**
  * Provides the Granularity form element.
@@ -17,7 +16,7 @@ use Drupal\Core\Render\Element\FormElement;
  *
  * @see \Drupal\Plugin\DataType\GranularityStringData
  */
-class GranularityElement extends FormElement {
+class GranularityElement extends DurationElementBase {
 
   use ProcessStatesTrait;
 
@@ -65,7 +64,7 @@ class GranularityElement extends FormElement {
     elseif (isset($element['#default_value']) && $element['#default_value']) {
       $value = $element['#default_value'];
     }
-    $granularities = explode(':', $value);
+    $granularity = explode(':', $value);
 
     $time_mappings = [
       'y' => t('Years'),
@@ -107,7 +106,7 @@ class GranularityElement extends FormElement {
         '#type' => 'checkbox',
         '#title' => $label,
         // Elements included in the #value or #default_value will be checked.
-        '#default_value' => in_array($key, $granularities),
+        '#default_value' => in_array($key, $granularity),
         '#weight' => 0,
         '#min' => 0,
       ];

@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.buttons = Drupal.webform.buttons || {};
   Drupal.webform.buttons.selector = Drupal.webform.buttons.selector || [
@@ -20,7 +22,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformButtons = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-buttons', Drupal.webform.buttons.selector, context)).each(function () {
         var $buttons = $(this);
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\Core\Theme\Icon\Plugin;
 
 // cspell:ignore corge
-use Drupal\Component\Render\FormattableMarkup;
+
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Theme\Icon\IconDefinition;
 use Drupal\Core\Theme\Icon\IconDefinitionInterface;
@@ -129,7 +129,7 @@ class SvgExtractorTest extends UnitTestCase {
     }
 
     $expected_result = [];
-    foreach ($files as $index => $icon) {
+    foreach ($files as $icon) {
       $expected_id = $this->pluginId . IconDefinition::ICON_SEPARATOR . $icon['icon_id'];
       $expected_result[$expected_id] = [
         'source' => $icon['source'],
@@ -288,7 +288,6 @@ class SvgExtractorTest extends UnitTestCase {
       $this->assertInstanceOf(IconDefinitionInterface::class, $icon_loaded);
 
       $data_loaded = $icon_loaded->getAllData();
-      $expected_content[$index] = new FormattableMarkup($expected_content[$index], []);
       $this->assertEquals($expected_content[$index], $data_loaded['content']);
 
       $expected_attributes[$index] = new Attribute($expected_attributes[$index] ?? []);

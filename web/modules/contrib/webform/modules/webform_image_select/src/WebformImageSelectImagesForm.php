@@ -178,7 +178,7 @@ class WebformImageSelectImagesForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\webform_image_select\WebformImageSelectImagesInterface $images */
     $images = $this->getEntity();
-    $images->save();
+    $status = $images->save();
 
     $context = [
       '@label' => $images->label(),
@@ -191,6 +191,8 @@ class WebformImageSelectImagesForm extends EntityForm {
     ]));
 
     $form_state->setRedirect('entity.webform_image_select_images.collection');
+
+    return $status;
   }
 
   /**

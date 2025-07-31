@@ -17,39 +17,39 @@ class ToolbarTestHooks {
    * Implements hook_toolbar().
    */
   #[Hook('toolbar')]
-  public function toolbar() {
+  public function toolbar(): array {
     $items['testing'] = [
       '#type' => 'toolbar_item',
       'tab' => [
         '#type' => 'link',
-        '#title' => t('Test tab'),
+        '#title' => 'Test tab',
         '#url' => Url::fromRoute('<front>'),
         '#options' => [
           'attributes' => [
             'id' => 'toolbar-tab-testing',
-            'title' => t('Test tab'),
+            'title' => 'Test tab',
           ],
         ],
       ],
       'tray' => [
-        '#heading' => t('Test tray'),
+        '#heading' => 'Test tray',
         '#wrapper_attributes' => [
           'id' => 'toolbar-tray-testing',
         ],
         'content' => [
           '#theme' => 'item_list',
           '#items' => [
-            Link::fromTextAndUrl(t('link 1'), Url::fromRoute('<front>', [], [
+            Link::fromTextAndUrl('link 1', Url::fromRoute('<front>', [], [
               'attributes' => [
                 'title' => 'Test link 1 title',
               ],
             ]))->toRenderable(),
-            Link::fromTextAndUrl(t('link 2'), Url::fromRoute('<front>', [], [
+            Link::fromTextAndUrl('link 2', Url::fromRoute('<front>', [], [
               'attributes' => [
                 'title' => 'Test link 2 title',
               ],
             ]))->toRenderable(),
-            Link::fromTextAndUrl(t('link 3'), Url::fromRoute('<front>', [], [
+            Link::fromTextAndUrl('link 3', Url::fromRoute('<front>', [], [
               'attributes' => [
                 'title' => 'Test link 3 title',
               ],

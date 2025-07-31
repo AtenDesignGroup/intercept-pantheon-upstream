@@ -19,7 +19,7 @@ class BlockTestHooks {
   #[Hook('block_alter')]
   public function blockAlter(&$block_info): void {
     if (\Drupal::state()->get('block_test_info_alter') && isset($block_info['test_block_instantiation'])) {
-      $block_info['test_block_instantiation']['category'] = t('Custom category');
+      $block_info['test_block_instantiation']['category'] = 'Custom category';
     }
   }
 
@@ -34,6 +34,16 @@ class BlockTestHooks {
     if (\Drupal::state()->get('block_test_view_alter_append_pre_render_prefix') !== NULL) {
       $build['#pre_render'][] = '\Drupal\block_test\BlockRenderAlterContent::preRender';
     }
+  }
+
+  /**
+   * Implements hook_block_view_BASE_BLOCK_ID_alter().
+   *
+   * @see \Drupal\Tests\block\Kernel\BlockViewBuilderTest::testBlockViewBuilderCacheTitleBlock()
+   */
+  #[Hook('block_view_page_title_block_alter')]
+  public function blockViewPageTitleBlockAlter(array &$build, BlockPluginInterface $block): void {
+    $build['#cache']['tags'][] = 'custom_cache_tag';
   }
 
   /**

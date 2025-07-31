@@ -30,12 +30,12 @@ class ImageModuleTestHooks {
   }
 
   /**
-   * Implements hook_image_style_presave().
+   * Implements hook_ENTITY_TYPE_presave().
    *
    * Used to save test third party settings in the image style entity.
    */
   #[Hook('image_style_presave')]
-  public function imageStylePresave(ImageStyleInterface $style) {
+  public function imageStylePresave(ImageStyleInterface $style): void {
     $style->setThirdPartySetting('image_module_test', 'foo', 'bar');
   }
 
@@ -43,9 +43,21 @@ class ImageModuleTestHooks {
    * Implements hook_image_style_flush().
    */
   #[Hook('image_style_flush')]
-  public function imageStyleFlush($style, $path = NULL) {
+  public function imageStyleFlush($style, $path = NULL): void {
     $state = \Drupal::state();
     $state->set('image_module_test_image_style_flush.called', $path);
+  }
+
+  /**
+   * Implements hook_file_download().
+   */
+  #[Hook('file_download')]
+  public function fileDownload($uri): array {
+    $default_uri = \Drupal::keyValue('image')->get('test_file_download', FALSE);
+    if ($default_uri == $uri) {
+      return ['X-Image-Owned-By' => 'image_module_test'];
+    }
+    return [];
   }
 
 }

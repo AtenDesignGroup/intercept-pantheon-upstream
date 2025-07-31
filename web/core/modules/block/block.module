@@ -4,18 +4,22 @@
  * @file
  */
 
-use Drupal\Component\Utility\Html;
+use Drupal\block\Hook\BlockHooks;
 use Drupal\Core\Installer\InstallerKernel;
 
 /**
  * Initializes blocks for installed themes.
  *
- * @param $theme_list
+ * @param string[] $theme_list
  *   An array of theme names.
  *
  * @see block_modules_installed()
  */
-function block_themes_installed($theme_list) {
+function block_themes_installed($theme_list): void {
+  // Do not create blocks during config sync.
+  if (\Drupal::service('config.installer')->isSyncing()) {
+    return;
+  }
   // Disable this functionality prior to install profile installation because
   // block configuration is often optional or provided by the install profile
   // itself. block_theme_initialize() will be called when the install profile is
@@ -40,10 +44,10 @@ function block_themes_installed($theme_list) {
  * a particular region isn't available in the new theme, the block is assigned
  * to the new theme's default region.
  *
- * @param $theme
+ * @param string $theme
  *   The name of a theme.
  */
-function block_theme_initialize($theme) {
+function block_theme_initialize($theme): void {
   // Initialize theme's blocks if none already registered.
   $has_blocks = \Drupal::entityTypeManager()->getStorage('block')->loadByProperties(['theme' => $theme]);
   if (!$has_blocks) {
@@ -73,7 +77,7 @@ function block_theme_initialize($theme) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function block_theme_suggestions_block(array $variables) {
+function block_theme_suggestions_block(array $variables): array {
   $suggestions = [];
 
   $suggestions[] = 'block__' . $variables['elements']['#configuration']['provider'];
@@ -119,30 +123,13 @@ function block_theme_suggestions_block(array $variables) {
  *   An associative array containing:
  *   - elements: An associative array containing the properties of the element.
  *     Properties used: #block, #configuration, #children, #plugin_id.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ *  template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_block(&$variables): void {
-  $variables['configuration'] = $variables['elements']['#configuration'];
-  $variables['plugin_id'] = $variables['elements']['#plugin_id'];
-  $variables['base_plugin_id'] = $variables['elements']['#base_plugin_id'];
-  $variables['derivative_plugin_id'] = $variables['elements']['#derivative_plugin_id'];
-  $variables['in_preview'] = $variables['elements']['#in_preview'] ?? FALSE;
-  $variables['label'] = !empty($variables['configuration']['label_display']) ? $variables['configuration']['label'] : '';
-  $variables['content'] = $variables['elements']['content'];
-  // A block's label is configuration: it is static. Allow dynamic labels to be
-  // set in the render array.
-  if (isset($variables['elements']['content']['#title']) && !empty($variables['configuration']['label_display'])) {
-    $variables['label'] = $variables['elements']['content']['#title'];
-  }
-
-  // Create a valid HTML ID and make sure it is unique.
-  if (!empty($variables['elements']['#id'])) {
-    $variables['attributes']['id'] = Html::getUniqueId('block-' . $variables['elements']['#id']);
-  }
-
-  // Proactively add aria-describedby if possible to improve accessibility.
-  if ($variables['label'] && isset($variables['attributes']['role'])) {
-    $variables['title_attributes']['id'] = Html::getUniqueId($variables['label']);
-    $variables['attributes']['aria-describedby'] = $variables['title_attributes']['id'];
-  }
-
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(BlockHooks::class)->preprocessBlock($variables);
 }

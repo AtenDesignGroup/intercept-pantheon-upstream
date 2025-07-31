@@ -292,7 +292,10 @@ class WebformTokenManager implements WebformTokenManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function elementValidate(array &$form, array $token_types = ['webform', 'webform_submission', 'webform_handler']) {
+  public function elementValidate(
+    array &$form,
+    array $token_types = ['webform', 'webform_submission', 'webform_handler'],
+  ) {
     if (!function_exists('token_element_validate')) {
       return;
     }

@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // @see https://github.com/jonthornton/jquery-timepicker#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.timePicker = Drupal.webform.timePicker || {};

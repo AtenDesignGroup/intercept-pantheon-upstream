@@ -39,6 +39,7 @@ class UrlResolverTest extends MediaFunctionalTestBase {
    * @see ::testEndpointMatching()
    *
    * @return array
+   *   An array of test data.
    */
   public static function providerEndpointMatching() {
     return [
@@ -64,14 +65,13 @@ class UrlResolverTest extends MediaFunctionalTestBase {
   /**
    * Tests resource URL resolution with a matched provider endpoint.
    *
-   * @covers ::getProviderByUrl
-   * @covers ::getResourceUrl
-   *
    * @param string $url
    *   The asset URL to resolve.
    * @param string $resource_url
    *   The expected oEmbed resource URL of the asset.
    *
+   * @covers ::getProviderByUrl
+   * @covers ::getResourceUrl
    * @dataProvider providerEndpointMatching
    */
   public function testEndpointMatching($url, $resource_url): void {
@@ -104,6 +104,7 @@ class UrlResolverTest extends MediaFunctionalTestBase {
    * @see ::testUrlDiscovery()
    *
    * @return array
+   *   An array of test data.
    */
   public static function providerUrlDiscovery() {
     return [

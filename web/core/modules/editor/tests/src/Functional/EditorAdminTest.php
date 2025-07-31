@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\editor\Functional;
 
-use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\Html;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -142,7 +142,7 @@ class EditorAdminTest extends BrowserTestBase {
     $this->drupalLogin($account);
 
     // The node edit page header.
-    $text = (string) new FormattableMarkup('<em>Edit @type</em> @title', ['@type' => $node_type->label(), '@title' => $node->label()]);
+    $text = sprintf('<em>Edit %s</em> %s', Html::escape($node_type->label()), Html::escape($node->label()));
 
     // Go to node edit form.
     $this->drupalGet('node/' . $node->id() . '/edit');
@@ -240,7 +240,7 @@ class EditorAdminTest extends BrowserTestBase {
    *   The expected value of the ponies_too setting.
    */
   protected function verifyUnicornEditorConfiguration($format_id, $ponies_too = TRUE): void {
-    $editor = editor_load($format_id);
+    $editor = \Drupal::entityTypeManager()->getStorage('editor')->load($format_id);
     $settings = $editor->getSettings();
     $this->assertSame('unicorn', $editor->getEditor(), 'The text editor is configured correctly.');
     $this->assertSame($ponies_too, $settings['ponies_too'], 'The text editor settings are stored correctly.');

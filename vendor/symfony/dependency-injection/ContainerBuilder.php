@@ -790,10 +790,11 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      *  * The parameter bag is frozen;
      *  * Extension loading is disabled.
      *
-     * @param bool $resolveEnvPlaceholders Whether %env()% parameters should be resolved using the current
-     *                                     env vars or be replaced by uniquely identifiable placeholders.
-     *                                     Set to "true" when you want to use the current ContainerBuilder
-     *                                     directly, keep to "false" when the container is dumped instead.
+     * @param bool $resolveEnvPlaceholders Whether %env()% parameters should be resolved at build time using
+     *                                     the current env var values (true), or be resolved at runtime based
+     *                                     on the environment (false). In general, this should be set to "true"
+     *                                     when you want to use the current ContainerBuilder directly, and to
+     *                                     "false" when the container is dumped instead.
      */
     public function compile(bool $resolveEnvPlaceholders = false): void
     {
@@ -822,7 +823,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
 
         if ($bag instanceof EnvPlaceholderParameterBag) {
             if ($resolveEnvPlaceholders) {
-                $this->parameterBag = new ParameterBag($this->resolveEnvPlaceholders($bag->all(), true));
+                $this->parameterBag = new ParameterBag($this->resolveEnvPlaceholders($this->escapeParameters($bag->all()), true));
             }
 
             $this->envPlaceholders = $bag->getEnvPlaceholders();
@@ -1108,14 +1109,15 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             }
 
             if (\is_array($callable) && (
-                $callable[0] instanceof Reference
+                'Closure' !== $class
+                || $callable[0] instanceof Reference
                 || $callable[0] instanceof Definition && !isset($inlineServices[spl_object_hash($callable[0])])
             )) {
                 $initializer = function () use ($callable, &$inlineServices) {
                     return $this->doResolveServices($callable[0], $inlineServices);
                 };
 
-                $proxy = eval('return '.LazyClosure::getCode('$initializer', $callable, $definition, $this, $id).';');
+                $proxy = eval('return '.LazyClosure::getCode('$initializer', $callable, $class, $this, $id).';');
                 $this->shareService($definition, $proxy, $id, $inlineServices);
 
                 return $proxy;
@@ -1172,7 +1174,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             if (!$definition->isDeprecated() && \is_array($factory) && \is_string($factory[0])) {
                 $r = new \ReflectionClass($factory[0]);
 
-                if (0 < strpos($r->getDocComment(), "\n * @deprecated ")) {
+                if (0 < strpos($r->getDocComment() ?: '', "\n * @deprecated ")) {
                     trigger_deprecation('', '', 'The "%s" service relies on the deprecated "%s" factory class. It should either be deprecated or its factory upgraded.', $id, $r->name);
                 }
             }
@@ -1189,7 +1191,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
                 $service = $r->getConstructor() ? $r->newInstanceArgs($arguments) : $r->newInstance();
             }
 
-            if (!$definition->isDeprecated() && 0 < strpos($r->getDocComment(), "\n * @deprecated ")) {
+            if (!$definition->isDeprecated() && 0 < strpos($r->getDocComment() ?: '', "\n * @deprecated ")) {
                 trigger_deprecation('', '', 'The "%s" service relies on the deprecated "%s" class. It should either be deprecated or its implementation upgraded.', $id, $r->name);
             }
         }
@@ -1498,8 +1500,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
 
         $autoconfiguredAttributes = [];
         foreach ($this->autoconfiguredAttributes as $attribute => $configurators) {
-            if (count($configurators) > 1) {
-                throw new LogicException(\sprintf('The "%s" attribute has %d configurators. Use "getAttributeAutoconfigurators()" to get all of them.', $attribute, count($configurators)));
+            if (\count($configurators) > 1) {
+                throw new LogicException(\sprintf('The "%s" attribute has %d configurators. Use "getAttributeAutoconfigurators()" to get all of them.', $attribute, \count($configurators)));
             }
 
             $autoconfiguredAttributes[$attribute] = $configurators[0];
@@ -1826,5 +1828,19 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
         }
 
         return $this->pathsInVendor[$path] = false;
+    }
+
+    private function escapeParameters(array $parameters): array
+    {
+        $params = [];
+        foreach ($parameters as $k => $v) {
+            $params[$k] = match (true) {
+                \is_array($v) => $this->escapeParameters($v),
+                \is_string($v) => str_replace('%', '%%', $v),
+                default => $v,
+            };
+        }
+
+        return $params;
     }
 }

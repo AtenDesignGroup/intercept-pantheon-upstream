@@ -83,7 +83,7 @@ class CommentUserNameTest extends ViewsKernelTestBase {
 
     $commentType = CommentType::create([
       'id' => 'entity_test_comment',
-      'label' => t('Entity Test Comment'),
+      'label' => 'Entity Test Comment',
       'target_entity_type_id' => 'entity_test',
     ]);
     $commentType->save();

@@ -6,11 +6,14 @@ namespace Drupal\update_script_test\Hook;
 
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Hook implementations for update_script_test.
  */
 class UpdateScriptTestHooks {
+
+  use StringTranslationTrait;
 
   /**
    * Implements hook_cache_flush().
@@ -21,8 +24,8 @@ class UpdateScriptTestHooks {
    * @see UpdateScriptFunctionalTest::testRequirements()
    */
   #[Hook('cache_flush')]
-  public function cacheFlush() {
-    \Drupal::messenger()->addStatus(t('hook_cache_flush() invoked for update_script_test.module.'));
+  public function cacheFlush(): void {
+    \Drupal::messenger()->addStatus($this->t('hook_cache_flush() invoked for update_script_test.module.'));
   }
 
   /**

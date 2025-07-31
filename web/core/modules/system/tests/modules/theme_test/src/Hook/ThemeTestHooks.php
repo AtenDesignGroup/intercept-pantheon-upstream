@@ -24,7 +24,12 @@ class ThemeTestHooks {
     $items['theme_test_suggestion_provided'] = ['variables' => []];
     $items['theme_test_specific_suggestions'] = ['variables' => []];
     $items['theme_test_suggestions'] = ['variables' => []];
-    $items['theme_test_general_suggestions'] = ['variables' => ['module_hook' => 'theme_test_theme', 'theme_hook' => 'none']];
+    $items['theme_test_general_suggestions'] = [
+      'variables' => [
+        'module_hook' => 'theme_test_theme',
+        'theme_hook' => 'none',
+      ],
+    ];
     $items['theme_test_foo'] = ['variables' => ['foo' => NULL]];
     $items['theme_test_render_element'] = ['render element' => 'elements'];
     $items['theme_test_render_element_children'] = ['render element' => 'element'];
@@ -61,7 +66,10 @@ class ThemeTestHooks {
    */
   #[Hook('theme_registry_alter')]
   public function themeRegistryAlter(&$registry): void {
-    $registry['theme_test_preprocess_callback']['preprocess functions'][] = ['\Drupal\theme_test\ThemeTestPreprocess', 'preprocess'];
+    $registry['theme_test_preprocess_callback']['preprocess functions'][] = [
+      '\Drupal\theme_test\ThemeTestPreprocess',
+      'preprocess',
+    ];
   }
 
   /**
@@ -77,7 +85,7 @@ class ThemeTestHooks {
    */
   #[Hook('theme_suggestions_alter')]
   public function themeSuggestionsAlter(array &$suggestions, array $variables, $hook): void {
-    \Drupal::messenger()->addStatus('theme_test_theme_suggestions_alter' . '() executed for ' . $hook . '.');
+    \Drupal::messenger()->addStatus('theme_test_theme_suggestions_alter() executed for ' . $hook . '.');
   }
 
   /**
@@ -85,7 +93,7 @@ class ThemeTestHooks {
    */
   #[Hook('theme_suggestions_theme_test_suggestions_alter')]
   public function themeSuggestionsThemeTestSuggestionsAlter(array &$suggestions, array $variables): void {
-    \Drupal::messenger()->addStatus('theme_test_theme_suggestions_theme_test_suggestions_alter' . '() executed.');
+    \Drupal::messenger()->addStatus('theme_test_theme_suggestions_theme_test_suggestions_alter() executed.');
   }
 
   /**
@@ -108,9 +116,9 @@ class ThemeTestHooks {
   #[Hook('library_info_alter')]
   public function libraryInfoAlter(array &$libraries, string $extension) : void {
     // Allow test code to simulate library changes in a particular extension by
-    // setting a state key in the form `theme_test_library_info_alter $extension`,
-    // whose values is an array containing everything that should be recursively
-    // merged into the given extension's library definitions.
+    // setting a state key in the form `theme_test_library_info_alter
+    // $extension`, whose values is an array containing everything that should
+    // be recursively merged into the given extension's library definitions.
     $info = \Drupal::state()->get('theme_test_library_info_alter' . " {$extension}");
     if (is_array($info)) {
       $libraries = NestedArray::mergeDeep($libraries, $info);

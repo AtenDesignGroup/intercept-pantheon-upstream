@@ -51,6 +51,7 @@ abstract class ImageTestBase extends CKEditor5TestBase {
    * Provides the relevant image attributes.
    *
    * @return string[]
+   *   An associative array with the image source, width, and height.
    */
   protected function imageAttributes() {
     return [
@@ -67,6 +68,7 @@ abstract class ImageTestBase extends CKEditor5TestBase {
    *   Reverse attributes when printing them.
    *
    * @return string
+   *   A space-separated string of image attributes.
    */
   protected function imageAttributesAsString($reverse = FALSE) {
     $string = [];
@@ -90,7 +92,7 @@ abstract class ImageTestBase extends CKEditor5TestBase {
     $dialog = $page->find('css', '.ck-dialog');
     $src_input = $dialog->find('css', '.ck-image-insert-url input[type=text]');
     $src_input->setValue($src);
-    $dialog->find('xpath', "//button[span[text()='Accept']]")->click();
+    $dialog->find('xpath', "//button[span[text()='Insert']]")->click();
     // Wait for the image to be uploaded and rendered by CKEditor 5.
     $this->assertNotEmpty($this->assertSession()->waitForElementVisible('css', '.ck-widget.image > img[src="' . $src . '"]'));
   }

@@ -181,6 +181,9 @@ class ControllerResolverTest extends UnitTestCase {
 
 }
 
+/**
+ * Mock for the controller.
+ */
 class MockController {
 
   public function getResult() {
@@ -192,6 +195,10 @@ class MockController {
   }
 
 }
+
+/**
+ * Mock for the PSR-7 controller.
+ */
 class MockControllerPsr7 {
 
   public function getResult() {
@@ -204,7 +211,16 @@ class MockControllerPsr7 {
 
 }
 
+/**
+ * Mock for the injected service.
+ */
 class MockContainerInjection implements ContainerInjectionInterface {
+
+  /**
+   * The test value saved during construction.
+   *
+   * @var string
+   */
   protected $result;
 
   public function __construct($result) {
@@ -221,6 +237,9 @@ class MockContainerInjection implements ContainerInjectionInterface {
 
 }
 
+/**
+ * Test class used for testing the Controller resolver class.
+ */
 class MockInvokeController {
 
   public function __invoke() {

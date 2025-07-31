@@ -334,6 +334,8 @@ system.action.*:
 system.file:
   type: config_object
   label: 'File system'
+  constraints:
+    FullyValidatable: ~
   mapping:
     allow_insecure_uploads:
       type: boolean
@@ -341,12 +343,20 @@ system.file:
     default_scheme:
       type: string
       label: 'Default download method'
+      constraints:
+        ClassResolver:
+          classOrService: 'stream_wrapper_manager'
+          method: 'isValidScheme'
     path:
       type: mapping
       label: 'Path settings'
+      deprecated: "The 'path' config schema is deprecated in drupal:11.2.0 and will be removed from drupal 12.0.0. Use 'file_temp_path' key in settings.php instead. See https://www.drupal.org/node/3039255."
     temporary_maximum_age:
       type: integer
       label: 'Maximum age for temporary files'
+      constraints:
+        Range:
+          min: 0
 
 system.image:
   type: config_object
@@ -438,13 +448,23 @@ block.settings.system_branding_block:
 block.settings.system_menu_block:*:
   type: block_settings
   label: 'Menu block'
+  constraints:
+    FullyValidatable: ~
   mapping:
     level:
       type: integer
       label: 'Starting level'
+      constraints:
+        MenuLinkDepth:
+          min: 0
     depth:
       type: integer
       label: 'Maximum number of levels'
+      nullable: true
+      constraints:
+        MenuLinkDepth:
+          baseLevel: '[%parent.level]'
+          min: 1
     expand_all_items:
       type: boolean
       label: 'Expand all items'

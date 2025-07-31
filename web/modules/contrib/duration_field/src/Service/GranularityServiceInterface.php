@@ -14,7 +14,7 @@ interface GranularityServiceInterface {
    *
    * @param array $granularityArray
    *   An array containing the following keys. The value of each key will be
-   *   evaulated to TRUE or FALSE.
+   *   evaluated to TRUE or FALSE.
    *   - y (years)
    *   - m (months)
    *   - d (days)
@@ -66,7 +66,7 @@ interface GranularityServiceInterface {
    *   The granularity string to test against.
    *
    * @return bool
-   *   TRUE if the given granularity should be inclued, FALSE otherwise.
+   *   TRUE if the given granularity should be included, FALSE otherwise.
    */
   public function includeGranularityElement($granularityElement, $granularityString);
 

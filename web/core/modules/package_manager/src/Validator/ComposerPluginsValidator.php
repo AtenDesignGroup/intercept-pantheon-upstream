@@ -10,7 +10,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\package_manager\ComposerInspector;
 use Drupal\package_manager\Event\PreApplyEvent;
 use Drupal\package_manager\Event\PreCreateEvent;
-use Drupal\package_manager\Event\PreOperationStageEvent;
+use Drupal\package_manager\Event\SandboxValidationEvent;
 use Drupal\package_manager\Event\StatusCheckEvent;
 use Drupal\package_manager\PathLocator;
 use PhpTuf\ComposerStager\API\Exception\RuntimeException;
@@ -62,8 +62,6 @@ final class ComposerPluginsValidator implements EventSubscriberInterface {
    *   for those plugins that this validator explicitly supports.
    */
   private const SUPPORTED_PLUGINS_THAT_DO_MODIFY = [
-    // @see \Drupal\package_manager\Validator\ComposerPatchesValidator
-    'cweagans/composer-patches' => '^1.7.3 || ^2',
     // @see \Drupal\package_manager\PathExcluder\VendorHardeningExcluder
     'drupal/core-vendor-hardening' => '*',
     'php-http/discovery' => '*',
@@ -80,6 +78,7 @@ final class ComposerPluginsValidator implements EventSubscriberInterface {
     'composer/installers' => '^2.0',
     'dealerdirect/phpcodesniffer-composer-installer' => '^0.7.1 || ^1.0.0',
     'drupal/core-composer-scaffold' => '*',
+    'drupal/core-recipe-unpack' => '*',
     'drupal/core-project-message' => '*',
     'phpstan/extension-installer' => '^1.1',
     PhpTufValidator::PLUGIN_NAME => '^1',
@@ -128,8 +127,8 @@ final class ComposerPluginsValidator implements EventSubscriberInterface {
   /**
    * Validates the allowed Composer plugins, both in active and stage.
    */
-  public function validate(PreOperationStageEvent $event): void {
-    $stage = $event->stage;
+  public function validate(SandboxValidationEvent $event): void {
+    $sandbox_manager = $event->sandboxManager;
 
     // When about to copy the changes from the stage directory to the active
     // directory, use the stage directory's composer instead of the active.
@@ -137,7 +136,7 @@ final class ComposerPluginsValidator implements EventSubscriberInterface {
     // matters is the set of composer plugins that *will* apply — if a composer
     // plugin is being removed, that's fine.
     $dir = $event instanceof PreApplyEvent
-      ? $stage->getStageDirectory()
+      ? $sandbox_manager->getSandboxDirectory()
       : $this->pathLocator->getProjectRoot();
     try {
       $allowed_plugins = $this->inspector->getAllowPluginsConfig($dir);

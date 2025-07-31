@@ -2,11 +2,13 @@
 
 namespace Drupal\layout_builder\Hook;
 
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Link;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\layout_builder\InlineBlockEntityOperations;
 use Drupal\layout_builder\Plugin\Block\ExtraFieldBlock;
 use Drupal\Core\Render\Element;
@@ -24,52 +26,55 @@ use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Hook\Order\Order;
 
 /**
  * Hook implementations for layout_builder.
  */
 class LayoutBuilderHooks {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?string {
     // Add help text to the Layout Builder UI.
     if ($route_match->getRouteObject()->getOption('_layout_builder')) {
-      $output = '<p>' . t('This layout builder tool allows you to configure the layout of the main content area.') . '</p>';
+      $output = '<p>' . $this->t('This layout builder tool allows you to configure the layout of the main content area.') . '</p>';
       if (\Drupal::currentUser()->hasPermission('administer blocks')) {
-        $output .= '<p>' . t('To manage other areas of the page, use the <a href="@block-ui">block administration page</a>.', ['@block-ui' => Url::fromRoute('block.admin_display')->toString()]) . '</p>';
+        $output .= '<p>' . $this->t('To manage other areas of the page, use the <a href="@block-ui">block administration page</a>.', ['@block-ui' => Url::fromRoute('block.admin_display')->toString()]) . '</p>';
       }
       else {
-        $output .= '<p>' . t('To manage other areas of the page, use the block administration page.') . '</p>';
+        $output .= '<p>' . $this->t('To manage other areas of the page, use the block administration page.') . '</p>';
       }
-      $output .= '<p>' . t('Forms and links inside the content of the layout builder tool have been disabled.') . '</p>';
+      $output .= '<p>' . $this->t('Forms and links inside the content of the layout builder tool have been disabled.') . '</p>';
       return $output;
     }
     switch ($route_name) {
       case 'help.page.layout_builder':
-        $output = '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('Layout Builder allows you to use layouts to customize how content, content blocks, and other <a href=":field_help" title="Field module help, with background on content entities">content entities</a> are displayed.', [
+        $output = '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('Layout Builder allows you to use layouts to customize how content, content blocks, and other <a href=":field_help" title="Field module help, with background on content entities">content entities</a> are displayed.', [
           ':field_help' => Url::fromRoute('help.page', [
             'name' => 'field',
           ])->toString(),
         ]) . '</p>';
-        $output .= '<p>' . t('For more information, see the <a href=":layout-builder-documentation">online documentation for the Layout Builder module</a>.', [
+        $output .= '<p>' . $this->t('For more information, see the <a href=":layout-builder-documentation">online documentation for the Layout Builder module</a>.', [
           ':layout-builder-documentation' => 'https://www.drupal.org/docs/8/core/modules/layout-builder',
         ]) . '</p>';
-        $output .= '<h2>' . t('Uses') . '</h2>';
+        $output .= '<h2>' . $this->t('Uses') . '</h2>';
         $output .= '<dl>';
-        $output .= '<dt>' . t('Default layouts') . '</dt>';
-        $output .= '<dd>' . t('Layout Builder can be selectively enabled on the "Manage Display" page in the <a href=":field_ui">Field UI</a>. This allows you to control the output of each type of display individually. For example, a "Basic page" might have view modes such as Full and Teaser, with each view mode having different layouts selected.', [
+        $output .= '<dt>' . $this->t('Default layouts') . '</dt>';
+        $output .= '<dd>' . $this->t('Layout Builder can be selectively enabled on the "Manage Display" page in the <a href=":field_ui">Field UI</a>. This allows you to control the output of each type of display individually. For example, a "Basic page" might have view modes such as Full and Teaser, with each view mode having different layouts selected.', [
           ':field_ui' => Url::fromRoute('help.page', [
             'name' => 'field_ui',
           ])->toString(),
         ]) . '</dd>';
-        $output .= '<dt>' . t('Overridden layouts') . '</dt>';
-        $output .= '<dd>' . t('If enabled, each individual content item can have a custom layout. Once the layout for an individual content item is overridden, changes to the Default layout will no longer affect it. Overridden layouts may be reverted to return to matching and being synchronized to their Default layout.') . '</dd>';
-        $output .= '<dt>' . t('User permissions') . '</dt>';
-        $output .= '<dd>' . t('The Layout Builder module makes a number of permissions available, which can be set by role on the <a href=":permissions">permissions page</a>. For more information, see the <a href=":layout-builder-permissions">Configuring Layout Builder permissions</a> online documentation.', [
+        $output .= '<dt>' . $this->t('Overridden layouts') . '</dt>';
+        $output .= '<dd>' . $this->t('If enabled, each individual content item can have a custom layout. Once the layout for an individual content item is overridden, changes to the Default layout will no longer affect it. Overridden layouts may be reverted to return to matching and being synchronized to their Default layout.') . '</dd>';
+        $output .= '<dt>' . $this->t('User permissions') . '</dt>';
+        $output .= '<dd>' . $this->t('The Layout Builder module makes a number of permissions available, which can be set by role on the <a href=":permissions">permissions page</a>. For more information, see the <a href=":layout-builder-permissions">Configuring Layout Builder permissions</a> online documentation.', [
           ':permissions' => Url::fromRoute('user.admin_permissions.module', [
             'modules' => 'layout_builder',
           ])->toString(),
@@ -78,6 +83,7 @@ class LayoutBuilderHooks {
         $output .= '</dl>';
         return $output;
     }
+    return NULL;
   }
 
   /**
@@ -110,10 +116,10 @@ class LayoutBuilderHooks {
   }
 
   /**
-   * Implements hook_field_config_insert().
+   * Implements hook_ENTITY_TYPE_insert().
    */
   #[Hook('field_config_insert')]
-  public function fieldConfigInsert(FieldConfigInterface $field_config) {
+  public function fieldConfigInsert(FieldConfigInterface $field_config): void {
     // Clear the sample entity for this entity type and bundle.
     $sample_entity_generator = \Drupal::service('layout_builder.sample_entity_generator');
     $sample_entity_generator->delete($field_config->getTargetEntityTypeId(), $field_config->getTargetBundle());
@@ -121,10 +127,10 @@ class LayoutBuilderHooks {
   }
 
   /**
-   * Implements hook_field_config_delete().
+   * Implements hook_ENTITY_TYPE_delete().
    */
   #[Hook('field_config_delete')]
-  public function fieldConfigDelete(FieldConfigInterface $field_config) {
+  public function fieldConfigDelete(FieldConfigInterface $field_config): void {
     // Clear the sample entity for this entity type and bundle.
     $sample_entity_generator = \Drupal::service('layout_builder.sample_entity_generator');
     $sample_entity_generator->delete($field_config->getTargetEntityTypeId(), $field_config->getTargetBundle());
@@ -134,19 +140,19 @@ class LayoutBuilderHooks {
   /**
    * Implements hook_entity_view_alter().
    *
-   * ExtraFieldBlock block plugins add placeholders for each extra field which is
-   * configured to be displayed. Those placeholders are replaced by this hook.
-   * Modules that implement hook_entity_extra_field_info() use their
+   * ExtraFieldBlock block plugins add placeholders for each extra field which
+   * is configured to be displayed. Those placeholders are replaced by this
+   * hook. Modules that implement hook_entity_extra_field_info() use their
    * implementations of hook_entity_view_alter() to add the rendered output of
-   * the extra fields they provide, so we cannot get the rendered output of extra
-   * fields before this point in the view process.
+   * the extra fields they provide, so we cannot get the rendered output of
+   * extra fields before this point in the view process.
    * layout_builder_module_implements_alter() moves this implementation of
    * hook_entity_view_alter() to the end of the list.
    *
    * @see \Drupal\layout_builder\Plugin\Block\ExtraFieldBlock::build()
    * @see layout_builder_module_implements_alter()
    */
-  #[Hook('entity_view_alter')]
+  #[Hook('entity_view_alter', order: Order::Last)]
   public function entityViewAlter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void {
     // Only replace extra fields when Layout Builder has been used to alter the
     // build. See \Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay::buildMultiple().
@@ -161,8 +167,8 @@ class LayoutBuilderHooks {
           $replacement = $build[$field_name] ?? [];
           ExtraFieldBlock::replaceFieldPlaceholder($build, $replacement, $field_name);
           // After the rendered field in $build has been copied over to the
-          // ExtraFieldBlock block we must remove it from its original location or
-          // else it will be rendered twice.
+          // ExtraFieldBlock block we must remove it from its original location
+          // or else it will be rendered twice.
           unset($build[$field_name]);
         }
       }
@@ -193,7 +199,7 @@ class LayoutBuilderHooks {
    * Implements hook_entity_presave().
    */
   #[Hook('entity_presave')]
-  public function entityPresave(EntityInterface $entity) {
+  public function entityPresave(EntityInterface $entity): void {
     if (\Drupal::moduleHandler()->moduleExists('block_content')) {
       /** @var \Drupal\layout_builder\InlineBlockEntityOperations $entity_operations */
       $entity_operations = \Drupal::classResolver(InlineBlockEntityOperations::class);
@@ -205,7 +211,7 @@ class LayoutBuilderHooks {
    * Implements hook_entity_delete().
    */
   #[Hook('entity_delete')]
-  public function entityDelete(EntityInterface $entity) {
+  public function entityDelete(EntityInterface $entity): void {
     if (\Drupal::moduleHandler()->moduleExists('block_content')) {
       /** @var \Drupal\layout_builder\InlineBlockEntityOperations $entity_operations */
       $entity_operations = \Drupal::classResolver(InlineBlockEntityOperations::class);
@@ -261,11 +267,12 @@ class LayoutBuilderHooks {
    * Implements hook_ENTITY_TYPE_access().
    */
   #[Hook('block_content_access')]
-  public function blockContentAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  public function blockContentAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     /** @var \Drupal\block_content\BlockContentInterface $entity */
     if ($operation === 'view' || $entity->isReusable() || empty(\Drupal::service('inline_block.usage')->getUsage($entity->id()))) {
       // If the operation is 'view' or this is reusable block or if this is
-      // non-reusable that isn't used by this module then don't alter the access.
+      // non-reusable that isn't used by this module then don't alter the
+      // access.
       return AccessResult::neutral();
     }
     if ($account->hasPermission('create and edit custom blocks')) {
@@ -346,8 +353,8 @@ class LayoutBuilderHooks {
         }
           return $link->getUrl()->getRouteName() !== "entity.entity_view_display.{$entity_type_id}.default";
       });
-      // Links cannot be removed from an existing breadcrumb object. Create a new
-      // object but carry over the cacheable metadata.
+      // Links cannot be removed from an existing breadcrumb object. Create a
+      // new object but carry over the cacheable metadata.
       $cacheability = CacheableMetadata::createFromObject($breadcrumb);
       $breadcrumb = new Breadcrumb();
       $breadcrumb->setLinks($links);
@@ -359,11 +366,11 @@ class LayoutBuilderHooks {
    * Implements hook_entity_translation_create().
    */
   #[Hook('entity_translation_create')]
-  public function entityTranslationCreate(EntityInterface $translation) {
+  public function entityTranslationCreate(EntityInterface $translation): void {
     /** @var \Drupal\Core\Entity\FieldableEntityInterface $translation */
     if ($translation->hasField(OverridesSectionStorage::FIELD_NAME) && $translation->getFieldDefinition(OverridesSectionStorage::FIELD_NAME)->isTranslatable()) {
-      // When creating a new translation do not copy untranslated sections because
-      // per-language layouts are not supported.
+      // When creating a new translation do not copy untranslated sections
+      // because per-language layouts are not supported.
       $translation->set(OverridesSectionStorage::FIELD_NAME, []);
     }
   }

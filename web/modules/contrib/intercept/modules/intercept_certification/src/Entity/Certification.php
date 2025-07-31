@@ -46,6 +46,7 @@ use Drupal\user\UserInterface;
  *   admin_permission = "administer certification entities",
  *   entity_keys = {
  *     "id" = "id",
+ *     "label" = "id",
  *     "revision" = "vid",
  *     "uuid" = "uuid",
  *     "uid" = "author",

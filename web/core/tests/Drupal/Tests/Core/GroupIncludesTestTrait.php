@@ -16,6 +16,7 @@ trait GroupIncludesTestTrait {
 
   /**
    * @return array[]
+   *   An array of module filenames mapped to their virtual file system paths.
    */
   public static function setupGroupIncludes(): array {
     vfsStream::setup('drupal_root');
@@ -26,7 +27,7 @@ trait GroupIncludesTestTrait {
     file_put_contents('vfs://drupal_root/test_module.module', <<<'EOD'
 <?php
 
-function test_module_hook_info() {
+function test_module_hook_info(): array {
   $hooks['token_info'] = [
     'group' => 'tokens',
   ];

@@ -5,13 +5,15 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   /**
    * Webform cards administration.
    *
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformCardsAdmin = {
-    attach: function (context) {
+    attach(context) {
       // Determine if the form is the context or it is within the context.
       var $forms = $(context).is('form.webform-edit-form')
         ? $(context)

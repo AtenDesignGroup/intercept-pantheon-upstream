@@ -534,7 +534,7 @@ class RoomReservationForm extends ContentEntityForm {
     if (!empty(array_filter($validationMessages))) {
       foreach (array_filter($validationMessages) as $key => $validationMessage) {
         // Don't set errors if the user should be able to bypass this constraint.
-        if ($this->currentUser->hasPermission($bypassPermissions[$key])) {
+        if ($bypassPermissions[$key] && $this->currentUser->hasPermission($bypassPermissions[$key])) {
           continue;
         }
         $form_state->setErrorByName('field_dates', $validationMessage);

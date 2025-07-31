@@ -2,6 +2,7 @@
 
 namespace Drupal\big_pipe\Hook;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\big_pipe\Render\Placeholder\BigPipeStrategy;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -12,24 +13,27 @@ use Drupal\Core\Hook\Attribute\Hook;
  */
 class BigPipeHooks {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?string {
     switch ($route_name) {
       case 'help.page.big_pipe':
-        $output = '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('The BigPipe module sends pages with dynamic content in a way that allows browsers to show them much faster. For more information, see the <a href=":big_pipe-documentation">online documentation for the BigPipe module</a>.', [
+        $output = '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('The BigPipe module sends pages with dynamic content in a way that allows browsers to show them much faster. For more information, see the <a href=":big_pipe-documentation">online documentation for the BigPipe module</a>.', [
           ':big_pipe-documentation' => 'https://www.drupal.org/documentation/modules/big_pipe',
         ]) . '</p>';
-        $output .= '<h2>' . t('Uses') . '</h2>';
+        $output .= '<h2>' . $this->t('Uses') . '</h2>';
         $output .= '<dl>';
-        $output .= '<dt>' . t('Speeding up your site') . '</dt>';
-        $output .= '<dd>' . t('The module requires no configuration. Every part of the page contains metadata that allows BigPipe to figure this out on its own.') . '</dd>';
+        $output .= '<dt>' . $this->t('Speeding up your site') . '</dt>';
+        $output .= '<dd>' . $this->t('The module requires no configuration. Every part of the page contains metadata that allows BigPipe to figure this out on its own.') . '</dd>';
         $output .= '</dl>';
         return $output;
     }
+    return NULL;
   }
 
   /**
@@ -44,9 +48,9 @@ class BigPipeHooks {
       return;
     }
     $request = \Drupal::request();
-    // BigPipe is only used when there is an actual session, so only add the no-JS
-    // detection when there actually is a session.
-    // @see \Drupal\big_pipe\Render\Placeholder\BigPipeStrategy.
+    // BigPipe is only used when there is an actual session, so only add the
+    // no-JS detection when there actually is a session. @see
+    // \Drupal\big_pipe\Render\Placeholder\BigPipeStrategy.
     $session_exists = \Drupal::service('session_configuration')->hasSession($request);
     $page['#cache']['contexts'][] = 'session.exists';
     // Only do the no-JS detection while we don't know if there's no JS support:

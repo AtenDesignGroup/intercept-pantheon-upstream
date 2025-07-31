@@ -2,12 +2,12 @@
 
 namespace Drupal\package_manager\Validator;
 
+use Drupal\Core\Extension\Requirement\RequirementSeverity;
 use Drupal\package_manager\Event\PreApplyEvent;
 use Drupal\package_manager\Event\PreCreateEvent;
-use Drupal\package_manager\Event\PreOperationStageEvent;
 use Drupal\package_manager\Event\PreRequireEvent;
+use Drupal\package_manager\Event\SandboxValidationEvent;
 use Drupal\package_manager\Event\StatusCheckEvent;
-use Drupal\system\SystemManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -44,14 +44,14 @@ final class BaseRequirementsFulfilledValidator implements EventSubscriberInterfa
   /**
    * Validates that base requirements are fulfilled.
    *
-   * @param \Drupal\package_manager\Event\PreOperationStageEvent $event
+   * @param \Drupal\package_manager\Event\SandboxValidationEvent $event
    *   The event.
    */
-  public function validate(PreOperationStageEvent $event): void {
+  public function validate(SandboxValidationEvent $event): void {
     // If there are any errors from the validators which ran before this one,
     // base requirements are not fulfilled. Stop any further validators from
     // running.
-    if ($event->getResults(SystemManager::REQUIREMENT_ERROR)) {
+    if ($event->getResults(RequirementSeverity::Error->value)) {
       $event->stopPropagation();
     }
   }

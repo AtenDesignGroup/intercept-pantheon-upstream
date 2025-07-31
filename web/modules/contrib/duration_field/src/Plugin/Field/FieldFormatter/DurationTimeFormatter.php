@@ -56,7 +56,7 @@ class DurationTimeFormatter extends FormatterBase implements ContainerFactoryPlu
     $label,
     $view_mode,
     array $third_party_settings,
-    GranularityServiceInterface $granularityService
+    GranularityServiceInterface $granularityService,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_config, $settings, $label, $view_mode, $third_party_settings);
 

@@ -5,6 +5,8 @@
 
 (function ($, Drupal, drupalSettings, once) {
 
+  'use strict';
+
   // @see https://github.com/jackocnr/intl-tel-input#options
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.intlTelInput = Drupal.webform.intlTelInput || {};
@@ -16,7 +18,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformTelephoneInternational = {
-    attach: function (context) {
+    attach(context) {
       if (!$.fn.intlTelInput) {
         return;
       }

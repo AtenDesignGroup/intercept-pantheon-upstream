@@ -19,25 +19,26 @@ class EntityTestUpdateHooks {
    * Implements hook_entity_base_field_info().
    */
   #[Hook('entity_base_field_info')]
-  public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
+  public function entityBaseFieldInfo(EntityTypeInterface $entity_type): array {
     // Add a base field that will be used to test that fields added through
     // hook_entity_base_field_info() are handled correctly during a schema
     // conversion (e.g. from non-revisionable to revisionable).
+    $fields = [];
     if ($entity_type->id() == 'entity_test_update') {
-      $fields = [];
       $fields['test_entity_base_field_info'] = BaseFieldDefinition::create('string')->setLabel(new TranslatableMarkup('Field added by hook_entity_base_field_info()'))->setTranslatable(TRUE)->setRevisionable(TRUE);
-      return $fields;
     }
+    return $fields;
   }
 
   /**
    * Implements hook_entity_field_storage_info().
    */
   #[Hook('entity_field_storage_info')]
-  public function entityFieldStorageInfo(EntityTypeInterface $entity_type) {
+  public function entityFieldStorageInfo(EntityTypeInterface $entity_type): array {
     if ($entity_type->id() == 'entity_test_update') {
       return \Drupal::state()->get('entity_test_update.additional_field_storage_definitions', []);
     }
+    return [];
   }
 
   /**
@@ -59,7 +60,7 @@ class EntityTestUpdateHooks {
    * Implements hook_ENTITY_TYPE_presave() for the 'view' entity type.
    */
   #[Hook('view_presave')]
-  public function viewPresave(EntityInterface $entity) {
+  public function viewPresave(EntityInterface $entity): void {
     if (\Drupal::state()->get('entity_test_update.throw_view_exception') === $entity->id()) {
       throw new \LogicException('The view could not be saved.');
     }

@@ -18,14 +18,14 @@ class ViewsTestDataHooks {
    */
   #[Hook('form_views_form_test_form_multiple_default_alter')]
   public function formViewsFormTestFormMultipleDefaultAlter(&$form, FormStateInterface $form_state, $form_id) : void {
-    \Drupal::messenger()->addStatus(t('Test base form ID with Views forms and arguments.'));
+    \Drupal::messenger()->addStatus('Test base form ID with Views forms and arguments.');
   }
 
   /**
    * Implements hook_ENTITY_TYPE_update() for the 'view' entity type.
    */
   #[Hook('view_update')]
-  public function viewUpdate(ViewEntityInterface $view) {
+  public function viewUpdate(ViewEntityInterface $view): void {
     // Use state to keep track of how many times a file is saved.
     $view_save_count = \Drupal::state()->get('views_test_data.view_save_count', []);
     $view_save_count[$view->id()] = isset($view_save_count[$view->id()]) ? $view_save_count[$view->id()] + 1 : 1;

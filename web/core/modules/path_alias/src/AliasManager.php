@@ -240,8 +240,8 @@ class AliasManager implements AliasManagerInterface {
    *   An optional path for which an alias is being inserted.
    */
   protected function pathAliasPrefixListRebuild($path = NULL) {
-    // When paths are inserted, only rebuild the prefix list if the path has a top
-    // level component which is not already in the prefix list.
+    // When paths are inserted, only rebuild the prefix list if the path has a
+    // top level component which is not already in the prefix list.
     if (!empty($path)) {
       if ($this->pathPrefixes->get(strtok($path, '/'))) {
         return;
@@ -260,6 +260,8 @@ class AliasManager implements AliasManagerInterface {
    *  Use \Drupal\path_alias\AliasManager::pathAliasPrefixListRebuild instead.
    *
    * @see https://www.drupal.org/node/3467559
+   *
+   * cspell:ignore whitelist
    */
   protected function pathAliasWhitelistRebuild($path = NULL) {
     @trigger_error(__METHOD__ . '() is deprecated in drupal:11.1.0 and is removed from drupal:12.0.0. Use \Drupal\path_alias\AliasManager::pathAliasPrefixListRebuild() instead. See https://www.drupal.org/node/3467559', E_USER_DEPRECATED);

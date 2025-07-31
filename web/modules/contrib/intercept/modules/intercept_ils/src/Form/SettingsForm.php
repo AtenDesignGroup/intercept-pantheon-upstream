@@ -13,6 +13,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SettingsForm extends ConfigFormBase {
 
   /**
+   * The ILS manager
+   *
+   * @var \Drupal\intercept_ils\ILSManager
+   */
+  protected $manager;
+
+  /**
    * Constructs a new ILSManager object.
    *
    * @param \Drupal\intercept_ils\ILSManager $manager

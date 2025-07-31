@@ -475,14 +475,16 @@ class SeriesGenerator implements SeriesGeneratorInterface {
           $increment = (string) ($day) . ' days';
           $dateToCheck = date('Y-m-d', strtotime($dateField['start']['date'] . $increment));
           // Stop if this date is beyond our end date.
-          if ($input['field_date_time'][0]['ends_mode'] == 'date') {
-            // Calculate end date.
-            $ends_date = $input['field_date_time'][0]['ends_date'];
-            $end_date_string = $ends_date['date'] . $ends_date['time'];
-            $end_date_timestamp = strtotime($end_date_string);
-            if (strtotime($dateField['start']['date'] . $increment) > $end_date_timestamp) {
-              // Stop adding to the $logistics array.
-              break;
+          if (isset($input['field_date_time'][0]['ends_mode'])) {
+            if ($input['field_date_time'][0]['ends_mode'] == 'date') {
+              // Calculate end date.
+              $ends_date = $input['field_date_time'][0]['ends_date'];
+              $end_date_string = $ends_date['date'] . $ends_date['time'];
+              $end_date_timestamp = strtotime($end_date_string);
+              if (strtotime($dateField['start']['date'] . $increment) > $end_date_timestamp) {
+                // Stop adding to the $logistics array.
+                break;
+              }
             }
           }
           // Check to see if the day of the week for the "dateToCheck" is in the user's selection of weekdays.

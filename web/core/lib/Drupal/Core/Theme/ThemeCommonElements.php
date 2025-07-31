@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Core\Theme;
 
+use Drupal\Core\Datetime\DatePreprocess;
+
 /**
  * Provide common theme render elements.
  */
@@ -19,9 +21,11 @@ class ThemeCommonElements {
     return [
       'html' => [
         'render element' => 'html',
+        'initial preprocess' => ThemePreprocess::class . ':preprocessHtml',
       ],
       'page' => [
         'render element' => 'page',
+        'initial preprocess' => ThemePreprocess::class . ':preprocessPage',
       ],
       'page_title' => [
         'variables' => [
@@ -37,12 +41,15 @@ class ThemeCommonElements {
           'text' => NULL,
           'attributes' => [],
         ],
+        'initial preprocess' => DatePreprocess::class . ':preprocessTime',
       ],
       'datetime_form' => [
         'render element' => 'element',
+        'initial preprocess' => DatePreprocess::class . ':preprocessDatetimeForm',
       ],
       'datetime_wrapper' => [
         'render element' => 'element',
+        'initial preprocess' => DatePreprocess::class . ':preprocessDatetimeWrapper',
       ],
       'status_messages' => [
         'variables' => [
@@ -59,6 +66,7 @@ class ThemeCommonElements {
           'heading' => [],
           'set_active_class' => FALSE,
         ],
+        'initial preprocess' => ThemePreprocess::class . ':preprocessLinks',
       ],
       'dropbutton_wrapper' => [
         'variables' => [
@@ -66,14 +74,14 @@ class ThemeCommonElements {
         ],
       ],
       'image' => [
-        // HTML 4 and XHTML 1.0 always require an alt attribute. The HTML 5 draft
-        // allows the alt attribute to be omitted in some cases. Therefore,
-        // default the alt attribute to an empty string, but allow code providing
-        // variables to image.html.twig templates to pass explicit NULL for it to
-        // be omitted. Usually, neither omission nor an empty string satisfies
-        // accessibility requirements, so it is strongly encouraged for code
-        // building variables for image.html.twig templates to pass a meaningful
-        // value for the alt variable.
+        // HTML 4 and XHTML 1.0 always require an alt attribute. The HTML 5
+        // draft allows the alt attribute to be omitted in some cases.
+        // Therefore, default the alt attribute to an empty string, but allow
+        // code providing variables to image.html.twig templates to pass
+        // explicit NULL for it to be omitted. Usually, neither omission nor an
+        // empty string satisfies accessibility requirements, so it is strongly
+        // encouraged for code building variables for image.html.twig templates
+        // to pass a meaningful value for the alt variable.
         // - https://www.w3.org/TR/REC-html40/struct/objects.html#h-13.8
         // - https://www.w3.org/TR/xhtml1/dtds.html
         // - http://dev.w3.org/html5/spec/Overview.html#alt
@@ -168,6 +176,7 @@ class ThemeCommonElements {
         ],
         'includes' => ['core/includes/theme.maintenance.inc'],
         'template' => 'authorize-report',
+        'deprecated' => 'The "authorize-report" template is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. Use composer to manage the code for your site. See https://www.drupal.org/node/3522119',
       ],
       'pager' => [
         'render element' => 'pager',
@@ -227,6 +236,7 @@ class ThemeCommonElements {
       ],
       'container' => [
         'render element' => 'element',
+        'initial preprocess' => ThemePreprocess::class . ':preprocessContainer',
       ],
       // From field system.
       'field' => [

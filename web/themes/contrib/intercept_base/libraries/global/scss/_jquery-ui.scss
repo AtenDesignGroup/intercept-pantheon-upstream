@@ -16,6 +16,11 @@ body .ui-dialog {
   transition: all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   z-index: 101;
 }
+// These used to be span tags but were changed to h1 tags in
+// https://www.drupal.org/project/drupal/issues/3485202
+.ui-dialog-title {
+  font-size: rem(20px);
+}
 
 /**
  * Overlays

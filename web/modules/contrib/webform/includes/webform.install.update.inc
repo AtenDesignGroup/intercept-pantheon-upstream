@@ -5,6 +5,8 @@
  * Archived Webform update hooks.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\webform\Hook\WebformInstallUpdateHooks;
 use Drupal\Component\Uuid\Php as Uuid;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Database;
@@ -30,18 +32,9 @@ use Drupal\webform\WebformInterface;
 /**
  * Implements hook_update_dependencies().
  */
+#[LegacyHook]
 function webform_update_dependencies() {
-  // Ensure that system_update_8501() runs before the webform update, so that
-  // the new revision_default field is installed in the correct table.
-  // @see https://www.drupal.org/project/webform/issues/2958102
-  $dependencies['webform'][8099]['system'] = 8501;
-
-  // Ensure that system_update_8805() runs before the webform update, so that
-  // the 'path_alias' module is enabled and configured correctly.
-  // @see https://www.drupal.org/project/webform/issues/3166248
-  $dependencies['webform']['8158']['system'] = 8805;
-
-  return $dependencies;
+  return \Drupal::service(WebformInstallUpdateHooks::class)->updateDependencies();
 }
 
 /* ************************************************************************** */
@@ -4327,7 +4320,6 @@ function webform_update_8638() {
     ->load('authenticated');
   if ($filter_format && !$role->hasPermission('use text format webform_default')) {
     $role->grantPermission('use text format webform_default');
-    var_export($role->toArray());
     $role->save();
   }
 }

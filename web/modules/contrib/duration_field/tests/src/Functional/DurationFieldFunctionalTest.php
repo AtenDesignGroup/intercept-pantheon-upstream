@@ -10,6 +10,20 @@ namespace Drupal\Tests\duration_field\Functional;
 class DurationFieldFunctionalTest extends DurationFieldBrowserTestBase {
 
   /**
+   * The granularity options of the duration field.
+   *
+   * @var array
+   */
+  const DURATION_GRANULARITY = [
+    'y',
+    'm',
+    'd',
+    'h',
+    'i',
+    's',
+  ];
+
+  /**
    * Admin user for testing.
    *
    * @var \Drupal\user\UserInterface
@@ -218,86 +232,34 @@ class DurationFieldFunctionalTest extends DurationFieldBrowserTestBase {
   }
 
   /**
-   * Sets up a date.
+   * Tests the various setups when the weeks option enabled.
    */
-  protected function createDefaultSetup(
-    $granularity = [
-      'y',
-      'm',
-      'd',
-      'h',
-      'i',
-      's',
-    ]
-  ) {
+  public function testWeeksOption() {
+    // Make sure weeks are working properly on its own.
+    $this->createDefaultSetup(self::DURATION_GRANULARITY, TRUE);
+    $this->fillTextValue('#edit-title-0-value', 'Dummy Title');
+    $this->fillTextValue('#edit-field-duration-0-duration-y', 1);
+    $this->fillTextValue('#edit-field-duration-0-duration-m', 2);
+    $this->fillTextValue('#edit-field-duration-0-duration-d', 4);
+    $this->fillTextValue('#edit-field-duration-0-duration-h', 5);
+    $this->fillTextValue('#edit-field-duration-0-duration-i', 6);
+    $this->fillTextValue('#edit-field-duration-0-duration-s', 7);
+    $this->assertSession()->elementExists('css', 'input[name="field_duration[0][weeks]"]');
+    $this->getSession()->getPage()->fillField('field_duration[0][weeks]', 3);
 
-    $this->adminUser = $this->createUser([], 'Admin User', TRUE);
-    $admin_role = $this->createAdminRole();
-    $this->adminUser->addRole($admin_role);
-    $this->drupalLogin($this->adminUser);
-    $this->contentType = $this->createContentType(['type' => 'test_type', 'name' => 'Test Type']);
-    $this->drupalGet('admin/structure/types/manage/test_type/fields/add-field');
+    $this->click('input[name="op"]');
     $this->assertStatusCodeEquals(200);
-    $this->selectSelectOption('#edit-new-storage-type', 'duration');
-    $this->fillTextValue('#edit-label', 'Duration');
-    $this->fillTextValue('#edit-field-name', 'duration');
-    $this->click('#edit-submit');
-    $this->assertSession()->addressMatches('/^\/admin\/structure\/types\/manage\/test_type\/fields\/node.test_type.field_duration\/storage$/');
-    $this->assertStatusCodeEquals(200);
-    $this->click('#edit-submit');
-    $this->assertSession()->addressMatches('/^\/admin\/structure\/types\/manage\/test_type\/fields\/node.test_type.field_duration$/');
-    $this->assertStatusCodeEquals(200);
-    $check = array_diff(['y', 'm', 'd', 'h', 'i', 's'], $granularity);
-    foreach ($check as $field) {
-      $this->checkCheckbox('#edit-settings-granularity-' . $field);
-    }
+    $this->assertTextExists('1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds');
 
-    foreach ($granularity as $field) {
-      $this->assertCheckboxChecked('#edit-settings-granularity-' . $field);
-    }
-    $this->click('#edit-submit');
-    $this->assertSession()->addressMatches('/^\/admin\/structure\/types\/manage\/test_type\/fields$/');
+    $this->setHumanReadableOptions('short');
+    $this->drupalGet('/node/1');
     $this->assertStatusCodeEquals(200);
-    $this->assertElementExistsXpath('//table[@id="field-overview"]//td[text()="Duration"]');
-    $this->drupalGet('node/add/test_type');
-    $this->assertStatusCodeEquals(200);
-    $this->assertSession()->addressMatches('/^\/node\/add\/test_type$/');
-    foreach ($granularity as $field) {
-      $this->assertElementExists('input#edit-field-duration-0-duration-' . $field . '[type="number"]');
-    }
-  }
+    $this->assertTextExists('1 yr 2 mo 3 wks 4 days 5 hr 6 min 7 s');
 
-  /**
-   * Sets some human readable options.
-   */
-  protected function setHumanReadableOptions($text_length = 'full', $separator = 'space') {
-    $this->drupalGet('/admin/structure/types/manage/test_type/display');
+    $this->setHumanReadableOptions('full', 'hyphen');
+    $this->drupalGet('/node/1');
     $this->assertStatusCodeEquals(200);
-    $this->click('#edit-fields-field-duration-settings-edit');
-    $this->assertStatusCodeEquals(200);
-    $this->selectSelectOption('#edit-fields-field-duration-settings-edit-form-settings-text-length', $text_length);
-    $this->selectSelectOption('#edit-fields-field-duration-settings-edit-form-settings-separator', $separator);
-    $this->click('#edit-fields-field-duration-settings-edit-form-actions-save-settings');
-    $this->assertStatusCodeEquals(200);
-    $this->click('#edit-submit');
-    $this->assertStatusCodeEquals(200);
-  }
-
-  /**
-   * Sets the formatter to be tested.
-   */
-  protected function setFormatter($formatter) {
-
-    $types = [
-      'raw' => 'duration_string_display',
-      'human' => 'duration_human_display',
-      'time' => 'duration_time_display',
-    ];
-
-    $this->drupalGet('/admin/structure/types/manage/test_type/display');
-    $this->assertStatusCodeEquals(200);
-    $this->selectSelectOption('#edit-fields-field-duration-type', $types[$formatter]);
-    $this->click('#edit-submit');
+    $this->assertTextExists('1 year - 2 months - 3 weeks - 4 days - 5 hours - 6 minutes - 7 seconds');
   }
 
 }

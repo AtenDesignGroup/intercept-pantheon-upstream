@@ -2,14 +2,17 @@
 
 namespace Drupal\block_content\Controller;
 
+use Drupal\block_content\BlockContentTypeInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\block_content\BlockContentTypeInterface;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Controller routines for custom block routes.
+ */
 class BlockContentController extends ControllerBase {
 
   /**
@@ -85,7 +88,8 @@ class BlockContentController extends ControllerBase {
     uasort($types, [$this->blockContentTypeStorage->getEntityType()->getClass(), 'sort']);
     if ($types && count($types) == 1) {
       $type = reset($types);
-      return $this->addForm($type, $request);
+      $query = $request->query->all();
+      return $this->redirect('block_content.add_form', ['block_content_type' => $type->id()], ['query' => $query]);
     }
     if (count($types) === 0) {
       return [
@@ -115,9 +119,9 @@ class BlockContentController extends ControllerBase {
       'type' => $block_content_type->id(),
     ]);
     if (($theme = $request->query->get('theme')) && in_array($theme, array_keys($this->themeHandler->listInfo()))) {
-      // We have navigated to this page from the block library and will keep track
-      // of the theme for redirecting the user to the configuration page for the
-      // newly created block in the given theme.
+      // We have navigated to this page from the block library and will keep
+      // track of the theme for redirecting the user to the configuration page
+      // for the newly created block in the given theme.
       $block->setTheme($theme);
     }
     return $this->entityFormBuilder()->getForm($block);

@@ -19,6 +19,9 @@ class MinimalTest extends BrowserTestBase {
   use SchemaCheckTestTrait;
   use RequirementsPageTrait;
 
+  /**
+   * {@inheritdoc}
+   */
   protected $profile = 'minimal';
 
   /**

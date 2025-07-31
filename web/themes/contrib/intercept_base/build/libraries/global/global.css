@@ -178,9 +178,9 @@ input[type=search]::-webkit-search-decoration {
 }
 
 fieldset {
-  border: 1px solid #c0c0c0;
+  border: 0;
   margin: 0 2px;
-  padding: 0.35em 0.625em 0.75em;
+  padding: 0;
 }
 
 legend {
@@ -721,6 +721,11 @@ input[type=submit]:not(.unstyled):not(.js-hide)[disabled],
   background-color: #d3d8df;
 }
 
+.ui-dialog button:hover, .ui-dialog button:active, .ui-dialog button:focus {
+  color: #fff;
+  font-weight: 900;
+}
+
 .button--prominent {
   background: #eef1f4;
   color: #4c4d4f;
@@ -1025,6 +1030,10 @@ body .ui-dialog {
   color: rgba(0, 0, 0, 0.87);
   transition: all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   z-index: 101;
+}
+
+.ui-dialog-title {
+  font-size: 1.25rem;
 }
 
 /**

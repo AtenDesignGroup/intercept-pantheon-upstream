@@ -717,7 +717,15 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       '#type' => 'link',
       '#title' => $title,
       '#url' => $this->ensureDestination(Url::fromRoute($route_name, $route_parameters)),
-      '#attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NORMAL, ['button', 'button-action', 'button--small', 'button-webform-table-setting']),
+      '#attributes' => WebformDialogHelper::getModalDialogAttributes(
+        WebformDialogHelper::DIALOG_NORMAL,
+        [
+          'button',
+          'button-action',
+          'button--small',
+          'button-webform-table-setting',
+        ],
+      ),
     ];
   }
 
@@ -805,7 +813,13 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       case 'sticky':
       case 'locked':
         return [
-          'data' => new FormattableMarkup('<span class="webform-icon webform-icon-@name webform-icon-@name--link"></span><span class="visually-hidden">@title</span> ', ['@name' => $name, '@title' => $title]),
+          'data' => new FormattableMarkup(
+            '<span class="webform-icon webform-icon-@name webform-icon-@name--link"></span><span class="visually-hidden">@title</span> ',
+            [
+              '@name' => $name,
+              '@title' => $title,
+            ]
+          ),
           'class' => ['webform-results-table__icon'],
           'field' => $name,
           'specifier' => $name,
@@ -901,7 +915,13 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
         return [
           'data' => [
             '#type' => 'link',
-            '#title' => new FormattableMarkup('<span class="webform-icon webform-icon-notes webform-icon-notes--@state" title="@label"></span><span class="visually-hidden">@label</span>', ['@state' => $state, '@label' => $label]),
+            '#title' => new FormattableMarkup(
+              '<span class="webform-icon webform-icon-notes webform-icon-notes--@state" title="@label"></span><span class="visually-hidden">@label</span>',
+              [
+                '@state' => $state,
+                '@label' => $label,
+              ]
+            ),
             '#url' => $notes_url,
             '#attributes' => WebformDialogHelper::getModalDialogAttributes(WebformDialogHelper::DIALOG_NARROW),
           ],

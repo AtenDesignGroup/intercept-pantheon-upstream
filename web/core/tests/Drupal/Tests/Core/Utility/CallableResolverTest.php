@@ -211,8 +211,16 @@ class CallableResolverTest extends UnitTestCase {
 
 }
 
+/**
+ * Test class mocking container injection.
+ */
 class MockContainerInjection implements ContainerInjectionInterface {
 
+  /**
+   * The value to be injected.
+   *
+   * @var string
+   */
   protected $injected;
 
   public function __construct($result) {
@@ -229,6 +237,9 @@ class MockContainerInjection implements ContainerInjectionInterface {
 
 }
 
+/**
+ * Test class for testing a mock static callable.
+ */
 class NoInstantiationMockStaticCallable {
 
   public function __construct() {
@@ -241,6 +252,9 @@ class NoInstantiationMockStaticCallable {
 
 }
 
+/**
+ * A test class with callable methods.
+ */
 class MethodCallable {
 
   /**
@@ -274,5 +288,8 @@ class MethodCallable {
 
 }
 
+/**
+ * A test class with no callable methods.
+ */
 class NoMethodCallable {
 }

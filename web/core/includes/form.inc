@@ -7,7 +7,6 @@
 
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Batch\BatchStorageInterface;
-use Drupal\Core\Database\IntegrityConstraintViolationException;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\RenderElementBase;
 use Drupal\Core\Template\Attribute;
@@ -23,7 +22,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * the #options property to an associative array in which the keys are group
  * labels, and the values are associative arrays in the normal #options format.
  *
- * @param $variables
+ * @param array $variables
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #title, #value, #options, #description, #extra,
@@ -68,7 +67,7 @@ function template_preprocess_select(&$variables): void {
  *     or 'optgroup'.
  *   - value: A string that contains the value attribute for the option.
  */
-function form_select_options($element, $choices = NULL) {
+function form_select_options($element, $choices = NULL): array {
   if (!isset($choices)) {
     if (empty($element['#options'])) {
       return [];
@@ -85,8 +84,8 @@ function form_select_options($element, $choices = NULL) {
     unset($choices['#sort_start']);
   }
 
-  // array_key_exists() accommodates the rare event where $element['#value'] is NULL.
-  // isset() fails in this situation.
+  // array_key_exists() accommodates the rare event where $element['#value'] is
+  // NULL. isset() fails in this situation.
   $value_valid = \array_key_exists('#value', $element);
   $value_is_array = $value_valid && is_array($element['#value']);
   // Check if the element is multiple select and no value has been selected.
@@ -153,9 +152,9 @@ function form_select_options($element, $choices = NULL) {
  * As usual with functions that can return [] or FALSE, do not
  * forget to use === and !== if needed.
  *
- * @param $element
+ * @param array $element
  *   The select element to search.
- * @param $key
+ * @param string $key
  *   The key to look for.
  *
  * @return array|bool
@@ -355,10 +354,10 @@ function template_preprocess_input(&$variables): void {
  *
  * Default template: form.html.twig.
  *
- * @param $variables
+ * @param array $variables
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
- *     Properties used: #action, #method, #attributes, #children
+ *     Properties used: #action, #method, #attributes, #children.
  */
 function template_preprocess_form(&$variables): void {
   $element = $variables['element'];
@@ -392,7 +391,11 @@ function template_preprocess_textarea(&$variables): void {
   $variables['wrapper_attributes'] = new Attribute();
   $variables['attributes'] = new Attribute($element['#attributes']);
   $variables['value'] = $element['#value'];
-  $variables['resizable'] = !empty($element['#resizable']) ? $element['#resizable'] : NULL;
+  $resizable = !empty($element['#resizable']) ? $element['#resizable'] : NULL;
+  $variables['resizable'] = $resizable;
+  if ($resizable) {
+    $variables['attributes']->addClass('resize-' . $resizable);
+  }
   $variables['required'] = !empty($element['#required']) ? $element['#required'] : NULL;
 }
 
@@ -671,9 +674,9 @@ function template_preprocess_form_element_label(&$variables): void {
  *   \Drupal::messenger()->addMessage($message);
  *   // Providing data for the redirected page is done through the session.
  *   foreach ($results as $result) {
- *     $items[] = t('Loaded node %title.', ['%title' => $result)];
+ *     $items[] = t('Loaded node %title.', ['%title' => $result]);
  *   }
- *   $session = \Drupal::getRequest()->getSession();
+ *   $session = \Drupal::request()->getSession();
  *   $session->set('my_batch_results', $items);
  * }
  * @endcode
@@ -694,7 +697,7 @@ function template_preprocess_form_element_label(&$variables): void {
  * 'finished' callback. Batch sets are processed sequentially, with the progress
  * bar starting afresh for each new set.
  *
- * @param $batch_definition
+ * @param array $batch_definition
  *   An associative array defining the batch, with the following elements (all
  *   are optional except as noted):
  *   - operations: (required) Array of operations to be performed, where each
@@ -703,7 +706,7 @@ function template_preprocess_form_element_label(&$variables): void {
  *     Example:
  *     @code
  *     [
- *       ['callback_batch_operation_1', [$arg1)],
+ *       ['callback_batch_operation_1', [$arg1]],
  *       ['callback_batch_operation_2', [$arg2_1, $arg2_2]],
  *     ]
  *     @endcode
@@ -712,8 +715,10 @@ function template_preprocess_form_element_label(&$variables): void {
  *   - init_message: Message displayed while the processing is initialized.
  *     Defaults to t('Initializing.').
  *   - progress_message: Message displayed while processing the batch. Available
- *     placeholders are @current, @remaining, @total, @percentage, @estimate and
- *     @elapsed. Defaults to t('Completed @current of @total.').
+ *     placeholders are "@current", "@remaining", "@total", "@percentage",
+ *     phpcs:ignore Drupal.Commenting.FunctionComment.ParamCommentFullStop
+ *     "@estimate" and "@elapsed". Defaults to "t('Completed @current of
+ *     @total.')".
  *   - error_message: Message displayed if an error occurred while processing
  *     the batch. Defaults to t('An error has occurred.').
  *   - finished: Name of an implementation of callback_batch_finished(). This is
@@ -742,7 +747,7 @@ function template_preprocess_form_element_label(&$variables): void {
  *       \Drupal\Core\Queue\BatchMemory. Defaults to Batch if progressive is
  *       TRUE, or to BatchMemory if progressive is FALSE.
  */
-function batch_set($batch_definition) {
+function batch_set($batch_definition): void {
   if ($batch_definition) {
     $batch =& batch_get();
 
@@ -799,12 +804,12 @@ function batch_set($batch_definition) {
  * inserted a new set, additional sets will be inserted after the last inserted
  * set.
  *
- * @param &$batch
+ * @param array &$batch
  *   The batch array.
- * @param $batch_set
+ * @param array $batch_set
  *   The batch set.
  */
-function _batch_append_set(&$batch, $batch_set) {
+function _batch_append_set(&$batch, $batch_set): void {
   $append_after_index = $batch['current_set'];
   $reached_current_set = FALSE;
   foreach ($batch['sets'] as $index => $set) {
@@ -871,7 +876,7 @@ function _batch_append_set(&$batch, $batch_set) {
  * @param \Drupal\Core\Url|null $url
  *   (optional) URL of the batch processing page. Should only be used for
  *   separate scripts like update.php.
- * @param $redirect_callback
+ * @param string|null $redirect_callback
  *   (optional) Specify a function to be called to redirect to the progressive
  *   processing page.
  *
@@ -901,24 +906,7 @@ function batch_process($redirect = NULL, ?Url $url = NULL, $redirect_callback = 
 
     // Assign an id to progressive batches. Non-progressive batches skip
     // database storage completely.
-    try {
-      $batch['id'] = $batch['progressive'] ? \Drupal::service(BatchStorageInterface::class)->getId() : 'non-progressive';
-    }
-    catch (IntegrityConstraintViolationException) {
-      // @todo this is here to support the update path to deprecate
-      // Connection::nextId(). Remove in Drupal 11.
-      $connection = \Drupal::database();
-      $max_bid = (int) $connection->query('SELECT MAX([bid]) FROM {batch}')->fetchField();
-      $batch['id'] = $max_bid + 1;
-      $connection->insert('batch')
-        ->fields([
-          'bid' => $batch['id'],
-          'timestamp' => \Drupal::time()->getRequestTime(),
-          'token' => '',
-          'batch' => NULL,
-        ])
-        ->execute();
-    }
+    $batch['id'] = $batch['progressive'] ? \Drupal::service(BatchStorageInterface::class)->getId() : 'non-progressive';
 
     // Move operations to a job queue. Non-progressive batches will use a
     // memory-based queue.
@@ -952,7 +940,8 @@ function batch_process($redirect = NULL, ?Url $url = NULL, $redirect_callback = 
       // Store the batch.
       \Drupal::service(BatchStorageInterface::class)->create($batch);
 
-      // Set the batch number in the session to guarantee that it will stay alive.
+      // Set the batch number in the session to guarantee that it will stay
+      // alive.
       $session = \Drupal::request()->getSession();
       $batches = $session->get('batches', []);
       $batches[$batch['id']] = TRUE;
@@ -1001,12 +990,12 @@ function &batch_get() {
  * be used. The name and class of the queue are added by reference to the
  * batch set.
  *
- * @param $batch
+ * @param array $batch
  *   The batch array.
- * @param $set_id
+ * @param string $set_id
  *   The id of the set to process.
  */
-function _batch_populate_queue(&$batch, $set_id) {
+function _batch_populate_queue(&$batch, $set_id): void {
   $batch_set = &$batch['sets'][$set_id];
 
   if (isset($batch_set['operations'])) {
@@ -1030,7 +1019,7 @@ function _batch_populate_queue(&$batch, $set_id) {
 /**
  * Returns a queue object for a batch set.
  *
- * @param $batch_set
+ * @param string[][] $batch_set
  *   The batch set.
  *
  * @return \Drupal\Core\Queue\QueueInterface|null

@@ -128,12 +128,15 @@ class FormSubmitter implements FormSubmitterInterface {
     // If no redirect was specified, redirect to the current path.
     elseif ($redirect === NULL) {
       $request = $this->requestStack->getCurrentRequest();
-      $url = $this->urlGenerator->generateFromRoute('<current>', [], ['query' => $request->query->all(), 'absolute' => TRUE]);
+      $url = $this->urlGenerator->generateFromRoute('<current>', [], [
+        'query' => $request->query->all(),
+        'absolute' => TRUE,
+      ]);
     }
 
     if ($url) {
-      // According to RFC 7231, 303 See Other status code must be used to redirect
-      // user agent (and not default 302 Found).
+      // According to RFC 7231, 303 See Other status code must be used to
+      // redirect user agent (and not default 302 Found).
       // @see http://tools.ietf.org/html/rfc7231#section-6.4.4
       return new RedirectResponse($url, Response::HTTP_SEE_OTHER);
     }

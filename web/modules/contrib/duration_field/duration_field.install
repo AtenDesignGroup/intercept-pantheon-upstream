@@ -178,3 +178,26 @@ function duration_field_update_db_v1_v2(FieldConfigInterface $field) {
       ->execute();
   }
 }
+
+/**
+ * Add weeks column to duration fields.
+ */
+function duration_field_update_8201(&$sandbox) {
+  // Update all entity types that are using duration fields to install column.
+  $duration_fields = \Drupal::entityTypeManager()
+    ->getStorage('field_config')
+    ->loadByProperties(['field_type' => 'duration']);
+  /** @var \Drupal\Core\Field\FieldConfigInterface $duration_field */
+  foreach ($duration_fields as $duration_field) {
+    $schema = $duration_field->getFieldStorageDefinition()->getSchema();
+    $field_name = $duration_field->getName();
+    $entity_type_id = $duration_field->getTargetEntityTypeId();
+
+    if (!\Drupal::database()->schema()->fieldExists($entity_type_id . '__' . $field_name, $field_name . '_weeks')) {
+      \Drupal::database()->schema()->addField($entity_type_id . '__' . $field_name, $field_name . '_weeks', $schema['columns']['weeks']);
+    }
+    if (!\Drupal::database()->schema()->fieldExists($entity_type_id . '_revision__' . $field_name, $field_name . '_weeks')) {
+      \Drupal::database()->schema()->addField($entity_type_id . '_revision__' . $field_name, $field_name . '_weeks', $schema['columns']['weeks']);
+    }
+  }
+}

@@ -28,6 +28,8 @@ class Graph {
 
   /**
    * Holds the directed acyclic graph.
+   *
+   * @var array
    */
   protected $graph;
 
@@ -54,8 +56,8 @@ class Graph {
    *     this vertex.
    *   - 'reverse_paths': Contains a list of vertices that has a path from them
    *     to this vertex.
-   *   - 'weight': If there is a path from a vertex to another then the weight of
-   *     the latter is higher.
+   *   - 'weight': If there is a path from a vertex to another then the weight
+   *      of the latter is higher.
    *   - 'component': Vertices in the same component have the same component
    *     identifier.
    */
@@ -103,7 +105,8 @@ class Graph {
    * @see \Drupal\Component\Graph\Graph::searchAndSort()
    */
   protected function depthFirstSearch(&$state, $start, &$component = NULL) {
-    // Assign new component for each new vertex, i.e. when not called recursively.
+    // Assign new component for each new vertex, i.e. when not called
+    // recursively.
     if (!isset($component)) {
       $component = $start;
     }

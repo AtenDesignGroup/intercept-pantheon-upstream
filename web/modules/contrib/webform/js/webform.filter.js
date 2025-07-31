@@ -5,6 +5,8 @@
 
 (function ($, Drupal, debounce, once) {
 
+  'use strict';
+
   /**
    * Filters the webform element list by a text input search string.
    *

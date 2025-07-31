@@ -33,7 +33,7 @@ class AddConsumerAction extends LocalActionDefault {
   /**
    * {@inheritdoc}
    */
-  public function getTitle(Request $request = NULL) {
+  public function getTitle(?Request $request = NULL) {
     return $this->t('Add @label', [
       '@label' => $this->entityTypeManager->getDefinition('consumer')->getLabel(),
     ]);

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.15] - 2025-07-31
+
+* Changed certifications listing view to only show customer notes related specifically to certifications
+* Fixed a scenario where duplicate registrations for an event could occur
+* ​Fixed an error when clicking Preview during event creation and then returning to content editing
+* Removed the future constraint for staff trying to edit existing reservations
+* Fixed an issue where staff couldn’t create event registrations on behalf of customers
+
 ## [2.0.14] - 2025-06-25
 
 * Updated Room Reservations so that customers are not able to edit a room reservation once it starts

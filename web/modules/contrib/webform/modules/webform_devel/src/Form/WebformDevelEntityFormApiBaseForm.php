@@ -212,7 +212,7 @@ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
    *   If used and set to TRUE, var_export() will return the variable
    *   representation instead of outputting it.
    *
-   * @return string
+   * @return string|null
    *   Returns the variable representation when the return parameter is used and
    *   evaluates to TRUE. Otherwise, this function will return NULL.
    */

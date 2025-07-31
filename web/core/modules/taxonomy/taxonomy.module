@@ -12,7 +12,7 @@ use Drupal\taxonomy\Entity\Term;
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function taxonomy_theme_suggestions_taxonomy_term(array $variables) {
+function taxonomy_theme_suggestions_taxonomy_term(array $variables): array {
   $suggestions = [];
 
   /** @var \Drupal\taxonomy\TermInterface $term */
@@ -90,15 +90,20 @@ function taxonomy_term_is_page(Term $term) {
 }
 
 /**
+ * @addtogroup taxonomy_index
+ * @{
+ */
+
+/**
  * Builds and inserts taxonomy index entries for a given node.
  *
  * The index lists all terms that are related to a given node entity, and is
  * therefore maintained at the entity level.
  *
- * @param \Drupal\node\Entity\Node $node
+ * @param \Drupal\node\NodeInterface $node
  *   The node entity.
  */
-function taxonomy_build_node_index($node) {
+function taxonomy_build_node_index($node): void {
   // We maintain a denormalized table of term/node relationships, containing
   // only data for current, published nodes.
   if (!\Drupal::config('taxonomy.settings')->get('maintain_index_table') || !(\Drupal::entityTypeManager()->getStorage('node') instanceof SqlContentEntityStorage)) {
@@ -145,12 +150,12 @@ function taxonomy_build_node_index($node) {
  * @param \Drupal\Core\Entity\EntityInterface $node
  *   The node entity.
  */
-function taxonomy_delete_node_index(EntityInterface $node) {
+function taxonomy_delete_node_index(EntityInterface $node): void {
   if (\Drupal::config('taxonomy.settings')->get('maintain_index_table')) {
     \Drupal::database()->delete('taxonomy_index')->condition('nid', $node->id())->execute();
   }
 }
 
 /**
- * @} End of "defgroup taxonomy_index".
+ * @} End of "addtogroup taxonomy_index".
  */

@@ -5,6 +5,8 @@
 
 (function ($, drupalSettings, once) {
 
+  'use strict';
+
   // Disable clientside validation for webforms submitted using Ajax.
   // This prevents Computed elements with Ajax from breaking.
   // @see \Drupal\clientside_validation_jquery\Form\ClientsideValidationjQuerySettingsForm
@@ -16,7 +18,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformClientSideValidationAjax = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-clientside-validation-ajax', 'form.webform-submission-form .form-actions input[type="submit"]:not([formnovalidate])'))
         .addClass('cv-validate-before-ajax');
     }
@@ -30,7 +32,7 @@
    * @see https://github.com/jquery-validation/jquery-validation/pull/2119/commits
    */
   Drupal.behaviors.webformClientSideValidationDateTimeFix = {
-    attach: function (context) {
+    attach(context) {
       $(context).find(':input[type="date"], :input[type="time"], :input[type="datetime"]')
         .removeAttr('step')
         .removeAttr('min')

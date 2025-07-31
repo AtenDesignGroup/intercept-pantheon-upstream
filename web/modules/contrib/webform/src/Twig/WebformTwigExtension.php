@@ -142,7 +142,14 @@ class WebformTwigExtension extends AbstractExtension {
       return '';
     }
 
-    return (WebformHtmlHelper::containsHtml($value)) ? ['#markup' => $value, '#allowed_tags' => WebformXss::getAdminTagList()] : $value;
+    if (WebformHtmlHelper::containsHtml($value)) {
+      return [
+        '#markup' => $value,
+        '#allowed_tags' => WebformXss::getAdminTagList(),
+      ];
+    }
+
+    return $value;
   }
 
   /* ************************************************************************ */

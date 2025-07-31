@@ -28,7 +28,8 @@ function olivero_preprocess_html(&$variables): void {
 
   $variables['html_attributes']->setAttribute('style', "--color--primary-hue:$h;--color--primary-saturation:$s%;--color--primary-lightness:$l");
 
-  // So fonts can be preloaded from base theme in the event Olivero is used as a subtheme.
+  // So fonts can be preloaded from base theme in the event Olivero is used as a
+  // subtheme.
   $variables['olivero_path'] = \Drupal::request()->getBasePath() . '/' . \Drupal::service('extension.list.theme')->getPath('olivero');
 
   $query_string = \Drupal::service('asset.query_string')->get();
@@ -231,8 +232,8 @@ function olivero_theme_suggestions_block_alter(&$suggestions, array $variables):
         ->getRegion();
 
       $suggestions[] = 'block__' . $region;
-      $suggestions[] = 'block__' . $region . '__' . 'plugin_id' . '__' . $variables['elements']['#plugin_id'];
-      $suggestions[] = 'block__' . $region . '__' . 'id' . '__' . $variables['elements']['#id'];
+      $suggestions[] = 'block__' . $region . '__plugin_id__' . $variables['elements']['#plugin_id'];
+      $suggestions[] = 'block__' . $region . '__id__' . $variables['elements']['#id'];
     }
   }
 }
@@ -309,8 +310,9 @@ function olivero_preprocess_input(&$variables): void {
     $variables['attributes']['class'][] = Html::getClass('form-element--type-' . $type_html);
     $variables['attributes']['class'][] = Html::getClass('form-element--api-' . $type_api);
 
-    // This logic is functioning as expected, but there is nothing in the theme that renders the result.
-    // As a result it can't currently be covered by a functional test.
+    // This logic is functioning as expected, but there is nothing in the theme
+    // that renders the result. As a result it can't currently be covered by a
+    // functional test.
     if (!empty($variables['element']['#autocomplete_route_name'])) {
       $variables['autocomplete_message'] = t('Loading…');
     }
@@ -628,13 +630,15 @@ function olivero_form_views_exposed_form_alter(&$form): void {
  * Converts hex color strings to array of HSL values.
  *
  * @param string $hex_string
- *   The 6-character hexadecimal color code, optionally with a leading hash
+ *   The 6-character hexadecimal color code, optionally with a leading hash.
  *
  * @return array
  *   Array containing hue, saturation, and lightness values.
  *   $hue: integer of value 0-360 indicating the hue on a color wheel.
- *   $saturation: string of saturation as a percentage (0% all gray, 100% full color).
- *   $lightness: string of lightness as a percentage (0% darkened to black, 50% full color, 100% lightened to white).
+ *   $saturation: string of saturation as a percentage (0% all gray, 100% full
+ *   color).
+ *   $lightness: string of lightness as a percentage (0% darkened to black, 50%
+ *   full color, 100% lightened to white).
  *
  * @see https://css-tricks.com/converting-color-spaces-in-javascript
  *   Code based on JS version.

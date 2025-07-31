@@ -18,6 +18,8 @@ if (!jQuery.trim) {
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // @see https://select2.github.io/options.html
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.select2 = Drupal.webform.select2 || {};
@@ -31,7 +33,7 @@ if (!jQuery.trim) {
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformSelect2 = {
-    attach: function (context) {
+    attach(context) {
       if (!$.fn.select2) {
         return;
       }

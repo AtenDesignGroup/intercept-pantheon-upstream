@@ -7,13 +7,15 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   /**
    * Initialize and tweak webform tableselect behavior.
    *
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformTableSelect = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-tableselect', 'table.js-webform-tableselect', context))
         .each(Drupal.webformTableSelect);
     }

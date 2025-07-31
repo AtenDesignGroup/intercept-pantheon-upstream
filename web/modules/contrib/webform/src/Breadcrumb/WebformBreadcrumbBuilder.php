@@ -88,7 +88,18 @@ class WebformBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
     // Skip all config_translation routes except the overview
     // and allow Drupal to use the path as the breadcrumb.
-    if (strpos($route_name, 'config_translation') !== FALSE && !in_array($route_name, ['entity.webform.config_translation_overview', 'config_translation.item.overview.webform.config', 'config_translation.item.add.webform.config', 'config_translation.item.edit.webform.config', 'config_translation.item.delete.webform.config'])) {
+    $config_translation_route = strpos($route_name, 'config_translation') !== FALSE;
+    $webform_config_translation_route = !in_array(
+      $route_name,
+      [
+        'entity.webform.config_translation_overview',
+        'config_translation.item.overview.webform.config',
+        'config_translation.item.add.webform.config',
+        'config_translation.item.edit.webform.config',
+        'config_translation.item.delete.webform.config',
+      ]
+    );
+    if ($config_translation_route && $webform_config_translation_route) {
       return FALSE;
     }
     try {

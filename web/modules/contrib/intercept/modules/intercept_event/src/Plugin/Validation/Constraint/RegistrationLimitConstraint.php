@@ -23,6 +23,13 @@ class RegistrationLimitConstraint extends Constraint {
   public $errorMessage = 'User is already registered for this event.';
 
   /**
+   * The error message to display if a concurrent request caused a failure.
+   *
+   * @var string
+   */
+  public $lockMessage = 'Unable to process your registration. Please try again later.';
+
+  /**
    * The error message to display after failing validation.
    *
    * Personalized if the current user is the registrant.

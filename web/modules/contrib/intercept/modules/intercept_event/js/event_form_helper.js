@@ -96,7 +96,6 @@ Drupal.behaviors.eventFormHelper = {
       var _this = $(this);
       clearTimeout(timer);
       timer = setTimeout(function() {
-        console.log(_this.val());
         var titleValue = $('#edit-title-0-value').val();
         var altValue = $('input[id^="edit-image-primary-form-0-field-media-image-0-alt"]').val();
         if (titleValue == altValue) {

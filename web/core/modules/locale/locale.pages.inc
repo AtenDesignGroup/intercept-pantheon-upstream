@@ -4,6 +4,7 @@
  * @file
  */
 
+use Drupal\Core\Hook\Attribute\ProceduralHookScanStop;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 
@@ -21,6 +22,7 @@ use Drupal\Core\Url;
  *
  * @see \Drupal\locale\Form\TranslationStatusForm
  */
+#[ProceduralHookScanStop]
 function template_preprocess_locale_translation_update_info(array &$variables): void {
   foreach ($variables['updates'] as $update) {
     $variables['modules'][] = $update['name'];

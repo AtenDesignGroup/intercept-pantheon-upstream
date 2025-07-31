@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\package_manager\Kernel;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\package_manager\Event\PreApplyEvent;
 use Drupal\package_manager\Event\PreCreateEvent;
-use Drupal\package_manager\Event\PreOperationStageEvent;
+use Drupal\package_manager\Event\SandboxValidationEvent;
 use Drupal\package_manager\Event\PreRequireEvent;
 use Drupal\package_manager\Event\StatusCheckEvent;
 use Drupal\package_manager\ValidationResult;
@@ -23,6 +24,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class BaseRequirementsFulfilledValidatorTest extends PackageManagerKernelTestBase implements EventSubscriberInterface {
 
   use BaseRequirementValidatorTrait;
+  use StringTranslationTrait;
 
   /**
    * The event class to throw to an error for.
@@ -34,10 +36,10 @@ class BaseRequirementsFulfilledValidatorTest extends PackageManagerKernelTestBas
   /**
    * {@inheritdoc}
    */
-  public function validate(PreOperationStageEvent $event): void {
+  public function validate(SandboxValidationEvent $event): void {
     if (get_class($event) === $this->eventClass) {
       $event->addError([
-        t('This will not stand!'),
+        $this->t('This will not stand!'),
       ]);
     }
   }
@@ -81,7 +83,7 @@ class BaseRequirementsFulfilledValidatorTest extends PackageManagerKernelTestBas
     $this->assertEventPropagationStopped($event_class, [$validator, 'validate']);
 
     $result = ValidationResult::createError([
-      t('This will not stand!'),
+      $this->t('This will not stand!'),
     ]);
 
     if ($event_class === StatusCheckEvent::class) {

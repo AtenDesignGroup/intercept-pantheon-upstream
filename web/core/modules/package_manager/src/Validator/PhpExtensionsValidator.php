@@ -8,7 +8,7 @@ use Drupal\Component\FileSystem\FileSystem as DrupalFilesystem;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\package_manager\Event\PreApplyEvent;
 use Drupal\package_manager\Event\PreCreateEvent;
-use Drupal\package_manager\Event\PreOperationStageEvent;
+use Drupal\package_manager\Event\SandboxValidationEvent;
 use Drupal\package_manager\Event\StatusCheckEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -39,7 +39,7 @@ class PhpExtensionsValidator implements EventSubscriberInterface {
     if (self::insideTest()) {
       // By default, assume OpenSSL is enabled and Xdebug isn't. This allows us
       // to run tests in environments that we might not support in production,
-      // such as Drupal CI.
+      // such as a configured CI environment.
       $loaded_extensions = \Drupal::state()
         ->get('package_manager_loaded_php_extensions', ['openssl']);
       return in_array($name, $loaded_extensions, TRUE);
@@ -64,10 +64,10 @@ class PhpExtensionsValidator implements EventSubscriberInterface {
   /**
    * Flags an error if the OpenSSL extension is not installed.
    *
-   * @param \Drupal\package_manager\Event\PreOperationStageEvent $event
+   * @param \Drupal\package_manager\Event\SandboxValidationEvent $event
    *   The event object.
    */
-  public function validateOpenSsl(PreOperationStageEvent $event): void {
+  public function validateOpenSsl(SandboxValidationEvent $event): void {
     if (!$this->isExtensionLoaded('openssl')) {
       $message = $this->t('The OpenSSL extension is not enabled, which is a security risk. See <a href=":url">the PHP documentation</a> for information on how to enable this extension.', [
         ':url' => 'https://www.php.net/manual/en/openssl.installation.php',
@@ -80,6 +80,7 @@ class PhpExtensionsValidator implements EventSubscriberInterface {
    * Whether this validator is running inside a test.
    *
    * @return bool
+   *   TRUE if the validator is running in a test. FALSE otherwise.
    */
   private static function insideTest(): bool {
     // @see \Drupal\Core\CoreServiceProvider::registerTest()

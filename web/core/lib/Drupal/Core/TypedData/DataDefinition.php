@@ -312,6 +312,7 @@ class DataDefinition implements DataDefinitionInterface, \ArrayAccess {
    * {@inheritdoc}
    *
    * This is for BC support only.
+   *
    * @todo Remove in https://www.drupal.org/node/1928868.
    */
   public function offsetExists($offset): bool {
@@ -324,6 +325,7 @@ class DataDefinition implements DataDefinitionInterface, \ArrayAccess {
    * {@inheritdoc}
    *
    * This is for BC support only.
+   *
    * @todo Remove in https://www.drupal.org/node/1928868.
    */
   public function &offsetGet($offset): mixed {
@@ -337,6 +339,7 @@ class DataDefinition implements DataDefinitionInterface, \ArrayAccess {
    * {@inheritdoc}
    *
    * This is for BC support only.
+   *
    * @todo Remove in https://www.drupal.org/node/1928868.
    */
   public function offsetSet($offset, $value): void {
@@ -347,6 +350,7 @@ class DataDefinition implements DataDefinitionInterface, \ArrayAccess {
    * {@inheritdoc}
    *
    * This is for BC support only.
+   *
    * @todo Remove in https://www.drupal.org/node/1928868.
    */
   public function offsetUnset($offset): void {
@@ -357,6 +361,7 @@ class DataDefinition implements DataDefinitionInterface, \ArrayAccess {
    * Returns all definition values as array.
    *
    * @return array
+   *   The array holding values for all definition keys.
    */
   public function toArray() {
     return $this->definition;

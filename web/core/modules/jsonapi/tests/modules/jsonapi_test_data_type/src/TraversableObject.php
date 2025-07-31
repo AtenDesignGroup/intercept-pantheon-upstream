@@ -9,6 +9,11 @@ namespace Drupal\jsonapi_test_data_type;
  */
 class TraversableObject implements \IteratorAggregate {
 
+  /**
+   * The test data.
+   *
+   * @var string
+   */
   public $property = "value";
 
   /**

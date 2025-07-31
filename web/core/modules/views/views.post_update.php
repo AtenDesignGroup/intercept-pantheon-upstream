@@ -5,6 +5,7 @@
  * Post update functions for Views.
  */
 
+use Drupal\block\BlockInterface;
 use Drupal\Core\Config\Entity\ConfigEntityUpdater;
 use Drupal\views\ViewEntityInterface;
 use Drupal\views\ViewsConfigUpdater;
@@ -63,4 +64,49 @@ function views_post_update_views_data_argument_plugin_id(?array &$sandbox = NULL
   \Drupal::classResolver(ConfigEntityUpdater::class)->update($sandbox, 'view', function (ViewEntityInterface $view) use ($view_config_updater): bool {
     return $view_config_updater->needsEntityArgumentUpdate($view);
   });
+}
+
+/**
+ * Clean-up empty remember_roles display settings for views filters.
+ */
+function views_post_update_update_remember_role_empty(?array &$sandbox = NULL): void {
+  /** @var \Drupal\views\ViewsConfigUpdater $view_config_updater */
+  $view_config_updater = \Drupal::classResolver(ViewsConfigUpdater::class);
+  $view_config_updater->setDeprecationsEnabled(FALSE);
+  \Drupal::classResolver(ConfigEntityUpdater::class)->update($sandbox, 'view', function (ViewEntityInterface $view) use ($view_config_updater): bool {
+    return $view_config_updater->needsRememberRolesUpdate($view);
+  });
+}
+
+/**
+ * Adds a default table CSS class.
+ */
+function views_post_update_table_css_class(?array &$sandbox = NULL): void {
+  /** @var \Drupal\views\ViewsConfigUpdater $view_config_updater */
+  $view_config_updater = \Drupal::classResolver(ViewsConfigUpdater::class);
+  $view_config_updater->setDeprecationsEnabled(FALSE);
+  \Drupal::classResolver(ConfigEntityUpdater::class)->update($sandbox, 'view', function (ViewEntityInterface $view) use ($view_config_updater): bool {
+    return $view_config_updater->needsTableCssClassUpdate($view);
+  });
+}
+
+/**
+ * Defaults `items_per_page` to NULL in Views blocks.
+ */
+function views_post_update_block_items_per_page(?array &$sandbox = NULL): void {
+  if (!\Drupal::moduleHandler()->moduleExists('block')) {
+    return;
+  }
+  \Drupal::classResolver(ConfigEntityUpdater::class)
+    ->update($sandbox, 'block', function (BlockInterface $block): bool {
+      if (str_starts_with($block->getPluginId(), 'views_block:')) {
+        $settings = $block->get('settings');
+        if ($settings['items_per_page'] === 'none') {
+          $settings['items_per_page'] = NULL;
+          $block->set('settings', $settings);
+          return TRUE;
+        }
+      }
+      return FALSE;
+    });
 }

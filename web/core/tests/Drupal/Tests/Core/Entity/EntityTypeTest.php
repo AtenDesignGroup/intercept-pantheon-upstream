@@ -24,6 +24,7 @@ class EntityTypeTest extends UnitTestCase {
    *   An array of values to use for the EntityType.
    *
    * @return \Drupal\Core\Entity\EntityTypeInterface
+   *   The EntityType object.
    */
   protected function setUpEntityType($definition) {
     $definition += [
@@ -307,6 +308,7 @@ class EntityTypeTest extends UnitTestCase {
    * @covers ::getLabel
    */
   public function testGetLabel(): void {
+    // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
     $translatable_label = new TranslatableMarkup($this->randomMachineName());
     $entity_type = $this->setUpEntityType(['label' => $translatable_label]);
     $this->assertSame($translatable_label, $entity_type->getLabel());
@@ -320,6 +322,7 @@ class EntityTypeTest extends UnitTestCase {
    * @covers ::getGroupLabel
    */
   public function testGetGroupLabel(): void {
+    // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
     $translatable_group_label = new TranslatableMarkup($this->randomMachineName());
     $entity_type = $this->setUpEntityType(['group_label' => $translatable_group_label]);
     $this->assertSame($translatable_group_label, $entity_type->getGroupLabel());
@@ -482,6 +485,17 @@ class EntityTypeTest extends UnitTestCase {
     $entity_type = $this->setUpEntityType(['class' => EntityFormMode::class]);
     $this->assertTrue($entity_type->entityClassImplements(ConfigEntityInterface::class));
     $this->assertFalse($entity_type->entityClassImplements(\DateTimeInterface::class));
+  }
+
+  /**
+   * Tests the ::getBundleListCacheTags() method.
+   *
+   * @covers ::getBundleListCacheTags
+   */
+  public function testGetBundleListCacheTags(): void {
+    $entity_type = $this->setUpEntityType(['entity_keys' => ['id' => 'id']]);
+    $bundle = $this->randomMachineName();
+    $this->assertEquals([$entity_type->id() . '_list:' . $bundle], $entity_type->getBundleListCacheTags($bundle));
   }
 
 }

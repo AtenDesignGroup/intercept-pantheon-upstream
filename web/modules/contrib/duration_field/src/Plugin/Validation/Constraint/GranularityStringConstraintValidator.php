@@ -2,6 +2,7 @@
 
 namespace Drupal\duration_field\Plugin\Validation\Constraint;
 
+use Drupal\duration_field\Plugin\DataType\GranularityStringInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -43,7 +44,7 @@ class GranularityStringConstraintValidator extends ConstraintValidator {
    */
   private function isGranularityString($value) {
     if (is_string($value)) {
-      return preg_match(GraularityStringInterface::GRANULARITY_STRING_PATTERN, $value);
+      return preg_match(GranularityStringInterface::GRANULARITY_STRING_PATTERN, $value);
     }
 
     return FALSE;

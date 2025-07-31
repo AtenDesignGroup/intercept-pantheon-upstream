@@ -10,9 +10,15 @@ use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\user\EntityOwnerInterface;
 
+/**
+ * Service for storing and retrieving comment statistics.
+ */
 class CommentStatistics implements CommentStatisticsInterface {
+
+  use StringTranslationTrait;
 
   /**
    * The current database connection.
@@ -173,7 +179,7 @@ class CommentStatistics implements CommentStatisticsInterface {
   public function getRankingInfo() {
     return [
       'comments' => [
-        'title' => t('Number of comments'),
+        'title' => $this->t('Number of comments'),
         'join' => [
           'type' => 'LEFT',
           'table' => 'comment_entity_statistics',

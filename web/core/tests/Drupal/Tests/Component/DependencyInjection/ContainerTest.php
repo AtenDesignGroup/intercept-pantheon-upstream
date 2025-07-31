@@ -72,7 +72,7 @@ class ContainerTest extends TestCase {
     $container_definition = $this->getMockContainerDefinition();
     $container_definition['machine_format'] = !$this->machineFormat;
     $this->expectException(InvalidArgumentException::class);
-    $container = new $this->containerClass($container_definition);
+    new $this->containerClass($container_definition);
   }
 
   /**
@@ -238,6 +238,7 @@ class ContainerTest extends TestCase {
 
   /**
    * Tests that Container::get() for circular dependencies works properly.
+   *
    * @covers ::get
    * @covers ::createService
    */
@@ -357,6 +358,7 @@ class ContainerTest extends TestCase {
 
   /**
    * Tests that Container::get() for NULL service works properly.
+   *
    * @covers ::get
    * @covers ::createService
    */
@@ -1254,7 +1256,7 @@ class MockService {
    * Provides a factory method to get a service.
    *
    * @param string $class
-   *   The class name of the class to instantiate
+   *   The class name of the class to instantiate.
    * @param array $arguments
    *   (optional) Arguments to pass to the new class.
    *

@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   /**
    * Link the wizard's previous pages.
    *
@@ -14,7 +16,7 @@
    *   Links the wizard's previous pages.
    */
   Drupal.behaviors.webformWizardPagesLink = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-wizard-pages-links', '.js-webform-wizard-pages-links', context)).each(function () {
         var $pages = $(this);
         var $form = $pages.closest('form');

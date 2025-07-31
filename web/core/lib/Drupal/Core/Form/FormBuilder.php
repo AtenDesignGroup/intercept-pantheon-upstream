@@ -614,16 +614,16 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
         return;
       }
 
-      // If $form_state->isRebuilding() has been set and input has been
+      // If $form_state->setRebuild(TRUE) was called and input has been
       // processed without validation errors, we are in a multi-step workflow
-      // that is not yet complete. A new $form needs to be constructed based on
-      // the changes made to $form_state during this request. Normally, a submit
-      // handler sets $form_state->isRebuilding() if a fully executed form
-      // requires another step. However, for forms that have not been fully
-      // executed (e.g., Ajax submissions triggered by non-buttons), there is no
-      // submit handler to set $form_state->isRebuilding(). It would not make
-      // sense to redisplay the identical form without an error for the user to
-      // correct, so we also rebuild error-free non-executed forms, regardless
+      // that is not yet complete. A new $form needs to be constructed based
+      // on the changes made to $form_state during this request.
+      //
+      // Typically, a submit handler calls $form_state->setRebuild(TRUE) when
+      // a fully executed form requires another step. However, for forms that
+      // have not been fully executed (e.g., AJAX submissions triggered by
+      // non-buttons), there is no submit handler to call setRebuild(). In
+      // that case, we also rebuild error-free, non-executed forms, regardless
       // of $form_state->isRebuilding().
       // @todo Simplify this logic; considering Ajax and non-HTML front-ends,
       //   along with element-level #submit properties, it makes no sense to
@@ -1019,7 +1019,11 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
     if (isset($element['#process']) && !$element['#processed']) {
       foreach ($element['#process'] as $callback) {
         $complete_form = &$form_state->getCompleteForm();
-        $element = call_user_func_array($form_state->prepareCallback($callback), [&$element, &$form_state, &$complete_form]);
+        $element = call_user_func_array($form_state->prepareCallback($callback), [
+          &$element,
+          &$form_state,
+          &$complete_form,
+        ]);
       }
       $element['#processed'] = TRUE;
     }
@@ -1202,8 +1206,8 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
     // of how the element is themed or whether JavaScript is used to change the
     // control's attributes. However, it's good UI to let the user know that
     // input is not wanted for the control. HTML supports two attributes for:
-    // this: https://www.w3.org/TR/html401/interact/forms.html#h-17.12. If a form
-    // wants to start a control off with one of these attributes for UI
+    // this: https://www.w3.org/TR/html401/interact/forms.html#h-17.12. If a
+    // form wants to start a control off with one of these attributes for UI
     // purposes, only, but still allow input to be processed if it's submitted,
     // it can set the desired attribute in #attributes directly rather than
     // using #disabled. However, developers should think carefully about the
@@ -1346,7 +1350,7 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
    * element. If the name alone doesn't identify the element uniquely, the input
    * key '_triggering_element_value' may also be set to require a match on
    * element value. An example where this is needed is if there are several
-   * // buttons all named 'op', and only differing in their value.
+   * // buttons all named 'op', and only different in their value.
    */
   protected function elementTriggeredScriptedSubmission($element, FormStateInterface &$form_state) {
     $input = $form_state->getUserInput();

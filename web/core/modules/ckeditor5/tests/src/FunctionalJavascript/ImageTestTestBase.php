@@ -113,6 +113,7 @@ class ImageTestTestBase extends ImageTestBase {
    * Provides the relevant image attributes.
    *
    * @return string[]
+   *   Default image attributes for tests.
    */
   protected function imageAttributes(): array {
     return [
@@ -124,6 +125,9 @@ class ImageTestTestBase extends ImageTestBase {
     ];
   }
 
+  /**
+   * Uploads a test image.
+   */
   protected function addImage() {
     $page = $this->getSession()->getPage();
     $this->assertNotEmpty($image_upload_field = $page->find('css', '.ck-file-dialog-button input[type="file"]'));

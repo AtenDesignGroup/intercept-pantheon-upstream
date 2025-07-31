@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\FunctionalJavascriptTests;
 
-use Behat\Mink\Exception\DriverException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Tests\BrowserTestBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -60,16 +59,12 @@ abstract class WebDriverTestBase extends BrowserTestBase {
     try {
       return parent::initMink();
     }
-    catch (DriverException $e) {
-      if ($this->minkDefaultDriverClass === DrupalSelenium2Driver::class) {
-        $this->markTestSkipped("The test wasn't able to connect to your webdriver instance. For more information read core/tests/README.md.\n\nThe original message while starting Mink: {$e->getMessage()}");
-      }
-      else {
-        throw $e;
-      }
-    }
     catch (\Exception $e) {
-      $this->markTestSkipped('An unexpected error occurred while starting Mink: ' . $e->getMessage());
+      // If it's not possible to get a mink connection ensure that mink's own
+      // destructor is called immediately, to avoid it being called in
+      // ::tearDown(), then rethrow the exception.
+      $this->mink = NULL;
+      throw $e;
     }
   }
 
@@ -80,7 +75,6 @@ abstract class WebDriverTestBase extends BrowserTestBase {
     self::$modules = [
       'js_testing_ajax_request_test',
       'js_testing_log_test',
-      'jquery_keyevent_polyfill_test',
     ];
     if ($this->disableCssAnimations) {
       self::$modules[] = 'css_disable_transitions_test';
@@ -208,7 +202,13 @@ abstract class WebDriverTestBase extends BrowserTestBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Returns WebAssert object.
+   *
+   * @param string $name
+   *   (optional) Name of the session. Defaults to the active session.
+   *
+   * @return \Drupal\FunctionalJavascriptTests\WebDriverWebAssert
+   *   A new web-assert option for asserting the presence of elements with.
    */
   public function assertSession($name = NULL) {
     return new WebDriverWebAssert($this->getSession($name), $this->baseUrl);

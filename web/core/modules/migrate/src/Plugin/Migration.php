@@ -226,6 +226,8 @@ class Migration extends PluginBase implements MigrationInterface, RequirementsIn
    * These are different from the configuration dependencies. Migration
    * dependencies are only used to store relationships between migrations.
    *
+   * @var array
+   *
    * The migration_dependencies value is structured like this:
    * @code
    * [
@@ -238,10 +240,8 @@ class Migration extends PluginBase implements MigrationInterface, RequirementsIn
    *   ],
    * ];
    * @endcode
-   *
-   * @var array
    */
-  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName, Drupal.Commenting.VariableComment.Missing
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   protected $migration_dependencies = [];
 
   /**
@@ -617,6 +617,34 @@ class Migration extends PluginBase implements MigrationInterface, RequirementsIn
    */
   public function setProcessOfProperty($property, $process_of_property) {
     $this->process[$property] = $process_of_property;
+    return $this;
+  }
+
+  /**
+   * Add required migration dependencies.
+   *
+   * @param string[] $required_dependencies
+   *   An array of migration IDs to be added to the required migration
+   *   dependencies.
+   *
+   * @return $this
+   */
+  public function addRequiredDependencies(array $required_dependencies): MigrationInterface {
+    $this->migration_dependencies['required'] = array_unique(array_merge($this->migration_dependencies['required'], $required_dependencies));
+    return $this;
+  }
+
+  /**
+   * Add optional migration dependencies.
+   *
+   * @param string[] $optional_dependencies
+   *   An array of migration IDs to be added to the optional migration
+   *   dependencies.
+   *
+   * @return $this
+   */
+  public function addOptionalDependencies(array $optional_dependencies): MigrationInterface {
+    $this->migration_dependencies['optional'] = array_unique(array_merge($this->migration_dependencies['optional'], $optional_dependencies));
     return $this;
   }
 

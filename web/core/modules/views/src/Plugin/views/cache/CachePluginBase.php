@@ -75,7 +75,7 @@ abstract class CachePluginBase extends PluginBase {
    *
    * Plugins must override this to implement expiration.
    *
-   * @param $type
+   * @param string $type
    *   The cache type, either 'query', 'result'.
    */
   protected function cacheExpire($type) {
@@ -103,7 +103,7 @@ abstract class CachePluginBase extends PluginBase {
    *
    * A plugin should override this to provide specialized caching behavior.
    *
-   * @param $type
+   * @param string $type
    *   The cache type, either 'query', 'result'.
    */
   public function cacheSet($type) {
@@ -129,7 +129,7 @@ abstract class CachePluginBase extends PluginBase {
    *
    * A plugin should override this to provide specialized caching behavior.
    *
-   * @param $type
+   * @param string $type
    *   The cache type, either 'query', 'result'.
    *
    * @return bool
@@ -261,6 +261,7 @@ abstract class CachePluginBase extends PluginBase {
    * Gets the max age for the current view.
    *
    * @return int
+   *   The maximum age for the current view's cache.
    */
   public function getCacheMaxAge() {
     $max_age = $this->getDefaultCacheMaxAge();

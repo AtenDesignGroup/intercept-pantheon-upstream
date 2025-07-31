@@ -17,6 +17,7 @@ class TestController {
    * Returns a json response.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   The Json response value.
    */
   public function simple() {
     return new JsonResponse(['some' => 'data']);
@@ -26,6 +27,7 @@ class TestController {
    * Returns a simple render array.
    *
    * @return array
+   *   A render array with only '#markup'.
    */
   public function html() {
     return [
@@ -37,7 +39,7 @@ class TestController {
    * Returns different responses depending on the request format.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request
+   *   The request.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *   The response.

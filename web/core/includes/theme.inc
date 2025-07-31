@@ -8,9 +8,9 @@
  * customized by user themes.
  */
 
+use Drupal\Core\Datetime\DatePreprocess;
+use Drupal\Core\Theme\ThemePreprocess;
 use Drupal\Core\Url;
-use Drupal\Component\Serialization\Json;
-use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Config\StorageException;
@@ -19,17 +19,15 @@ use Drupal\Core\Template\AttributeHelper;
 use Drupal\Core\Theme\ThemeCommonElements;
 use Drupal\Core\Theme\ThemeSettings;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Utility\TableSort;
 use Drupal\Core\Installer\InstallerKernel;
 
 /**
  * @defgroup content_flags Content markers
  * @{
- * Markers used by mark.html.twig and node_mark() to designate content.
+ * Markers used by mark.html.twig to designate content.
  *
  * @see mark.html.twig
- * @see node_mark()
  */
 
 /**
@@ -85,14 +83,14 @@ function _system_default_theme_features() {
 /**
  * Allows themes and/or theme engines to easily discover overridden templates.
  *
- * @param $cache
+ * @param array $cache
  *   The existing cache of theme hooks to test against.
- * @param $extension
+ * @param string $extension
  *   The extension that these templates will have.
- * @param $path
+ * @param string $path
  *   The path to search.
  */
-function drupal_find_theme_templates($cache, $extension, $path) {
+function drupal_find_theme_templates($cache, $extension, $path): array {
   $implementations = [];
 
   // Collect paths to all sub-themes grouped by base themes. These will be
@@ -199,9 +197,9 @@ function drupal_find_theme_templates($cache, $extension, $path) {
  * To only retrieve the default global theme setting, an empty string should be
  * given for $theme.
  *
- * @param $setting_name
+ * @param string $setting_name
  *   The name of the setting to be retrieved.
- * @param $theme
+ * @param string $theme
  *   The name of a given theme; defaults to the current theme.
  *
  * @return mixed
@@ -286,8 +284,6 @@ function theme_get_setting($setting_name, $theme = NULL) {
 /**
  * Converts theme settings to configuration.
  *
- * @see system_theme_settings_submit()
- *
  * @param array $theme_settings
  *   An array of theme settings from system setting form or a Drupal 7 variable.
  * @param \Drupal\Core\Config\Config $config
@@ -295,6 +291,8 @@ function theme_get_setting($setting_name, $theme = NULL) {
  *
  * @return \Drupal\Core\Config\Config
  *   The Config object with updated data.
+ *
+ * @see system_theme_settings_submit()
  */
 function theme_settings_convert_to_config(array $theme_settings, Config $config) {
   foreach ($theme_settings as $key => $value) {
@@ -330,30 +328,18 @@ function theme_settings_convert_to_config(array $theme_settings, Config $config)
  *
  * @param array $variables
  *   An associative array possibly containing:
- *   - attributes['timestamp']:
- *   - timestamp:
- *   - text:
+ *   - "attributes['timestamp']:".
+ *   - "timestamp:".
+ *   - "text:".
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ *  template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_time(&$variables): void {
-  /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
-  $date_formatter = \Drupal::service('date.formatter');
-  // Format the 'datetime' attribute based on the timestamp.
-  // @see https://www.w3.org/TR/html5-author/the-time-element.html#attr-time-datetime
-  if (!isset($variables['attributes']['datetime']) && isset($variables['timestamp'])) {
-    $variables['attributes']['datetime'] = $date_formatter->format($variables['timestamp'], 'html_datetime', '', 'UTC');
-  }
-
-  // If no text was provided, try to auto-generate it.
-  if (!isset($variables['text'])) {
-    // Format and use a human-readable version of the timestamp, if any.
-    if (isset($variables['timestamp'])) {
-      $variables['text'] = $date_formatter->format($variables['timestamp']);
-    }
-    // Otherwise, use the literal datetime attribute.
-    elseif (isset($variables['attributes']['datetime'])) {
-      $variables['text'] = $variables['attributes']['datetime'];
-    }
-  }
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(DatePreprocess::class)->preprocessTime($variables);
 }
 
 /**
@@ -370,22 +356,15 @@ function template_preprocess_time(&$variables): void {
  *     Properties used: #title, #value, #options, #description, #required,
  *     #attributes.
  *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ *  template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  * @see form_process_datetime()
  */
 function template_preprocess_datetime_form(&$variables): void {
-  $element = $variables['element'];
-
-  $variables['attributes'] = [];
-
-  if (isset($element['#id'])) {
-    $variables['attributes']['id'] = $element['#id'];
-  }
-  if (!empty($element['#attributes']['class'])) {
-    $variables['attributes']['class'] = (array) $element['#attributes']['class'];
-  }
-
-  $variables['content'] = $element;
-
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(DatePreprocess::class)->preprocessDatetimeForm($variables);
 }
 
 /**
@@ -397,40 +376,15 @@ function template_preprocess_datetime_form(&$variables): void {
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #title, #children, #required, #attributes.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ *  template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_datetime_wrapper(&$variables): void {
-  $element = $variables['element'];
-
-  if (!empty($element['#title'])) {
-    $variables['title'] = $element['#title'];
-    // If the element title is a string, wrap it a render array so that markup
-    // will not be escaped (but XSS-filtered).
-    if (is_string($variables['title']) && $variables['title'] !== '') {
-      $variables['title'] = ['#markup' => $variables['title']];
-    }
-  }
-
-  // Suppress error messages.
-  $variables['errors'] = NULL;
-
-  $variables['description'] = NULL;
-  if (!empty($element['#description'])) {
-    $description_attributes = [];
-    if (!empty($element['#id'])) {
-      $description_attributes['id'] = $element['#id'] . '--description';
-    }
-    $description_attributes['data-drupal-field-elements'] = 'description';
-    $variables['description'] = $element['#description'];
-    $variables['description_attributes'] = new Attribute($description_attributes);
-  }
-
-  $variables['required'] = FALSE;
-  // For required datetime fields 'form-required' & 'js-form-required' classes
-  // are appended to the label attributes.
-  if (!empty($element['#required'])) {
-    $variables['required'] = TRUE;
-  }
-  $variables['content'] = $element['#children'];
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(DatePreprocess::class)->preprocessDatetimeWrapper($variables);
 }
 
 /**
@@ -487,110 +441,17 @@ function template_preprocess_datetime_wrapper(&$variables): void {
  *     http://juicystudio.com/article/screen-readers-display-none.php and
  *     https://www.w3.org/TR/WCAG-TECHS/H42.html for more information.
  *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ *  template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  * @see \Drupal\Core\Utility\LinkGenerator
  * @see \Drupal\Core\Utility\LinkGenerator::generate()
  * @see system_page_attachments()
  */
 function template_preprocess_links(&$variables): void {
-  $links = $variables['links'];
-  $heading = &$variables['heading'];
-
-  if (!empty($links)) {
-    // Prepend the heading to the list, if any.
-    if (!empty($heading)) {
-      // Convert a string heading into an array, using a <h2> tag by default.
-      if (is_string($heading)) {
-        $heading = ['text' => $heading];
-      }
-      // Merge in default array properties into $heading.
-      $heading += [
-        'level' => 'h2',
-        'attributes' => [],
-      ];
-      // Convert the attributes array into an Attribute object.
-      $heading['attributes'] = new Attribute($heading['attributes']);
-    }
-
-    $variables['links'] = [];
-    foreach ($links as $key => $link) {
-      $item = [];
-      $link += [
-        'ajax' => NULL,
-        'url' => NULL,
-      ];
-
-      $li_attributes = [];
-      $keys = ['title', 'url'];
-      $link_element = [
-        '#type' => 'link',
-        '#title' => $link['title'],
-        '#options' => array_diff_key($link, array_combine($keys, $keys)),
-        '#url' => $link['url'],
-        '#ajax' => $link['ajax'],
-      ];
-
-      // Handle links and ensure that the active class is added on the LIs, but
-      // only if the 'set_active_class' option is not empty. Links templates
-      // duplicate the "is-active" class handling of l() and
-      // LinkGenerator::generate() because they need to be able to set the
-      // "is-active" class not on the links themselves (<a> tags), but on the
-      // list items (<li> tags) that contain the links. This is necessary for
-      // CSS to be able to style list items differently when the link is active,
-      // since CSS does not yet allow one to style list items only if they
-      // contain a certain element with a certain class. That is, we cannot yet
-      // convert this jQuery selector to a CSS selector:
-      // jQuery('li:has("a.is-active")')
-      if (isset($link['url'])) {
-        if (!empty($variables['set_active_class'])) {
-
-          // Also enable set_active_class for the contained link.
-          $link_element['#options']['set_active_class'] = TRUE;
-
-          if (!empty($link['language'])) {
-            $li_attributes['hreflang'] = $link['language']->getId();
-          }
-
-          // Add a "data-drupal-link-query" attribute to let the
-          // drupal.active-link library know the query in a standardized manner.
-          // Only add the data- attribute. The "is-active" class will be
-          // calculated using JavaScript, to prevent breaking the render cache.
-          if (!empty($link['query'])) {
-            $query = $link['query'];
-            ksort($query);
-            $li_attributes['data-drupal-link-query'] = Json::encode($query);
-          }
-
-          /** @var \Drupal\Core\Url $url */
-          $url = $link['url'];
-          if ($url->isRouted()) {
-            // Add a "data-drupal-link-system-path" attribute to let the
-            // drupal.active-link library know the path in a standardized
-            // manner. Only add the data- attribute. The "is-active" class will
-            // be calculated using JavaScript, to prevent breaking the render
-            // cache.
-            $system_path = $url->getInternalPath();
-            // @todo System path is deprecated - use the route name and parameters.
-            // Special case for the front page.
-            $li_attributes['data-drupal-link-system-path'] = $system_path == '' ? '<front>' : $system_path;
-          }
-        }
-
-        $item['link'] = $link_element;
-      }
-
-      // Handle title-only text items.
-      $item['text'] = $link['title'];
-      if (isset($link['attributes'])) {
-        $item['text_attributes'] = new Attribute($link['attributes']);
-      }
-
-      // Handle list item attributes.
-      $item['attributes'] = new Attribute($li_attributes);
-
-      // Add the item to the list of links.
-      $variables['links'][$key] = $item;
-    }
-  }
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(ThemePreprocess::class)->preprocessLinks($variables);
 }
 
 /**
@@ -620,6 +481,7 @@ function template_preprocess_links(&$variables): void {
  *   - attributes: Associative array of attributes to be placed in the img tag.
  *   - srcset: Array of multiple URIs and sizes/multipliers.
  *   - sizes: The sizes attribute for viewport-based selection of images.
+ *     phpcs:ignore
  *     - http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#introduction-3:viewport-based-selection-2
  */
 function template_preprocess_image(&$variables): void {
@@ -825,8 +687,8 @@ function template_preprocess_table(&$variables): void {
 
         // Track responsive classes for each column as needed. Only the header
         // cells for a column are marked up with the responsive classes by a
-        // module developer or themer. The responsive classes on the header cells
-        // must be transferred to the content cells.
+        // module developer or themer. The responsive classes on the header
+        // cells must be transferred to the content cells.
         if (!empty($cell['class']) && is_array($cell['class'])) {
           if (in_array(RESPONSIVE_PRIORITY_MEDIUM, $cell['class'])) {
             $responsive_classes[$responsive_index] = RESPONSIVE_PRIORITY_MEDIUM;
@@ -997,24 +859,15 @@ function template_preprocess_item_list(&$variables): void {
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #id, #attributes, #children.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ *  template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_container(&$variables): void {
-  $variables['has_parent'] = FALSE;
-  $element = $variables['element'];
-  // Ensure #attributes is set.
-  $element += ['#attributes' => []];
-
-  // Special handling for form elements.
-  if (isset($element['#array_parents'])) {
-    // Assign an html ID.
-    if (!isset($element['#attributes']['id'])) {
-      $element['#attributes']['id'] = $element['#id'];
-    }
-    $variables['has_parent'] = TRUE;
-  }
-
-  $variables['children'] = $element['#children'];
-  $variables['attributes'] = $element['#attributes'];
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(ThemePreprocess::class)->preprocessContainer($variables);
 }
 
 /**
@@ -1060,20 +913,23 @@ function template_preprocess_maintenance_task_list(&$variables): void {
  *
  * See the @link themeable Default theme implementations topic @endlink for
  * details.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is
+ *   no replacement, default preprocess variables are added for all theme hooks
+ *   directly in \Drupal\Core\Theme\ThemeManager.
+ *
+ * @see https://www.drupal.org/node/2340341
  */
-function template_preprocess(&$variables, $hook, $info) {
-  // Merge in variables that don't depend on hook and don't change during a
-  // single page request.
-  // Use the advanced drupal_static() pattern, since this is called very often.
-  static $drupal_static_fast;
-  if (!isset($drupal_static_fast)) {
-    $drupal_static_fast['default_variables'] = &drupal_static(__FUNCTION__);
+function template_preprocess(&$variables, $hook, $info): void {
+  @trigger_error('template_preprocess() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement, default preprocess variables are added for all theme hooks directly in \Drupal\Core\Theme\ThemeManager. See https://www.drupal.org/node/2340341', E_USER_DEPRECATED);
+
+  $themeManager = \Drupal::service('theme.manager');
+  // ThemeManager::getDefaultTemplateVariables() is not on the interface, it is
+  // internal and only public for backwards compatibility, verify it really
+  // exists.
+  if (method_exists($themeManager, 'getDefaultTemplateVariables')) {
+    $variables += $themeManager->getDefaultTemplateVariables();
   }
-  $default_variables = &$drupal_static_fast['default_variables'];
-  if (!isset($default_variables)) {
-    $default_variables = _template_preprocess_default_variables();
-  }
-  $variables += $default_variables;
 
   // When theming a render element, merge its #attributes into
   // $variables['attributes'].
@@ -1086,31 +942,6 @@ function template_preprocess(&$variables, $hook, $info) {
 }
 
 /**
- * Returns hook-independent variables to template_preprocess().
- */
-function _template_preprocess_default_variables() {
-  // Variables that don't depend on a database connection.
-  $variables = [
-    'attributes' => [],
-    'title_attributes' => [],
-    'content_attributes' => [],
-    'title_prefix' => [],
-    'title_suffix' => [],
-    'db_is_active' => !defined('MAINTENANCE_MODE'),
-    'is_admin' => FALSE,
-    'logged_in' => FALSE,
-  ];
-
-  // Give modules a chance to alter the default template variables.
-  \Drupal::moduleHandler()->alter('template_preprocess_default_variables', $variables);
-
-  // Tell all templates where they are located.
-  $variables['directory'] = \Drupal::theme()->getActiveTheme()->getPath();
-
-  return $variables;
-}
-
-/**
  * Prepares variables for HTML document templates.
  *
  * Default template: html.html.twig.
@@ -1118,88 +949,15 @@ function _template_preprocess_default_variables() {
  * @param array $variables
  *   An associative array containing:
  *   - page: A render element representing the page.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ *  template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_html(&$variables): void {
-  $variables['page'] = $variables['html']['page'];
-  unset($variables['html']['page']);
-  $variables['page_top'] = NULL;
-  if (isset($variables['html']['page_top'])) {
-    $variables['page_top'] = $variables['html']['page_top'];
-    unset($variables['html']['page_top']);
-  }
-  $variables['page_bottom'] = NULL;
-  if (isset($variables['html']['page_bottom'])) {
-    $variables['page_bottom'] = $variables['html']['page_bottom'];
-    unset($variables['html']['page_bottom']);
-  }
-
-  $variables['html_attributes'] = new Attribute();
-
-  // <html> element attributes.
-  $language_interface = \Drupal::languageManager()->getCurrentLanguage();
-  $variables['html_attributes']['lang'] = $language_interface->getId();
-  $variables['html_attributes']['dir'] = $language_interface->getDirection();
-
-  if (isset($variables['db_is_active']) && !$variables['db_is_active']) {
-    $variables['db_offline'] = TRUE;
-  }
-
-  // Add a variable for the root path. This can be used to create a class and
-  // theme the page depending on the current path (e.g. node, admin, user) as
-  // well as more specific data like path-frontpage.
-  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
-
-  if ($is_front_page) {
-    $variables['root_path'] = FALSE;
-  }
-  else {
-    $system_path = \Drupal::service('path.current')->getPath();
-    $variables['root_path'] = explode('/', $system_path)[1];
-  }
-
-  $site_config = \Drupal::config('system.site');
-  // Construct page title.
-  if (isset($variables['page']['#title']) && is_array($variables['page']['#title'])) {
-    // Do an early render if the title is a render array.
-    $variables['page']['#title'] = (string) \Drupal::service('renderer')->render($variables['page']['#title']);
-  }
-  if (!empty($variables['page']['#title'])) {
-    $head_title = [
-      // Marking the title as safe since it has had the tags stripped.
-      'title' => Markup::create(trim(strip_tags($variables['page']['#title']))),
-      'name' => $site_config->get('name'),
-    ];
-  }
-  // @todo Remove once views is not bypassing the view subscriber anymore.
-  //   @see https://www.drupal.org/node/2068471
-  elseif ($is_front_page) {
-    $head_title = [
-      'title' => t('Home'),
-      'name' => $site_config->get('name'),
-    ];
-  }
-  else {
-    $head_title = ['name' => $site_config->get('name')];
-    if ($site_config->get('slogan')) {
-      $head_title['slogan'] = strip_tags($site_config->get('slogan'));
-    }
-  }
-
-  $variables['head_title'] = $head_title;
-
-  // Create placeholder strings for these keys.
-  // @see \Drupal\Core\Render\HtmlResponseSubscriber
-  $types = [
-    'styles' => 'css',
-    'scripts' => 'js',
-    'scripts_bottom' => 'js-bottom',
-    'head' => 'head',
-  ];
-  $variables['placeholder_token'] = Crypt::randomBytesBase64(55);
-  foreach ($types as $type => $placeholder_name) {
-    $placeholder = '<' . $placeholder_name . '-placeholder token="' . $variables['placeholder_token'] . '">';
-    $variables['#attached']['html_response_attachment_placeholders'][$type] = $placeholder;
-  }
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(ThemePreprocess::class)->preprocessHtml($variables);
 }
 
 /**
@@ -1208,34 +966,15 @@ function template_preprocess_html(&$variables): void {
  * Default template: page.html.twig.
  *
  * See the page.html.twig template for the list of variables.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial
+ * template_preprocess functions are registered directly in hook_theme().
+ *
+ * @see https://www.drupal.org/node/3504125
  */
 function template_preprocess_page(&$variables): void {
-  $language_interface = \Drupal::languageManager()->getCurrentLanguage();
-
-  foreach (\Drupal::theme()->getActiveTheme()->getRegions() as $region) {
-    if (!isset($variables['page'][$region])) {
-      $variables['page'][$region] = [];
-    }
-  }
-
-  $variables['base_path'] = base_path();
-  $variables['front_page'] = Url::fromRoute('<front>')->toString();
-  $variables['language'] = $language_interface;
-
-  // An exception might be thrown.
-  try {
-    $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
-  }
-  catch (Exception) {
-    // If the database is not yet available, set default values for these
-    // variables.
-    $variables['is_front'] = FALSE;
-    $variables['db_is_active'] = FALSE;
-  }
-
-  if (($node = \Drupal::routeMatch()->getParameter('node')) || ($node = \Drupal::routeMatch()->getParameter('node_preview'))) {
-    $variables['node'] = $node;
-  }
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. Initial template_preprocess functions are registered directly in hook_theme(). See https://www.drupal.org/node/3504125', E_USER_DEPRECATED);
+  \Drupal::service(ThemePreprocess::class)->preprocessPage($variables);
 }
 
 /**
@@ -1246,12 +985,12 @@ function template_preprocess_page(&$variables): void {
  * variables from within preprocess functions, when wanting to base the
  * additional suggestions or classes on the path of the current page.
  *
- * @param $args
+ * @param array $args
  *   An array of path arguments.
- * @param $base
+ * @param string $base
  *   A string identifying the base 'thing' from which more specific suggestions
  *   are derived. For example, 'page' or 'html'.
- * @param $delimiter
+ * @param string $delimiter
  *   The string used to delimit increasingly specific information. The default
  *   of '__' is appropriate for theme hook suggestions. '-' is appropriate for
  *   extra classes.
@@ -1261,7 +1000,7 @@ function template_preprocess_page(&$variables): void {
  *   hook_theme_suggestions_HOOK_alter() or to $variables['attributes']['class']
  *   if the suggestions represent extra CSS classes.
  */
-function theme_get_suggestions($args, $base, $delimiter = '__') {
+function theme_get_suggestions($args, $base, $delimiter = '__'): array {
 
   // Build a list of suggested theme hooks in order of
   // specificity. One suggestion is made for every element of the current path,
@@ -1309,6 +1048,15 @@ function theme_get_suggestions($args, $base, $delimiter = '__') {
 }
 
 /**
+ * Prepares variables for tablesort indicators.
+ *
+ * Default template: tablesort-indicator.html.twig.
+ */
+function template_preprocess_tablesort_indicator(&$variables): void {
+  $variables['#attached']['library'][] = 'core/drupal.tablesort';
+}
+
+/**
  * Prepares variables for maintenance page templates.
  *
  * Default template: maintenance-page.html.twig.
@@ -1321,7 +1069,7 @@ function theme_get_suggestions($args, $base, $delimiter = '__') {
  */
 function template_preprocess_maintenance_page(&$variables): void {
   // @todo Rename the templates to page--maintenance + page--install.
-  template_preprocess_page($variables);
+  \Drupal::service(ThemePreprocess::class)->preprocessPage($variables);
 
   // @see system_page_attachments()
   $variables['#attached']['library'][] = 'system/maintenance';

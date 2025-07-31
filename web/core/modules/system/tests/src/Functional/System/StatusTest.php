@@ -117,7 +117,7 @@ class StatusTest extends BrowserTestBase {
     // Check if JSON database support is enabled.
     $this->assertSession()->pageTextContains('Database support for JSON');
     $elements = $this->xpath('//details[@class="system-status-report__entry"]//div[contains(text(), :text)]', [
-      ':text' => 'Is required in Drupal 10.0.',
+      ':text' => 'Drupal requires databases that support JSON storage.',
     ]);
     $this->assertCount(1, $elements);
     $this->assertStringStartsWith('Available', $elements[0]->getParent()->getText());
@@ -181,6 +181,10 @@ class StatusTest extends BrowserTestBase {
     $session->pageTextNotContains('Deprecated themes installed');
     $session->pageTextNotContains('Deprecated themes found: Test deprecated theme.');
     $this->assertSession()->elementNotExists('xpath', "//a[contains(@href, 'http://example.com/deprecated_theme')]");
+
+    // Check that the installation profile information is displayed.
+    $this->drupalGet('admin/reports/status');
+    $this->assertSession()->pageTextContains('Testing (testing-' . \Drupal::VERSION . ')');
 
     // Check if pg_trgm extension is enabled on postgres.
     if (\Drupal::database()->databaseType() == 'pgsql') {

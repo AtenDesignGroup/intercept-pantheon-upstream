@@ -645,8 +645,10 @@ function intercept_base_preprocess_views_view_row_rss(&$variables) {
         $variables['enclosure'] = ['#markup' => $host . $explosion[1]];
 
         $file = \Drupal::service('entity_type.manager')->getStorage('file')->load($explosion[2]);
-        $variables['enclosure_size'] = ['#markup' => $file->getSize()];
-        $variables['enclosure_mime'] = ['#markup' => $file->getMimeType()];
+        if ($file) {
+          $variables['enclosure_size'] = ['#markup' => $file->getSize()];
+          $variables['enclosure_mime'] = ['#markup' => $file->getMimeType()];
+        }
       }
     }
   }

@@ -26,6 +26,10 @@
     id:
       type: string
       label: 'Machine name'
+      constraints:
+        Regex:
+          pattern: '/^[a-z0-9_]+$/'
+          message: "The %value machine name is not valid."
     title:
       type: label
       label: Title

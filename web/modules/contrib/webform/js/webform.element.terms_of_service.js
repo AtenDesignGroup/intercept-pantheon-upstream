@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // @see http://api.jqueryui.com/dialog/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.termsOfServiceModal = Drupal.webform.termsOfServiceModal || {};
@@ -16,7 +18,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformTermsOfService = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-terms-of-service', '.js-form-type-webform-terms-of-service', context)).each(function () {
         var $element = $(this);
         var $a = $element.find('label a');

@@ -8,10 +8,13 @@ use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Controller for generating mock XML metadata for package manager testing.
+ */
 class TestController extends ControllerBase {
 
   /**
-   * Page callback: Prints mock XML for the Update Manager module.
+   * Page callback: Prints mock XML for the Update Status module.
    *
    * @todo This is a wholesale copy of
    *   \Drupal\update_test\Controller\UpdateTestController::updateTest() for

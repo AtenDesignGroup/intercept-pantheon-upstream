@@ -3,9 +3,11 @@
 namespace Drupal\media_library\Hook;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\media\MediaTypeForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\UrlHelper;
@@ -17,60 +19,64 @@ use Drupal\media_library\Form\FileUploadForm;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Render\Element;
 
 /**
  * Hook implementations for media_library.
  */
 class MediaLibraryHooks {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?string {
     switch ($route_name) {
       case 'help.page.media_library':
-        $output = '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('The Media Library module provides a rich, visual interface for managing media, and allows media to be reused in entity reference fields or embedded into text content. It overrides the <a href=":media-collection">media administration page</a>, allowing users to toggle between the existing table-style interface and a new grid-style interface for browsing and performing administrative operations on media.', [
+        $output = '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('The Media Library module provides a rich, visual interface for managing media, and allows media to be reused in entity reference fields or embedded into text content. It overrides the <a href=":media-collection">media administration page</a>, allowing users to toggle between the existing table-style interface and a new grid-style interface for browsing and performing administrative operations on media.', [
           ':media-collection' => Url::fromRoute('entity.media.collection')->toString(),
         ]) . '</p>';
-        $output .= '<p>' . t('To learn more about media management, begin by reviewing the <a href=":media-help">documentation for the Media module</a>. For more information about the media library and related functionality, see the <a href=":media-library-handbook">online documentation for the Media Library module</a>.', [
+        $output .= '<p>' . $this->t('To learn more about media management, begin by reviewing the <a href=":media-help">documentation for the Media module</a>. For more information about the media library and related functionality, see the <a href=":media-library-handbook">online documentation for the Media Library module</a>.', [
           ':media-help' => Url::fromRoute('help.page', [
             'name' => 'media',
           ])->toString(),
           ':media-library-handbook' => 'https://www.drupal.org/docs/8/core/modules/media-library-module',
         ]) . '</p>';
-        $output .= '<h2>' . t('Selection dialog') . '</h2>';
-        $output .= '<p>' . t('When selecting media for an entity reference field or a text editor, Media Library opens a modal dialog to help users easily find and select media. The modal dialog can toggle between a grid-style and table-style interface, and new media items can be uploaded directly into it.') . '</p>';
-        $output .= '<p>' . t('Within the dialog, media items are divided up by type. If more than one media type can be selected by the user, the available types will be displayed as a set of vertical tabs. To users who have appropriate permissions, each media type may also present a short form allowing you to upload or create new media items of that type.') . '</p>';
-        $output .= '<h2>' . t('Uses') . '</h2>';
+        $output .= '<h2>' . $this->t('Selection dialog') . '</h2>';
+        $output .= '<p>' . $this->t('When selecting media for an entity reference field or a text editor, Media Library opens a modal dialog to help users easily find and select media. The modal dialog can toggle between a grid-style and table-style interface, and new media items can be uploaded directly into it.') . '</p>';
+        $output .= '<p>' . $this->t('Within the dialog, media items are divided up by type. If more than one media type can be selected by the user, the available types will be displayed as a set of vertical tabs. To users who have appropriate permissions, each media type may also present a short form allowing you to upload or create new media items of that type.') . '</p>';
+        $output .= '<h2>' . $this->t('Uses') . '</h2>';
         $output .= '<dl>';
-        $output .= '<dt>' . t('Grid-style vs. table-style interface') . '</dt>';
-        $output .= '<dd>' . t('The Media Library module provides a new grid-style interface for the media administration page that displays media as thumbnails, with minimal textual information, allowing users to visually browse media in their site. The existing table-style interface is better suited to displaying additional information about media items, in addition to being more accessible to users with assistive technology.') . '</dd>';
-        $output .= '<dt>' . t('Reusing media in entity reference fields') . '</dt>';
-        $output .= '<dd>' . t('Any entity reference field that references media can use the media library. To enable, configure the form display for the field to use the "Media library" widget.') . '</dd>';
-        $output .= '<dt>' . t('Embedding media in text content') . '</dt>';
-        $output .= '<dd>' . t('To use the media library within CKEditor, you must add the "Insert from Media Library" button to the CKEditor toolbar, and enable the "Embed media" filter in the text format associated with the text editor.') . '</dd>';
+        $output .= '<dt>' . $this->t('Grid-style vs. table-style interface') . '</dt>';
+        $output .= '<dd>' . $this->t('The Media Library module provides a new grid-style interface for the media administration page that displays media as thumbnails, with minimal textual information, allowing users to visually browse media in their site. The existing table-style interface is better suited to displaying additional information about media items, in addition to being more accessible to users with assistive technology.') . '</dd>';
+        $output .= '<dt>' . $this->t('Reusing media in entity reference fields') . '</dt>';
+        $output .= '<dd>' . $this->t('Any entity reference field that references media can use the media library. To enable, configure the form display for the field to use the "Media library" widget.') . '</dd>';
+        $output .= '<dt>' . $this->t('Embedding media in text content') . '</dt>';
+        $output .= '<dd>' . $this->t('To use the media library within CKEditor, you must add the "Insert from Media Library" button to the CKEditor toolbar, and enable the "Embed media" filter in the text format associated with the text editor.') . '</dd>';
         $output .= '</dl>';
-        $output .= '<h2>' . t('Customize') . '</h2>';
+        $output .= '<h2>' . $this->t('Customize') . '</h2>';
         $output .= '<ul>';
         $output .= '<li>';
         if (\Drupal::moduleHandler()->moduleExists('views_ui') && \Drupal::currentUser()->hasPermission('administer views')) {
-          $output .= t('Both the table-style and grid-style interfaces are regular views and can be customized via the <a href=":views-ui">Views UI</a>, including sorting and filtering. This is the case for both the administration page and the modal dialog.', [':views_ui' => Url::fromRoute('entity.view.collection')->toString()]);
+          $output .= $this->t('Both the table-style and grid-style interfaces are regular views and can be customized via the <a href=":views-ui">Views UI</a>, including sorting and filtering. This is the case for both the administration page and the modal dialog.', [':views_ui' => Url::fromRoute('entity.view.collection')->toString()]);
         }
         else {
-          $output .= t('Both the table-style and grid-style interfaces are regular views and can be customized via the Views UI, including sorting and filtering. This is the case for both the administration page and the modal dialog.');
+          $output .= $this->t('Both the table-style and grid-style interfaces are regular views and can be customized via the Views UI, including sorting and filtering. This is the case for both the administration page and the modal dialog.');
         }
         $output .= '</li>';
-        $output .= '<li>' . t('In the grid-style interface, the fields that are displayed (including which image style is used for images) can be customized by configuring the "Media library" view mode for each of your <a href=":media-types">media types</a>. The thumbnail images in the grid-style interface can be customized by configuring the "Media Library thumbnail (220×220)" image style.', [
+        $output .= '<li>' . $this->t('In the grid-style interface, the fields that are displayed (including which image style is used for images) can be customized by configuring the "Media library" view mode for each of your <a href=":media-types">media types</a>. The thumbnail images in the grid-style interface can be customized by configuring the "Media Library thumbnail (220×220)" image style.', [
           ':media-types' => Url::fromRoute('entity.media_type.collection')->toString(),
         ]) . '</li>';
-        $output .= '<li>' . t('When adding new media items within the modal dialog, the fields that are displayed can be customized by configuring the "Media library" form mode for each of your <a href=":media-types">media types</a>.', [
+        $output .= '<li>' . $this->t('When adding new media items within the modal dialog, the fields that are displayed can be customized by configuring the "Media library" form mode for each of your <a href=":media-types">media types</a>.', [
           ':media-types' => Url::fromRoute('entity.media_type.collection')->toString(),
         ]) . '</li>';
         $output .= '</ul>';
         return $output;
     }
+    return NULL;
   }
 
   /**
@@ -117,7 +123,7 @@ class MediaLibraryHooks {
    * Implements hook_views_pre_render().
    */
   #[Hook('views_pre_render')]
-  public function viewsPreRender(ViewExecutable $view) {
+  public function viewsPreRender(ViewExecutable $view): void {
     $add_classes = function (&$option, array $classes_to_add) {
       $classes = $option ? preg_split('/\s+/', trim($option)) : [];
       $classes = array_filter($classes);
@@ -151,7 +157,7 @@ class MediaLibraryHooks {
    * Implements hook_views_post_render().
    */
   #[Hook('views_post_render')]
-  public function viewsPostRender(ViewExecutable $view, &$output, CachePluginBase $cache) {
+  public function viewsPostRender(ViewExecutable $view, &$output, CachePluginBase $cache): void {
     if ($view->id() === 'media_library') {
       $output['#attached']['library'][] = 'media_library/view';
       if (str_starts_with($view->current_display, 'widget')) {
@@ -159,10 +165,10 @@ class MediaLibraryHooks {
           $query = MediaLibraryState::fromRequest($view->getRequest())->all();
         }
         catch (\InvalidArgumentException $e) {
-          // MediaLibraryState::fromRequest() will throw an exception if the view
-          // is being previewed, since not all required query parameters will be
-          // present. In a preview, however, this can be omitted since we're
-          // merely previewing.
+          // MediaLibraryState::fromRequest() will throw an exception if the
+          // view is being previewed, since not all required query parameters
+          // will be present. In a preview, however, this can be omitted since
+          // we're merely previewing.
           // @todo Use the views API for checking for the preview mode when it
           //   lands. https://www.drupal.org/project/drupal/issues/3060855
           if (empty($view->preview) && empty($view->live_preview)) {
@@ -170,9 +176,10 @@ class MediaLibraryHooks {
           }
         }
         // If the current query contains any parameters we use to contextually
-        // filter the view, ensure they persist across AJAX rebuilds.
-        // The ajax_path is shared for all AJAX views on the page, but our query
-        // parameters are prefixed and should not interfere with any other views.
+        // filter the view, ensure they persist across AJAX rebuilds. The
+        // ajax_path is shared for all AJAX views on the page, but our query
+        // parameters are prefixed and should not interfere with any other
+        // views.
         // @todo Rework or remove this in https://www.drupal.org/node/2983451
         if (!empty($query)) {
           $ajax_path =& $output['#attached']['drupalSettings']['views']['ajax_path'];
@@ -202,6 +209,27 @@ class MediaLibraryHooks {
       // @see field_ui_form_alter()
       if (isset($form['actions']['save_continue'])) {
         $form['actions']['save_continue']['#submit'][] = '_media_library_media_type_form_submit';
+      }
+    }
+  }
+
+  /**
+   * Implements hook_form_FORM_ID_alter().
+   *
+   * Alter the bulk form to add a more accessible label.
+   *
+   * @todo Remove in https://www.drupal.org/node/2983454
+   */
+  #[Hook('form_views_form_media_library_page_alter')]
+  public function formViewsFormMediaLibraryPageAlter(array &$form, FormStateInterface $form_state, $form_id) : void {
+    if (isset($form['media_bulk_form']) && isset($form['output'])) {
+      /** @var \Drupal\views\ViewExecutable $view */
+      $view = $form['output'][0]['#view'];
+      foreach (Element::getVisibleChildren($form['media_bulk_form']) as $key) {
+        if (isset($view->result[$key])) {
+          $media = $view->field['media_bulk_form']->getEntity($view->result[$key]);
+          $form['media_bulk_form'][$key]['#title'] = $media ? $this->t('Select @label', ['@label' => $media->label()]) : '';
+        }
       }
     }
   }
@@ -242,13 +270,14 @@ class MediaLibraryHooks {
    * Implements hook_ENTITY_TYPE_access().
    */
   #[Hook('image_style_access')]
-  public function imageStyleAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  public function imageStyleAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // Prevent the fallback 'media_library' image style from being deleted.
     // @todo Lock the image style instead of preventing delete access.
     //   https://www.drupal.org/project/drupal/issues/2247293
     if ($operation === 'delete' && $entity->id() === 'media_library') {
       return AccessResult::forbidden();
     }
+    return AccessResult::neutral();
   }
 
 }

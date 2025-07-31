@@ -10,9 +10,6 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * @file
  * Primary module hooks for Intercept Guest module.
- *
- * This file is no longer required in Drupal 8.
- * @see https://www.drupal.org/node/2217931
  */
 
 /**

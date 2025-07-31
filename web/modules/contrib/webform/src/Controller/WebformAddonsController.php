@@ -128,8 +128,14 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
               '#message_type' => 'warning',
               '#message_close' => TRUE,
               '#message_storage' => WebformMessage::STORAGE_USER,
-              '#message_message' => $this->t('Please install to the <a href=":href">@title</a> project to improve the Webform module\'s user experience.', [':href' => $project['url']->toString(), '@title' => $project['title']]) .
-                ' <em>' . $project['install'] . '</em>',
+              '#message_message' => $this->t(
+                'Please install to the <a href=":href">@title</a> project to improve the Webform module\'s user experience.',
+                [
+                  ':href' => $project['url']->toString(),
+                  '@title' => $project['title'],
+                ]
+              ) .
+              ' <em>' . $project['install'] . '</em>',
               '#weight' => -100,
             ];
           }

@@ -27,6 +27,7 @@ class MigrationPluginListTest extends KernelTestBase {
   protected static $modules = [
     'migrate',
     // Test with all modules containing Drupal migrations.
+    // @todo Remove Ban in https://www.drupal.org/project/drupal/issues/3488827
     'ban',
     'block',
     'block_content',
@@ -96,6 +97,7 @@ class MigrationPluginListTest extends KernelTestBase {
 
     // Enable migrate_drupal to test that the plugins can now be discovered.
     $this->enableModules(['migrate_drupal']);
+    $this->installConfig(['migrate_drupal']);
 
     // Make sure retrieving these migration plugins in the absence of a database
     // connection does not throw any errors.

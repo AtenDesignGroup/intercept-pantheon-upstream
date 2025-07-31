@@ -34,7 +34,6 @@ class DurationFormElementTest extends KernelTestBase implements FormInterface {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->installSchema('system', ['sequences', 'key_value_expire']);
     $this->installEntitySchema('user');
     \Drupal::service('router.builder')->rebuild();
     $this->testUser = User::create([

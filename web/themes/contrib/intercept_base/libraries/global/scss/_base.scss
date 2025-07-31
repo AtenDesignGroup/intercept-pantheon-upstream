@@ -349,6 +349,15 @@ input[type='submit']:not(.unstyled):not(.js-hide),
   }
 }
 
+.ui-dialog button {
+  &:hover,
+  &:active,
+  &:focus {
+    color: $white;
+    font-weight: $fw-bold;
+  }
+}
+
 .button {
   &--prominent {
     background: $gray-80;

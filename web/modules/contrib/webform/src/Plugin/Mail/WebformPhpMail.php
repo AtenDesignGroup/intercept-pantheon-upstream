@@ -35,7 +35,7 @@ class WebformPhpMail extends PhpMail {
           '#webform_submission' => $message['params']['webform_submission'],
           '#handler' => $message['params']['handler'],
         ];
-        $message['body'] = \Drupal::service('renderer')->renderInIsolation($build);
+        $message['body'] = (string) \Drupal::service('renderer')->renderInIsolation($build);
       }
       return $message;
     }

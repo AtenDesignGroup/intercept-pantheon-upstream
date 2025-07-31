@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   var unsaved = false;
 
   /**
@@ -29,7 +31,7 @@
       // Set the current unsaved flag state.
       unsaved = value;
     },
-    attach: function (context) {
+    attach(context) {
       // Look for the 'data-webform-unsaved' attribute which indicates that
       // a multi-step webform has unsaved data.
       // @see \Drupal\webform\WebformSubmissionForm::buildForm

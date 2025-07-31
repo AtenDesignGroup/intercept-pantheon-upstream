@@ -6,9 +6,12 @@ namespace Drupal\Tests\migrate\Kernel;
 
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\Core\Database\Statement\FetchAs;
 use Drupal\Core\Database\StatementInterface;
 use Drupal\migrate\Exception\RequirementsException;
 use Drupal\Core\Database\Database;
+use Drupal\migrate\MigrateExecutable;
+use Drupal\migrate\MigrateMessage;
 use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Plugin\MigrationInterface;
 
@@ -173,7 +176,7 @@ class SqlBaseTest extends MigrateTestBase {
     }
 
     $statement = $this->createMock(StatementInterface::class);
-    $statement->expects($this->atLeastOnce())->method('setFetchMode')->with(\PDO::FETCH_ASSOC);
+    $statement->expects($this->atLeastOnce())->method('setFetchMode')->with(FetchAs::Associative);
     $query = $this->createMock(SelectInterface::class);
     $query->method('execute')->willReturn($statement);
     $query->expects($this->atLeastOnce())->method('orderBy')->with('order', 'ASC');
@@ -196,6 +199,52 @@ class SqlBaseTest extends MigrateTestBase {
       'no high-water value set' => [],
       'high-water value set' => [33],
     ];
+  }
+
+  /**
+   * Tests prepare query method.
+   */
+  public function testPrepareQuery(): void {
+    $this->prepareSourceData();
+    $this->enableModules(['migrate_sql_prepare_query_test', 'entity_test']);
+
+    /** @var \Drupal\migrate\Plugin\MigrationInterface $migration */
+    $migration = $this->container->get('plugin.manager.migration')
+      ->createStubMigration([
+        'source' => ['plugin' => 'test_sql_prepare_query'],
+        'process' => ['id' => 'id', 'name' => 'name'],
+        'destination' => ['plugin' => 'entity:entity_test'],
+      ]);
+
+    // One item is excluded by the condition defined in the source plugin.
+    // @see \Drupal\migrate_sql_prepare_query_test\Plugin\migrate\source\TestSqlPrepareQuery
+    $count = $migration->getSourcePlugin()->count();
+    $this->assertEquals(2, $count);
+
+    // Run the migration and verify that the number of migrated items matches
+    // the initial source count.
+    (new MigrateExecutable($migration, new MigrateMessage()))->import();
+    $this->assertEquals(2, $migration->getIdMap()->processedCount());
+  }
+
+  /**
+   * Creates a custom source table and some sample data.
+   */
+  protected function prepareSourceData(): void {
+    $this->sourceDatabase->schema()->createTable('migrate_source_test', [
+      'fields' => [
+        'id' => ['type' => 'int'],
+        'name' => ['type' => 'varchar', 'length' => 32],
+      ],
+    ]);
+
+    // Add some data in the table.
+    $this->sourceDatabase->insert('migrate_source_test')
+      ->fields(['id', 'name'])
+      ->values(['id' => 1, 'name' => 'foo'])
+      ->values(['id' => 2, 'name' => 'bar'])
+      ->values(['id' => 3, 'name' => 'baz'])
+      ->execute();
   }
 
 }

@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   // @see http://api.jqueryui.com/dialog/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.confirmationModal = Drupal.webform.confirmationModal || {};
@@ -16,7 +18,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformConfirmationModal = {
-    attach: function (context) {
+    attach(context) {
       $(once('webform-confirmation-modal', '.js-webform-confirmation-modal', context)).each(function () {
         var $element = $(this);
 

@@ -61,6 +61,8 @@ class KeyValueEntityStorageTest extends UnitTestCase {
   protected $languageManager;
 
   /**
+   * The entity storage.
+   *
    * @var \Drupal\Core\Entity\KeyValueStore\KeyValueEntityStorage
    */
   protected $entityStorage;
@@ -97,10 +99,10 @@ class KeyValueEntityStorageTest extends UnitTestCase {
   /**
    * Prepares the key value entity storage.
    *
-   * @covers ::__construct
-   *
    * @param string $uuid_key
    *   (optional) The entity key used for the UUID. Defaults to 'uuid'.
+   *
+   * @covers ::__construct
    */
   protected function setUpKeyValueEntityStorage($uuid_key = 'uuid'): void {
     $this->entityType->expects($this->atLeastOnce())
@@ -204,10 +206,8 @@ class KeyValueEntityStorageTest extends UnitTestCase {
   /**
    * @covers ::create
    * @covers ::doCreate
-   *
-   * @return \Drupal\Core\Entity\EntityInterface
    */
-  public function testCreate() {
+  public function testCreate(): void {
     $entity = $this->getMockEntity(EntityBaseTest::class, [], ['toArray']);
     $this->entityType->expects($this->once())
       ->method('getClass')
@@ -228,22 +228,17 @@ class KeyValueEntityStorageTest extends UnitTestCase {
     $this->assertInstanceOf('Drupal\Core\Entity\EntityInterface', $entity);
     $this->assertSame('foo', $entity->id());
     $this->assertSame('bar', $entity->uuid());
-    return $entity;
   }
 
   /**
    * @covers ::save
    * @covers ::doSave
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface
-   *
-   * @depends testCreate
    */
-  public function testSaveInsert(EntityInterface $entity) {
+  public function testSaveInsert(): EntityInterface&MockObject {
     $this->setUpKeyValueEntityStorage();
+
+    $entity = $this->getMockEntity(EntityBaseTest::class, [['id' => 'foo']], ['toArray']);
+    $entity->enforceIsNew();
 
     $expected = ['id' => 'foo'];
     $this->keyValueStore->expects($this->exactly(2))
@@ -281,11 +276,9 @@ class KeyValueEntityStorageTest extends UnitTestCase {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity.
    *
-   * @return \Drupal\Core\Entity\EntityInterface
-   *
    * @depends testSaveInsert
    */
-  public function testSaveUpdate(EntityInterface $entity) {
+  public function testSaveUpdate(EntityInterface $entity): void {
     $this->entityType->expects($this->once())
       ->method('getClass')
       ->willReturn(get_class($entity));
@@ -315,7 +308,6 @@ class KeyValueEntityStorageTest extends UnitTestCase {
       ->with('foo', $expected);
     $return = $this->entityStorage->save($entity);
     $this->assertSame(SAVED_UPDATED, $return);
-    return $entity;
   }
 
   /**
@@ -614,6 +606,7 @@ class KeyValueEntityStorageTest extends UnitTestCase {
    *   (optional) The methods to mock.
    *
    * @return \Drupal\Core\Entity\EntityInterface&\PHPUnit\Framework\MockObject\MockObject
+   *   A mock entity instance with the specified methods mocked.
    */
   protected function getMockEntity(string $class = EntityBaseTest::class, array $arguments = [], array $methods = []): EntityInterface&MockObject {
     // Ensure the entity is passed at least an array of values and an entity
@@ -632,11 +625,44 @@ class KeyValueEntityStorageTest extends UnitTestCase {
 
 }
 
+/**
+ * A simple entity class for testing key value entity storage.
+ */
 class EntityBaseTest extends EntityBase {
+
+  /**
+   * The entity ID.
+   *
+   * @var string
+   */
   public $id;
+
+  /**
+   * The language code for the entity.
+   *
+   * @var string
+   */
   public $langcode;
+
+  /**
+   * The entity UUID.
+   *
+   * @var string
+   */
   public $uuid;
+
+  /**
+   * The entity label.
+   *
+   * @var string
+   */
   public $label;
+
+  /**
+   * The original, or NULL if the entity cannot be loaded.
+   *
+   * @var string
+   */
   public $original;
 
 }

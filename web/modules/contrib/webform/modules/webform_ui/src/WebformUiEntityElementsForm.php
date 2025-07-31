@@ -254,7 +254,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = $this->getEntity();
 
-    $webform->save();
+    $status = $webform->save();
 
     $context = [
       '@label' => $webform->label(),
@@ -263,6 +263,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     $t_args = ['%label' => $webform->label()];
     $this->logger('webform')->notice('Webform @label elements saved.', $context);
     $this->messenger()->addStatus($this->t('Webform %label elements saved.', $t_args));
+    return $status;
   }
 
   /**

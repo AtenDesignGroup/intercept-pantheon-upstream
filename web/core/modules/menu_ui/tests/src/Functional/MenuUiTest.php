@@ -311,7 +311,11 @@ class MenuUiTest extends BrowserTestBase {
     $this->assertSession()->pageTextContains($label);
 
     // Enable the block.
-    $block = $this->drupalPlaceBlock('system_menu_block:' . $menu_name);
+    $block = $this->drupalPlaceBlock('system_menu_block:' . $menu_name, [
+      'level' => 1,
+      'depth' => NULL,
+      'expand_all_items' => FALSE,
+    ]);
     $this->blockPlacements[$menu_name] = $block->id();
     return Menu::load($menu_name);
   }
@@ -355,7 +359,7 @@ class MenuUiTest extends BrowserTestBase {
     // destination query string.
     $this->drupalGet('admin/structure/menu/manage/tools');
     $this->clickLink('Add link');
-    $link_title = $this->randomString();
+    $link_title = $this->randomMachineName();
     $this->submitForm(['link[0][uri]' => '/', 'title[0][value]' => $link_title], 'Save');
     $this->assertSession()->linkExists($link_title);
     $this->assertSession()->addressEquals('admin/structure/menu/manage/tools');
@@ -366,7 +370,7 @@ class MenuUiTest extends BrowserTestBase {
     $links = $this->xpath('//*/td[contains(text(),:menu_label)]/following::a[normalize-space()=:link_label]', [':menu_label' => 'Tools', ':link_label' => 'Add link']);
     $links[0]->click();
     $this->assertMatchesRegularExpression('#admin/structure/menu/manage/tools/add\?destination=(/[^/]*)*/admin/structure/menu/manage/tools$#', $this->getSession()->getCurrentUrl());
-    $link_title = $this->randomString();
+    $link_title = $this->randomMachineName();
     $this->submitForm(['link[0][uri]' => '/', 'title[0][value]' => $link_title], 'Save');
     $this->assertSession()->linkExists($link_title);
     $this->assertSession()->addressEquals('admin/structure/menu/manage/tools');
@@ -383,13 +387,13 @@ class MenuUiTest extends BrowserTestBase {
 
     // Test the 'Add link' local action.
     $this->clickLink('Add link');
-    $link_title = $this->randomString();
+    $link_title = $this->randomMachineName();
     $this->submitForm(['link[0][uri]' => '/', 'title[0][value]' => $link_title], 'Save');
     $this->assertSession()->addressEquals(Url::fromRoute('entity.menu.edit_form', ['menu' => $menu_name]));
     // Test the 'Edit' operation.
     $this->clickLink('Edit');
     $this->assertSession()->fieldValueEquals('title[0][value]', $link_title);
-    $link_title = $this->randomString();
+    $link_title = $this->randomMachineName();
     $this->submitForm(['title[0][value]' => $link_title], 'Save');
     $this->assertSession()->addressEquals(Url::fromRoute('entity.menu.edit_form', ['menu' => $menu_name]));
     // Test the 'Delete' operation.
@@ -409,7 +413,7 @@ class MenuUiTest extends BrowserTestBase {
 
     // Test the 'Add link' local action.
     $this->clickLink('Add link');
-    $link_title = $this->randomString();
+    $link_title = $this->randomMachineName();
     $this->submitForm(['link[0][uri]' => '/', 'title[0][value]' => $link_title], 'Save');
     $this->assertSession()->linkExists($link_title);
     $this->assertSession()->addressEquals(Url::fromRoute('entity.menu.edit_form', ['menu' => $menu_name]));
@@ -1184,7 +1188,7 @@ class MenuUiTest extends BrowserTestBase {
     $this->assertEquals(3, $settings['depth']);
     $this->assertEquals(2, $settings['level']);
     // Reset settings.
-    $block->getPlugin()->setConfigurationValue('depth', 0);
+    $block->getPlugin()->setConfigurationValue('depth', NULL);
     $block->getPlugin()->setConfigurationValue('level', 1);
     $block->save();
   }

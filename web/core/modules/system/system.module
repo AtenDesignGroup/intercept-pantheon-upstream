@@ -43,7 +43,7 @@ const REGIONS_ALL = 'all';
 /**
  * Implements hook_hook_info().
  */
-function system_hook_info() {
+function system_hook_info(): array {
   $hooks['token_info'] = [
     'group' => 'tokens',
   ];
@@ -63,7 +63,7 @@ function system_hook_info() {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function system_theme_suggestions_html(array $variables) {
+function system_theme_suggestions_html(array $variables): array {
   $path_args = explode('/', trim(\Drupal::service('path.current')->getPath(), '/'));
   return theme_get_suggestions($path_args, 'html');
 }
@@ -71,7 +71,7 @@ function system_theme_suggestions_html(array $variables) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function system_theme_suggestions_page(array $variables) {
+function system_theme_suggestions_page(array $variables): array {
   $path_args = explode('/', trim(\Drupal::service('path.current')->getPath(), '/'));
   $suggestions = theme_get_suggestions($path_args, 'page');
 
@@ -88,7 +88,7 @@ function system_theme_suggestions_page(array $variables) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function system_theme_suggestions_maintenance_page(array $variables) {
+function system_theme_suggestions_maintenance_page(array $variables): array {
   $suggestions = [];
 
   // Dead databases will show error messages so supplying this template will
@@ -111,7 +111,7 @@ function system_theme_suggestions_maintenance_page(array $variables) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function system_theme_suggestions_region(array $variables) {
+function system_theme_suggestions_region(array $variables): array {
   $suggestions = [];
   if (!empty($variables['elements']['#region'])) {
     $suggestions[] = 'region__' . $variables['elements']['#region'];
@@ -122,7 +122,7 @@ function system_theme_suggestions_region(array $variables) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function system_theme_suggestions_field(array $variables) {
+function system_theme_suggestions_field(array $variables): array {
   $suggestions = [];
   $element = $variables['element'];
 
@@ -210,26 +210,21 @@ function template_preprocess_entity_add_list(&$variables): void {
  *   system_authorized_init($callback, $file, $arguments, $page_title);
  *   return new RedirectResponse(system_authorized_get_url()->toString());
  * @endcode
- * Example (Drupal\update\Form\UpdateReady::submitForm()):
- * @code
- *  system_authorized_init('update_authorize_run_update',
- *    __DIR__ . '/../../update.authorize.inc',
- *    [$updates], $this->t('Update manager'));
- *  $form_state->setRedirectUrl(system_authorized_get_url());
- * @endcode
  *
  * @param callable $callback
  *   The name of the function to invoke once the user authorizes the operation.
- * @param $file
+ * @param string $file
  *   The full path to the file where the callback function is implemented.
- * @param $arguments
+ * @param array $arguments
  *   Optional array of arguments to pass into the callback when it is invoked.
  *   Note that the first argument to the callback is always the FileTransfer
  *   object created by authorize.php when the user authorizes the operation.
- * @param $page_title
+ * @param string $page_title
  *   Optional string to use as the page title once redirected to authorize.php.
  */
-function system_authorized_init($callback, $file, $arguments = [], $page_title = NULL) {
+function system_authorized_init($callback, $file, $arguments = [], $page_title = NULL): void {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. Use composer to manage the code for your site. See https://www.drupal.org/node/3512364', E_USER_DEPRECATED);
+
   $session = \Drupal::request()->getSession();
   // First, figure out what file transfer backends the site supports, and put
   // all of those in the SESSION so that authorize.php has access to all of
@@ -260,6 +255,8 @@ function system_authorized_init($callback, $file, $arguments = [], $page_title =
  * @see system_authorized_init()
  */
 function system_authorized_get_url(array $options = []) {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. Use composer to manage the code for your site. See https://www.drupal.org/node/3512364', E_USER_DEPRECATED);
+
   // core/authorize.php is an unrouted URL, so using the base: scheme is
   // the correct usage for this case.
   $url = Url::fromUri('base:core/authorize.php');
@@ -275,8 +272,11 @@ function system_authorized_get_url(array $options = []) {
  *   Optional array of options to set on the \Drupal\Core\Url object.
  *
  * @return \Drupal\Core\Url
+ *   The full URL for the authorize.php script with batch processing options.
  */
 function system_authorized_batch_processing_url(array $options = []) {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. Use composer to manage the code for your site. See https://www.drupal.org/node/3512364', E_USER_DEPRECATED);
+
   $options['query'] = ['batch' => '1'];
   return system_authorized_get_url($options);
 }
@@ -287,6 +287,8 @@ function system_authorized_batch_processing_url(array $options = []) {
  * @see system_authorized_init()
  */
 function system_authorized_run($callback, $file, $arguments = [], $page_title = NULL) {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. Use composer to manage the code for your site. See https://www.drupal.org/node/3512364', E_USER_DEPRECATED);
+
   system_authorized_init($callback, $file, $arguments, $page_title);
   return new RedirectResponse(system_authorized_get_url()->toString());
 }
@@ -297,10 +299,16 @@ function system_authorized_run($callback, $file, $arguments = [], $page_title = 
  * @see batch_process()
  */
 function system_authorized_batch_process() {
+  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. Use composer to manage the code for your site. See https://www.drupal.org/node/3512364', E_USER_DEPRECATED);
+
   $finish_url = system_authorized_get_url();
   $process_url = system_authorized_batch_processing_url();
   return batch_process($finish_url->setAbsolute()->toString(), $process_url);
 }
+
+/**
+ * @} End of "defgroup authorize".
+ */
 
 /**
  * Implements hook_preprocess_HOOK() for block templates.
@@ -332,7 +340,7 @@ function system_preprocess_block(&$variables): void {
  * This function is called from the system_settings form to check all core
  * file directories (file_public_path, file_private_path, file_temporary_path).
  *
- * @param $form_element
+ * @param array $form_element
  *   The form element containing the name of the directory to check.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The current state of the form.
@@ -376,14 +384,14 @@ function system_check_directory($form_element, FormStateInterface $form_state) {
  *
  * @param \Drupal\Core\Extension\Extension|string $theme
  *   A theme extension object, or the name of a theme.
- * @param $show
+ * @param string $show
  *   Possible values: REGIONS_ALL or REGIONS_VISIBLE. Visible excludes hidden
  *   regions.
  *
  * @return string[]
  *   An array of regions in the form $region['name'] = 'description'.
  */
-function system_region_list($theme, $show = REGIONS_ALL) {
+function system_region_list($theme, $show = REGIONS_ALL): array {
   if (!$theme instanceof Extension) {
     $themes = \Drupal::service('theme_handler')->listInfo();
     if (!isset($themes[$theme])) {
@@ -396,6 +404,7 @@ function system_region_list($theme, $show = REGIONS_ALL) {
   // If requested, suppress hidden regions. See block_admin_display_form().
   foreach ($info['regions'] as $name => $label) {
     if ($show == REGIONS_ALL || !isset($info['regions_hidden']) || !in_array($name, $info['regions_hidden'])) {
+      // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
       $list[$name] = t($label);
     }
   }
@@ -424,7 +433,7 @@ function system_sort_themes($a, $b) {
 /**
  * Gets the name of the default region for a given theme.
  *
- * @param $theme
+ * @param string $theme
  *   The name of a theme.
  *
  * @return string

@@ -214,7 +214,7 @@ class WebformEntityAddForm extends BundleEntityFormBase {
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = $this->getEntity();
 
-    $webform->save();
+    $status = $webform->save();
 
     $context = [
       '@label' => $webform->label(),
@@ -223,6 +223,7 @@ class WebformEntityAddForm extends BundleEntityFormBase {
     $t_args = ['%label' => $webform->label()];
     $this->logger('webform')->notice('Webform @label created.', $context);
     $this->messenger()->addStatus($this->t('Webform %label created.', $t_args));
+    return $status;
   }
 
 }

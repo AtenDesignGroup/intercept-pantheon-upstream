@@ -45,8 +45,8 @@ class DrupalKernelTest extends KernelTestBase {
    * Build a kernel for testings.
    *
    * Because the bootstrap is in DrupalKernel::boot and that involved loading
-   * settings from the filesystem we need to go to extra lengths to build a kernel
-   * for testing.
+   * settings from the filesystem we need to go to extra lengths to build a
+   * kernel for testing.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   A request object to use in booting the kernel.
@@ -203,7 +203,10 @@ class DrupalKernelTest extends KernelTestBase {
 
   /**
    * Data provider for self::testClassLoaderAutoDetect.
+   *
    * @return array
+   *   An array of test cases. Each test case is an array containing a single boolean value
+   *   that represents the class_loader_auto_detect setting to be tested.
    */
   public static function providerClassLoaderAutoDetect() {
     return [
@@ -218,13 +221,13 @@ class DrupalKernelTest extends KernelTestBase {
    * This test runs in a separate process since it registers class loaders and
    * results in statics being set.
    *
+   * @param bool $value
+   *   The value to set class_loader_auto_detect to.
+   *
    * @runInSeparateProcess
    * @preserveGlobalState disabled
    * @covers ::boot
    * @dataProvider providerClassLoaderAutoDetect
-   *
-   * @param bool $value
-   *   The value to set class_loader_auto_detect to.
    */
   public function testClassLoaderAutoDetect($value): void {
     // Create a virtual file system containing items that should be
@@ -317,7 +320,7 @@ class DrupalKernelTest extends KernelTestBase {
     // Test environment locale should be UTF-8.
     $this->assertSame($utf8_string, escapeshellcmd($utf8_string));
     $request = Request::createFromGlobals();
-    $kernel = $this->getTestKernel($request);
+    $this->getTestKernel($request);
     // Kernel environment locale should be UTF-8.
     $this->assertSame($utf8_string, escapeshellcmd($utf8_string));
   }

@@ -12,14 +12,15 @@ use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\Site\Settings;
 use Drupal\fixture_manipulator\StageFixtureManipulator;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\package_manager\Attribute\AllowDirectWrite;
 use Drupal\package_manager\Event\PreApplyEvent;
-use Drupal\package_manager\Event\PreOperationStageEvent;
-use Drupal\package_manager\Exception\StageEventException;
+use Drupal\package_manager\Event\SandboxValidationEvent;
+use Drupal\package_manager\Exception\SandboxEventException;
 use Drupal\package_manager\FailureMarker;
 use Drupal\package_manager\PathLocator;
 use Drupal\package_manager\StatusCheckTrait;
 use Drupal\package_manager\Validator\DiskSpaceValidator;
-use Drupal\package_manager\StageBase;
+use Drupal\package_manager\SandboxManagerBase;
 use Drupal\Tests\package_manager\Traits\AssertPreconditionsTrait;
 use Drupal\Tests\package_manager\Traits\ComposerStagerTestTrait;
 use Drupal\Tests\package_manager\Traits\FixtureManipulatorTrait;
@@ -118,9 +119,9 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
     $this->fileSystem = new Filesystem();
     $this->createTestProject();
 
-    // The Update module's default configuration must be installed for our
-    // fake release metadata to be fetched, and the System module's to ensure
-    // the site has a name.
+    // The Update Status module's default configuration must be installed for
+    // our fake release metadata to be fetched, and the System module's to
+    // ensure the site has a name.
     $this->installConfig(['system', 'update']);
 
     // Make the update system think that all of System's post-update functions
@@ -173,11 +174,15 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
   /**
    * Creates a stage object for testing purposes.
    *
-   * @return \Drupal\Tests\package_manager\Kernel\TestStage
+   * @param class-string $class
+   *   (optional) The class of the sandbox manager to create. Defaults to
+   *   \Drupal\Tests\package_manager\Kernel\TestSandboxManager.
+   *
+   * @return \Drupal\Tests\package_manager\Kernel\TestSandboxManager
    *   A stage object, with test-only modifications.
    */
-  protected function createStage(): TestStage {
-    return new TestStage(
+  protected function createStage(?string $class = TestSandboxManager::class): TestSandboxManager {
+    return new $class(
       $this->container->get(PathLocator::class),
       $this->container->get(BeginnerInterface::class),
       $this->container->get(StagerInterface::class),
@@ -200,10 +205,10 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
    *   (optional) The class of the event which should return the results. Must
    *   be passed if $expected_results is not empty.
    *
-   * @return \Drupal\package_manager\StageBase
+   * @return \Drupal\package_manager\SandboxManagerBase
    *   The stage that was used to collect the validation results.
    */
-  protected function assertResults(array $expected_results, ?string $event_class = NULL): StageBase {
+  protected function assertResults(array $expected_results, ?string $event_class = NULL): SandboxManagerBase {
     $stage = $this->createStage();
 
     try {
@@ -216,7 +221,7 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
       // If we did not get an exception, ensure we didn't expect any results.
       $this->assertValidationResultsEqual([], $expected_results);
     }
-    catch (StageEventException $e) {
+    catch (SandboxEventException $e) {
       $this->assertNotEmpty($expected_results);
       $this->assertInstanceOf($event_class, $e->event);
       $this->assertExpectedResultsFromException($expected_results, $e);
@@ -229,11 +234,11 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
    *
    * @param \Drupal\package_manager\ValidationResult[] $expected_results
    *   The expected validation results.
-   * @param \Drupal\Tests\package_manager\Kernel\TestStage|null $stage
+   * @param \Drupal\Tests\package_manager\Kernel\TestSandboxManager|null $stage
    *   (optional) The test stage to use to create the status check event. If
    *   none is provided a new stage will be created.
    */
-  protected function assertStatusCheckResults(array $expected_results, ?StageBase $stage = NULL): void {
+  protected function assertStatusCheckResults(array $expected_results, ?SandboxManagerBase $stage = NULL): void {
     $actual_results = $this->runStatusCheck($stage ?? $this->createStage(), $this->container->get('event_dispatcher'));
     $this->assertValidationResultsEqual($expected_results, $actual_results);
   }
@@ -328,10 +333,10 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
   }
 
   /**
-   * Sets the current (running) version of core, as known to the Update module.
+   * Sets the current (running) version of core for the Update Status module.
    *
-   * @todo Remove this function with use of the trait from the Update module in
-   *   https://drupal.org/i/3348234.
+   * @todo Remove this function with use of the trait from the Update Status
+   *   module in https://drupal.org/i/3348234.
    *
    * @param string $version
    *   The current version of core.
@@ -436,15 +441,15 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
    *
    * @param array $expected_results
    *   The expected results.
-   * @param \Drupal\package_manager\Exception\StageEventException $exception
+   * @param \Drupal\package_manager\Exception\SandboxEventException $exception
    *   The exception.
    */
-  protected function assertExpectedResultsFromException(array $expected_results, StageEventException $exception): void {
+  protected function assertExpectedResultsFromException(array $expected_results, SandboxEventException $exception): void {
     $event = $exception->event;
-    $this->assertInstanceOf(PreOperationStageEvent::class, $event);
+    $this->assertInstanceOf(SandboxValidationEvent::class, $event);
 
-    $stage = $event->stage;
-    $stage_dir = $stage->stageDirectoryExists() ? $stage->getStageDirectory() : NULL;
+    $stage = $event->sandboxManager;
+    $stage_dir = $stage->sandboxDirectoryExists() ? $stage->getSandboxDirectory() : NULL;
     $this->assertValidationResultsEqual($expected_results, $event->getResults(), NULL, $stage_dir);
   }
 
@@ -453,7 +458,7 @@ abstract class PackageManagerKernelTestBase extends KernelTestBase {
 /**
  * Defines a stage specifically for testing purposes.
  */
-class TestStage extends StageBase {
+class TestSandboxManager extends SandboxManagerBase {
 
   /**
    * {@inheritdoc}
@@ -472,6 +477,19 @@ class TestStage extends StageBase {
   public function __sleep(): array {
     return [];
   }
+
+}
+
+/**
+ * Defines a test-only sandbox manager that allows direct-write.
+ */
+#[AllowDirectWrite]
+class TestDirectWriteSandboxManager extends TestSandboxManager {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected string $type = 'package_manager:test_direct_write';
 
 }
 

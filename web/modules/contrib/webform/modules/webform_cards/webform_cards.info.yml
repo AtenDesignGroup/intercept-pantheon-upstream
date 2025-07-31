@@ -5,3 +5,5 @@ package: 'Webform'
 core_version_requirement: ^10.3 || ^11.0
 dependencies:
   - 'webform:webform'
+  - 'webform:webform_clientside_validation'
+  - 'drupal:inline_form_errors'

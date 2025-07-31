@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\content_translation_test\Hook;
 
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
@@ -36,7 +37,7 @@ class ContentTranslationTestHooks {
    * Implements hook_entity_access().
    */
   #[Hook('entity_access')]
-  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     $access = \Drupal::state()->get('content_translation.entity_access.' . $entity->getEntityTypeId());
     if (!empty($access[$operation])) {
       return AccessResult::allowed();
@@ -61,7 +62,7 @@ class ContentTranslationTestHooks {
       ];
       foreach (array_keys($form['actions']) as $action) {
         if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
-          $form['actions'][$action]['#submit'][] = 'content_translation_test_form_node_form_submit';
+          $form['actions'][$action]['#submit'][] = [$this, 'formNodeFormSubmit'];
         }
       }
     }
@@ -71,8 +72,17 @@ class ContentTranslationTestHooks {
    * Implements hook_entity_translation_delete().
    */
   #[Hook('entity_translation_delete')]
-  public function entityTranslationDelete(EntityInterface $translation) {
+  public function entityTranslationDelete(EntityInterface $translation): void {
     \Drupal::state()->set('content_translation_test.translation_deleted', TRUE);
+  }
+
+  /**
+   * Form submission handler for custom field added based on a request parameter.
+   *
+   * @see content_translation_test_form_node_article_form_alter()
+   */
+  public function formNodeFormSubmit($form, FormStateInterface $form_state): void {
+    \Drupal::state()->set('test_field_only_en_fr', $form_state->getValue('test_field_only_en_fr'));
   }
 
 }

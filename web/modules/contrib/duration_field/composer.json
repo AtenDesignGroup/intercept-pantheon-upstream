@@ -16,10 +16,13 @@
     "issues": "https://www.drupal.org/project/issues/duration_field",
     "source": "http://cgit.drupalcode.org/duration_field"
   },
+  "require-dev": {
+    "drush/drush": ">=9"
+  },
   "extra": {
     "drush": {
       "services": {
-        "drush.services.yml": "^9"
+        "drush.services.yml": ">=9"
       }
     }
   }

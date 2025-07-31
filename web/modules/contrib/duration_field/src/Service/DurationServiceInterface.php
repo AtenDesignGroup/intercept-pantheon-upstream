@@ -2,8 +2,6 @@
 
 namespace Drupal\duration_field\Service;
 
-use DateInterval;
-
 /**
  * Interface for classes providing services for the Duration Field module.
  */
@@ -85,7 +83,7 @@ interface DurationServiceInterface {
    * @return string
    *   The ISO 8601 duration string for the given \DateInterval.
    */
-  public function getDurationStringFromDateInterval(DateInterval $dateInterval);
+  public function getDurationStringFromDateInterval(\DateInterval $dateInterval);
 
   /**
    * Get a human-readable string representing a DateTime interval.
@@ -109,11 +107,13 @@ interface DurationServiceInterface {
    * @param string $textLength
    *   The length of text that should be returned. Allowed values are 'full' and
    *   'short'.
+   * @param int $weeks
+   *   The number of weeks to include in the output.
    *
    * @return string
    *   A human readable translated string representing the DateInterval element.
    */
-  public function getHumanReadableStringFromDateInterval(DateInterval $dateInterval, array $granularity, $separator = ' ', $textLength = 'full');
+  public function getHumanReadableStringFromDateInterval(\DateInterval $dateInterval, array $granularity, $separator = ' ', $textLength = 'full', int $weeks = 0);
 
   /**
    * Get the number of seconds a given duration represents.
@@ -124,7 +124,7 @@ interface DurationServiceInterface {
    * @return int
    *   The number of seconds the interval represents.
    */
-  public function getSecondsFromDateInterval(DateInterval $dateInterval);
+  public function getSecondsFromDateInterval(\DateInterval $dateInterval);
 
   /**
    * Get the number of seconds an ISO 8601 duration string represents.
@@ -136,5 +136,31 @@ interface DurationServiceInterface {
    *   The number of seconds the duration string represents.
    */
   public function getSecondsFromDurationString($durationString);
+
+  /**
+   * Helper method to retrieve a date interval with number of weeks added.
+   *
+   * @param \DateInterval $dateInterval
+   *   The DateInterval to which weeks should be added.
+   * @param int $weeks
+   *   The number of weeks to add to the DateInterval.
+   *
+   * @return \DateInterval
+   *   The DateInterval with the number of weeks added.
+   */
+  public function addWeeksToDateInterval(\DateInterval $dateInterval, int $weeks = 0);
+
+  /**
+   * Helper method to retrieve a date interval with number of weeks removed.
+   *
+   * @param \DateInterval $dateInterval
+   *   The DateInterval from which weeks should be removed.
+   * @param int $weeks
+   *   The number of weeks to remove from the DateInterval.
+   *
+   * @return \DateInterval
+   *   The DateInterval with the number of weeks removed.
+   */
+  public function removeWeeksFromDateInterval(\DateInterval $dateInterval, int $weeks = 0);
 
 }

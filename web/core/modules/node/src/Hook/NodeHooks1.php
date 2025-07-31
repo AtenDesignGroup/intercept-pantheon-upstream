@@ -2,6 +2,8 @@
 
 namespace Drupal\node\Hook;
 
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\language\ConfigurableLanguageInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Database\Query\AlterableInterface;
@@ -22,20 +24,22 @@ use Drupal\Core\Hook\Attribute\Hook;
  */
 class NodeHooks1 {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?string {
     // Remind site administrators about the {node_access} table being flagged
     // for rebuild. We don't need to issue the message on the confirm form, or
     // while the rebuild is being processed.
     if ($route_name != 'node.configure_rebuild_confirm' && $route_name != 'system.batch_page.html' && $route_name != 'help.page.node' && $route_name != 'help.main' && \Drupal::currentUser()->hasPermission('administer nodes') && node_access_needs_rebuild()) {
       if ($route_name == 'system.status') {
-        $message = t('The content access permissions need to be rebuilt.');
+        $message = $this->t('The content access permissions need to be rebuilt.');
       }
       else {
-        $message = t('The content access permissions need to be rebuilt. <a href=":node_access_rebuild">Rebuild permissions</a>.', [
+        $message = $this->t('The content access permissions need to be rebuilt. <a href=":node_access_rebuild">Rebuild permissions</a>.', [
           ':node_access_rebuild' => Url::fromRoute('node.configure_rebuild_confirm')->toString(),
         ]);
       }
@@ -44,32 +48,32 @@ class NodeHooks1 {
     switch ($route_name) {
       case 'help.page.node':
         $output = '';
-        $output .= '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('The Node module manages the creation, editing, deletion, settings, and display of the main site content. Content items managed by the Node module are typically displayed as pages on your site, and include a title, some meta-data (author, creation time, content type, etc.), and optional fields containing text or other data (fields are managed by the <a href=":field">Field module</a>). For more information, see the <a href=":node">online documentation for the Node module</a>.', [
+        $output .= '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('The Node module manages the creation, editing, deletion, settings, and display of the main site content. Content items managed by the Node module are typically displayed as pages on your site, and include a title, some meta-data (author, creation time, content type, etc.), and optional fields containing text or other data (fields are managed by the <a href=":field">Field module</a>). For more information, see the <a href=":node">online documentation for the Node module</a>.', [
           ':node' => 'https://www.drupal.org/docs/core-modules-and-themes/core-modules/node-module',
           ':field' => Url::fromRoute('help.page', [
             'name' => 'field',
           ])->toString(),
         ]) . '</p>';
-        $output .= '<h2>' . t('Uses') . '</h2>';
+        $output .= '<h2>' . $this->t('Uses') . '</h2>';
         $output .= '<dl>';
-        $output .= '<dt>' . t('Creating content') . '</dt>';
-        $output .= '<dd>' . t('When new content is created, the Node module records basic information about the content, including the author, date of creation, and the <a href=":content-type">Content type</a>. It also manages the <em>publishing options</em>, which define whether or not the content is published, promoted to the front page of the site, and/or sticky at the top of content lists. Default settings can be configured for each <a href=":content-type">type of content</a> on your site.', [
+        $output .= '<dt>' . $this->t('Creating content') . '</dt>';
+        $output .= '<dd>' . $this->t('When new content is created, the Node module records basic information about the content, including the author, date of creation, and the <a href=":content-type">Content type</a>. It also manages the <em>publishing options</em>, which define whether or not the content is published, promoted to the front page of the site, and/or sticky at the top of content lists. Default settings can be configured for each <a href=":content-type">type of content</a> on your site.', [
           ':content-type' => Url::fromRoute('entity.node_type.collection')->toString(),
         ]) . '</dd>';
-        $output .= '<dt>' . t('Creating custom content types') . '</dt>';
-        $output .= '<dd>' . t('The Node module gives users with the <em>Administer content types</em> permission the ability to <a href=":content-new">create new content types</a> in addition to the default ones already configured. Creating custom content types gives you the flexibility to add <a href=":field">fields</a> and configure default settings that suit the differing needs of various site content.', [
+        $output .= '<dt>' . $this->t('Creating custom content types') . '</dt>';
+        $output .= '<dd>' . $this->t('The Node module gives users with the <em>Administer content types</em> permission the ability to <a href=":content-new">create new content types</a> in addition to the default ones already configured. Creating custom content types gives you the flexibility to add <a href=":field">fields</a> and configure default settings that suit the differing needs of various site content.', [
           ':content-new' => Url::fromRoute('node.type_add')->toString(),
           ':field' => Url::fromRoute('help.page', [
             'name' => 'field',
           ])->toString(),
         ]) . '</dd>';
-        $output .= '<dt>' . t('Administering content') . '</dt>';
-        $output .= '<dd>' . t('The <a href=":content">Content</a> page lists your content, allowing you add new content, filter, edit or delete existing content, or perform bulk operations on existing content.', [':content' => Url::fromRoute('system.admin_content')->toString()]) . '</dd>';
-        $output .= '<dt>' . t('Creating revisions') . '</dt>';
-        $output .= '<dd>' . t('The Node module also enables you to create multiple versions of any content, and revert to older versions using the <em>Revision information</em> settings.') . '</dd>';
-        $output .= '<dt>' . t('User permissions') . '</dt>';
-        $output .= '<dd>' . t('The Node module makes a number of permissions available for each content type, which can be set by role on the <a href=":permissions">permissions page</a>.', [
+        $output .= '<dt>' . $this->t('Administering content') . '</dt>';
+        $output .= '<dd>' . $this->t('The <a href=":content">Content</a> page lists your content, allowing you add new content, filter, edit or delete existing content, or perform bulk operations on existing content.', [':content' => Url::fromRoute('system.admin_content')->toString()]) . '</dd>';
+        $output .= '<dt>' . $this->t('Creating revisions') . '</dt>';
+        $output .= '<dd>' . $this->t('The Node module also enables you to create multiple versions of any content, and revert to older versions using the <em>Revision information</em> settings.') . '</dd>';
+        $output .= '<dt>' . $this->t('User permissions') . '</dt>';
+        $output .= '<dd>' . $this->t('The Node module makes a number of permissions available for each content type, which can be set by role on the <a href=":permissions">permissions page</a>.', [
           ':permissions' => Url::fromRoute('user.admin_permissions.module', [
             'modules' => 'node',
           ])->toString(),
@@ -78,20 +82,20 @@ class NodeHooks1 {
         return $output;
 
       case 'node.type_add':
-        return '<p>' . t('Individual content types can have different fields, behaviors, and permissions assigned to them.') . '</p>';
+        return '<p>' . $this->t('Individual content types can have different fields, behaviors, and permissions assigned to them.') . '</p>';
 
       case 'entity.entity_form_display.node.default':
       case 'entity.entity_form_display.node.form_mode':
         $type = $route_match->getParameter('node_type');
-        return '<p>' . t('Content items can be edited using different form modes. Here, you can define which fields are shown and hidden when %type content is edited in each form mode, and define how the field form widgets are displayed in each form mode.', ['%type' => $type->label()]) . '</p>';
+        return '<p>' . $this->t('Content items can be edited using different form modes. Here, you can define which fields are shown and hidden when %type content is edited in each form mode, and define how the field form widgets are displayed in each form mode.', ['%type' => $type->label()]) . '</p>';
 
       case 'entity.entity_view_display.node.default':
       case 'entity.entity_view_display.node.view_mode':
         $type = $route_match->getParameter('node_type');
-        return '<p>' . t('Content items can be displayed using different view modes: Teaser, Full content, Print, RSS, etc. <em>Teaser</em> is a short format that is typically used in lists of multiple content items. <em>Full content</em> is typically used when the content is displayed on its own page.') . '</p>' . '<p>' . t('Here, you can define which fields are shown and hidden when %type content is displayed in each view mode, and define how the fields are displayed in each view mode.', ['%type' => $type->label()]) . '</p>';
+        return '<p>' . $this->t('Content items can be displayed using different view modes: Teaser, Full content, Print, RSS, etc. <em>Teaser</em> is a short format that is typically used in lists of multiple content items. <em>Full content</em> is typically used when the content is displayed on its own page.') . '</p><p>' . $this->t('Here, you can define which fields are shown and hidden when %type content is displayed in each view mode, and define how the fields are displayed in each view mode.', ['%type' => $type->label()]) . '</p>';
 
       case 'entity.node.version_history':
-        return '<p>' . t('Revisions allow you to track differences between multiple versions of your content, and revert to older versions.') . '</p>';
+        return '<p>' . $this->t('Revisions allow you to track differences between multiple versions of your content, and revert to older versions.') . '</p>';
 
       case 'entity.node.edit_form':
         $node = $route_match->getParameter('node');
@@ -104,6 +108,7 @@ class NodeHooks1 {
         $help = $type->getHelp();
         return !empty($help) ? Xss::filterAdmin($help) : '';
     }
+    return NULL;
   }
 
   /**
@@ -171,12 +176,12 @@ class NodeHooks1 {
    * Implements hook_entity_extra_field_info().
    */
   #[Hook('entity_extra_field_info')]
-  public function entityExtraFieldInfo() {
+  public function entityExtraFieldInfo(): array {
     $extra = [];
-    $description = t('Node module element');
+    $description = $this->t('Node module element');
     foreach (NodeType::loadMultiple() as $bundle) {
       $extra['node'][$bundle->id()]['display']['links'] = [
-        'label' => t('Links'),
+        'label' => $this->t('Links'),
         'description' => $description,
         'weight' => 100,
         'visible' => TRUE,
@@ -209,22 +214,22 @@ class NodeHooks1 {
    * Implements hook_ranking().
    */
   #[Hook('ranking')]
-  public function ranking() {
+  public function ranking(): array {
     // Create the ranking array and add the basic ranking options.
     $ranking = [
       'relevance' => [
-        'title' => t('Keyword relevance'),
+        'title' => $this->t('Keyword relevance'),
               // Average relevance values hover around 0.15
         'score' => 'i.relevance',
       ],
       'sticky' => [
-        'title' => t('Content is sticky at top of lists'),
-              // The sticky flag is either 0 or 1, which is automatically normalized.
+        'title' => $this->t('Content is sticky at top of lists'),
+        // The sticky flag is either 0 or 1, which is automatically normalized.
         'score' => 'n.sticky',
       ],
       'promote' => [
-        'title' => t('Content is promoted to the front page'),
-              // The promote flag is either 0 or 1, which is automatically normalized.
+        'title' => $this->t('Content is promoted to the front page'),
+        // The promote flag is either 0 or 1, which is automatically normalized.
         'score' => 'n.promote',
       ],
     ];
@@ -232,8 +237,8 @@ class NodeHooks1 {
     // been calculated in node_cron().
     if ($node_min_max = \Drupal::state()->get('node.min_max_update_time')) {
       $ranking['recent'] = [
-        'title' => t('Recently created'),
-            // Exponential decay with half life of 14% of the age range of nodes.
+        'title' => $this->t('Recently created'),
+        // Exponential decay with half life of 14% of the age range of nodes.
         'score' => 'EXP(-5 * (1 - (n.created - :node_oldest) / :node_range))',
         'arguments' => [
           ':node_oldest' => $node_min_max['min_created'],
@@ -248,7 +253,7 @@ class NodeHooks1 {
    * Implements hook_ENTITY_TYPE_predelete() for user entities.
    */
   #[Hook('user_predelete')]
-  public function userPredelete($account) {
+  public function userPredelete($account): void {
     // Delete nodes (current revisions).
     // @todo Introduce node_mass_delete() or make node_mass_update() more flexible.
     $nids = \Drupal::entityQuery('node')->condition('uid', $account->id())->accessCheck(FALSE)->execute();
@@ -294,8 +299,8 @@ class NodeHooks1 {
   public function formSystemThemesAdminFormAlter(&$form, FormStateInterface $form_state, $form_id) : void {
     $form['admin_theme']['use_admin_theme'] = [
       '#type' => 'checkbox',
-      '#title' => t('Use the administration theme when editing or creating content'),
-      '#description' => t('Control which roles can "View the administration theme" on the <a href=":permissions">Permissions page</a>.', [
+      '#title' => $this->t('Use the administration theme when editing or creating content'),
+      '#description' => $this->t('Control which roles can "View the administration theme" on the <a href=":permissions">Permissions page</a>.', [
         ':permissions' => Url::fromRoute('user.admin_permissions.module', [
           'modules' => 'system',
         ])->toString(),
@@ -315,41 +320,42 @@ class NodeHooks1 {
    * "bypass node access" permission. Such users have unrestricted access to all
    * nodes. user 1 will always pass this check.
    *
-   * Next, all implementations of hook_ENTITY_TYPE_access() for node will
-   * be called. Each implementation may explicitly allow, explicitly forbid, or
-   * ignore the access request. If at least one module says to forbid the request,
-   * it will be rejected. If no modules deny the request and at least one says to
-   * allow it, the request will be permitted.
+   * Next, all implementations of hook_ENTITY_TYPE_access() for node will be
+   * called. Each implementation may explicitly allow, explicitly forbid, or
+   * ignore the access request. If at least one module says to forbid the
+   * request, it will be rejected. If no modules deny the request and at least
+   * one says to allow it, the request will be permitted.
    *
-   * If all modules ignore the access request, then the node_access table is used
-   * to determine access. All node access modules are queried using
-   * hook_node_grants() to assemble a list of "grant IDs" for the user. This list
-   * is compared against the table. If any row contains the node ID in question
-   * (or 0, which stands for "all nodes"), one of the grant IDs returned, and a
-   * value of TRUE for the operation in question, then access is granted. Note
-   * that this table is a list of grants; any matching row is sufficient to grant
-   * access to the node.
+   * If all modules ignore the access request, then the node_access table is
+   * used to determine access. All node access modules are queried using
+   * hook_node_grants() to assemble a list of "grant IDs" for the user. This
+   * list is compared against the table. If any row contains the node ID in
+   * question (or 0, which stands for "all nodes"), one of the grant IDs
+   * returned, and a value of TRUE for the operation in question, then access is
+   * granted. Note that this table is a list of grants; any matching row is
+   * sufficient to grant access to the node.
    *
    * In node listings (lists of nodes generated from a select query, such as the
-   * default home page at path 'node', an RSS feed, a recent content block, etc.),
-   * the process above is followed except that hook_ENTITY_TYPE_access() is not
-   * called on each node for performance reasons and for proper functioning of
-   * the pager system. When adding a node listing to your module, be sure to use
-   * an entity query, which will add a tag of "node_access". This will allow
-   * modules dealing with node access to ensure only nodes to which the user has
-   * access are retrieved, through the use of hook_query_TAG_alter(). See the
-   * @link entity_api Entity API topic @endlink for more information on entity
-   * queries. Tagging a query with "node_access" does not check the
-   * published/unpublished status of nodes, so the base query is responsible
-   * for ensuring that unpublished nodes are not displayed to inappropriate users.
+   * default home page at path 'node', an RSS feed, a recent content block,
+   * etc.), the process above is followed except that hook_ENTITY_TYPE_access()
+   * is not called on each node for performance reasons and for proper
+   * functioning of the pager system. When adding a node listing to your module,
+   * be sure to use an entity query, which will add a tag of "node_access". This
+   * will allow modules dealing with node access to ensure only nodes to which
+   * the user has access are retrieved, through the use of
+   * hook_query_TAG_alter(). See the @link entity_api Entity API topic @endlink
+   * for more information on entity queries. Tagging a query with "node_access"
+   * does not check the published/unpublished status of nodes, so the base query
+   * is responsible for ensuring that unpublished nodes are not displayed to
+   * inappropriate users.
    *
    * Note: Even a single module returning an AccessResultInterface object from
    * hook_ENTITY_TYPE_access() whose isForbidden() method equals TRUE will block
    * access to the node. Therefore, implementers should take care to not deny
    * access unless they really intend to. Unless a module wishes to actively
    * forbid access it should return an AccessResultInterface object whose
-   * isAllowed() nor isForbidden() methods return TRUE, to allow other modules or
-   * the node_access table to control access.
+   * isAllowed() nor isForbidden() methods return TRUE, to allow other modules
+   * or the node_access table to control access.
    *
    * Note also that access to create nodes is handled by
    * hook_ENTITY_TYPE_create_access().
@@ -361,7 +367,7 @@ class NodeHooks1 {
    * Implements hook_ENTITY_TYPE_access().
    */
   #[Hook('node_access')]
-  public function nodeAccess(NodeInterface $node, $operation, AccountInterface $account) {
+  public function nodeAccess(NodeInterface $node, $operation, AccountInterface $account): AccessResultInterface {
     $type = $node->bundle();
     // Note create access is handled by hook_ENTITY_TYPE_create_access().
     switch ($operation) {
@@ -388,10 +394,11 @@ class NodeHooks1 {
   /**
    * Implements hook_query_TAG_alter().
    *
-   * This is the hook_query_alter() for queries tagged with 'node_access'. It adds
-   * node access checks for the user account given by the 'account' meta-data (or
-   * current user if not provided), for an operation given by the 'op' meta-data
-   * (or 'view' if not provided; other possible values are 'update' and 'delete').
+   * This is the hook_query_alter() for queries tagged with 'node_access'. It
+   * adds node access checks for the user account given by the 'account'
+   * meta-data (or current user if not provided), for an operation given by the
+   * 'op' meta-data (or 'view' if not provided; other possible values are
+   * 'update' and 'delete').
    *
    * Queries tagged with 'node_access' that are not against the {node} table
    * must add the base table as metadata. For example:
@@ -469,9 +476,9 @@ class NodeHooks1 {
    * Implements hook_modules_installed().
    */
   #[Hook('modules_installed')]
-  public function modulesInstalled(array $modules) {
-    // Check if any of the newly enabled modules require the node_access table to
-    // be rebuilt.
+  public function modulesInstalled(array $modules): void {
+    // Check if any of the newly enabled modules require the node_access table
+    // to be rebuilt.
     if (!node_access_needs_rebuild() && \Drupal::moduleHandler()->hasImplementations('node_grants', $modules)) {
       node_access_needs_rebuild(TRUE);
     }
@@ -481,15 +488,15 @@ class NodeHooks1 {
    * Implements hook_modules_uninstalled().
    */
   #[Hook('modules_uninstalled')]
-  public function modulesUninstalled($modules) {
+  public function modulesUninstalled($modules): void {
     // Check whether any of the disabled modules implemented hook_node_grants(),
     // in which case the node access table needs to be rebuilt.
     foreach ($modules as $module) {
       // At this point, the module is already disabled, but its code is still
       // loaded in memory. Module functions must no longer be called. We only
-      // check whether a hook implementation function exists and do not invoke it.
-      // Node access also needs to be rebuilt if language module is disabled to
-      // remove any language-specific grants.
+      // check whether a hook implementation function exists and do not invoke
+      // it. Node access also needs to be rebuilt if language module is disabled
+      // to remove any language-specific grants.
       if (!node_access_needs_rebuild() && (\Drupal::moduleHandler()->hasImplementations('node_grants', $module) || $module == 'language')) {
         node_access_needs_rebuild(TRUE);
       }
@@ -505,7 +512,7 @@ class NodeHooks1 {
    * Implements hook_ENTITY_TYPE_delete() for 'configurable_language'.
    */
   #[Hook('configurable_language_delete')]
-  public function configurableLanguageDelete(ConfigurableLanguageInterface $language) {
+  public function configurableLanguageDelete(ConfigurableLanguageInterface $language): void {
     // On nodes with this language, unset the language.
     \Drupal::entityTypeManager()->getStorage('node')->clearRevisionsLanguage($language);
   }
@@ -514,7 +521,7 @@ class NodeHooks1 {
    * Implements hook_ENTITY_TYPE_insert() for comment entities.
    */
   #[Hook('comment_insert')]
-  public function commentInsert($comment) {
+  public function commentInsert($comment): void {
     // Reindex the node when comments are added.
     if ($comment->getCommentedEntityTypeId() == 'node') {
       node_reindex_node_search($comment->getCommentedEntityId());
@@ -525,7 +532,7 @@ class NodeHooks1 {
    * Implements hook_ENTITY_TYPE_update() for comment entities.
    */
   #[Hook('comment_update')]
-  public function commentUpdate($comment) {
+  public function commentUpdate($comment): void {
     // Reindex the node when comments are changed.
     if ($comment->getCommentedEntityTypeId() == 'node') {
       node_reindex_node_search($comment->getCommentedEntityId());
@@ -536,7 +543,7 @@ class NodeHooks1 {
    * Implements hook_ENTITY_TYPE_delete() for comment entities.
    */
   #[Hook('comment_delete')]
-  public function commentDelete($comment) {
+  public function commentDelete($comment): void {
     // Reindex the node when comments are deleted.
     if ($comment->getCommentedEntityTypeId() == 'node') {
       node_reindex_node_search($comment->getCommentedEntityId());

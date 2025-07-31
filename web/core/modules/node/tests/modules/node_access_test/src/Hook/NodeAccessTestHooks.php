@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\node_access_test\Hook;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Hook\Attribute\Hook;
@@ -38,7 +39,7 @@ class NodeAccessTestHooks {
    * @see node_access_test_node_access_records()
    */
   #[Hook('node_grants')]
-  public function nodeGrants($account, $operation) {
+  public function nodeGrants($account, $operation): array {
     $grants = [];
     $grants['node_access_test_author'] = [$account->id()];
     if ($operation == 'view' && $account->hasPermission('node test view')) {
@@ -65,7 +66,7 @@ class NodeAccessTestHooks {
    * @see node_access_test.permissions.yml
    */
   #[Hook('node_access_records')]
-  public function nodeAccessRecords(NodeInterface $node) {
+  public function nodeAccessRecords(NodeInterface $node): array {
     $grants = [];
     // For NodeAccessBaseTableTestCase, only set records for private nodes.
     if (!\Drupal::state()->get('node_access_test.private') || isset($node->private) && $node->private->value) {
@@ -102,7 +103,7 @@ class NodeAccessTestHooks {
    * Implements hook_ENTITY_TYPE_access().
    */
   #[Hook('node_access')]
-  public function nodeAccess(NodeInterface $node, $operation, AccountInterface $account) {
+  public function nodeAccess(NodeInterface $node, $operation, AccountInterface $account): AccessResultInterface {
     $secret_catalan = \Drupal::state()->get('node_access_test_secret_catalan') ?: 0;
     if ($secret_catalan && $node->language()->getId() == 'ca') {
       // Make all Catalan content secret.

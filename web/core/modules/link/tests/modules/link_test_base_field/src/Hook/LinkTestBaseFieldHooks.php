@@ -19,10 +19,10 @@ class LinkTestBaseFieldHooks {
    * Implements hook_entity_base_field_info().
    */
   #[Hook('entity_base_field_info')]
-  public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
+  public function entityBaseFieldInfo(EntityTypeInterface $entity_type): array {
     $fields = [];
     if ($entity_type->id() === 'entity_test') {
-      $fields['links'] = BaseFieldDefinition::create('link')->setLabel(t('Links'))->setRevisionable(TRUE)->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)->setDescription(t('Add links to the entity.'))->setRequired(FALSE)->setSettings([
+      $fields['links'] = BaseFieldDefinition::create('link')->setLabel('Links')->setRevisionable(TRUE)->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)->setDescription('Add links to the entity.')->setRequired(FALSE)->setSettings([
         'link_type' => LinkItemInterface::LINK_GENERIC,
         'title' => DRUPAL_REQUIRED,
       ])->setDisplayOptions('form', ['type' => 'link_default', 'weight' => 49]);

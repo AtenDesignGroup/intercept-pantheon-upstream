@@ -35,6 +35,9 @@ class InputTest extends KernelTestBase {
    */
   protected static $modules = ['system', 'user'];
 
+  /**
+   * The recipe.
+   */
   private readonly Recipe $recipe;
 
   /**
@@ -57,6 +60,9 @@ class InputTest extends KernelTestBase {
     $this->recipe = Recipe::createFromDirectory($this->getDrupalRoot() . '/core/recipes/feedback_contact_form');
   }
 
+  /**
+   * Tests getting the default value from configuration.
+   */
   public function testDefaultValueFromConfig(): void {
     // Collect the input values before processing the recipe, using a mocked
     // collector that will always return the default value.
@@ -72,6 +78,9 @@ class InputTest extends KernelTestBase {
     $this->assertSame(['ben@deep.space'], ContactForm::load('feedback')?->getRecipients());
   }
 
+  /**
+   * Tests input validation.
+   */
   public function testInputIsValidated(): void {
     $collector = $this->createMock(InputCollectorInterface::class);
     $collector->expects($this->atLeastOnce())
@@ -153,6 +162,11 @@ YAML
     $recipe->input->collectAll($collector);
   }
 
+  /**
+   * Tests getting the default value from non-existing configuration.
+   *
+   * @covers \Drupal\Core\Recipe\InputConfigurator::getDefaultValue
+   */
   public function testDefaultValueFromNonExistentConfig(): void {
     $recipe = $this->createRecipe(<<<YAML
 name: 'Default value from non-existent config'
@@ -170,6 +184,9 @@ YAML
     $recipe->input->collectAll($this->createMock(InputCollectorInterface::class));
   }
 
+  /**
+   * Tests input with literals.
+   */
   public function testLiterals(): void {
     $recipe = $this->createRecipe(<<<YAML
 name: Literals as input

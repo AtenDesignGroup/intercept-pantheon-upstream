@@ -11,6 +11,7 @@ use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Asset\AttachedAssets;
 use Drupal\Core\Asset\AttachedAssetsInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\EnforcedResponseException;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -93,7 +94,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
  *     sent first, the closing </body> tag is not yet sent, and the connection
  *     is kept open. Whenever another BigPipe Placeholder is rendered, Drupal
  *     sends (and so actually appends to the already-sent HTML) something like
- *     <script type="application/vnd.drupal-ajax">[{"command":"settings","settings":{…}}, {"command":…}.
+ *     <script type="application/vnd.drupal-ajax">
+ *     [{"command":"settings","settings":{…}}, {"command":…}.
  *   - So, for every BigPipe placeholder, we send such a <script
  *     type="application/vnd.drupal-ajax"> tag. And the contents of that tag is
  *     exactly like an AJAX response. The BigPipe module has JavaScript that
@@ -139,16 +141,21 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Combining all of the above, when using both BigPipe placeholders and no-JS
  * BigPipe placeholders, we therefore send: 1 HtmlResponse + M Embedded HTML
  * Responses + N Embedded AJAX Responses. Schematically, we send these chunks:
- *  1. Byte zero until 1st no-JS placeholder: headers + <html><head /><span>…</span>
- *  2. 1st no-JS placeholder replacement: <link rel="stylesheet" …><script …><content>
+ *  1. Byte zero until 1st no-JS placeholder:
+ *     headers + <html><head /><span>…</span>
+ *  2. 1st no-JS placeholder replacement:
+ *     <link rel="stylesheet" …><script …><content>
  *  3. Content until 2nd no-JS placeholder: <span>…</span>
- *  4. 2nd no-JS placeholder replacement: <link rel="stylesheet" …><script …><content>
+ *  4. 2nd no-JS placeholder replacement:
+ *     <link rel="stylesheet" …><script …><content>
  *  5. Content until 3rd no-JS placeholder: <span>…</span>
  *  6. [… repeat until all no-JS placeholder replacements are sent …]
  *  7. Send content after last no-JS placeholder.
  *  8. Send script_bottom (markup to load bottom i.e. non-critical JS).
- *  9. 1st placeholder replacement: <script type="application/vnd.drupal-ajax">[{"command":"settings","settings":{…}}, {"command":…}
- * 10. 2nd placeholder replacement: <script type="application/vnd.drupal-ajax">[{"command":"settings","settings":{…}}, {"command":…}
+ *  9. 1st placeholder replacement: <script type="application/vnd.drupal-ajax">
+ *     [{"command":"settings","settings":{…}}, {"command":…}
+ * 10. 2nd placeholder replacement: <script type="application/vnd.drupal-ajax">
+ *     [{"command":"settings","settings":{…}}, {"command":…}
  * 11. [… repeat until all placeholder replacements are sent …]
  * 12. Send </body> and everything after it.
  * 13. Terminate request/response cycle.
@@ -182,6 +189,7 @@ class BigPipe {
     protected MessengerInterface $messenger,
     protected RequestContext $requestContext,
     protected LoggerInterface $logger,
+    protected bool $debugCacheabilityHeaders = FALSE,
   ) {
   }
 
@@ -284,7 +292,7 @@ class BigPipe {
       // Create a new HtmlResponse. Ensure the CSS and (non-bottom) JS is sent
       // before the HTML they're associated with.
       // @see \Drupal\Core\Render\HtmlResponseSubscriber
-      // @see template_preprocess_html()
+      // @see \Drupal\Core\Theme\ThemePreprocess::preprocessHtml()
       $js_bottom_placeholder = '<nojs-bigpipe-placeholder-scripts-bottom-placeholder token="' . Crypt::randomBytesBase64(55) . '">';
 
       $html_response = new HtmlResponse();
@@ -390,7 +398,7 @@ class BigPipe {
       // before the HTML they're associated with. In other words: ensure the
       // critical assets for this placeholder's markup are loaded first.
       // @see \Drupal\Core\Render\HtmlResponseSubscriber
-      // @see template_preprocess_html()
+      // @see \Drupal\Core\Theme\ThemePreprocess::preprocessHtml()
       $css_placeholder = '<nojs-bigpipe-placeholder-styles-placeholder token="' . $token . '">';
       $js_placeholder = '<nojs-bigpipe-placeholder-scripts-placeholder token="' . $token . '">';
       $elements['#markup'] = BigPipeMarkup::create($css_placeholder . $js_placeholder . (string) $elements['#markup']);
@@ -481,6 +489,9 @@ class BigPipe {
 
     // Create a Fiber for each placeholder.
     $fibers = [];
+
+    $cacheable_metadata = new CacheableMetadata();
+
     foreach ($placeholder_order as $placeholder_id) {
       if (!isset($placeholders[$placeholder_id])) {
         continue;
@@ -514,6 +525,11 @@ class BigPipe {
           }
           $elements = $fiber->getReturn();
           unset($fibers[$placeholder_id]);
+
+          if ($this->debugCacheabilityHeaders) {
+            $cacheable_metadata->addCacheableDependency(CacheableMetadata::createFromRenderArray($elements));
+          }
+
           // Create a new AjaxResponse.
           $ajax_response = new AjaxResponse();
           // JavaScript's querySelector automatically decodes HTML entities in
@@ -524,8 +540,8 @@ class BigPipe {
           $ajax_response->addCommand(new ReplaceCommand(sprintf('[data-big-pipe-placeholder-id="%s"]', $big_pipe_js_placeholder_id), $elements['#markup']));
           $ajax_response->setAttachments($elements['#attached']);
 
-          // Delete all messages that were generated during the rendering of this
-          // placeholder, to render them in a BigPipe-optimized way.
+          // Delete all messages that were generated during the rendering of
+          // this placeholder, to render them in a BigPipe-optimized way.
           $messages = $this->messenger->deleteAll();
           foreach ($messages as $type => $type_messages) {
             foreach ($type_messages as $message) {
@@ -578,8 +594,8 @@ EOF;
           else {
             try {
               // SecuredRedirectResponse is an abstract class that requires a
-              // concrete implementation. Default to LocalRedirectResponse, which
-              // considers only redirects to within the same site as safe.
+              // concrete implementation. Default to LocalRedirectResponse,
+              // which considers only redirects to within the same site as safe.
               $safe_response = LocalRedirectResponse::createFromRedirectResponse($response);
               $safe_response->setRequestContext($this->requestContext);
               $ajax_response->addCommand(new RedirectCommand($safe_response->getTargetUrl()));
@@ -620,6 +636,11 @@ EOF;
         }
       }
       $iterations++;
+    }
+
+    if ($this->debugCacheabilityHeaders) {
+      $this->sendChunk("\n<!-- big_pipe cache tags: " . implode(' ', $cacheable_metadata->getCacheTags()) . " -->\n");
+      $this->sendChunk("\n<!-- big_pipe cache contexts: " . implode(' ', $cacheable_metadata->getCacheContexts()) . " -->\n");
     }
 
     // Send the stop signal.

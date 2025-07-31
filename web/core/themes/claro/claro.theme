@@ -596,7 +596,7 @@ function claro_preprocess_links(&$variables): void {
  * @return array
  *   The link renderable converted to action link.
  */
-function _claro_convert_link_to_action_link(array $link, $icon_name = NULL, $size = 'default', $variant = 'default') {
+function _claro_convert_link_to_action_link(array $link, $icon_name = NULL, $size = 'default', $variant = 'default'): array {
   // Early opt-out if we cannot do anything.
   if (empty($link['#type']) || $link['#type'] !== 'link' || empty($link['#url'])) {
     return $link;
@@ -665,7 +665,7 @@ function _claro_convert_link_to_action_link(array $link, $icon_name = NULL, $siz
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter() for \Drupal\node\NodeForm.
+ * Implements hook_form_BASE_FORM_ID_alter() for \Drupal\node\Form\NodeForm.
  *
  * Changes vertical tabs to container.
  */
@@ -707,7 +707,7 @@ function claro_form_menu_link_content_form_alter(&$form, FormStateInterface $for
     '#group' => 'advanced',
     '#title' => t('Display settings'),
     '#attributes' => ['class' => ['entity-meta__options']],
-    '#tree' => TRUE,
+    '#tree' => FALSE,
     '#accordion' => TRUE,
   ];
   if (!empty($form['weight'])) {
@@ -725,7 +725,7 @@ function claro_form_menu_link_content_form_alter(&$form, FormStateInterface $for
       '#group' => 'advanced',
       '#title' => t('Description'),
       '#attributes' => ['class' => ['entity-meta__description']],
-      '#tree' => TRUE,
+      '#tree' => FALSE,
       '#accordion' => TRUE,
       'description' => $form['description'],
     ];
@@ -1113,11 +1113,6 @@ function claro_preprocess_field_multiple_value_form(&$variables): void {
         }
       }
     }
-
-    // Make add-more button smaller.
-    if (!empty($variables['button'])) {
-      $variables['button']['#attributes']['class'][] = 'button--small';
-    }
   }
 }
 
@@ -1272,11 +1267,9 @@ function claro_preprocess_system_themes_page(&$variables): void {
     foreach ($variables['theme_groups'] as &$theme_group) {
       if (!empty($theme_group['themes'])) {
         foreach ($theme_group['themes'] as &$theme_card) {
-          /**
-           * @todo Remove dependency on attributes after
-           *   https://www.drupal.org/project/drupal/issues/2511548 has been
-           *   resolved.
-           */
+          // @todo Remove dependency on attributes after
+          //   https://www.drupal.org/project/drupal/issues/2511548 has been
+          //   resolved.
           if (isset($theme_card['screenshot']['#attributes']) && $theme_card['screenshot']['#attributes'] instanceof Attribute && $theme_card['screenshot']['#attributes']->hasClass('no-screenshot')) {
             unset($theme_card['screenshot']);
           }
@@ -1415,7 +1408,7 @@ function claro_preprocess_image_widget(&$variables): void {
  *   The renderable array of image and file widgets, with 'element' and 'data'
  *   keys.
  */
-function _claro_preprocess_file_and_image_widget(array &$variables) {
+function _claro_preprocess_file_and_image_widget(array &$variables): void {
   $element = $variables['element'];
   $main_item_keys = [
     'upload',
@@ -1605,7 +1598,7 @@ function claro_preprocess_fieldset__media_library_widget(array &$variables): voi
 /**
  * Implements hook_views_pre_render().
  */
-function claro_views_pre_render(ViewExecutable $view) {
+function claro_views_pre_render(ViewExecutable $view): void {
   $add_classes = function (&$option, array $classes_to_add) {
     $classes = preg_split('/\s+/', $option);
     $classes = array_filter($classes);

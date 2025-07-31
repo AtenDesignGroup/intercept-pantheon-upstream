@@ -45,11 +45,6 @@ const DRUPAL_EXTENSION_NAME_MAX_LENGTH = 50;
 define('DRUPAL_ROOT', dirname(__DIR__, 2));
 
 /**
- * Keep backward compatibility for sites with references to TranslationWrapper.
- */
-class_alias(TranslatableMarkup::class, '\Drupal\Core\StringTranslation\TranslationWrapper', TRUE);
-
-/**
  * Translates a string to the current language or to a given language.
  *
  * In order for strings to be localized, make them available in one of the ways
@@ -88,22 +83,23 @@ class_alias(TranslatableMarkup::class, '\Drupal\Core\StringTranslation\Translati
  * @ingroup sanitization
  */
 function t($string, array $args = [], array $options = []) {
+  // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
   return new TranslatableMarkup($string, $args, $options);
 }
 
 /**
  * Provides custom PHP error handling.
  *
- * @param $error_level
+ * @param int $error_level
  *   The level of the error raised.
- * @param $message
+ * @param string $message
  *   The error message.
- * @param $filename
+ * @param string $filename
  *   (optional) The filename that the error was raised in.
- * @param $line
+ * @param int $line
  *   (optional) The line number the error was raised at.
  */
-function _drupal_error_handler($error_level, $message, $filename = NULL, $line = NULL) {
+function _drupal_error_handler($error_level, $message, $filename = NULL, $line = NULL): void {
   require_once __DIR__ . '/errors.inc';
   _drupal_error_handler_real($error_level, $message, $filename, $line);
 }
@@ -118,7 +114,7 @@ function _drupal_error_handler($error_level, $message, $filename = NULL, $line =
  * @param \Exception|\Throwable $exception
  *   The exception object that was thrown.
  */
-function _drupal_exception_handler($exception) {
+function _drupal_exception_handler($exception): void {
   require_once __DIR__ . '/errors.inc';
 
   try {
@@ -139,7 +135,7 @@ function _drupal_exception_handler($exception) {
  * @param \Exception|\Throwable $exception2
  *   The second exception object that was thrown.
  */
-function _drupal_exception_handler_additional($exception, $exception2) {
+function _drupal_exception_handler_additional($exception, $exception2): void {
   // Another uncaught exception was thrown while handling the first one.
   // If we are displaying errors, then do so with no possibility of a further
   // uncaught exception being thrown.
@@ -266,7 +262,7 @@ function drupal_generate_test_ua($prefix) {
  *
  * @see _drupal_maintenance_theme()
  */
-function drupal_maintenance_theme() {
+function drupal_maintenance_theme(): void {
   require_once __DIR__ . '/theme.maintenance.inc';
   _drupal_maintenance_theme();
 }
@@ -366,14 +362,14 @@ function drupal_maintenance_theme() {
  * }
  * @endcode
  *
- * @param $name
+ * @param string|null $name
  *   Globally unique name for the variable. For a function with only one static,
  *   variable, the function name (e.g. via the PHP magic __FUNCTION__ constant)
  *   is recommended. For a function with multiple static variables add a
  *   distinguishing suffix to the function name for each one.
- * @param $default_value
+ * @param mixed|null $default_value
  *   Optional default value.
- * @param $reset
+ * @param bool $reset
  *   TRUE to reset one or all variables(s). This parameter is only used
  *   internally and should not be passed in; use drupal_static_reset() instead.
  *   (This function's return value should not be used when TRUE is passed in.)
@@ -424,12 +420,12 @@ function &drupal_static($name, $default_value = NULL, $reset = FALSE) {
 /**
  * Resets one or all centrally stored static variable(s).
  *
- * @param $name
+ * @param string $name
  *   Name of the static variable to reset. Omit to reset all variables.
  *   Resetting all variables should only be used, for example, for running
  *   unit tests with a clean environment.
  */
-function drupal_static_reset($name = NULL) {
+function drupal_static_reset($name = NULL): void {
   drupal_static($name, NULL, TRUE);
 }
 
@@ -441,7 +437,7 @@ function drupal_static_reset($name = NULL) {
  *
  * @param callable $callback
  *   The shutdown function to register.
- * @param ...$args
+ * @param mixed ...$args
  *   Additional arguments to pass to the shutdown function.
  *
  * @return array
@@ -469,7 +465,7 @@ function &drupal_register_shutdown_function($callback = NULL, ...$args) {
 /**
  * Executes registered shutdown functions.
  */
-function _drupal_shutdown_function() {
+function _drupal_shutdown_function(): void {
   $callbacks = &drupal_register_shutdown_function();
 
   // Set the CWD to DRUPAL_ROOT as it is not guaranteed to be the same as it
@@ -499,7 +495,7 @@ function _drupal_shutdown_function() {
  *
  * @see _drupal_shutdown_function()
  */
-function _drupal_shutdown_function_handle_exception($exception) {
+function _drupal_shutdown_function_handle_exception($exception): void {
   // If using PHP-FPM then fastcgi_finish_request() will have been fired
   // preventing further output to the browser.
   if (!function_exists('fastcgi_finish_request')) {

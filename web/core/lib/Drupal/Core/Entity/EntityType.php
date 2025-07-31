@@ -225,6 +225,8 @@ class EntityType extends PluginDefinition implements EntityTypeInterface {
   /**
    * A definite singular/plural name of the type.
    *
+   * @var string[]
+   *
    * Needed keys: "singular" and "plural". Can also have key: "context".
    * @code
    * [
@@ -232,8 +234,7 @@ class EntityType extends PluginDefinition implements EntityTypeInterface {
    *    'plural' => '@count entities',
    *    'context' => 'Entity context',
    * ]
-   *
-   * @var string[]
+   * @endcode
    *
    * @see \Drupal\Core\Entity\EntityTypeInterface::getCountLabel()
    */
@@ -863,6 +864,13 @@ class EntityType extends PluginDefinition implements EntityTypeInterface {
    */
   public function getListCacheTags() {
     return $this->list_cache_tags;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBundleListCacheTags(string $bundle): array {
+    return [$this->id() . '_list:' . $bundle];
   }
 
   /**

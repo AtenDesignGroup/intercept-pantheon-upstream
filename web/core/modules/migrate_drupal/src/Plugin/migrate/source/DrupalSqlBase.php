@@ -153,12 +153,13 @@ abstract class DrupalSqlBase extends SqlBase implements DependentPluginInterface
   /**
    * Reads a variable from a source Drupal database.
    *
-   * @param $name
+   * @param string $name
    *   Name of the variable.
-   * @param $default
+   * @param mixed $default
    *   The default value.
    *
    * @return mixed
+   *   The variable value.
    */
   protected function variableGet($name, $default) {
     try {
@@ -187,6 +188,13 @@ abstract class DrupalSqlBase extends SqlBase implements DependentPluginInterface
       $this->addDependency('module', $this->configuration['constants']['module']);
     }
     return $this->dependencies;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSourceModule(): ?string {
+    return parent::getSourceModule() ?? $this->pluginDefinition['source_module'] ?? NULL;
   }
 
 }

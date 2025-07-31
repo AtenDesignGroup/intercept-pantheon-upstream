@@ -82,6 +82,10 @@ interface ModuleHandlerInterface {
    *   The module name; e.g., 'node'.
    * @param string $path
    *   The module path; e.g., 'core/modules/node'.
+   *
+   * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0.
+   * There is no direct replacement.
+   * @see https://www.drupal.org/node/3491200
    */
   public function addModule($name, $path);
 
@@ -92,6 +96,10 @@ interface ModuleHandlerInterface {
    *   The profile name; e.g., 'standard'.
    * @param string $path
    *   The profile path; e.g., 'core/profiles/standard'.
+   *
+   * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0.
+   * There is no direct replacement.
+   * @see https://www.drupal.org/node/3491200
    */
   public function addProfile($name, $path);
 
@@ -107,8 +115,8 @@ interface ModuleHandlerInterface {
    *   The same array with the new keys for each module:
    *   - requires: An array with the keys being the modules that this module
    *     requires.
-   *   - required_by: An array with the keys being the modules that will not work
-   *     without this module.
+   *   - required_by: An array with the keys being the modules that will not
+   *     work without this module.
    *
    * @see \Drupal\Core\Extension\ExtensionDiscovery
    */
@@ -217,7 +225,7 @@ interface ModuleHandlerInterface {
    *
    * @param string $hook
    *   The name of the hook to invoke.
-   * @param callable $callback
+   * @param callable(callable, string): mixed $callback
    *   A callable that invokes a hook implementation. Such that
    *   $callback is callable(callable, string): mixed.
    *   Arguments:
@@ -317,9 +325,9 @@ interface ModuleHandlerInterface {
    * hook_TYPE_alter() implementations in modules. It ensures a consistent
    * interface for all altering operations.
    *
-   * A maximum of 2 alterable arguments is supported. In case more arguments need
-   * to be passed and alterable, modules provide additional variables assigned by
-   * reference in the last $context argument:
+   * A maximum of 2 alterable arguments is supported. In case more arguments
+   * need to be passed and alterable, modules provide additional variables
+   * assigned by reference in the last $context argument:
    * @code
    *   $context = [
    *     'alterable' => &$alterable,
@@ -348,8 +356,8 @@ interface ModuleHandlerInterface {
    *   execute both hook_form_alter() and hook_form_FORM_ID_alter()
    *   implementations, it passes ['form', 'form_' . $form_id] for $type.
    * @param mixed $data
-   *   The variable that will be passed to hook_TYPE_alter() implementations to be
-   *   altered. The type of this variable depends on the value of the $type
+   *   The variable that will be passed to hook_TYPE_alter() implementations to
+   *   be altered. The type of this variable depends on the value of the $type
    *   argument. For example, when altering a 'form', $data will be a structured
    *   array. When altering a 'profile', $data will be an object.
    * @param mixed $context1
@@ -381,8 +389,8 @@ interface ModuleHandlerInterface {
    *   execute both hook_form_alter() and hook_form_FORM_ID_alter()
    *   implementations, it passes ['form', 'form_' . $form_id] for $type.
    * @param mixed $data
-   *   The variable that will be passed to hook_TYPE_alter() implementations to be
-   *   altered. The type of this variable depends on the value of the $type
+   *   The variable that will be passed to hook_TYPE_alter() implementations to
+   *   be altered. The type of this variable depends on the value of the $type
    *   argument. For example, when altering a 'form', $data will be a structured
    *   array. When altering a 'profile', $data will be an object.
    * @param mixed $context1
@@ -404,6 +412,8 @@ interface ModuleHandlerInterface {
    * directories.
    *
    * @return array
+   *   An associative array of the directories for all enabled modules, keyed by
+   *   the extension machine name.
    */
   public function getModuleDirectories();
 

@@ -40,7 +40,7 @@ function history_read($nid) {
  *   by the user, the timestamp in seconds of when the last view occurred;
  *   otherwise, zero.
  */
-function history_read_multiple($nids) {
+function history_read_multiple($nids): array {
   $history = &drupal_static(__FUNCTION__, []);
 
   $return = [];
@@ -76,13 +76,13 @@ function history_read_multiple($nids) {
 /**
  * Updates 'last viewed' timestamp of the specified entity for the current user.
  *
- * @param $nid
+ * @param string|int|null $nid
  *   The node ID that has been read.
- * @param $account
+ * @param \Drupal\User\UserInterface $account
  *   (optional) The user account to update the history for. Defaults to the
  *   current user.
  */
-function history_write($nid, $account = NULL) {
+function history_write($nid, $account = NULL): void {
 
   if (!isset($account)) {
     $account = \Drupal::currentUser();

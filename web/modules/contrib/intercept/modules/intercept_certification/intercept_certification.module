@@ -55,7 +55,7 @@ function intercept_certification_form_alter(&$form, FormStateInterface $form_sta
       }
       // Hide revision log message & new revision fields.
       $form['revision_log_message']['#access'] = FALSE;
-      $form['new_revision'] = FALSE;
+      $form['new_revision']['#access'] = FALSE;
       break;
 
     case 'user_customer_form':
@@ -206,12 +206,12 @@ function intercept_certification_views_exposed_form_validate(&$form, FormStateIn
     $uid = $field_user[0]['target_id'];
     $validationMessageBuilder = \Drupal::service('intercept_room_reservation.validation_message_builder');
     $validationMessages = $validationMessageBuilder->checkUser($uid);
+    $certificationMessage = $validationMessages['notes_certifications'];
 
     // Note: AJAX & caching must be turned off for this view in order for these
     // validation messages to display.
-    if (!empty($validationMessages)) {
-      $message = implode('<br>', $validationMessages);
-      $rendered_message = Markup::create($message);
+    if (!empty($certificationMessage)) {
+      $rendered_message = Markup::create($certificationMessage);
       $error_message = new TranslatableMarkup('@message', ['@message' => $rendered_message]);
       \Drupal::messenger()->addWarning($error_message);
     }

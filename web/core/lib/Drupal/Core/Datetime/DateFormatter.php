@@ -33,7 +33,7 @@ class DateFormatter implements DateFormatterInterface {
   protected $dateFormatStorage;
 
   /**
-   * Language manager for retrieving the default langcode when none is specified.
+   * The Language manager.
    *
    * @var \Drupal\Core\Language\LanguageManagerInterface
    */
@@ -53,6 +53,11 @@ class DateFormatter implements DateFormatterInterface {
    */
   protected $requestStack;
 
+  /**
+   * The available date formats.
+   *
+   * @var array
+   */
   protected $dateFormats = [];
 
   /**
@@ -163,7 +168,7 @@ class DateFormatter implements DateFormatterInterface {
         break;
       }
     }
-    return $output ? $output : $this->t('0 sec', [], ['langcode' => $langcode]);
+    return $output ?: $this->t('0 sec', [], ['langcode' => $langcode]);
   }
 
   /**
@@ -265,7 +270,8 @@ class DateFormatter implements DateFormatterInterface {
             }
             else {
               // If we did not output days, set the granularity to 0 so that we
-              // will not output hours and get things like "@count week @count hour".
+              // will not output hours and get things like "@count week @count
+              // hour".
               $granularity = 0;
             }
             break;
@@ -291,7 +297,8 @@ class DateFormatter implements DateFormatterInterface {
       }
       elseif ($output) {
         // Break if there was previous output but not any output at this level,
-        // to avoid skipping levels and getting output like "@count year @count second".
+        // to avoid skipping levels and getting output like "@count year @count
+        // second".
         break;
       }
 

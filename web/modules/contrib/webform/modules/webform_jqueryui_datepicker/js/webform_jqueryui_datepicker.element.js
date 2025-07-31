@@ -5,6 +5,8 @@
 
 (function ($, Drupal) {
 
+  'use strict';
+
   // @see http://api.jqueryui.com/datepicker/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.datePicker = Drupal.webform.datePicker || {};

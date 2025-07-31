@@ -419,6 +419,9 @@ class PathBasedBreadcrumbBuilderTest extends UnitTestCase {
       ->willReturn((new AccessResultAllowed())->cachePerPermissions());
   }
 
+  /**
+   * Prepares the mock processInbound() method.
+   */
   protected function setupStubPathProcessor(): void {
     $this->pathProcessor->expects($this->any())
       ->method('processInbound')
@@ -432,13 +435,22 @@ class PathBasedBreadcrumbBuilderTest extends UnitTestCase {
  */
 class TestPathBasedBreadcrumbBuilder extends PathBasedBreadcrumbBuilder {
 
+  /**
+   * The test link generator.
+   */
   protected LinkGeneratorInterface $linkGenerator;
 
+  /**
+   * {@inheritdoc}
+   */
   public function setStringTranslation(TranslationInterface $string_translation) {
     $this->stringTranslation = $string_translation;
     return $this;
   }
 
+  /**
+   * Sets the link generator.
+   */
   public function setLinkGenerator(LinkGeneratorInterface $link_generator): void {
     $this->linkGenerator = $link_generator;
   }

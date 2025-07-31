@@ -1,6 +1,0 @@
-name: 'Webform Toggles test'
-type: module
-description: 'Support module for webform toggles element testing.'
-package: Testing
-dependencies:
-  - 'webform:webform_toggles'

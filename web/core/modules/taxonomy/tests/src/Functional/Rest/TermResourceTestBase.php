@@ -11,6 +11,9 @@ use Drupal\Tests\rest\Functional\EntityResource\EntityResourceTestBase;
 use GuzzleHttp\RequestOptions;
 use PHPUnit\Framework\Attributes\Before;
 
+/**
+ * Resource test base for taxonomy term entity.
+ */
 abstract class TermResourceTestBase extends EntityResourceTestBase {
 
   /**
@@ -369,6 +372,9 @@ abstract class TermResourceTestBase extends EntityResourceTestBase {
     $this->assertSame($expected, $actual);
   }
 
+  /**
+   * Data provider for ::testGetTermWithParent().
+   */
   public static function providerTestGetTermWithParent() {
     return [
       'root parent: [0] (= no parent)' => [

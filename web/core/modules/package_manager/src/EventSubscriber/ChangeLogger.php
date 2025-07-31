@@ -66,7 +66,7 @@ final class ChangeLogger implements EventSubscriberInterface, LoggerAwareInterfa
    */
   public function recordInstalledPackages(PreCreateEvent $event): void {
     $packages = $this->composerInspector->getInstalledPackagesList($this->pathLocator->getProjectRoot());
-    $event->stage->setMetadata(static::INSTALLED_PACKAGES_KEY, $packages);
+    $event->sandboxManager->setMetadata(static::INSTALLED_PACKAGES_KEY, $packages);
   }
 
   /**
@@ -80,21 +80,27 @@ final class ChangeLogger implements EventSubscriberInterface, LoggerAwareInterfa
     // packages from the current operation onto the requested packages from any
     // previous 'require' operation.
     $requested_packages = array_merge(
-      $event->stage->getMetadata(static::REQUESTED_PACKAGES_KEY) ?? [],
+      $event->sandboxManager->getMetadata(static::REQUESTED_PACKAGES_KEY) ?? [],
       $event->getRuntimePackages(),
       $event->getDevPackages(),
     );
-    $event->stage->setMetadata(static::REQUESTED_PACKAGES_KEY, $requested_packages);
+    $event->sandboxManager->setMetadata(static::REQUESTED_PACKAGES_KEY, $requested_packages);
+
+    // If we're in direct-write mode, the changes have already been made, so
+    // we should log them right away.
+    if ($event->sandboxManager->isDirectWrite()) {
+      $this->logChanges($event);
+    }
   }
 
   /**
    * Logs changes made by Package Manager.
    *
-   * @param \Drupal\package_manager\Event\PostApplyEvent $event
+   * @param \Drupal\package_manager\Event\PostApplyEvent|\Drupal\package_manager\Event\PostRequireEvent $event
    *   The event being handled.
    */
-  public function logChanges(PostApplyEvent $event): void {
-    $installed_at_start = $event->stage->getMetadata(static::INSTALLED_PACKAGES_KEY);
+  public function logChanges(PostApplyEvent|PostRequireEvent $event): void {
+    $installed_at_start = $event->sandboxManager->getMetadata(static::INSTALLED_PACKAGES_KEY);
     $installed_post_apply = $this->composerInspector->getInstalledPackagesList($this->pathLocator->getProjectRoot());
 
     // Compare the packages which were installed when the stage was created
@@ -102,7 +108,7 @@ final class ChangeLogger implements EventSubscriberInterface, LoggerAwareInterfa
     // require operations, and create a log entry listing all of it.
     $requested_log = [];
 
-    $requested_packages = $event->stage->getMetadata(static::REQUESTED_PACKAGES_KEY) ?? [];
+    $requested_packages = $event->sandboxManager->getMetadata(static::REQUESTED_PACKAGES_KEY) ?? [];
     // Sort the requested packages by name, to make it easier to review a large
     // change list.
     ksort($requested_packages, SORT_NATURAL);

@@ -5,6 +5,8 @@
 
 (function ($, Drupal, once) {
 
+  'use strict';
+
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.computed = Drupal.webform.computed || {};
   Drupal.webform.computed.delay = Drupal.webform.computed.delay || 500;
@@ -17,7 +19,7 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.webformComputed = {
-    attach: function (context) {
+    attach(context) {
       // Find computed elements and build trigger selectors.
       $(once('webform-computed', '.js-webform-computed', context)).each(function () {
         // Get computed element and form.

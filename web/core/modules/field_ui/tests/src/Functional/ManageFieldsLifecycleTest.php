@@ -217,7 +217,8 @@ class ManageFieldsLifecycleTest extends ManageFieldsFunctionalTestBase {
 
     // Test the cardinality validation is not access sensitive.
 
-    // Remove the cardinality limit 4 so we can add a node the user doesn't have access to.
+    // Remove the cardinality limit 4 so we can add a node the user doesn't have
+    // access to.
     $edit = [
       'field_storage[subform][cardinality]' => (string) FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
     ];
@@ -291,7 +292,7 @@ class ManageFieldsLifecycleTest extends ManageFieldsFunctionalTestBase {
     $this->assertSession()->pageTextContains('Re-use an existing field');
 
     // Ensure that we test with a label that contains HTML.
-    $label = $this->randomString(4) . '<br/>' . $this->randomString(4);
+    $label = $this->randomMachineName(4) . '<br/>' . $this->randomMachineName(4);
     // Add a new field for the orphaned storage.
     $this->fieldUIAddExistingField("admin/structure/types/manage/page", $this->fieldName, $label);
   }

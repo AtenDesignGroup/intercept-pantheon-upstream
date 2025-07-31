@@ -6,12 +6,15 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 
 /**
  * Lazy builders for the shortcut module.
  */
 class ShortcutLazyBuilders implements TrustedCallbackInterface {
+
+  use StringTranslationTrait;
 
   /**
    * The renderer service.
@@ -42,7 +45,9 @@ class ShortcutLazyBuilders implements TrustedCallbackInterface {
   }
 
   /**
-   * #lazy_builder callback; builds shortcut toolbar links.
+   * Render API callback: Builds shortcut toolbar links.
+   *
+   * This function is assigned as a #lazy_builder callback.
    *
    * @param bool $show_configure_link
    *   Boolean to indicate whether to include the configure link or not.
@@ -60,7 +65,7 @@ class ShortcutLazyBuilders implements TrustedCallbackInterface {
     if ($show_configure_link && shortcut_set_edit_access($shortcut_set)->isAllowed()) {
       $configure_link = [
         '#type' => 'link',
-        '#title' => t('Edit shortcuts'),
+        '#title' => $this->t('Edit shortcuts'),
         '#url' => Url::fromRoute('entity.shortcut_set.customize_form', ['shortcut_set' => $shortcut_set->id()]),
         '#options' => ['attributes' => ['class' => ['edit-shortcuts']]],
       ];

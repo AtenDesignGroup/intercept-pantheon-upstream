@@ -3698,7 +3698,7 @@ button.btn-floating {
 .webform-submission-form label:not(.webform-section-title),
 .header__site-search label:not(.webform-section-title) {
   font-size: 1rem;
-  color: #767676;
+  color: #6B6B6B;
 }
 
 .materialize .form-wrapper .description,
@@ -5869,7 +5869,7 @@ button.btn-floating {
 .views-exposed-form .input-field.select-filter > label,
 .webform-submission-form .input-field:not(.js-form-type-webform-address):not(.file-field):not(.js-form-type-webform-multiple):not(.js-form-type-select) > label,
 .webform-submission-form .input-field.select-filter > label {
-  color: #767676;
+  color: #6B6B6B;
   position: absolute;
   top: 0;
   left: 0;

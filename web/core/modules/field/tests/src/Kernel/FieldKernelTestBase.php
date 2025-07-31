@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\field\Kernel;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\field\Entity\FieldConfig;
@@ -188,7 +187,7 @@ abstract class FieldKernelTestBase extends KernelTestBase {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to test.
    * @param string $field_name
-   *   The name of the field to test
+   *   The name of the field to test.
    * @param array $expected_values
    *   The array of expected values.
    * @param string $langcode
@@ -212,7 +211,7 @@ abstract class FieldKernelTestBase extends KernelTestBase {
     $values = $field->getValue();
     $this->assertCount($expected_values_count, $values, 'Expected number of values were saved.');
     foreach ($expected_values as $key => $value) {
-      $this->assertEquals($value, $values[$key][$column], new FormattableMarkup('Value @value was saved correctly.', ['@value' => $value]));
+      $this->assertEquals($value, $values[$key][$column], "Value $value was saved correctly.");
     }
   }
 

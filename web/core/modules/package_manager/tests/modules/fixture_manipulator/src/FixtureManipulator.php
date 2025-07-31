@@ -120,7 +120,8 @@ class FixtureManipulator {
     }
 
     $repo_path = $this->addRepository($package);
-    if (is_null($extra_files) && isset($package['type']) && in_array($package['type'], ['drupal-module', 'drupal-theme', 'drupal-profile'], TRUE)) {
+    if (is_null($extra_files) && isset($package['type'])
+      && in_array($package['type'], ['drupal-module', 'drupal-theme', 'drupal-profile'], TRUE)) {
       // For Drupal projects if no files are provided create an info.yml file
       // that assumes the project and package names match.
       [, $package_name] = explode('/', $package['name']);
@@ -299,12 +300,12 @@ class FixtureManipulator {
   /**
    * Modifies the project root's composer.json properties.
    *
-   * @see \Composer\Command\ConfigCommand
-   *
    * @param array $additional_config
    *   The configuration to add.
    * @param bool $update_lock
    *   Whether to run composer update --lock. Defaults to FALSE.
+   *
+   * @see \Composer\Command\ConfigCommand
    */
   public function addConfig(array $additional_config, bool $update_lock = FALSE): self {
     if (empty($additional_config)) {
@@ -442,9 +443,16 @@ class FixtureManipulator {
 
   protected function runComposerCommand(array $command_options): OutputCallbackInterface {
     $plain_output = new class() implements OutputCallbackInterface {
-      // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable
+      /**
+       * The standard output for the process.
+       */
+      // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable, Drupal.Commenting.VariableComment.Missing
       public string $stdout = '';
-      // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable
+
+      /**
+       * The error output for the process.
+       */
+      // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable, Drupal.Commenting.VariableComment.Missing
       public string $stderr = '';
 
       /**
@@ -571,7 +579,12 @@ class FixtureManipulator {
     // Set the `extra` property in the generated composer.json file using
     // `composer config`, because `composer init` does not support it.
     foreach ($package['extra'] ?? [] as $extra_property => $extra_value) {
-      $this->runComposerCommand(['config', "extra.$extra_property", '--json', json_encode($extra_value, JSON_UNESCAPED_SLASHES)]);
+      $this->runComposerCommand([
+        'config',
+        "extra.$extra_property",
+        '--json',
+        json_encode($extra_value, JSON_UNESCAPED_SLASHES),
+      ]);
     }
     // Restore the project root as the working directory.
     $this->dir = $project_root_dir;

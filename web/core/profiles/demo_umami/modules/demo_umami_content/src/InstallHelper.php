@@ -193,8 +193,8 @@ class InstallHelper implements ContainerInjectionInterface {
         fclose($handle);
       }
       else {
-        // Language directory exists, but the file in this language was not found,
-        // remove that language from list of languages to be translated.
+        // Language directory exists, but the file in this language was not
+        // found, remove that language from list of languages to be translated.
         $key = array_search($language, $translated_languages);
         unset($translated_languages[$key]);
       }
@@ -235,7 +235,7 @@ class InstallHelper implements ContainerInjectionInterface {
   }
 
   /**
-   * Retrieves the Media Image ID of a media image saved during the import process.
+   * Retrieves th ID of a media image saved during the import process.
    *
    * @param int $media_image_csv_id
    *   The media image's ID from the CSV file.
@@ -743,7 +743,7 @@ class InstallHelper implements ContainerInjectionInterface {
    * Imports content.
    *
    * @param string $entity_type
-   *   Entity type to be imported
+   *   Entity type to be imported.
    * @param string $bundle_machine_name
    *   Bundle machine name to be imported.
    *

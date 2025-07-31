@@ -134,7 +134,9 @@ class MappingTest extends KernelTestBase {
         break;
 
       case 'field.field.node.config_mapping_test.comment_config_mapping_test':
-        $this->enableModules(['field', 'node', 'comment', 'taxonomy', 'config_mapping_test']);
+        $this->enableModules(['user', 'field', 'node', 'comment', 'taxonomy', 'config_mapping_test']);
+        $this->installEntitySchema('user');
+        $this->installEntitySchema('node');
         $this->assertNull(FieldConfig::load('node.config_mapping_test.comment_config_mapping_test'));
         // \Drupal\node\Entity\NodeType::$preview_mode uses DRUPAL_OPTIONAL,
         // which is defined in system.module.
@@ -165,6 +167,7 @@ class MappingTest extends KernelTestBase {
    * @see https://www.drupal.org/files/ConfigSchemaCheatSheet2.0.pdf
    *
    * @return \Generator
+   *   The test cases.
    */
   public static function providerMappingInterpretation(): \Generator {
     $available_block_settings_types = [
@@ -225,7 +228,8 @@ class MappingTest extends KernelTestBase {
         // @see core/config/schema/core.data_types.schema.yml
         '_core',
         'langcode',
-        // Keys defined locally, in `type: config_schema_deprecated_test.settings`.
+        // Keys defined locally, in `type:
+        // config_schema_deprecated_test.settings`.
         // @see core/modules/config/tests/config_schema_deprecated_test/config/schema/config_schema_deprecated_test.schema.yml
         'complex_structure_deprecated',
       ],
@@ -236,7 +240,8 @@ class MappingTest extends KernelTestBase {
       'config_schema_deprecated_test.settings',
       'complex_structure_deprecated',
       [
-        // Keys defined locally, in `type: config_schema_deprecated_test.settings`.
+        // Keys defined locally, in `type:
+        // config_schema_deprecated_test.settings`.
         // @see core/modules/config/tests/config_schema_deprecated_test/config/schema/config_schema_deprecated_test.schema.yml
         'type',
         'products',
@@ -314,7 +319,8 @@ class MappingTest extends KernelTestBase {
         'label_display',
         'provider',
         'context_mapping',
-        // Keys defined locally, in `type: block.settings.system_branding_block`.
+        // Keys defined locally, in `type:
+        // block.settings.system_branding_block`.
         // @see core/modules/block/config/schema/block.schema.yml
         ...$available_block_settings_types['block.settings.system_branding_block'],
       ],

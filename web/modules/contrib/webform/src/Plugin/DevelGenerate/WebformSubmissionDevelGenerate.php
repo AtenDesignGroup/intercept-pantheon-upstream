@@ -223,8 +223,11 @@ class WebformSubmissionDevelGenerate extends DevelGenerateBase implements Contai
    *
    * @param array $values
    *   The element values from the settings webform.
+   *
+   * @return array
+   *   An array indicating the status or summary of the operation.
    */
-  protected function generateSubmissions(array $values): array {
+  protected function generateSubmissions(array $values) {
     static::$generatingSubmissions = TRUE;
     if (!empty($values['kill'])) {
       $this->deleteWebformSubmissions($values['webform_ids'], $values['entity-type'], $values['entity-id']);
@@ -248,7 +251,14 @@ class WebformSubmissionDevelGenerate extends DevelGenerateBase implements Contai
       }
     }
     $this->setMessage($this->formatPlural($values['num'], '1 submissions created.', 'Finished creating @count submissions'));
+    // @phpstan-ignore-next-line property.notFound
     static::$generatingSubmissions = FALSE;
+
+    // Return an array summarizing the process.
+    return [
+      'status' => 'completed',
+      'submissions_created' => $values['num'] ?? 0,
+    ];
   }
 
   /**

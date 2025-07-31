@@ -24,6 +24,11 @@ class RegistryTest extends KernelTestBase {
    */
   protected static $modules = ['theme_test', 'system'];
 
+  /**
+   * The profile to use for this test.
+   *
+   * @var string
+   */
   protected $profile = 'testing';
 
   /**
@@ -83,7 +88,6 @@ class RegistryTest extends KernelTestBase {
 
     $preprocess_functions = $registry_subsub_theme->get()['theme_test_template_test']['preprocess functions'];
     $this->assertSame([
-      'template_preprocess',
       'test_base_theme_preprocess_theme_test_template_test',
       'test_subtheme_preprocess_theme_test_template_test',
       'test_subsubtheme_preprocess_theme_test_template_test',
@@ -91,14 +95,12 @@ class RegistryTest extends KernelTestBase {
 
     $preprocess_functions = $registry_sub_theme->get()['theme_test_template_test']['preprocess functions'];
     $this->assertSame([
-      'template_preprocess',
       'test_base_theme_preprocess_theme_test_template_test',
       'test_subtheme_preprocess_theme_test_template_test',
     ], $preprocess_functions);
 
     $preprocess_functions = $registry_base_theme->get()['theme_test_template_test']['preprocess functions'];
     $this->assertSame([
-      'template_preprocess',
       'test_base_theme_preprocess_theme_test_template_test',
     ], $preprocess_functions);
   }
@@ -117,7 +119,6 @@ class RegistryTest extends KernelTestBase {
 
     $suggestions = ['__kitten', '__flamingo'];
     $expected_preprocess_functions = [
-      'template_preprocess',
       'theme_test_preprocess_theme_test_preprocess_suggestions',
     ];
     $suggestion = '';
@@ -130,7 +131,6 @@ class RegistryTest extends KernelTestBase {
     } while ($suggestion = array_shift($suggestions));
 
     $expected_preprocess_functions = [
-      'template_preprocess',
       'theme_test_preprocess_theme_test_preprocess_suggestions',
       'test_theme_preprocess_theme_test_preprocess_suggestions',
       'test_theme_preprocess_theme_test_preprocess_suggestions__kitten',
@@ -267,11 +267,10 @@ class RegistryTest extends KernelTestBase {
     $registry_theme->setThemeManager(\Drupal::theme());
 
     $expected = [
-      'template_preprocess',
-      'template_preprocess_container',
       'template_preprocess_theme_test_registered_by_module',
     ];
     $registry = $registry_theme->get();
+    $this->assertEquals('Drupal\Core\Theme\ThemePreprocess:preprocessContainer', $registry['theme_test_registered_by_module']['initial preprocess']);
     $this->assertEquals($expected, array_values($registry['theme_test_registered_by_module']['preprocess functions']));
   }
 

@@ -222,8 +222,8 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
         '#type' => 'textfield',
         '#title' => $this->t('Webform URL alias'),
         '#description' => $this->t('Optionally specify an alternative URL by which the webform submit page can be accessed. Any value entered here will overwrite ALL aliases you may have created for this form via the <a href=":path_alias">path</a> module.', $t_args)
-           . ' ' . $this->t('The URL alias has to start with a slash and cannot end with a slash.'),
-       '#pattern' => '^/.+(?<!/)$',
+        . ' ' . $this->t('The URL alias has to start with a slash and cannot end with a slash.'),
+        '#pattern' => '^/.+(?<!/)$',
         '#default_value' => $settings['page_submit_path'],
         '#states' => [
           'visible' => [
@@ -235,8 +235,8 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
         '#type' => 'textfield',
         '#title' => $this->t('Confirmation page URL alias'),
         '#description' => $this->t('Optionally specify an alternative URL by which the webform confirmation page can be accessed.', $t_args)
-           . ' ' . $this->t('The URL alias has to start with a slash and cannot end with a slash.'),
-       '#pattern' => '^/.+(?<!/)$',
+        . ' ' . $this->t('The URL alias has to start with a slash and cannot end with a slash.'),
+        '#pattern' => '^/.+(?<!/)$',
         '#default_value' => $settings['page_confirm_path'],
         '#states' => [
           'visible' => [
@@ -407,8 +407,8 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
         '#type' => 'checkbox',
         '#title' => $this->t('Allow (dialog) source entity to be populated using query string parameters'),
         '#description' => $this->t("If checked, source entity can be populated using query string parameters.") .
-          '<br/><br/>' . $this->t("For example, appending <code>?source_entity_type=node&source_entity_id=1</code> to a webform's URL would set a submission's 'Submitted to' value to 'node:1'.") .
-          '<br/><br/>' . $this->t("You can also append <code>?source_entity_type=ENTITY_TYPE&amp;source_entity_id=ENTITY_ID</code> and the <code>ENTITY_TYPE</code> and <code>ENTITY_ID</code> parameters will automatically be replaced based on the current page's source entity."),
+        '<br/><br/>' . $this->t("For example, appending <code>?source_entity_type=node&source_entity_id=1</code> to a webform's URL would set a submission's 'Submitted to' value to 'node:1'.") .
+        '<br/><br/>' . $this->t("You can also append <code>?source_entity_type=ENTITY_TYPE&amp;source_entity_id=ENTITY_ID</code> and the <code>ENTITY_TYPE</code> and <code>ENTITY_ID</code> parameters will automatically be replaced based on the current page's source entity."),
         '#return_value' => TRUE,
         '#default_value' => $settings['form_prepopulate_source_entity'],
       ];
@@ -578,7 +578,7 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
     $webform_storage = $this->entityTypeManager->getStorage('webform');
     $webform_storage->resetCategoriesCache();
 
-    parent::save($form, $form_state);
+    return parent::save($form, $form_state);
   }
 
   /**

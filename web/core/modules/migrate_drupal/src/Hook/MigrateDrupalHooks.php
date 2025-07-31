@@ -2,6 +2,7 @@
 
 namespace Drupal\migrate_drupal\Hook;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\migrate_drupal\NodeMigrateType;
 use Drupal\Core\Database\DatabaseExceptionWrapper;
 use Drupal\migrate\Exception\RequirementsException;
@@ -16,16 +17,18 @@ use Drupal\Core\Hook\Attribute\Hook;
  */
 class MigrateDrupalHooks {
 
+  use StringTranslationTrait;
+
   /**
    * Implements hook_help().
    */
   #[Hook('help')]
-  public function help($route_name, RouteMatchInterface $route_match) {
+  public function help($route_name, RouteMatchInterface $route_match): ?string {
     switch ($route_name) {
       case 'help.page.migrate_drupal':
         $output = '';
-        $output .= '<h2>' . t('About') . '</h2>';
-        $output .= '<p>' . t('The Migrate Drupal module provides a framework based on the <a href=":migrate">Migrate module</a> to facilitate migration from a Drupal (6, 7, or 8) site to your website. It does not provide a user interface. For more information, see the <a href=":migrate_drupal">online documentation for the Migrate Drupal module</a>.', [
+        $output .= '<h2>' . $this->t('About') . '</h2>';
+        $output .= '<p>' . $this->t('The Migrate Drupal module provides a framework based on the <a href=":migrate">Migrate module</a> to facilitate migration from a Drupal (6, 7, or 8) site to your website. It does not provide a user interface. For more information, see the <a href=":migrate_drupal">online documentation for the Migrate Drupal module</a>.', [
           ':migrate' => Url::fromRoute('help.page', [
             'name' => 'migrate',
           ])->toString(),
@@ -33,6 +36,7 @@ class MigrateDrupalHooks {
         ]) . '</p>';
         return $output;
     }
+    return NULL;
   }
 
   /**
@@ -89,9 +93,9 @@ class MigrateDrupalHooks {
         }
       }
       catch (RequirementsException $e) {
-        // This code currently runs whenever the definitions are being loaded and
-        // if you have a Drupal 7 source site then the requirements will not be
-        // met for the d6_taxonomy_vocabulary migration.
+        // This code currently runs whenever the definitions are being loaded
+        // and if you have a Drupal 7 source site then the requirements will not
+        // be met for the d6_taxonomy_vocabulary migration.
       }
       catch (DatabaseExceptionWrapper $e) {
         // When the definitions are loaded it is possible the tables will not
@@ -115,12 +119,12 @@ class MigrateDrupalHooks {
         $version = NodeMigrateType::getLegacyDrupalVersion($source_connection);
       }
       catch (\Exception $e) {
-        \Drupal::messenger()->addError(t('Failed to connect to your database server. The server reports the following message: %error.<ul><li>Is the database server running?</li><li>Does the database exist, and have you entered the correct database name?</li><li>Have you entered the correct username and password?</li><li>Have you entered the correct database hostname?</li></ul>', ['%error' => $e->getMessage()]));
+        \Drupal::messenger()->addError($this->t('Failed to connect to your database server. The server reports the following message: %error.<ul><li>Is the database server running?</li><li>Does the database exist, and have you entered the correct database name?</li><li>Have you entered the correct username and password?</li><li>Have you entered the correct database hostname?</li></ul>', ['%error' => $e->getMessage()]));
       }
     }
     // If this is a complete node migration then for all migrations, except the
-    // classic node migrations, replace any dependency on a classic node migration
-    // with a dependency on the complete node migration.
+    // classic node migrations, replace any dependency on a classic node
+    // migration with a dependency on the complete node migration.
     if (NodeMigrateType::getNodeMigrateType($connection, $version ?? FALSE) === NodeMigrateType::NODE_MIGRATE_TYPE_COMPLETE) {
       $classic_migration_match = '/d([67])_(node|node_translation|node_revision|node_entity_translation)($|:.*)/';
       $replace_with_complete_migration = function (&$value, $key, $classic_migration_match) {

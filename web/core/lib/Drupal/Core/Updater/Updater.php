@@ -2,13 +2,23 @@
 
 namespace Drupal\Core\Updater;
 
+@trigger_error('The ' . __NAMESPACE__ . '\Updater base class is deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no replacement. Use composer to manage the code for your site. See https://www.drupal.org/node/3512364', E_USER_DEPRECATED);
+
 use Drupal\Core\FileTransfer\FileTransferException;
 use Drupal\Core\FileTransfer\FileTransfer;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Defines the base class for Updaters used in Drupal.
+ *
+ * @deprecated in drupal:11.2.0 and is removed from drupal:12.0.0. There is no
+ *   replacement. Use composer to manage the code for your site.
+ *
+ * @see https://www.drupal.org/node/3512364
  */
 abstract class Updater {
+
+  use StringTranslationTrait;
 
   /**
    * Directory to install from.
@@ -349,8 +359,12 @@ abstract class Updater {
             $filetransfer->chmod($parent_dir, $old_perms);
           }
           catch (FileTransferException $e) {
-            $message = t($e->getMessage(), $e->arguments);
-            $throw_message = t('Unable to create %directory due to the following: %reason', ['%directory' => $directory, '%reason' => $message]);
+            // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
+            $message = $this->t($e->getMessage(), $e->arguments);
+            $throw_message = $this->t('Unable to create %directory due to the following: %reason', [
+              '%directory' => $directory,
+              '%reason' => $message,
+            ]);
             throw new UpdaterException($throw_message);
           }
         }

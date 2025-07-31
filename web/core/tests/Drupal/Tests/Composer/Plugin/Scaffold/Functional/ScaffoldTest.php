@@ -198,6 +198,9 @@ class ScaffoldTest extends TestCase {
     $this->assertAutoloadFileCorrect($result->docroot());
   }
 
+  /**
+   * Provides test values for testScaffoldOverridingSettingsExcludingHtaccess.
+   */
   public static function scaffoldOverridingSettingsExcludingHtaccessValues() {
     return [
       [
@@ -336,7 +339,8 @@ include __DIR__ . "/settings-custom-additions.php";',
    * @param string $scaffold_file_path
    *   Relative path to the scaffold file target we are testing.
    * @param string $scaffold_file_contents
-   *   A string expected to be contained inside the scaffold file we are testing.
+   *   A string expected to be contained inside the scaffold file we are
+   *   testing.
    * @param string $scaffoldOutputContains
    *   A string expected to be contained in the scaffold command output.
    *

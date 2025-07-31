@@ -36,7 +36,7 @@ trait UpdatePathTestTrait {
    * @param string|null $update_url
    *   The update URL.
    */
-  protected function runUpdates($update_url = NULL) {
+  protected function runUpdates($update_url = NULL): void {
     if (!$update_url) {
       $update_url = Url::fromRoute('system.db_update');
     }
@@ -98,12 +98,7 @@ trait UpdatePathTestTrait {
       $modules_installed = FALSE;
       // Modules that are in configuration but not the module handler have been
       // installed.
-      /** @var \Drupal\Core\Extension\ModuleExtensionList $module_list */
-      $module_list = $this->container->get('extension.list.module');
-      foreach (array_keys(array_diff_key($config_module_list, $module_handler_list)) as $module) {
-        $module_handler->addModule($module, $module_list->getPath($module));
-        $modules_installed = TRUE;
-      }
+      $modules_installed = !empty(array_diff_key($config_module_list, $module_handler_list));
       $modules_uninstalled = FALSE;
       $module_handler_list = $module_handler->getModuleList();
       // Modules that are in the module handler but not configuration have been
@@ -172,7 +167,7 @@ trait UpdatePathTestTrait {
   /**
    * Tests the selection page.
    */
-  protected function doSelectionTest() {
+  protected function doSelectionTest(): void {
     // No-op. Tests wishing to do test the selection page or the general
     // update.php environment before running update.php can override this method
     // and implement their required tests.
@@ -181,7 +176,7 @@ trait UpdatePathTestTrait {
   /**
    * Installs the update_script_test module and makes an update available.
    */
-  protected function ensureUpdatesToRun() {
+  protected function ensureUpdatesToRun(): void {
     \Drupal::service('module_installer')->install(['update_script_test']);
     // Reset the schema so there is an update to run.
     \Drupal::service('update.update_hook_registry')->setInstalledVersion('update_script_test', 8000);

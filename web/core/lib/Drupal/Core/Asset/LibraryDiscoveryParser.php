@@ -227,7 +227,10 @@ class LibraryDiscoveryParser {
             $options['group'] = JS_LIBRARY;
           }
           elseif ($type == 'css') {
-            $options['group'] = $extension_type == 'theme' ? CSS_AGGREGATE_THEME : CSS_AGGREGATE_DEFAULT;
+            // Component stylesheets should be added in the "theme" aggregate
+            // group to load them alongside the theme.
+            // @see \Drupal\Core\Plugin\Component::getLibraryName
+            $options['group'] = ($extension_type == 'theme' || str_starts_with($id, 'components.')) ? CSS_AGGREGATE_THEME : CSS_AGGREGATE_DEFAULT;
           }
           // By default, all library assets are files.
           if (!isset($options['type'])) {
@@ -261,7 +264,7 @@ class LibraryDiscoveryParser {
             elseif ($this->streamWrapperManager->isValidUri($source)) {
               $options['data'] = $source;
             }
-            // A regular URI (e.g., http://example.com/example.js) without
+            // A regular URI (e.g., https://example.com/example.js) without
             // 'external' explicitly specified, which may happen if, e.g.
             // libraries-override is used.
             elseif ($this->isValidUri($source)) {
@@ -634,8 +637,8 @@ class LibraryDiscoveryParser {
   protected function resolveThemeAssetPath($theme_path, $overriding_asset) {
     if ($overriding_asset[0] !== '/' && !$this->isValidUri($overriding_asset)) {
       // The destination is not an absolute path and it's not a URI (e.g.
-      // public://generated_js/example.js or http://example.com/js/my_js.js), so
-      // it's relative to the theme.
+      // public://generated_js/example.js or https://example.com/js/my_js.js),
+      // so it's relative to the theme.
       return '/' . $theme_path . '/' . $overriding_asset;
     }
     return $overriding_asset;

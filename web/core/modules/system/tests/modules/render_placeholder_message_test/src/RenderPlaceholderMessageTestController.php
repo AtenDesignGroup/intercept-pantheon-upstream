@@ -10,6 +10,9 @@ use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\Core\Render\RenderContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Provides a controller for testing render placeholders and message ordering.
+ */
 class RenderPlaceholderMessageTestController implements TrustedCallbackInterface, ContainerInjectionInterface {
 
   /**
@@ -32,6 +35,7 @@ class RenderPlaceholderMessageTestController implements TrustedCallbackInterface
 
   /**
    * @return array
+   *   A renderable array with the messages placeholder rendered first.
    */
   public function messagesPlaceholderFirst() {
     return $this->build([
@@ -45,6 +49,7 @@ class RenderPlaceholderMessageTestController implements TrustedCallbackInterface
 
   /**
    * @return array
+   *   A renderable array with the messages placeholder rendered in the middle.
    */
   public function messagesPlaceholderMiddle() {
     return $this->build([
@@ -58,6 +63,7 @@ class RenderPlaceholderMessageTestController implements TrustedCallbackInterface
 
   /**
    * @return array
+   *   A renderable array with the messages placeholder rendered last.
    */
   public function messagesPlaceholderLast() {
     return $this->build([
@@ -71,6 +77,7 @@ class RenderPlaceholderMessageTestController implements TrustedCallbackInterface
 
   /**
    * @return array
+   *   A renderable array containing only messages.
    */
   public function queuedMessages() {
     return ['#type' => 'status_messages'];
@@ -78,16 +85,23 @@ class RenderPlaceholderMessageTestController implements TrustedCallbackInterface
 
   /**
    * @return array
+   *   A renderable array containing only placeholders.
    */
   protected function build(array $placeholder_order) {
     $build = [];
     $build['messages'] = ['#type' => 'status_messages'];
     $build['p1'] = [
-      '#lazy_builder' => ['\Drupal\render_placeholder_message_test\RenderPlaceholderMessageTestController::setAndLogMessage', ['P1']],
+      '#lazy_builder' => [
+        '\Drupal\render_placeholder_message_test\RenderPlaceholderMessageTestController::setAndLogMessage',
+        ['P1'],
+      ],
       '#create_placeholder' => TRUE,
     ];
     $build['p2'] = [
-      '#lazy_builder' => ['\Drupal\render_placeholder_message_test\RenderPlaceholderMessageTestController::setAndLogMessage', ['P2']],
+      '#lazy_builder' => [
+        '\Drupal\render_placeholder_message_test\RenderPlaceholderMessageTestController::setAndLogMessage',
+        ['P2'],
+      ],
       '#create_placeholder' => TRUE,
     ];
 
@@ -98,7 +112,9 @@ class RenderPlaceholderMessageTestController implements TrustedCallbackInterface
 
     $reordered = [];
     foreach ($placeholder_order as $placeholder) {
-      $reordered[$placeholder] = $build['#attached']['placeholders'][$placeholder];
+      if (isset($build['#attached']['placeholders'][$placeholder])) {
+        $reordered[$placeholder] = $build['#attached']['placeholders'][$placeholder];
+      }
     }
     $build['#attached']['placeholders'] = $reordered;
 
@@ -106,7 +122,9 @@ class RenderPlaceholderMessageTestController implements TrustedCallbackInterface
   }
 
   /**
-   * #lazy_builder callback; sets and prints a message.
+   * Render API callback: Sets and prints a message.
+   *
+   * This function is assigned as a #lazy_builder callback.
    *
    * @param string $message
    *   The message to send.

@@ -175,6 +175,7 @@ Tfor
 Timepicker
 togglelink
 Traducción
+TRANSLIT
 Unarchives
 unflag
 unflagged
@@ -189,3 +190,5 @@ wfdcu
 wfdr
 wfro
 wfsec
+whitelist
+whitelisted

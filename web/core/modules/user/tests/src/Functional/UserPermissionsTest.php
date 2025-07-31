@@ -148,6 +148,9 @@ class UserPermissionsTest extends BrowserTestBase {
     $this->drupalGet('admin/people/role-settings');
     $this->submitForm($edit, 'Save configuration');
 
+    // Check that the success message appears.
+    $this->assertSession()->pageTextContains('The role settings have been updated.');
+
     \Drupal::entityTypeManager()->getStorage('user_role')->resetCache();
     $this->assertTrue(Role::load($this->rid)->isAdmin());
 
@@ -162,6 +165,9 @@ class UserPermissionsTest extends BrowserTestBase {
     $edit['user_admin_role'] = '';
     $this->drupalGet('admin/people/role-settings');
     $this->submitForm($edit, 'Save configuration');
+
+    // Check that the success message appears.
+    $this->assertSession()->pageTextContains('The role settings have been updated.');
 
     \Drupal::entityTypeManager()->getStorage('user_role')->resetCache();
     \Drupal::configFactory()->reset();
@@ -350,6 +356,22 @@ class UserPermissionsTest extends BrowserTestBase {
 
     $this->drupalGet('admin/people/permissions');
     $this->assertSession()->checkboxNotChecked('anonymous[access content]');
+  }
+
+  /**
+   * Tests that module header rows in the permissions table have a single cell.
+   */
+  public function testPermissionTableHtml(): void {
+    $this->drupalLogin($this->adminUser);
+
+    \Drupal::service('module_installer')->install(['user_permissions_test']);
+    $this->drupalGet('admin/people/permissions');
+
+    // Verify that if a permission has the same name as a module, that its
+    // table cells aren't combined into the module's header row. The header row
+    // should have a single cell in that case.
+    $header_row = $this->xpath('//tr[@data-drupal-selector=\'edit-permissions-module-user-permissions-test\'][count(td)=1]');
+    $this->assertNotEmpty($header_row);
   }
 
 }

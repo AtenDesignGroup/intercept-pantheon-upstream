@@ -2,10 +2,8 @@
 
 namespace Drupal\duration_field\Element;
 
-use DateInterval;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElement;
 
 /**
  * Defines the 'duration' form element.
@@ -31,14 +29,14 @@ use Drupal\Core\Render\Element\FormElement;
  *   '#granularity' => 'y:m:d:h:i',
  *   // Require hours and minutes.
  *   '#required_elements' => 'h:i',
- * );
+ * ];
  * @endcode
  *
  * @see Drupal\duration_field\Plugin\DataType\GranularityStringData
  *
  * @FormElement("duration")
  */
-class DurationElement extends FormElement {
+class DurationElement extends DurationElementBase {
 
   use ProcessStatesTrait;
 
@@ -94,7 +92,7 @@ class DurationElement extends FormElement {
     }
 
     if (is_string($value) && !$duration_service->checkDurationInvalid($value)) {
-      $value = new DateInterval($value);
+      $value = new \DateInterval($value);
     }
 
     if (!$value) {
@@ -139,6 +137,7 @@ class DurationElement extends FormElement {
       's' => t('Seconds'),
     ];
 
+    $weight = 0;
     foreach ($time_mappings as $key => $label) {
       // Only include elements that are part of the given granularity.
       if ($granularity_service->includeGranularityElement($key, $element['#granularity'])) {
@@ -152,14 +151,14 @@ class DurationElement extends FormElement {
           // Only require elements that are part of the given require elements
           // granularity.
           '#required' => $granularity_service->includeGranularityElement($key, $element['#required_elements']),
-          '#weight' => 0,
+          '#weight' => $weight++,
           '#min' => 0,
         ];
 
         // Apply the ajax of the main duration element to each granularity
         // input.
         if (!empty($element['#ajax'])) {
-          $element[$info['key']]['#ajax'] = $element['#ajax'];
+          $element[$key]['#ajax'] = $element['#ajax'];
         }
       }
     }
@@ -190,7 +189,7 @@ class DurationElement extends FormElement {
     // The closing wrapper. See notes on the opening wrapper.
     $element['wrapper_close'] = [
       '#markup' => '</div>',
-      '#weight' => 1,
+      '#weight' => $weight,
     ];
 
     // Attach the CSS for the display of the output.

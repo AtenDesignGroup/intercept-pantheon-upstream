@@ -459,7 +459,15 @@ class WebformSubmissionForm extends ContentEntityForm {
    *   with excluded elements.
    */
   protected function getLastSubmissionData(WebformInterface $webform, ?EntityInterface $source_entity = NULL, ?AccountInterface $account = NULL) {
-    $last_submission = $this->getStorage()->getLastSubmission($webform, $source_entity, $account, ['in_draft' => FALSE, 'access_check' => FALSE]);
+    $last_submission = $this->getStorage()->getLastSubmission(
+      $webform,
+      $source_entity,
+      $account,
+      [
+        'in_draft' => FALSE,
+        'access_check' => FALSE,
+      ]
+    );
     if (!$last_submission) {
       return [];
     }
@@ -1124,7 +1132,17 @@ class WebformSubmissionForm extends ContentEntityForm {
       && $this->operation === 'add'
       && $this->getWebformSetting('draft') !== WebformInterface::DRAFT_NONE
       && $this->getWebformSetting('draft_multiple', FALSE)
-      && ($previous_draft_total = $this->getStorage()->getTotal($webform, $this->sourceEntity, $this->currentUser(), ['in_draft' => TRUE, 'check_source_entity' => TRUE]))
+      && (
+        $previous_draft_total = $this->getStorage()->getTotal(
+          $webform,
+          $this->sourceEntity,
+          $this->currentUser(),
+          [
+            'in_draft' => TRUE,
+            'check_source_entity' => TRUE,
+          ]
+        )
+      )
     ) {
       if ($previous_draft_total > 1) {
         $this->getMessageManager()->display(WebformMessageManagerInterface::DRAFT_PENDING_MULTIPLE);
@@ -1161,7 +1179,16 @@ class WebformSubmissionForm extends ContentEntityForm {
       && $this->operation === 'add'
       && $webform_submission->isNew()
       && $webform->getSetting('autofill')
-      && $this->getStorage()->getLastSubmission($webform, $source_entity, $account, ['in_draft' => FALSE, 'access_check' => FALSE])) {
+      && $this->getStorage()->getLastSubmission(
+        $webform,
+        $source_entity,
+        $account,
+        [
+          'in_draft' => FALSE,
+          'access_check' => FALSE,
+        ]
+      )
+    ) {
       $this->getMessageManager()->display(WebformMessageManagerInterface::AUTOFILL_MESSAGE);
     }
   }
@@ -1467,7 +1494,15 @@ class WebformSubmissionForm extends ContentEntityForm {
       }
 
       $is_first_page = ($current_page === $this->getFirstPage($pages)) ? TRUE : FALSE;
-      $is_last_page = (in_array($current_page, [WebformInterface::PAGE_PREVIEW, WebformInterface::PAGE_CONFIRMATION, $this->getLastPage($pages)])) ? TRUE : FALSE;
+      $is_last_page_check = in_array(
+        $current_page,
+        [
+          WebformInterface::PAGE_PREVIEW,
+          WebformInterface::PAGE_CONFIRMATION,
+          $this->getLastPage($pages),
+        ]
+      );
+      $is_last_page = $is_last_page_check ? TRUE : FALSE;
       $is_preview_page = ($current_page === WebformInterface::PAGE_PREVIEW);
       $is_next_page_preview = ($next_page === WebformInterface::PAGE_PREVIEW) ? TRUE : FALSE;
       $is_next_page_complete = ($next_page === WebformInterface::PAGE_CONFIRMATION) ? TRUE : FALSE;
@@ -1909,6 +1944,7 @@ class WebformSubmissionForm extends ContentEntityForm {
 
     // Validate file (upload) limit.
     $this->validateUploadedManagedFiles($form, $form_state);
+    return $this->entity;
   }
 
   /**
@@ -2015,7 +2051,7 @@ class WebformSubmissionForm extends ContentEntityForm {
     }
 
     // Save and log webform submission.
-    $webform_submission->save();
+    $status = $webform_submission->save();
 
     // Invalidate cache if any limits are specified.
     if ($this->getWebformSetting('limit_total')
@@ -2032,6 +2068,7 @@ class WebformSubmissionForm extends ContentEntityForm {
     if ($this->checkTotalLimit() || $this->checkUserLimit()) {
       $form_state->setRebuild();
     }
+    return $status;
   }
 
   /**

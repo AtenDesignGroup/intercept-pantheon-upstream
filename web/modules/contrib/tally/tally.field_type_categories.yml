@@ -1,0 +1,3 @@
+tally:
+  label: 'Tally'
+  description: 'Field to calculate a simple count per referenced entity'

@@ -273,5 +273,5 @@ highcharts/export-data:12.1.1 highcharts/accessibility:12.1.1
 highcharts/3d:12.1.1 highcharts/annotations:12.1.1 highcharts/boost:12.1.1
 highcharts/coloraxis:12.1.1 highcharts/data:12.1.1
 highcharts/high-contrast-light:12.1.1 highcharts/pattern-fill:12.1.1
-highcharts/no-data-to-display:12.1.1 highcharts/solidgauge:12.1.1`
+highcharts/no-data-to-display:12.1.1 highcharts/solid-gauge:12.1.1`
 - you should find that new directories have been created under "/libraries"

@@ -198,8 +198,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
 
     // Include the library-specific render callback via their plugin manager.
     // Use the first charting library if the requested library is not available.
-    $library = $element['#chart_library'] ?? '';
-    $library = $this->getLibrary($library);
+    $library = $this->getLibrary($element['#chart_library'] ?? '');
 
     $element['#chart_library'] = $library;
     $charts_settings = $this->configFactory->get('charts.settings');

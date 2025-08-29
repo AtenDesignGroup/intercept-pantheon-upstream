@@ -13,7 +13,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *
  * @FieldType(
  *   id = "tally_reference",
- *   category = @Translation("Tally"),
+ *   category = "tally",
  *   label = @Translation("Tally reference"),
  *   description = @Translation("Advanced count information"),
  *   default_widget = "tally_default",

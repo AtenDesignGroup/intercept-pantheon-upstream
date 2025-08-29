@@ -40,6 +40,8 @@ third_party_settings:
         - field_map_link
         - field_closed_for_renovations
         - field_location_hours
+      label: Contact
+      region: content
       parent_name: ''
       weight: 3
       format_type: fieldset
@@ -48,8 +50,6 @@ third_party_settings:
         classes: ''
         description: ''
         required_fields: false
-      label: Contact
-      region: content
 id: node.location.default
 targetEntityType: node
 bundle: location
@@ -62,19 +62,19 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_address:
-    weight: 5
-    settings:
-      default_country: US
-    third_party_settings: {  }
     type: address_default
+    weight: 5
     region: content
+    settings:
+      wrapper_type: details
+    third_party_settings: {  }
   field_branch_location:
+    type: boolean_checkbox
     weight: 26
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_closed_for_renovations:
     type: boolean_checkbox
     weight: 10
@@ -83,20 +83,20 @@ content:
       display_label: true
     third_party_settings: {  }
   field_contact_number:
-    weight: 4
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
     type: telephone_default
+    weight: 4
     region: content
-  field_features:
-    weight: 5
     settings:
-      size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
+  field_features:
+    type: link_default
+    weight: 5
     region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
   field_gallery:
     type: paragraphs
     weight: 7
@@ -120,66 +120,73 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
   field_location_abbreviation:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_location_hours:
+    type: office_hours_default
     weight: 11
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: office_hours_default
-    region: content
   field_map_link:
+    type: link_default
     weight: 8
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_text_content:
+    type: text_textarea
     weight: 8
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_text_intro:
-    weight: 2
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings: {  }
     type: text_textarea
+    weight: 2
     region: content
-  field_virtual_tour:
-    weight: 6
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: string_textarea
+  field_virtual_tour:
+    type: text_textarea
+    weight: 27
     region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
   image_primary:
+    type: inline_entity_form_complex
     weight: 1
+    region: content
     settings:
       form_mode: simple
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
       match_operator: CONTAINS
-      override_labels: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: stories_image_uploader
-    type: inline_entity_form_complex
+  langcode:
+    type: language_select
+    weight: 2
     region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
   path:
     type: path
     weight: 13
@@ -188,30 +195,29 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 11
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
-  publish_on:
-    type: datetime_timestamp_no_default
-    weight: 15
+  simple_sitemap:
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 14
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 12
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -224,18 +230,12 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 9
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
-    third_party_settings: {  }
-  unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 16
-    region: content
-    settings: {  }
     third_party_settings: {  }
   url_redirects:
     weight: 17
@@ -243,3 +243,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  publish_on: true
+  unpublish_on: true

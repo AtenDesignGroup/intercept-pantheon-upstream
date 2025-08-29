@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.16] - 2025-08-29
+
+* Changed location page features to where they can be linked to other pages
+* Consolidated sidebar fields on the Location content type
+* Fixed an issue with incorrect week calculation on recurring monthly events
+* Fixed an accessibility issue with low color contrast on the customer My Account > Settings page
+
 ## [2.0.15] - 2025-07-31
 
 * Changed certifications listing view to only show customer notes related specifically to certifications

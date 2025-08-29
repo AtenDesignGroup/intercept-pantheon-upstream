@@ -17,8 +17,12 @@ use Drupal\Core\Form\FormStateInterface;
  * Implements hook_views_filters_summary_plugin_alias().
  */
 function views_filters_summary_search_api_views_filters_summary_plugin_alias($filter) {
-  if ($filter->getPluginId() === 'search_api_term') {
-    return 'taxonomy_index_tid';
+  switch ($filter->getPluginId()) {
+    case 'search_api_term':
+      return 'taxonomy_index_tid';
+
+    case 'search_api_options':
+      return 'list_field';
   }
 }
 
@@ -53,5 +57,14 @@ function views_filters_summary_search_api_form_alter(&$form, FormStateInterface 
       $form['options']['content']['#description']
         .= \Drupal::service('renderer')->render($item_list);
     }
+  }
+}
+
+/**
+ * Implements hook_views_filters_summary_valid_index().
+ */
+function views_filters_summary_search_api_views_filters_summary_valid_index($index, $filter) {
+  if ($filter->getPluginId() === 'search_api_options') {
+    return !is_null($index);
   }
 }

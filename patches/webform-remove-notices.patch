@@ -1,8 +1,8 @@
 diff --git a/includes/webform.form_alter.inc b/includes/webform.form_alter.inc
-index 6ce8b8cb8..26ee3ab51 100644
+index becbc1daa..9e03ab6a9 100644
 --- a/includes/webform.form_alter.inc
 +++ b/includes/webform.form_alter.inc
-@@ -99,6 +99,7 @@ function _webform_form_webform_submission_form_after_build($form, FormStateInter
+@@ -53,6 +53,7 @@ function _webform_form_webform_submission_form_after_build($form, FormStateInter
   * @see https://www.drupal.org/project/webform/issues/2920095
   */
  function webform_form_update_manager_update_form_alter(&$form, FormStateInterface $form_state) {
@@ -10,16 +10,30 @@ index 6ce8b8cb8..26ee3ab51 100644
    if (!isset($form['projects']) || !isset($form['projects']['#options']['webform'])) {
      return;
    }
-diff --git a/webform.module b/webform.module
-index 0d44d8936..861c19ddd 100644
---- a/webform.module
-+++ b/webform.module
-@@ -45,7 +45,7 @@ function webform_help($route_name, RouteMatchInterface $route_match) {
- 
-   // Get path from route match.
-   $path = preg_replace('/^' . preg_quote(base_path(), '/') . '/', '/', Url::fromRouteMatch($route_match)->setAbsolute(FALSE)->toString());
--  if (!in_array($route_name, ['system.modules_list', 'update.status']) && strpos($route_name, 'webform') === FALSE && strpos($path, '/webform') === FALSE) {
-+  if (strpos($route_name, 'webform') === FALSE && strpos($path, '/webform') === FALSE) {
-     return NULL;
-   }
- 
+diff --git a/src/EntitySettings/WebformEntitySettingsFormForm.php b/src/EntitySettings/WebformEntitySettingsFormForm.php
+index 6bfaf15c6..30d2fd062 100644
+--- a/src/EntitySettings/WebformEntitySettingsFormForm.php
++++ b/src/EntitySettings/WebformEntitySettingsFormForm.php
+@@ -77,14 +77,14 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
+       ':cache_control_override_href' => 'https://www.drupal.org/project/cache_control_override',
+     ];
+     if ($this->moduleHandler->moduleExists('page_cache') && !$this->moduleHandler->moduleExists('cache_control_override')) {
+-      $form['form_settings']['scheduled']['page_cache'] = [
+-        '#type' => 'webform_message',
+-        '#message_type' => 'warning',
+-        '#message_close' => TRUE,
+-        '#message_storage' => WebformMessage::STORAGE_SESSION,
+-        '#message_message' => $this->t('Scheduled forms do not work as expected for anonymous users when Drupal\'s <a href=":page_cache_href">Internal Page Cache</a> module is enabled. This is a <a href=":issue_href">known issue</a>.', $t_args) . '<br/><br/>' .
+-        '<strong>' . $this->t('It is strongly recommended that you install the <a href=":cache_control_override_href">Cache Control Override</a> module.', $t_args) . '</strong>',
+-      ];
++      // $form['form_settings']['scheduled']['page_cache'] = [
++      //   '#type' => 'webform_message',
++      //   '#message_type' => 'warning',
++      //   '#message_close' => TRUE,
++      //   '#message_storage' => WebformMessage::STORAGE_SESSION,
++      //   '#message_message' => $this->t('Scheduled forms do not work as expected for anonymous users when Drupal\'s <a href=":page_cache_href">Internal Page Cache</a> module is enabled. This is a <a href=":issue_href">known issue</a>.', $t_args) . '<br/><br/>' .
++      //   '<strong>' . $this->t('It is strongly recommended that you install the <a href=":cache_control_override_href">Cache Control Override</a> module.', $t_args) . '</strong>',
++      // ];
+     }
+     $form['form_settings']['scheduled']['open'] = [
+       '#type' => 'datetime',

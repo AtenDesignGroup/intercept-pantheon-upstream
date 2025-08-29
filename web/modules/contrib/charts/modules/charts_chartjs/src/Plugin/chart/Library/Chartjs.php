@@ -354,7 +354,7 @@ class Chartjs extends ChartBase {
     }
     $chart_definition['options']['plugins']['tooltip']['enabled'] = $element['#tooltips'];
     if (!empty($element['#data_labels'])) {
-      $chart_definition['options']['plugins']['dataLabels']['display'] = TRUE;
+      $chart_definition['options']['plugins']['datalabels'] = [];
     }
     $chart_definition['options']['plugins']['legend'] = $this->buildLegend($element);
 

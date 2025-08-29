@@ -77,14 +77,14 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
       ':cache_control_override_href' => 'https://www.drupal.org/project/cache_control_override',
     ];
     if ($this->moduleHandler->moduleExists('page_cache') && !$this->moduleHandler->moduleExists('cache_control_override')) {
-      $form['form_settings']['scheduled']['page_cache'] = [
-        '#type' => 'webform_message',
-        '#message_type' => 'warning',
-        '#message_close' => TRUE,
-        '#message_storage' => WebformMessage::STORAGE_SESSION,
-        '#message_message' => $this->t('Scheduled forms do not work as expected for anonymous users when Drupal\'s <a href=":page_cache_href">Internal Page Cache</a> module is enabled. This is a <a href=":issue_href">known issue</a>.', $t_args) . '<br/><br/>' .
-        '<strong>' . $this->t('It is strongly recommended that you install the <a href=":cache_control_override_href">Cache Control Override</a> module.', $t_args) . '</strong>',
-      ];
+      // $form['form_settings']['scheduled']['page_cache'] = [
+      //   '#type' => 'webform_message',
+      //   '#message_type' => 'warning',
+      //   '#message_close' => TRUE,
+      //   '#message_storage' => WebformMessage::STORAGE_SESSION,
+      //   '#message_message' => $this->t('Scheduled forms do not work as expected for anonymous users when Drupal\'s <a href=":page_cache_href">Internal Page Cache</a> module is enabled. This is a <a href=":issue_href">known issue</a>.', $t_args) . '<br/><br/>' .
+      //   '<strong>' . $this->t('It is strongly recommended that you install the <a href=":cache_control_override_href">Cache Control Override</a> module.', $t_args) . '</strong>',
+      // ];
     }
     $form['form_settings']['scheduled']['open'] = [
       '#type' => 'datetime',

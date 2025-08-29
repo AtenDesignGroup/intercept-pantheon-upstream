@@ -57,10 +57,14 @@ content:
     weight: 2
     region: content
   field_features:
-    type: string
+    type: link
     label: above
     settings:
-      link_to_entity: false
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
     third_party_settings: {  }
     weight: 5
     region: content

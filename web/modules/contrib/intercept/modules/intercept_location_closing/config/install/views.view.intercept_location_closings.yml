@@ -6,10 +6,10 @@ dependencies:
     - intercept_location_closing
     - user
 id: intercept_location_closings
-label: 'Intercept Location Closings'
+label: 'Location Closings'
 module: views
 description: ''
-tag: ''
+tag: Intercept
 base_table: intercept_location_closing_field_data
 base_field: id
 display:
@@ -19,7 +19,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Intercept Location Closings'
+      title: 'Location Closings'
       fields:
         title:
           id: title

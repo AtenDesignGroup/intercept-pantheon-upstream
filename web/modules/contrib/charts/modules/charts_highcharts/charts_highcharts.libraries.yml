@@ -204,3 +204,10 @@ color_changer:
     - charts/global
     - core/once
     - charts_highcharts/charts_highcharts
+
+# Default CSS, for example when using styledMode true
+highcharts_default_css:
+  version: VERSION
+  css:
+    theme:
+      https://code.highcharts.com/css/highcharts.css: { type: external }

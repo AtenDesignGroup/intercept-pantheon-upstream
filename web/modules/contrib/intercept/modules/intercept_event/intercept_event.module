@@ -747,6 +747,12 @@ function intercept_event_form_node_form_alter(&$form, FormStateInterface $form_s
     ];
     $form['field_room']['#states'] = $room_state;
   }
+  if ($node->bundle() == 'location') {
+    foreach ($form['field_features']['widget'] as $key => $widget) {
+      $key = (int) $key;
+      $form['field_features']['widget'][$key]['uri']['#description'] = new TranslatableMarkup('<div style="padding-left: 30px;">Enter &lt;nolink&gt; to add a feature name with just a title and no link.</div>');
+    }
+  }
 }
 
 /**

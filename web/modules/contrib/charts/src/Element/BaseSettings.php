@@ -137,7 +137,7 @@ class BaseSettings extends FormElementBase {
 
     if (!empty($element['#library']) && isset($library_options[$element['#library']])) {
       $element['library'] = [
-        '#type' => 'value',
+        '#type' => 'hidden',
         '#value' => $element['#library'],
       ];
       $selected_library = $element['#library'];

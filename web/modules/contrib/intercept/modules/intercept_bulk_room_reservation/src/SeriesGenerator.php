@@ -253,7 +253,7 @@ class SeriesGenerator implements SeriesGeneratorInterface {
     // Get the first day of the month.
     $firstOfMonth = strtotime(date('Y-m-01', $date));
 
-    return $this->weekOfYear($date) - $this->weekOfYear($firstOfMonth);
+    return $this->weekOfYear($date) - $this->weekOfYear($firstOfMonth) + 1;
 
   }
 

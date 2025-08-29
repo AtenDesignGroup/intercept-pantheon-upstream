@@ -7,6 +7,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\Url;
@@ -55,6 +56,13 @@ class ViewsFiltersSummary extends Result {
   protected $loggerFactory;
 
   /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * Constructs a ViewsFiltersSummary object.
    *
    * @param array $configuration
@@ -71,6 +79,8 @@ class ViewsFiltersSummary extends Result {
    *   The bundle info service.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager.
    */
   public function __construct(
     array $configuration,
@@ -80,12 +90,14 @@ class ViewsFiltersSummary extends Result {
     EntityTypeManagerInterface $entity_type_manager,
     EntityTypeBundleInfoInterface $entity_type_bundle_info,
     LoggerChannelFactoryInterface $logger_factory,
+    LanguageManagerInterface $language_manager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->translationManager = $translation_manager;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
     $this->loggerFactory = $logger_factory;
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -104,7 +116,8 @@ class ViewsFiltersSummary extends Result {
       $container->get('string_translation'),
       $container->get('entity_type.manager'),
       $container->get('entity_type.bundle.info'),
-      $container->get('logger.factory')
+      $container->get('logger.factory'),
+      $container->get('language_manager')
     );
   }
 
@@ -584,7 +597,23 @@ class ViewsFiltersSummary extends Result {
       'boolean' => $filter->valueOptions[$value] ?? $value,
       default => $value,
     };
-    return match ($filter->operator) {
+
+    return $this->getValueLabelFromOperator($filter->operator, $label);
+  }
+
+  /**
+   * Get the formatted label from a given operator.
+   *
+   * @param string $operator
+   *   The operator to check.
+   * @param string $label
+   *   The base label.
+   *
+   * @return string
+   *   The formatted label.
+   */
+  protected function getValueLabelFromOperator(string $operator, string $label) {
+    return match ($operator) {
       '!=' => $this->t('Not @label', ['@label' => $label]),
       '<' => $this->t('Less than @label', ['@label' => $label]),
       '<=' => $this->t('Less than or equal to @label', ['@label' => $label]),
@@ -633,12 +662,22 @@ class ViewsFiltersSummary extends Result {
         if (is_array($original_value)) {
           $values = [];
           $storage = $this->entityTypeManager->getStorage('taxonomy_term');
+          // Get the current user's language.
+          $current_language = $this->languageManager->getCurrentLanguage()->getId();
           foreach ($original_value as $index => $term) {
             if ($term = $storage->load($term)) {
+              // Get the term translation in the current user's language.
+              if ($term->hasTranslation($current_language)) {
+                $translated_term = $term->getTranslation($current_language);
+              }
+              else {
+                // Fallback to the default language if no translation exists.
+                $translated_term = $term;
+              }
               $values[] = [
                 'id' => $index,
                 'raw' => $term->id(),
-                'value' => $term->label(),
+                'value' => $translated_term->label(),
               ];
             }
           }
@@ -726,7 +765,7 @@ class ViewsFiltersSummary extends Result {
                   $values[] = [
                     'id' => 0,
                     'raw' => $group_index,
-                    'value' => $min_value . '-' . $max_value,
+                    'value' => $group_item['title'] ?? $min_value . '-' . $max_value,
                   ];
                   $processed_value = $values;
                   break;
@@ -778,11 +817,20 @@ class ViewsFiltersSummary extends Result {
           if ($filter->operator === 'between' || $filter->operator === 'not between') {
             $min_value = $filter->value['min'] ?? NULL;
             $max_value = $filter->value['max'] ?? NULL;
-            if ($this->isValidValue($min_value) && $this->isValidValue($max_value)) {
+            if ($this->isValidValue($min_value) || $this->isValidValue($max_value)) {
+              if (empty($max_value)) {
+                $value = $this->getValueLabelFromOperator('>=', (string) $min_value);
+              }
+              elseif (empty($min_value)) {
+                $value = $this->getValueLabelFromOperator('<=', (string) $max_value);
+              }
+              else {
+                $value = $min_value . '-' . $max_value;
+              }
               $values[] = [
                 'id' => 0,
                 'raw' => 'min|max',
-                'value' => $min_value . '-' . $max_value,
+                'value' => $value,
               ];
               $processed_value = $values;
             }

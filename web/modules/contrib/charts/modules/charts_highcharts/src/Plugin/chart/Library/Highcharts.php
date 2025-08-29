@@ -131,6 +131,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       'no_data_library' => FALSE,
       'texture_library' => FALSE,
       'solidgauge_library' => FALSE,
+      'disable_default_css_library' => FALSE,
       'global_options' => static::defaultGlobalOptions(),
     ] + parent::defaultConfiguration();
 
@@ -231,6 +232,24 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       '#default_value' => !empty($this->configuration['solidgauge_library']),
       '#description' => $this->t('Highcharts Texture module is a separate library that enables texture fill. See <a href="https://api.highcharts.com/highcharts/series.solidgauge" target="_blank">Solid Gauge documentation</a> for more information.'),
     ];
+
+    // Provide option to disable adding the default Highcharts CSS library.
+    if (!empty($this->configuration['global_options']['chart']['styled_mode'])) {
+      $form['disable_default_css_library'] = [
+        '#title' => $this->t("Disable the default Highcharts' CSS library"),
+        '#type' => 'checkbox',
+        '#default_value' => !empty($this->configuration['disable_default_css_library']),
+        '#description' => $this->t('When styledMode is enabled in the global chart options, the default highcharts.css library is added by default. Check this box to disable adding the default CSS.'),
+      ];
+    }
+    else {
+      // Provide default value to the submit handler, if styled_mode
+      // is not enabled.
+      $form['disable_default_css_library'] = [
+        '#type' => 'value',
+        '#value' => $this->defaultConfiguration()['disable_default_css_library'],
+      ];
+    }
 
     $legend_configuration = $this->configuration['legend'] ?? [];
     $form['legend'] = [
@@ -485,6 +504,21 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
         '#required' => TRUE,
       ];
     }
+    // Add global options for the chart property.
+    $form['global_options']['chart'] = [
+      '#title' => $this->t('Chart'),
+      '#type' => 'details',
+      '#collapsible' => TRUE,
+      '#tree' => TRUE,
+    ];
+    $form['global_options']['chart']['styled_mode'] = [
+      '#title' => $this->t('Enable styled mode'),
+      '#description' => $this->t('Enables styledMode for the chart. This will include the default highcharts.css and apply styles from the CSS files instead of inline styles. For example for dark mode support. See <a href=":url" target="_blank">chart.styledMode</a> for more information.', [
+        ':url' => 'https://api.highcharts.com/highcharts/chart.styledMode',
+      ]),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['global_options']['chart']['styled_mode']),
+    ];
 
     return $form;
   }
@@ -514,6 +548,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       $this->configuration['no_data_library'] = $values['no_data_library'];
       $this->configuration['texture_library'] = $values['texture_library'];
       $this->configuration['solidgauge_library'] = $values['solidgauge_library'];
+      $this->configuration['disable_default_css_library'] = $values['disable_default_css_library'];
       $this->configuration['global_options'] = $values['global_options'];
     }
   }
@@ -761,6 +796,12 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     // Setting global options.
     $element['#attached']['drupalSettings']['charts']['highcharts']['global_options'] = $this->processedGlobalOptions();
 
+    // Add default Highcharts CSS library if global styled mode option
+    // is enabled.
+    if (!empty($this->configuration['global_options']['chart']['styled_mode']) && empty($this->configuration['disable_default_css_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/highcharts_default_css';
+    }
+
     return $element;
   }
 
@@ -850,6 +891,9 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
           'P',
           'E',
         ],
+      ],
+      'chart' => [
+        'styledMode' => FALSE,
       ],
     ];
   }
@@ -1381,6 +1425,17 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
 
       $language_options[$transformed_key] = $value;
       unset($language_options[$option_key]);
+    }
+    // Add global chart options, such as styledMode for dark mode support.
+    $global_options['chart'] = $global_options['chart'] ?? [];
+    $global_options['chart'] += static::defaultGlobalOptions()['chart'];
+    foreach ($global_options['chart'] as $option_key => $value) {
+      $transformed_key = $this->transformSnakeCaseToCamelCase($option_key);
+      // Use boolean value for styledMode option.
+      if ($option_key === 'styled_mode') {
+        $value = (bool) $value;
+      }
+      $global_options['chart'][$transformed_key] = $value;
     }
     return $global_options;
   }

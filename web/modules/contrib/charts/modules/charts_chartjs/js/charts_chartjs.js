@@ -32,12 +32,8 @@
           const chart = contents.getData(chartId);
           const options = chart.options;
           const enabledPlugins = [];
-          // If options.plugins.dataLabels.display is set to true, we need to add the plugin to the chart.
-          if (
-            options.plugins &&
-            options.plugins.dataLabels &&
-            options.plugins.dataLabels.display
-          ) {
+          // If options.plugins.datalabels is set, we need to add the plugin to the chart.
+          if (options.plugins && options.plugins.datalabels) {
             enabledPlugins.push(ChartDataLabels);
           }
           new Chart(chartId, {

@@ -7,7 +7,7 @@ dependencies:
   - views_filters_summary:views_filters_summary
   - verf:verf
 
-# Information added by Drupal.org packaging script on 2025-06-09
-version: '3.1.0'
+# Information added by Drupal.org packaging script on 2025-08-07
+version: '3.2.0'
 project: 'views_filters_summary'
-datestamp: 1749465765
+datestamp: 1754585890

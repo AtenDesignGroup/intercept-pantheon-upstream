@@ -62,7 +62,7 @@
     "@gitlab-formatters/stylelint-formatter-gitlab": "^1.0.2",
     "backbone": "^1.6.1",
     "chokidar": "^4.0.3",
-    "ckeditor5": "~45.2.0",
+    "ckeditor5": "~45.2.2",
     "cspell": "^8.16.1",
     "dotenv": "^16.5.0",
     "dotenv-safe": "^9.1.0",

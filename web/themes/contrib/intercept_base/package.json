@@ -4,7 +4,7 @@
   "description": "Collection of build tools for Aten projects.",
   "dependencies": {
     "breakpoint-sass": "~2.6.1",
-    "browser-sync": "^2.26.13",
+    "browser-sync": "^3.0.4",
     "core-js": "^3.6.5",
     "gulp": "^4.0.2",
     "gulp-dependents": "^1.2.5",

@@ -213,7 +213,7 @@ abstract class WebformComputedBase extends FormElementBase implements WebformCom
     // WORKAROUND:
     // See if _wrapper_format=drupal_ajax is being appended to the query string.
     $querystring = \Drupal::request()->getQueryString();
-    return (strpos($querystring, MainContentViewSubscriber::WRAPPER_FORMAT . '=drupal_ajax') !== FALSE);
+    return str_contains($querystring, MainContentViewSubscriber::WRAPPER_FORMAT . '=drupal_ajax');
   }
 
   /**

@@ -4,9 +4,6 @@
  */
 
 (function ($, drupalSettings, once) {
-
-  'use strict';
-
   // Disable clientside validation for webforms submitted using Ajax.
   // This prevents Computed elements with Ajax from breaking.
   // @see \Drupal\clientside_validation_jquery\Form\ClientsideValidationjQuerySettingsForm
@@ -60,6 +57,9 @@
 
       // Add '.form-item--error-message' class to all errors.
       $(this.currentForm).find('strong.error').addClass('form-item--error-message');
+      // All errors should have role alert for better accessibility.
+      // @see https://www.w3.org/TR/WCAG20-TECHS/ARIA19.html
+      $(this.currentForm).find('strong.error').attr('role', 'alert');
 
       // Move all radios, checkboxes, and datelist errors to appear after
       // the parent container.
@@ -116,11 +116,19 @@
       });
 
       // Add custom clear error handling to checkboxes to remove the
-      // error message, when any checkbox is checked.
+      // error message and .error class from checkboxes,
+      // when any checkbox is checked.
       $(once('webform-clientside-validation-form-checkboxes', '.form-checkboxes', this.currentForm)).each(function () {
         var $container = $(this);
         $container.find('input:checkbox').click( function () {
-          var state = $container.find('input:checkbox:checked').length ? 'hide' : 'show';
+          var isChecked = $container.find('input:checkbox:checked').length;
+
+          // If checked, then remove the `.error` class from all checkboxes.
+          if (isChecked) {
+            $container.find('input:checkbox').removeClass('error');
+          }
+
+          var state = isChecked ? 'hide' : 'show';
           var $message = $container.next('strong.error.form-item--error-message');
           $message[state]();
 

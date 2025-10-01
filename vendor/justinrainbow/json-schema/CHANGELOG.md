@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.5.2] - 2025-09-09
+### Fixed
+- Fix issue when http headers are already present ([#843](https://github.com/jsonrainbow/json-schema/pull/843))
+
 ## [6.5.1] - 2025-08-29
 ### Changed
 - ci: Add PHP 8.5 to pipeline, ignoring dependencies and as experimental ([#842](https://github.com/jsonrainbow/json-schema/pull/842))

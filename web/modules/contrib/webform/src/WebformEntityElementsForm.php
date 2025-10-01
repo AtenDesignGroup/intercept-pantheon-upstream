@@ -188,7 +188,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
    *   A form element.
    */
   protected function removeWebformTypePrefixRecursive(array &$element) {
-    if (isset($element['#type']) && strpos($element['#type'], 'webform_') === 0 && $this->elementManager->hasDefinition($element['#type'])) {
+    if (isset($element['#type']) && str_starts_with($element['#type'], 'webform_') && $this->elementManager->hasDefinition($element['#type'])) {
       $type = str_replace('webform_', '', $element['#type']);
       if (!$this->elementInfo->hasDefinition($type) && !$this->elementManager->hasDefinition($type)) {
         $element['#type'] = $type;

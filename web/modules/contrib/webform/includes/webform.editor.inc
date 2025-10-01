@@ -272,7 +272,7 @@ function _webform_delete_file_usage(array $uuids, $type, $id, $count) {
  * @see _editor_parse_file_uuids()
  */
 function _webform_parse_file_uuids($text) {
-  if (strpos($text, 'data-entity-uuid') === FALSE) {
+  if (!str_contains($text, 'data-entity-uuid')) {
     return [];
   }
 

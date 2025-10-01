@@ -67,12 +67,12 @@ class WebformAttachmentUrl extends WebformAttachmentBase {
     $form_state->setValueForElement($element, $value);
 
     // Prepend scheme and host to root relative path.
-    if (strpos($value, '/') === 0) {
+    if (str_starts_with($value, '/')) {
       $value = \Drupal::request()->getSchemeAndHttpHost() . $value;
     }
 
     // Skip validating [webform_submission] tokens which can't be replaced.
-    if (strpos($value, '[webform_submission:') !== FALSE) {
+    if (str_contains($value, '[webform_submission:')) {
       return;
     }
 

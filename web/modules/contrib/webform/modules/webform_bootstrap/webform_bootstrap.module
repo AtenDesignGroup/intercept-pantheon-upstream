@@ -70,13 +70,13 @@ function webform_bootstrap_preprocess_input(&$variables) {
   // @see themes/bootstrap/templates/input/input--button.html.twig
   // @see \Drupal\webform\Element\WebformElementStates::buildOperations
   // @see \Drupal\webform\Element\WebformMultiple::buildElementRow
-  if (isset($element['#type']) && $element['#type'] === 'image_button' && strpos($variables['attributes']['src'], '/webform/images/icons/') !== FALSE) {
+  if (isset($element['#type']) && $element['#type'] === 'image_button' && str_contains($variables['attributes']['src'], '/webform/images/icons/')) {
     $element['#icon_only'] = TRUE;
-    if (strpos($variables['attributes']['src'], '/webform/images/icons/plus.svg') !== FALSE) {
+    if (str_contains($variables['attributes']['src'], '/webform/images/icons/plus.svg')) {
       $element['#title'] = t('Add');
       $element['#icon'] = Bootstrap::glyphicon('plus-sign');
     }
-    elseif (strpos($variables['attributes']['src'], '/webform/images/icons/minus.svg') !== FALSE) {
+    elseif (str_contains($variables['attributes']['src'], '/webform/images/icons/minus.svg')) {
       $element['#title'] = t('Remove');
       $element['#icon'] = Bootstrap::glyphicon('minus-sign');
     }

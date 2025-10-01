@@ -621,10 +621,24 @@ abstract class DateBase extends WebformElementBase {
     $format = DateFormat::load('html_datetime')->getPattern();
     if (!empty($element['#date_year_range'])) {
       [$min, $max] = static::datetimeRangeYears($element['#date_year_range']);
+      $min = strtotime("$min-01-01 00:00:00");
+      $max = strtotime("$max-01-01 00:00:00");
+    }
+    elseif (!empty($element['#date_date_min']) && empty($element['#date_date_max'])) {
+      $min = strtotime($element['#date_date_min']);
+      $max = max($min, strtotime('+20 years') ?: PHP_INT_MAX);
+    }
+    elseif (!empty($element['#date_date_max']) && empty($element['#date_date_min'])) {
+      $max = strtotime($element['#date_date_max']);
+      $min = min($max, strtotime('-10 years'));
+    }
+    elseif (empty($element['#date_date_min']) && empty($element['#date_date_max'])) {
+      $min = strtotime('-10 years');
+      $max = max($min, strtotime('+20 years') ?: PHP_INT_MAX);
     }
     else {
-      $min = !empty($element['#date_date_min']) ? strtotime($element['#date_date_min']) : strtotime('-10 years');
-      $max = !empty($element['#date_date_max']) ? strtotime($element['#date_date_max']) : max($min, strtotime('+20 years') ?: PHP_INT_MAX);
+      $min = strtotime($element['#date_date_min']);
+      $max = strtotime($element['#date_date_max']);
     }
     return static::formatDate($format, rand($min, $max));
   }

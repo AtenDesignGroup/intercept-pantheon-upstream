@@ -10,10 +10,10 @@ default:
       value: true
   name:
     -
-      value: COVID-19
+      value: Food Allergen Statement
   description:
     -
-      value: '<p><span>For your safety and ours, please stay home if you have COVID-19, if you have symptoms of COVID-19, if you are waiting for COVID-19 test results, or may have been exposed to someone with COVID-19.</span></p>'
+      value: '<p>Please be aware that consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs may increase the risk of foodborne illness. Some foods may include products with peanuts, tree nuts, soy, milk, eggs and wheat. Please refrain from consuming if you have known food allergies or ask staff about the ingredients and processing used in the making of this food item(s).</p>'
       format: basic_html
   weight:
     -

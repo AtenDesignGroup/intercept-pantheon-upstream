@@ -308,8 +308,8 @@ class WebformTwigExtension extends AbstractExtension {
     // If the template does NOT use the webform_token() function, but contains
     // simple tokens, convert the simple tokens to use
     // the webform_token() function.
-    if (strpos($template, 'webform_token(') === FALSE
-      && strpos($template, '[webform') !== FALSE) {
+    if (!str_contains($template, 'webform_token(')
+      && str_contains($template, '[webform')) {
       $template = preg_replace('#([^"\']|^)(\[[^]]+\])([^"\']|$)#', '\1{{ webform_token(\'\2\', webform_submission) }}\3', $template);
     }
 

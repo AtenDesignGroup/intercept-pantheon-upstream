@@ -25,7 +25,7 @@ class WebformPhpMail extends PhpMail {
 
     if (!empty($message['params']['html'])) {
       // Wrap body in HTML template if the <html> tag is missing.
-      if (strpos($message['body'], '<html') === FALSE) {
+      if (!str_contains($message['body'], '<html')) {
         // Make sure parameters exist.
         $message['params'] += ['webform_submission' => NULL, 'handler' => NULL];
         $build = [

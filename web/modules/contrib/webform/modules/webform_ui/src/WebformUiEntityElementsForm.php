@@ -98,7 +98,8 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
     $elements = $this->getOrderableElements();
 
     // Get (weight) delta parent options.
-    $delta = count($elements);
+    // Adding one to ensure delta is valid even when an element is deleted.
+    $delta = count($elements) + 1;
     $parent_options = $this->getParentOptions($elements);
 
     // Build table rows for elements.

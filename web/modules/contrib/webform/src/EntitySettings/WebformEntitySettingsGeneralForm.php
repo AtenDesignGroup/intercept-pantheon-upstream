@@ -391,16 +391,23 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
         '#title' => $this->t('Dialog settings'),
         '#description' => $this->t('Below are links and code snippets that can be inserted into your website to open this form in a modal dialog.'),
         '#open' => TRUE,
-        'table' => [
-          '#type' => 'table',
-          '#header' => [
-            ['data' => $this->t('Title'), 'width' => '10%', 'class' => [RESPONSIVE_PRIORITY_LOW]],
-            ['data' => $this->t('Dimensions'), 'width' => '10%', 'class' => [RESPONSIVE_PRIORITY_LOW]],
-            ['data' => $this->t('Example'), 'width' => '10%', 'class' => [RESPONSIVE_PRIORITY_LOW]],
-            ['data' => $this->t('Source'), 'width' => '70%'],
-          ],
-          '#rows' => $rows,
+      ];
+      if (!$settings['page']) {
+        $form['dialog_settings']['page_warning'] = [
+          '#type' => 'webform_message',
+          '#message_type' => 'warning',
+          '#message_message' => $this->t('You must allow users to post submissions from a dedicated URL to use open this webform is a dialog.'),
+        ];
+      }
+      $form['dialog_settings']['table'] = [
+        '#type' => 'table',
+        '#header' => [
+          ['data' => $this->t('Title'), 'width' => '10%', 'class' => [RESPONSIVE_PRIORITY_LOW]],
+          ['data' => $this->t('Dimensions'), 'width' => '10%', 'class' => [RESPONSIVE_PRIORITY_LOW]],
+          ['data' => $this->t('Example'), 'width' => '10%', 'class' => [RESPONSIVE_PRIORITY_LOW]],
+          ['data' => $this->t('Source'), 'width' => '70%'],
         ],
+        '#rows' => $rows,
       ];
 
       $form['dialog_settings']['form_prepopulate_source_entity'] = [

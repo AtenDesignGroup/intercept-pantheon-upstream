@@ -14,3 +14,7 @@
     margin-bottom: 0.75rem;
   }
 }
+
+a {
+  cursor: pointer;
+}

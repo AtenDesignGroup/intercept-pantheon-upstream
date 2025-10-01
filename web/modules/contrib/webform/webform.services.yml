@@ -36,9 +36,6 @@ services:
 
   # Services.
 
-  webform.addons_manager:
-    class: Drupal\webform\WebformAddonsManager
-
   webform.conditions_manager:
     class: Drupal\webform\WebformEntityConditionsManager
     arguments: ['@plugin.manager.webform.element']
@@ -57,7 +54,7 @@ services:
 
   webform.help_manager:
     class: Drupal\webform\WebformHelpManager
-    arguments: ['@current_user', '@config.factory', '@module_handler', '@state', '@path.matcher', '@webform.addons_manager', '@webform.libraries_manager', '@plugin.manager.webform.element']
+    arguments: ['@current_user', '@config.factory', '@module_handler', '@state', '@path.matcher', '@webform.libraries_manager', '@plugin.manager.webform.element']
 
   webform.libraries_manager:
     class: Drupal\webform\WebformLibrariesManager
@@ -93,7 +90,7 @@ services:
 
   webform.third_party_settings_manager:
     class: Drupal\webform\WebformThirdPartySettingsManager
-    arguments: ['@config.factory', '@module_handler', '@path.validator', '@webform.addons_manager']
+    arguments: ['@config.factory', '@module_handler', '@path.validator']
 
   webform.token_manager:
     class: Drupal\webform\WebformTokenManager

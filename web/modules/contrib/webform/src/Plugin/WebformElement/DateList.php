@@ -45,6 +45,7 @@ class DateList extends DateBase implements TrustedCallbackInterface {
       'date_year_range_reverse' => FALSE,
       'date_increment' => 1,
       'date_abbreviate' => TRUE,
+      'date_part_title_display' => 'invisible',
     ] + parent::defineDefaultProperties();
   }
 
@@ -55,6 +56,9 @@ class DateList extends DateBase implements TrustedCallbackInterface {
    */
   public function prepare(array &$element, ?WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
+
+    // Set date part title display.
+    $element['#date_part_title_display'] = $this->getElementProperty($element, 'date_part_title_display');
 
     // Remove month abbreviation.
     // @see \Drupal\Core\Datetime\Element\Datelist::processDatelist
@@ -206,7 +210,19 @@ class DateList extends DateBase implements TrustedCallbackInterface {
       '#description' => $this->t('If checked, month will be abbreviated to three letters.'),
       '#return_value' => TRUE,
     ];
-
+    $form['date']['date_part_title_display'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Date part title display'),
+      '#empty_option' => $this->t('- Default -'),
+      '#options' => [
+        'before' => $this->t('Before'),
+        'after' => $this->t('After'),
+        'inline' => $this->t('Inline'),
+        'invisible' => $this->t('Invisible'),
+        'none' => $this->t('None'),
+      ],
+      '#description' => $this->t('Determines the placement of the title for date parts.'),
+    ];
     return $form;
   }
 
@@ -243,9 +259,15 @@ class DateList extends DateBase implements TrustedCallbackInterface {
       $options = $element['year']['#options'];
       $element['year']['#options'] = ['' => $options['']] + array_reverse($options, TRUE);
     }
-    // Suppress inline error messages for datelist sub-elements.
+
+    $date_part_title_display = $element['#date_part_title_display'] ?? 'hidden';
     foreach (Element::children($element) as $child_key) {
+      // Suppress inline error messages for datelist sub-elements.
       $element[$child_key]['#error_no_message'] = TRUE;
+      // Set date part title display.
+      if ($date_part_title_display) {
+        $element[$child_key]['#title_display'] = $date_part_title_display;
+      }
     }
 
     // Override Datelist validate callback so that we can support custom

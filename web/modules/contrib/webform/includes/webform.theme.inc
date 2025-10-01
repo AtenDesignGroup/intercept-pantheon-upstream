@@ -263,6 +263,10 @@ function webform_preprocess_fieldset(&$variables) {
   if (isset($element['#title_display']) && $element['#title_display'] === 'none') {
     $variables['legend'] = ['attributes' => new Attribute(['style' => 'display:none'])];
   }
+  elseif (isset($element['#title_attributes'])
+    && $variables['legend']['attributes'] instanceof Attribute) {
+    $variables['legend']['attributes']->merge(new Attribute($element['#title_attributes']));
+  }
 
   // Add .js-webform-form-type-* class to be used JavaScript and #states API.
   // @see js/webform.states.js
@@ -316,6 +320,8 @@ function webform_preprocess_form_element(&$variables) {
     return;
   }
 
+  $element = &$variables['element'];
+
   // Setup description, help, and more.
   _webform_preprocess_element($variables, ['label', '#title']);
 
@@ -323,7 +329,6 @@ function webform_preprocess_form_element(&$variables) {
   // #more which is placed in the #description.
   // @see template_preprocess_form_element()
   if (isset($variables['description'])) {
-    $element = &$variables['element'];
     $variables['description_display'] = $element['#description_display'];
   }
 
@@ -365,6 +370,13 @@ function webform_preprocess_form_element(&$variables) {
       }
       $variables['description']['attributes']->addClass('description');
     }
+  }
+
+  // Add .js-webform-form-type-* class to be used JavaScript and #states API.
+  // @see js/webform.states.js
+  if (isset($element['#type'])) {
+    $variables['attributes']['class'][] = 'js-webform-type-' . Html::getClass($element['#type']);
+    $variables['attributes']['class'][] = 'webform-type-' . Html::getClass($element['#type']);
   }
 }
 
@@ -450,7 +462,16 @@ function webform_preprocess_file_managed_file(&$variables) {
   $element['upload']['#attributes']['class'][] = 'webform-file-button-input';
 
   // Attach library.
-  $element['#attached']['library'][] = 'webform/webform.element.file.button';
+  $element['upload']['#attached']['library'][] = 'webform/webform.element.file.button';
+
+  // Remove #errors to prevent 'aria-invalid' from being added to the
+  // remove file checkbox which is valid.
+  // @see \Drupal\Core\Render\Element\RenderElementBase::setAttributes
+  foreach (Element::children($element) as $child_key) {
+    if (NestedArray::getValue($element, [$child_key, 'selected', '#type']) === 'checkbox') {
+      unset($element[$child_key]['selected']['#errors']);
+    }
+  }
 }
 
 /**
@@ -459,12 +480,43 @@ function webform_preprocess_file_managed_file(&$variables) {
  * @see \Drupal\webform\Plugin\WebformElement\WebformManagedFileBase::prepare
  */
 function webform_preprocess_file_upload_help(&$variables) {
-  $validator_help = $variables['upload_validators'];
+  // Retrieve upload validators from file upload element variables.
+  $upload_validators = $variables['upload_validators'];
 
-  if (isset($validator_help['webform_file_limit'])) {
-    $variables['descriptions'][] = t('@size limit per form.', ['@size' => ByteSizeMarkup::create($validator_help['webform_file_limit'])]);
+  // Exit early if no 'webform_file_limit' is set.
+  if (!isset($upload_validators['webform_file_limit'])) {
+    return;
   }
 
+  // Get the webform's overall file size limit and the individual file element's limit.
+  $webform_file_limit = $upload_validators['webform_file_limit'];
+  $element_file_limit = (isset($upload_validators['FileSizeLimit']))
+    ? $upload_validators['FileSizeLimit']['fileLimit']
+    : 0;
+
+  // Prepare translated arguments for the file size descriptions.
+  $t_args = [
+    // Overall size limit for all files.
+    '@webform_file_limit' => ByteSizeMarkup::create($webform_file_limit),
+    // Size limit for individual files.
+    '@element_file_limit' => ByteSizeMarkup::create($element_file_limit),
+  ];
+
+  // Determine the appropriate description based on file size limits.
+  $file_limit_description = ($element_file_limit < $webform_file_limit)
+    // If individual file limit is smaller than the overall limit, include both in the message.
+    ? t('@element_file_limit limit per file. The accumulated size of all files in this form cannot exceed @webform_file_limit.', $t_args)
+    // Otherwise, only mention the overall file size limit.
+    : t('The accumulated size of all files in this form cannot exceed @webform_file_limit.', $t_args);
+
+  // Remove any existing descriptions that match the outdated '@size limit.' message.
+  $descriptions = array_filter(
+    $variables['descriptions'],
+    fn($description) => $file_limit_description->getUntranslatedString() !== '@size limit.'
+  );
+
+  // Add the updated file limit description to the list of descriptions.
+  $variables['descriptions'] = [...$descriptions, $file_limit_description];
 }
 
 /**
@@ -478,7 +530,7 @@ function webform_preprocess_file_link(&$variables) {
   $file = ($file instanceof File) ? $file : File::load($file->fid);
 
   // Remove link to temporary anonymous private file uploads.
-  if ($file->isTemporary() && $file->getOwner() && $file->getOwner()->isAnonymous() && strpos($file->getFileUri(), 'private://webform/') === 0) {
+  if ($file->isTemporary() && $file->getOwner() && $file->getOwner()->isAnonymous() && str_starts_with($file->getFileUri(), 'private://webform/')) {
     $variables['link'] = $file->getFilename();
   }
 
@@ -520,7 +572,7 @@ function _webform_preprocess_options(array &$variables) {
   $variables['attributes']['class'][] = Html::getClass('js-webform-' . $element['#type']);
 
   if (!empty($element['#options_display'])) {
-    if (strpos($element['#options_display'], 'buttons_') === 0) {
+    if (str_starts_with($element['#options_display'], 'buttons_')) {
       $variables['attributes']['class'][] = 'webform-options-display-buttons';
     }
     $variables['attributes']['class'][] = Html::getClass('webform-options-display-' . $element['#options_display']);
@@ -790,7 +842,7 @@ function _webform_theme_suggestions(array $variables, $hook) {
   elseif ($hook === 'webform_submission_form' && isset($variables['form']) && isset($variables['form']['#webform_id'])) {
     $suggestions[] = $hook . '__' . $variables['form']['#webform_id'];
   }
-  elseif (strpos($hook, 'webform_element_base_') === 0 || strpos($hook, 'webform_container_base_') === 0) {
+  elseif (str_starts_with($hook, 'webform_element_base_') || str_starts_with($hook, 'webform_container_base_')) {
     $element = $variables['element'];
 
     if (!empty($element['#type'])) {
@@ -850,7 +902,7 @@ function _webform_devel_hook_theme_suggestions_generate() {
     if ($hook === 'webform') {
       $suggestion = TRUE;
     }
-    elseif (strpos($hook, 'webform_element_base_') === 0 || strpos($hook, 'webform_container_base_') === 0) {
+    elseif (str_starts_with($hook, 'webform_element_base_') || str_starts_with($hook, 'webform_container_base_')) {
       $suggestion = TRUE;
     }
     elseif (isset($info['variables'])
@@ -1046,7 +1098,7 @@ function _webform_theme_suggestions_options(array $variables, $type) {
 
   $element = $variables['element'];
   $suggestions = [];
-  if (!empty($element['#options_display']) && strpos($element['#options_display'], 'buttons') === 0) {
+  if (!empty($element['#options_display']) && str_starts_with($element['#options_display'], 'buttons')) {
     $suggestions[] = $type . '__webform_' . $element['#options_display'];
   }
   return $suggestions;

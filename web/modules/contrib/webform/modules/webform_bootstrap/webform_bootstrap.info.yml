@@ -1,6 +1,6 @@
 name: 'Webform Bootstrap (3.x)'
 type: module
-description: 'Helps to support Webform with the Bootstrap 3.x theme.'
+description: 'Note: This is only to be used with the Drupal Bootstrap Theme, NOT with other Bootstrap Framework related Themes (like Radix).'
 package: 'Webform [DEPRECATED]'
 core_version_requirement: ^10.3 || ^11.0
 dependencies:

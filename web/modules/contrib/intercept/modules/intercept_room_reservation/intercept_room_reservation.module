@@ -312,6 +312,7 @@ function intercept_room_reservation_form_alter(&$form, FormStateInterface $form_
           ':input[name="field_refreshments"]' => ['value' => '1'],
         ];
       }
+
       $form_display = $form_state->getStorage()['form_display']->getMode();
       if ($form_display === 'customer_reserve') {
         // Hide a few items for customers.

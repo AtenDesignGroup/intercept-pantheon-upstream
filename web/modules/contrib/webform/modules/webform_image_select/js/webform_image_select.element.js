@@ -4,9 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
-  'use strict';
-
   // @see https://rvera.github.io/image-picker/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.imageSelect = Drupal.webform.imageSelect || {};
@@ -48,6 +45,11 @@
 
         if ($select.attr('data-show-label')) {
           options.show_label = true;
+        }
+
+        // Allow custom options.
+        if ($select.attr('data-options')) {
+          options = $.extend(true, options, JSON.parse($select.attr('data-options')));
         }
 
         $select.imagepicker(options);

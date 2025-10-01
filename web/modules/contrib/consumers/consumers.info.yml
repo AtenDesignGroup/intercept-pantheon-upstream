@@ -5,11 +5,12 @@ core_version_requirement: ^9.5 || ^10 || ^11
 package: Authentication
 php: 8.0
 configure: entity.consumer.collection
+container_rebuild_required: true
 dependencies:
   - drupal:system
   - drupal:image
 
-# Information added by Drupal.org packaging script on 2025-07-17
-version: '8.x-1.20'
+# Information added by Drupal.org packaging script on 2025-09-28
+version: '8.x-1.21'
 project: 'consumers'
-datestamp: 1752783035
+datestamp: 1759031306

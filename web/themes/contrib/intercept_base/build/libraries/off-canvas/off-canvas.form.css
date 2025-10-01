@@ -9,6 +9,7 @@
 }
 #drupal-off-canvas input[type=checkbox] {
   -webkit-appearance: checkbox;
+  vertical-align: top;
 }
 #drupal-off-canvas input[type=radio] {
   -webkit-appearance: radio;

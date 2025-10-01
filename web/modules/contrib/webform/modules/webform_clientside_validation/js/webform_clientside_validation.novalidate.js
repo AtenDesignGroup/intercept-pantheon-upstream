@@ -3,9 +3,6 @@
  * Attaches behaviors for the Clientside Validation jQuery module.
  */
 (function ($, Drupal, once) {
-
-  'use strict';
-
   /**
    * Disable clientside validation for webforms.
    *

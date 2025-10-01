@@ -40,13 +40,13 @@ class WebformFormAlterHooks {
         ]);
         break;
     }
-    if (strpos($form_id, 'webform_') === FALSE || strpos($form_id, 'node_') === 0) {
+    if (!str_contains($form_id, 'webform_') || str_starts_with($form_id, 'node_')) {
       return;
     }
     // Get form object.
     $form_object = $form_state->getFormObject();
     // Alter the webform submission form.
-    if (strpos($form_id, 'webform_submission') === 0 && $form_object instanceof WebformSubmissionForm) {
+    if (str_starts_with($form_id, 'webform_submission') && $form_object instanceof WebformSubmissionForm) {
       // Make sure webform libraries are always attached to submission form.
       _webform_page_attachments($form);
       // After build.

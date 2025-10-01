@@ -42,13 +42,6 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
   protected $thirdPartySettingsManager;
 
   /**
-   * The webform add-ons manager.
-   *
-   * @var \Drupal\webform\WebformAddonsManagerInterface
-   */
-  protected $addonsManager;
-
-  /**
    * The webform theme manager.
    *
    * @var \Drupal\webform\WebformThemeManagerInterface
@@ -71,7 +64,6 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
     $instance->moduleHandler = $container->get('module_handler');
     $instance->tokenManager = $container->get('webform.token_manager');
     $instance->thirdPartySettingsManager = $container->get('webform.third_party_settings_manager');
-    $instance->addonsManager = $container->get('webform.addons_manager');
     $instance->themeManager = $container->get('webform.theme_manager');
     return $instance;
   }
@@ -699,17 +691,6 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
         '#type' => 'webform_message',
         '#message_message' => $this->t('There are no third party settings available. Please install a contributed module that integrates with the Webform module.'),
         '#message_type' => 'info',
-      ];
-      $form['third_party_settings']['supported'] = [
-        'title' => [
-          '#markup' => $this->t('Supported modules'),
-          '#prefix' => '<h3>',
-          '#suffix' => '</h3>',
-        ],
-        'modules' => [
-          '#theme' => 'admin_block_content',
-          '#content' => $this->addonsManager->getThirdPartySettings(),
-        ],
       ];
     }
     else {

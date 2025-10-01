@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\Core\Hook\Attribute\LegacyModuleImplementsAlter;
 use Drupal\webform\Hook\WebformHooks;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Cache\Cache;
@@ -26,6 +27,7 @@ require_once __DIR__ . '/includes/webform.form_alter.inc';
 require_once __DIR__ . '/includes/webform.libraries.inc';
 require_once __DIR__ . '/includes/webform.options.inc';
 require_once __DIR__ . '/includes/webform.theme.inc';
+require_once __DIR__ . '/includes/webform.tokens.inc';
 require_once __DIR__ . '/includes/webform.translation.inc';
 require_once __DIR__ . '/includes/webform.query.inc';
 
@@ -134,6 +136,7 @@ function webform_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableD
 /**
  * Implements hook_module_implements_alter().
  */
+#[LegacyModuleImplementsAlter]
 function webform_module_implements_alter(&$implementations, $hook) {
   if ($hook === 'form_alter') {
     $implementation = $implementations['webform'];
@@ -288,6 +291,15 @@ function _webform_page_attachments(array &$attachments) {
   $webform = $request_handler->getCurrentWebform();
   if (!$webform) {
     return;
+  }
+
+  // Assets: Add global CSS and JS.
+  $config = \Drupal::config('webform.settings');
+  if ($config->get('assets.css')) {
+    $attachments['#attached']['library'][] = 'webform/webform.css';
+  }
+  if ($config->get('assets.javascript')) {
+    $attachments['#attached']['library'][] = 'webform/webform.javascript';
   }
 
   // Assets: Add custom shared and webform specific CSS and JS.
@@ -532,7 +544,7 @@ function webform_process_options(&$element, FormStateInterface $form_state, &$co
   }
 
   // Display as buttons.
-  if (!empty($element['#options_display']) && strpos($element['#options_display'], 'buttons') === 0) {
+  if (!empty($element['#options_display']) && str_starts_with($element['#options_display'], 'buttons')) {
     foreach (Element::children($element) as $key) {
       // Add wrapper which is needed to make flexbox work with tables.
       $element[$key]['#prefix'] = '<div class="webform-options-display-buttons-wrapper">';

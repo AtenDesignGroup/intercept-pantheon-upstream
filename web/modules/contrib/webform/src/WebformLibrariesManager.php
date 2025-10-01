@@ -296,7 +296,7 @@ class WebformLibrariesManager implements WebformLibrariesManagerInterface {
       return TRUE;
     }
 
-    if (strpos($name, 'libraries.') !== 0 && strpos($name, 'webform/libraries.') !== 0) {
+    if (!str_starts_with($name, 'libraries.') && !str_starts_with($name, 'webform/libraries.')) {
       return FALSE;
     }
 

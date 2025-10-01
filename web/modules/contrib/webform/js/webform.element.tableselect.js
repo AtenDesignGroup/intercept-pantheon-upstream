@@ -6,9 +6,6 @@
  */
 
 (function ($, Drupal, once) {
-
-  'use strict';
-
   /**
    * Initialize and tweak webform tableselect behavior.
    *

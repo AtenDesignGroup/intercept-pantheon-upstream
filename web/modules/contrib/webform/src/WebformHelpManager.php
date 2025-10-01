@@ -6,11 +6,9 @@
 namespace Drupal\webform;
 
 use Drupal\Component\Serialization\Yaml;
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Path\PathMatcherInterface;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\State\StateInterface;
@@ -93,13 +91,6 @@ class WebformHelpManager implements WebformHelpManagerInterface {
   protected $pathMatcher;
 
   /**
-   * The webform add-ons manager.
-   *
-   * @var \Drupal\webform\WebformAddonsManagerInterface
-   */
-  protected $addOnsManager;
-
-  /**
    * The webform libraries manager.
    *
    * @var \Drupal\webform\WebformLibrariesManagerInterface
@@ -126,32 +117,29 @@ class WebformHelpManager implements WebformHelpManagerInterface {
    *   The state service.
    * @param \Drupal\Core\Path\PathMatcherInterface $path_matcher
    *   The path matcher.
-   * @param \Drupal\webform\WebformAddOnsManagerInterface $addons_manager
-   *   The webform add-ons manager.
    * @param \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager
    *   The webform libraries manager.
    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
    *   The webform element manager.
    */
-  public function __construct(AccountInterface $current_user, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, StateInterface $state, PathMatcherInterface $path_matcher, WebformAddOnsManagerInterface $addons_manager, WebformLibrariesManagerInterface $libraries_manager, WebformElementManagerInterface $element_manager) {
+  public function __construct(AccountInterface $current_user, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, StateInterface $state, PathMatcherInterface $path_matcher, WebformLibrariesManagerInterface $libraries_manager, WebformElementManagerInterface $element_manager) {
     $this->currentUser = $current_user;
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
     $this->state = $state;
     $this->pathMatcher = $path_matcher;
-    $this->addOnsManager = $addons_manager;
     $this->librariesManager = $libraries_manager;
     $this->elementManager = $element_manager;
-
-    $this->groups = $this->initGroups();
-    $this->help = $this->initHelp();
-    $this->videos = $this->initVideos();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getGroup($id = NULL) {
+    if (!isset($this->groups)) {
+      $this->groups = $this->initGroups();
+    }
+
     if ($id !== NULL) {
       return $this->groups[$id] ?? NULL;
     }
@@ -164,6 +152,10 @@ class WebformHelpManager implements WebformHelpManagerInterface {
    * {@inheritdoc}
    */
   public function getHelp($id = NULL) {
+    if (!isset($this->help)) {
+      $this->help = $this->initHelp();
+    }
+
     if ($id !== NULL) {
       return $this->help[$id] ?? NULL;
     }
@@ -176,6 +168,10 @@ class WebformHelpManager implements WebformHelpManagerInterface {
    * {@inheritdoc}
    */
   public function getVideo($id = NULL) {
+    if (!isset($this->videos)) {
+      $this->videos = $this->initVideos();
+    }
+
     if ($id !== NULL) {
       return $this->videos[$id] ?? NULL;
     }
@@ -253,7 +249,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
     $path = preg_replace('/^' . preg_quote(base_path(), '/') . '/', '/', Url::fromRouteMatch($route_match)->setAbsolute(FALSE)->toString());
 
     $build = [];
-    foreach ($this->help as $id => $help) {
+    foreach ($this->getHelp() as $id => $help) {
       // Set default values.
       $help += [
         'routes' => [],
@@ -347,7 +343,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
     }
 
     $rows = [];
-    foreach ($this->videos as $id => $video) {
+    foreach ($this->getVideo() as $id => $video) {
       if (!empty($video['hidden'])) {
         continue;
       }
@@ -531,66 +527,6 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       default:
         return [];
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildAddOns($docs = FALSE) {
-    $t_args = [
-      ':href_submodules' => 'https://www.drupal.org/docs/contributed-modules/webform/webform-sub-modules',
-      ':href_libraries' => 'https://www.drupal.org/docs/contributed-modules/webform/webform-libraries',
-    ];
-    $build = [
-      'quote' => [
-        '#markup' => '<table class="views-view-grid" width="100%"><tr>
-<td><blockquote>' . $this->t('The Webform module for Drupal provides all the features expected from an enterprise proprietary form builder combined with the flexibility and openness of Drupal.') . '</blockquote></td>
-<td width="100"><img src="https://www.drupal.org/files/webform_stacked-logo_256.png" width="256" alt="' . $this->t('Webform logo') . '" /></td>
-</tr></table>',
-        '#allowed_tags' => Xss::getAdminTagList(),
-      ],
-      'content' => [
-        '#markup' => '<p>'
-        . $this->t("Below is a list of modules and projects that extend and/or provide additional functionality to the Webform module and Drupal's Form API.")
-        . ' '
-        . $this->t('(Other optional functionality is provided by <a href=":href_submodules">Webform sub-modules</a> and <a href=":href_libraries">Webform libraries</a>.)', $t_args)
-        . '</p>'
-        . '<hr/>'
-        . '<p>★ = ' . $this->t('Recommended') . '</p>',
-      ],
-    ];
-
-    $categories = $this->addOnsManager->getCategories();
-    foreach ($categories as $category_name => $category) {
-      $build['content'][$category_name]['title'] = [
-        '#markup' => $category['title'],
-        '#prefix' => '<h3 id="' . $category_name . '">',
-        '#suffix' => '</h3>',
-      ];
-      $build['content'][$category_name]['projects'] = [
-        '#prefix' => '<dl>',
-        '#suffix' => '</dl>',
-      ];
-      $projects = $this->addOnsManager->getProjects($category_name);
-      foreach ($projects as $project_name => $project) {
-        $build['content'][$category_name]['projects'][$project_name] = [
-          'title' => [
-            '#type' => 'link',
-            '#title' => Markup::create($project['title']
-              . (!empty($project['experimental']) ? ' [' . $this->t('EXPERIMENTAL') . ']' : '')),
-            '#url' => $project['url'],
-            '#prefix' => '<dt>',
-            '#suffix' => ((isset($project['recommended'])) ? ' ★' : '') . '</dt>',
-          ],
-          'description' => [
-            '#markup' => $project['description'],
-            '#prefix' => '<dd>',
-            '#suffix' => '</dd>',
-          ],
-        ];
-      }
-    }
-    return $build;
   }
 
   /**
@@ -838,7 +774,6 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'submission' => $this->t('Submission'),
       'configuration' => $this->t('Configuration'),
       'plugins' => $this->t('Plugins'),
-      'addons' => $this->t('Add-ons'),
       'webform_nodes' => $this->t('Webform Nodes'),
       'webform_blocks' => $this->t('Webform Blocks'),
       'translations' => $this->t('Translations'),
@@ -1138,22 +1073,6 @@ class WebformHelpManager implements WebformHelpManagerInterface {
           [
             'title' => $this->t('Blocks | Drupalize.me'),
             'url' => 'https://drupalize.me/topic/blocks',
-          ],
-        ],
-      ],
-      'addons' => [
-        'title' => $this->t('Extending Webform using add-ons'),
-        'content' => $this->t("This screencast suggests and recommends additional Drupal projects that can be installed to enhance, improve and alter the Webform module's functionality."),
-        'youtube_id' => '2sthMx6adl4',
-        'presentation_id' => '1azK1xkHH4-tiQ9TV8GDqVKk4FXgxarM6MPrBWCLljiQ',
-        'links' => [
-          [
-            'title' => $this->t('Extend Drupal with Modules | Drupalize.me'),
-            'url' => 'https://drupalize.me/topic/extend-drupal-modules',
-          ],
-          [
-            'title' => $this->t('Download & Extend | Drupal.org'),
-            'url' => 'https://www.drupal.org/project/project_module',
           ],
         ],
       ],
@@ -1621,8 +1540,8 @@ class WebformHelpManager implements WebformHelpManagerInterface {
     // Installation.
     $t_args = [
       ':about_href' => 'https://www.drupal.org/docs/8/modules/webform',
-      ':addons_href' => Url::fromRoute('webform.addons')->toString(),
       ':submodules_href' => Url::fromRoute('system.modules_list', [], ['fragment' => 'edit-modules-webform'])->toString(),
+      ':ecosystem_href' => 'https://www.drupal.org/project/webform/ecosystem',
       ':libraries_href' => Url::fromRoute('webform.config.libraries')->toString(),
     ];
     $help['installation'] = [
@@ -1631,7 +1550,7 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'content' => '<strong>' . $this->t('Congratulations!') . '</strong> ' .
       $this->t('You have successfully installed the Webform module.') .
       ' ' . $this->t('Learn more about the <a href=":about_href">Webform module and Drupal</a>', $t_args) . '</br>' .
-      $this->t('Please make sure to install additional <a href=":libraries_href">third-party libraries</a>, <a href=":submodules_href">sub-modules</a> and optional <a href=":addons_href">add-ons</a>.', $t_args),
+      $this->t('Please make sure to install additional <a href=":libraries_href">third-party libraries</a>, <a href=":submodules_href">sub-modules</a> and optional <a href=":ecosystem_href">add-ons</a>.', $t_args),
       'video_id' => 'installation',
       'message_type' => 'webform',
       'message_close' => TRUE,
@@ -1658,22 +1577,6 @@ class WebformHelpManager implements WebformHelpManagerInterface {
       'routes' => [
         // @see /admin/structure/webform
         'entity.webform.collection',
-      ],
-    ];
-
-    /* ********************************************************************** */
-    // Addons.
-    /* ********************************************************************** */
-
-    // Addons.
-    $help['addons'] = [
-      'group' => 'addons',
-      'title' => $this->t('Add-ons'),
-      'content' => $this->t('The <strong>Add-ons</strong> page lists Drupal modules and projects that extend and provide additional functionality to the Webform module and Drupal\'s Form API.  If you would like a module or project to be included in the below list, please submit a request to the <a href=":href">Webform module\'s issue queue</a>.', [':href' => 'https://www.drupal.org/node/add/project-issue/webform']),
-      'video_id' => 'addons',
-      'routes' => [
-        // @see /admin/structure/webform/addons
-        'webform.addons',
       ],
     ];
 

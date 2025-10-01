@@ -353,7 +353,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
       default:
         $theme = str_replace('webform_', 'webform_element_', $this->getPluginId());
-        if (strpos($theme, 'webform_') !== 0) {
+        if (!str_starts_with($theme, 'webform_')) {
           $theme = 'webform_element_' . $theme;
         }
         return [
@@ -800,7 +800,7 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
         // Don't allow anonymous temporary files to be previewed.
         // @see template_preprocess_file_link().
         // @see webform_preprocess_file_link().
-        if ($file->isTemporary() && $file->getOwner()->isAnonymous() && strpos($file->getFileUri(), 'private://') === 0) {
+        if ($file->isTemporary() && $file->getOwner()->isAnonymous() && str_starts_with($file->getFileUri(), 'private://')) {
           continue;
         }
 
@@ -945,8 +945,11 @@ abstract class WebformManagedFileBase extends WebformElementBase implements Webf
 
     // If has access and total file size exceeds file limit then display error.
     if (Element::isVisibleElement($element) && $total_file_size > $file_limit) {
+      $file_limit_message = $webform_submission->getWebform()->getSetting('form_file_limit_message')
+        ?: \Drupal::config('webform.settings')->get('settings.default_form_file_limit_message')
+        ?: '';
       $t_args = ['%quota' => ByteSizeMarkup::create($file_limit)];
-      $message = t("This form's file upload quota of %quota has been exceeded. Please remove some files.", $t_args);
+      $message = t($file_limit_message, $t_args);
       $form_state->setError($element, $message);
     }
   }

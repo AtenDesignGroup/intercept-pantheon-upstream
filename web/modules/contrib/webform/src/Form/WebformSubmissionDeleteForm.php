@@ -161,7 +161,7 @@ class WebformSubmissionDeleteForm extends ContentEntityDeleteForm implements Web
    */
   public function getCancelUrl() {
     if ($this->webform->access('submission_view_own') || $this->webform->access('submission_view_any')) {
-      $base_route_name = (strpos(\Drupal::routeMatch()->getRouteName(), 'webform.user.submission.delete') !== FALSE) ? 'webform.user.submissions' : 'webform.results_submissions';
+      $base_route_name = str_contains(\Drupal::routeMatch()->getRouteName(), 'webform.user.submission.delete') ? 'webform.user.submissions' : 'webform.results_submissions';
       return $this->requestHandler->getUrl($this->webform, $this->sourceEntity, $base_route_name);
     }
     elseif ($this->sourceEntity && $this->sourceEntity->hasLinkTemplate('canonical') && $this->sourceEntity->access('view')) {

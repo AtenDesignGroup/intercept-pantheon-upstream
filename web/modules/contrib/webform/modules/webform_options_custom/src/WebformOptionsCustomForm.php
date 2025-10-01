@@ -64,6 +64,7 @@ class WebformOptionsCustomForm extends EntityForm {
     switch ($this->operation) {
       case 'duplicate':
         $form['#title'] = $this->t("Duplicate '@label' custom options", ['@label' => $webform_options_custom->label()]);
+        $form['#attached']['library'][] = 'webform/webform.admin.machine-name';
         break;
 
       case 'edit':

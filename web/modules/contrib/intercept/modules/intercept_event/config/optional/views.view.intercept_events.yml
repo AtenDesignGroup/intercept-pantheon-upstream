@@ -22,7 +22,6 @@ dependencies:
     - user
     - views_autosubmit
     - views_filters_summary
-    - views_infinite_scroll
 id: intercept_events
 label: 'Intercept Events'
 module: views
@@ -760,14 +759,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -809,13 +800,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -855,14 +839,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -904,14 +880,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -951,14 +919,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1005,14 +965,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-              intercept_equipment_reservation_manager: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1053,13 +1005,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1102,14 +1047,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1316,6 +1253,7 @@ display:
           empty_table: false
           caption: ''
           description: ''
+          class: ''
       row:
         type: fields
       query:
@@ -1379,6 +1317,7 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_location_abbreviation'
+        - flag.flag.saved_event
   embed:
     id: embed
     display_title: Embed
@@ -1979,15 +1918,45 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        field_event_is_template_value:
+          id: field_event_is_template_value
+          table: node__field_event_is_template
+          field: field_event_is_template_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: boolean
+          operator: '!='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
           is_grouped: false
           group_info:
             label: ''
@@ -2028,13 +1997,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -2074,14 +2036,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -2123,14 +2077,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2170,14 +2116,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2224,14 +2162,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
-              intercept_equipment_reservation_manager: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2272,13 +2202,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2321,14 +2244,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -2429,6 +2344,7 @@ display:
         - 'config:field.storage.node.field_date_time'
         - 'config:field.storage.node.field_location'
         - 'config:field.storage.node.field_location_abbreviation'
+        - flag.flag.saved_event
   events:
     id: events
     display_title: 'JSON:API'
@@ -2583,14 +2499,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2632,13 +2540,44 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        field_event_is_template_value:
+          id: field_event_is_template_value
+          table: node__field_event_is_template
+          field: field_event_is_template_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: boolean
+          operator: '!='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
           is_grouped: false
           group_info:
             label: ''
@@ -2677,15 +2616,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -2725,15 +2655,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2786,15 +2707,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2840,15 +2752,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2898,15 +2801,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -2952,15 +2846,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -3031,16 +2916,16 @@ display:
             field_date_time_value: field_date_time_value
             field_date_time_end_value: field_date_time_end_value
           show_labels: true
+          show_remove_link: true
+          show_reset_link: false
           group_values: true
           content: '@exposed_filter_summary'
+          filters_reset_link_title: Reset
           filters_summary_separator: ''
           filters_summary_prefix: ''
           filters_result_label:
             plural: results
             singular: result
-          show_remove_link: 1
-          show_reset_link: 0
-          filters_reset_link_title: Reset
       footer: {  }
       display_extenders: {  }
       path: intercept/events
@@ -3177,15 +3062,18 @@ display:
           hide_alter_empty: true
           view_mode: intercept_listing
       pager:
-        type: infinite_scroll
+        type: full
         options:
           offset: 0
-          items_per_page: 15
+          pagination_heading_level: h4
+          items_per_page: 30
           total_pages: null
           id: 0
           tags:
             next: 'Next ›'
             previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -3194,10 +3082,7 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
-          views_infinite_scroll:
-            button_text: 'Load More'
-            automatically_load_content: true
-            initially_load_all_pages: true
+          quantity: 9
       exposed_form:
         type: autosubmit
         options:
@@ -3257,14 +3142,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -3306,13 +3183,44 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_event_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
-              administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        field_event_is_template_value:
+          id: field_event_is_template_value
+          table: node__field_event_is_template
+          field: field_event_is_template_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: boolean
+          operator: '!='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
           is_grouped: false
           group_info:
             label: ''
@@ -3351,15 +3259,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             placeholder: ''
           is_grouped: false
           group_info:
@@ -3399,15 +3298,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -3460,15 +3350,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -3514,15 +3395,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -3572,15 +3444,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -3629,15 +3492,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-              intercept_registered_customer: '0'
-              intercept_kiosk: '0'
-              intercept_equipment_reservation_manager: '0'
-              intercept_event_manager: '0'
-              intercept_room_manager: '0'
-              intercept_staff: '0'
-              intercept_system_admin: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -3705,16 +3559,16 @@ display:
             field_date_time_value: field_date_time_value
             field_date_time_end_value: field_date_time_end_value
           show_labels: true
+          show_remove_link: true
+          show_reset_link: false
           group_values: true
           content: '@exposed_filter_summary'
+          filters_reset_link_title: Reset
           filters_summary_separator: ''
           filters_summary_prefix: ''
           filters_result_label:
             plural: results
             singular: result
-          show_remove_link: 1
-          show_reset_link: 0
-          filters_reset_link_title: Reset
       footer: {  }
       display_extenders: {  }
     cache_metadata:
@@ -3726,30 +3580,4 @@ display:
         - url.query_args
         - 'user.node_grants:view'
       tags:
-        - 'config:core.entity_view_display.node.equipment.default'
-        - 'config:core.entity_view_display.node.equipment.teaser'
-        - 'config:core.entity_view_display.node.event.default'
-        - 'config:core.entity_view_display.node.event.evaluation_attendee'
-        - 'config:core.entity_view_display.node.event.evaluation_staff'
-        - 'config:core.entity_view_display.node.event.full'
-        - 'config:core.entity_view_display.node.event.header'
-        - 'config:core.entity_view_display.node.event.intercept_listing'
-        - 'config:core.entity_view_display.node.event.listing'
-        - 'config:core.entity_view_display.node.event.scan'
-        - 'config:core.entity_view_display.node.event.search_result'
-        - 'config:core.entity_view_display.node.event.summary'
-        - 'config:core.entity_view_display.node.event.teaser'
-        - 'config:core.entity_view_display.node.event.token'
-        - 'config:core.entity_view_display.node.event_series.default'
-        - 'config:core.entity_view_display.node.event_series.teaser'
-        - 'config:core.entity_view_display.node.location.default'
-        - 'config:core.entity_view_display.node.location.listing'
-        - 'config:core.entity_view_display.node.location.teaser'
-        - 'config:core.entity_view_display.node.page.default'
-        - 'config:core.entity_view_display.node.page.full'
-        - 'config:core.entity_view_display.node.page.search_result'
-        - 'config:core.entity_view_display.node.page.teaser'
-        - 'config:core.entity_view_display.node.room.default'
-        - 'config:core.entity_view_display.node.room.off_canvas'
-        - 'config:core.entity_view_display.node.room.teaser'
         - 'config:field.storage.node.field_date_time'

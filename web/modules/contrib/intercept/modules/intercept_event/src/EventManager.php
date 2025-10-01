@@ -129,6 +129,10 @@ class EventManager implements EventManagerInterface {
    * Alter both node edit and node add forms for events.
    */
   public function nodeFormAlter(&$form, FormStateInterface $form_state) {
+
+    // Improve the UI of this form.
+    $form['title']['widget'][0]['value']['#description'] = 'Make your title simple and straightforward. Character limit: 255.';
+
     $display = $form_state->getFormObject()->getFormDisplay($form_state);
     if (!$display->getComponent('field_location') || !$display->getComponent('field_room')) {
       return;
@@ -219,9 +223,6 @@ class EventManager implements EventManagerInterface {
       '#submit' => array_merge($form['actions']['submit']['#submit'], [[static::class, 'nodeEditFormSubmit']]),
     ];
 
-    // Improve the UI of this form.
-    $form['title']['widget'][0]['value']['#description'] = 'Make your title simple and straightforward. Character limit: 255.';
-
     if ($is_template) {
       $form['actions']['submit']['#value'] = $this->t('Save template');
     }
@@ -237,10 +238,17 @@ class EventManager implements EventManagerInterface {
    */
   public static function nodeEditFormSubmit(array &$form, FormStateInterface $form_state) {
     $event = $form_state->getFormObject()->getEntity();
+    // Create the template clone of the original event.
     $event_template = $event->createDuplicate();
-    // This is to separate it from other events in the admin/content menu.
     $event_template->field_event_is_template->setValue(1);
+    // Clear out some data that shouldn't be carried to the template clone.
     $event_template->event_recurrence->setValue(NULL);
+    $event_template->field_must_register->setValue(NULL);
+    $event_template->field_event_register_period->setValue(NULL);
+    $event_template->field_attendees->setValue(NULL);
+    // Ensure that the “author” of the template is set to whichever system admin initiated the template (rather than the author of the original event)
+    $event_template->setOwnerId(\Drupal::currentUser()->id());
+    // Save it.
     $event_template->save();
     \Drupal::messenger()->addMessage(new TranslatableMarkup('Event template @link has been created.', [
       '@link' => $event_template->toLink()->toString(),

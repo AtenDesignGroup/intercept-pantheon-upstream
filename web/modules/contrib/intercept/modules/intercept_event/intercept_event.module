@@ -510,18 +510,19 @@ function intercept_event_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
   $row = $variables['row'];
   $field = $variables['field'];
+  $field_name = $variables['field']->field;
   $display = $view->current_display;
   if ($view->id() == 'intercept_event_templates' && $display == 'embed') {
-    if ($field == 'title') {
+    $current_user = \Drupal::currentUser();
+    $user = User::load($current_user->id());
+    if ($field_name == 'title') {
       $title = $field->getValue($row);
       if ($title) {
-        $current_user = \Drupal::currentUser();
-        $user = User::load($current_user->id());
         if (!$user->hasPermission('edit event field field_event_is_template')) {
           return;
         }
         $nid = $variables['row']->nid;
-        $variables['output'] = Markup::create('<a href="/node/' . $nid . '">' . $variables['output'] . '</a>');
+        $variables['output'] = Markup::create('<a href="/node/' . $nid . '/edit">' . $variables['output'] . '</a>');
       }
     }
   }

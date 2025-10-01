@@ -4,9 +4,6 @@
  */
 
 (function ($, Drupal) {
-
-  'use strict';
-
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.cards = Drupal.webform.cards || {};
   // Autoforward (defaults to 1/4 second delay).

@@ -6,7 +6,7 @@ dependencies:
   - consumers:consumers
   - jsonapi:jsonapi
 
-# Information added by Drupal.org packaging script on 2025-07-17
-version: '8.x-1.20'
+# Information added by Drupal.org packaging script on 2025-09-28
+version: '8.x-1.21'
 project: 'consumers'
-datestamp: 1752783035
+datestamp: 1759031306

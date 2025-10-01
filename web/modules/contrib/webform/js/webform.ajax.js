@@ -4,9 +4,6 @@
  */
 
 (function ($, Drupal, drupalSettings, once, tabbable) {
-
-  'use strict';
-
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.ajax = Drupal.webform.ajax || {};
   // Allow scrollTopOffset to be custom defined or based on whether there is a

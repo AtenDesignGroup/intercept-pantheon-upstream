@@ -644,6 +644,12 @@ class WebformEntitySettingsFormForm extends WebformEntitySettingsBaseForm {
       '#size' => 10,
       '#default_value' => $settings['form_file_limit'],
     ];
+    $form['file_settings']['form_file_limit_message'] = [
+      '#type' => 'webform_html_editor',
+      '#title' => $this->t('File upload limit per form message'),
+      '#description' => $this->t('Enter message to be displayed when file upload limit is reached. You may use %quota as a placeholder.'),
+      '#default_value' => $settings['form_file_limit_message'],
+    ];
 
     // Custom settings.
     $properties = WebformElementHelper::getProperties($webform->getElementsDecoded());

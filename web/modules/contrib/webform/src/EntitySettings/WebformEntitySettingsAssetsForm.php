@@ -2,7 +2,7 @@
 
 namespace Drupal\webform\EntitySettings;
 
-use Drupal\Core\Cache\Cache;
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Element\WebformMessage;
 
@@ -63,9 +63,14 @@ class WebformEntitySettingsAssetsForm extends WebformEntitySettingsBaseForm {
     $webform->setCss($form_state->getValue('css'));
     $webform->setJavaScript($form_state->getValue('javascript'));
 
-    // Invalidate library_info cache tag.
+    // Reset libraries cache.
     // @see webform_library_info_build()
-    Cache::invalidateTags(['library_info']);
+    DeprecationHelper::backwardsCompatibleCall(
+      currentVersion: \Drupal::VERSION,
+      deprecatedVersion: '11.1',
+      currentCallable: fn() => \Drupal::service('library.discovery')->clear(),
+      deprecatedCallable: fn() => \Drupal::service('library.discovery')->clearCachedDefinitions(),
+    );
 
     return parent::save($form, $form_state);
   }

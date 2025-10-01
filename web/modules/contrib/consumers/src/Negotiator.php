@@ -45,7 +45,8 @@ class Negotiator {
    */
   public function __construct(RequestStack $request_stack, LoggerInterface $logger) {
     $this->requestStack = $request_stack;
-    $this->logger = $logger;
+    // Since we are using LoggerAwareTrait, we may as well use its setter function.
+    $this->setLogger($logger);
   }
 
   /**
@@ -80,10 +81,9 @@ class Negotiator {
       catch (EntityStorageException $exception) {
         // Backwards compatibility of error logging. See
         // https://www.drupal.org/node/2932520. This can be removed when we no
-        // longer support Drupal > 10.1.
+        // longer support Drupal < 10.1.
         if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
-          $logger = \Drupal::logger('consumers');
-          Error::logException($logger, $exception);
+          Error::logException($this->logger, $exception);
         }
         else {
           // @phpstan-ignore-next-line

@@ -15,7 +15,7 @@ intercept_location_closing.admin.structure.settings:
 # Closings
 intercept_location_closing.closing_parent:
   title: 'Closings'
-  weight: 8
+  weight: 2
   route_name: view.intercept_location_closings.page
   menu_name: intercept-manage
   class: Drupal\intercept_core\Plugin\Menu\SystemAdminMenuLink

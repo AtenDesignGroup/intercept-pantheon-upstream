@@ -18,7 +18,7 @@ class WebformTestAlterHooksHooks {
    */
   #[Hook('form_alter')]
   public function formAlter(&$form, FormStateInterface $form_state, $form_id) {
-    if (strpos($form_id, 'webform_') === 0) {
+    if (str_starts_with($form_id, 'webform_')) {
       \Drupal::messenger()->addStatus(t("@hook: '@form_id' executed.", ['@hook' => 'hook_form_alter()', '@form_id' => $form_id]), TRUE);
     }
   }

@@ -103,6 +103,13 @@ class DateTime extends DateBase implements TrustedCallbackInterface {
     // Add date callback.
     $element['#date_date_callbacks'][] = [DateTime::class, 'dateCallback'];
 
+    // Set date format to 'none' if the date element is set to 'none'.
+    // @see \Drupal\Core\Datetime\Element\Datetime::valueCallback
+    if (isset($element['#date_date_element'])
+      && $element['#date_date_element'] === 'none') {
+      $element['#date_date_format'] = 'none';
+    }
+
     /* Time */
 
     // Set time format.

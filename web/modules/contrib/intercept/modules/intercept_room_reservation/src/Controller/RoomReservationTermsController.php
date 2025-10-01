@@ -12,6 +12,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RoomReservationTermsController extends ControllerBase {
 
   /**
+   * The controller config.
+   *
+   * @var Drupal\Core\Config\Config
+   */
+  protected $config;
+
+  /**
    * Creates a NodeViewController object.
    *
    * @param \Drupal\Core\Config\Config $config

@@ -209,7 +209,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
         // Transfer '#{composite_key}_{property}' from main element to composite
         // element.
         foreach ($element as $property_key => $property_value) {
-          if (strpos($property_key, '#' . $composite_key . '__') === 0) {
+          if (str_starts_with($property_key, '#' . $composite_key . '__')) {
             $composite_property_key = str_replace('#' . $composite_key . '__', '#', $property_key);
             $composite_element[$composite_property_key] = $property_value;
           }
@@ -413,7 +413,10 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
         }
         foreach ($lines as $key => $line) {
           if (is_string($line)) {
-            $lines[$key] = ['#markup' => $line];
+            // Note: We have to include the empty '#markup' to ensure the line
+            // is rendered as expected via an item_list.
+            // @see \template_preprocess_item_list()
+            $lines[$key] = ['#plain_text' => $line, '#markup' => ''];
           }
           $lines[$key]['#suffix'] = '<br />';
         }
@@ -796,11 +799,14 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
         continue;
       }
 
-      if ($export_options['composite_element_item_format'] === 'label' && $composite_element['#type'] !== 'textfield' && !empty($composite_element['#options'])) {
+      if (!isset($value[$composite_key])) {
+        $record[] = NULL;
+      }
+      elseif ($export_options['composite_element_item_format'] === 'label' && $composite_element['#type'] !== 'textfield' && !empty($composite_element['#options'])) {
         $record[] = WebformOptionsHelper::getOptionText($value[$composite_key], $composite_element['#options']);
       }
       else {
-        $record[] = $value[$composite_key] ?? NULL;
+        $record[] = $value[$composite_key];
       }
     }
     return $record;
@@ -1353,7 +1359,7 @@ abstract class WebformCompositeBase extends WebformElementBase implements Webfor
     $webform_options = WebformOptions::loadMultiple();
     $options = [];
     foreach ($webform_options as $key => $webform_option) {
-      if (strpos($key, $composite_key) === 0) {
+      if (str_starts_with($key, $composite_key)) {
         $options[$key] = $webform_option->label();
       }
     }

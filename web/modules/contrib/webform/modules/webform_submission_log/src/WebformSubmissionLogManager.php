@@ -81,7 +81,7 @@ class WebformSubmissionLogManager implements WebformSubmissionLogManagerInterfac
     ]);
 
     // User fields.
-    $query->leftJoin('users_field_data', 'u', 'log.uid = u.uid');
+    $query->leftJoin('users_field_data', 'user', 'log.uid = user.uid');
 
     // Submission fields.
     $query->leftJoin('webform_submission', 'submission', 'log.sid = submission.sid');

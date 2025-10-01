@@ -218,6 +218,8 @@ class ReserveRoomStep3 extends React.Component {
       'refreshments',
       'refreshmentsDesc',
       'publicize',
+      'publicityAddress',
+      'publicityEndorsement',
       'groupName',
       'agreement',
       'agreementCustom1',

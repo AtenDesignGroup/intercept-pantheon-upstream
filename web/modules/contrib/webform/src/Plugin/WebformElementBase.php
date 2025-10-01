@@ -387,12 +387,19 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
   protected function setElementDefaultCallback(array &$element, $callback_name) {
     $callback_name = ($callback_name[0] !== '#') ? '#' . $callback_name : $callback_name;
     $callback_value = $this->getElementInfoDefaultProperty($element, $callback_name) ?: [];
-    if (!empty($element[$callback_name])) {
-      $element[$callback_name] = array_merge($callback_value, $element[$callback_name]);
-    }
-    else {
+
+    if (empty($element[$callback_name])) {
       $element[$callback_name] = $callback_value;
+      return;
     }
+
+    foreach ($callback_value as $callback) {
+      if (in_array($callback, $element[$callback_name], TRUE)) {
+        return;
+      }
+    }
+
+    $element[$callback_name] = array_merge($callback_value, $element[$callback_name]);
   }
 
   /**
@@ -1180,7 +1187,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     // Apply multiple properties.
     $multiple_properties = $this->defineDefaultMultipleProperties();
     foreach ($multiple_properties as $multiple_property => $multiple_value) {
-      if (strpos($multiple_property, 'multiple__') === 0) {
+      if (str_starts_with($multiple_property, 'multiple__')) {
         $property_name = str_replace('multiple__', '', $multiple_property);
         $element["#$property_name"] = $element["#$multiple_property"] ?? $multiple_value;
       }
@@ -1354,7 +1361,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     $items_function = 'format' . $type . 'Items';
     if ($this->hasMultipleValues($element)) {
       // Return $options['delta'] which is used by tokens.
-      // @see _webform_token_get_submission_value()
+      // @see \Drupal\webform\Hook\WebformTokensHooks::getSubmissionValue()
       if (isset($options['delta'])) {
         return $this->$item_function($element, $webform_submission, $options);
       }
@@ -1650,7 +1657,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
    * @return string
    *   The element's value formatted as text.
    *
-   * @see _webform_token_get_submission_value()
+   * @see \Drupal\webform\Hook\WebformTokensHooks::getSubmissionValue()
    */
   protected function formatTextItem(array $element, WebformSubmissionInterface $webform_submission, array $options = []) {
     $value = $this->getValue($element, $webform_submission, $options);
@@ -1737,7 +1744,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     // Return multiple (delta) value or composite (composite_key) value.
     if (is_array($value)) {
       // Return $options['delta'] which is used by tokens.
-      // @see _webform_token_get_submission_value()
+      // @see \Drupal\webform\Hook\WebformTokensHooks::getSubmissionValue
       if (isset($options['delta'])) {
         $value = $value[$options['delta']] ?? NULL;
       }
@@ -1984,7 +1991,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
    * Form API callback. Validate element #unique value.
    */
   public static function validateUnique(array &$element, FormStateInterface $form_state) {
-    if (!isset($element['#unique'])) {
+    if (empty($element['#unique'])) {
       return;
     }
 
@@ -2078,7 +2085,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
    * Form API callback. Validate element #unique multiple values.
    */
   public static function validateUniqueMultiple(array &$element, FormStateInterface $form_state) {
-    if (!isset($element['#unique'])) {
+    if (empty($element['#unique'])) {
       return;
     }
 
@@ -2891,7 +2898,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     ];
     $form['multiple']['multiple__min_items'] = [
       '#type' => 'number',
-      '#title' => $this->t('Minimum amount of items'),
+      '#title' => $this->t('Minimum amount of items displayed'),
       '#description' => $this->t('Minimum items defaults to 0 for optional elements and 1 for required elements.'),
       '#min' => 0,
       '#max' => 20,
@@ -3334,7 +3341,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
     }
 
     // Add warning to all password elements that are stored in the database.
-    if (strpos($this->pluginId, 'password') !== FALSE && !$webform->getSetting('results_disabled')) {
+    if (str_contains($this->pluginId, 'password') && !$webform->getSetting('results_disabled')) {
       $form['element']['password_message'] = [
         '#type' => 'webform_message',
         '#message_type' => 'warning',
@@ -3711,6 +3718,11 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
           if ($default_properties[$property_name] == $element_properties[$property_name]) {
             unset($element_properties[$property_name]);
           }
+          // Compare #access array values and ignore the array order.
+          elseif (str_starts_with($property_name, 'access')
+            && WebformArrayHelper::equal($default_properties[$property_name], $element_properties[$property_name])) {
+            unset($element_properties[$property_name]);
+          }
 
           // Cast data types (except #multiple).
           if (isset($element_properties[$property_name])) {
@@ -3725,6 +3737,7 @@ class WebformElementBase extends PluginBase implements WebformElementInterface, 
               }
             }
           }
+
           break;
       }
     }

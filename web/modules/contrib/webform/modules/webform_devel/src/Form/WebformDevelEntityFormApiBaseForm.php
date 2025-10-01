@@ -194,7 +194,7 @@ abstract class WebformDevelEntityFormApiBaseForm extends EntityForm {
    */
   protected function isPropertyTranslatable($property) {
     $property = str_replace('#', '', $property);
-    if (strpos($property, '__') !== FALSE) {
+    if (str_contains($property, '__')) {
       [, $child_property] = explode('__', $property);
       return isset($this->translatableProperties[$child_property]);
     }

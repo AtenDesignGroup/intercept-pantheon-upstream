@@ -18,6 +18,7 @@ use Drupal\webform\Plugin\WebformElementEntityOptionsInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\webform_options_custom\Plugin\WebformOptionsCustomInterface;
 use Drupal\webform_options_limit\Plugin\WebformOptionsLimitHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -1144,6 +1145,11 @@ class OptionsLimitWebformHandler extends WebformHandlerBase implements WebformOp
     $webform_element = $this->getWebformElement();
     if ($webform_element instanceof WebformElementEntityOptionsInterface) {
       $this->setOptions($element);
+    }
+    elseif ($webform_element instanceof WebformOptionsCustomInterface) {
+      $webform_element = $this->getWebformElement();
+      $webform_element->initialize($element);
+      $webform_element->prepare($element);
     }
 
     return ($element) ? OptGroup::flattenOptions($element['#options']) : [];

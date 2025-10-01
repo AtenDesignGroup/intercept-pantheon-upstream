@@ -278,7 +278,7 @@ function webform_entity_print_preprocess_entity_print(array &$variables) {
   if (preg_match_all('#(src\s*=\s*")([^"]+(?:/private|/system/files)/webform/' . $webform_id . '/' . $sid . '/[^"]+)#', $html, $matches)) {
     foreach ($matches[2] as $index => $found_uri) {
       $token_query = [WEBFORM_ENTITY_PRINT_IMAGE_TOKEN => _webform_entity_print_token_generate($found_uri)];
-      $replace_uri = $found_uri . (strpos($found_uri, '?') !== FALSE ? '&' : '?') . UrlHelper::buildQuery($token_query);
+      $replace_uri = $found_uri . (str_contains($found_uri, '?') ? '&' : '?') . UrlHelper::buildQuery($token_query);
       $html = str_replace($matches[0][$index], $matches[1][$index] . $replace_uri, $html);
     }
   }
@@ -294,7 +294,7 @@ function webform_entity_print_preprocess_entity_print(array &$variables) {
   if ($signature_elements && preg_match_all('#(src\s*=\s*")([^"]+(?:/private|/system/files)/webform/' . $webform_id . '/(?:' . implode('|', $signature_elements) . ')/[^"]+)#', $html, $matches)) {
     foreach ($matches[2] as $index => $found_uri) {
       $token_query = [WEBFORM_ENTITY_PRINT_IMAGE_TOKEN => _webform_entity_print_token_generate($found_uri)];
-      $replace_uri = $found_uri . (strpos($found_uri, '?') !== FALSE ? '&' : '?') . UrlHelper::buildQuery($token_query);
+      $replace_uri = $found_uri . (str_contains($found_uri, '?') ? '&' : '?') . UrlHelper::buildQuery($token_query);
       $html = str_replace($matches[0][$index], $matches[1][$index] . $replace_uri, $html);
     }
   }

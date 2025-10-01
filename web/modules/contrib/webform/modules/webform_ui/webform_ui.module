@@ -18,7 +18,9 @@ use Drupal\webform_ui\Hook\WebformUiHooks;
  */
 #[LegacyHook]
 function webform_ui_entity_type_alter(array &$entity_types) {
-  \Drupal::service(WebformUiHooks::class)->entityTypeAlter($entity_types);
+  if (\Drupal::hasService(WebformUiHooks::class)) {
+    \Drupal::service(WebformUiHooks::class)->entityTypeAlter($entity_types);
+  }
 }
 
 /**

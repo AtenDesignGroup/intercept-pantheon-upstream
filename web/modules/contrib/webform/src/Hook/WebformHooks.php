@@ -16,6 +16,7 @@ use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Plugin\WebformElement\ManagedFile;
 use Drupal\webform\Plugin\WebformElementFileDownloadAccessInterface;
+use Drupal\webform\Plugin\WebformVariant\OverrideWebformVariant;
 use Drupal\webform\Utility\WebformMailHelper;
 use Drupal\webform\WebformInterface;
 
@@ -35,7 +36,7 @@ class WebformHooks {
     }
     // Get path from route match.
     $path = preg_replace('/^' . preg_quote(base_path(), '/') . '/', '/', Url::fromRouteMatch($route_match)->setAbsolute(FALSE)->toString());
-    if (!in_array($route_name, ['system.modules_list', 'update.status']) && strpos($route_name, 'webform') === FALSE && strpos($path, '/webform') === FALSE) {
+    if (!in_array($route_name, ['system.modules_list', 'update.status']) && !str_contains($route_name, 'webform') && !str_contains($path, '/webform')) {
       return NULL;
     }
     /** @var \Drupal\webform\WebformHelpManagerInterface $help_manager */
@@ -62,7 +63,7 @@ class WebformHooks {
    */
   #[Hook('webform_message_custom')]
   public function webformMessageCustom($operation, $id) {
-    if (strpos($id, 'webform_help_notification__') === 0 && $operation === 'close') {
+    if (str_starts_with($id, 'webform_help_notification__') && $operation === 'close') {
       $id = str_replace('webform_help_notification__', '', $id);
       /** @var \Drupal\webform\WebformHelpManagerInterface $help_manager */
       $help_manager = \Drupal::service('webform.help_manager');
@@ -130,15 +131,23 @@ class WebformHooks {
     if (empty($definitions['webform.webform.*']['mapping'])) {
       return;
     }
+
     $mapping = $definitions['webform.webform.*']['mapping'];
-    // Copy setting, elements, and handlers to variant override schema.
+
+    // Copy properties, settings, elements, and handlers to variant override schema.
     if (isset($definitions['webform.variant.override'])) {
       $definitions['webform.variant.override']['mapping'] += [
+        'properties' => [
+          'type' => 'mapping',
+          'label' => 'Properties',
+          'mapping' => array_intersect_key($mapping, array_flip(OverrideWebformVariant::OVERRIDE_PROPERTIES)),
+        ],
         'settings' => $mapping['settings'],
         'elements' => $mapping['elements'],
         'handlers' => $mapping['handlers'],
       ];
     }
+
     // Append settings handler settings schema.
     if (isset($definitions['webform.handler.settings'])) {
       $definitions['webform.handler.settings']['mapping'] += _webform_config_schema_info_alter_settings_recursive($mapping['settings']['mapping']);
@@ -219,14 +228,14 @@ class WebformHooks {
     //
     // WORKAROUND:
     // Make sure webform parameter is set for all routes.
-    if (strpos($route_name, 'entity.webform_submission.devel_') === 0 || $route_name === 'entity.webform_submission.token_devel') {
+    if (str_starts_with($route_name, 'entity.webform_submission.devel_') || $route_name === 'entity.webform_submission.token_devel') {
       foreach ($data['tabs'] as $tab_level) {
         foreach ($tab_level as $tab) {
           /** @var \Drupal\Core\Url $url */
           $url = $tab['#link']['url'];
           $tab_route_name = $url->getRouteName();
           $tab_route_parameters = $url->getRouteParameters();
-          if (strpos($tab_route_name, 'entity.webform_submission.devel_') !== 0) {
+          if (!str_starts_with($tab_route_name, 'entity.webform_submission.devel_')) {
             $webform_submission = WebformSubmission::load($tab_route_parameters['webform_submission']);
             $url->setRouteParameter('webform', $webform_submission->getWebform()->id());
           }
@@ -279,9 +288,9 @@ class WebformHooks {
       '<li>' . $this->t('<code>:htmldecode</code> decodes HTML entities in returned value.') . '<br/><b>' . $this->t('This suffix has security implications.') . '</b><br/>' . $this->t('Use <code>:htmldecode</code> with <code>:striptags</code>.') . '</li>' .
       '<li>' . $this->t('<code>:striptags</code> removes all HTML tags from returned value.') . '</li>' .
     '</ul>';
-    $more = _webform_token_render_more(t('Learn about token suffixes'), $token_suffixes);
+    $more = \Drupal::service(WebformTokensHooks::class)->renderMore(t('Learn about token suffixes'), $token_suffixes);
     foreach ($data['types'] as $type => &$info) {
-      if (strpos($type, 'webform') === 0) {
+      if (str_starts_with($type, 'webform')) {
         if (isset($info['description']) && !empty($info['description'])) {
           $description = $info['description'] . $more;
         }
@@ -355,7 +364,7 @@ class WebformHooks {
     if (!empty($params['from_mail'])) {
       // 'From name' is only used when the 'From mail' contains a single
       // email address.
-      $from = !empty($params['from_name']) && strpos($params['from_mail'], ',') === FALSE ? WebformMailHelper::formatAddress($params['from_mail'], $params['from_name']) : $params['from_mail'];
+      $from = !empty($params['from_name']) && !str_contains($params['from_mail'], ',') ? WebformMailHelper::formatAddress($params['from_mail'], $params['from_name']) : $params['from_mail'];
       $message['from'] = $message['headers']['From'] = $from;
     }
     // Set header 'Cc'.
@@ -399,7 +408,7 @@ class WebformHooks {
     // 'html' flag has been set.
     // @see \Drupal\Core\Mail\MailManager::mail()
     // @see \Drupal\webform\Plugin\WebformHandler\EmailWebformHandler::getMessage().
-    if (strpos($message['id'], 'webform') === 0) {
+    if (str_starts_with($message['id'], 'webform')) {
       if (isset($message['params']['html']) && $message['params']['html']) {
         $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
       }
@@ -473,7 +482,7 @@ class WebformHooks {
     }
     // Attach codemirror and select2 library to block admin to ensure that the
     // library is loaded by the webform block is placed using Ajax.
-    if (strpos($route_name, 'block.admin_display') === 0) {
+    if (str_starts_with($route_name, 'block.admin_display')) {
       $attachments['#attached']['library'][] = 'webform/webform.block';
     }
     // Attach webform dialog library and options to every page.
@@ -530,7 +539,7 @@ class WebformHooks {
    */
   #[Hook('file_access')]
   public function fileAccess(FileInterface $file, $operation, AccountInterface $account) {
-    $is_webform_download = $operation === 'download' && strpos($file->getFileUri(), 'private://webform/') === 0;
+    $is_webform_download = $operation === 'download' && str_starts_with($file->getFileUri(), 'private://webform/');
     // Block access to temporary anonymous private file uploads
     // only when an anonymous user is attempting to download the file.
     // Links to anonymous file uploads are automatically suppressed.

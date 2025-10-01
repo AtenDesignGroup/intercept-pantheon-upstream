@@ -53,7 +53,7 @@ class WebformNodeHooks {
    */
   #[Hook('node_access')]
   public function nodeAccess(NodeInterface $node, $operation, AccountInterface $account) {
-    if (strpos($operation, 'webform_submission_') !== 0) {
+    if (!str_starts_with($operation, 'webform_submission_')) {
       return AccessResult::neutral();
     }
     else {

@@ -130,7 +130,7 @@ function template_preprocess_html__webform_share(&$variables) {
   // @see toolbar_preprocess_html()
   if (\Drupal::currentUser()->hasPermission('access toolbar')) {
     foreach ($variables['attributes']['class'] as $index => $class_name) {
-      if (strpos($class_name, 'toolbar-') === 0) {
+      if (str_starts_with($class_name, 'toolbar-')) {
         unset($variables['attributes']['class'][$index]);
       }
     }

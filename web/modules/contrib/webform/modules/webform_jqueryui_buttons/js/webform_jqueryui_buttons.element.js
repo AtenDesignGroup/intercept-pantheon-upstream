@@ -4,9 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
-  'use strict';
-
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.buttons = Drupal.webform.buttons || {};
   Drupal.webform.buttons.selector = Drupal.webform.buttons.selector || [

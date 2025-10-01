@@ -35,7 +35,7 @@ class WebformExamplesAccessibilityHooks {
    */
   #[Hook('webform_submission_form_alter')]
   public function webformSubmissionFormAlter(array &$form, FormStateInterface $form_state, $form_id) {
-    if (strpos($form['#webform_id'], 'example_accessibility_') !== 0 && !preg_match('/^issue_\d+$/', $form['#webform_id']) && strpos($form['#webform_id'], 'test_') !== 0) {
+    if (!str_starts_with($form['#webform_id'], 'example_accessibility_') && !preg_match('/^issue_\d+$/', $form['#webform_id']) && !str_starts_with($form['#webform_id'], 'test_')) {
       return;
     }
     $form['accessibility'] = ['#suffix' => '<hr/>', '#weight' => -1000];

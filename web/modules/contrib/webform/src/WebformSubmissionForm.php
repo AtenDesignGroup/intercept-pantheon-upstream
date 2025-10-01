@@ -479,7 +479,7 @@ class WebformSubmissionForm extends ContentEntityForm {
       unset($data[$excluded_element_key]);
 
       // Unset excluded composite sub-element.
-      if (strpos($excluded_element_key, '__') !== FALSE) {
+      if (str_contains($excluded_element_key, '__')) {
         [$excluded_parent_key, $excluded_composite_key] = explode('__', $excluded_element_key);
         if (isset($data[$excluded_parent_key]) && is_array($data[$excluded_parent_key])) {
           if (WebformArrayHelper::isSequential($data[$excluded_parent_key])) {
@@ -1200,26 +1200,17 @@ class WebformSubmissionForm extends ContentEntityForm {
   /**
    * Attach libraries to the form.
    *
+   * Webform specific libraries are attached via _webform_page_attachments().
+   *
    * @param array $form
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
+   *
+   * @see _webform_page_attachments()
    */
   protected function attachLibraries(array &$form, FormStateInterface $form_state) {
-    // Default: Add CSS and JS.
-    // @see https://www.drupal.org/node/2274843#inline
     $form['#attached']['library'][] = 'webform/webform.form';
-
-    // Assets: Add custom shared and webform specific CSS and JS.
-    // @see webform_library_info_build()
-    // @see _webform_page_attachments()
-    $webform = $this->getWebform();
-    $assets = $webform->getAssets();
-    foreach ($assets as $type => $value) {
-      if ($value) {
-        $form['#attached']['library'][] = 'webform/webform.' . $type . '.' . $webform->id();
-      }
-    }
   }
 
   /**
@@ -1320,7 +1311,7 @@ class WebformSubmissionForm extends ContentEntityForm {
   public function afterBuild(array $form, FormStateInterface $form_state) {
     // If webform has a custom #action remove Form API fields.
     // @see \Drupal\Core\Form\FormBuilder::prepareForm
-    if (strpos($form['#action'], 'form_action_') === FALSE) {
+    if (!str_contains($form['#action'], 'form_action_')) {
       // Remove 'op' #name from all action buttons.
       foreach (Element::children($form['actions']) as $child_key) {
         unset($form['actions'][$child_key]['#name']);
@@ -1428,6 +1419,11 @@ class WebformSubmissionForm extends ContentEntityForm {
 
   /**
    * {@inheritdoc}
+   *
+   * Note: The prioritization of wizard buttons
+   * is page, actions, webform settings, and global configuration.
+   *
+   * @see \Drupal\webform\Element\WebformActions::processWebformActions
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
@@ -1544,7 +1540,8 @@ class WebformSubmissionForm extends ContentEntityForm {
             $previous_button_custom = TRUE;
           }
           else {
-            $previous_button_label = $this->config('webform.settings')->get('settings.default_wizard_prev_button_label');
+            $previous_button_label = $this->getWebform()->getSetting('wizard_prev_button_label')
+              ?: $this->config('webform.settings')->get('settings.default_wizard_prev_button_label');
             $previous_button_custom = FALSE;
           }
           $element['wizard_prev'] = [
@@ -1586,7 +1583,8 @@ class WebformSubmissionForm extends ContentEntityForm {
             $next_button_custom = TRUE;
           }
           else {
-            $next_button_label = $this->config('webform.settings')->get('settings.default_wizard_next_button_label');
+            $next_button_label = $this->getWebform()->getSetting('wizard_next_button_label')
+              ?: $this->config('webform.settings')->get('settings.default_wizard_next_button_label');
             $next_button_custom = FALSE;
           }
           $element['wizard_next'] = [
@@ -2555,7 +2553,7 @@ class WebformSubmissionForm extends ContentEntityForm {
   protected function getConfirmationUrl() {
     $confirmation_url = trim($this->getWebformSetting('confirmation_url', ''));
 
-    if (strpos($confirmation_url, '/') === 0) {
+    if (str_starts_with($confirmation_url, '/')) {
       // Get redirect URL using an absolute URL for the absolute  path.
       $redirect_url = Url::fromUri($this->getRequest()->getSchemeAndHttpHost() . $confirmation_url);
     }
@@ -2564,7 +2562,7 @@ class WebformSubmissionForm extends ContentEntityForm {
       // and Drupal custom URIs (i.e internal:).
       $redirect_url = Url::fromUri($confirmation_url);
     }
-    elseif (strpos($confirmation_url, '<') === 0) {
+    elseif (str_starts_with($confirmation_url, '<')) {
       // Get redirect URL from special paths: '<front>' and '<none>'.
       $redirect_url = $this->pathValidator->getUrlIfValid($confirmation_url);
     }
@@ -2679,7 +2677,7 @@ class WebformSubmissionForm extends ContentEntityForm {
   protected function addStatesPrefix(array $array) {
     $prefixed_array = [];
     foreach ($array as $key => $value) {
-      if (strpos($key, ':input') === 0) {
+      if (str_starts_with($key, ':input')) {
         $key = $this->statesPrefix . ' ' . $key;
         $prefixed_array[$key] = $value;
       }
@@ -3190,7 +3188,7 @@ class WebformSubmissionForm extends ContentEntityForm {
    */
   protected function isSharePage() {
     $route_name = $this->getRouteMatch()->getRouteName();
-    return ($route_name && strpos($route_name, 'entity.webform.share_page') === 0);
+    return ($route_name && str_starts_with($route_name, 'entity.webform.share_page'));
   }
 
   /* ************************************************************************ */

@@ -2,19 +2,28 @@
 
 namespace Drupal\webform\Hook;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Datetime\Entity\DateFormat;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
 use Drupal\webform\Element\WebformHtmlEditor;
+use Drupal\webform\Plugin\WebformElementEntityReferenceInterface;
+use Drupal\webform\Plugin\WebformElementManagerInterface;
+use Drupal\webform\Plugin\WebformElement\WebformComputedBase;
+use Drupal\webform\Plugin\WebformElement\WebformMarkupBase;
 use Drupal\webform\Utility\WebformDateHelper;
 use Drupal\webform\Utility\WebformHtmlHelper;
+use Drupal\webform\Utility\WebformLogicHelper;
 use Drupal\webform\Utility\WebformUserHelper;
+use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Hook\Attribute\Hook;
 
 /**
  * Hook implementations for webform.
@@ -202,7 +211,7 @@ class WebformTokensHooks {
     ];
     $webform_submission['values'] = [
       'name' => $this->t('Submission values'),
-      'description' => Markup::create(t('Webform tokens from submitted data.') . _webform_token_render_more(t('Learn about submission value tokens'), $this->t("Omit the '?' to output all values. Output all values as HTML using [webform_submission:values:html].") . '<br />' . $this->t("To output individual elements, replace the '?' with…") . '<br /><ul>' .
+      'description' => Markup::create(t('Webform tokens from submitted data.') . $this->renderMore(t('Learn about submission value tokens'), $this->t("Omit the '?' to output all values. Output all values as HTML using [webform_submission:values:html].") . '<br />' . $this->t("To output individual elements, replace the '?' with…") . '<br /><ul>' .
           '<li>element_key</li>' .
           '<li>element_key:format</li>' .
           '<li>element_key:raw</li>' .
@@ -309,7 +318,7 @@ class WebformTokensHooks {
     ];
     $webform['settings'] = [
       'name' => $this->t('Settings'),
-      'description' => Markup::create(t('Webform settings tokens.') . _webform_token_render_more(t('Learn about Webform settings tokens'), '<ul>' .
+      'description' => Markup::create(t('Webform settings tokens.') . $this->renderMore(t('Learn about Webform settings tokens'), '<ul>' .
         '<li>confirmation_title</li>' .
         '<li>confirmation_message</li>' .
         '<li>form_open_message</li>' .
@@ -319,7 +328,7 @@ class WebformTokensHooks {
     ];
     $webform['element'] = [
       'name' => $this->t('Element properties'),
-      'description' => Markup::create(t('Webform element property tokens.') . _webform_token_render_more(t('Learn about element property tokens'), $this->t("Replace the '?' with…") . '<br /><ul>' .
+      'description' => Markup::create(t('Webform element property tokens.') . $this->renderMore(t('Learn about element property tokens'), $this->t("Replace the '?' with…") . '<br /><ul>' .
         '<li>element_key:title</li>' .
         '<li>element_key:description</li>' .
         '<li>element_key:help</li>' .
@@ -329,7 +338,7 @@ class WebformTokensHooks {
     ];
     $webform['handler'] = [
       'name' => $this->t('Handler response'),
-      'description' => Markup::create(t('Webform handler response tokens.') . _webform_token_render_more(t('Learn about handler response tokens'), $this->t("Replace the '?' with…") . '<br /><ul>' .
+      'description' => Markup::create(t('Webform handler response tokens.') . $this->renderMore(t('Learn about handler response tokens'), $this->t("Replace the '?' with…") . '<br /><ul>' .
         '<li>handler_id:state:key</li>' .
         '<li>handler_id:state:key1:key2</li>' .
       '</ul>' . $this->t("For example, to display a remote post's confirmation number you would use the [webform:handler:remote_post:completed:confirmation_number] token."))),
@@ -516,7 +525,7 @@ class WebformTokensHooks {
             break;
 
           case 'values':
-            $replacements[$original] = _webform_token_get_submission_values($options, $webform_submission);
+            $replacements[$original] = $this->getSubmissionValues($options, $webform_submission);
             break;
 
           /* Default values for the chained tokens handled below */
@@ -558,7 +567,7 @@ class WebformTokensHooks {
             break;
 
           case 'interval:webform:wait':
-            $replacements[$original] = _webform_token_get_interval_wait('limit_total_interval', $bubbleable_metadata, $webform);
+            $replacements[$original] = $this->getIntervalWait('limit_total_interval', $bubbleable_metadata, $webform);
             break;
 
           case 'total:webform':
@@ -582,7 +591,7 @@ class WebformTokensHooks {
             break;
 
           case 'interval:user:wait':
-            $replacements[$original] = _webform_token_get_interval_wait('limit_user_interval', $bubbleable_metadata, $webform, NULL, $account);
+            $replacements[$original] = $this->getIntervalWait('limit_user_interval', $bubbleable_metadata, $webform, NULL, $account);
             break;
 
           case 'total:user':
@@ -606,7 +615,7 @@ class WebformTokensHooks {
             break;
 
           case 'interval:webform:source_entity:wait':
-            $replacements[$original] = $source_entity ? _webform_token_get_interval_wait('entity_limit_total_interval', $bubbleable_metadata, $webform, $source_entity) : '';
+            $replacements[$original] = $source_entity ? $this->getIntervalWait('entity_limit_total_interval', $bubbleable_metadata, $webform, $source_entity) : '';
             break;
 
           case 'total:webform:source_entity':
@@ -630,7 +639,7 @@ class WebformTokensHooks {
             break;
 
           case 'interval:user:source_entity:wait':
-            $replacements[$original] = $source_entity ? _webform_token_get_interval_wait('entity_limit_user_interval', $bubbleable_metadata, $webform, $source_entity, $account) : '';
+            $replacements[$original] = $source_entity ? $this->getIntervalWait('entity_limit_user_interval', $bubbleable_metadata, $webform, $source_entity, $account) : '';
             break;
 
           case 'total:user:source_entity':
@@ -656,7 +665,7 @@ class WebformTokensHooks {
       }
       if ($value_tokens = $token_service->findWithPrefix($tokens, 'values')) {
         foreach ($value_tokens as $value_token => $original) {
-          $value = _webform_token_get_submission_value($value_token, $options, $webform_submission, $element_manager, $bubbleable_metadata);
+          $value = $this->getSubmissionValue($value_token, $options, $webform_submission, $element_manager, $bubbleable_metadata);
           if ($value !== NULL) {
             $replacements[$original] = $value;
           }
@@ -753,7 +762,7 @@ class WebformTokensHooks {
       }
       if ($element_tokens = $token_service->findWithPrefix($tokens, 'element')) {
         foreach ($element_tokens as $key => $original) {
-          if (strpos($key, ':') === FALSE) {
+          if (!str_contains($key, ':')) {
             $element_key = $key;
             $element_property = 'title';
           }
@@ -804,6 +813,331 @@ class WebformTokensHooks {
       }
     }
     return $replacements;
+  }
+
+  /**
+   * Render webform more element (slideouts) for token descriptions.
+   *
+   * @param string $more_title
+   *   More title.
+   * @param string $more
+   *   More content.
+   *
+   * @return string
+   *   Rendered webform more element.
+   */
+  public function renderMore($more_title, $more) {
+    // Token info might be called via CLI and not all modules are loaded
+    // or an active theme is NOT defined.
+    //
+    // We are preventing the below exceptions:
+    // - The theme implementations may not be rendered until all modules
+    //   are loaded.
+    // - Call to a member function setParser() on array in Twig\Parser->parse().
+    //
+    // @see \Drupal\Core\Theme\ThemeManager::render
+    /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
+    $module_handler = \Drupal::service('module_handler');
+    /** @var \Drupal\webform\WebformThemeManagerInterface $theme_manager */
+    $theme_manager = \Drupal::service('webform.theme_manager');
+    if (!$module_handler->isLoaded() || !$theme_manager->hasActiveTheme()) {
+      return '';
+    }
+
+    /** @var \Drupal\Core\Session\AccountInterface $current_user */
+    $current_user = \Drupal::currentUser();
+    // Never render the more widget for anonymous users.
+    if ($current_user->isAnonymous()) {
+      return '';
+    }
+
+    // Make sure the current user can use webform tokens.
+    if (!$current_user->hasPermission('administer webform')
+      && !$current_user->hasPermission('create webform')
+      && !$current_user->hasPermission('edit any webform')
+      && !$current_user->hasPermission('edit own webform')) {
+      return '';
+    }
+
+    $build = [
+      '#type' => 'webform_more',
+      '#more' => $more,
+      '#more_title' => $more_title,
+    ];
+    return (string) \Drupal::service('renderer')->renderInIsolation($build);
+  }
+
+  /**
+   * Get webform submission token value.
+   *
+   * @param string $value_token
+   *   A [webform_submission:value:?] token.
+   * @param array $options
+   *   An array of token options.
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   * @param \Drupal\webform\Plugin\WebformElementManagerInterface $element_manager
+   *   The webform element manager.
+   * @param \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata
+   *   (optional) Object to collect route processors' bubbleable metadata.
+   *
+   * @return \Drupal\Component\Render\MarkupInterface|string
+   *   Webform submission token value.
+   */
+  protected function getSubmissionValue($value_token, array $options, WebformSubmissionInterface $webform_submission, WebformElementManagerInterface $element_manager, BubbleableMetadata $bubbleable_metadata) {
+    $submission_data = $webform_submission->getData();
+
+    // phpcs:disable Drupal.Commenting.InlineComment.InvalidEndChar
+    // Formats:
+    // [html]
+    // [values:{element_key}:{format}]
+    // [values:{element_key}:{format}:{items}]
+    // [values:{element_key}:{format}:html]
+    // [values:{element_key}:{format}:{items}:html]
+    // [values:{element_key}:{format}:urlencode]
+    // [values:{element_key}:{format}:{items}:urlencode]
+    // [values:{element_key}:{delta}:{format}]
+    // [values:{element_key}:{delta}:{sub-element}]
+    // phpcs:enable Drupal.Commenting.InlineComment.InvalidEndChar
+    $keys = explode(':', $value_token);
+    $element_key = array_shift($keys);
+
+    // Build HTML values.
+    if ($element_key === 'html' && empty($keys)) {
+      $options['html'] = TRUE;
+      return $this->getSubmissionValues($options, $webform_submission);
+    }
+
+    // Set default options.
+    $options += [
+      'html' => FALSE,
+    ];
+
+    // Parse suffixes and set options.
+    $suffixes = [
+      // Indicates the tokens should be formatted as HTML instead of plain text.
+      'html',
+    ];
+    foreach ($suffixes as $suffix) {
+      if ($keys && in_array($suffix, $keys)) {
+        $keys = array_diff($keys, [$suffix]);
+        $options[$suffix] = TRUE;
+      }
+    }
+
+    $element = $webform_submission->getWebform()->getElement($element_key, TRUE);
+
+    // Exit if form element does not exist.
+    if (!$element) {
+      return NULL;
+    }
+
+    $element_plugin = $element_manager->getElementInstance($element);
+
+    // Always get value for a computed element.
+    if ($element_plugin instanceof WebformComputedBase) {
+      return $element_plugin->getValue($element, $webform_submission);
+    }
+
+    // Always get rendered markup for a markup element.
+    if ($element_plugin instanceof WebformMarkupBase) {
+      $format_method = (empty($options['html'])) ? 'buildText' : 'buildHtml';
+      $element['#display_on'] = WebformMarkupBase::DISPLAY_ON_BOTH;
+      $token_value = $element_manager->invokeMethod($format_method, $element, $webform_submission, $options);
+      return \Drupal::service('renderer')->renderInIsolation($token_value);
+    }
+
+    // Exit if no submission data and form element is not a container.
+    if (!isset($submission_data[$element_key]) && !$element_plugin->isContainer($element)) {
+      return NULL;
+    }
+
+    // If multiple value element look for delta.
+    if ($keys && $element_plugin->hasMultipleValues($element) && is_numeric($keys[0])) {
+      $delta = array_shift($keys);
+      $options['delta'] = $delta;
+    }
+    else {
+      $delta = NULL;
+    }
+
+    // If composite element look for sub-element key.
+    if ($keys && $element_plugin->isComposite() && method_exists($element_plugin, 'getInitializedCompositeElement') && $element_plugin->getInitializedCompositeElement($element, $keys[0])) {
+      $composite_key = array_shift($keys);
+      $options['composite_key'] = $composite_key;
+    }
+    else {
+      $composite_key = NULL;
+    }
+
+    /* ************************************************************************ */
+    // Get value.
+    /* ************************************************************************ */
+
+    // Set entity reference chaining.
+    if ($keys && $keys[0] === 'entity' && $element_plugin instanceof WebformElementEntityReferenceInterface) {
+      // Remove entity from keys.
+      array_shift($keys);
+
+      // Get entity value, type, instance, and token.
+      if ($entity = $element_plugin->getTargetEntity($element, $webform_submission, $options)) {
+        $entity_type = $entity->getEntityTypeId();
+        // Map entity type id to entity token name.
+        $entity_token_names = [
+          // Taxonomy tokens are not prefixed with 'taxonomy_'.
+          // @see taxonomy_token_info()
+          'taxonomy_term' => 'term',
+          'taxonomy_vocabulary' => 'vocabulary',
+        ];
+        $entity_token_name = $entity_token_names[$entity_type] ?? $entity_type;
+        $entity_token = implode(':', $keys);
+        $token_value = Markup::create(\Drupal::token()->replace(
+          "[$entity_token_name:$entity_token]",
+          [$entity_token_name => $entity],
+          $options,
+          $bubbleable_metadata
+        ));
+        return $token_value;
+      }
+      else {
+        return '';
+      }
+    }
+
+    // Set checked/selected for an options elements.
+    if ($keys && in_array($keys[0], ['checked', 'selected']) && $element_plugin->hasProperty('options')) {
+      $token_values = (array) $element_plugin->getValue($element, $webform_submission);
+      return ($token_values && in_array($keys[1], $token_values)) ? '1' : '0';
+    }
+
+    // Set format and items format.
+    if ($keys) {
+      if ($composite_key) {
+        // Must set '#webform_composite_elements' format.
+        // @see \Drupal\webform\Plugin\WebformElement\WebformCompositeBase::initialize
+        // @see \Drupal\webform\Plugin\WebformElement\WebformCompositeBase::getInitializedCompositeElement
+        $element['#webform_composite_elements'][$composite_key]['#format'] = array_shift($keys);
+      }
+      else {
+        $element['#format'] = array_shift($keys);
+      }
+    }
+    if ($keys) {
+      $element['#format_items'] = array_shift($keys);
+    }
+
+    $token = "[webform_submission:values:$value_token]";
+    if (WebformLogicHelper::startRecursionTracking($token) === FALSE) {
+      return '';
+    }
+
+    $format_method = (empty($options['html'])) ? 'formatText' : 'formatHtml';
+    $token_value = $element_manager->invokeMethod($format_method, $element, $webform_submission, $options);
+    if (is_array($token_value)) {
+      // Note, tokens can't include CSS and JS libraries since they will
+      // can be included in an email.
+      $token_value = \Drupal::service('renderer')->renderInIsolation($token_value);
+    }
+    elseif (isset($element['#format']) && $element['#format'] === 'raw') {
+      // Make sure raw tokens are always rendered AS-IS.
+      $token_value = Markup::create((string) $token_value);
+    }
+    elseif (!($token_value instanceof MarkupInterface)) {
+      // All strings will be escaped as HtmlEscapedText.
+      // @see \Drupal\Core\Utility\Token::replace
+      // @see \Drupal\Component\Render\HtmlEscapedText
+      $token_value = (string) $token_value;
+    }
+
+    if (WebformLogicHelper::stopRecursionTracking($token) === FALSE) {
+      return '';
+    }
+
+    return $token_value;
+  }
+
+  /**
+   * Get webform submission values.
+   *
+   * @param array $options
+   *   An array of token options.
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   *
+   * @return \Drupal\Component\Render\MarkupInterface|string
+   *   Webform submission values.
+   */
+  protected function getSubmissionValues(array $options, WebformSubmissionInterface $webform_submission) {
+    $token = (!empty($options['html'])) ? '[webform_submission:values:html]' : '[webform_submission:values]';
+
+    if (WebformLogicHelper::startRecursionTracking($token) === FALSE) {
+      return '';
+    }
+
+    $submission_format = (!empty($options['html'])) ? 'html' : 'text';
+    /** @var \Drupal\webform\WebformSubmissionViewBuilderInterface $view_builder */
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder('webform_submission');
+    $form_elements = $webform_submission->getWebform()->getElementsInitialized();
+    $token_value = $view_builder->buildElements($form_elements, $webform_submission, $options, $submission_format);
+
+    // Note, tokens can't include CSS and JS libraries since they can be
+    // included in an email.
+    $value = \Drupal::service('renderer')->renderInIsolation($token_value);
+
+    if (WebformLogicHelper::stopRecursionTracking($token) === FALSE) {
+      return '';
+    }
+
+    return $value;
+  }
+
+  /**
+   * Get interval wait time.
+   *
+   * @param string $interval_setting
+   *   Interval setting name.
+   * @param \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata
+   *   (optional) Object to collect path processors' bubbleable metadata.
+   * @param \Drupal\webform\WebformInterface|null $webform
+   *   (optional) A webform. If set the total number of submissions for the
+   *   Webform will be returned.
+   * @param \Drupal\Core\Entity\EntityInterface|null $source_entity
+   *   (optional) A webform submission source entity.
+   * @param \Drupal\Core\Session\AccountInterface|null $account
+   *   (optional) A user account.
+   *
+   * @return string
+   *   Formatted interval wait time.
+   */
+  protected function getIntervalWait($interval_setting, BubbleableMetadata $bubbleable_metadata, ?WebformInterface $webform = NULL, ?EntityInterface $source_entity = NULL, ?AccountInterface $account = NULL) {
+    // Get last submission completed time.
+    /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
+    $submission_storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
+    $options = ['access_check' => FALSE];
+    $last_submission = $submission_storage->getLastSubmission($webform, $source_entity, $account, $options);
+    if (!$last_submission) {
+      return '';
+    }
+
+    $completed_time = $last_submission->getCompletedTime();
+
+    // Get interval.
+    $interval = $webform->getSetting($interval_setting);
+
+    // Get wait time.
+    $wait_time = ($completed_time + $interval);
+
+    // Get request time.
+    $request_time = \Drupal::request()->server->get('REQUEST_TIME');
+
+    // Set cache max age.
+    $max_age = ($wait_time - $request_time);
+    $bubbleable_metadata->setCacheMaxAge(($max_age > 0) ? $max_age : 0);
+
+    // Format time diff until next allows submission.
+    /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
+    $date_formatter = \Drupal::service('date.formatter');
+    return $date_formatter->formatTimeDiffUntil($wait_time);
   }
 
 }

@@ -34,6 +34,9 @@ class WebformQueryHooks {
       $query->condition('webform_submission_data_list_builder_element.property', $property_name);
     }
     $query->orderBy('webform_submission_data_list_builder_element.value', $direction);
+    // Sort by 'sid' to ensure a consistent order of records for batch operations.
+    $query->addField('base_table', 'sid');
+    $query->orderBy('base_table.sid', 'DESC');
   }
 
   /**

@@ -162,6 +162,7 @@ class ReserveRoomForm extends PureComponent {
         findTime: false,
       },
       openAgreementDialog: false,
+      openAgreementPublicityDialog: false,
       openDialog: false,
       canSubmit: false,
       uuid: null,
@@ -172,9 +173,11 @@ class ReserveRoomForm extends PureComponent {
     this.updateValues = this.updateValues.bind(this);
     this.toggleValue = this.toggleValue.bind(this);
     this.onCloseAgreementDialog = this.onCloseAgreementDialog.bind(this);
+    this.onCloseAgreementPublicityDialog = this.onCloseAgreementPublicityDialog.bind(this);
     this.onCloseDialog = this.onCloseDialog.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
     this.onOpenAgreementDialog = this.onOpenAgreementDialog.bind(this);
+    this.onOpenAgreementPublicityDialog = this.onOpenAgreementPublicityDialog.bind(this);
     this.onOpenDialog = this.onOpenDialog.bind(this);
     this.onValueChange = this.onValueChange.bind(this);
     this.disableButton = this.disableButton.bind(this);
@@ -214,8 +217,16 @@ class ReserveRoomForm extends PureComponent {
     this.setState({ openAgreementDialog: true });
   };
 
+  onOpenAgreementPublicityDialog = () => {
+    this.setState({ openAgreementPublicityDialog: true });
+  };
+
   onCloseAgreementDialog = () => {
     this.setState({ openAgreementDialog: false });
+  };
+
+  onCloseAgreementPublicityDialog = () => {
+    this.setState({ openAgreementPublicityDialog: false });
   };
 
   disableButton() {
@@ -336,6 +347,56 @@ class ReserveRoomForm extends PureComponent {
     );
   }
 
+  agreementPublicityRichland() {
+    return (
+      <React.Fragment>
+        <p className="publicity">I have read the <a onClick={this.onOpenAgreementPublicityDialog} role="link" tabIndex="0">Meeting Room Publicity Best Practices</a>, and agree that:</p>
+        <Dialog
+          open={this.state.openAgreementPublicityDialog}
+          onCancel={this.onCloseAgreementPublicityDialog}
+          onClose={this.onCloseAgreementPublicityDialog}
+          TransitionComponent={Transition}
+          className="dialog dialog--fullscreen"
+        >
+          <DialogTitle id="responsive-dialog-title">Meeting Room Publicity Best Practices</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              <p>We're glad you've chosen Richland Library as the place for your meeting. To help you share your event clearly and accurately, please keep these best practices in mind when promoting your meeting.</p>
+              <h3>What is considered promotion?</h3>
+              <p>Promotion includes any way you share your meeting with others, such as:</p>
+              <ul>
+                <li>Social media (including Facebook events, Instagram posts or stories, etc.)</li>
+                <li>Creating flyers</li>
+                <li>Using registration platforms like Eventbrite</li>
+                <li>Adding it to community calendars</li>
+              </ul>
+              <p>All meetings must be free and open to the public. Please make sure your promotions don't suggest that Richland Library is sponsoring or endorsing your event.</p>
+              <h3>How should I list Richland Library's name and address?</h3>
+              <p>List Richland Library only as the meeting location and always use the full name of the library location where your meeting will take place.</p>
+              <p>For example:</p>
+              <ul>
+                <li>Richland Library Main</li>
+                <li>Richland Library Ballentine</li>
+                <li>Richland Library Cooper</li>
+                <li>Richland Library Wheatley</li>
+              </ul>
+              <h3>Can I use Richland Library's logo?</h3>
+              <p>No. Please don't use Richland Library's logo on your materials, since that could suggest endorsement.</p>
+              <h3>Related Policies</h3>
+              <ul>
+                <li><a href="/photo-video-and-media-policy">Richland Library Photo, Video and Media Policy</a></li>
+              </ul> 
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
+      </React.Fragment>
+    );
+  }
+
+  handleChange = (model) => {
+    this.setState({ selectedOption: model.publicize });
+  };
+
   render() {
     const {
       availabilityQuery,
@@ -349,6 +410,7 @@ class ReserveRoomForm extends PureComponent {
     } = this.props;
     const { uuid } = this.state;
     const showMeetingPurposeExplanation = !!purposeRequiresExplanation(meetingPurpose);
+    const { selectedOption } = this.state;
 
     let content = null;
     let contact = null;
@@ -413,6 +475,7 @@ class ReserveRoomForm extends PureComponent {
           onValidSubmit={this.onOpenDialog}
           onValid={this.enableButton}
           onInvalid={this.disableButton}
+          onChange={this.handleChange}
         >
           <div className="l--2-col">
             <div className="l__main">
@@ -500,6 +563,31 @@ class ReserveRoomForm extends PureComponent {
                     required
                     options={FIELD_PUBLICIZE_OPTIONS}
                   />
+                  {agreementText && agreementText.includes('Richland') && selectedOption === "1" && 
+                    <div className="form-item">
+                      <small>
+                        {this.agreementPublicityRichland()}
+                        <InputCheckbox
+                          label="I will not use the Richland Library logo on promotional materials or imply an endorsement or sponsorship for this meeting. *"
+                          checked={values.publicityEndorsement}
+                          onChange={() => this.toggleValue('publicityEndorsement')}
+                          value={values.publicityEndorsement}
+                          name="publicityEndorsement"
+                          required={values.publicize === '1'}
+                          disabled={values.publicize !== '1'}
+                        />
+                        <InputCheckbox
+                          label="I will list Richland Library solely as the site of the meeting by using the address. *"
+                          checked={values.publicityAddress}
+                          onChange={() => this.toggleValue('publicityAddress')}
+                          value={values.publicityAddress}
+                          name="publicityAddress"
+                          required={values.publicize === '1'}
+                          disabled={values.publicize !== '1'}
+                        />
+                      </small>
+                    </div>
+                  }
                 </div>
                 {agreementText && agreementText.includes('Richland') &&
                   <div className="l--subsection">
@@ -629,6 +717,8 @@ ReserveRoomForm.propTypes = {
     refreshments: PropTypes.string,
     refreshmentsDesc: PropTypes.string,
     publicize: PropTypes.string,
+    publicityAddress: PropTypes.bool,
+    publicityEndorsement: PropTypes.bool,
     user: PropTypes.string,
   }),
   onChange: PropTypes.func.isRequired,
@@ -658,6 +748,8 @@ ReserveRoomForm.defaultProps = {
     refreshments: '',
     refreshmentsDesc: '',
     publicize: '',
+    publicityAddress: false,
+    publicityEndorsement: false,
     user: drupalSettings.intercept.user.uuid,
   },
   meetingPurpose: null,

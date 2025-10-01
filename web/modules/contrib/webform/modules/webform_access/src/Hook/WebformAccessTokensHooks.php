@@ -119,14 +119,14 @@ class WebformAccessTokensHooks {
           // requested via [webform_access:type:admins] or
           // [webform_access:type:TYPE_ID:admins].
           if (in_array($type, ['admins', 'all']) || in_array($property, ['admins', 'all'])) {
-            $emails = array_merge($emails, _webform_access_tokens_get_access_group_emails('admin', $webform_access_group_ids));
+            $emails = array_merge($emails, $this->getAccessGroupEmails('admin', $webform_access_group_ids));
           }
           // Get access group user email addresses.
           // [webform_access:users]
           // [webform_access:type:TYPE_ID]
           // [webform_access:type:TYPE_ID:users]
           if (in_array($type, ['users', 'all']) || $type === 'type' && (empty($property) || in_array($property, ['users', 'all']))) {
-            $emails = array_merge($emails, _webform_access_tokens_get_access_group_emails('user', $webform_access_group_ids));
+            $emails = array_merge($emails, $this->getAccessGroupEmails('user', $webform_access_group_ids));
           }
           // Get access group 'custom' email addresses.
           // [webform_access:emails]
@@ -145,6 +145,31 @@ class WebformAccessTokensHooks {
       }
     }
     return $replacements;
+  }
+
+  /**
+   * Get webform access group administrator or user email addresses.
+   *
+   * @param string $type
+   *   The type of user (admin or user).
+   * @param array $group_ids
+   *   An array of webform access group ids.
+   *
+   * @return string
+   *   Administrator or user email addresses.
+   *
+   * @internal
+   */
+  protected function getAccessGroupEmails($type, array $group_ids) {
+    $query = \Drupal::database()->select('webform_access_group_' . $type, 'gu');
+    $query->condition('gu.group_id', $group_ids, 'IN');
+    $query->join('users_field_data', 'u', 'u.uid = gu.uid');
+    $query->fields('u', ['mail']);
+    $query->condition('u.status', 1);
+    $query->condition('u.mail', '', '<>');
+    $query->orderBy('mail');
+    $query->distinct();
+    return $query->execute()->fetchCol();
   }
 
 }

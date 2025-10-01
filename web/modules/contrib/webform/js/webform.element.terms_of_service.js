@@ -4,9 +4,6 @@
  */
 
 (function ($, Drupal, once) {
-
-  'use strict';
-
   // @see http://api.jqueryui.com/dialog/
   Drupal.webform = Drupal.webform || {};
   Drupal.webform.termsOfServiceModal = Drupal.webform.termsOfServiceModal || {};
@@ -52,14 +49,17 @@
           });
         }
 
-        // Set event handlers.
-        $a.on('click', openDetails)
-          .on('keydown', function (event) {
-            // Space or Return.
-            if (event.which === 32 || event.which === 13) {
-              openDetails(event);
-            }
-          });
+        // Only add the event handler for none link items.
+        if (type !== 'link') {
+          // Set event handlers.
+          $a.on('click', openDetails)
+            .on('keydown', function (event) {
+              // Space or Return.
+              if (event.which === 32 || event.which === 13) {
+                openDetails(event);
+              }
+            });
+        }
 
         function openDetails(event) {
           if (type === 'modal') {

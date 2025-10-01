@@ -59,3 +59,7 @@
 .flag-saved-event:not(:last-child) {
   margin-right: 1.25rem;
 }
+
+.card .save-link {
+  color: #58595b;
+}

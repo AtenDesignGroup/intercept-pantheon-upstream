@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.17] - 2025-10-01
+
+* Template Fixes
+  * Ensured that attendance numbers are not copied when an event template is created
+  * Ensured that the “author” of the template is set to whichever system admin initiated the template (rather than the author of the original event)
+  * Added the ability to edit a template directly from the template list (Intercept System Admin role only)
+  * Ensured that templates do not display on the events listing view
+* Fixed an accessibility issue with multiple form labels on some forms
+* Fixed color contrast issues on smaller heading sizes
+* Fixed color contrast issues in My Account dashboard
+
 ## [2.0.16] - 2025-08-29
 
 * Changed location page features to where they can be linked to other pages

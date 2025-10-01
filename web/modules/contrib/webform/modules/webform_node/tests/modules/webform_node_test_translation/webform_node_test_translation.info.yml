@@ -2,6 +2,7 @@ name: 'Webform Node Translation test'
 type: module
 description: 'Support module for webform node translation testing.'
 package: Testing
+container_rebuild_required: true
 dependencies:
   - 'webform:webform'
   - 'webform:webform_node'

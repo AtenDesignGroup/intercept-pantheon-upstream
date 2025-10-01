@@ -19,36 +19,58 @@ class WebformLibrariesHooks {
   public function libraryInfoBuild() {
     $base_path = base_path();
     $default_query_string = \Drupal::service('asset.query_string')->get();
-    /** @var \Drupal\webform\WebformInterface[] $webforms */
-    $webforms = Webform::loadMultiple();
+
+    // Note:
+    // Setting the 'type' to 'external' and manually build the CSS/JS file path
+    // to prevent JS from being parsed by locale_js_alter()
+    // @see locale_js_alter()
+    // @see https://www.drupal.org/node/1803330
+    $library_settings = ['type' => 'external', 'preprocess' => FALSE, 'minified' => FALSE];
+
     $libraries = [];
+
+    // Set global webform CSS/JSS libraries when defined.
+    $config = \Drupal::config('webform.settings');
+    if ($config->get('assets.css')) {
+      $libraries["webform.css"] = [
+        'css' => [
+          'theme' => [
+            "{$base_path}webform/assets/global.css?{$default_query_string}" => $library_settings,
+          ],
+        ],
+      ];
+    }
+    if ($config->get('assets.javascript')) {
+      $libraries["webform.javascript"] = [
+        'js' => [
+          "{$base_path}webform/assets/global.js?{$default_query_string}" => $library_settings,
+        ],
+      ];
+    }
+
+    // Set webform specific CSS/JSS libraries when defined.
+    $webform_libraries = \Drupal::state()->get('webform_libraries', []);
+    $webforms = Webform::loadMultiple($webform_libraries);
     foreach ($webforms as $webform_id => $webform) {
-      $assets = array_filter($webform->getAssets());
-      foreach ($assets as $type => $value) {
-        // Note:
-        // Set 'type' to 'external' and manually build the CSS/JS file path
-        // to prevent JS from being parsed by locale_js_alter()
-        // @see locale_js_alter()
-        // @see https://www.drupal.org/node/1803330
-        $settings = ['type' => 'external', 'preprocess' => FALSE, 'minified' => FALSE];
-        if ($type === 'css') {
-          $libraries["webform.css.{$webform_id}"] = [
-            'css' => [
-              'theme' => [
-                "{$base_path}webform/css/{$webform_id}/custom.css?{$default_query_string}" => $settings,
-              ],
+      $assets = $webform->getAssets();
+      if (!empty($assets['css'])) {
+        $libraries["webform.css.{$webform_id}"] = [
+          'css' => [
+            'theme' => [
+              "{$base_path}webform/css/{$webform_id}/custom.css?{$default_query_string}" => $library_settings,
             ],
-          ];
-        }
-        else {
-          $libraries["webform.javascript.{$webform_id}"] = [
-            'js' => [
-              "{$base_path}webform/javascript/{$webform_id}/custom.js?{$default_query_string}" => $settings,
-            ],
-          ];
-        }
+          ],
+        ];
+      }
+      if (!empty($assets['javascript'])) {
+        $libraries["webform.javascript.{$webform_id}"] = [
+          'js' => [
+            "{$base_path}webform/javascript/{$webform_id}/custom.js?{$default_query_string}" => $library_settings,
+          ],
+        ];
       }
     }
+
     return $libraries;
   }
 

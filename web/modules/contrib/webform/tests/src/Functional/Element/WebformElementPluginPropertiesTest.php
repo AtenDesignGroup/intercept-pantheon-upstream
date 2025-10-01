@@ -354,6 +354,7 @@ date:
   admin_notes: ''
   admin_title: ''
   attributes: {  }
+  autocomplete: 'on'
   date_date_format: Y-m-d
   date_date_max: ''
   date_date_min: ''
@@ -458,6 +459,7 @@ datelist:
     - day
     - hour
     - minute
+  date_part_title_display: invisible
   date_text_parts: {  }
   date_year_range: '1900:2050'
   date_year_range_reverse: false
@@ -827,6 +829,7 @@ fieldset:
   states: {  }
   states_clear: true
   title: ''
+  title_attributes: {  }
   title_display: ''
 hidden:
   access_create_permissions: {  }
@@ -3239,6 +3242,7 @@ webform_flexbox:
   format_attributes: {  }
   format_html: ''
   format_text: ''
+  justify_content: flex-start
   randomize: false
   states: {  }
   states_clear: true
@@ -4844,6 +4848,8 @@ webform_terms_of_service:
   states: {  }
   states_clear: true
   terms_content: ''
+  terms_link: ''
+  terms_link_target: ''
   terms_title: ''
   terms_type: modal
   title: 'I agree to the {terms of service}.'

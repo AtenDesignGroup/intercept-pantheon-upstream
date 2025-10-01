@@ -111,7 +111,7 @@ class WebformAccessHooks {
       }
     }
     $route_name = \Drupal::routeMatch()->getRouteName();
-    if ($route_name !== 'entity.node.canonical' && strpos($route_name, 'entity.node.webform.') !== 0) {
+    if ($route_name !== 'entity.node.canonical' && !str_starts_with($route_name, 'entity.node.webform.')) {
       return;
     }
     /** @var \Drupal\webform\WebformRequestInterface $request_handler */

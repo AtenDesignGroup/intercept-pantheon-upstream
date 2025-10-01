@@ -57,7 +57,7 @@ function _webform_devel_form_config_single_export_form_update_export($form, Form
   $value = Yaml::encode(\Drupal::service('config.storage')->read($name));
 
   // Tidy all only Webform exported configuration…for now.
-  if (strpos($name, 'webform') === 0) {
+  if (str_starts_with($name, 'webform')) {
     $value = WebformYaml::tidy($value);
   }
 

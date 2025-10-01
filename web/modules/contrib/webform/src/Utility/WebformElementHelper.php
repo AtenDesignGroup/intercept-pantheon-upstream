@@ -519,13 +519,13 @@ class WebformElementHelper {
     if (isset(self::$allowedProperties[$property])) {
       return FALSE;
     }
-    elseif (strpos($property, '__') !== FALSE && preg_match(self::$allowedSubPropertiesRegExp, $property)) {
+    elseif (str_contains($property, '__') && preg_match(self::$allowedSubPropertiesRegExp, $property)) {
       return FALSE;
     }
     elseif (isset(self::$ignoredProperties[$property])) {
       return TRUE;
     }
-    elseif (strpos($property, '__') !== FALSE && preg_match(self::$ignoredSubPropertiesRegExp, $property)) {
+    elseif (str_contains($property, '__') && preg_match(self::$ignoredSubPropertiesRegExp, $property)) {
       return TRUE;
     }
     elseif (preg_match('/_(validates?|callbacks?)$/', $property)) {

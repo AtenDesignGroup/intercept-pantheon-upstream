@@ -48,7 +48,7 @@ function _webform_library_info_alter_recursive(array &$library, array $cdn) {
     // Replace the CDN sources (i.e. /library/*) with the CDN URL destination
     // (https://cdnjs.cloudflare.com/ajax/libs/*).
     foreach ($cdn as $source => $destination) {
-      if (strpos($key, $source) === 0) {
+      if (str_starts_with($key, $source)) {
         $uri = str_replace($source, $destination, $key);
         $library[$uri] = $value;
         $library[$uri]['type'] = 'external';
@@ -90,7 +90,7 @@ function webform_js_alter(&$javascript, AttachedAssetsInterface $assets) {
  */
 function _webform_asset_alter(array &$items, $type) {
   foreach ($items as $key => &$item) {
-    if (strpos($key, "/webform/$type/") === 0) {
+    if (str_starts_with($key, "/webform/$type/")) {
       $item['weight'] = 1000;
       $item['group'] = 1000;
     }

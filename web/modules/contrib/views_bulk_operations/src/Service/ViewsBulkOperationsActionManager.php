@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\views_bulk_operations\Service;
 
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
@@ -8,6 +10,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\views_bulk_operations\ActionAlterDefinitionsEvent;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -17,7 +20,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * Extends the core Action Manager to allow VBO actions
  * define additional configuration.
  */
-class ViewsBulkOperationsActionManager extends ActionManager {
+final class ViewsBulkOperationsActionManager extends ActionManager {
 
   public const ALTER_ACTIONS_EVENT = 'views_bulk_operations.action_definitions';
 
@@ -50,7 +53,7 @@ class ViewsBulkOperationsActionManager extends ActionManager {
     CacheBackendInterface $cacheBackend,
     ModuleHandlerInterface $moduleHandler,
     protected readonly EventDispatcherInterface $eventDispatcher,
-    protected readonly EntityTypeManagerInterface $entityTypeManager
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
   ) {
     parent::__construct($namespaces, $cacheBackend, $moduleHandler);
 
@@ -68,11 +71,8 @@ class ViewsBulkOperationsActionManager extends ActionManager {
       // We only allow actions of existing entity type and empty
       // type meaning it's applicable to all entity types.
       if (
-        empty($definition) ||
-        (
-          !empty($definition['type']) &&
-          !isset($entity_type_definitions[$definition['type']])
-        )
+        \count($definition) === 0 ||
+        ($definition['type'] !== '' && !\array_key_exists($definition['type'], $entity_type_definitions))
       ) {
         unset($definitions[$plugin_id]);
       }
@@ -85,10 +85,10 @@ class ViewsBulkOperationsActionManager extends ActionManager {
       // shouldn't be the case in core. Luckily, core also has useful actions
       // without the workaround, like node_assign_owner_action or
       // comment_unpublish_by_keyword_action.
-      if (!\in_array('Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionInterface', \class_implements($definition['class']))) {
+      if (!\in_array(ViewsBulkOperationsActionInterface::class, \class_implements($definition['class']), TRUE)) {
         if (
-          !empty($definition['confirm_form_route_name']) ||
-          empty($definition['type'])
+          ($definition['confirm_form_route_name'] ?? '') !== '' ||
+          ($definition['type'] ?? '') === ''
         ) {
           unset($definitions[$plugin_id]);
         }
@@ -99,14 +99,14 @@ class ViewsBulkOperationsActionManager extends ActionManager {
     foreach ($definitions as $plugin_id => $plugin_definition) {
       // If the plugin definition is an object, attempt to convert it to an
       // array, if that is not possible, skip further processing.
-      if (\is_object($plugin_definition) && !($plugin_definition = (array) $plugin_definition)) {
+      if (\is_object($plugin_definition) && (($plugin_definition = (array) $plugin_definition) === [])) {
         continue;
       }
       // If this plugin was provided by a module that does not exist, remove the
       // plugin definition.
       if (
-        isset($plugin_definition['provider']) &&
-        !\in_array($plugin_definition['provider'], ['core', 'component']) &&
+        array_key_exists('provider', $plugin_definition) &&
+        !\in_array($plugin_definition['provider'], ['core', 'component'], TRUE) &&
         !$this->providerExists($plugin_definition['provider'])
       ) {
         unset($definitions[$plugin_id]);
@@ -122,11 +122,12 @@ class ViewsBulkOperationsActionManager extends ActionManager {
    *   Parameters of the method. Passed to alter event.
    */
   public function getDefinitions(array $parameters = []) {
-    if (empty($parameters['nocache'])) {
+    $definitions = NULL;
+    if (($parameters['nocache'] ?? '') === '') {
       $definitions = $this->getCachedDefinitions();
     }
-    if (!isset($definitions)) {
-      $definitions = $this->findDefinitions($parameters);
+    if ($definitions === NULL) {
+      $definitions = $this->findDefinitions();
 
       $this->setCachedDefinitions($definitions);
     }
@@ -160,7 +161,7 @@ class ViewsBulkOperationsActionManager extends ActionManager {
     // Loading all definitions here will not hurt much, as they're cached,
     // and we need the option to alter a definition.
     $definitions = $this->getDefinitions($parameters);
-    if (isset($definitions[$plugin_id])) {
+    if (\array_key_exists($plugin_id, $definitions)) {
       return $definitions[$plugin_id];
     }
     elseif (!$exception_on_invalid) {
@@ -173,7 +174,7 @@ class ViewsBulkOperationsActionManager extends ActionManager {
   /**
    * {@inheritdoc}
    */
-  protected function alterDefinitions(&$definitions) {
+  protected function alterDefinitions(&$definitions): void {
     // Let other modules change definitions.
     // Main purpose: Action permissions bridge.
     $event = new ActionAlterDefinitionsEvent();
@@ -182,7 +183,7 @@ class ViewsBulkOperationsActionManager extends ActionManager {
 
     $this->eventDispatcher->dispatch($event, self::ALTER_ACTIONS_EVENT);
 
-    // Include the expected behaviour (hook system) to avoid security issues.
+    // Include the expected behavior (hook system) to avoid security issues.
     parent::alterDefinitions($definitions);
   }
 

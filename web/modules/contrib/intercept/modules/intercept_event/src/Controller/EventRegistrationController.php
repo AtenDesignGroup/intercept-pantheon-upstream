@@ -118,16 +118,17 @@ class EventRegistrationController extends ControllerBase {
     if (!empty($plugin_id) && $authdata = $authmap->getAuthdata($this->currentUser->id(), $plugin_id)) {
       $authdata_data = unserialize($authdata['data']);
       if (isset($authdata_data)) {
-        $contact = '<div class="l--section">
-            <h2 class="section-title section-title--secondary">Your Current Contact Information</h2>
-            <small>
-              Telephone: ' . $authdata_data->PhoneNumber . '<br />
-              Email: ' . $authdata_data->EmailAddress . '<br />
-              <em>Need to update your info? After finishing your registration visit My Account &gt; Settings.</em>
-            </small>
-          </div>';
+        $contact = '<h2 class="section-title section-title--secondary">Your Current Contact Information</h2>
+          <small>
+            Telephone: ' . $authdata_data->PhoneNumber . '<br />
+            Email: ' . $authdata_data->EmailAddress . '<br />
+            <em>Need to update your info? After finishing your registration visit My Account &gt; Settings.</em>
+          </small>';
         $markup .= '<div class="l--subsection">' . $contact . '</div>';
       }
+    }
+    if (\Drupal::moduleHandler()->moduleExists('rl_site')) {
+      $markup .= '<div class="l--subsection"><p>We value inclusion and access for all of our customers including those that may need <a href="https://www.ada.gov/law-and-regs/ada/">Americans with Disabilities Act accommodations</a>. Please complete this <a href="/services/request-accomodations">ADA accommodation request form</a> at least two weeks prior to the event to make a reasonable accommodation request.<br>Have questions about the program? Please reach out to a staff member at the <a href="/locations">hosting location</a> for additional information.</p></div>';
     }
     return [
       '#theme' => 'event_registration_user_form',
@@ -159,6 +160,10 @@ class EventRegistrationController extends ControllerBase {
     // Add Registration page.
     $build['#attached']['library'][] = 'intercept_event/eventRegister';
     $build['intercept_event_register']['#markup'] = '<div id="eventRegisterRoot" data-uuid="' . $node->uuid() . '"></div>';
+
+    if (\Drupal::moduleHandler()->moduleExists('rl_site')) {
+      $build['intercept_event_register']['#markup'] .= '<div class="l--offset l--section"><p>We value inclusion and access for all of our customers including those that may need <a href="https://www.ada.gov/law-and-regs/ada/">Americans with Disabilities Act accommodations</a>. Please complete this <a href="/services/request-accomodations">ADA accommodation request form</a> at least two weeks prior to the event to make a reasonable accommodation request.<br>Have questions about the program? Please reach out to a staff member at the <a href="/locations">hosting location</a> for additional information.</p></div>';
+    }
 
     return $build;
   }

@@ -157,33 +157,29 @@ class EventRegisterGuestForm extends React.Component {
     ];
 
     return (
-      <div className="l--2-col">
-        <div className="l__main">
-          <div className="l--section">
-            {steps[step]}
-            <EventRegisterConfirmation
-              open={this.state.openDialog}
-              onCancel={this.onCloseDialog}
-              uuid={uuid}
-              eventId={eventId}
-              heading={text[currentStatus].dialogHeading}
-              total={total}
-              status={currentStatus}
-              onConfirm={() =>
-                this.saveEntitytoStore({
-                  event: eventId,
-                  status: currentStatus,
-                  registrants: values.registrants,
-                  nameFirst: values.nameFirst,
-                  nameLast: values.nameLast,
-                  phoneNumber: values.phoneNumber,
-                  email: values.email,
-                  zip: values.zip,
-                })
-              }
-            />
-          </div>
-        </div>
+      <div className="event-register-guest-form">
+        {steps[step]}
+        <EventRegisterConfirmation
+          open={this.state.openDialog}
+          onCancel={this.onCloseDialog}
+          uuid={uuid}
+          eventId={eventId}
+          heading={text[currentStatus].dialogHeading}
+          total={total}
+          status={currentStatus}
+          onConfirm={() =>
+            this.saveEntitytoStore({
+              event: eventId,
+              status: currentStatus,
+              registrants: values.registrants,
+              nameFirst: values.nameFirst,
+              nameLast: values.nameLast,
+              phoneNumber: values.phoneNumber,
+              email: values.email,
+              zip: values.zip,
+            })
+          }
+        />
       </div>
     );
   }

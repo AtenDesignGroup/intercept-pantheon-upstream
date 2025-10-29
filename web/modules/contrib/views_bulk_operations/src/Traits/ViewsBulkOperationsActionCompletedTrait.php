@@ -1,6 +1,8 @@
 <?php
 
-namespace Drupal\views_bulk_operations\Action;
+declare(strict_types=1);
+
+namespace Drupal\views_bulk_operations\Traits;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -16,7 +18,7 @@ trait ViewsBulkOperationsActionCompletedTrait {
    *
    * @see \Drupal\Core\Messenger\MessengerInterface
    */
-  public static function message($message = NULL, $type = 'status', $repeat = TRUE): void {
+  public static function message(?string $message = NULL, string $type = 'status', bool $repeat = TRUE): void {
     \Drupal::messenger()->addMessage($message, $type, $repeat);
   }
 
@@ -25,7 +27,7 @@ trait ViewsBulkOperationsActionCompletedTrait {
    *
    * @see \Drupal\Core\StringTranslation\TranslationInterface:translate()
    */
-  public static function translate($string, array $args = [], array $options = []): TranslatableMarkup {
+  public static function translate(string $string, array $args = [], array $options = []): TranslatableMarkup {
     return \Drupal::translation()->translate($string, $args, $options);
   }
 
@@ -53,12 +55,12 @@ trait ViewsBulkOperationsActionCompletedTrait {
             '@count' => $item['count'],
           ]);
         }
-        static::message($message, $item['type']);
+        static::message((string) $message, $item['type']);
       }
     }
     else {
       $message = static::translate('Finished with an error.');
-      static::message($message, 'error');
+      static::message((string) $message, 'error');
     }
     return NULL;
   }

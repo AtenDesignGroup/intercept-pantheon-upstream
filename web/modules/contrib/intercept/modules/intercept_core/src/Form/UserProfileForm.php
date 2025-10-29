@@ -128,6 +128,8 @@ class UserProfileForm extends ProfileForm {
       // Notification/delivery option
       $entity_form['field_delivery_option']['widget']['#default_value'] = $patron->basicData()->DeliveryOptionID ?? '0';
       unset($entity_form['field_delivery_option']['widget']['#options']['_none']);
+      // Enable SMS
+      $entity_form['field_enable_sms']['widget']['#default_value'] = $patron->basicData()->EnableSMS ?? FALSE;
       $entity_form['field_email_address']['widget'][0]['value']['#default_value'] = $patron->basicData()->EmailAddress ?? '';
       $entity_form['#element_validate'][] = [$this, 'validateInlineEntityForm'];
       $entity_form['#ief_element_submit'][] = [$this, 'saveInlineEntityForm'];
@@ -293,7 +295,12 @@ class UserProfileForm extends ProfileForm {
       'field_delivery_option',
     ]);
     $delivery_option = $delivery_option[0]['value'];
-    if (!empty($pin) || !empty($phone) || !empty($email_address) || !empty($carrier) || !empty($delivery_option)) {
+    $enable_sms = $form_state->cleanValues()->getValue([
+      'customer_profile',
+      'field_enable_sms',
+    ]);
+    $enable_sms = $enable_sms['value'];
+    if (!empty($pin) || !empty($phone) || !empty($email_address) || !empty($carrier) || !empty($delivery_option) || !empty($enable_sms)) {
       // If $patron is empty, this submit handler is never set.
       $patron = $form_state->get('patron');
       if (!empty($pin)) {
@@ -316,6 +323,12 @@ class UserProfileForm extends ProfileForm {
         $patron->DeliveryOptionID = $delivery_option;
         if ($delivery_option == '8') {
           // Check the TXT box next to the number in Polaris.
+          $patron->TxtPhoneNumber = '1';
+        }
+      }
+      if ($enable_sms >= 0) {
+        $patron->EnableSMS = $enable_sms;
+        if ($enable_sms == 1) {
           $patron->TxtPhoneNumber = '1';
         }
       }

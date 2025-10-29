@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.18] - 2025-10-29
+
+* Updated location closings functionality to automatically generate “closing events” in addition to blocking off room reservations
+* Removed auto-submit from staff filters on Events and Room Reservations
+
 ## [2.0.17] - 2025-10-01
 
 * Template Fixes

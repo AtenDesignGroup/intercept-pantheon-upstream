@@ -1,0 +1,21 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Drupal\\\\Core\\\\Executable\\\\ExecutableInterface\\:\\:execute\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			count: 1
+			path: src/Action/ViewsBulkOperationsActionBase.php
+
+		-
+			message: "#^Call to function array_key_exists\\(\\) with 'id' and array\\{total_items\\: mixed\\} will always evaluate to false\\.$#"
+			count: 1
+			path: src/Service/ViewsBulkOperationsViewData.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\views\\\\ResultRow\\:\\:\\$nid\\.$#"
+			count: 1
+			path: tests/src/Kernel/ViewsBulkOperationsProcessSortingTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$message of static method Drupal\\\\views_bulk_operations\\\\Action\\\\ViewsBulkOperationsActionBase\\:\\:message\\(\\) expects string\\|null, Drupal\\\\Core\\\\StringTranslation\\\\TranslatableMarkup given\\.$#"
+			count: 1
+			path: tests/views_bulk_operations_test/src/Plugin/Action/ViewsBulkOperationsTestActionV2.php

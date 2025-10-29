@@ -299,7 +299,7 @@ class InterceptLocationClosing extends ContentEntityBase implements InterceptLoc
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Published'))
-      ->setDescription(new TranslatableMarkup('A boolean indicating whether the closing is published.'))
+      ->setDescription(new TranslatableMarkup('This determines whether the closing will be visible to customers.'))
       ->setDefaultValue(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'boolean_checkbox',

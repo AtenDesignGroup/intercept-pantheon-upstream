@@ -5,12 +5,14 @@
  * Contains intercept_location_closing.module.
  */
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_help().
@@ -23,8 +25,6 @@ function intercept_location_closing_help($route_name, RouteMatchInterface $route
       $output .= '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t('Allows locations to be marked as closed') . '</p>';
       return $output;
-
-    default:
   }
 }
 
@@ -101,11 +101,152 @@ function intercept_location_closing_node_insert(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_update().
+ * Implements hook_ENTITY_TYPE_presave().
  */
-function intercept_location_closing_node_update(EntityInterface $entity) {
-  if ($entity->bundle() == 'event') {
-    \Drupal::service('intercept_location_closing.query')->eventClosingConflictPrompt($entity);
+function intercept_location_closing_intercept_location_closing_presave(EntityInterface $entity) {
+
+  // Let's start by getting the field values that we need.
+  $title = $entity->get('title')->getString();
+  $visitor_message = $entity->get('message')->getString();
+  $dates = $entity->get('date')->getValue();
+  $author = $entity->get('user_id')->getString();
+  $locations = $entity->get('location')->getValue();
+  $events = $entity->get('field_events')->getValue();
+  $published = $entity->get('status')->getValue();
+
+  // DELETE any previously-associated event nodes.
+  if ($events) {
+    foreach ($events as $event) {
+      $event_node = Node::load($event['target_id']);
+      if ($event_node) {
+        $event_node->delete();
+      }
+    }
+  }
+
+  // CREATE (or recreate) the event nodes.
+
+  // Determine if this event spans multiple days.
+  $dateTime = new DrupalDateTime($dates[0]['value'], 'UTC');
+  $start_date = date('Y-m-d', $dateTime->getTimestamp());
+  $start_time = date('H:i:s', $dateTime->getTimestamp());
+  $dateTime = new DrupalDateTime($dates[0]['end_value'], 'UTC');
+  $end_date = date('Y-m-d', $dateTime->getTimestamp());
+  $end_time = date('H:i:s', $dateTime->getTimestamp());
+  $multiple_days = ($start_date !== $end_date);
+  
+  foreach ($locations as $location) {
+    // We're going to break up each multi-day closing into multiple events.
+    if ($multiple_days == TRUE) {
+      $date_list = [];
+      $date_period = intercept_location_closing_return_dates($start_date, $end_date);
+      $count = 0;
+      $count_total = iterator_count($date_period);
+      $event_ids = [];
+      foreach ($date_period as $date) {
+        $count++;
+        // By default, start and end each at 12:00 - 11:59.
+        $start_date_timestamp = strtotime($date->format('Y-m-d') . ' 00:00:00');
+        $start_date_datetime = DrupalDateTime::createFromTimestamp($start_date_timestamp, 'UTC');
+        $start_date_value = $start_date_datetime->format('Y-m-d\TH:i:s');
+        $end_date_timestamp = strtotime($date->format('Y-m-d'). ' 23:59:59');
+        $end_date_datetime = DrupalDateTime::createFromTimestamp($end_date_timestamp, 'UTC');
+        $end_date_value = $end_date_datetime->format('Y-m-d\TH:i:s');
+        // Need to add the specific start time to the first date. (End at 11:59 PM)
+        if ($count == 1) {
+          $start_date_value = $dates[0]['value'];
+        }
+        // Also, add the specific end time to the last date. (Start at 12:00 AM)
+        elseif ($count == $count_total) {
+          $end_date_value = $dates[0]['end_value'];
+        }
+        $event = Node::create([
+          'type' => 'event',
+          'title' => $title,
+          'field_event_status' => 'scheduled',
+          'field_text_teaser' => $visitor_message,
+          'field_text_content' => $visitor_message,
+          'field_location' => $location['target_id'],
+          'field_date_time' => [
+            'value' => $start_date_value,
+            'end_value' => $end_date_value
+          ],
+          'field_event_type_primary' => 197, // Other
+          'field_audience_primary' => 204, // Adults
+          'image_primary' => 8752,
+        ]);
+        // Save the node, but only if the closing is in published status.
+        if ($published[0]['value'] == 1) {
+          $event->save();
+        }
+        // Check for success.
+        if ($event->id()) {
+          // After the event nodes are saved, we need to also update the "field_events"
+          // value on this original location closing entity. That solidifies the association.
+          $event_ids[] = $event->id();
+        }
+      }
+      $entity->set('field_events', $event_ids);
+    }
+    else {
+      // Just make a single event that is on the single day.
+      $start_date_value = $dates[0]['value'];
+      $end_date_value = $dates[0]['end_value'];
+      $event = Node::create([
+        'type' => 'event',
+        'title' => $title,
+        'field_event_status' => 'scheduled',
+        'field_text_teaser' => $visitor_message,
+        'field_text_content' => $visitor_message,
+        'field_location' => $location['target_id'],
+        'field_date_time' => [
+          'value' => $start_date_value,
+          'end_value' => $end_date_value
+        ],
+        'field_event_type_primary' => 197, // Other
+        'field_audience_primary' => 204, // Adults
+      ]);
+      // Save the node, but only if the closing is in published status.
+      if ($published[0]['value'] == 1) {
+        $event->save();
+      }
+      // Check for success.
+      if ($event->id()) {
+        // After the event nodes are saved, we need to also update the "field_events"
+        // value on this original location closing entity. That solidifies the association.
+        $entity->set('field_events', [$event->id()]);
+      }
+    }
+  }
+}
+
+/**
+ * Get a list of dates between two dates.
+ */
+function intercept_location_closing_return_dates($fromdate, $todate) {
+  $fromdate = \DateTime::createFromFormat('Y-m-d', $fromdate);
+  $todate = \DateTime::createFromFormat('Y-m-d', $todate);
+  return new \DatePeriod(
+    $fromdate,
+    new \DateInterval('P1D'),
+    $todate->modify('+1 day')
+  );
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function intercept_location_closing_intercept_location_closing_delete(EntityInterface $entity) {
+  $events = $entity->get('field_events')->getValue();
+
+  // Delete any previously-associated event nodes.
+  if ($events) {
+    foreach ($events as $event) {
+      $event_node = Node::load($event['target_id']);
+      if ($event_node) {
+        $event_node->delete();
+      }
+    }
   }
 }
 

@@ -950,7 +950,8 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
   else {
     $room_id = NULL;
   }
-  if (!empty($values['event_recurrence']) && !empty($values['reservation']) && $ajax_form != TRUE && $room_id && $new_node == TRUE) {
+  $event_recurrence = ($values['event_recurrence'][0]['inline_entity_form']['field_event_rrule'][0]['mode'] !== 'once') ? $values['event_recurrence'][0]['inline_entity_form']['field_event_rrule'][0]['mode'] : '';
+  if (!empty($event_recurrence) && !empty($values['reservation']) && $ajax_form != TRUE && $room_id && $new_node == TRUE) {
     // Check for conflicts.
     $date_utility = \Drupal::service('intercept_core.utility.dates');
     $reservation_manager = \Drupal::service('intercept_core.reservation.manager');

@@ -130,8 +130,8 @@
   margin: 0;
   transform: none;
   background: #fff;
-  -webkit-mask-image: url("../../media/sprite.svg#close-view");
-          mask-image: url("../../media/sprite.svg#close-view");
+  -webkit-mask-image: url("../../../images/icons/close.svg");
+          mask-image: url("../../../images/icons/close.svg");
   -webkit-mask-size: 24px 24px;
           mask-size: 24px 24px;
   -webkit-mask-repeat: no-repeat;

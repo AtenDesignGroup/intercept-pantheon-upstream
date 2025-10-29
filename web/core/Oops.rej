@@ -1,9 +1,0 @@
-@@ -43,7 +43,7 @@
-     tags:
-       - { name: theme_negotiator, priority: -40 }
-   user.auth:
--    class: Drupal\user\UserAuthentication
-+    class: Drupal\user\UserAuth
-     arguments: ['@entity_type.manager', '@password']
-   Drupal\user\UserAuthInterface: '@user.auth'
-   user.permissions:

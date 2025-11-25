@@ -10,7 +10,7 @@ use Drupal\views_bulk_operations\Traits\ViewsBulkOperationsActionCompletedTrait;
 /**
  * Defines module Batch API methods.
  */
-final class ViewsBulkOperationsBatch {
+class ViewsBulkOperationsBatch {
 
   use ViewsBulkOperationsActionCompletedTrait;
 

@@ -20,6 +20,7 @@ use Drupal\Core\Url;
 use Drupal\field\FieldConfigInterface;
 use Drupal\profile\Entity\ProfileType;
 use Drupal\profile\Plugin\Field\ProfileEntityFieldItemList;
+use Drupal\user\UserInterface;
 
 /**
  * Implements hook_help().
@@ -135,6 +136,31 @@ function template_preprocess_profile(array &$variables) {
   $variables['content'] = [];
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function profile_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'user_insert') {
+    // Move profile_user_insert() to the top so it fires first.
+    $group = $implementations['profile'];
+    unset($implementations['profile']);
+    $implementations = ['profile' => $group] + $implementations;
+  }
+}
+
+/**
+ * Implements hook_user_insert().
+ */
+function profile_user_insert(UserInterface $user) {
+  // Save any profiles that were prepared for the user.
+  $profiles = \Drupal::service('profile.user_syncer')->flushPreparedProfiles($user);
+  foreach ($profiles as $profile) {
+    $profile->setOwnerId($user->id());
+    $profile->setPublished();
+    $profile->save();
   }
 }
 

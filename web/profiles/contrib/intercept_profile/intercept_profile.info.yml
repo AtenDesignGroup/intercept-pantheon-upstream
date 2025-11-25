@@ -55,7 +55,6 @@ dependencies:
   - stories:stories_media
   - twig_tweak:twig_tweak (>=8.x-2.9)
   - twig_field_value:twig_field_value
-  - view_user_email:view_user_email
   - views_autosubmit:views_autosubmit
 themes:
   - gin

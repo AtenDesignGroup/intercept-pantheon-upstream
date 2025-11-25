@@ -11,7 +11,6 @@ label: 'Intercept Staff'
 weight: 7
 is_admin: null
 permissions:
-  - 'access email field'
   - 'access environment indicator'
   - 'access event attendance tab'
   - 'access event registrations tab'
@@ -98,3 +97,4 @@ permissions:
   - 'view saved_event flagging entities'
   - 'view staff use room reservation'
   - 'view the administration theme'
+  - 'view user email addresses'

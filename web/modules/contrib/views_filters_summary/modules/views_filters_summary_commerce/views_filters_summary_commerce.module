@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for views_filters_summary_commerce module.
+ */
+
+/**
+ * Implements hook_views_filters_summary_plugin_alias().
+ */
+function views_filters_summary_commerce_views_filters_summary_plugin_alias($filter) {
+  if ($filter->getPluginId() === 'commerce_entity_bundle') {
+    // The commerce_entity_bundle plugin behaves like the bundle plugin.
+    return 'bundle';
+  }
+}

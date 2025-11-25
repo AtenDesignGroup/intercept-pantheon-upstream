@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 /**
  * Defines VBO action processor.
  */
-final class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionProcessorInterface {
+class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionProcessorInterface {
 
   use StringTranslationTrait;
 
@@ -81,7 +81,7 @@ final class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsAct
       $this->queue = [];
     }
 
-    $this->excludeMode = \array_key_exists('exclude_mode', $view_data) && $view_data['exclude_mode'] != FALSE;
+    $this->excludeMode = \array_key_exists('exclude_mode', $view_data) && $view_data['exclude_mode'] !== FALSE;
 
     if (\array_key_exists('action_id', $view_data)) {
       if (!\array_key_exists('configuration', $view_data)) {
@@ -162,7 +162,7 @@ final class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsAct
 
     // Set exposed filters and pager parameters.
     if (
-      (\array_key_exists('clear_on_exposed', $this->bulkFormData) && $this->bulkFormData['clear_on_exposed'] != FALSE) &&
+      (\array_key_exists('clear_on_exposed', $this->bulkFormData) && $this->bulkFormData['clear_on_exposed'] !== FALSE) &&
       (\array_key_exists('exposed_input', $this->bulkFormData) && \count($this->bulkFormData['exposed_input']) !== 0)
     ) {
       $this->view->setExposedInput($this->bulkFormData['exposed_input']);
@@ -279,7 +279,7 @@ final class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsAct
       foreach ($this->view->filter as $id => $filter) {
         if (
           \array_key_exists('exposed', $filter->options) &&
-          $filter->options['exposed'] == TRUE
+          $filter->options['exposed'] === TRUE
         ) {
           unset($this->view->filter[$id]);
         }

@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Default action execution confirmation form.
  */
-final class ConfirmAction extends FormBase {
+class ConfirmAction extends FormBase {
 
   use ViewsBulkOperationsFormTrait;
 

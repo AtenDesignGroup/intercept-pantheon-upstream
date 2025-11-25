@@ -10,7 +10,7 @@ use Drupal\views\ViewExecutable;
 /**
  * Defines Views Bulk Operations event type.
  */
-final class ViewEntityDataEvent extends Event {
+class ViewEntityDataEvent extends Event {
 
   public const NAME = 'views_bulk_operations.view_entity_data';
 

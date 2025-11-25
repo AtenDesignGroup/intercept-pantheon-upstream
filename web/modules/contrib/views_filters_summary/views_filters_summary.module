@@ -7,6 +7,8 @@
  * Provides the ability to show which filters are used in Views Result.
  */
 
+use Drupal\views\Plugin\views\filter\FilterPluginBase;
+
 /**
  * Implements hook_theme().
  */
@@ -35,4 +37,30 @@ function views_filters_summary_views_data(): array {
   ];
 
   return $data;
+}
+
+/**
+ * Implements hook_views_filters_summary_filter_value_alter().
+ */
+function views_filters_summary_views_filters_summary_filter_value_alter(
+  mixed &$value,
+  FilterPluginBase $filter,
+) {
+  // For some reason, the User Permissions plugin does not properly
+  // populate the filter value.
+  if ($filter->getPluginId() === 'user_permissions') {
+    $inputs = $filter->view->getExposedInput();
+    $value = $inputs[$filter->options['id']];
+  }
+}
+
+/**
+ * Implements hook_views_filters_summary_plugin_alias().
+ */
+function views_filters_summary_views_filters_summary_plugin_alias($filter) {
+  switch ($filter->getPluginId()) {
+    case 'user_permissions':
+    case 'user_roles':
+      return 'list_field';
+  }
 }

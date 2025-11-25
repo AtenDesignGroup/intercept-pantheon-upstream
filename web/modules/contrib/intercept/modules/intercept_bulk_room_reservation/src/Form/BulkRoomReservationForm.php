@@ -525,7 +525,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
     if ($success) {
       if ($results['room_reservations']) {
         \Drupal::service('messenger')->addMessage(\Drupal::translation()
-          ->formatPlural($results['room_reservations'], 'Generated 1 reservation.', 'Generated @count reservations.'));
+          ->formatPlural(count($results['room_reservations']), 'Generated 1 reservation.', 'Generated @count reservations.'));
       }
       else {
         \Drupal::service('messenger')
@@ -549,7 +549,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
     if ($success) {
       if ($results['room_reservations']) {
         \Drupal::service('messenger')->addMessage(\Drupal::translation()
-          ->formatPlural($results['room_reservations'], 'Deleted 1 reservation.', 'Deleted @count reservations.'));
+          ->formatPlural(count($results['room_reservations']), 'Deleted 1 reservation.', 'Deleted @count reservations.'));
       }
       else {
         \Drupal::service('messenger')

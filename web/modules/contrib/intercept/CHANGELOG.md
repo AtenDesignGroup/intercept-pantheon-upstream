@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.19] - 2025-11-25
+
+* Fixed an issue on event creation where the event location could be left empty
+* Fixed an issue with the event filter toggle not appearing on calendar view
+
 ## [2.0.18] - 2025-10-29
 
 * Updated location closings functionality to automatically generate “closing events” in addition to blocking off room reservations

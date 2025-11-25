@@ -10,7 +10,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Contains module hook implementations.
  */
-final class ViewsBulkOperationsHooks {
+class ViewsBulkOperationsHooks {
 
   #[Hook('views_data_alter')]
   public function viewsDataAlter(array &$data): void {

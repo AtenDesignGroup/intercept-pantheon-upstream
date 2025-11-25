@@ -20,7 +20,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * Gets Views data needed by VBO.
  */
-final class ViewsBulkOperationsViewData implements ViewsBulkOperationsViewDataInterface {
+class ViewsBulkOperationsViewData implements ViewsBulkOperationsViewDataInterface {
 
   use ViewsBulkOperationsBulkFormKeyTrait;
 
@@ -233,6 +233,7 @@ final class ViewsBulkOperationsViewData implements ViewsBulkOperationsViewDataIn
    * {@inheritdoc}
    */
   public function getEntityDefault(ResultRow $row, $relationship_id, ViewExecutable $view): ?FieldableEntityInterface {
+    $entity = NULL;
     if ($relationship_id === 'none') {
       $entity = $row->_entity;
     }

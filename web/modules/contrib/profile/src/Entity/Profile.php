@@ -292,6 +292,7 @@ class Profile extends EditorialContentEntityBase implements ProfileInterface {
         $profiles = $storage->loadMultipleByUser($this->getOwner(), $this->bundle());
         foreach ($profiles as $profile) {
           if ($profile->id() != $this->id() && $profile->isDefault()) {
+            $profile->setSyncing($this->isSyncing());
             $profile->setDefault(FALSE);
             $profile->save();
           }

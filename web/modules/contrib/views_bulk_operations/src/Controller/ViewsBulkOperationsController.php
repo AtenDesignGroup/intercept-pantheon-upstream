@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /**
  * Defines VBO controller class.
  */
-final class ViewsBulkOperationsController extends ControllerBase implements ContainerInjectionInterface {
+class ViewsBulkOperationsController extends ControllerBase implements ContainerInjectionInterface {
 
   use ViewsBulkOperationsFormTrait;
 
@@ -115,7 +115,7 @@ final class ViewsBulkOperationsController extends ControllerBase implements Cont
 
     $this->setTempstoreData($tempstore_data);
 
-    $exclude_mode = \array_key_exists('exclude_mode', $tempstore_data) && $tempstore_data['exclude_mode'] == TRUE;
+    $exclude_mode = \array_key_exists('exclude_mode', $tempstore_data) && $tempstore_data['exclude_mode'] === TRUE;
     $count = $exclude_mode ? $tempstore_data['total_results'] - \count($tempstore_data['list']) : \count($tempstore_data['list']);
 
     $selection_info_renderable = $this->getMultipageList($tempstore_data);

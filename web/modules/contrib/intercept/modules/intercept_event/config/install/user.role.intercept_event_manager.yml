@@ -3,13 +3,12 @@ status: true
 dependencies: {  }
 id: intercept_event_manager
 label: 'Intercept Event Manager'
-weight: 4
+weight: 2
 is_admin: null
 permissions:
   - 'access equipment reservations export'
   - 'access event attendance tab'
   - 'access event registrations tab'
-  - 'access management'
   - 'access management page equipment_reservations'
   - 'access management page event_attendance_export'
   - 'access management page event_templates'
@@ -17,17 +16,17 @@ permissions:
   - 'access management page room_reservations'
   - 'access room reservations export'
   - 'access stories_image_uploader entity browser pages'
-  - 'access email field'
   - 'access user profiles'
   - 'add equipment reservation entities'
   - 'analyze events'
   - 'bypass event registration limit'
+  - 'bypass room certification constraints'
   - 'bypass room reservation agreement'
   - 'bypass room reservation limit'
-  - 'bypass room reservation maximum duration constraints'
-  - 'bypass room reservation open hours constraints'
   - 'bypass room reservation maximum capacity constraints'
+  - 'bypass room reservation maximum duration constraints'
   - 'bypass room reservation minimum capacity constraints'
+  - 'bypass room reservation open hours constraints'
   - 'cancel event_registration entities'
   - 'clone event content'
   - 'create any event feedback'
@@ -43,6 +42,7 @@ permissions:
   - 'delete any event_registration'
   - 'delete equipment reservation entities'
   - 'delete own event content'
+  - 'delete own files'
   - 'edit any event content'
   - 'edit any event_series content'
   - 'edit equipment reservation entities'

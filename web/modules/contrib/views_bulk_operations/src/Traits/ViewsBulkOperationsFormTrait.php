@@ -29,7 +29,7 @@ trait ViewsBulkOperationsFormTrait {
    * @return array
    *   Array containing data for the form builder.
    */
-  private function getFormData($view_id, $display_id): array {
+  protected function getFormData($view_id, $display_id): array {
 
     // Get tempstore data.
     $form_data = $this->getTempstoreData($view_id, $display_id);
@@ -43,11 +43,11 @@ trait ViewsBulkOperationsFormTrait {
   /**
    * Add data needed for entity list rendering.
    */
-  private function addListData(array &$form_data): void {
+  protected function addListData(array &$form_data): void {
     $form_data['entity_labels'] = [];
     if (\count($form_data['list']) !== 0) {
       $form_data['selected_count'] = \count($form_data['list']);
-      if (\array_key_exists('exclude_mode', $form_data) && $form_data['exclude_mode'] == TRUE) {
+      if (\array_key_exists('exclude_mode', $form_data) && $form_data['exclude_mode'] === TRUE) {
         $form_data['selected_count'] = $form_data['total_results'] - $form_data['selected_count'];
       }
 
@@ -71,9 +71,9 @@ trait ViewsBulkOperationsFormTrait {
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup | null
    *   The selection info title.
    */
-  private function getSelectionInfoTitle(array $tempstore_data): ?TranslatableMarkup {
+  protected function getSelectionInfoTitle(array $tempstore_data): ?TranslatableMarkup {
     if (\count($tempstore_data['list']) !== 0) {
-      $exclude_mode = \array_key_exists('exclude_mode', $tempstore_data) && $tempstore_data['exclude_mode'] == TRUE;
+      $exclude_mode = \array_key_exists('exclude_mode', $tempstore_data) && $tempstore_data['exclude_mode'] === TRUE;
       return $exclude_mode ? $this->t('Selected all items except:') : $this->t('Items selected:');
     }
     return NULL;
@@ -88,7 +88,7 @@ trait ViewsBulkOperationsFormTrait {
    * @return array
    *   Renderable array of the item list.
    */
-  private function getMultipageList(array $tempstore_data): array {
+  protected function getMultipageList(array $tempstore_data): array {
     $this->addListData($tempstore_data);
     $list = $this->getListRenderable($tempstore_data);
     return $list;
@@ -103,7 +103,7 @@ trait ViewsBulkOperationsFormTrait {
    * @return array
    *   Renderable list array.
    */
-  private function getListRenderable(array $form_data): array {
+  protected function getListRenderable(array $form_data): array {
     $renderable = [
       '#theme' => 'item_list',
       '#items' => $form_data['entity_labels'],
@@ -121,7 +121,7 @@ trait ViewsBulkOperationsFormTrait {
       }
       $renderable['#title'] = $this->getSelectionInfoTitle($form_data);
     }
-    elseif (\array_key_exists('exclude_mode', $form_data) && $form_data['exclude_mode'] == TRUE) {
+    elseif (\array_key_exists('exclude_mode', $form_data) && $form_data['exclude_mode'] === TRUE) {
       $renderable['#empty'] = $this->t('Action will be executed on all items in the view.');
     }
 
@@ -139,7 +139,7 @@ trait ViewsBulkOperationsFormTrait {
    * @return array
    *   Entity list item.
    */
-  private function getListItem($bulkFormKey): ?array {
+  protected function getListItem($bulkFormKey): ?array {
     $decoded = \base64_decode($bulkFormKey, TRUE);
     if ($decoded === FALSE) {
       return NULL;
@@ -157,7 +157,7 @@ trait ViewsBulkOperationsFormTrait {
    * @param array $form
    *   The form definition.
    */
-  private function addCancelButton(array &$form): void {
+  protected function addCancelButton(array &$form): void {
     $form['actions']['cancel'] = [
       '#type' => 'submit',
       '#value' => $this->t('Cancel'),

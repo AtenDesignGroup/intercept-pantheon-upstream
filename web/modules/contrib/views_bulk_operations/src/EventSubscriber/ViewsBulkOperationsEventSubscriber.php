@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * Allows getting data of core entity views.
  */
-final class ViewsBulkOperationsEventSubscriber implements EventSubscriberInterface {
+class ViewsBulkOperationsEventSubscriber implements EventSubscriberInterface {
 
   // Subscribe to the VBO event with high priority
   // to prepopulate the event data.

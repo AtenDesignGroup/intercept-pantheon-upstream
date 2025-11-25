@@ -20,7 +20,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * Extends the core Action Manager to allow VBO actions
  * define additional configuration.
  */
-final class ViewsBulkOperationsActionManager extends ActionManager {
+class ViewsBulkOperationsActionManager extends ActionManager {
 
   public const ALTER_ACTIONS_EVENT = 'views_bulk_operations.action_definitions';
 
@@ -65,37 +65,54 @@ final class ViewsBulkOperationsActionManager extends ActionManager {
    */
   protected function findDefinitions() {
     $definitions = $this->getDiscovery()->getDefinitions();
-
     $entity_type_definitions = $this->entityTypeManager->getDefinitions();
+
     foreach ($definitions as $plugin_id => &$definition) {
-      // We only allow actions of existing entity type and empty
-      // type meaning it's applicable to all entity types.
+      // Remove broken definitions.
+      if (\count($definition) === 0) {
+        unset($definitions[$plugin_id]);
+        continue;
+      }
+
+      // Make sure confirm_form_route_name and type are always
+      // of the string type.
+      foreach (['type', 'confirm_form_route_name'] as $parameter) {
+        if (
+          !\array_key_exists($parameter, $definition) ||
+          !\is_string($definition[$parameter])
+        ) {
+          $definition[$parameter] = '';
+        }
+      }
+
+      // We only allow actions of existing entity types and empty
+      // string type that apply to all entity types.
       if (
-        \count($definition) === 0 ||
-        ($definition['type'] !== '' && !\array_key_exists($definition['type'], $entity_type_definitions))
+        $definition['type'] !== '' &&
+        !\array_key_exists($definition['type'], $entity_type_definitions)
       ) {
         unset($definitions[$plugin_id]);
+        continue;
       }
 
       // Filter definitions that are incompatible due to applied core
       // configuration form workaround (using confirm_form_route for config
       // forms and using action execute() method for purposes other than
-      // actual action execution). Also filter out actions that don't implement
-      // ViewsBulkOperationsActionInterface and have empty type as this
-      // shouldn't be the case in core. Luckily, core also has useful actions
+      // actual action execution). Luckily, core also has useful actions
       // without the workaround, like node_assign_owner_action or
       // comment_unpublish_by_keyword_action.
-      if (!\in_array(ViewsBulkOperationsActionInterface::class, \class_implements($definition['class']), TRUE)) {
-        if (
-          ($definition['confirm_form_route_name'] ?? '') !== '' ||
-          ($definition['type'] ?? '') === ''
-        ) {
-          unset($definitions[$plugin_id]);
-        }
+      if (
+        !\in_array(ViewsBulkOperationsActionInterface::class, \class_implements($definition['class']), TRUE) &&
+        $definition['confirm_form_route_name'] !== ''
+      ) {
+        unset($definitions[$plugin_id]);
+        continue;
       }
 
       $this->processDefinition($definition, $plugin_id);
     }
+
+    // @todo Examine the following block of code for possible use cases.
     foreach ($definitions as $plugin_id => $plugin_definition) {
       // If the plugin definition is an object, attempt to convert it to an
       // array, if that is not possible, skip further processing.
@@ -105,13 +122,14 @@ final class ViewsBulkOperationsActionManager extends ActionManager {
       // If this plugin was provided by a module that does not exist, remove the
       // plugin definition.
       if (
-        array_key_exists('provider', $plugin_definition) &&
+        \array_key_exists('provider', $plugin_definition) &&
         !\in_array($plugin_definition['provider'], ['core', 'component'], TRUE) &&
         !$this->providerExists($plugin_definition['provider'])
       ) {
         unset($definitions[$plugin_id]);
       }
     }
+
     return $definitions;
   }
 

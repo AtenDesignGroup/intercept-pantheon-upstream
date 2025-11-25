@@ -68,7 +68,7 @@
     </span>
 
     {% if summary and options.show_reset_link and options.reset_link.title %}
-      <a class="reset" href='/'>{{ options.reset_link.title }}</a>
+      <a class="reset disabled" href='#' data-filter-ids="{{ options.reset_link.filter_ids|join(',') }}">{{ options.reset_link.title }}</a>
     {% endif %}
   </div>
 {% endapply %}

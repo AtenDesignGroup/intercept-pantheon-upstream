@@ -3,11 +3,10 @@ status: true
 dependencies: {  }
 id: intercept_system_admin
 label: 'Intercept System Admin'
-weight: 4
+weight: 8
 is_admin: null
 permissions:
   - 'access content overview'
-  - 'access email field'
   - 'access equipment reservations export'
   - 'access equipment_reservation overview'
   - 'access event attendance tab'
@@ -19,14 +18,12 @@ permissions:
   - 'access management page event_configuration'
   - 'access management page event_templates'
   - 'access management page events'
-  - 'access management page location_closing_add'
-  - 'access management page location_closings'
   - 'access management page locations_rooms'
   - 'access management page room_reservation_configuration'
   - 'access management page room_reservations'
-  - 'access room reservations export'
   - 'access management page settings'
   - 'access management page system_configuration'
+  - 'access room reservations export'
   - 'access stories_image entity browser pages'
   - 'access stories_image_uploader entity browser pages'
   - 'access taxonomy overview'
@@ -83,6 +80,7 @@ permissions:
   - 'delete location closing entities'
   - 'delete own customer profile'
   - 'delete own event content'
+  - 'delete own files'
   - 'delete terms in audience'
   - 'delete terms in equipment_type'
   - 'delete terms in event_type'

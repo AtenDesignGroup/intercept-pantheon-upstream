@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for views_filters_summary_vcer module.
+ */
+
+use Drupal\views\Plugin\views\filter\FilterPluginBase;
+
+/**
+ * Implements hook_views_filters_summary_filter_value_label_alter().
+ */
+function views_filters_summary_vcer_views_filters_summary_filter_value_label_alter(
+  string &$label,
+  string &$value,
+  FilterPluginBase $filter,
+) {
+  if ($filter->getPluginId() === 'entity_reference') {
+    $entity_type_id = $filter->getEntityType();
+    $entity = \Drupal::entityTypeManager()->getStorage($entity_type_id)->load($value);
+    if ($entity) {
+      $label = $entity->label();
+    }
+  }
+}

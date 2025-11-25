@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   label: new TranslatableMarkup('Cancel the selected user accounts'),
   type: 'user'
 )]
-final class CancelUserAction extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface, PluginFormInterface {
+class CancelUserAction extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   /**
    * Object constructor.
@@ -81,7 +81,7 @@ final class CancelUserAction extends ViewsBulkOperationsActionBase implements Co
     }
     else {
       // Allow other modules to act.
-      if ($this->configuration['user_cancel_method'] != 'user_cancel_delete') {
+      if ($this->configuration['user_cancel_method'] !== 'user_cancel_delete') {
         $this->moduleHandler->invokeAll('user_cancel', [
           $this->configuration,
           $account,
@@ -105,7 +105,7 @@ final class CancelUserAction extends ViewsBulkOperationsActionBase implements Co
       ];
 
       // After cancelling account, ensure that user is logged out.
-      if ($account->id() == $this->currentUser->id()) {
+      if ($account->id() === $this->currentUser->id()) {
         // Batch API stores data in the session, so use the finished operation
         // to manipulate the current user's session id.
         $batch['finished'] = '_user_cancel_session_regenerate';

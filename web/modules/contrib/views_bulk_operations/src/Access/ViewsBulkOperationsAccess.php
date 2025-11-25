@@ -14,7 +14,7 @@ use Drupal\views\Views;
 /**
  * Defines module access rules.
  */
-final class ViewsBulkOperationsAccess implements AccessInterface {
+class ViewsBulkOperationsAccess implements AccessInterface {
 
   /**
    * Object constructor.

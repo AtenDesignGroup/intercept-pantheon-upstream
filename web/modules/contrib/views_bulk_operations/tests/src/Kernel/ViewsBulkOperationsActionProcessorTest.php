@@ -35,7 +35,6 @@ final class ViewsBulkOperationsActionProcessorTest extends ViewsBulkOperationsKe
     $nodeStorage = $this->container->get('entity_type.manager')->getStorage('node');
 
     $statuses = [];
-
     foreach ($this->testNodesData as $id => $lang_data) {
       $node = $nodeStorage->load($id);
       $statuses[$id] = $node->isPublished();
@@ -48,7 +47,7 @@ final class ViewsBulkOperationsActionProcessorTest extends ViewsBulkOperationsKe
     foreach ($statuses as $id => $status) {
       $asserted = FALSE;
       foreach ($list as $item) {
-        if ($item[3] == $id) {
+        if ($item[3] === (string) $id) {
           self::assertEquals($exclude, $status);
           $asserted = TRUE;
           break;

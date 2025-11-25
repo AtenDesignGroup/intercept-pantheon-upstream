@@ -9,7 +9,7 @@ use Drupal\Component\EventDispatcher\Event;
 /**
  * Defines action alter definitions event.
  */
-final class ActionAlterDefinitionsEvent extends Event {
+class ActionAlterDefinitionsEvent extends Event {
 
   /**
    * Array of action definitions.

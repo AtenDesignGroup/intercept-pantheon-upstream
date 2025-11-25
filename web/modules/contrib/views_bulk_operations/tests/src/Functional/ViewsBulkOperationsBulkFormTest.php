@@ -16,7 +16,6 @@ final class ViewsBulkOperationsBulkFormTest extends ViewsBulkOperationsFunctiona
    * Tests the VBO bulk form with simple test action.
    */
   public function testViewsBulkOperationsBulkFormSimple(): void {
-
     $assertSession = $this->assertSession();
 
     $this->drupalGet('views-bulk-operations-test');
@@ -45,9 +44,7 @@ final class ViewsBulkOperationsBulkFormTest extends ViewsBulkOperationsFunctiona
     $this->executeAction('views-bulk-operations-test', 'Simple test action', $selected);
 
     foreach ($selected as $index) {
-      $assertSession->pageTextContains(\sprintf('Test action (label: %s)',
-        $this->testNodes[$index]->label()
-      ));
+      $assertSession->pageTextContains(\sprintf('Test action (label: %s)', $this->testNodes[$index]->label()));
     }
 
     // Test the select all functionality.
@@ -60,6 +57,8 @@ final class ViewsBulkOperationsBulkFormTest extends ViewsBulkOperationsFunctiona
 
     $assertSession->pageTextContains(\sprintf('Test (%d)', self::TEST_NODE_COUNT));
 
+    // Ensure the null type action displays.
+    $this->assertSession()->buttonExists('VBO Null type test action');
   }
 
   /**

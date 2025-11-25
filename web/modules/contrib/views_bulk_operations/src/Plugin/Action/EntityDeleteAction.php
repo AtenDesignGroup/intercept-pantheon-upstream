@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   label: new TranslatableMarkup('Delete selected entities / translations'),
   type: ''
 )]
-final class EntityDeleteAction extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface {
+class EntityDeleteAction extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface {
 
   /**
    * Constructs a new EntityDeleteAction object.

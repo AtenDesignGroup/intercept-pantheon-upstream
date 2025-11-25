@@ -300,7 +300,7 @@ abstract class ViewsBulkOperationsKernelTestBase extends KernelTestBase {
     ];
 
     // Execute the selected action.
-    $context = [];
+    $context = ['results' => []];
     do {
       $context['finished'] = 1;
       $context['message'] = '';

@@ -146,7 +146,7 @@ class EventManager implements EventManagerInterface {
     asort($form['field_location']['widget']['#options']);
     asort($form['field_hosting_location']['widget']['#options']);
 
-    $form['field_location']['widget']['#options'] = [0 => '- None -'] + $form['field_location']['widget']['#options'];
+    $form['field_location']['widget']['#options'] = ['_none' => '- None -'] + $form['field_location']['widget']['#options'];
     $form['field_location']['widget']['#ajax'] = [
       'callback' => [$this, 'fieldRoomAjaxCallback'],
       'wrapper' => 'event-node-field-room-ajax-wrapper',
@@ -386,7 +386,7 @@ class EventManager implements EventManagerInterface {
    *
    * @param bool $branch_location
    *   Whether you're looking for branch locations (or the opposite).
-   * 
+   *
    * @return array
    *   An array of location ids.
    */

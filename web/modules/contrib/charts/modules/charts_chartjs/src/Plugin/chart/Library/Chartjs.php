@@ -122,16 +122,26 @@ class Chartjs extends ChartBase {
    * {@inheritdoc}
    */
   public function preRender(array $element) {
-    $chart_definition = [];
-
     if (!isset($element['#id'])) {
       $element['#id'] = Html::getUniqueId('chartjs-render');
     }
 
+    // Handle manual sizing wrapper.
+    // Only add the wrapper if at least one dimension is specified.
     if (!empty($element['#height']) || !empty($element['#width'])) {
+      $style = 'display:inline-block;';
+
+      if (!empty($element['#height'])) {
+        $style .= 'height:' . $element['#height'] . $element['#height_units'] . ';';
+      }
+
+      if (!empty($element['#width'])) {
+        $style .= 'width:' . $element['#width'] . $element['#width_units'] . ';';
+      }
+
       $element['#content_prefix']['manual_sizing'] = [
         '#type' => 'inline_template',
-        '#template' => '<div data-chartjs-render-wrapper style="display:inline-block;height:' . $element['#height'] . $element['#height_units'] . ';width:' . $element['#width'] . $element['#width_units'] . ';">',
+        '#template' => '<div data-chartjs-render-wrapper style="' . $style . '">',
       ];
       $element['#content_suffix']['manual_sizing'] = [
         '#type' => 'inline_template',
@@ -139,12 +149,19 @@ class Chartjs extends ChartBase {
       ];
     }
 
-    $chart_definition = $this->populateOptions($element, $chart_definition);
-    $chart_definition = $this->populateCategories($element, $chart_definition);
-    $chart_definition = $this->populateDatasets($element, $chart_definition);
-    $chart_definition = $this->populateAxes($element, $chart_definition);
+    // Use raw definition if provided, otherwise build from elements.
+    if (!empty($element['#chart_definition'])) {
+      $chart_definition = $element['#chart_definition'];
+    }
+    else {
+      $chart_definition = [];
+      $chart_definition = $this->populateOptions($element, $chart_definition);
+      $chart_definition = $this->populateCategories($element, $chart_definition);
+      $chart_definition = $this->populateDatasets($element, $chart_definition);
+      $chart_definition = $this->populateAxes($element, $chart_definition);
+    }
 
-    // Merge in chart raw options.
+    // Merge in chart raw options (applies to both methods).
     if (!empty($element['#raw_options'])) {
       $chart_definition = NestedArray::mergeDeepArray([
         $chart_definition,

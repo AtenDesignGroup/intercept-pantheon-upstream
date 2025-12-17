@@ -56,3 +56,9 @@ function consumers_post_update_make_consumer_entity_type_translatable(array &$sa
 
   return t('Consumers have been converted to be translatable.');
 }
+
+/**
+ * Ensure the cache is flushed for the route enhancer service change.
+ */
+function consumers_post_update_flush_cache_for_route_enhancer_service() {
+}

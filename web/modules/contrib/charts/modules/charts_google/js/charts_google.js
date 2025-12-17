@@ -34,7 +34,7 @@
       const packages = ['corechart', 'gauge', 'table'];
       if (
         useMaterialDesign === 'true' &&
-        materialDesignPackages.indexOf(chartType) !== -1
+        materialDesignPackages.includes(chartType)
       ) {
         if (chartType === 'spline') {
           chartType = 'line';

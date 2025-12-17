@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.20] - 2025-12-17
+
+* Prevented event registration active SMS messages from sending to customers on the waitlist
+* Fixed issue with event filter toggle incorrectly appearing on room reservation calendar
+* ​​Fixed an issue with autocomplete dropdowns not displaying correctly on s​taff events listing page
+* Fixed an error that was occurring when adding bulk room reservations
+
 ## [2.0.19] - 2025-11-25
 
 * Fixed an issue on event creation where the event location could be left empty

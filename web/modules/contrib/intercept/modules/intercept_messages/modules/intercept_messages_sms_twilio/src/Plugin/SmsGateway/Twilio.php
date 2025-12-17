@@ -109,16 +109,26 @@ class Twilio extends SmsGatewayPluginBase {
     $recipient = $sms_message->getRecipients()[0];
     $entity_id = $sms_message->getOption('sender_entity__target_id');
     $entity_type = $sms_message->getOption('sender_entity__target_type');
+    // Check for waitlist/inactive.
+    $inactive = '';
+    if ($entity_type == 'event_registration') {
+      // Load the event registration with id # $entity_id.
+      $storage = \Drupal::service('entity_type.manager')->getStorage('event_registration');
+      $registrations = $storage->loadByProperties(['id' => $entity_id]);
+      $registration = reset($registrations);
+      $status = $registration->get('status')->value;
+      if ($status !== 'active') {
+        $inactive = TRUE;
+      }
+    }
     $previously_scheduled = $sms_message->getOption('recipient');
+    $time = '';
     if (method_exists($sms_message, 'getSendTime')) {
       $time = $sms_message->getSendTime();
     }
-    else {
-      $time = '';
-    }
 
     // Handle scheduled messages.
-    if (!empty($time) && empty($previously_scheduled)) {
+    if (!empty($time) && empty($previously_scheduled) && empty($inactive)) {
       // Insert into the queue table for SMS Framework module.
       $options = ['recipient' => $recipient];
       $result = \Drupal::service('database')
@@ -139,7 +149,7 @@ class Twilio extends SmsGatewayPluginBase {
       return NULL;
     }
     // Immediate messages or scheduled ones that are now ready to send.
-    else {
+    elseif (empty($inactive)) {
       $result = new SmsMessageResult();
 
       $account_sid = $this->configuration['account_sid'];

@@ -11,10 +11,12 @@
       once('charts-billboard', '.charts-billboard', context).forEach(
         function (element) {
           const config = contents.getData(element.id);
-          const title = config.title.text;
-          // If the title contains '\\n', convert it to a line break.
-          if (title.indexOf('\\n') !== -1) {
-            config.title.text = title.replace(/\\n/g, '\n');
+          if (config.title && config.title.text) {
+            const title = config.title.text;
+            // If the title contains '\\n', convert it to a line break.
+            if (title.includes('\\n')) {
+              config.title.text = title.replace(/\\n/g, '\n');
+            }
           }
           bb.generate(config);
           if (

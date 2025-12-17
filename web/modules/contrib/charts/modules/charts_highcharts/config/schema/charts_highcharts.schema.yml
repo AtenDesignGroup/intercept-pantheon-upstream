@@ -210,6 +210,13 @@ charts.library_plugin.highcharts.options.donut:
 charts.library_plugin.highcharts.options.pie:
   type: charts_highcharts_coloraxis
 
+charts.library_plugin.highcharts.options.dumbbell:
+  type: mapping
+  mapping:
+    low_color:
+      label: 'Low color'
+      type: string
+
 charts_highcharts_bar_column:
   type: mapping
   mapping:

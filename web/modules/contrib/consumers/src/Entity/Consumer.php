@@ -36,6 +36,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "views_data" = "\Drupal\views\EntityViewsData",
  *     "access" = "Drupal\consumers\AccessControlHandler",
  *     "storage" = "Drupal\consumers\ConsumerStorage",
+ *     "storage_schema" = "Drupal\consumers\ConsumersStorageSchema",
  *   },
  *   base_table = "consumer",
  *   data_table = "consumer_field_data",

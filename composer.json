@@ -60,7 +60,8 @@
     "allow-plugins": {
       "composer/installers": true,
       "cweagans/composer-patches": true,
-      "mglaman/composer-drupal-lenient": true
+      "mglaman/composer-drupal-lenient": true,
+      "drupal/core-composer-scaffold": true
     }
   },
   "prefer-stable": true,

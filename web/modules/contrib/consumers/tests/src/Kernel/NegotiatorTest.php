@@ -94,6 +94,25 @@ class NegotiatorTest extends KernelTestBase {
   }
 
   /**
+   * Test client ID negotiation from request with header.
+   */
+  public function testNegotiateClientIdFromRequestWithHeader(): void {
+    $request = Request::create('/');
+    $request->headers->set('X-Consumer-ID', $this->consumer->getClientId());
+    $client_id = $this->negotiator->negotiateClientIdFromRequest($request);
+
+    $this->assertEquals($this->consumer->getClientId(), $client_id);
+    $this->assertEquals($this->consumer->getClientId(), $request->attributes->get('consumer_id'));
+
+    // If consumer doesn't exist, expected is to fallback on default consumer.
+    $request->headers->set('X-Consumer-ID', 'unknown');
+    $client_id = $this->negotiator->negotiateClientIdFromRequest($request);
+
+    $this->assertEquals($this->defaultConsumer->getClientId(), $client_id);
+    $this->assertEquals($this->defaultConsumer->getClientId(), $request->attributes->get('consumer_id'));
+  }
+
+  /**
    * Test negotiation from request with query string parameter.
    */
   public function testNegotiateFromRequestWithQuery(): void {
@@ -114,6 +133,28 @@ class NegotiatorTest extends KernelTestBase {
 
     $this->assertInstanceOf(ConsumerInterface::class, $consumer);
     $this->assertEquals($this->defaultConsumer->getClientId(), $consumer->getClientId());
+    $this->assertEquals($this->defaultConsumer->getClientId(), $request->attributes->get('consumer_id'));
+  }
+
+  /**
+   * Test client ID  negotiation from request with query string parameter.
+   */
+  public function testNegotiateClientIdFromRequestWithQuery(): void {
+    $request = Request::create('/', 'GET', [
+      'consumerId' => $this->consumer->getClientId(),
+    ]);
+    $client_id = $this->negotiator->negotiateClientIdFromRequest($request);
+
+    $this->assertEquals($this->consumer->getClientId(), $client_id);
+    $this->assertEquals($this->consumer->getClientId(), $request->attributes->get('consumer_id'));
+
+    // If consumer doesn't exist, expected is to fallback on default consumer.
+    $request = Request::create('/', 'GET', [
+      'consumerId' => 'unknown',
+    ]);
+    $client_id = $this->negotiator->negotiateClientIdFromRequest($request);
+
+    $this->assertEquals($this->defaultConsumer->getClientId(), $client_id);
     $this->assertEquals($this->defaultConsumer->getClientId(), $request->attributes->get('consumer_id'));
   }
 

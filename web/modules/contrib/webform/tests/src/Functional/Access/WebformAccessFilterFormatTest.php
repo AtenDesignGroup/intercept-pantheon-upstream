@@ -38,7 +38,7 @@ class WebformAccessFilterFormatTest extends WebformBrowserTestBase {
   }
 
   /**
-   * Tests webform default filter format access..
+   * Tests webform default filter format access.
    */
   public function testFilterFormatAccess() {
     $assert_session = $this->assertSession();

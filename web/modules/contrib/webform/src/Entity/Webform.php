@@ -783,7 +783,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       return FALSE;
     }
     else {
-      return (boolean) $this->getSetting('page');
+      return (bool) $this->getSetting('page');
     }
   }
 

@@ -21,13 +21,6 @@ class ConsumerRouteEnhancer implements EnhancerInterface {
   const CACHE_CONTEXT = 'url.query_args:consumerId';
 
   /**
-   * The consumer negotiator.
-   *
-   * @var \Drupal\consumers\Negotiator
-   */
-  protected $consumerNegotiator;
-
-  /**
    * The module handler.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
@@ -37,13 +30,10 @@ class ConsumerRouteEnhancer implements EnhancerInterface {
   /**
    * ConsumerRouteEnhancer constructor.
    *
-   * @param \Drupal\consumers\Negotiator $negotiator
-   *   The consumer negotiator.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    */
-  public function __construct(Negotiator $negotiator, ModuleHandlerInterface $module_handler) {
-    $this->consumerNegotiator = $negotiator;
+  public function __construct(ModuleHandlerInterface $module_handler) {
     $this->moduleHandler = $module_handler;
   }
 

@@ -680,7 +680,7 @@ class ChartsApiExample extends ControllerBase {
 
     if ($library === 'highcharts') {
       $charts_container['content']['php_override'] = [
-        '#chart_id' => 'exampleidphp',
+        '#chart_id' => 'example_id_php',
         '#type' => 'chart',
         '#tooltips' => $charts_settings->get('charts_default_settings.display.tooltips'),
         '#title' => $this->t('@library Chart, Overridden By PHP Hook', ['@library' => ucfirst($library)]),
@@ -694,7 +694,7 @@ class ChartsApiExample extends ControllerBase {
 
       $charts_container['content']['js_override'] = [
         '#id' => 'exampleidjs',
-        '#chart_id' => 'exampleidjschart',
+        '#chart_id' => 'example_id_js_chart',
         '#type' => 'chart',
         '#tooltips' => $charts_settings->get('charts_default_settings.display.tooltips'),
         '#title' => $this->t('@library Chart, Overridden By JS Function', ['@library' => ucfirst($library)]),
@@ -715,7 +715,7 @@ class ChartsApiExample extends ControllerBase {
    * @return array
    *   The array of rows.
    */
-  private function getCsvContents() {
+  private function getCsvContents(): array {
     $file_path = $this->moduleList->getPath('charts_api_example');
     $file_name = $file_path . '/fixtures/charts_api_example_file.csv';
     $handle = fopen($file_name, 'r');

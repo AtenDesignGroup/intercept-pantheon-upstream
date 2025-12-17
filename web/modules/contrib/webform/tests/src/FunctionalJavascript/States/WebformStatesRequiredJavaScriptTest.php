@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace Drupal\Tests\webform\FunctionalJavascript\States;
 
@@ -29,12 +28,18 @@ class WebformStatesRequiredJavaScriptTest extends WebformWebDriverTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  public function setUp(): void {
+    parent::setUp();
+    // @todo Fix broken test on Drupal.org that works as expected locally.
+    $this->markTestSkipped('This test is skipped until it is fixed ...');
+  }
+
+  /**
    * Tests webform (custom) #states required logic.
    */
   public function testRequiredState() {
-    // @todo Fix broken test on Drupal.org that working as expected locally.
-    $this->assertTrue(TRUE);
-    return;
 
     $session = $this->getSession();
     $page = $session->getPage();

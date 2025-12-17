@@ -53,17 +53,17 @@ class ConsumerVaryEventSubscriber implements EventSubscriberInterface {
     $response = $event->getResponse();
 
     try {
-      $consumer = $this->negotiator->negotiateFromRequest($event->getRequest());
+      $client_id = $this->negotiator->negotiateClientIdFromRequest($event->getRequest());
     }
     catch (MissingConsumer $e) {
       // If there's no consumer in the header, and no default consumer then we
       // don't need to add any Vary headers.
-      $consumer = FALSE;
+      $client_id = FALSE;
     }
 
-    if ($consumer) {
+    if ($client_id) {
       // Add consumer id to headers.
-      $response->headers->set(self::CONSUMER_ID_HEADER, $consumer->getClientId());
+      $response->headers->set(self::CONSUMER_ID_HEADER, $client_id);
 
       // Add consumer id to vary headers.
       $vary_headers = $response->getVary();

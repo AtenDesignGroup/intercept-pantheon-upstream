@@ -316,7 +316,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   public static function batchFinished($success, $results, $operations) {
     if ($success) {
       if ($results['events']) {
-        \Drupal::service('messenger')->addMessage(\Drupal::translation()->formatPlural(count($results['events']), 'Generated 1 event.', 'Generated @count events.'));
+        \Drupal::service('messenger')->addMessage(\Drupal::translation()->formatPlural($results['events'], 'Generated 1 event.', 'Generated @count events.'));
       }
       else {
         \Drupal::service('messenger')

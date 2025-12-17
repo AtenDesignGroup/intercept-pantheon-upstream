@@ -127,20 +127,39 @@ class C3 extends ChartBase implements ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function preRender(array $element) {
-    // Populate chart settings.
-    $chart_definition = [];
-
-    $chart_definition = $this->populateOptions($element, $chart_definition);
-    $chart_definition = $this->populateData($element, $chart_definition);
-    $chart_definition = $this->populateAxes($element, $chart_definition);
-
-    if (!empty($element['#height']) || !empty($element['#width'])) {
-      $element['#attributes']['style'] = 'height:' . $element['#height'] . $element['#height_units'] . ';width:' . $element['#width'] . $element['#width_units'] . ';';
-    }
-
+    // Ensure ID is set early so we can use it for 'bindto'.
     if (!isset($element['#id'])) {
       $element['#id'] = Html::getUniqueId('chart-c3');
     }
+
+    // Handle dimensions (optimized to avoid empty properties).
+    if (!empty($element['#height']) || !empty($element['#width'])) {
+      $style = '';
+      if (!empty($element['#height'])) {
+        $style .= 'height:' . $element['#height'] . $element['#height_units'] . ';';
+      }
+      if (!empty($element['#width'])) {
+        $style .= 'width:' . $element['#width'] . $element['#width_units'] . ';';
+      }
+      if ($style) {
+        $element['#attributes']['style'] = $style;
+      }
+    }
+
+    // Use raw definition if provided, otherwise build from elements.
+    if (!empty($element['#chart_definition'])) {
+      $chart_definition = $element['#chart_definition'];
+    }
+    else {
+      // Populate chart settings.
+      $chart_definition = [];
+      $chart_definition = $this->populateOptions($element, $chart_definition);
+      $chart_definition = $this->populateData($element, $chart_definition);
+      $chart_definition = $this->populateAxes($element, $chart_definition);
+    }
+
+    // Ensure the chart knows where to render.
+    // This must happen regardless of how the definition was built.
     $chart_definition['bindto'] = '#' . $element['#id'];
 
     $element['#attached']['library'][] = 'charts_c3/c3';

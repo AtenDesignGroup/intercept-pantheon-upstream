@@ -693,6 +693,11 @@ function intercept_base_theme_suggestions_block_alter(array &$suggestions, array
   if (isset($content['#block_content']) && $content['#block_content'] instanceof BlockContentInterface) {
     $suggestions[] = 'block__block_content__' . $content['#block_content']->bundle();
   }
+  if (in_array('block__intercept_room_reservation_jsonapi_views_filter_block', $suggestions)) {
+    if (isset($variables["elements"]["#attributes"]["id"]) && $variables["elements"]["#attributes"]["id"] == 'intercept-events-filter') {
+      $suggestions[] = 'block__intercept_room_reservation_jsonapi_views_filter_block__intercept_events_filter';
+    }
+  }
 }
 
 /**

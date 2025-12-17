@@ -35,9 +35,7 @@
   {{ title_suffix }}
   {% block content %}
     <div class="filters filters--3up">
-      {% include '@intercept_core/templates/intercept-filter-toggle.html.twig' with {
-        title: "Show Event Filters"
-      } %}
+      <h3 class="filters__heading">Filter</h3>
       {{ content|without('header') }}
     </div>
     {{ content.header }}

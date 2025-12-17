@@ -33,6 +33,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     "bubble",
     "column",
     "donut",
+    "dumbbell",
     "gauge",
     "heatmap",
     "line",
@@ -126,6 +127,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       'boost_library' => FALSE,
       'coloraxis_library' => FALSE,
       'data_library' => FALSE,
+      'dumbbell_library' => FALSE,
       'exporting_library' => TRUE,
       'heatmap_library' => FALSE,
       'no_data_library' => FALSE,
@@ -196,6 +198,13 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       '#type' => 'checkbox',
       '#default_value' => !empty($this->configuration['data_library']),
       '#description' => $this->t('Highcharts Data module is a separate library that enables data import and export. See <a href="https://www.highcharts.com/docs/working-with-data/data-module" target="_blank">Highcharts Data documentation</a> for more information.'),
+    ];
+
+    $form['dumbbell_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Dumbbell" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['dumbbell_library']),
+      '#description' => $this->t('Highcharts Dumbbell module is a separate library that enables the dumbbell chart style. See <a href="https://www.highcharts.com/docs/chart-and-series-types/dumbbell-series" target="_blank">Highcharts Dumbbell documentation</a> for more information.'),
     ];
 
     $form['exporting_library'] = [
@@ -542,6 +551,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       $this->configuration['annotations_library'] = $values['annotations_library'];
       $this->configuration['boost_library'] = $values['boost_library'];
       $this->configuration['coloraxis_library'] = $values['coloraxis_library'];
+      $this->configuration['dumbbell_library'] = $values['dumbbell_library'];
       $this->configuration['data_library'] = $values['data_library'];
       $this->configuration['exporting_library'] = $values['exporting_library'];
       $this->configuration['heatmap_library'] = $values['heatmap_library'];
@@ -563,6 +573,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       'bar',
       'column',
       'donut',
+      'dumbbell',
       'pie',
       'solidgauge',
     ];
@@ -580,6 +591,11 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     // Settings for donut and pie.
     if (in_array($element['#chart_type'], ['donut', 'pie'])) {
       $this->processDonutPieOptions($element, $options);
+    }
+
+    // Settings for dumbbell.
+    if ($element['#chart_type'] === 'dumbbell') {
+      $this->processDumbbellOptions($element, $options);
     }
 
     // Settings for bar and column.
@@ -601,7 +617,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
    * @param array $options
    *   The options array.
    */
-  private function processSolidGaugeOptions(array &$element, array &$options) {
+  private function processSolidGaugeOptions(array &$element, array &$options): void {
     $solidgauge_options = $options + [
       'max' => 100,
       'min' => 0,
@@ -670,7 +686,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
    * @param array $options
    *   The options array.
    */
-  private function processDonutPieOptions(array &$element, array &$options) {
+  private function processDonutPieOptions(array &$element, array &$options): void {
     $element['coloraxis'] = [
       '#title' => $this->t('Enable colorAxis'),
       '#type' => 'checkbox',
@@ -706,35 +722,72 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
   }
 
   /**
+   * Process dumbbell options.
+   *
+   * @param array $element
+   *   The form element.
+   * @param array $options
+   *   The options array.
+   */
+  private function processDumbbellOptions(array &$element, array &$options): void {
+    // Minimum color value.
+    $element['low_color'] = [
+      '#title' => $this->t('Low color'),
+      '#type' => 'textfield',
+      '#size' => 10,
+      '#maxlength' => 7,
+      '#attributes' => [
+        'placeholder' => '#FFFFFF',
+        'TYPE' => 'color',
+      ],
+      '#description' => $this->t('The color to use for the low value. Leave blank for no low color.'),
+      '#default_value' => $options['low_color'] ?? '#FFFFFF',
+    ];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function preRender(array $element) {
-    // Populate chart settings.
-    $chart_definition = [];
+    // Check if a raw chart definition is already provided.
+    // This allows bypassing the Drupal Charts abstraction layer.
+    if (!empty($element['#chart_definition'])) {
+      $chart_definition = $element['#chart_definition'];
+    }
+    else {
+      // Standard processing: Populate chart settings from Drupal
+      // element properties.
+      $chart_definition = [];
+      $chart_definition = $this->populateOptions($element, $chart_definition);
+      $chart_definition = $this->populateAxes($element, $chart_definition);
+      $chart_definition = $this->populateData($element, $chart_definition);
 
-    $chart_definition = $this->populateOptions($element, $chart_definition);
-    $chart_definition = $this->populateAxes($element, $chart_definition);
-    $chart_definition = $this->populateData($element, $chart_definition);
+      // Remove machine names from series. Highcharts series must be an array.
+      $series = !empty($chart_definition['series']) ? array_values($chart_definition['series']) : [];
+      unset($chart_definition['series']);
 
-    if (!empty($element['#height']) || !empty($element['#width'])) {
-      $element['#attributes']['style'] = 'height:' . $element['#height'] . $element['#height_units'] . ';width:' . $element['#width'] . $element['#width_units'] . ';';
+      // Trim out empty options (excluding "series" for efficiency).
+      ChartElement::trimArray($chart_definition);
+
+      // Put back the data.
+      $chart_definition['series'] = $series;
     }
 
-    // Remove machine names from series. Highcharts series must be an array.
-    $series = !empty($chart_definition['series']) ? array_values($chart_definition['series']) : [];
-    unset($chart_definition['series']);
-
-    // Trim out empty options (excluding "series" for efficiency).
-    ChartElement::trimArray($chart_definition);
-
-    // Put back the data.
-    $chart_definition['series'] = $series;
+    // Handle container sizing.
+    if (!empty($element['#height']) || !empty($element['#width'])) {
+      $height = $element['#height'] . $element['#height_units'];
+      $width = $element['#width'] . $element['#width_units'];
+      $element['#attributes']['style'] = "height:{$height};width:{$width};";
+    }
 
     if (!isset($element['#id'])) {
       $element['#id'] = Html::getUniqueId('highchart-render');
     }
 
+    // Attach libraries.
     $element['#attached']['library'][] = 'charts_highcharts/highcharts';
+
+    // Attach optional libraries based on configuration.
     if (!empty($this->configuration['3d_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/3d';
     }
@@ -749,8 +802,8 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     }
     if (!empty($this->configuration['coloraxis_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/coloraxis';
-      if (!empty($chart_definition['colorAxis'])) {
-        // Unset the color property from the series data.
+      // If we are in standard mode, we might need to clean data colors.
+      if (empty($element['#chart_definition']) && !empty($chart_definition['colorAxis'])) {
         foreach ($chart_definition['series'] as &$series_to_clean) {
           if (isset($series_to_clean['data'])) {
             foreach ($series_to_clean['data'] as &$data_to_clean) {
@@ -762,6 +815,9 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     }
     if (!empty($this->configuration['data_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/data';
+    }
+    if (!empty($this->configuration['dumbbell_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/dumbbell';
     }
     if (!empty($this->configuration['exporting_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/exporting';
@@ -778,14 +834,20 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     if (!empty($this->configuration['solidgauge_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/solidgauge';
     }
+
     $element['#attributes']['class'][] = 'charts-highchart';
     $element['#chart_definition'] = $chart_definition;
+
     // Show a form on the front-end so users can change chart colors.
+    // Only available in standard mode or if explicitly supported in raw mode.
     if (!empty($element['#color_changer']) && empty($element['#in_preview_mode'])) {
+      $series = $chart_definition['series'] ?? [];
+      $chart_type = $chart_definition['chart']['type'] ?? 'line';
+
       $form_state = new FormState();
       $form_state->set('chart_series', $series);
       $form_state->set('chart_id', $element['#id']);
-      $form_state->set('chart_type', $chart_definition['chart']['type']);
+      $form_state->set('chart_type', $chart_type);
       if (!empty($chart_definition['yAxis'])) {
         $form_state->set('y_axis', $chart_definition['yAxis']);
       }
@@ -954,6 +1016,13 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     $chart_definition['plotOptions']['series']['dataLabels']['enabled'] = (bool) $element['#data_labels'];
     $chart_definition['plotOptions']['series']['marker']['enabled'] = (bool) $element['#data_markers'];
     $chart_definition['plotOptions']['series']['connectNulls'] = !empty($element['#connect_nulls']);
+    // Special handling for dumbbell charts.
+    if ($element['#chart_type'] === 'dumbbell') {
+      // They need to be inverted (horizontal).
+      $chart_definition['chart']['inverted'] = TRUE;
+      // They require markers to be visible.
+      $chart_definition['plotOptions']['dumbbell']['marker']['enabled'] = TRUE;
+    }
     if ($element['#chart_type'] === 'gauge') {
       $chart_definition['yAxis']['plotBands'][] = [
         'from' => (int) $element['#gauge']['red_from'],
@@ -1095,9 +1164,10 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
    * @return array
    *   Return the chart definition.
    */
-  protected function populateData(array &$element, array $chart_definition) {
+  protected function populateData(array &$element, array $chart_definition): array {
     $categories = [];
     $chart_type = $this->getType($element['#chart_type']);
+
     foreach (Element::children($element) as $key) {
       if ($element[$key]['#type'] === 'chart_xaxis' && !empty($element[$key]['#labels'])) {
         if ($chart_type === 'pie') {
@@ -1164,7 +1234,14 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
             }
           }
           else {
-            $series_data[$data_index] = $data;
+            if ($chart_type === 'dumbbell') {
+              $series_data[$data_index]['lowColor'] = $element['#library_type_options']['low_color'];
+              $series_data[$data_index]['low'] = $data[0];
+              $series_data[$data_index]['high'] = $data[1];
+            }
+            else {
+              $series_data[$data_index] = $data;
+            }
           }
         }
 

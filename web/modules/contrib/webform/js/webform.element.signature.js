@@ -51,7 +51,6 @@
         var options = $.extend({
           onEnd: function () {
             $input.val(signaturePad.toDataURL());
-            $input.change();
           }
         }, Drupal.webform.signaturePad.options);
 

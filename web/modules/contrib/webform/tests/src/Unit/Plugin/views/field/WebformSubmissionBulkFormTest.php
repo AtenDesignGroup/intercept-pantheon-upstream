@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace Drupal\Tests\webform\Unit\Plugin\views\field;
 
@@ -21,6 +20,15 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
+  public function setUp(): void {
+    parent::setUp();
+    // @todo Fix broken test. Skip the test until then.
+    $this->markTestSkipped('This test is skipped until it is fixed ...');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function tearDown(): void {
     parent::tearDown();
     $container = new ContainerBuilder();
@@ -31,9 +39,6 @@ class WebformSubmissionBulkFormTest extends UnitTestCase {
    * Tests the constructor assignment of actions.
    */
   public function testConstructor() {
-    // @todo Fix broken test.
-    $this->assertTrue(TRUE);
-    return;
 
     $actions = [];
 

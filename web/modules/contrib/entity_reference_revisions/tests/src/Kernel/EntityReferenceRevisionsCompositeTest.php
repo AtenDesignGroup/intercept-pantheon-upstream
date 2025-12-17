@@ -11,12 +11,16 @@ use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the entity_reference_revisions composite relationship.
  *
  * @group entity_reference_revisions
  */
+#[RunTestsInSeparateProcesses]
+#[Group('entity_reference_revisions')]
 class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
 
   use ContentTypeCreationTrait;
@@ -518,7 +522,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
    * Tests the composite entity is deleted after removing its reference.
    */
   public function testCompositeDeleteAfterRemovingReference() {
-    list($composite, $node) = $this->assignCompositeToNode();
+    [$composite, $node] = $this->assignCompositeToNode();
 
     // Remove reference to the composite entity from the node.
     $node->set('composite_reference', NULL);
@@ -542,7 +546,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
    * Includes revisions on the host entity.
    */
   public function testCompositeDeleteAfterRemovingReferenceWithRevisions() {
-    list($composite, $node) = $this->assignCompositeToNode();
+    [$composite, $node] = $this->assignCompositeToNode();
 
     // Remove reference to the composite entity from the node in a new revision.
     $node->set('composite_reference', NULL);
@@ -570,7 +574,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
    * Includes revisions on the host entity.
    */
   public function testCompositeDeleteAfterChangingParent() {
-    list($composite, $node) = $this->assignCompositeToNode();
+    [$composite, $node] = $this->assignCompositeToNode();
     // Remove reference to the composite entity from the node.
     $node->set('composite_reference', NULL);
     $node->setNewRevision();
@@ -620,7 +624,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
    * Includes revisions on the host entity.
    */
   public function testCompositeDeleteRevisionAfterChangingParent() {
-    list($composite, $node) = $this->assignCompositeToNode();
+    [$composite, $node] = $this->assignCompositeToNode();
     // Remove reference to the composite entity from the node.
     $node->set('composite_reference', NULL);
     $node->setNewRevision();
@@ -668,7 +672,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
    * Includes revisions on the host entity.
    */
   public function testCompositeDeleteAfterDuplicatingParent() {
-    list($composite, $node) = $this->assignCompositeToNode();
+    [$composite, $node] = $this->assignCompositeToNode();
     $node->setNewRevision(TRUE);
     $node->save();
 

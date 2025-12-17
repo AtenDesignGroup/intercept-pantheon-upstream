@@ -156,6 +156,9 @@ charts_views_field_entity_grouping_selected_method_colors:
     color:
       type: string
       label: Color
+    property_value:
+      type: string
+      label: 'Property value'
 
 charts_config:
   type: mapping
@@ -195,6 +198,9 @@ charts_config:
                 color_field_name:
                   type: string
                   label: 'Color field name'
+                color_field_property:
+                  type: string
+                  label: 'Color field property'
                 colors:
                   type: sequence
                   label: 'Colors'

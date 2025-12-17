@@ -169,18 +169,21 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
 
     // Ensure there's an x and y axis to provide defaults.
     $type_name = $element['#chart_type'];
-    $type = $this->chartsTypeManager->getDefinition($type_name);
-    if ($type && $type['axis'] === ChartInterface::DUAL_AXIS) {
-      $children_types = [];
-      foreach (Element::children($element) as $key) {
-        $children_types[] = $element[$key]['#type'];
-      }
+    // Only lookup definition if a type name is provided.
+    if ($type_name) {
+      $type = $this->chartsTypeManager->getDefinition($type_name);
+      if ($type && $type['axis'] === ChartInterface::DUAL_AXIS) {
+        $children_types = [];
+        foreach (Element::children($element) as $key) {
+          $children_types[] = $element[$key]['#type'];
+        }
 
-      if (!in_array('chart_xaxis', $children_types)) {
-        $element['xaxis'] = ['#type' => 'chart_xaxis'];
-      }
-      if (!in_array('chart_yaxis', $children_types)) {
-        $element['yaxis'] = ['#type' => 'chart_yaxis'];
+        if (!in_array('chart_xaxis', $children_types)) {
+          $element['xaxis'] = ['#type' => 'chart_xaxis'];
+        }
+        if (!in_array('chart_yaxis', $children_types)) {
+          $element['yaxis'] = ['#type' => 'chart_yaxis'];
+        }
       }
     }
 
@@ -205,9 +208,19 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
     $plugin_configuration = $charts_settings->get('charts_default_settings.library_config') ?? [];
     /** @var \Drupal\charts\Plugin\chart\Library\ChartInterface $plugin */
     $plugin = $this->chartsManager->createInstance($library, $plugin_configuration);
-    if (!$plugin->isSupportedChartType($type_name)) {
+
+    // Only check supported types if a type is actually declared.
+    if ($type_name && !$plugin->isSupportedChartType($type_name)) {
       // Chart type not supported by the library.
       throw new \LogicException(sprintf('The provided chart type "%s" is not supported by "%s" chart plugin library.', $type_name, $plugin->getChartName()));
+    }
+
+    // If using the raw option and the user input a JSON string.
+    if (!empty($element['#chart_definition']) && is_string($element['#chart_definition'])) {
+      $decoded = $this->decodeLooseJson($element['#chart_definition']);
+      if ($decoded !== NULL) {
+        $element['#chart_definition'] = $decoded;
+      }
     }
 
     $element = $plugin->preRender($element);
@@ -216,13 +229,17 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
       $chart_definition = $element['#chart_definition'];
       unset($element['#chart_definition']);
 
-      // Allow the chart definition to be altered - @TODO use event dispatching
-      // if needed.
+      // Allow the chart definition to be altered.
       $alter_hooks = ['chart_definition'];
       if ($element['#chart_id']) {
         $alter_hooks[] = 'chart_definition_' . $chart_id;
       }
-      $this->moduleHandler->alter($alter_hooks, $chart_definition, $element, $chart_id);
+
+      // FIX: Ensure element is an array before passing to hooks.
+      if (is_array($element)) {
+        $this->moduleHandler->alter($alter_hooks, $chart_definition, $element, $chart_id);
+      }
+
       // Set the element #chart_json property as a data-attribute.
       $element['#attributes']['data-chart'] = Json::encode($chart_definition);
     }
@@ -426,6 +443,44 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
     }
 
     return $element;
+  }
+
+  /**
+   * Attempts to decode a loose JSON object string.
+   *
+   * This method attempts to fix common syntax issues found in JavaScript
+   * library examples that are not valid strict JSON.
+   *
+   * @param string $input
+   *   The raw string input.
+   *
+   * @return mixed|null
+   *   The decoded array, or NULL if it cannot be decoded.
+   */
+  protected function decodeLooseJson(string $input): ?array {
+    // Try strict decode first.
+    $decoded = Json::decode($input);
+
+    if ($decoded !== NULL || json_last_error() === JSON_ERROR_NONE) {
+      return $decoded;
+    }
+
+    // If strict decode fails, try to fix common "Loose JS" issues.
+    $loose_json = $input;
+
+    // Replace single quotes with double quotes, but ignore escaped
+    // single quotes.
+    $loose_json = str_replace("'", '"', $loose_json);
+
+    // Quote unquoted keys, ignoring keys that already have quotes.
+    // Looks for word characters at the start of the string or preceded by
+    // a comma/brace, followed by a colon.
+    $loose_json = preg_replace('/([{,]\s*)([a-zA-Z0-9_]+)(\s*:)/', '$1"$2"$3', $loose_json);
+
+    // Fix trailing commas (common in JS, invalid in JSON).
+    $loose_json = preg_replace('/,\s*([]}])/', '$1', $loose_json);
+
+    return Json::decode($loose_json);
   }
 
 }

@@ -4,7 +4,7 @@
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
   "require": {
-    "drupal/core": "^9 || ^10 || ^11"
+    "drupal/core": "^10.2 || ^11"
   },
   "require-dev": {
     "drupal/diff": "^1 || ^2"

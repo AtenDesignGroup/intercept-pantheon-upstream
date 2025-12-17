@@ -131,6 +131,14 @@ function intercept_messages_entity_insert(EntityInterface $entity) {
               if ($send_timestamp < time()) {
                 return;
               }
+              if ($entity_type_id == 'event_registration') {
+                // Block this if the event_registration is in a "waitlist"
+                // status and not active.
+                $status = $entity->get('status')->getString();
+                if ($status !== 'active') {
+                  return;
+                }
+              }
               break;
           }
           intercept_messages_schedule_message($plugin_id, $entity_type_id, $entity->id(), 0, $send_timestamp);
@@ -145,7 +153,7 @@ function intercept_messages_entity_insert(EntityInterface $entity) {
         if ($send_timestamp < time()) {
           continue;
         }
-        intercept_messages_schedule_message($plugin_id, $entity_type_id, $entity->id(), 0, $send_timestamp);
+        intercept_messages_schedule_message('saved_registration_active', $entity_type_id, $entity->id(), 0, $send_timestamp);
       }
     }
   }

@@ -146,22 +146,40 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
    */
   public function preRender(array $element) {
     $chart_definition = [];
-    // Convert the chart renderable to a proper definition.
-    $chart_definition['visualization'] = $this->chartsGoogleVisualizationType($element['#chart_type']);
-    $chart_definition = $this->chartsGooglePopulateChartOptions($element, $chart_definition);
-    $chart_definition = $this->chartsGooglePopulateChartAxes($element, $chart_definition);
-    $chart_definition = $this->chartsGooglePopulateChartData($element, $chart_definition);
 
+    // Generate a unique ID if one is not provided.
     if (!isset($element['#id'])) {
       $element['#id'] = Html::getUniqueId('google-chart-render');
     }
 
+    // Handle dimensions (optimized to avoid empty properties).
     if (!empty($element['#height']) || !empty($element['#width'])) {
-      $element['#attributes']['style'] = 'height:' . $element['#height'] . $element['#height_units'] . ';width:' . $element['#width'] . $element['#width_units'] . ';';
+      $style = '';
+      if (!empty($element['#height'])) {
+        $style .= 'height:' . $element['#height'] . $element['#height_units'] . ';';
+      }
+      if (!empty($element['#width'])) {
+        $style .= 'width:' . $element['#width'] . $element['#width_units'] . ';';
+      }
+      if ($style) {
+        $element['#attributes']['style'] = $style;
+      }
     }
 
-    // Trim out empty options.
-    ChartElement::trimArray($chart_definition['options']);
+    // Use raw definition if provided, otherwise build from elements.
+    if (!empty($element['#chart_definition'])) {
+      $chart_definition = $element['#chart_definition'];
+    }
+    else {
+      // Convert the chart renderable to a proper definition.
+      $chart_definition['visualization'] = $this->chartsGoogleVisualizationType($element['#chart_type']);
+      $chart_definition = $this->chartsGooglePopulateChartOptions($element, $chart_definition);
+      $chart_definition = $this->chartsGooglePopulateChartAxes($element, $chart_definition);
+      $chart_definition = $this->chartsGooglePopulateChartData($element, $chart_definition);
+
+      // Trim out empty options (only for generated definitions).
+      ChartElement::trimArray($chart_definition['options']);
+    }
 
     $element['#attached']['library'][] = 'charts_google/google';
     $element['#attributes']['class'][] = 'charts-google';
@@ -170,7 +188,7 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
     // Setting global options.
     $element['#attached']['drupalSettings']['charts']['google']['global_options'] = [
       'useMaterialDesign' => !empty($this->configuration['use_material_design']) ? 'true' : 'false',
-      'chartType' => $element['#chart_type'],
+      'chartType' => $element['#chart_type'] ?? '',
     ];
 
     return $element;

@@ -384,6 +384,7 @@ main-menu:
     https://cdn.jsdelivr.net/npm/jquery-once@2.2.3/jquery.once.min.js:
       external: true
       minified: true
+    js/mobile-menu-fix.js: {}
   dependencies:
     - core/jquery
     - intercept_base/tabbed

@@ -42,13 +42,6 @@ if (defined('PANTHEON_ENVIRONMENT') && isset($_ENV['PANTHEON_ENVIRONMENT']) && $
   $databases['default']['default']['init_commands']['optimizer_search_depth'] = 'SET SESSION optimizer_search_depth = 0';
 }
 
-if (isset($_ENV['PANTHEON_ENVIRONMENT']) && php_sapi_name() != 'cli') {
-  // Drupal 8 Trusted Host Settings.
-  if (is_array($settings)) {
-    $settings['trusted_host_patterns'] = array('^'. preg_quote($primary_domain) . '$');
-  }
-}
-
 // Turn error reporting of notices off on test and live.
 // All Pantheon Environments.
 if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {

@@ -10,7 +10,7 @@ dependencies:
   - drupal:system
   - drupal:image
 
-# Information added by Drupal.org packaging script on 2026-01-22
-version: '8.x-1.23'
+# Information added by Drupal.org packaging script on 2026-02-11
+version: '8.x-1.24'
 project: 'consumers'
-datestamp: 1769094426
+datestamp: 1770824864

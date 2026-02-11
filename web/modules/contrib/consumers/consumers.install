@@ -225,3 +225,26 @@ function consumers_update_8111() {
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('status', 'consumer', 'consumers', $field_definition);
 }
+
+/**
+ * Fix Consumer entity definition mismatch.
+ */
+function consumers_update_8112() {
+  // Step 1: Update entity type definition.
+  $manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('consumer');
+  $manager->updateEntityType($entity_type);
+
+  // Step 2: Hard-reset metadata registry.
+  \Drupal::service('entity.last_installed_schema.repository')->setLastInstalledDefinition($entity_type);
+  \Drupal::service('entity_field.manager')->clearCachedFieldDefinitions();
+
+  // Step 3: Synchronize status field definition.
+  $storage_definition = $manager->getFieldStorageDefinition('status', 'consumer');
+  if ($storage_definition) {
+    $manager->updateFieldStorageDefinition($storage_definition);
+    return t('Consumer entity definition refreshed and status field synchronized.');
+  }
+
+  return t('Consumer entity definition refreshed but status field not found.');
+}

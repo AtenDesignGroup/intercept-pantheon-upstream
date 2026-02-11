@@ -1,0 +1,6 @@
+name: amigos-intercept
+recipe: pantheon
+config:
+  framework: drupal8
+  site: amigos-intercept
+  id: aef5f5e6-ca8d-438a-b508-f3d1af58b2b4

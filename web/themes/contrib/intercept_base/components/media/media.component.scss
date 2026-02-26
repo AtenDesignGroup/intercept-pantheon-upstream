@@ -1,26 +1,18 @@
 @use 'partials' as *;
 
-.media {
-  &__media {
-    // margin-bottom: 2rem;
-  }
+.media__caption {
+  @include fs(x-small);
+  color: $gray-40;
+  font-style: italic;
+  margin: 1em 0;
+}
 
-  &__caption {
-    background-color: $gray-90;
-    bottom: 0;
-    padding: 1em;
-  }
+.media__caption-credit {
+  @include fs(tiny);
+  margin-top: .5rem;
+}
 
-  &__caption-caption {
-  }
-
-  &__caption-credit {
-    @include fs(tiny);
-    margin-top: .5rem;
-  }
-
-  // Layout
-  &--l--section {
-    @include spacing(margin-bottom, loose);
-  }
+// Layout
+.media--l--section {
+  @include spacing(margin-bottom, loose);
 }

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.22] - 2026-02-25
+
+* Fixed a few color contrast issues on loading indicators
+
 ## [2.0.21] - 2026-01-28
 
 * Fixed an accessibility issue with low color contrast on My Account > Events > Past

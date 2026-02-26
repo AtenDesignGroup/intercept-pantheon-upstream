@@ -386,7 +386,7 @@ function intercept_event_entity_presave(EntityInterface $entity) {
         // Redirect to the recurrences page as appropriate.
         $event_recurrences = $entity->get('event_recurrence')->referencedEntities();
         $referrer = parse_url(\Drupal::request()->server->get('HTTP_REFERER'));
-        if (!strstr($referrer['path'], '/analysis')) {
+        if (!empty($referrer['path']) && !strstr($referrer['path'], '/analysis')) {
           if ($recurrence = \Drupal::service('intercept_event.recurring_manager')->getBaseEventRecurrence($entity) && !empty($event_recurrences)) {
             $recurrences_url = Url::fromRoute('entity.node.recurrence_form', [
               'node' => $entity->id(),
@@ -982,7 +982,7 @@ function intercept_event_node_event_form_validate(&$form, FormStateInterface $fo
           || $room_availability['has_max_duration_conflict']
           || $room_availability['is_closed']) {
           $error = TRUE;
-          
+
           // Unfortunately we can only set one error per form element
           // due to this core bug:
           // https://www.drupal.org/project/drupal/issues/2818437

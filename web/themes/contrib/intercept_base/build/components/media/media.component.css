@@ -1,8 +1,22 @@
 .media__caption {
-  background-color: #f6f8f9;
-  bottom: 0;
-  padding: 1em;
+  color: #818487;
+  font-style: italic;
+  margin: 1em 0;
 }
+.media__caption {
+  font-size: 0.6527777778rem;
+}
+@media (min-width: 48rem) {
+  .media__caption {
+    font-size: 0.8333333333rem;
+  }
+}
+@media (min-width: 62rem) {
+  .media__caption {
+    font-size: 1rem;
+  }
+}
+
 .media__caption-credit {
   margin-top: 0.5rem;
 }
@@ -19,6 +33,7 @@
     font-size: 0.875rem;
   }
 }
+
 .media--l--section {
   margin-bottom: 2.0625rem;
 }

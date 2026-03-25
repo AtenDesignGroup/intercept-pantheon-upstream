@@ -1,6 +1,7 @@
 @use "partials" as *;
 
-button.MuiButton-textPrimary {
+button.MuiButton-textPrimary,
+button.MuiButton-outlinedPrimary {
   &:focus {
     color: $white;
   }

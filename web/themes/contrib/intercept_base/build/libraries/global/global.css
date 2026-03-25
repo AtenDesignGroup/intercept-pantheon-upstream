@@ -979,6 +979,11 @@ tbody + tbody {
   padding: 1px 7px 2px 7px;
 }
 
+button.MuiButton-textPrimary:focus,
+button.MuiButton-outlinedPrimary:focus {
+  color: #fff;
+}
+
 .field:last-child {
   margin-bottom: 0;
 }

@@ -20,9 +20,6 @@ intercept_room_reservation.settings:
     reservation_barred_text:
       type: text_format
       label: 'Room reservation barred user message'
-    reservation_limit_message:
-      type: text_format
-      label: 'Room reservation limit message'
     refreshments_text:
       type: text_format
       label: 'Room reservation refreshments configuration'

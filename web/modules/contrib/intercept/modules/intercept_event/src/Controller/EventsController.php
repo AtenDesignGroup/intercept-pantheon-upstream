@@ -384,11 +384,11 @@ class EventsController extends ControllerBase {
     $accessResult = !empty($results) ? AccessResult::allowed() : AccessResult::forbidden();
 
     switch ($node->registration->status) {
+      case 'open':
       case 'expired':
       case 'closed':
-        return $accessResult;
-
       case 'full':
+        return $accessResult;
       case 'open_pending':
         return AccessResult::forbidden();
     }

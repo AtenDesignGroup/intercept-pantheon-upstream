@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.23] - 2026-03-25
+
+* Fixed an accessibility issues on My Account > Settings with missing form labels & broken ARIA reference
+* Fixed alternative text on event teaser images to be more descriptive
+* Fixed a color contrast issue with the cancel button on event registration pages
+* Increased font size on highlight/tag component used throughout the site for accessibility
+
 ## [2.0.22] - 2026-02-25
 
 * Fixed a few color contrast issues on loading indicators

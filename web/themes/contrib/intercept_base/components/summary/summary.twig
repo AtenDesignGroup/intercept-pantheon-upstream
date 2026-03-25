@@ -3,9 +3,10 @@
 {{ attach_library('intercept_base/action-button') }}
 
 <article {{ component.attributes('summary', modifiers, attr) }}>
-  {% if image %}
+  {% set rendered_image = image|render|trim %}
+  {% if rendered_image %}
     <div class="summary__image">
-      {{image}}
+      {{ image }}
     </div>
   {% endif %}
   <div class="summary__main">

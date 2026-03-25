@@ -28,15 +28,6 @@ class WebformStatesRequiredJavaScriptTest extends WebformWebDriverTestBase {
   ];
 
   /**
-   * {@inheritdoc}
-   */
-  public function setUp(): void {
-    parent::setUp();
-    // @todo Fix broken test on Drupal.org that works as expected locally.
-    $this->markTestSkipped('This test is skipped until it is fixed ...');
-  }
-
-  /**
    * Tests webform (custom) #states required logic.
    */
   public function testRequiredState() {

@@ -113,6 +113,7 @@ function intercept_location_closing_intercept_location_closing_presave(EntityInt
   $locations = $entity->get('location')->getValue();
   $events = $entity->get('field_events')->getValue();
   $published = $entity->get('status')->getValue();
+  $image = $entity->get('field_primary_image')->getValue();
 
   // DELETE any previously-associated event nodes.
   if ($events) {
@@ -164,6 +165,7 @@ function intercept_location_closing_intercept_location_closing_presave(EntityInt
           'type' => 'event',
           'title' => $title,
           'field_event_status' => 'scheduled',
+          'image_primary' => $image,
           'field_text_teaser' => $visitor_message,
           'field_text_content' => $visitor_message,
           'field_location' => $location['target_id'],
@@ -196,6 +198,7 @@ function intercept_location_closing_intercept_location_closing_presave(EntityInt
         'type' => 'event',
         'title' => $title,
         'field_event_status' => 'scheduled',
+        'image_primary' => $image,
         'field_text_teaser' => $visitor_message,
         'field_text_content' => $visitor_message,
         'field_location' => $location['target_id'],

@@ -296,10 +296,10 @@ div.webform-form-filter input.webform-form-filter-text {
   margin: 0;
 }
 
-.webform-off-canvas #drupal-off-canvas-wrapper .form-type--boolean {
+#drupal-off-canvas-wrapper.webform-off-canvas .form-type--boolean {
   margin-left: 1.6875rem;
 }
 
-.webform-off-canvas #drupal-off-canvas-wrapper .form-item .form-item__description {
+#drupal-off-canvas-wrapper.webform-off-canvas .form-item .form-item__description {
   color: #55565b;
 }

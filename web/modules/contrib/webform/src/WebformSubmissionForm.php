@@ -1481,7 +1481,7 @@ class WebformSubmissionForm extends ContentEntityForm {
           $track_last_page = ($this->getWebform()->getSetting('wizard_confirmation')) ? count($track_pages) : count($track_pages) + 1;
           break;
 
-        default;
+        default:
         case 'name':
           $track_previous_page = $previous_page;
           $track_next_page = $next_page;

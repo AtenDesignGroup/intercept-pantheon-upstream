@@ -1,6 +1,3 @@
-intercept_event.settings:
-  type: config_object
-  label: 'Intercept Event settings'
 field.formatter.settings.daterange_combined:
   type: field.formatter.settings.daterange_custom
   label: 'Date range single date display format settings'

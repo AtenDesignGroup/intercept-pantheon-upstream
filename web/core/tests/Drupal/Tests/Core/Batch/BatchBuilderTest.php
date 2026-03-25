@@ -7,20 +7,20 @@ namespace Drupal\Tests\Core\Batch;
 use Drupal\Core\Batch\BatchBuilder;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests for the batch builder class.
- *
- * @coversDefaultClass \Drupal\Core\Batch\BatchBuilder
- *
- * @group system
  */
+#[CoversClass(BatchBuilder::class)]
+#[Group('system')]
 class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests the default values.
    *
-   * @covers ::toArray
+   * @legacy-covers ::toArray
    */
   public function testDefaultValues(): void {
     $batch = (new BatchBuilder())->toArray();
@@ -48,8 +48,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setTitle().
-   *
-   * @covers ::setTitle
    */
   public function testSetTitle(): void {
     $batch = (new BatchBuilder())
@@ -61,8 +59,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setFinishCallback().
-   *
-   * @covers ::setFinishCallback
    */
   public function testSetFinishCallback(): void {
     $batch = (new BatchBuilder())
@@ -74,8 +70,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setInitMessage().
-   *
-   * @covers ::setInitMessage
    */
   public function testSetInitMessage(): void {
     $batch = (new BatchBuilder())
@@ -87,8 +81,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setProgressMessage().
-   *
-   * @covers ::setProgressMessage
    */
   public function testSetProgressMessage(): void {
     $batch = (new BatchBuilder())
@@ -111,8 +103,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setFile().
-   *
-   * @covers ::setFile
    */
   public function testSetFile(): void {
     $filename = $this->root . '/core/modules/system/tests/modules/batch_test/batch_test.set_file.inc';
@@ -134,7 +124,7 @@ class BatchBuilderTest extends UnitTestCase {
   /**
    * Tests setting and adding libraries.
    *
-   * @covers ::setLibraries
+   * @legacy-covers ::setLibraries
    */
   public function testAddingLibraries(): void {
     $batch = (new BatchBuilder())
@@ -146,8 +136,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setProgressive().
-   *
-   * @covers ::setProgressive
    */
   public function testSetProgressive(): void {
     $batch_builder = new BatchBuilder();
@@ -166,8 +154,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setQueue().
-   *
-   * @covers ::setQueue
    */
   public function testSetQueue(): void {
     $batch = (new BatchBuilder())
@@ -183,7 +169,7 @@ class BatchBuilderTest extends UnitTestCase {
   /**
    * Tests queue class exists.
    *
-   * @covers ::setQueue
+   * @legacy-covers ::setQueue
    */
   public function testQueueExists(): void {
     $batch_builder = (new BatchBuilder());
@@ -195,7 +181,7 @@ class BatchBuilderTest extends UnitTestCase {
   /**
    * Tests queue class implements \Drupal\Core\Queue\QueueInterface.
    *
-   * @covers ::setQueue
+   * @legacy-covers ::setQueue
    */
   public function testQueueImplements(): void {
     $batch_builder = (new BatchBuilder());
@@ -206,8 +192,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests setUrlOptions().
-   *
-   * @covers ::setUrlOptions
    */
   public function testSetUrlOptions(): void {
     $options = [
@@ -223,8 +207,6 @@ class BatchBuilderTest extends UnitTestCase {
 
   /**
    * Tests addOperation().
-   *
-   * @covers ::addOperation
    */
   public function testAddOperation(): void {
     $batch_builder = new BatchBuilder();
@@ -251,8 +233,8 @@ class BatchBuilderTest extends UnitTestCase {
   /**
    * Tests registering IDs of built batches.
    *
-   * @covers ::isSetIdRegistered
-   * @covers ::registerSetId
+   * @legacy-covers ::isSetIdRegistered
+   * @legacy-covers ::registerSetId
    */
   public function testRegisterIds(): void {
     $setId = $this->randomMachineName();

@@ -28,6 +28,7 @@ variables:
   OPT_IN_TEST_MAX_PHP: 1
   OPT_IN_TEST_NEXT_MINOR: 1
   OPT_IN_TEST_PREVIOUS_MAJOR: 1
+  OPT_IN_TEST_PREVIOUS_MINOR: 1
   _LENIENT_ALLOW_LIST: "select2, styleguide"
   _CSPELL_IGNORE_PATHS: 'webform.libraries.yml,
   config/install/*,

@@ -403,45 +403,48 @@ function template_preprocess_room_reservation(array &$variables) {
   }
 
   // Add to my Calendar
-  $data_calendars = [
-    'Google Calendar',
-    'Outlook Online',
-    'iCalendar',
-    'Yahoo! Calendar',
-  ];
-  $service = \Drupal::service('addtocalendar.apiwidget');
-  $room = $room_reservation->get('field_room')->entity;
-  $room_name = $room->label();
-  $location_name = $room->get('field_location')->entity->label();
-  $title = $room_name . ' Reservation';
-  $location = $room_name . ', ' . $location_name;
-  $start_date_value = $room_reservation->get('field_dates')->value;
-  $end_date_value = $room_reservation->get('field_dates')->end_value;
-  $start_date = \DateTime::createFromFormat('Y-m-d\TH:i:s', $start_date_value)->format('Ymd\THis\Z');
-  $end_date = \DateTime::createFromFormat('Y-m-d\TH:i:s', $end_date_value)->format('Ymd\THis\Z');
-  $reservationManager = \Drupal::service('intercept_core.reservation.manager');
-  $blocked_dates = @$reservationManager->getBlockedDates([$room_reservation], [], $room);
-  $message = $blocked_dates[0]['message'];
-  if (!empty($message)) {
-    $title = $message;
-  }
-  $config_values = [
-    'atcStyle' => 'none',
-    'atcDisplayText' => 'Add to my Calendar',
-    'atcTitle' => $title,
-    'atcDescription' => '',
-    'atcLocation' => $location,
-    'atcDateStart' => $start_date,
-    'atcDateEnd' => $end_date,
-    'atcPrivacy' => 'public',
-    'atcDataSecure' => 'auto',
-    'atcDataCalendars' => $data_calendars,
-  ];
-  $service->setWidgetValues($config_values);
-   // Only show this on future reservations.
-  if (strtotime($end_date_value) > strtotime('now')) {
-    $add_to_calendar_widget = $service->generateWidget();
-    $variables['addtocalendar'] = \Drupal::service('renderer')->render($add_to_calendar_widget);
+  $view_mode = $variables['view_mode'];
+  if ($view_mode === 'off_canvas') {
+    $data_calendars = [
+      'Google Calendar',
+      'Outlook Online',
+      'iCalendar',
+      'Yahoo! Calendar',
+    ];
+    $service = \Drupal::service('addtocalendar.apiwidget');
+    $room = $room_reservation->get('field_room')->entity;
+    $room_name = $room->label();
+    $location_name = $room->get('field_location')->entity->label();
+    $title = $room_name . ' Reservation';
+    $location = $room_name . ', ' . $location_name;
+    $start_date_value = $room_reservation->get('field_dates')->value;
+    $end_date_value = $room_reservation->get('field_dates')->end_value;
+    $start_date = \DateTime::createFromFormat('Y-m-d\TH:i:s', $start_date_value)->format('Ymd\THis\Z');
+    $end_date = \DateTime::createFromFormat('Y-m-d\TH:i:s', $end_date_value)->format('Ymd\THis\Z');
+    $reservationManager = \Drupal::service('intercept_core.reservation.manager');
+    $blocked_dates = @$reservationManager->getBlockedDates([$room_reservation], [], $room);
+    $message = $blocked_dates[0]['message'];
+    if (!empty($message)) {
+      $title = $message;
+    }
+    $config_values = [
+      'atcStyle' => 'none',
+      'atcDisplayText' => 'Add to my Calendar',
+      'atcTitle' => $title,
+      'atcDescription' => '',
+      'atcLocation' => $location,
+      'atcDateStart' => $start_date,
+      'atcDateEnd' => $end_date,
+      'atcPrivacy' => 'public',
+      'atcDataSecure' => 'auto',
+      'atcDataCalendars' => $data_calendars,
+    ];
+    $service->setWidgetValues($config_values);
+    // Only show this on future reservations.
+    if (strtotime($end_date_value) > strtotime('now')) {
+      $add_to_calendar_widget = $service->generateWidget();
+      $variables['addtocalendar'] = \Drupal::service('renderer')->render($add_to_calendar_widget);
+    }
   }
 
 }

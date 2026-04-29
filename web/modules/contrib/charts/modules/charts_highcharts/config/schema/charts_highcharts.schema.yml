@@ -48,6 +48,9 @@ charts.settings.library_plugin.highcharts:
     no_data_library:
       label: 'Enable no data library'
       type: boolean
+    pareto_library:
+      label: 'Enable pareto library'
+      type: boolean
     texture_library:
       label: 'Enable texture library'
       type: boolean
@@ -223,6 +226,12 @@ charts_highcharts_bar_column:
     enable_stacklabels:
       label: 'Enable stackLabels'
       type: boolean
+    pareto_line:
+      label: 'Enable Pareto line'
+      type: boolean
+    pareto_color:
+      label: 'Pareto line color'
+      type: string
 
 charts.library_plugin.highcharts.options.bar:
   type: charts_highcharts_bar_column

@@ -63,6 +63,32 @@ function hook_views_filters_summary_replacements_alter(&$replacements, $view) {
 }
 
 /**
+ * Alter a filter's summary item.
+ *
+ * Allows developers to modify a specific item to be displayed in the
+ * summary text.
+ *
+ * @param array $item
+ *   A filter item.
+ *
+ * @see \Drupal\views_filters_summary\Plugin\views\area\ViewsFiltersSummary::buildFilterSummaryItem()
+ */
+function hook_views_filters_summary_item_alter(&$item) {
+  // Example taken from the views_filter_summary_a11y submodule.
+  $value = $item['value'];
+  $aria_label = $item['link']['#attributes']['aria-label'];
+  $item['link']['#title'] = [
+    '#markup' =>
+    '<span aria-hidden="true" class="remove-label">' . $value . '</span>' .
+    '<span class="visually-hidden">' . $aria_label . '</span>' .
+    '<span aria-hidden="true" class="remove-button">X</span>',
+  ];
+  $item['link']['#options'] = [
+    'html' => TRUE,
+  ];
+}
+
+/**
  * Allow filter plugins to specify an alias to use for processing.
  *
  * @param \Drupal\views\Plugin\views\filter\FilterPluginBase $filter

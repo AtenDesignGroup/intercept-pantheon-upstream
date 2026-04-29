@@ -92,18 +92,14 @@ abstract class ActionLinkTypeBase extends PluginBase implements ActionLinkTypePl
     }
 
     $action = $this->getAction($flag, $entity);
-    $url = $this->getUrl($action, $flag, $entity);
-    $url->setRouteParameter('view_mode', $view_mode);
-    $url->setOption('query', ['destination' => $this->getDestination()]);
     $title = $flag->getShortText($action);
-
-    return Link::fromTextAndUrl($title, $url);
+    return Link::fromTextAndUrl($title, $this->getAsUrl($flag, $entity, $view_mode));
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAsFlagLink(FlagInterface $flag, EntityInterface $entity, ?string $view_mode = NULL): array {
+  public function getAsFlagLink(FlagInterface $flag, EntityInterface $entity, ?string $view_mode = 'default'): array {
     $action = $this->getAction($flag, $entity);
     $access = $flag->actionAccess($action, $this->currentUser, $entity);
 
@@ -114,24 +110,16 @@ abstract class ActionLinkTypeBase extends PluginBase implements ActionLinkTypePl
       $deprecation_message = 'Not providing the "$view_mode" parameter is deprecated in flag:8.x-4.0-beta4 and will throw an error from flag:8.x-4.0. See https://www.drupal.org/node/3458551.';
       @trigger_error($deprecation_message, E_USER_DEPRECATED);
     }
-
+    $render = [
+      '#theme' => 'flag',
+      '#flag' => $flag,
+      '#flaggable' => $entity,
+      '#view_mode' => $view_mode,
+      '#action' => $action,
+      '#access' => $access->isAllowed(),
+    ];
     if ($access->isAllowed()) {
-      $url = $this->getUrl($action, $flag, $entity);
-      $url->setRouteParameter('destination', $this->getDestination());
-      $url->setRouteParameter('view_mode', $view_mode);
-      $render = [
-        '#theme' => 'flag',
-        '#flag' => $flag,
-        '#flaggable' => $entity,
-        '#view_mode' => $view_mode,
-        '#action' => $action,
-        '#access' => $access->isAllowed(),
-        // Use render array for title to allow limited markup in the link text.
-        '#title' => ['#markup' => $flag->getShortText($action)],
-        '#attributes' => [
-          'title' => $flag->getLongText($action),
-        ],
-      ];
+      $url = $this->getAsUrl($flag, $entity, $view_mode);
       // Build the URL. It is important that bubbleable metadata is explicitly
       // collected and applied to the render array, as it might be rendered on
       // its own, for example in an ajax response. Specifically, this is
@@ -140,6 +128,14 @@ abstract class ActionLinkTypeBase extends PluginBase implements ActionLinkTypePl
       $rendered_url->applyTo($render);
 
       $render['#attributes']['href'] = $rendered_url->getGeneratedUrl();
+
+      // Use render array for title to allow limited markup in the link text.
+      $render['#title'] = ['#markup' => $flag->getShortText($action)];
+      $render['#attributes']['title'] = $flag->getLongText($action);
+    }
+    elseif (!$this->currentUser->isAnonymous() && $flag->isFlagged($entity, $this->currentUser)) {
+      $render['#access'] = !$access->isAllowed();
+      $render['#unflag_denied_text'] = $flag->getUnflagDeniedText();
     }
     else {
       $render = [];
@@ -150,6 +146,17 @@ abstract class ActionLinkTypeBase extends PluginBase implements ActionLinkTypePl
       ->applyTo($render);
 
     return $render;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAsUrl(FlagInterface $flag, EntityInterface $entity, ?string $view_mode = NULL) {
+    $action = $this->getAction($flag, $entity);
+    $url = $this->getUrl($action, $flag, $entity);
+    $url->setRouteParameter('view_mode', $view_mode);
+    $url->setOption('query', ['destination' => $this->getDestination()]);
+    return $url;
   }
 
   /**

@@ -7,7 +7,7 @@
     "libraries:copy": "rimraf ../../../../../libraries/highcharts* && copy-files-from-to"
   },
   "dependencies": {
-    "highcharts": "~12.4.0"
+    "highcharts": "~12.5.0"
   },
   "devDependencies": {
     "copy-files-from-to": "^3.9.0",
@@ -73,6 +73,10 @@
     {
       "from": "../../../../../../node_modules/highcharts/modules/pattern-fill.js",
       "to": "../../../../../libraries/highcharts_pattern-fill/pattern-fill.js"
+    },
+    {
+      "from": "../../../../../../node_modules/highcharts/modules/pareto.js",
+      "to": "../../../../../libraries/highcharts_pareto/pareto.js"
     },
     {
       "from": "../../../../../../node_modules/highcharts/modules/solid-gauge.js",

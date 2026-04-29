@@ -318,6 +318,8 @@
   @media screen and (min-height: 900px) and (min-width: 768px) { // hp 1920x1080
     position: sticky;
     top: 1em;
+    overflow-y: scroll;
+    max-height: 100vh;
   }
   &::-webkit-scrollbar {
     display: none; // hide scrollbar on sidebar contents

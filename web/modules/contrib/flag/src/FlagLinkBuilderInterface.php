@@ -23,6 +23,6 @@ interface FlagLinkBuilderInterface {
    *   A render array for the action link, empty if the user does not have
    *   access.
    */
-  public function build($entity_type_id, $entity_id, $flag_id, $view_mode = NULL);
+  public function build($entity_type_id, $entity_id, $flag_id, ?string $view_mode = 'default');
 
 }

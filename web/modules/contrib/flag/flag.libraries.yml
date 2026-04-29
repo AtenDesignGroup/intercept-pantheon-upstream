@@ -27,3 +27,4 @@ flag.link_ajax:
     - core/drupal
     - core/drupal.dialog.ajax
     - core/drupal.ajax
+    - core/drupal.announce

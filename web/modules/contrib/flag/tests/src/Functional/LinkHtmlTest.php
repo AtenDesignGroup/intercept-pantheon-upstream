@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\flag\Functional;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 
 /**
@@ -75,7 +74,7 @@ class LinkHtmlTest extends FlagTestBase {
     // could either be at the ends (we added the italics tags above) OR they
     // could be in the middle as a result of a randomly-generated valid tag
     // in the flag text.
-    $this->clickLink(Html::decodeEntities(Xss::filter($this->flag->getShortText('flag'))));
+    $this->getSession()->getPage()->find('css', '.flag a')->click();
 
     // Check that the node is flagged.
     $this->drupalGet('node/' . $node_id);
@@ -83,7 +82,7 @@ class LinkHtmlTest extends FlagTestBase {
 
     // Unflag the node.
     $this->drupalGet('node/' . $node_id);
-    $this->clickLink(Html::decodeEntities(Xss::filter($this->flag->getShortText('unflag'))));
+    $this->getSession()->getPage()->find('css', '.flag a')->click();
 
     // Check that the node is no longer flagged.
     $this->drupalGet('node/' . $node_id);

@@ -25,7 +25,7 @@ interface ActionLinkTypePluginInterface extends PluginFormInterface, Configurabl
    * @return array
    *   The render array.
    */
-  public function getAsFlagLink(FlagInterface $flag, EntityInterface $entity, ?string $view_mode = NULL): array;
+  public function getAsFlagLink(FlagInterface $flag, EntityInterface $entity, ?string $view_mode = 'default'): array;
 
   /**
    * Get the action link as a Link object.
@@ -41,5 +41,20 @@ interface ActionLinkTypePluginInterface extends PluginFormInterface, Configurabl
    *   The action Link.
    */
   public function getAsLink(FlagInterface $flag, EntityInterface $entity, ?string $view_mode = NULL);
+
+  /**
+   * Get the action link as an URL object.
+   *
+   * @param \Drupal\flag\FlagInterface $flag
+   *   The flag entity.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The flaggable entity.
+   * @param string|null $view_mode
+   *   The flaggable entity view mode.
+   *
+   * @return \Drupal\Core\Url
+   *   The action URL.
+   */
+  public function getAsUrl(FlagInterface $flag, EntityInterface $entity, ?string $view_mode = NULL);
 
 }

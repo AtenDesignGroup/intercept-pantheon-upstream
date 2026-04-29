@@ -44,10 +44,11 @@ function _toConsumableArray(arr) {
         );
 
         document.querySelector(response.selector).appendChild(para);
+        Drupal.announce(response.message, 'assertive');
       }
     } else {
       const links = [].concat(
-        _toConsumableArray(document.querySelectAll('.flag-waiting')),
+        _toConsumableArray(document.querySelectorAll('.flag-waiting')),
       );
       links.forEach(function (link) {
         return link.classList.remove('flag-waiting');

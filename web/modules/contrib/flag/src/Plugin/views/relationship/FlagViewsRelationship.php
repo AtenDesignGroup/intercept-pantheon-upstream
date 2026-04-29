@@ -7,10 +7,12 @@ use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\PageCache\ResponsePolicy\KillSwitch;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\flag\FlagServiceInterface;
 use Drupal\user\RoleInterface;
+use Drupal\user\UserInterface;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -50,6 +52,13 @@ class FlagViewsRelationship extends RelationshipPluginBase implements CacheableD
   protected $entityTypeManager;
 
   /**
+   * The route match.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $router;
+
+  /**
    * Constructs a FlagViewsRelationship object.
    *
    * @param array $configuration
@@ -66,14 +75,17 @@ class FlagViewsRelationship extends RelationshipPluginBase implements CacheableD
    *   The current user.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $router
+   *   The route match.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, KillSwitch $page_cache_kill_switch, FlagServiceInterface $flag_service, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, KillSwitch $page_cache_kill_switch, FlagServiceInterface $flag_service, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, RouteMatchInterface $router) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->flagService = $flag_service;
     $this->pageCacheKillSwitch = $page_cache_kill_switch;
     $this->currentUser = $current_user;
     $this->entityTypeManager = $entity_type_manager;
     $this->definition = $plugin_definition + $configuration;
+    $this->router = $router;
   }
 
   /**
@@ -84,7 +96,8 @@ class FlagViewsRelationship extends RelationshipPluginBase implements CacheableD
     $page_cache_kill_switch = $container->get('page_cache_kill_switch');
     $current_user = $container->get('current_user');
     $entity_type_manager = $container->get('entity_type.manager');
-    return new static($configuration, $plugin_id, $plugin_definition, $page_cache_kill_switch, $flag_service, $current_user, $entity_type_manager);
+    $router = $container->get('current_route_match');
+    return new static($configuration, $plugin_id, $plugin_definition, $page_cache_kill_switch, $flag_service, $current_user, $entity_type_manager, $router);
   }
 
   /**
@@ -120,10 +133,15 @@ class FlagViewsRelationship extends RelationshipPluginBase implements CacheableD
       $form['flag']['#options'][$flag_id] = $flag->label();
     }
 
+    $user_scope_options = [
+      'current' => $this->t('Current user'),
+      'context' => $this->t('User from Url context'),
+      'any' => $this->t('Any user'),
+    ];
     $form['user_scope'] = [
       '#type' => 'radios',
       '#title' => $this->t('By'),
-      '#options' => ['current' => $this->t('Current user'), 'any' => $this->t('Any user')],
+      '#options' => $user_scope_options,
       '#default_value' => $this->options['user_scope'],
     ];
 
@@ -156,18 +174,24 @@ class FlagViewsRelationship extends RelationshipPluginBase implements CacheableD
       'value' => $flag->id(),
       'numeric' => TRUE,
     ];
-
-    if ($this->options['user_scope'] == 'current' && !$flag->isGlobal()) {
+    if (in_array($this->options['user_scope'], ['current', 'context']) && !$flag->isGlobal()) {
+      $user_value = '***CURRENT_USER***';
+      if ($this->options['user_scope'] === 'context') {
+        $context_user = $this->router->getParameter('user');
+        if (!empty($context_user)) {
+          $user_value = $context_user instanceof UserInterface ? $context_user->id() : $context_user;
+        }
+      }
       $this->definition['extra'][] = [
         'field' => 'uid',
-        'value' => '***CURRENT_USER***',
+        'value' => $user_value,
         'numeric' => TRUE,
       ];
 
       $roles = $this->entityTypeManager->getStorage('user_role')->loadMultiple();
       $flag_roles = array_filter($roles, fn(RoleInterface $role) => $role->hasPermission('flag ' . $flag->id()));
 
-      if (isset($flag_roles[RoleInterface::ANONYMOUS_ID]) && $this->currentUser->isAnonymous()) {
+      if (isset($flag_roles[RoleInterface::ANONYMOUS_ID]) && $this->currentUser->isAnonymous() && $this->options['user_scope'] !== 'context') {
         // Disable page caching for anonymous users.
         $this->pageCacheKillSwitch->trigger();
 
@@ -214,7 +238,7 @@ class FlagViewsRelationship extends RelationshipPluginBase implements CacheableD
     if (!$flag = $this->getFlag()) {
       return [];
     }
-    return $this->options['user_scope'] == 'current' && !$flag->isGlobal()
+    return in_array($this->options['user_scope'], ['context', 'current']) && !$flag->isGlobal()
       ? ['user']
       : [];
   }

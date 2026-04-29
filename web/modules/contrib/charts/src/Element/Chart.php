@@ -3,6 +3,7 @@
 namespace Drupal\charts\Element;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -111,6 +112,11 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
       '#title_font_size' => 14,
       '#title_position' => 'out',
       '#subtitle' => NULL,
+      '#figure_caption' => '',
+      '#chart_summary' => '',
+      '#accessible_table' => 'disabled',
+      '#accessible_table_button_text' => '',
+      '#accessible_table_button_class' => 'button',
       '#colors' => ChartBase::getDefaultColors(),
       '#font' => 'Arial',
       '#font_size' => 12,
@@ -157,7 +163,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function preRender(array $element) {
+  public function preRender(array $element): array {
     /** @var \Drupal\charts\Plugin\chart\Library\ChartInterface[] $definitions */
     $definitions = $this->chartsManager->getDefinitions();
 
@@ -235,7 +241,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
         $alter_hooks[] = 'chart_definition_' . $chart_id;
       }
 
-      // FIX: Ensure element is an array before passing to hooks.
+      // Ensure element is an array before passing to hooks.
       if (is_array($element)) {
         $this->moduleHandler->alter($alter_hooks, $chart_definition, $element, $chart_id);
       }
@@ -243,6 +249,9 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
       // Set the element #chart_json property as a data-attribute.
       $element['#attributes']['data-chart'] = Json::encode($chart_definition);
     }
+
+    // Accessible table options.
+    $element = $this->accessibleTableLogic($element);
 
     $element['#cache']['tags'][] = 'config:charts.settings';
 
@@ -255,7 +264,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
    * @param array $element
    *   The element.
    */
-  public static function castElementIntegerValues(array &$element) {
+  public static function castElementIntegerValues(array &$element): void {
     // Cast options to integers to avoid redundant library fixing problems.
     $integer_options = [
       // Chart options.
@@ -276,11 +285,11 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
     ];
 
     foreach ($element as $property_name => $value) {
-      if (is_array($element[$property_name])) {
+      if (is_array($value)) {
         self::castElementIntegerValues($element[$property_name]);
       }
       elseif ($property_name && in_array($property_name, $integer_options)) {
-        $element[$property_name] = (is_null($element[$property_name]) || strlen($element[$property_name]) === 0) ? NULL : (int) $element[$property_name];
+        $element[$property_name] = (is_null($value) || strlen($value) === 0) ? NULL : (int) $value;
       }
     }
   }
@@ -291,7 +300,7 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
    * @param array $array
    *   The array to trim.
    */
-  public static function trimArray(array &$array) {
+  public static function trimArray(array &$array): void {
     foreach ($array as $key => &$value) {
       if (is_array($value)) {
         self::trimArray($value);
@@ -326,6 +335,11 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
       '#title' => $settings['display']['title'],
       '#title_position' => $settings['display']['title_position'],
       '#subtitle' => $settings['display']['subtitle'] ?? '',
+      '#figure_caption' => $settings['display']['figure_caption'] ?? '',
+      '#chart_summary' => $settings['display']['chart_summary'] ?? '',
+      '#accessible_table' => $settings['display']['accessible_table'] ?? 'disabled',
+      '#accessible_table_button_text' => $settings['display']['accessible_table_button_text'] ?? '',
+      '#accessible_table_button_class' => $settings['display']['accessible_table_button_class'] ?? '',
       '#tooltips' => $settings['display']['tooltips'] ?? [],
       '#data_labels' => $settings['display']['data_labels'] ?? FALSE,
       '#data_markers' => $settings['display']['data_markers'] ?? FALSE,
@@ -481,6 +495,82 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
     $loose_json = preg_replace('/,\s*([]}])/', '$1', $loose_json);
 
     return Json::decode($loose_json);
+  }
+
+  /**
+   * Logic to build the accessible table.
+   *
+   * @param array $element
+   *   The chart element.
+   *
+   * @return array
+   *   The element with a table alternative.
+   */
+  protected function accessibleTableLogic(array $element): array {
+    $visibility = $element['#accessible_table'] ?? 'collapsible';
+
+    if ($visibility !== 'disabled') {
+      /** @var \Drupal\charts\Service\ChartTableBuilder $table_builder */
+      $table_builder = \Drupal::service('charts.table_builder');
+      $raw_table = $table_builder->buildTable($element);
+
+      if ($visibility === 'collapsible') {
+        $unique_id = Html::getUniqueId('charts-table-' . $element['#id']);
+
+        // Get custom classes.
+        $custom_classes = !empty($element['#accessible_table_button_class'])
+          ? explode(' ', $element['#accessible_table_button_class'])
+          : [];
+        // Merge with required JS trigger class.
+        $btn_classes = array_merge(['charts-accordion-trigger'], $custom_classes);
+
+        $element['#table_alternative'] = [
+          'trigger' => [
+            '#type' => 'html_tag',
+            '#tag' => 'button',
+            '#value' => !empty($element['#accessible_table_button_text']) ? $element['#accessible_table_button_text'] : $this->t('View data table'),
+            '#attributes' => [
+              'class' => $btn_classes,
+              'type' => 'button',
+              'aria-expanded' => 'false',
+              'aria-controls' => $unique_id,
+            ],
+          ],
+          'content' => [
+            '#type' => 'html_tag',
+            '#tag' => 'div',
+            '#attributes' => [
+              'id' => $unique_id,
+              'class' => ['charts-accordion-content'],
+              'style' => 'display:none;',
+            ],
+            'table' => $raw_table,
+          ],
+        ];
+      }
+      elseif ($visibility === 'visible') {
+        $element['#table_alternative'] = [
+          '#type' => 'container',
+          '#attributes' => ['class' => ['chart-table-visible', 'charts-accessible-table-wrapper']],
+          'content' => $raw_table,
+        ];
+      }
+      elseif ($visibility === 'invisible') {
+        $element['#table_alternative'] = [
+          '#type' => 'container',
+          '#attributes' => ['class' => ['visually-hidden', 'charts-accessible-table-wrapper']],
+          'content' => $raw_table,
+        ];
+      }
+      $element['#table_visibility'] = $visibility;
+    }
+    else {
+      // Explicitly empty variables when disabled.
+      $element['#table_alternative'] = [];
+      $element['#table_visibility'] = 'disabled';
+    }
+
+    return $element;
   }
 
 }

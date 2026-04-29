@@ -1,12 +1,19 @@
-
 existing_values_autocomplete_widget.autocomplete:
-  path: '/existing-values/autocomplete/{field_name}/{count}/{entity_type_id}'
+  path: '/existing-values/autocomplete/{entity_type_id}/{bundle}/{field_name}'
   defaults:
     _controller: '\Drupal\existing_values_autocomplete_widget\Controller\AutocompleteController::handleAutocomplete'
     _title: 'Handle Autocomplete of text fields with existing values'
     _format: json
-    field_name: NULL
-    count: 15
-    entity_type_id: NULL
+  options:
+    parameters:
+      entity_type_id:
+        type: string
+      bundle:
+        type: string
+      field_name:
+        type: string
   requirements:
     _permission: 'access content'
+    entity_type_id: '[a-z_]+'
+    bundle: '[a-z_]+'
+    field_name: '[a-z_]+'

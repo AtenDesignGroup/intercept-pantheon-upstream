@@ -47,7 +47,7 @@ class FlagLinkBuilder implements FlagLinkBuilderInterface, TrustedCallbackInterf
   /**
    * {@inheritdoc}
    */
-  public function build($entity_type_id, $entity_id, $flag_id, $view_mode = NULL) {
+  public function build($entity_type_id, $entity_id, $flag_id, $view_mode = 'default') {
     $entity = $this->entityTypeManager->getStorage($entity_type_id)->load($entity_id);
     $flag = $this->flagService->getFlagById($flag_id);
 

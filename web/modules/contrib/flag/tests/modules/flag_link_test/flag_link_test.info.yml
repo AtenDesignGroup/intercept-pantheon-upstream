@@ -1,0 +1,11 @@
+name: 'Flag link test module'
+description: 'Functionality to assist Flag link testing.'
+type: module
+dependencies:
+  - flag
+package: Testing
+
+# Information added by Drupal.org packaging script on 2025-10-27
+version: '5.0.3'
+project: 'flag'
+datestamp: 1761563279

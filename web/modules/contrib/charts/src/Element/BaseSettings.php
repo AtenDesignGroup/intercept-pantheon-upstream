@@ -231,6 +231,60 @@ class BaseSettings extends FormElementBase {
       ],
     ];
 
+    $element['display']['figure_caption'] = [
+      '#title' => new TranslatableMarkup('Caption'),
+      '#type' => 'textarea',
+      '#description' => new TranslatableMarkup('A visible caption displayed below the chart. Must be different than the accessible summary. You may use HTML and tokens.'),
+      '#default_value' => $options['display']['figure_caption'] ?? '',
+      '#rows' => 2,
+    ];
+
+    $element['display']['chart_summary'] = [
+      '#title' => new TranslatableMarkup('Accessible summary'),
+      '#type' => 'textarea',
+      '#description' => new TranslatableMarkup('A 125–150 character, visually-hidden description for screen readers. It should summarize the chart’s purpose and the conclusions to be drawn from it. A helpful formula is: [chart type] of [type of data] where [reason for including chart]. For example: "Bar chart of the average household’s funds over time comparing saving versus investing, where investing grows money faster than saving." You may use tokens.'),
+      '#default_value' => $options['display']['chart_summary'] ?? '',
+      '#rows' => 3,
+    ];
+
+    $element['display']['accessible_table'] = [
+      '#type' => 'select',
+      '#title' => new TranslatableMarkup('Data table representation'),
+      '#options' => [
+        'collapsible' => new TranslatableMarkup('Collapsible (Details element)'),
+        'visible' => new TranslatableMarkup('Always Visible'),
+        'invisible' => new TranslatableMarkup('Screen Reader Only (visually-hidden)'),
+        'disabled' => new TranslatableMarkup('Disabled'),
+      ],
+      '#default_value' => $options['display']['accessible_table'] ?? 'collapsible',
+      '#description' => new TranslatableMarkup('How the alternative text-based data table should be rendered for accessibility.'),
+    ];
+
+    $element['display']['accessible_table_button_text'] = [
+      '#type' => 'textfield',
+      '#title' => new TranslatableMarkup('Data table button text'),
+      '#description' => new TranslatableMarkup('Custom text for the toggle button. Defaults to "View data table".'),
+      '#default_value' => $options['display']['accessible_table_button_text'] ?? '',
+      '#attributes' => ['placeholder' => new TranslatableMarkup('View data table')],
+      '#states' => [
+        'visible' => [
+          ':input[name="' . $element['#name'] . '[display][accessible_table]"]' => ['value' => 'collapsible'],
+        ],
+      ],
+    ];
+
+    $element['display']['accessible_table_button_class'] = [
+      '#type' => 'textfield',
+      '#title' => new TranslatableMarkup('Data table button class'),
+      '#description' => new TranslatableMarkup('Custom classes for the "View data table" button. Separate multiple classes with spaces.'),
+      '#default_value' => $options['display']['accessible_table_button_class'] ?? '',
+      '#states' => [
+        'visible' => [
+          ':input[name="' . $element['#name'] . '[display][accessible_table]"]' => ['value' => 'collapsible'],
+        ],
+      ],
+    ];
+
     $element['xaxis'] = [
       '#title' => new TranslatableMarkup('Horizontal axis'),
       '#type' => 'fieldset',

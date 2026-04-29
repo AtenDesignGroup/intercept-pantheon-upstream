@@ -1,0 +1,7 @@
+field.widget.settings.existing_autocomplete_field_widget:
+  type: field.widget.settings.string_textfield
+  label: 'Existing Autocomplete field widget settings'
+  mapping:
+    suggestions_count:
+      type: integer
+      label: 'The amount of suggestions to show.'

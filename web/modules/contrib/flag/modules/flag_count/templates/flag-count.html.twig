@@ -32,9 +32,17 @@
 %}
 
 {# Attach flag count. #}
-{% set count = '[' ~ flagcount(flag, flaggable) ~ ']' %}
+{% if flag and flaggable %}
+  {% set count = '[' ~ flagcount(flag, flaggable) ~ ']' %}
+{% endif %}
+
 
 {# Set nofollow to prevent search bots from crawling anonymous flag links #}
 {% set attributes = attributes.setAttribute('rel', 'nofollow') %}
 
-<div class="{{classes|join(' ')}}"><a{{ attributes }}>{{ title }}</a><span>{{ count }}</span></div>
+<div class="{{classes|join(' ')}}">
+  <a{{attributes}}>{{ title }}</a>
+  {% if count %}
+    <span>{{ count }}</span>
+  {% endif %}
+</div>

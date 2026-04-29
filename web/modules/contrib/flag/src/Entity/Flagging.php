@@ -237,4 +237,17 @@ class Flagging extends ContentEntityBase implements FlaggingInterface {
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTagsToInvalidate() {
+    $tags = parent::getCacheTagsToInvalidate();
+
+    $tags[] = 'flagging:' . $this->bundle() . ':' . $this->getFlaggableType() . ':' . $this->getFlaggableId();
+    $tags[] = 'flagging:' . $this->bundle() . ':' . $this->getFlaggableType() . ':' . $this->getFlaggableId() . ':' . $this->getOwnerId();
+    $tags[] = 'flagging:' . $this->bundle() . ':' . $this->getFlaggableType() . ':*:' . $this->getOwnerId();
+
+    return $tags;
+  }
+
 }

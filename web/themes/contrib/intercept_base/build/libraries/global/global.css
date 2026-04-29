@@ -1966,6 +1966,8 @@ body .ui-dialog {
   .l--sidebar-after > .l__main > .l__secondary {
     position: sticky;
     top: 1em;
+    overflow-y: scroll;
+    max-height: 100vh;
   }
 }
 .l--sidebar-after > .l__main > .l__secondary::-webkit-scrollbar {

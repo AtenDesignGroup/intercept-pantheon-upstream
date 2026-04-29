@@ -2,7 +2,6 @@
 
 namespace Drupal\charts_highcharts\Plugin\chart\Library;
 
-use Drupal\charts_highcharts\Form\ColorChanger;
 use Drupal\charts\Attribute\Chart;
 use Drupal\charts\Element\Chart as ChartElement;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
@@ -11,7 +10,6 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
-use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
@@ -60,13 +58,6 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
   protected $chartTypeManager;
 
   /**
-   * The chart type manager.
-   *
-   * @var \Drupal\Core\Form\FormBuilderInterface
-   */
-  protected $formBuilder;
-
-  /**
    * Constructs a \Drupal\views\Plugin\Block\ViewsBlockBase object.
    *
    * @param array $configuration
@@ -85,10 +76,9 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
    *   The module handler service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ElementInfoManagerInterface $element_info, TypeManager $chart_type_manager, FormBuilderInterface $form_builder, ?ModuleHandlerInterface $module_handler = NULL) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler, $form_builder);
     $this->elementInfo = $element_info;
     $this->chartTypeManager = $chart_type_manager;
-    $this->formBuilder = $form_builder;
   }
 
   /**
@@ -131,6 +121,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       'exporting_library' => TRUE,
       'heatmap_library' => FALSE,
       'no_data_library' => FALSE,
+      'pareto_library' => FALSE,
       'texture_library' => FALSE,
       'solidgauge_library' => FALSE,
       'disable_default_css_library' => FALSE,
@@ -226,6 +217,13 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       '#type' => 'checkbox',
       '#default_value' => !empty($this->configuration['no_data_library']),
       '#description' => $this->t('Highcharts No Data module is a separate library that enables no data message. See <a href="https://api.highcharts.com/highcharts/noData" target="_blank">Highcharts No Data documentation</a> for more information.'),
+    ];
+
+    $form['pareto_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Pareto" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['pareto_library']),
+      '#description' => $this->t('Highcharts Pareto module enables pareto series types.'),
     ];
 
     $form['texture_library'] = [
@@ -606,6 +604,26 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
         '#default_value' => !empty($options['enable_stacklabels']),
         '#description' => $this->t('Enable stackLabels for stacked bar or column charts.'),
       ];
+
+      $element['pareto_line'] = [
+        '#title' => $this->t('Enable Pareto line'),
+        '#type' => 'checkbox',
+        '#default_value' => !empty($options['pareto_line']),
+      ];
+
+      $element['pareto_color'] = [
+        '#title' => $this->t('Pareto line color'),
+        '#type' => 'textfield',
+        '#size' => 10,
+        '#maxlength' => 7,
+        '#attributes' => ['TYPE' => 'color'],
+        '#default_value' => $options['pareto_color'] ?? '#000000',
+        '#states' => [
+          'visible' => [
+            ':input[name*="pareto_line"]' => ['checked' => TRUE],
+          ],
+        ],
+      ];
     }
   }
 
@@ -828,6 +846,9 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     if (!empty($this->configuration['no_data_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/no_data';
     }
+    if (!empty($this->configuration['pareto_library']) || !empty($element['#library_type_options']['pareto_line'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/pareto';
+    }
     if (!empty($this->configuration['texture_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/texture';
     }
@@ -841,18 +862,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     // Show a form on the front-end so users can change chart colors.
     // Only available in standard mode or if explicitly supported in raw mode.
     if (!empty($element['#color_changer']) && empty($element['#in_preview_mode'])) {
-      $series = $chart_definition['series'] ?? [];
-      $chart_type = $chart_definition['chart']['type'] ?? 'line';
-
-      $form_state = new FormState();
-      $form_state->set('chart_series', $series);
-      $form_state->set('chart_id', $element['#id']);
-      $form_state->set('chart_type', $chart_type);
-      if (!empty($chart_definition['yAxis'])) {
-        $form_state->set('y_axis', $chart_definition['yAxis']);
-      }
-      $element['#attached']['library'][] = 'charts_highcharts/color_changer';
-      $element['#content_suffix']['color_changer'] = $this->formBuilder->buildForm(ColorChanger::class, $form_state);
+      $element = $this->applyColorChanger($element, $chart_definition);
     }
 
     // Setting global options.
@@ -863,6 +873,35 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     if (!empty($this->configuration['global_options']['chart']['styled_mode']) && empty($this->configuration['disable_default_css_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/highcharts_default_css';
     }
+
+    return $element;
+  }
+
+  /**
+   * Utility to apply color changer options.
+   *
+   * @param array $element
+   *   The element.
+   * @param array $chart_definition
+   *   The chart definition.
+   *
+   * @return array
+   *   The chart element.
+   *
+   * @throws \Drupal\Core\Form\EnforcedResponseException
+   * @throws \Drupal\Core\Form\FormAjaxException
+   */
+  private function applyColorChanger(array $element, array $chart_definition): array {
+    $form_state_items = [
+      'chart_series' => $chart_definition['series'] ?? [],
+      'chart_id' => $element['#id'],
+      'chart_type' => $chart_definition['chart']['type'] ?? 'line',
+    ];
+    if (!empty($chart_definition['yAxis'])) {
+      $form_state_items['y_axis'] = $chart_definition['yAxis'];
+    }
+    $element['#attached']['library'][] = 'charts_highcharts/color_changer';
+    $element['#content_suffix']['color_changer'] = $this->colorChangerFormBuilder($form_state_items);
 
     return $element;
   }
@@ -1070,6 +1109,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       $chart_definition['plotOptions']['solidgauge']['dataLabels']['style']['fontSize'] = '24px';
       $chart_definition['plotOptions']['solidgauge']['dataLabels']['color'] = $element['#title_color'];
     }
+
     if (!empty($element['#library_type_options']['enable_stacklabels'])) {
       $chart_definition['yAxis']['stackLabels']['enabled'] = TRUE;
     }
@@ -1344,6 +1384,11 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       }
     }
 
+    // Pareto options.
+    if (!empty($element['#library_type_options']['pareto_line'])) {
+      $chart_definition = $this->applyParetoOptions($element, $chart_definition);
+    }
+
     return $chart_definition;
   }
 
@@ -1421,6 +1466,91 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
    */
   protected function getType($type) {
     return $type === 'donut' ? 'pie' : $type;
+  }
+
+  /**
+   * Process definition for Pareto charts.
+   *
+   * @param array $element
+   *   The chart element.
+   * @param array $chart_definition
+   *   The chart definition.
+   *
+   * @return array
+   *   The updated chart definition.
+   */
+  private function applyParetoOptions(array $element, array $chart_definition) {
+    // Move stackLabels from the root of yAxis to the first axis object.
+    if (isset($chart_definition['yAxis']['stackLabels'])) {
+      $stack_labels = $chart_definition['yAxis']['stackLabels'];
+      unset($chart_definition['yAxis']['stackLabels']);
+      // Ensure index 0 exists to receive the labels.
+      if (!isset($chart_definition['yAxis'][0])) {
+        $chart_definition['yAxis'][0] = [];
+      }
+      $chart_definition['yAxis'][0]['stackLabels'] = $stack_labels;
+    }
+
+    // Normalize yAxis into a sequential array.
+    if (isset($chart_definition['yAxis'])) {
+      // array_values() strips string keys and closes gaps in numeric keys.
+      $chart_definition['yAxis'] = array_values($chart_definition['yAxis']);
+    }
+
+    // Handle Pareto line injection.
+    $series_keys = array_keys($chart_definition['series'] ?? []);
+    $first_key = reset($series_keys);
+
+    // Return if first_key is false or not set.
+    if ($first_key === FALSE || !isset($chart_definition['series'][$first_key])) {
+      return $chart_definition;
+    }
+
+    $chart_definition['series'][$first_key]['id'] = 'pareto_base';
+
+    // Check if an appropriate secondary axis already exists.
+    $pareto_axis_index = NULL;
+    foreach ($chart_definition['yAxis'] as $index => $axis) {
+      if (!empty($axis['opposite']) && (isset($axis['max']) && $axis['max'] == 100)) {
+        $pareto_axis_index = $index;
+        break;
+      }
+    }
+
+    // Create the axis if not found.
+    if ($pareto_axis_index === NULL) {
+      $pareto_axis_index = count($chart_definition['yAxis']);
+      $chart_definition['yAxis'][$pareto_axis_index] = [
+        'title' => [
+          'text' => $this->t('Percentage'),
+        ],
+        'opposite' => TRUE,
+        'min' => 0,
+        'max' => 100,
+        'labels' => [
+          'format' => '{value:.2f}%',
+        ],
+      ];
+    }
+
+    // Inject the Pareto series.
+    $chart_definition['series'][] = [
+      'type' => 'pareto',
+      'name' => $this->t('Cumulative %'),
+      'baseSeries' => 'pareto_base',
+      'yAxis' => $pareto_axis_index,
+      'color' => $element['#library_type_options']['pareto_color'] ?? '#000000',
+      'zIndex' => 10,
+      'tooltip' => [
+        'pointFormat' => '<span style="color:{point.color}">●</span> {series.name}: <b>{point.y:.2f}%</b><br/>',
+      ],
+      'dataLabels' => [
+        'enabled' => (bool) $element['#data_labels'],
+        'format' => '{point.y:.2f}%',
+      ],
+    ];
+
+    return $chart_definition;
   }
 
   /**

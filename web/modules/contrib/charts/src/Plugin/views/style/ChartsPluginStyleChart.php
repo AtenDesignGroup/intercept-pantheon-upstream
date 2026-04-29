@@ -288,7 +288,10 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
 
     $title = !empty($chart_settings['display']['title']) ? $chart_settings['display']['title'] : '';
     $subtitle = !empty($chart_settings['display']['subtitle']) ? $chart_settings['display']['subtitle'] : '';
-    if (!empty($title) || !empty($subtitle)) {
+    $figure_caption = !empty($chart_settings['display']['figure_caption']) ? $chart_settings['display']['figure_caption'] : '';
+    $chart_summary = !empty($chart_settings['display']['chart_summary']) ? $chart_settings['display']['chart_summary'] : '';
+    // Check if any of our text fields have content to tokenize.
+    if ($title || $subtitle || $figure_caption || $chart_summary) {
       $tokens = [];
       $global_tokens = [];
       foreach ($field_handlers as $field_id => $field_handler) {
@@ -309,6 +312,8 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
         $title = $this->viewsTokenReplace($title, $tokens);
         // Allow argument tokens in the subtitle.
         $subtitle = $this->viewsTokenReplace($subtitle, $tokens);
+        $figure_caption = $this->viewsTokenReplace($figure_caption, $tokens);
+        $chart_summary = $this->viewsTokenReplace($chart_summary, $tokens);
       }
     }
 
@@ -332,6 +337,11 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
       '#title' => $title,
       '#title_position' => $chart_settings['display']['title_position'],
       '#subtitle' => $subtitle,
+      '#figure_caption' => $figure_caption,
+      '#chart_summary' => $chart_summary,
+      '#accessible_table' => $chart_settings['display']['accessible_table'] ?? 'disabled',
+      '#accessible_table_button_text' => $chart_settings['display']['accessible_table_button_text'] ?? '',
+      '#accessible_table_button_class' => $chart_settings['display']['accessible_table_button_class'] ?? '',
       '#tooltips' => $chart_settings['display']['tooltips'],
       '#data_labels' => $chart_settings['display']['data_labels'],
       '#data_markers' => $chart_settings['display']['data_markers'],

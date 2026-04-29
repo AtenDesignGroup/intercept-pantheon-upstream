@@ -251,6 +251,7 @@ function flag_theme() {
       'variables' => [
         'attributes' => [],
         'title' => NULL,
+        'unflag_denied_text' => NULL,
         'action' => 'flag',
         'flag' => NULL,
         'flaggable' => NULL,

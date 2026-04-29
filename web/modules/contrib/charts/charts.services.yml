@@ -30,3 +30,7 @@ services:
       - '@module_handler'
     tags:
       - { name: hook }
+
+  charts.table_builder:
+    class: Drupal\charts\Service\ChartTableBuilder
+    arguments: ['@string_translation', '@plugin.manager.charts_type']

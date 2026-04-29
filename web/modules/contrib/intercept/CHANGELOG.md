@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.24] - 2026-04-29
+
+* Fixed an error with event registration access
+* Fixed a visibility issue on sidebars when too tall for the screen
+
 ## [2.0.23] - 2026-03-25
 
 * Fixed an accessibility issues on My Account > Settings with missing form labels & broken ARIA reference

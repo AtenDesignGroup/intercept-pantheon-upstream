@@ -192,6 +192,20 @@ interface FlagServiceInterface {
   public function getFlaggingUsers(EntityInterface $entity, ?FlagInterface $flag = NULL);
 
   /**
+   * Get all flaggings for a given user.
+   *
+   * @param \Drupal\Core\Session\AccountInterface|null $account
+   *   (optional) The user account - defaults to the current user.
+   * @param null $session_id
+   *   (optional) The session ID. This must be supplied if $account is the
+   *   anonymous user.
+   *
+   * @return array
+   *   An array of flaggings.
+   */
+  public function getAllFlaggingByUser(?AccountInterface $account = NULL, $session_id = NULL): array;
+
+  /**
    * Flags the given entity given the flag and entity objects.
    *
    * To programmatically create a flagging between a flag and an article:
@@ -332,5 +346,29 @@ interface FlagServiceInterface {
    *   but $session_id is NULL.
    */
   public function populateFlaggerDefaults(?AccountInterface &$account = NULL, &$session_id = NULL);
+
+  /**
+   * Get all user flaggings for a given flag.
+   *
+   * @param \Drupal\flag\FlagInterface $flag
+   *   The flag entity.
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The user entity.
+   *
+   * @return \Drupal\flag\FlaggingInterface[]
+   *   An array of flaggings.
+   */
+  public function getFlagUserFlaggings(FlagInterface $flag, AccountInterface $user);
+
+  /**
+   * Get all flaggings for a given flag.
+   *
+   * @param \Drupal\flag\FlagInterface $flag
+   *   The flag entity.
+   *
+   * @return \Drupal\flag\FlaggingInterface[]
+   *   An array of flaggings.
+   */
+  public function getFlagFlaggings(FlagInterface $flag);
 
 }

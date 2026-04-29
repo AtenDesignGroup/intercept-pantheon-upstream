@@ -385,12 +385,13 @@ class EventsController extends ControllerBase {
 
     switch ($node->registration->status) {
       case 'open':
+        return AccessResult::allowed();
       case 'expired':
       case 'closed':
       case 'full':
         return $accessResult;
       case 'open_pending':
-        return AccessResult::forbidden();
+        return AccessResult::forbidden(); // They can only view these if they are registered.
     }
     
     // Add a hook to allow other modules to alter access.

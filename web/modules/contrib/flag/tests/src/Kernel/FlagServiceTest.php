@@ -277,4 +277,146 @@ class FlagServiceTest extends FlagKernelTestBase {
     $this->assertEquals(1, count($flaggings));
   }
 
+  /**
+   * Tests that getFlagUserFlaggings method returns the expected result.
+   */
+  public function testFlagServiceGetFlagUserFlaggings() {
+    // The service methods don't check access, so our user can be anybody.
+    $account = $this->createUser();
+
+    // Create a flag.
+    $flag = Flag::create([
+      'id' => strtolower($this->randomMachineName()),
+      'label' => $this->randomString(),
+      'entity_type' => 'node',
+      'bundles' => ['article'],
+      'flag_type' => 'entity:node',
+      'link_type' => 'reload',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $flag->save();
+
+    // Flag the node.
+    $flaggable_node = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(8),
+    ]);
+    $flaggable_node->save();
+    $this->flagService->flag($flag, $flaggable_node, $account);
+
+    // Flag the node 2.
+    $flaggable_node2 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(8),
+    ]);
+    $flaggable_node2->save();
+    $this->flagService->flag($flag, $flaggable_node2, $account);
+
+    $flaggings = $this->flagService->getFlagUserFlaggings($flag, $account);
+    $this->assertCount(2, $flaggings);
+  }
+
+  /**
+   * Tests getAllFlaggingByUser() method with multiple users.
+   */
+  public function testGetAllFlaggingByUser() {
+    $user1 = $this->createUser();
+    $user2 = $this->createUser();
+
+    $flag = Flag::create([
+      'id' => strtolower($this->randomMachineName()),
+      'label' => $this->randomString(),
+      'entity_type' => 'node',
+      'bundles' => ['article'],
+      'flag_type' => 'entity:node',
+      'link_type' => 'reload',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $flag->save();
+
+    // User 1 flags one node.
+    $node1 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node1->save();
+    $this->flagService->flag($flag, $node1, $user1);
+
+    // User 2 flags two nodes.
+    $node2 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node2->save();
+    $this->flagService->flag($flag, $node2, $user2);
+
+    $node3 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node3->save();
+    $this->flagService->flag($flag, $node3, $user2);
+
+    // Ensure correct flag counts before unflagging.
+    $this->assertCount(1, $this->flagService->getAllFlaggingByUser($user1), 'User 1 has 1 flagging.');
+    $this->assertCount(2, $this->flagService->getAllFlaggingByUser($user2), 'User 2 has 2 flaggings.');
+
+    // Unflag all for User 1.
+    $this->flagService->unflagAllByUser($user1);
+
+    // Verify User 1 has no flaggings.
+    $this->assertCount(0, $this->flagService->getAllFlaggingByUser($user1), 'User 1 has no flaggings after unflagAllByUser().');
+
+    // Verify User 2 still has their flaggings.
+    $this->assertCount(2, $this->flagService->getAllFlaggingByUser($user2), 'User 2 still has 2 flaggings.');
+  }
+
+  /**
+   * Tests getFlagFlaggings() method with multiple users.
+   */
+  public function testGetFlagFlaggings() {
+    $user1 = $this->createUser();
+    $user2 = $this->createUser();
+
+    $flag = Flag::create([
+      'id' => strtolower($this->randomMachineName()),
+      'label' => $this->randomString(),
+      'entity_type' => 'node',
+      'bundles' => ['article'],
+      'flag_type' => 'entity:node',
+      'link_type' => 'reload',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $flag->save();
+
+    // User 1 flags one node.
+    $node1 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node1->save();
+    $this->flagService->flag($flag, $node1, $user1);
+
+    // User 2 flags two nodes.
+    $node2 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node2->save();
+    $this->flagService->flag($flag, $node2, $user2);
+
+    $node3 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node3->save();
+    $this->flagService->flag($flag, $node3, $user2);
+
+    // Ensure correct flag counts.
+    $this->assertCount(3, $this->flagService->getFlagFlaggings($flag));
+  }
+
 }

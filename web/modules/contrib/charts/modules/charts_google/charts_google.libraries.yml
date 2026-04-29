@@ -20,3 +20,12 @@ google:
     /libraries/google_charts/loader.js: { }
   dependencies:
     - charts_google/charts_google
+
+color_changer:
+  version: VERSION
+  js:
+    js/color_changer.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - charts_google/google

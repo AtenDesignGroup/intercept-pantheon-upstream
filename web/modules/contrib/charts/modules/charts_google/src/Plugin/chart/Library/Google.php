@@ -6,6 +6,7 @@ use Drupal\charts\Attribute\Chart;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
@@ -69,9 +70,11 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
    *   The element info manager.
    * @param \Drupal\charts\TypeManager $chart_type_manager
    *   The chart type manager.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The form builder.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler, ElementInfoManagerInterface $element_info, TypeManager $chart_type_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $module_handler, ElementInfoManagerInterface $element_info, TypeManager $chart_type_manager, FormBuilderInterface $form_builder) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler, $form_builder);
     $this->elementInfo = $element_info;
     $this->chartTypeManager = $chart_type_manager;
   }
@@ -86,7 +89,8 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
       $plugin_definition,
       $container->get('module_handler'),
       $container->get('element_info'),
-      $container->get('plugin.manager.charts_type')
+      $container->get('plugin.manager.charts_type'),
+      $container->get('form_builder')
     );
   }
 
@@ -190,6 +194,65 @@ class Google extends ChartBase implements ContainerFactoryPluginInterface {
       'useMaterialDesign' => !empty($this->configuration['use_material_design']) ? 'true' : 'false',
       'chartType' => $element['#chart_type'] ?? '',
     ];
+
+    // Color changer options.
+    if (!empty($element['#color_changer']) && empty($element['#in_preview_mode'])) {
+      $element = $this->applyColorChanger($element, $chart_definition);
+    }
+
+    return $element;
+  }
+
+  /**
+   * Utility to apply color changer options.
+   *
+   * @param array $element
+   *   The element.
+   * @param array $chart_definition
+   *   The chart definition.
+   *
+   * @return array
+   *   The chart element.
+   *
+   * @throws \Drupal\Core\Form\EnforcedResponseException
+   * @throws \Drupal\Core\Form\FormAjaxException
+   */
+  private function applyColorChanger(array $element, array $chart_definition): array {
+    $chart_type = $element['#chart_type'];
+    $options = $chart_definition['options'] ?? [];
+    $data = $chart_definition['data'] ?? [];
+
+    $formatted_series = [];
+    if (in_array($chart_type, ['pie', 'donut'])) {
+      // For pie charts, we iterate over rows (skipping header at index 0).
+      $formatted_series[0]['data'] = [];
+      for ($i = 1; $i < count($data); $i++) {
+        $label = (string) $data[$i][0];
+        $formatted_series[0]['data'][$i - 1] = [
+          'name' => $label,
+          'color' => $options['slices'][$i - 1]['color'] ?? $options['colors'][$i - 1] ?? '#000000',
+        ];
+      }
+    }
+    else {
+      // For bar/line/column, we iterate over columns in the header (index 0).
+      $header = $data[0] ?? [];
+      for ($i = 1; $i < count($header); $i++) {
+        $formatted_series[$i - 1] = [
+          'name' => (string) $header[$i],
+          'color' => $options['series'][$i - 1]['color'] ?? $options['colors'][$i - 1] ?? '#000000',
+        ];
+      }
+    }
+
+    $form_state_items = [
+      'chart_series' => $formatted_series,
+      'chart_id' => $element['#id'],
+      'chart_type' => $chart_type,
+    ];
+
+    $element['#attached']['library'][] = 'charts_google/color_changer';
+    $element['#content_suffix']['color_changer'] = $this->colorChangerFormBuilder($form_state_items);
 
     return $element;
   }

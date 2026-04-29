@@ -375,7 +375,7 @@ class ViewsFiltersSummary extends Result {
     string|int|null $value_raw = NULL,
   ): array {
     $input = $value_raw ?? $value;
-    return [
+    $item = [
       'id' => $id,
       'label' => $label,
       'value' => $value,
@@ -390,6 +390,9 @@ class ViewsFiltersSummary extends Result {
         ],
       ],
     ];
+    // Invoke hook_views_filters_summary_item_alter().
+    $this->moduleHandler->alter('views_filters_summary_item', $item);
+    return $item;
   }
 
   /**

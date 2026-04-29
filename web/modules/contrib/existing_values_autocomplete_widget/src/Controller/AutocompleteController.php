@@ -2,45 +2,121 @@
 
 namespace Drupal\existing_values_autocomplete_widget\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Component\Utility\Tags;
-use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityDisplayRepository;
+use Drupal\Core\Entity\EntityFieldManager;
+use Drupal\Core\Entity\EntityTypeManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class AutocompleteController.
+ * Controller for handling autocomplete requests for entity field values.
  */
 class AutocompleteController extends ControllerBase {
+
   /**
-   * Handleautocomplete.
+   * The entity type manager.
    *
-   * @return string
-   *   Return Hello string.
+   * @var entityTypeManager
    */
-  public function handleAutocomplete(Request $request, $field_name = NULL, $count = 15, $entity_type_id = NULL) {
+  protected $entityTypeManager;
+
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * The EntityFieldManager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManager
+   */
+  protected $entityFieldManager;
+
+  /**
+   * The EntityDisplayRepository service.
+   *
+   * @var \Drupal\Core\Entity\EntityDisplayRepository
+   */
+  protected $entityDisplayRepository;
+
+  /**
+   * Constructs a new AutocompleteController object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManager $entityTypeManager
+   *   The EntityTypeManager manager.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
+   * @param \Drupal\Core\Entity\EntityFieldManager $entityFieldManager
+   *   The EntityFieldManager service.
+   * @param \Drupal\Core\Entity\EntityDisplayRepository $entityDisplayRepository
+   *   The EntityDisplayRepository service.
+   */
+  public function __construct(EntityTypeManager $entityTypeManager, Connection $database, EntityFieldManager $entityFieldManager, EntityDisplayRepository $entityDisplayRepository) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->database = $database;
+    $this->entityFieldManager = $entityFieldManager;
+    $this->entityDisplayRepository = $entityDisplayRepository;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('database'),
+      $container->get('entity_field.manager'),
+      $container->get('entity_display.repository'),
+    );
+  }
+
+  /**
+   * Returns autocomplete values for the given field.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request made to the controller.
+   * @param string $entity_type_id
+   *   The entity type ID that the field belongs to.
+   * @param string $bundle
+   *   The bundle that the field belongs to.
+   * @param string $field_name
+   *   The machine name of the field.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   The autocomplete values in JSON format.
+   */
+  public function handleAutocomplete(Request $request, $entity_type_id, $bundle, $field_name): JsonResponse {
     $existing_values = [];
     $entity_type_id = $entity_type_id ?: $request->query->get('entity_type_id') ?: 'node';
 
     if ($input = $request->query->get('q')) {
       $typed_string = Tags::explode($input);
-      // $typed_string = Unicode::strtolower(array_pop($typed_string)); -- depricated code
       $typed_string = mb_strtolower(array_pop($typed_string));
 
-      $entity_type_manager = \Drupal::entityTypeManager();
-      $table_mapping = $entity_type_manager->getStorage($entity_type_id)->getTableMapping();
+      $table_mapping = $this->entityTypeManager->getStorage($entity_type_id)->getTableMapping();
       $field_table = $table_mapping->getFieldTableName($field_name);
-      $field_storage_definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions($entity_type_id)[$field_name];
+      $field_storage_definitions = $this->entityFieldManager->getFieldStorageDefinitions($entity_type_id)[$field_name];
       $field_column = $table_mapping->getFieldColumnName($field_storage_definitions, 'value');
 
-      $query = \Drupal::database()->select($field_table, 'f');
+      $widget_settings = $this->entityDisplayRepository
+        ->getFormDisplay($entity_type_id, $bundle)
+        ->getComponent($field_name)['settings'];
+
+      $query = $this->database->select($field_table, 'f');
       $query->fields('f', ['entity_id', $field_column]);
       $query->condition($field_column, $query->escapeLike($typed_string) . '%', 'LIKE');
+      $query->range(0, ((int) $widget_settings['suggestions_count']) ?? 15);
       $results = $query->execute()->fetchAllKeyed();
 
       foreach ($results as $id => $value) {
         /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
-        $entity = $entity_type_manager->getStorage($entity_type_id)->load($id);
+        $entity = $this->entityTypeManager->getStorage($entity_type_id)->load($id);
         if ($entity->access('view') && $entity->get($field_name)->access('view')) {
           $existing_values[$value] = [
             'value' => $value,

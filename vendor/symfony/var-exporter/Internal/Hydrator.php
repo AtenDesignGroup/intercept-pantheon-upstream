@@ -222,10 +222,14 @@ class Hydrator
                 if ($propertyReflector->isStatic()) {
                     continue;
                 }
-                if (\PHP_VERSION_ID >= 80400 && !$propertyReflector->isAbstract() && $propertyReflector->getHooks()) {
+                if (!$propertyReflector->isAbstract() && $propertyReflector->getHooks()) {
                     $notByRef->{$propertyReflector->name} = $propertyReflector->setRawValue(...);
                 } elseif ($propertyReflector->isReadOnly()) {
-                    $notByRef->{$propertyReflector->name} = true;
+                    $notByRef->{$propertyReflector->name} = static function ($object, $value) use ($propertyReflector) {
+                        if (!$propertyReflector->isInitialized($object)) {
+                            $propertyReflector->setValue($object, $value);
+                        }
+                    };
                 }
             }
 
@@ -273,7 +277,7 @@ class Hydrator
             $name = $property->name;
             $access = ($flags << 2) | ($flags & \ReflectionProperty::IS_READONLY ? self::PROPERTY_NOT_BY_REF : 0);
 
-            if (\PHP_VERSION_ID >= 80400 && !$property->isAbstract() && $h = $property->getHooks()) {
+            if (!$property->isAbstract() && $h = $property->getHooks()) {
                 $access |= self::PROPERTY_HAS_HOOKS | (isset($h['get']) && !$h['get']->returnsReference() ? self::PROPERTY_NOT_BY_REF : 0);
             }
 
@@ -285,7 +289,7 @@ class Hydrator
 
             $propertyScopes[$name] = [$class, $name, null, $access, $property];
 
-            if ($flags & (\PHP_VERSION_ID >= 80400 ? \ReflectionProperty::IS_PRIVATE_SET : \ReflectionProperty::IS_READONLY)) {
+            if ($flags & \ReflectionProperty::IS_PRIVATE_SET) {
                 $propertyScopes[$name][2] = $property->class;
             }
 
@@ -306,7 +310,7 @@ class Hydrator
                 $name = $property->name;
                 $access = ($flags << 2) | ($flags & \ReflectionProperty::IS_READONLY ? self::PROPERTY_NOT_BY_REF : 0);
 
-                if (\PHP_VERSION_ID >= 80400 && $h = $property->getHooks()) {
+                if ($h = $property->getHooks()) {
                     $access |= self::PROPERTY_HAS_HOOKS | (isset($h['get']) && !$h['get']->returnsReference() ? self::PROPERTY_NOT_BY_REF : 0);
                 }
 

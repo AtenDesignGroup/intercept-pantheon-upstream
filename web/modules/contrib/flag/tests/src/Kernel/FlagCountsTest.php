@@ -32,6 +32,13 @@ class FlagCountsTest extends FlagKernelTestBase {
   protected $otherFlag;
 
   /**
+   * The global flag.
+   *
+   * @var \Drupal\flag\FlagInterface
+   */
+  protected $globalFlag;
+
+  /**
    * The node.
    *
    * @var \Drupal\node\Entity\Node
@@ -113,6 +120,20 @@ class FlagCountsTest extends FlagKernelTestBase {
       'linkTypeConfig' => [],
     ]);
     $this->otherFlag->save();
+
+    // Create a flag that is global.
+    $this->globalFlag = Flag::create([
+      'id' => strtolower($this->randomMachineName()),
+      'label' => $this->randomString(),
+      'global' => TRUE,
+      'entity_type' => 'node',
+      'bundles' => ['article'],
+      'flag_type' => 'entity:node',
+      'link_type' => 'reload',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $this->globalFlag->save();
 
     // Create admin user who may flag everything.
     $this->adminUser = $this->createUser([
@@ -197,25 +218,36 @@ class FlagCountsTest extends FlagKernelTestBase {
     // Consider two distinct anonymous users.
     $anon1_session_id = 'Unknown user 1';
     $anon2_session_id = 'Unknown user 2';
+    $anon3_session_id = 'Unknown user 3';
 
     // Both users flag the node - using a non-global flag.
     $this->flagService->flag($this->flag, $this->node, $this->anonymousUser, $anon1_session_id);
     $this->flagService->flag($this->flag, $this->node, $this->anonymousUser, $anon2_session_id);
 
-    // For non-global flags anonymous users can uniquely identified by
+    // When trying to flag the same node as anonymous user with the global
+    // flag, exception that the user already flagged entity should be thrown.
+    $this->flagService->flag($this->globalFlag, $this->node, $this->anonymousUser, $anon1_session_id);
+    $this->expectExceptionMessage('The user has already flagged the entity with the flag.');
+
+    $this->flagService->flag($this->globalFlag, $this->node, $this->anonymousUser, $anon2_session_id);
+    $this->expectExceptionMessage('The user has already flagged the entity with the flag.');
+
+    // Anonymous user flagging the node - using global flag.
+    $this->flagService->flag($this->globalFlag, $this->node, $this->anonymousUser, $anon3_session_id);
+
+    // For non-global flags anonymous users can uniquely be identified by
     // session_id.
     $anon1_count = $this->flagCountService->getUserFlagFlaggingCount($this->flag, $this->anonymousUser, $anon1_session_id);
     $this->assertEquals(1, $anon1_count, "getUserFlagFlaggingCount() counts only the first user.");
     $anon2_count = $this->flagCountService->getUserFlagFlaggingCount($this->flag, $this->anonymousUser, $anon2_session_id);
     $this->assertEquals(1, $anon2_count, "getUserFlagFlaggingCount() counts only the second user.");
 
-    // Switch to a global flag, the accounting rules.
-    $this->flag->setGlobal(TRUE);
-    $this->flag->save();
+    $anon3_count_global = $this->flagCountService->getUserFlagFlaggingCount($this->globalFlag, $this->anonymousUser, $anon3_session_id);
+    $this->assertEquals(1, $anon3_count_global, "getUserFlagFlaggingCount() counts only the first user.");
 
     // Despite being a global flag, queries about specific anonymous users can
     // still be made.
-    $rejected_count = $this->flagCountService->getUserFlagFlaggingCount($this->flag, $this->anonymousUser, $anon1_session_id);
+    $rejected_count = $this->flagCountService->getUserFlagFlaggingCount($this->globalFlag, $this->anonymousUser, $anon3_session_id);
     $this->assertEquals(1, $rejected_count, "getUserFlagFlaggingCount() ignores the session id.");
   }
 

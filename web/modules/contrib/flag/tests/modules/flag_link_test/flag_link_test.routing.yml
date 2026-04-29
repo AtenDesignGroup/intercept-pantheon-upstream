@@ -1,0 +1,11 @@
+flag_link_test.page:
+  path: '/flag-link-test/{entity_type_id}/{entity_id}/{flag}'
+  defaults:
+    _controller: \Drupal\flag_link_test\Controller\FlagLinkTest::page
+    _title: Flag link test page
+  options:
+    parameters:
+      flag:
+        type: entity:flag
+  requirements:
+    _access: 'TRUE'

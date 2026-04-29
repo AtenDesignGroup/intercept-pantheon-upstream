@@ -1,0 +1,17 @@
+name: Flagging Admin Test
+description: Provides an admin view for Flaggings.
+core_version_requirement: ^9.1 || ^10 || ^11
+type: module
+dependencies:
+  - flag:flag
+  - flag_follower:flag_follower
+  - flag_bookmark:flag_bookmark
+  - views:views
+  - node:node
+  - user:user
+package: Testing
+
+# Information added by Drupal.org packaging script on 2025-10-27
+version: '5.0.3'
+project: 'flag'
+datestamp: 1761563279

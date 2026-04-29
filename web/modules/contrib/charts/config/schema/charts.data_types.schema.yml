@@ -101,6 +101,21 @@ charts_display:
     color_changer:
       type: boolean
       label: 'Enable color changer widget'
+    figure_caption:
+      type: text
+      label: 'Caption'
+    chart_summary:
+      type: text
+      label: 'Accessible summary'
+    accessible_table:
+      type: string
+      label: 'Data table representation'
+    accessible_table_button_text:
+      type: label
+      label: 'Data table button text'
+    accessible_table_button_class:
+      type: string
+      label: 'Data table button class'
 
 charts_xaxis:
   type: mapping

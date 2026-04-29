@@ -14,3 +14,19 @@ views.relationship.flag_relationship:
     user_scope:
       type: string
       label: 'The user scope'
+
+views.field.flag_flagged:
+  type: views_field
+  mapping:
+    type:
+      type: string
+      label: 'Type'
+    type_custom_true:
+      type: string
+      label: 'Custom true text'
+    type_custom_false:
+      type: string
+      label: 'Custom false text'
+    not:
+      type: boolean
+      label: 'Reverse'

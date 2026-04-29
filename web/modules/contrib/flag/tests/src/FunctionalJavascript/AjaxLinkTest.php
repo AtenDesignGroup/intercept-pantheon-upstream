@@ -133,7 +133,7 @@ class AjaxLinkTest extends WebDriverTestBase {
     $this->assertEquals($flag_message, $p_flash->getText(), 'DOM update(1): The flag message is flashed.');
 
     $assert_session->assertNoElementAfterWait('css', 'p.js-flag-message');
-    $assert_session->pageTextNotContains($flag_message);
+    $assert_session->elementTextEquals('css', '#drupal-live-announce', $flag_message);
 
     // Verify new link.
     $unflag_link = $session->getPage()->findLink($this->flag->getShortText('unflag'));
@@ -146,9 +146,8 @@ class AjaxLinkTest extends WebDriverTestBase {
     $p_flash2 = $assert_session
       ->waitForElementVisible('xpath', '//p[@class="js-flag-message" and contains(text(), "' . $unflag_message . '")]');
     $this->assertEquals($unflag_message, $p_flash2->getText(), 'DOM update(3): The unflag message is flashed.');
-
     $assert_session->assertNoElementAfterWait('css', 'p.js-flag-message');
-    $assert_session->pageTextNotContains($unflag_message);
+    $assert_session->elementTextEquals('css', '#drupal-live-announce', $unflag_message);
 
     // Verify the cycle completes and flag returns.
     $flag_link2 = $session->getPage()->findLink($this->flag->getShortText('flag'));

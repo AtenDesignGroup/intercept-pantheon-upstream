@@ -270,6 +270,29 @@ class FlagService implements FlagServiceInterface {
   /**
    * {@inheritdoc}
    */
+  public function getAllFlaggingByUser(?AccountInterface $account = NULL, $session_id = NULL): array {
+    $this->populateFlaggerDefaults($account, $session_id);
+
+    $query = $this->entityTypeManager->getStorage('flagging')->getQuery();
+    $query->accessCheck();
+    $query->condition('uid', $account->id());
+
+    if ($account->isAnonymous()) {
+      if (empty($session_id)) {
+        throw new \LogicException('An anonymous user must be identified by session ID.');
+      }
+
+      $query->condition('session_id', $session_id);
+    }
+
+    $ids = $query->execute();
+
+    return $this->getFlaggingsByIds($ids);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function flag(FlagInterface $flag, EntityInterface $entity, ?AccountInterface $account = NULL, $session_id = NULL) {
     $bundles = $flag->getBundles();
 
@@ -371,21 +394,7 @@ class FlagService implements FlagServiceInterface {
    * {@inheritdoc}
    */
   public function unflagAllByUser(AccountInterface $account, $session_id = NULL) {
-    $query = $this->entityTypeManager->getStorage('flagging')->getQuery();
-    $query->accessCheck();
-    $query->condition('uid', $account->id());
-
-    if ($account->isAnonymous()) {
-      if (empty($session_id)) {
-        throw new \LogicException('An anonymous user must be identified by session ID.');
-      }
-
-      $query->condition('session_id', $session_id);
-    }
-
-    $ids = $query->execute();
-
-    $flaggings = $this->getFlaggingsByIds($ids);
+    $flaggings = $this->getAllFlaggingByUser($account, $session_id);
 
     $this->entityTypeManager->getStorage('flagging')->delete($flaggings);
   }
@@ -424,6 +433,29 @@ class FlagService implements FlagServiceInterface {
    *   An array of flaggings.
    */
   protected function getFlaggingsByIds(array $ids) {
+    return $this->entityTypeManager->getStorage('flagging')->loadMultiple($ids);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFlagUserFlaggings(FlagInterface $flag, AccountInterface $user) {
+    $query = $this->entityTypeManager->getStorage('flagging')->getQuery();
+    $query->accessCheck();
+    $query->condition('flag_id', $flag->id());
+    $query->condition('uid', $user->id());
+    $ids = $query->execute();
+    return $this->entityTypeManager->getStorage('flagging')->loadMultiple($ids);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFlagFlaggings(FlagInterface $flag) {
+    $query = $this->entityTypeManager->getStorage('flagging')->getQuery();
+    $query->accessCheck();
+    $query->condition('flag_id', $flag->id());
+    $ids = $query->execute();
     return $this->entityTypeManager->getStorage('flagging')->loadMultiple($ids);
   }
 

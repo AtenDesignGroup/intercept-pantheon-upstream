@@ -40,7 +40,7 @@ class EventAttendanceProvider implements EventAttendanceProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEventAttendance($nid, AccountInterface $account = NULL) {
+  public function getEventAttendance($nid, ?AccountInterface $account = NULL) {
     $account = $account ?: $this->currentUser;
     if ($account->isAnonymous()) {
       return FALSE;
@@ -56,7 +56,7 @@ class EventAttendanceProvider implements EventAttendanceProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEventAttendances(AccountInterface $account = NULL) {
+  public function getEventAttendances(?AccountInterface $account = NULL) {
     $event_attendances = [];
     $event_attendance_ids = $this->getEventAttendanceIds($account);
     if ($event_attendance_ids) {
@@ -69,7 +69,7 @@ class EventAttendanceProvider implements EventAttendanceProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEventAttendanceIds(AccountInterface $account = NULL) {
+  public function getEventAttendanceIds(?AccountInterface $account = NULL) {
     $account = $account ?: $this->currentUser;
     if ($account->isAnonymous()) {
       return [];

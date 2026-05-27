@@ -36,7 +36,7 @@ class RegisterForm extends ContentEntityForm {
    * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
    *   The entity display repository.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, EntityDisplayRepositoryInterface $entity_display_repository) {
+  public function __construct(EntityRepositoryInterface $entity_repository, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL, EntityDisplayRepositoryInterface $entity_display_repository) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->entityDisplayRepository = $entity_display_repository;
   }

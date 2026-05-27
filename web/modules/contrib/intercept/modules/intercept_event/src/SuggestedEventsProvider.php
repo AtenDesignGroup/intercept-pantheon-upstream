@@ -78,14 +78,14 @@ class SuggestedEventsProvider implements SuggestedEventsProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSuggestedEvents(AccountInterface $account = NULL) {
+  public function getSuggestedEvents(?AccountInterface $account = NULL) {
     return $this->eventStorage->loadMultiple($this->getSuggestedEventIds());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSuggestedEventIds(AccountInterface $account = NULL) {
+  public function getSuggestedEventIds(?AccountInterface $account = NULL) {
     $event_ids = [];
 
     // Get user's scanned in, registered, and saved events.

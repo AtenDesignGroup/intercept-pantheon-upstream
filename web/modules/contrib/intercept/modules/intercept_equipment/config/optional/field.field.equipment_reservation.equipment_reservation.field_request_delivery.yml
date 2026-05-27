@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.equipment_reservation.field_request_delivery
+  module:
+    - intercept_equipment
+id: equipment_reservation.equipment_reservation.field_request_delivery
+field_name: field_request_delivery
+entity_type: equipment_reservation
+bundle: equipment_reservation
+label: 'Request Delivery'
+description: 'Select this option if you are requesting that the item be delivered to you. Note: Not all departments and locations will be able to provide delivery.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

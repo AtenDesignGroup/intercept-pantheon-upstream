@@ -128,7 +128,7 @@ trait EventListBuilderTrait {
    * @return string
    *   An HTML string containing a link to the entity.
    */
-  protected function getLink(EntityInterface $entity = NULL, $title = NULL) {
+  protected function getLink(?EntityInterface $entity = NULL, $title = NULL) {
     if (empty($entity)) {
       return '';
     }

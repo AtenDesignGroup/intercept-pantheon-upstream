@@ -88,7 +88,7 @@ class CertificationListBuilder extends EntityListBuilder {
    * @return string
    *   The HTML link string to an entity.
    */
-  private function getEntityLabel(EntityInterface $entity = NULL, $default = '') {
+  private function getEntityLabel(?EntityInterface $entity = NULL, $default = '') {
     return $entity ? $entity->toLink()->toString() : $default;
   }
 

@@ -207,7 +207,7 @@ class EventEvaluation {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The current user account.
    */
-  public function access(AccountInterface $account = NULL) {
+  public function access(?AccountInterface $account = NULL) {
     if (!$account) {
       $account = \Drupal::service('current_user');
     }

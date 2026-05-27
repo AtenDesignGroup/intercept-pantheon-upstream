@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.25] - 2026-05-27
+
+* Fixed some deprecation issues related to use to PHP 8.4
+* Added the ability to request delivery on the staff equipment reservation form
+
 ## [2.0.24] - 2026-04-29
 
 * Fixed an error with event registration access

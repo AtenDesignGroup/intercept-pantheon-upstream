@@ -76,7 +76,7 @@ class BulkRoomReservationForm extends ContentEntityForm {
    * @param \Drupal\Core\Session\AccountProxy $currentUser
    *   The current user account proxy.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, SeriesGeneratorInterface $bulkReservationsSeriesGenerator, AccountProxy $currentUser) {
+  public function __construct(EntityRepositoryInterface $entity_repository, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL, SeriesGeneratorInterface $bulkReservationsSeriesGenerator, AccountProxy $currentUser) {
     $this->entityRepository = $entity_repository;
     $this->entityTypeBundleInfo = $entity_type_bundle_info ?: \Drupal::service('entity_type.bundle.info');
     $this->time = $time ?: \Drupal::service('datetime.time');

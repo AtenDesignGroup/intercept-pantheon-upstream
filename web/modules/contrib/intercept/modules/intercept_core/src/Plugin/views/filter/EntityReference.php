@@ -110,7 +110,7 @@ class EntityReference extends ManyToOne {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     parent::init($view, $display, $options);
 
     if (empty($this->definition['field_name'])) {

@@ -39,7 +39,7 @@ class DateRangeCombined extends DateRangeCustomFormatter {
    * @param \Drupal\Core\Datetime\DrupalDateTime $end_date
    *   The date_range end date.
    */
-  protected function buildCombinedDate(DrupalDateTime $start_date, DrupalDateTime $end_date = NULL) {
+  protected function buildCombinedDate(DrupalDateTime $start_date, ?DrupalDateTime $end_date = NULL) {
     $this->setTimeZone($start_date);
 
     $build = [

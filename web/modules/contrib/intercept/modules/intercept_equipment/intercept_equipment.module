@@ -107,7 +107,7 @@ function intercept_equipment_mail($key, &$message, $params) {
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = new TranslatableMarkup('Equipment Request - @equipment_title for @username', ['@username' => $params['username'], '@equipment_title' => $params['equipment_title']], $options);
       $message['body'] = [];
-      $message['body'][] = new TranslatableMarkup("The following request was submitted:\n\nContact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
+      $message['body'][] = new TranslatableMarkup("The following request was submitted:\n\nContact: @email_address\n Location: @location_title\n Room: @room_title\n Request Delivery?: @request_delivery\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
         '@email_address' => $params['email_address'],
         '@username' => $params['username'],
         '@equipment_title' => $params['equipment_title'],
@@ -116,13 +116,14 @@ function intercept_equipment_mail($key, &$message, $params) {
         '@location_title' => $params['location_title'],
         '@room_title' => $params['room_title'],
         '@event_title' => $params['event_title'],
+        '@request_delivery' => $params['request_delivery'],
       ], $options);
       break;
     case 'canceled':
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = new TranslatableMarkup('Equipment Request Canceled - @equipment_title for @username', ['@username' => $params['username'], '@equipment_title' => $params['equipment_title']], $options);
       $message['body'] = [];
-      $message['body'][] = new TranslatableMarkup("The following request was canceled:\n\n Contact: @email_address\n Location: @location_title\n Room: @room_title\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
+      $message['body'][] = new TranslatableMarkup("The following request was canceled:\n\n Contact: @email_address\n Location: @location_title\n Room: @room_title\n Request Delivery?: @request_delivery\n Event: @event_title\n Equipment: @equipment_title\n Start: @reservation_start_date\n End: @reservation_end_date", [
         '@email_address' => $params['email_address'],
         '@username' => $params['username'],
         '@equipment_title' => $params['equipment_title'],
@@ -131,6 +132,7 @@ function intercept_equipment_mail($key, &$message, $params) {
         '@location_title' => $params['location_title'],
         '@room_title' => $params['room_title'],
         '@event_title' => $params['event_title'],
+        '@request_delivery' => $params['request_delivery'],
       ], $options);
       break;
   }
@@ -159,21 +161,21 @@ function intercept_equipment_send_email($entity, $key) {
     // Get requestor/current user's email address.
     $user = \Drupal::currentUser();
     $email = $user->getEmail();
-    // Username of requestor.
+    // Username of requestor
     $username = $user->getDisplayName();
-    // Equipment title.
+    // Equipment title
     $equipment_title = $equipment_node->getTitle();
-    // Dates/times of reservation.
+    // Dates/times of reservation
     $reservation_dates = $entity->get('field_dates')->getValue();
     $dateTime = new DrupalDateTime($reservation_dates[0]['value'], 'UTC');
     $reservation_start_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
     $dateTime = new DrupalDateTime($reservation_dates[0]['end_value'], 'UTC');
     $reservation_end_date = date('m-d-Y g:i A', $dateTime->getTimestamp());
-    // Location.
+    // Location
     $location_nid = $entity->get('field_location')->getValue();
     $location_node = Node::load($location_nid[0]['target_id']);
     $location_title = $location_node->getTitle();
-    // Room.
+    // Room
     $room_nid = $entity->get('field_room')->getValue();
     if ($room_nid) {
       $room_node = Node::load($room_nid[0]['target_id']);
@@ -182,7 +184,10 @@ function intercept_equipment_send_email($entity, $key) {
     else {
       $room_title = '';
     }
-    // Event.
+    // Request delivery
+    $request_delivery = $entity->get('field_request_delivery')->getValue();
+    $request_delivery = $request_delivery[0]['value'] ? 'Yes' : 'No';
+    // Event
     $event_nid = $entity->get('field_event')->getValue();
     if ($event_nid) {
       $event_node = Node::load($event_nid[0]['target_id']);
@@ -205,6 +210,7 @@ function intercept_equipment_send_email($entity, $key) {
       'location_title' => $location_title,
       'room_title' => $room_title,
       'event_title' => $event_title,
+      'request_delivery' => $request_delivery,
     ];
     $send = TRUE;
     foreach ($email_addresses as $email_address) {
@@ -385,5 +391,19 @@ function intercept_equipment_views_query_alter(ViewExecutable $view, QueryPlugin
         }
       }
     }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function intercept_equipment_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  switch ($form_id) {
+    case 'equipment_reservation_add_form':
+    case 'equipment_reservation_edit_form':
+      // Hide revision log message & new revision fields.
+      $form['revision_log']['#access'] = FALSE;
+      $form['revision_information']['#access'] = FALSE;
+      break;
   }
 }

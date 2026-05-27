@@ -19,7 +19,7 @@ interface SuggestedEventsProviderInterface {
    * @return \Drupal\Core\Entity\EntityInterface[]
    *   An array of event entities.
    */
-  public function getSuggestedEvents(AccountInterface $account = NULL);
+  public function getSuggestedEvents(?AccountInterface $account = NULL);
 
   /**
    * Gets all suggested event ids for an account.
@@ -30,7 +30,7 @@ interface SuggestedEventsProviderInterface {
    * @return integer[]
    *   An array of event ids.
    */
-  public function getSuggestedEventIds(AccountInterface $account = NULL);
+  public function getSuggestedEventIds(?AccountInterface $account = NULL);
 
   /**
    * Gets all suggested event entities for an event.

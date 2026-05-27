@@ -122,7 +122,7 @@ class RoomReservationForm extends ContentEntityForm {
    * @param \Drupal\intercept_room_reservation\ValidationMessageBuilder $validationMessageBuilder
    *   The intercept_room_reservation.validation_message_builder service.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, EntityDisplayRepositoryInterface $entity_display_repository, Dates $date_utility, AccountProxy $current_user, RoomReservationCertificationChecker $certification_checker, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer, ParseAutocompleteInput $autocompleteParser, ValidationMessageBuilder $validationMessageBuilder) {
+  public function __construct(EntityRepositoryInterface $entity_repository, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL, EntityDisplayRepositoryInterface $entity_display_repository, Dates $date_utility, AccountProxy $current_user, RoomReservationCertificationChecker $certification_checker, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer, ParseAutocompleteInput $autocompleteParser, ValidationMessageBuilder $validationMessageBuilder) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->entityDisplayRepository = $entity_display_repository;
     $this->dateUtility = $date_utility;

@@ -71,7 +71,7 @@ interface EventManagerInterface {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.
    */
-  public function updateAttendance(UserInterface $user = NULL, Request $request);
+  public function updateAttendance(?UserInterface $user = NULL, Request $request);
 
   /**
    * Creates an attendee for an event.
@@ -81,7 +81,7 @@ interface EventManagerInterface {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.
    */
-  public function createAttendee(UserInterface $user = NULL, Request $request);
+  public function createAttendee(?UserInterface $user = NULL, Request $request);
 
   /**
    * Determines whether the event's start time is in the past.
@@ -181,7 +181,7 @@ interface EventManagerInterface {
    * @return bool
    *   Whether the user has scanned in at the event.
    */
-  public function userHasAttended(NodeInterface $node, AccountInterface $user = NULL);
+  public function userHasAttended(NodeInterface $node, ?AccountInterface $user = NULL);
 
   /**
    * Determines whether the user has registered for the event.
@@ -194,7 +194,7 @@ interface EventManagerInterface {
    * @return bool
    *   Whether the user has registered for the event.
    */
-  public function userHasRegistered(NodeInterface $node, AccountInterface $user = NULL);
+  public function userHasRegistered(NodeInterface $node, ?AccountInterface $user = NULL);
 
   /**
    * Determines whether the user has saved the event.
@@ -207,6 +207,6 @@ interface EventManagerInterface {
    * @return bool
    *   Whether the user has saved the event.
    */
-  public function userHasSaved(NodeInterface $node, AccountInterface $user = NULL);
+  public function userHasSaved(NodeInterface $node, ?AccountInterface $user = NULL);
 
 }

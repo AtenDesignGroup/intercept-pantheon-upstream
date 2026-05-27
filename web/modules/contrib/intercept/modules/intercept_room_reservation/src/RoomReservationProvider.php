@@ -40,7 +40,7 @@ class RoomReservationProvider implements RoomReservationProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRoomReservations(AccountInterface $account = NULL) {
+  public function getRoomReservations(?AccountInterface $account = NULL) {
     $room_reservations = [];
     $room_reservation_ids = $this->getRoomReservationIds($account);
     if ($room_reservation_ids) {
@@ -53,7 +53,7 @@ class RoomReservationProvider implements RoomReservationProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRoomReservationIds(AccountInterface $account = NULL) {
+  public function getRoomReservationIds(?AccountInterface $account = NULL) {
     $account = $account ?: $this->currentUser;
     if ($account->isAnonymous()) {
       return [];

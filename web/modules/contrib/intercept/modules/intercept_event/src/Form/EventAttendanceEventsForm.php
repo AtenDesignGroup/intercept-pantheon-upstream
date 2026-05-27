@@ -47,7 +47,7 @@ class EventAttendanceEventsForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, RecurringEventManager $recurring_event_manager, Dates $date_utility) {
+  public function __construct(EntityRepositoryInterface $entity_repository, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL, RecurringEventManager $recurring_event_manager, Dates $date_utility) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->recurringEventManager = $recurring_event_manager;
     $this->dateUtility = $date_utility;

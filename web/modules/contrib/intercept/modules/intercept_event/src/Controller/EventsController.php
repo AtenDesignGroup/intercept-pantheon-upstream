@@ -458,7 +458,7 @@ class EventsController extends ControllerBase {
    * @return \Drupal\Core\Entity\EntityViewBuilderInterface
    *   A view builder instance.
    */
-  protected function getListBuilder($entity_type_id, NodeInterface $node = NULL) {
+  protected function getListBuilder($entity_type_id, ?NodeInterface $node = NULL) {
     $list_builder = $this->entityTypeManager()->getListBuilder($entity_type_id);
     if ($node) {
       $list_builder->setEvent($node);

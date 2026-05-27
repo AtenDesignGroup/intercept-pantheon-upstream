@@ -20,7 +20,7 @@ interface EventAttendanceProviderInterface {
    * @return bool|\Drupal\intercept_event\Entity\EventAttendanceInterface
    *   The Event Attendance entity, or FALSE.
    */
-  public function getEventAttendance($nid, AccountInterface $account = NULL);
+  public function getEventAttendance($nid, ?AccountInterface $account = NULL);
 
   /**
    * Gets all event attendance entities for an account.
@@ -31,7 +31,7 @@ interface EventAttendanceProviderInterface {
    * @return \Drupal\intercept_event\Entity\EventAttendanceInterface[]
    *   An array of event attendance entities.
    */
-  public function getEventAttendances(AccountInterface $account = NULL);
+  public function getEventAttendances(?AccountInterface $account = NULL);
 
   /**
    * Gets all event attendance ids for an account.
@@ -42,6 +42,6 @@ interface EventAttendanceProviderInterface {
    * @return int[]
    *   An array of event attendance ids.
    */
-  public function getEventAttendanceIds(AccountInterface $account = NULL);
+  public function getEventAttendanceIds(?AccountInterface $account = NULL);
 
 }

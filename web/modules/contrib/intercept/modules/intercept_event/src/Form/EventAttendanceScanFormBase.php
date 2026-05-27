@@ -33,7 +33,7 @@ class EventAttendanceScanFormBase extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, ExternalAuth $external_auth) {
+  public function __construct(EntityRepositoryInterface $entity_repository, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL, ExternalAuth $external_auth) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->externalAuth = $external_auth;
   }

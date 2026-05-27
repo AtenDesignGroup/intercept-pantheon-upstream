@@ -51,7 +51,7 @@ class InterceptEventCookie extends Cookie {
    * @param \Drupal\Core\Messenger\MessengerInterface|null $messenger
    *   The messenger.
    */
-  public function __construct(SessionConfigurationInterface $session_configuration, Connection $connection, MessengerInterface $messenger = NULL) {
+  public function __construct(SessionConfigurationInterface $session_configuration, Connection $connection, ?MessengerInterface $messenger = NULL) {
     $this->sessionConfiguration = $session_configuration;
     $this->connection = $connection;
     $this->messenger = $messenger;

@@ -18,7 +18,7 @@ interface RoomReservationProviderInterface {
    * @return \Drupal\intercept_room_reservation\Entity\RoomReservationInterface[]
    *   An array of room reservation entities.
    */
-  public function getRoomReservations(AccountInterface $account = NULL);
+  public function getRoomReservations(?AccountInterface $account = NULL);
 
   /**
    * Gets all room reservation ids for an account.
@@ -29,6 +29,6 @@ interface RoomReservationProviderInterface {
    * @return int[]
    *   An array of room reservation ids.
    */
-  public function getRoomReservationIds(AccountInterface $account = NULL);
+  public function getRoomReservationIds(?AccountInterface $account = NULL);
 
 }

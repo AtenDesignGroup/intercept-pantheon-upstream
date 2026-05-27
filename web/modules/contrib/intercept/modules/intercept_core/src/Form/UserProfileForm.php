@@ -44,7 +44,7 @@ class UserProfileForm extends ProfileForm {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
+  public function __construct(EntityRepositoryInterface $entity_repository, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL, LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, ILSManager $ils_manager) {
     // Pass necessary info to parent constructor at \Drupal\user\AccountForm.
     parent::__construct($entity_repository, $language_manager, $entity_type_bundle_info, $time);
 

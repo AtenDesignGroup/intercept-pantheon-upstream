@@ -106,6 +106,6 @@ interface InterceptScheduledMessageManagerInterface {
    *   - self::EMAIL_UNSCHEDULED
    *   - self::EMAIL_SENT
    */
-  public function cron(EntityInterface $entity = NULL, $plugin_id = NULL, $schedule_limit = 1000, $send_limit = NULL);
+  public function cron(?EntityInterface $entity = NULL, $plugin_id = NULL, $schedule_limit = 1000, $send_limit = NULL);
 
 }

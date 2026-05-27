@@ -63,10 +63,15 @@ class ManagementControllerBase extends ControllerBase {
   /**
    * Default page.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request.
+   * @param \Drupal\Core\Session\AccountInterface|null $user
+   *   The account for the page, or NULL to use the current user.
+   *
    * @return array
    *   Rendered array for admin page.
    */
-  public function view(Request $request, AccountInterface $user = NULL) {
+  public function view(Request $request, ?AccountInterface $user = NULL) {
     if (!$user) {
       $user = $this->currentUser();
     }

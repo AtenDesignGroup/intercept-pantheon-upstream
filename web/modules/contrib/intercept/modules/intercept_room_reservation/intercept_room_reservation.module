@@ -675,7 +675,7 @@ function intercept_room_reservation_views_pre_view(ViewExecutable $view, $displa
  * @return array
  *   The array of allowed values.
  */
-function intercept_room_reservation_status_values(FieldStorageDefinitionInterface $definition, FieldableEntityInterface $entity = NULL, &$cacheable = FALSE) {
+function intercept_room_reservation_status_values(FieldStorageDefinitionInterface $definition, ?FieldableEntityInterface $entity = NULL, &$cacheable = FALSE) {
   $options = [
     'requested' => new TranslatableMarkup('Requested'),
     'approved' => new TranslatableMarkup('Approved'),

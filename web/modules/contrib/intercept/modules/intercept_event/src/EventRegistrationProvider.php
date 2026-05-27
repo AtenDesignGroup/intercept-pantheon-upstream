@@ -41,7 +41,7 @@ class EventRegistrationProvider implements EventRegistrationProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEventRegistrations(AccountInterface $account = NULL) {
+  public function getEventRegistrations(?AccountInterface $account = NULL) {
     $event_registrations = [];
     $event_registration_ids = $this->getEventRegistrationIds($account);
     if ($event_registration_ids) {
@@ -54,7 +54,7 @@ class EventRegistrationProvider implements EventRegistrationProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEventRegistrationIds(AccountInterface $account = NULL) {
+  public function getEventRegistrationIds(?AccountInterface $account = NULL) {
     $account = $account ?: $this->currentUser;
     if ($account->isAnonymous()) {
       return [];

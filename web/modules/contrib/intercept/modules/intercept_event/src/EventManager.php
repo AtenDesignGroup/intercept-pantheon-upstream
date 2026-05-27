@@ -273,7 +273,7 @@ class EventManager implements EventManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function updateAttendance(UserInterface $user = NULL, Request $request) {
+  public function updateAttendance(?UserInterface $user = NULL, Request $request) {
     $response = NULL;
     $event_id = $this->getRequestData($request, 'event');
     if ($event = $this->load($event_id)) {
@@ -296,7 +296,7 @@ class EventManager implements EventManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function createAttendee(UserInterface $user = NULL, Request $request) {
+  public function createAttendee(?UserInterface $user = NULL, Request $request) {
     $response = NULL;
     if ($barcode = $this->getRequestData($request, 'barcode')) {
       $user = \Drupal::service('intercept_ils.association_manager')->loadByBarcode($barcode);
@@ -546,7 +546,7 @@ class EventManager implements EventManagerInterface {
   /**
    * {@inheritDoc}
    */
-  public function userHasAttended(NodeInterface $node, AccountInterface $user = NULL) {
+  public function userHasAttended(NodeInterface $node, ?AccountInterface $user = NULL) {
     if (!$user instanceof AccountInterface) {
       $user = $this->currentUser;
     }
@@ -564,7 +564,7 @@ class EventManager implements EventManagerInterface {
   /**
    * {@inheritDoc}
    */
-  public function userHasRegistered(NodeInterface $node, AccountInterface $user = NULL) {
+  public function userHasRegistered(NodeInterface $node, ?AccountInterface $user = NULL) {
     if (!$user instanceof AccountInterface) {
       $user = $this->currentUser;
     }
@@ -582,7 +582,7 @@ class EventManager implements EventManagerInterface {
   /**
    * {@inheritDoc}
    */
-  public function userHasSaved(NodeInterface $node, AccountInterface $user = NULL) {
+  public function userHasSaved(NodeInterface $node, ?AccountInterface $user = NULL) {
     if (!$user instanceof AccountInterface) {
       $user = $this->currentUser;
     }

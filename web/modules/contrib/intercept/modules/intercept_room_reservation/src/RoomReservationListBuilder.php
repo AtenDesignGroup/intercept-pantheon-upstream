@@ -154,7 +154,7 @@ class RoomReservationListBuilder extends EntityListBuilder {
    * @return string
    *   The Room Reservation label.
    */
-  private function getEntityLabel(EntityInterface $entity = NULL, $default = '') {
+  private function getEntityLabel(?EntityInterface $entity = NULL, $default = '') {
     return $entity ? $entity->toLink()->toString() : $default;
   }
 

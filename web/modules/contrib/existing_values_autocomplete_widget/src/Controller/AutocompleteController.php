@@ -93,7 +93,13 @@ class AutocompleteController extends ControllerBase {
    */
   public function handleAutocomplete(Request $request, $entity_type_id, $bundle, $field_name): JsonResponse {
     $existing_values = [];
-    $entity_type_id = $entity_type_id ?: $request->query->get('entity_type_id') ?: 'node';
+
+    $field_widget = $this->entityDisplayRepository
+      ->getFormDisplay($entity_type_id, $bundle)
+      ->getComponent($field_name);
+    if ($field_widget['type'] !== 'existing_autocomplete_field_widget') {
+      return new JsonResponse([]);
+    }
 
     if ($input = $request->query->get('q')) {
       $typed_string = Tags::explode($input);
@@ -104,20 +110,23 @@ class AutocompleteController extends ControllerBase {
       $field_storage_definitions = $this->entityFieldManager->getFieldStorageDefinitions($entity_type_id)[$field_name];
       $field_column = $table_mapping->getFieldColumnName($field_storage_definitions, 'value');
 
-      $widget_settings = $this->entityDisplayRepository
-        ->getFormDisplay($entity_type_id, $bundle)
-        ->getComponent($field_name)['settings'];
+      $field_widget_settings = $field_widget['settings'];
 
       $query = $this->database->select($field_table, 'f');
-      $query->fields('f', ['entity_id', $field_column]);
+      $query->addExpression('MIN(f.entity_id)', 'entity_id');
+      $query->addField('f', $field_column, 'value');
       $query->condition($field_column, $query->escapeLike($typed_string) . '%', 'LIKE');
-      $query->range(0, ((int) $widget_settings['suggestions_count']) ?? 15);
-      $results = $query->execute()->fetchAllKeyed();
+      $query->range(0, ((int) $field_widget_settings['suggestions_count']) ?? 15);
+      $query->distinct(TRUE);
+      $query->groupBy($field_column);
+      $results = $query->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
-      foreach ($results as $id => $value) {
+      foreach ($results as $result) {
         /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
-        $entity = $this->entityTypeManager->getStorage($entity_type_id)->load($id);
+        $entity = $this->entityTypeManager->getStorage($entity_type_id)->load($result['entity_id']);
         if ($entity->access('view') && $entity->get($field_name)->access('view')) {
+          $value = $result['value'];
+          // Ensure values are unique:
           $existing_values[$value] = [
             'value' => $value,
             'label' => $value,

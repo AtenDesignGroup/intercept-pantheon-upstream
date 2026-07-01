@@ -8,11 +8,11 @@
 }
 
 .intercept-events-calendar {
-  @include fs(body);
+  font-size: var(--font-size-body);
 
   th,
   td,
   .fc-daygrid-event {
-    @include fs(body);
+    font-size: var(--font-size-body);
   }
 }

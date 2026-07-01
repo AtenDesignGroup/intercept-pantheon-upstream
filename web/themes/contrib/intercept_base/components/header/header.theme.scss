@@ -539,7 +539,7 @@ label[for='nav-trigger'] {
 
   @include bp(none large) {
     .menu--footer-menu {
-      @include fs(secondary-menu);
+      font-size: var(--font-size-secondary-menu);
       display: block;
 
       .menu__item {
@@ -762,7 +762,7 @@ label[for='account-trigger'] {
 
 .autocompleter-list {
   li {
-    @include fs(x-small);
+    font-size: var(--font-size-x-small);
     padding: 1.2rem 1rem;
   }
 }

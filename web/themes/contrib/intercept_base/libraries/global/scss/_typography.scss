@@ -1,0 +1,118 @@
+//
+// Settings - Typography
+//
+// - 01 - Imports
+// - 02 - Families
+// - 03 - Typographic Scale
+// - 04 - Weights
+//
+
+
+//------------------------------------
+//  01 - Imports
+//------------------------------------
+@use 'sass:math';
+@use 'partials' as *;
+
+
+//------------------------------------
+//  02 - Families
+//  A mixin is created and than instantly called here so that we can utilize the same styles within other
+//  stylesheets, like the `wysiwyg.scss` file.
+//------------------------------------
+
+//
+// @see: web/themes/custom/richland/partials/settings/_typography.scss
+//
+
+
+//------------------------------------
+//  03 - Typographic Scale
+//  The scale is organized into groups of font sizes, such as headings and body text.
+//  Additional categories can be added based on the needs of the design. Each category is
+//  broken up into font-size (integers) representing the target `px` value at the largest
+//  breakpoint. Within each font-size, target `px` values are set per breakpoint.
+//
+//-------------------------------------
+
+:root {
+  --font-size-nano: #{small-size(11)};
+  --font-size-micro: #{small-size(12)};
+  --font-size-tiny: #{small-size(14)};
+  --font-size-x-small: #{small-size(16)};
+  --font-size-small: #{small-size(18)};
+  --font-size-body: #{small-size(20)};
+  --font-size-secondary-menu: #{small-size(22)};
+  --font-size-main-menu: #{small-size(28)};
+  --font-size-label: #{small-size(21)};
+  --font-size-medium: #{small-size(22)};
+  --font-size-large: #{small-size(26)};
+  --font-size-h5: #{small-size(22)};
+  --font-size-h4: #{small-size(24)};
+  --font-size-h3: #{small-size(30)};
+  --font-size-h2: #{small-size(36)};
+  --font-size-h1: #{small-size(48)};
+  --font-size-mega: #{small-size(60)};
+
+  @include bp(medium){
+    --font-size-nano: #{medium-size(10)};
+    --font-size-micro: #{medium-size(12)};
+    --font-size-tiny: #{medium-size(14)};
+    --font-size-x-small: #{medium-size(16)};
+    --font-size-small: #{medium-size(18)};
+    --font-size-body: #{medium-size(20)};
+    --font-size-secondary-menu: #{medium-size(18)};
+    --font-size-main-menu: #{medium-size(20)};
+    --font-size-label: #{medium-size(21)};
+    --font-size-medium: #{medium-size(22)};
+    --font-size-large: #{medium-size(27)};
+    --font-size-h5: #{medium-size(22)};
+    --font-size-h4: #{medium-size(24)};
+    --font-size-h3: #{medium-size(30)};
+    --font-size-h2: #{medium-size(36)};
+    --font-size-h1: #{medium-size(48)};
+    --font-size-mega: #{medium-size(60)};
+  }
+
+  @include bp(large) {
+    --font-size-nano: 10px;
+    --font-size-micro: 12px;
+    --font-size-tiny: 14px;
+    --font-size-x-small: 16px;
+    --font-size-small: 18px;
+    --font-size-body: 20px;
+    --font-size-secondary-menu: 18px;
+    --font-size-main-menu: 20px;
+    --font-size-label: 21px;
+    --font-size-medium: 24px;
+    --font-size-large: 30px;
+    --font-size-h5: 22px;
+    --font-size-h4: 24px;
+    --font-size-h3: 30px;
+    --font-size-h2: 36px;
+    --font-size-h1: 48px;
+    --font-size-mega: 60px;
+  }
+}
+
+
+//------------------------------------
+//  04 - Weights
+//  A mixin is created and than instantly called here so that we can utilize the same styles within other
+//  stylesheets, like the `wysiwyg.scss` file.
+//------------------------------------
+
+@mixin typography-weights() {
+  :root {
+    --font-weight-thin:      100;
+    --font-weight-light:     300;
+    --font-weight-regular:   400;
+    --font-weight-book:      400;
+    --font-weight-medium:    500;
+    --font-weight-semibold:  600;
+    --font-weight-bold:      700;
+    --font-weight-extrabold: 900;
+  }
+}
+
+@include typography-weights;

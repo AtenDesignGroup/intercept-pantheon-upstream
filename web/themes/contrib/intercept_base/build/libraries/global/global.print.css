@@ -178,21 +178,9 @@ h1 {
 }
 
 .current-filter .option-chip {
+  font-size: var(--font-size-body);
   align-items: center;
   padding: 0;
-}
-.current-filter .option-chip {
-  font-size: 0.8055555556rem;
-}
-@media (min-width: 48rem) {
-  .current-filter .option-chip {
-    font-size: 1.0416666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  .current-filter .option-chip {
-    font-size: 1.25rem;
-  }
 }
 .current-filter .option-chip > span {
   padding: 0;

@@ -4,12 +4,12 @@
 .content-list__heading,
 .content-list__item {
   &:not(:last-child) {
-    @include spacing(margin-bottom, normal);
+    margin-bottom: var(--spacing-normal);
   }
 }
 
 .content-list__heading {
-  @include fs(h2);
+  font-size: var(--font-size-h2);
 }
 
 .content-list__list {

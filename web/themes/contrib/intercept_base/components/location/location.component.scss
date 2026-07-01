@@ -51,8 +51,8 @@
 }
 
 .location__content {
-  @include spacing(padding-top, normal);
-  @include spacing(padding-bottom, normal);
+  padding-top: var(--spacing-normal);
+  padding-bottom: var(--spacing-normal);
   @include box--gutters(math.percentage(math.div(1, 16)));
 
   color: $white;
@@ -65,13 +65,13 @@
 
 .location__highlight {
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 
 .location__header {
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 
@@ -79,20 +79,20 @@
 .location__subtitle,
 .location__address {
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 
 .location__title {
-  @include fs(large);
+  font-size: var(--font-size-large);
 }
 
 .location__subtitle {
-  @include fs(small);
+  font-size: var(--font-size-small);
 }
 
 .location__address {
-  @include fs(small);
+  font-size: var(--font-size-small);
 
   > p,
   > a:not([class]) {

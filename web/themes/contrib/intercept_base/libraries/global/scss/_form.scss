@@ -8,7 +8,7 @@
 
 .form__heading {
   &:not(:last-child) {
-    @include spacing(margin-bottom, tight);
+    margin-bottom: var(--spacing-tight);
   }
 }
 
@@ -36,7 +36,7 @@
   align-items: stretch;
 
   &:not(:first-child) {
-    @include spacing(margin-top, tight);
+    margin-top: var(--spacing-tight);
   }
 
   > .form-item {
@@ -54,11 +54,11 @@
 }
 
 .form-item__help-text {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   font-style: italic;
 
   &:not(:first-child) {
-    @include spacing(margin-top, narrow);
+    margin-top: var(--spacing-narrow);
   }
 }
 
@@ -83,7 +83,7 @@
   }
 
   .description {
-    @include fs(x-small);
+    font-size: var(--font-size-x-small);
     font-style: italic;
   }
 }

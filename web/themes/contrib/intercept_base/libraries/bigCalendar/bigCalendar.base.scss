@@ -73,7 +73,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-header {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   border-bottom: 1px solid #DDD;
   flex: 1 0 0%;
   font-weight: $fw-regular;
@@ -182,7 +182,7 @@ button.rbc-input::-moz-focus-inner {
   }
 
   > button {
-    @include fs(micro);
+    font-size: var(--font-size-micro);
   }
 }
 
@@ -239,7 +239,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-btn-group > .button {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
 }
 
 .rbc-rtl .rbc-btn-group button + button {
@@ -264,12 +264,12 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-event-label {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   max-width: 100%;
 }
 
 .rbc-event-content {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -322,7 +322,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-show-more {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
   background-color: rgba(255, 255, 255, 0.3);
   font-weight: bold;
   height: auto;
@@ -524,7 +524,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-label {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   padding: 0 5px;
 }
 

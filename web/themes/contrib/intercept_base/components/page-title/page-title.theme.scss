@@ -1,7 +1,7 @@
 @use 'partials' as *;
 
 h1.page-title {
-  @include spacing(margin-bottom, normal);
+  margin-bottom: var(--spacing-normal);
   color: $clr-primary;
   font-weight: $fw-bold;
 }
@@ -27,8 +27,8 @@ h1.page-title {
 }
 
 .page-title--ruled {
-  @include spacing(margin-bottom, tight);
-  @include spacing(padding-bottom, tight);
+  margin-bottom: var(--spacing-tight);
+  padding-bottom: var(--spacing-tight);
   position: relative;
 
   &::after {

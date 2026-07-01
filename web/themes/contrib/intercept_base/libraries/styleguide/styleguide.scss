@@ -27,7 +27,7 @@ h2.styleguide {
 
 .styleguide__header .item-list {
   margin: 0 3em 4em 0;
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   flex-grow: 1;
 }
 
@@ -65,7 +65,7 @@ h2.styleguide {
 }
 
 .styleguide__toc-heading {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
   border-bottom: 1px solid $clr-border;
   padding-bottom: .5em;
   margin-bottom: 2em;

@@ -1,18 +1,18 @@
 @use 'partials' as *;
 
 .media__caption {
-  @include fs(x-small);
   color: $gray-30;
+  font-size: var(--font-size-x-small);
   font-style: italic;
   margin: 1em 0;
 }
 
 .media__caption-credit {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
   margin-top: .5rem;
 }
 
 // Layout
 .media--l--section {
-  @include spacing(margin-bottom, loose);
+  margin-bottom: var(--spacing-loose);
 }

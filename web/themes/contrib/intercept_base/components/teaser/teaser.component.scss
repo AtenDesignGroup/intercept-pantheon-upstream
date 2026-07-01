@@ -203,25 +203,25 @@
 }
 
 .teaser__date-month {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   display: block;
   text-transform: uppercase;
   letter-spacing: .0625em;
 }
 
 .teaser__date-date {
-  @include fs(large);
+  font-size: var(--font-size-large);
   display: block;
 }
 
 .teaser__date-time {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   display: block;
 }
 
 .teaser__title {
-  @include fs(h4);
-  @include lh(0);
+  font-size: var(--font-size-h4);
+  line-height: $lh-0;
 
   &:not(:last-child) {
     margin-bottom: .5em;
@@ -229,8 +229,8 @@
 }
 
 .teaser__supertitle {
-  @include fs(tiny);
-  @include lh(0);
+  font-size: var(--font-size-tiny);
+  line-height: $lh-0;
 }
 
 a.teaser__title {
@@ -253,7 +253,7 @@ a.teaser__title {
 }
 
 .teaser__type {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
 
   &:not(:last-child) {
     margin-bottom: rem($sp-tight);
@@ -261,7 +261,7 @@ a.teaser__title {
 }
 
 .teaser__reservation-date {
-  @include fs(small);
+  font-size: var(--font-size-small);
 }
 
 .teaser__reservation-date-date {
@@ -290,22 +290,22 @@ a.teaser__title {
 }
 
 .teaser__subtitle {
-  @include fs(tiny);
-  @include lh(0);
+  font-size: var(--font-size-tiny);
+  line-height: $lh-0;
 }
 
 .teaser__description {
-  // @include fs(small);
+  // font-size: var(--font-size-small);
   width: 100%; // Prevent tags from wrapping
 }
 
 .teaser__dateline {
-  @include fs(small);
+  font-size: var(--font-size-small);
   white-space: nowrap;
 }
 
 .teaser__author {
-  @include fs(small);
+  font-size: var(--font-size-small);
 
   &:not(:last-child) {
     margin-bottom: .5em;
@@ -319,7 +319,7 @@ a.teaser__title {
 }
 
 .teaser__tags {
-  @include fs(small);
+  font-size: var(--font-size-small);
   margin-top: 1em;
 
   a:not([class]) {

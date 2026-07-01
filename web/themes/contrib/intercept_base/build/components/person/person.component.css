@@ -40,17 +40,7 @@
   margin: 0;
 }
 .person__department {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .person__department {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .person__department {
-    font-size: 1rem;
-  }
+  font-size: var(--font-size-x-small);
 }
 .person__department .field__item {
   display: inline-block;

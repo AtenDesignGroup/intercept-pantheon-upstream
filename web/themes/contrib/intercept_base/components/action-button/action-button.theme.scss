@@ -34,11 +34,11 @@
   text-align: center;
 
   &:not(:first-child) {
-    @include spacing(margin-top, tiny);
+    margin-top: var(--spacing-tiny);
   }
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, tiny);
+    margin-bottom: var(--spacing-tiny);
   }
 
   [role="dialog"] & {
@@ -54,10 +54,10 @@
   }
 
   &--outlined {
-    @include spacing(margin-bottom, tiny);
-    @include spacing(margin-top, tiny);
-    @include spacing(padding-bottom, narrow);
-    @include spacing(padding-top, narrow);
+    margin-bottom: var(--spacing-tiny);
+    margin-top: var(--spacing-tiny);
+    padding-bottom: var(--spacing-narrow);
+    padding-top: var(--spacing-narrow);
     background-color: $white;
     border: 1px solid $clr-border;
     border-radius: 0;
@@ -72,17 +72,17 @@
 }
 
 .action-button__message {
-  @include fs(x-small);
-  @include lh(0);
+  font-size: var(--font-size-x-small);
+  line-height: $lh-0;
   font-style: italic;
   text-align: center;
 
   &:not(:first-child) {
-    @include spacing(margin-top, narrow);
+    margin-top: var(--spacing-narrow);
   }
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, narrow);
+    margin-bottom: var(--spacing-narrow);
   }
 
   .summary__content & {

@@ -1,40 +1,10 @@
 .quote {
-  margin-bottom: 0.9375rem;
-  margin-top: 0.9375rem;
-  padding-bottom: 0.25rem;
+  margin-bottom: var(--spacing-tight);
+  margin-top: var(--spacing-tight);
+  padding-bottom: var(--spacing-narrow);
   padding-left: 7.1428571429%;
   padding-right: 7.1428571429%;
   position: relative;
-}
-@media (min-width: 48rem) {
-  .quote {
-    margin-bottom: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .quote {
-    margin-bottom: 1.875rem;
-  }
-}
-@media (min-width: 48rem) {
-  .quote {
-    margin-top: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .quote {
-    margin-top: 1.875rem;
-  }
-}
-@media (min-width: 48rem) {
-  .quote {
-    padding-bottom: 0.33rem;
-  }
-}
-@media (min-width: 62rem) {
-  .quote {
-    padding-bottom: 0.5rem;
-  }
 }
 @media (min-width: 37.5rem) {
   .quote {
@@ -60,18 +30,6 @@
 }
 
 .quote__citation {
+  font-size: var(--font-size-tiny);
   margin-top: 1rem;
-}
-.quote__citation {
-  font-size: 0.5763888889rem;
-}
-@media (min-width: 48rem) {
-  .quote__citation {
-    font-size: 0.7291666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  .quote__citation {
-    font-size: 0.875rem;
-  }
 }

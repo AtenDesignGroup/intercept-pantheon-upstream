@@ -8,9 +8,9 @@
 @use 'partials' as *;
 
 .quote {
-  @include spacing(margin-bottom, tight);
-  @include spacing(margin-top, tight);
-  @include spacing(padding-bottom, narrow);
+  margin-bottom: var(--spacing-tight);
+  margin-top: var(--spacing-tight);
+  padding-bottom: var(--spacing-narrow);
   padding-left: math.percentage(math.div(.5, 7));
   padding-right: math.percentage(math.div(.5, 7));
   position: relative;
@@ -38,6 +38,6 @@
 }
 
 .quote__citation {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
   margin-top: 1rem;
 }

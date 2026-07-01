@@ -6,7 +6,7 @@
 @use 'partials' as *;
 
 .card__content {
-  @include spacing(padding, compact);
+  padding: var(--spacing-compact);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -14,8 +14,8 @@
 }
 
 .card__body {
-  @include fs(small);
-  @include spacing(margin-top, compact);
+  font-size: var(--font-size-small);
+  margin-top: var(--spacing-compact);
 }
 
 .card__footer {
@@ -23,8 +23,8 @@
 }
 
 .card__label {
-  @include fs(small);
-  @include spacing(margin-top, compact);
+  font-size: var(--font-size-small);
+  margin-top: var(--spacing-compact);
   font-style: italic;
 }
 

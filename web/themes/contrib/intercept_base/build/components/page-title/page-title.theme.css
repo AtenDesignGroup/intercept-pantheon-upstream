@@ -1,17 +1,7 @@
 h1.page-title {
-  margin-bottom: 1.5625rem;
+  margin-bottom: var(--spacing-normal);
   color: #0288d1;
   font-weight: 900;
-}
-@media (min-width: 48rem) {
-  h1.page-title {
-    margin-bottom: 2.0625rem;
-  }
-}
-@media (min-width: 62rem) {
-  h1.page-title {
-    margin-bottom: 3.125rem;
-  }
 }
 
 h1.page-title--reversed {
@@ -32,29 +22,9 @@ h1.page-title {
 }
 
 .page-title--ruled {
-  margin-bottom: 0.9375rem;
-  padding-bottom: 0.9375rem;
+  margin-bottom: var(--spacing-tight);
+  padding-bottom: var(--spacing-tight);
   position: relative;
-}
-@media (min-width: 48rem) {
-  .page-title--ruled {
-    margin-bottom: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .page-title--ruled {
-    margin-bottom: 1.875rem;
-  }
-}
-@media (min-width: 48rem) {
-  .page-title--ruled {
-    padding-bottom: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .page-title--ruled {
-    padding-bottom: 1.875rem;
-  }
 }
 .page-title--ruled::after {
   background: url("/themes/contrib/intercept_base/images/dots/dots--horiz.svg");

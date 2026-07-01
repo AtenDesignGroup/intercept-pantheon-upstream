@@ -3,7 +3,7 @@
 @use 'partials' as *;
 
 .highlight {
-  @include spacing(margin-bottom, compact);
+  margin-bottom: var(--spacing-compact);
   background: $clr-secondary-light;
   color: $clr-secondary-dark;
   text-transform: uppercase;

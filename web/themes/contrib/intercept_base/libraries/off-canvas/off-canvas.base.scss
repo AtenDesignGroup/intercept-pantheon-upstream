@@ -7,28 +7,28 @@
 
 /* Set some global attributes. */
 [id="drupal-off-canvas"] {
-  @include fs(small);
+  font-size: var(--font-size-small);
   line-height: 1.2;
 
   h1:not([class]) {
-    @include fs(h2);
+    font-size: var(--font-size-h2);
   }
 
   h2:not([class]) {
-    @include fs(h3);
+    font-size: var(--font-size-h3);
   }
 
   h3:not([class]) {
-    @include fs(h4);
-    @include lh(0);
+    font-size: var(--font-size-h4);
+    line-height: $lh-0;
   }
 
   h4:not([class]) {
-    @include fs(h5);
+    font-size: var(--font-size-h5);
   }
 
   h5:not([class]) {
-    @include fs(body);
+    font-size: var(--font-size-body);
   }
 
   .field--label-inline {

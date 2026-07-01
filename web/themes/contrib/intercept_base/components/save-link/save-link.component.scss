@@ -3,8 +3,8 @@
 @use 'partials' as *;
 
 .save-link {
-  @include fs(micro);
-  @include lh(-1);
+  font-size: var(--font-size-micro);
+  line-height: $lh--1;
   align-items: center;
   color: $gray-30;
   display: flex;
@@ -37,7 +37,7 @@
   }
 
   + .ajax-progress {
-    @include lh(-1);
+    line-height: $lh--1;
     position: absolute;
     left: 100%;
   }

@@ -1,18 +1,6 @@
 .call-prompt {
+  font-size: var(--font-size-x-small);
   letter-spacing: 0.03em;
-}
-.call-prompt {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .call-prompt {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .call-prompt {
-    font-size: 1rem;
-  }
 }
 .call-prompt__text {
   display: block;

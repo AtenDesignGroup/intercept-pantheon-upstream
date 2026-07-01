@@ -23,8 +23,8 @@
 
 // Dotted Above
 .l--dotted {
-  @include spacing(padding-top, normal);
-  @include spacing(padding-bottom, normal);
+  padding-top: var(--spacing-normal);
+  padding-bottom: var(--spacing-normal);
   position: relative;
 
   &::before {
@@ -53,8 +53,8 @@
 
 // Dotted Below
 .l--dotted-below {
-  @include spacing(margin-bottom, normal);
-  @include spacing(padding-bottom, normal);
+  margin-bottom: var(--spacing-normal);
+  padding-bottom: var(--spacing-normal);
   position: relative;
 
   &::after {
@@ -248,7 +248,7 @@
   > .l__header,
   > .l__main {
     &:not(:last-child) {
-      @include spacing(margin-bottom, loose);
+      margin-bottom: var(--spacing-loose);
     }
   }
 }
@@ -261,7 +261,7 @@
   > .l__header,
   > .l__main {
     &:not(:last-child) {
-      @include spacing(margin-bottom, loose);
+      margin-bottom: var(--spacing-loose);
     }
   }
 
@@ -269,7 +269,7 @@
   > .l__main > .l__secondary {
     @include bp(none medium) {
       &:not(:last-child) {
-        @include spacing(margin-bottom, loose, none);
+        margin-bottom: 2.0625rem;
       }
     }
   }
@@ -348,7 +348,7 @@
   > .l__header,
   > .l__main {
     &:not(:last-child) {
-      @include spacing(margin-bottom, loose);
+      margin-bottom: var(--spacing-loose);
     }
   }
 
@@ -363,7 +363,7 @@
   > .l__main > .l__secondary {
     @include bp(none medium) {
       &:not(:last-child) {
-        @include spacing(margin-bottom, loose, none);
+        margin-bottom: var(--spacing-loose);
       }
     }
 
@@ -417,11 +417,11 @@
 }
 
 .l--subsection {
-  @include spacing(margin-bottom, normal);
+  margin-bottom: var(--spacing-normal);
 }
 
 .l--subsection--tight {
-  @include spacing(margin-bottom, tight);
+  margin-bottom: var(--spacing-tight);
 }
 
 .region--header {
@@ -511,10 +511,10 @@
 .view-intercept-room-reservations {
   .views-row {
     &:not(:last-of-type) {
-      @include spacing(margin-bottom, sparse);
+      margin-bottom: var(--spacing-sparse);
 
       @include bp(small) {
-        @include spacing(margin-bottom, normal);
+        margin-bottom: var(--spacing-normal);
       }
     }
 

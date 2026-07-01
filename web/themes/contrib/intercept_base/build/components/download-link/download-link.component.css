@@ -3,14 +3,12 @@
   position: relative;
 }
 .download-link > a:not([class]) {
+  line-height: 1;
   border: 0;
   display: block;
   letter-spacing: 0.01em;
   padding: 0.75em 1em 0.75em 3.5em;
   transition-property: all;
-}
-.download-link > a:not([class]) {
-  line-height: 1;
 }
 .download-link > a:not([class]):hover, .download-link > a:not([class]):focus {
   text-decoration: none;

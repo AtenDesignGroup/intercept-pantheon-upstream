@@ -31,8 +31,8 @@ parameters:
     - '#Method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\\_]+\(\) is not final, but since the containing class is abstract, it should be#'
     # What's wrong with null default values?
     - '#Method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\\_]+\(\) has parameter \$[a-zA-Z0-9\\_]+ with null as default value#'
-    # Allow extending entity and service classes.
-    - '#Class Drupal\\lms\\(Entity\\){0,1}[a-zA-Z0-9]+ is neither abstract nor final#'
+    # Allow extending all classes.
+    - '#Class Drupal\\views_bulk_operations\\[a-zA-Z0-9\\]+ is neither abstract nor final#'
     # What's wrong with constructor default values, especially if it's
     # an extension of a PHP class that HAS constructor default values?
     - '#Constructor in [a-zA-Z0-9\\]+ has parameter \$[a-zA-Z0-9\\_]+ with default value#'

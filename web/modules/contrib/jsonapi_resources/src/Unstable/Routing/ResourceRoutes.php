@@ -106,7 +106,7 @@ final class ResourceRoutes implements EventSubscriberInterface {
       ]);
 
       // Enable all available authentication providers.
-      $route->addOptions(['_auth' => $this->providerIds]);
+      $route->addOptions(['_auth' => $route->getOption('_auth') ?? $this->providerIds]);
       // Flag every route as belonging to the JSON:API module.
       $route->addDefaults([JsonapiRoutes::JSON_API_ROUTE_FLAG_KEY => TRUE]);
 

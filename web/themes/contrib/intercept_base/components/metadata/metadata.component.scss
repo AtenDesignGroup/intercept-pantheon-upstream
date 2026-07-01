@@ -2,18 +2,18 @@
 
 .metadata {
   &:not(:last-child) {
-    @include spacing(margin-bottom, normal);
+    margin-bottom: var(--spacing-normal);
   }
 }
 
 .metadata--small {
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 
   .metadata__title,
   .metadata__content {
-    @include fs(x-small);
+    font-size: var(--font-size-x-small);
   }
 }
 
@@ -22,8 +22,8 @@
 }
 
 .metadata__title {
-  @include fs(body);
-  @include lh(0);
+  font-size: var(--font-size-body);
+  line-height: $lh-0;
 
   color: $gray-20;
   font-weight: $fw-bold;
@@ -40,7 +40,7 @@
 }
 
 .metadata__content {
-  @include fs(small);
+  font-size: var(--font-size-small);
 }
 
 .metadata__item--block {
@@ -65,7 +65,7 @@
   }
 
   .metadata__content {
-    @include lh(0);
+    line-height: $lh-0;
     flex-grow: 1;
   }
 }

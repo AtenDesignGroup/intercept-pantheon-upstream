@@ -7,12 +7,13 @@
 {% set modifiers = modifiers|default([])|merge(['reservation', image ? 'has-image' : 'no-image']) %}
 <{{ tag|default('article') }} {{ component.attributes('teaser', modifiers, attributes) }}>
   {% if image %}
-  <div class="teaser__image">
-    {% if title_url %}
-      <a href="{{ title_url }}" class="teaser__image-link" aria-hidden="true">{{ image }}</a>
+    {% if title_url is not empty %}
+      {{ attach_library('intercept_base/block-link') }}
+      <div class="teaser__image js--block-link" data-href="{{ title_url|render }}">
     {% else %}
-      {{ image }}
+      <div class="teaser__image">
     {% endif %}
+  {{ image }}
   </div>
   {% endif %}
   <div class="teaser__main clearfix">

@@ -1,7 +1,7 @@
 @use 'partials' as *;
 
 .call-prompt {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   letter-spacing: .03em;
 
   &__text {

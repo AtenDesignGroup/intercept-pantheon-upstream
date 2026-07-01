@@ -56,3 +56,25 @@ services:
     parent: jsonapi.entity_access_checker
     class: Drupal\jsonapi\Access\EntityAccessChecker
     public: true
+
+  jsonapi_resources.include_resolver:
+    class: Drupal\jsonapi_resources\IncludeResolver
+    decorates: jsonapi.include_resolver
+    arguments:
+      - '@jsonapi_resources.include_resolver.inner'
+
+  jsonapi_resources.normalizer.resource_object:
+    class: Drupal\jsonapi\Normalizer\ImpostorFrom\jsonapi_resources\ResourceObjectNormalizerImpostor
+    decorates: serializer.normalizer.resource_object.jsonapi
+    # Decorate as the outermost normalizer and delegate to the inner one, so
+    # other decorators of this service (e.g. commerce_api, which adds top-level
+    # resource meta) keep running. In Symfony, the lowest decoration_priority is
+    # applied last and therefore wraps the others. See
+    # https://www.drupal.org/i/3599417.
+    decoration_priority: -100
+    arguments:
+      - '@jsonapi.normalization_cacher'
+      - '@event_dispatcher'
+      - '@entity_field.manager'
+      - '@entity_type.manager'
+      - '@.inner'

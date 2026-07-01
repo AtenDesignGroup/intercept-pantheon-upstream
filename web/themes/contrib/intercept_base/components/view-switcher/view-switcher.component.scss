@@ -5,7 +5,7 @@
   justify-content: flex-end;
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, tight);
+    margin-bottom: rem(15px);
   }
 
   .visually-hidden {
@@ -14,7 +14,7 @@
 }
 
 .view-switcher__button {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   background-color: transparent;
   padding: 0;
   text-decoration: none;
@@ -29,8 +29,8 @@
   }
 
   &:not(:last-child) {
-    @include spacing(padding-right, tight);
-    @include spacing(margin-right, tight);
+    padding-right: var(--spacing-tight);
+    margin-right: var(--spacing-tight);
     border-right: 1px solid $clr-border;
   }
 }

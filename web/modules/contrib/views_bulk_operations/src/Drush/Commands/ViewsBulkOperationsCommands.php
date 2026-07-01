@@ -300,7 +300,7 @@ final class ViewsBulkOperationsCommands extends DrushCommands {
    *
    * Overrides the one from the trait and uses Drush logger.
    */
-  public static function message(?string $message = NULL, string $type = 'status', bool $repeat = TRUE): void {
+  public static function message(string|\Stringable $message, string $type = 'status', bool $repeat = TRUE): void {
     // Status type no longer exists, mapping required.
     if ($type === 'status') {
       $type = LogLevel::INFO;

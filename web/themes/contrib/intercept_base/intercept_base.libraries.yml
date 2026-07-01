@@ -518,9 +518,9 @@ slick:
   version: 1.8.1
   css:
     component:
-      https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css: { type: external, minified: true }
+      vendor/slick/slick.css: {}
   js:
-    build/components/slideshow/slick.js: {}
+    vendor/slick/slick.js: {}
   dependencies:
     - core/jquery
 

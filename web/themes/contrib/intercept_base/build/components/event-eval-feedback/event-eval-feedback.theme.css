@@ -1,18 +1,6 @@
 .event-eval-feedback__user {
+  font-size: var(--font-size-x-small);
   font-weight: 900;
-}
-.event-eval-feedback__user {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .event-eval-feedback__user {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .event-eval-feedback__user {
-    font-size: 1rem;
-  }
 }
 .event-eval-feedback__user:not(:last-child) {
   margin-top: 1em;

@@ -143,20 +143,8 @@
 }
 @media (min-width: 62rem) {
   .account-menu__content [id^=user-login-form] label {
+    font-size: var(--font-size-small);
     font-weight: normal;
-  }
-  .account-menu__content [id^=user-login-form] label {
-    font-size: 0.7291666667rem;
-  }
-}
-@media (min-width: 62rem) and (min-width: 48rem) {
-  .account-menu__content [id^=user-login-form] label {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) and (min-width: 62rem) {
-  .account-menu__content [id^=user-login-form] label {
-    font-size: 1.125rem;
   }
 }
 .account-menu__content [id^=user-login-form] input {

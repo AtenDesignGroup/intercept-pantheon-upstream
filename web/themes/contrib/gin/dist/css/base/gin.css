@@ -1496,6 +1496,11 @@ button.link:active,
   margin-block-start: calc(var(--gin-spacing-xs) * -1);
 }
 
+:where(*) .gin-table-scroll-wrapper:has(.dropbutton-wrapper.open),
+:is(#extra-specificity-hack, [data-drupal-admin-styles]) .gin-table-scroll-wrapper:has(.dropbutton-wrapper.open) {
+  overflow: visible;
+}
+
 :where(*) table.gin--sticky-table-header,
 :is(#extra-specificity-hack, [data-drupal-admin-styles]) table.gin--sticky-table-header {
   visibility: hidden;
@@ -3187,7 +3192,7 @@ button.link:active,
 :where(*) .dropbutton--multiple > .dropbutton__item:first-of-type,
 :is(#extra-specificity-hack, [data-drupal-admin-styles]) .dropbutton--multiple > .dropbutton__item:first-of-type {
   height: 100%;
-  margin-inline-end: var(--gin-spacing-xxl);
+  margin-inline-end: calc(var(--dropbutton-extrasmall-toggle-size) + var(--dropbutton-toggle-size-spacing) - 2px) !important;
   border-inline-end: 1px solid var(--gin-color-primary-light-active);
 }
 
@@ -3218,6 +3223,7 @@ button.link:active,
 
 :where(*) .dropbutton-wrapper,
 :is(#extra-specificity-hack, [data-drupal-admin-styles]) .dropbutton-wrapper {
+  position: relative;
   box-shadow: none;
 }
 
@@ -3948,6 +3954,11 @@ button.link:active,
 :is(#extra-specificity-hack, [data-drupal-admin-styles]) #edit-help {
   font-size: var(--gin-font-size-s);
   color: var(--gin-color-text-light);
+}
+
+:where(*) #edit-help.messages.messages--warning,
+:is(#extra-specificity-hack, [data-drupal-admin-styles]) #edit-help.messages.messages--warning {
+  color: var(--gin-color-warning-light);
 }
 
 :where(*) .system-status-report__requirements-group h3,
@@ -4722,8 +4733,8 @@ button.link:active,
   color: var(--gin-color-danger);
 }
 
-:where(*) table.diff .diff-context,
-:is(#extra-specificity-hack, [data-drupal-admin-styles]) table.diff .diff-context {
+:where(*) table.diff tr .diff-context,
+:is(#extra-specificity-hack, [data-drupal-admin-styles]) table.diff tr .diff-context {
   background-color: transparent;
 }
 

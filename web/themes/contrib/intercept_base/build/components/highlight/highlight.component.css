@@ -1,17 +1,5 @@
 .highlight {
+  font-size: var(--font-size-tiny);
   display: inline-block;
   padding: 0.3rem 0.5875em;
-}
-.highlight {
-  font-size: 0.5763888889rem;
-}
-@media (min-width: 48rem) {
-  .highlight {
-    font-size: 0.7291666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  .highlight {
-    font-size: 0.875rem;
-  }
 }

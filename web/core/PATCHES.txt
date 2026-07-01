@@ -21,3 +21,7 @@ Source: patches/3238849-fix-js-error-room-reservation-calendar.patch
 Source: patches/3411040-fix-user-auth.patch
 
 
+Remove unnecessary warnings about config vs. schema mismatch.
+Source: patches/core-remove-warnings-schema.patch
+
+

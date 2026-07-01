@@ -166,7 +166,7 @@ final class ResourceResponseFactory {
         implode(',', array_map(static fn (string $path) => "`$path`", array_keys($unresolved_include_paths)))
       );
       if (count($relatable_resource_types) > 0) {
-        $message .= sprintf(' Possible values: %s', implode(', ', array_unique(array_merge(...$relatable_resource_types))));
+        $message .= sprintf(' Possible values: %s', implode(', ', array_unique(array_merge(...array_values($relatable_resource_types)))));
       }
       throw new CacheableBadRequestHttpException(
         (new CacheableMetadata())->addCacheContexts(['url.query_args:include']),

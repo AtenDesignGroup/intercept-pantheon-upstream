@@ -1,0 +1,12 @@
+name: 'JSON:API Resources meta decorator test'
+description: "Mimics a second decorator (like commerce_api) that adds resource meta."
+type: module
+package: Testing
+core_version_requirement: ^9.1 || ^10 || ^11
+dependencies:
+  - jsonapi_resources:jsonapi_resources
+
+# Information added by Drupal.org packaging script on 2026-06-18
+version: '8.x-1.7'
+project: 'jsonapi_resources'
+datestamp: 1781794626

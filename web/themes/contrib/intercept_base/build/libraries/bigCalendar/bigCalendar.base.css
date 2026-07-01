@@ -71,6 +71,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-header {
+  font-size: var(--font-size-micro);
   border-bottom: 1px solid #DDD;
   flex: 1 0 0%;
   font-weight: 400;
@@ -82,19 +83,6 @@ button.rbc-input::-moz-focus-inner {
   text-transform: uppercase;
   vertical-align: middle;
   white-space: nowrap;
-}
-.rbc-header {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .rbc-header {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .rbc-header {
-    font-size: 0.75rem;
-  }
 }
 .rbc-header > a,
 .rbc-header > a:active,
@@ -192,17 +180,7 @@ button.rbc-input::-moz-focus-inner {
   }
 }
 .rbc-btn-group > button {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .rbc-btn-group > button {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .rbc-btn-group > button {
-    font-size: 0.75rem;
-  }
+  font-size: var(--font-size-micro);
 }
 
 .rbc-btn-group--views > button {
@@ -236,17 +214,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-btn-group > .button {
-  font-size: 0.5763888889rem;
-}
-@media (min-width: 48rem) {
-  .rbc-btn-group > .button {
-    font-size: 0.7291666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  .rbc-btn-group > .button {
-    font-size: 0.875rem;
-  }
+  font-size: var(--font-size-tiny);
 }
 
 .rbc-rtl .rbc-btn-group button + button {
@@ -272,38 +240,14 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-event-label {
+  font-size: var(--font-size-micro);
   max-width: 100%;
-}
-.rbc-event-label {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .rbc-event-label {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .rbc-event-label {
-    font-size: 0.75rem;
-  }
 }
 
 .rbc-event-content {
+  font-size: var(--font-size-micro);
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.rbc-event-content {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .rbc-event-content {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .rbc-event-content {
-    font-size: 0.75rem;
-  }
 }
 
 .rbc-event-overlaps {
@@ -354,6 +298,7 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-show-more {
+  font-size: var(--font-size-tiny);
   background-color: rgba(255, 255, 255, 0.3);
   font-weight: bold;
   height: auto;
@@ -362,19 +307,6 @@ button.rbc-input::-moz-focus-inner {
   text-decoration: none;
   white-space: nowrap;
   z-index: 4;
-}
-.rbc-show-more {
-  font-size: 0.5763888889rem;
-}
-@media (min-width: 48rem) {
-  .rbc-show-more {
-    font-size: 0.7291666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  .rbc-show-more {
-    font-size: 0.875rem;
-  }
 }
 
 .rbc-month-view {
@@ -572,20 +504,8 @@ button.rbc-input::-moz-focus-inner {
 }
 
 .rbc-label {
+  font-size: var(--font-size-micro);
   padding: 0 5px;
-}
-.rbc-label {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .rbc-label {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .rbc-label {
-    font-size: 0.75rem;
-  }
 }
 
 .rbc-day-slot {

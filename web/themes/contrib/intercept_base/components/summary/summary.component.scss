@@ -4,13 +4,13 @@
   max-width: 24em;
 
   .summary__content {
-    @include spacing(padding, tight);
+    padding: var(--spacing-tight);
   }
 }
 
 .summary--calendar--event {
   .summary__content {
-    @include spacing(padding, compact);
+    padding: var(--spacing-compact);
   }
 }
 
@@ -20,16 +20,16 @@
 
 .summary__header {
   &:not(:last-child) {
-    @include spacing(margin-bottom, tight);
+    margin-bottom: var(--spacing-tight);
   }
 }
 
 .summary__body {
-  @include fs(small);
-  @include spacing(margin-top, tight);
+  font-size: var(--font-size-small);
+  margin-top: var(--spacing-tight);
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, tight);
+    margin-bottom: var(--spacing-tight);
   }
 }
 
@@ -39,37 +39,37 @@
 }
 
 .summary__title {
-  @include fs(h4);
-  @include lh(0);
+  font-size: var(--font-size-h4);
+  line-height: $lh-0;
 }
 
 .summary__supertitle {
-  @include fs(micro);
-  @include lh(0);
+  font-size: var(--font-size-micro);
+  line-height: $lh-0;
 }
 
 .summary__subtitle {
-  @include fs(micro);
-  @include lh(0);
+  font-size: var(--font-size-micro);
+  line-height: $lh-0;
 }
 
 .summary__dateline-date {
-  @include fs(small);
+  font-size: var(--font-size-small);
   font-weight: $fw-bold;
 }
 
 .summary__label {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   font-style: italic;
 }
 
 .summary__dateline-time {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
 }
 
 .summary__dateline-date,
 .summary__dateline-time {
-  @include lh(0);
+  line-height: $lh-0;
   display: block;
 }
 
@@ -79,7 +79,7 @@
 // .summary__subtitle,
 .summary__label {
   &:not(:last-child) {
-    @include spacing(margin-bottom, narrow);
+    margin-bottom: var(--spacing-narrow);
   }
 }
 

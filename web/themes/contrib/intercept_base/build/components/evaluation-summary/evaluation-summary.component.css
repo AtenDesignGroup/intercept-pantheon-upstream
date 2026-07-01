@@ -1,28 +1,8 @@
 .evaluation-summary {
-  margin-top: 0.9375rem;
-}
-@media (min-width: 48rem) {
-  .evaluation-summary {
-    margin-top: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .evaluation-summary {
-    margin-top: 1.875rem;
-  }
+  margin-top: var(--spacing-tight);
 }
 .evaluation-summary:not(:last-child) {
-  margin-bottom: 0.9375rem;
-}
-@media (min-width: 48rem) {
-  .evaluation-summary:not(:last-child) {
-    margin-bottom: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .evaluation-summary:not(:last-child) {
-    margin-bottom: 1.875rem;
-  }
+  margin-bottom: var(--spacing-tight);
 }
 @media (min-width: 31.25rem) {
   .evaluation-summary {
@@ -42,17 +22,7 @@
 }
 
 .evaluation-summary__overview-text {
-  font-size: 1.4166666667rem;
-}
-@media (min-width: 48rem) {
-  .evaluation-summary__overview-text {
-    font-size: 1.875rem;
-  }
-}
-@media (min-width: 62rem) {
-  .evaluation-summary__overview-text {
-    font-size: 2.25rem;
-  }
+  font-size: var(--font-size-h2);
 }
 
 @media (max-width: 47.99875rem) {

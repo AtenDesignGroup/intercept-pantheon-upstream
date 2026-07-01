@@ -25,8 +25,8 @@
 
 .content-header__text {
   @include box--gutters(math.percentage(math.div(0.5, 7)));
-  @include spacing(padding-top, loose);
-  @include spacing(padding-bottom, loose);
+  padding-top: var(--spacing-loose);
+  padding-bottom: var(--spacing-loose);
   color: $white;
   flex: auto;
   z-index: 1;
@@ -68,16 +68,16 @@
 }
 
 .content-header__supertitle {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 
 .content-header__title {
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 
   h1.page-title {
@@ -88,12 +88,12 @@
 
 .content-header__date-date,
 .content-header__date-time {
-  @include fs(h4);
-  @include lh(0);
+  font-size: var(--font-size-h4);
+  line-height: $lh-0;
   display: block;
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 

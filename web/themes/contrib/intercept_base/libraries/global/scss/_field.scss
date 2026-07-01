@@ -17,7 +17,7 @@
 }
 
 .field__label {
-  @include lh(0);
+  line-height: $lh-0;
   color: $gray-00;
   margin-bottom: .25em;
 }
@@ -30,7 +30,7 @@
 }
 
 .field--inline {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   margin-bottom: .666em;
 
   > .field__label {

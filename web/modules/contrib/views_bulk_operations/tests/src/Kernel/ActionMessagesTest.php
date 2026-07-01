@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\views_bulk_operations\Kernel;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
 /**
  * @coversDefaultClass \Drupal\views_bulk_operations\Service\ViewsBulkOperationsActionProcessor
  * @group views_bulk_operations
@@ -35,8 +37,8 @@ final class ActionMessagesTest extends ViewsBulkOperationsKernelTestBase {
     $results = $this->executeAction($vbo_data);
 
     foreach ($result_messages as $index => $message) {
-      static::assertEquals($results['finished_output'][$index]['type'], $message['type']);
-      static::assertEquals($results['finished_output'][$index]['message'], $message['message']);
+      static::assertEquals($message['type'], $results['finished_output'][$index]['type']);
+      static::assertEquals((string) $message['message'], (string) $results['finished_output'][$index]['message']);
     }
   }
 
@@ -53,7 +55,7 @@ final class ActionMessagesTest extends ViewsBulkOperationsKernelTestBase {
         'views_bulk_operations_simple_test_action',
         [
           [
-            'message' => 'Test (3)',
+            'message' => new TranslatableMarkup('Test (3)'),
             'type' => 'status',
           ],
         ],
@@ -63,11 +65,15 @@ final class ActionMessagesTest extends ViewsBulkOperationsKernelTestBase {
         'views_bulk_operations_test_action_v2',
         [
           [
-            'message' => 'A warning message. (1)',
+            'message' => new TranslatableMarkup('A warning message. (1)'),
             'type' => 'warning',
           ],
           [
-            'message' => 'Standard output. (2)',
+            'message' => new TranslatableMarkup('A warning message with a "quote", an & ampersand, and <tag>. (1)'),
+            'type' => 'warning',
+          ],
+          [
+            'message' => new TranslatableMarkup('Standard output. (1)'),
             'type' => 'status',
           ],
         ],

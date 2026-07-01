@@ -46,8 +46,8 @@
   }
 
   h3 {
-    @include fs(h3);
-    @include lh(0);
+    font-size: var(--font-size-h3);
+    line-height: $lh-0;
     width: 100%;
   }
 
@@ -75,7 +75,7 @@
   .card__footer {
     margin-top: 1em;
     a:not([class]) {
-      @include fs(x-small);
+      font-size: var(--font-size-x-small);
       letter-spacing: rem(1px);
       text-transform: unset;
 

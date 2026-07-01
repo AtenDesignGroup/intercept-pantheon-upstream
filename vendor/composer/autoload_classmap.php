@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'CURLStringFile' => $vendorDir . '/symfony/polyfill-php81/Resources/stubs/CURLStringFile.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'DateError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
@@ -17,6 +18,8 @@ return array(
     'DateMalformedStringException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateMalformedStringException.php',
     'DateObjectError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateObjectError.php',
     'DateRangeError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateRangeError.php',
+    'DeepClone\\ClassNotFoundException' => $vendorDir . '/symfony/polyfill-deepclone/Resources/stubs/ClassNotFoundException.php',
+    'DeepClone\\NotInstantiableException' => $vendorDir . '/symfony/polyfill-deepclone/Resources/stubs/NotInstantiableException.php',
     'DelayedTargetValidation' => $vendorDir . '/symfony/polyfill-php85/Resources/stubs/DelayedTargetValidation.php',
     'Deprecated' => $vendorDir . '/symfony/polyfill-php84/Resources/stubs/Deprecated.php',
     'Dompdf\\Cpdf' => $vendorDir . '/dompdf/dompdf/lib/Cpdf.php',
@@ -60,6 +63,7 @@ return array(
     'Pdo\\Odbc' => $vendorDir . '/symfony/polyfill-php84/Resources/stubs/Pdo/Odbc.php',
     'Pdo\\Pgsql' => $vendorDir . '/symfony/polyfill-php84/Resources/stubs/Pdo/Pgsql.php',
     'Pdo\\Sqlite' => $vendorDir . '/symfony/polyfill-php84/Resources/stubs/Pdo/Sqlite.php',
+    'PhpToken' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
     'Psr\\Container\\ContainerInterface' => $vendorDir . '/psr/container/src/ContainerInterface.php',
     'ReflectionConstant' => $vendorDir . '/symfony/polyfill-php84/Resources/stubs/ReflectionConstant.php',
     'ReturnTypeWillChange' => $vendorDir . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
@@ -94,4 +98,6 @@ return array(
     'Symfony\\Component\\HttpKernel\\HttpKernelInterface' => $vendorDir . '/symfony/http-kernel/HttpKernelInterface.php',
     'Symfony\\Component\\HttpKernel\\TerminableInterface' => $vendorDir . '/symfony/http-kernel/TerminableInterface.php',
     'System' => $vendorDir . '/pear/pear-core-minimal/src/System.php',
+    'UnhandledMatchError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
+    'ValueError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
 );

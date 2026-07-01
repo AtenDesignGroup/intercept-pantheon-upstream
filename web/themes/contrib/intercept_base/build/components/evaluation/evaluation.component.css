@@ -1,15 +1,5 @@
 .evaluation__subject:not(:last-child) {
-  margin-bottom: 0.9375rem;
-}
-@media (min-width: 48rem) {
-  .evaluation__subject:not(:last-child) {
-    margin-bottom: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .evaluation__subject:not(:last-child) {
-    margin-bottom: 1.875rem;
-  }
+  margin-bottom: var(--spacing-tight);
 }
 .evaluation__subject .listing {
   padding-right: 0;
@@ -23,21 +13,7 @@
 .evaluation div[id^=webform-submission-intercept-event-feedback]:not(:last-child),
 .evaluation .evaluation__eval-widget:not(:last-child),
 .evaluation .evaluation__criteria-widget:not(:last-child) {
-  margin-bottom: 0.9375rem;
-}
-@media (min-width: 48rem) {
-  .evaluation div[id^=webform-submission-intercept-event-feedback]:not(:last-child),
-  .evaluation .evaluation__eval-widget:not(:last-child),
-  .evaluation .evaluation__criteria-widget:not(:last-child) {
-    margin-bottom: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .evaluation div[id^=webform-submission-intercept-event-feedback]:not(:last-child),
-  .evaluation .evaluation__eval-widget:not(:last-child),
-  .evaluation .evaluation__criteria-widget:not(:last-child) {
-    margin-bottom: 1.875rem;
-  }
+  margin-bottom: var(--spacing-tight);
 }
 .evaluation .webform-card {
   border: none;
@@ -56,21 +32,7 @@
 .evaluation [id^=edit-step-1] label:not(:last-child),
 .evaluation legend:not(:last-child),
 .evaluation .evaluation__widget-label:not(:last-child) {
-  margin-bottom: 0.375rem;
-}
-@media (min-width: 48rem) {
-  .evaluation [id^=edit-step-1] label:not(:last-child),
-  .evaluation legend:not(:last-child),
-  .evaluation .evaluation__widget-label:not(:last-child) {
-    margin-bottom: 0.495rem;
-  }
-}
-@media (min-width: 62rem) {
-  .evaluation [id^=edit-step-1] label:not(:last-child),
-  .evaluation legend:not(:last-child),
-  .evaluation .evaluation__widget-label:not(:last-child) {
-    margin-bottom: 0.75rem;
-  }
+  margin-bottom: var(--spacing-compact);
 }
 .evaluation .form-checkboxes label {
   vertical-align: top;

@@ -6,13 +6,13 @@
   }
 
   > small {
-    @include fs(tiny);
+    font-size: var(--font-size-tiny);
     display: block;
     margin-top: .5em;
   }
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 
@@ -22,7 +22,7 @@
 
 .section-title--dark {
   &:not(:last-child) {
-    @include spacing(margin-bottom, normal);
+    margin-bottom: var(--spacing-normal);
   }
 }
 
@@ -33,11 +33,11 @@
 }
 
 .section-title--secondary {
-  @include fs(body);
+  font-size: var(--font-size-body);
   font-weight: $fw-bold;
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 

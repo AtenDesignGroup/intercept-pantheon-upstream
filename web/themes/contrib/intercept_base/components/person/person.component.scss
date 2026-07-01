@@ -52,7 +52,7 @@
 
   // Department
   &__department {
-    @include fs(x-small);
+    font-size: var(--font-size-x-small);
 
     .field__item {
       display: inline-block;

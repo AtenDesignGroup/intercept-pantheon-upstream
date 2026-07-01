@@ -16,39 +16,15 @@
 }
 
 .filter-tips__heading {
+  font-size: var(--font-size-label);
   font-weight: 900;
   margin-bottom: 1em;
 }
-.filter-tips__heading {
-  font-size: 0.84375rem;
-}
-@media (min-width: 48rem) {
-  .filter-tips__heading {
-    font-size: 1.09375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .filter-tips__heading {
-    font-size: 1.3125rem;
-  }
-}
 
 .filter-tips__name {
+  font-size: var(--font-size-small);
   text-transform: uppercase;
   margin-bottom: 1em;
-}
-.filter-tips__name {
-  font-size: 0.7291666667rem;
-}
-@media (min-width: 48rem) {
-  .filter-tips__name {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .filter-tips__name {
-    font-size: 1.125rem;
-  }
 }
 
 .filter-tips__list {

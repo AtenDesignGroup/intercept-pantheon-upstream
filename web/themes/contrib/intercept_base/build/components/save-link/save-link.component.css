@@ -1,4 +1,6 @@
 .save-link {
+  font-size: var(--font-size-micro);
+  line-height: 1;
   align-items: center;
   color: #747481;
   display: flex;
@@ -8,22 +10,6 @@
   text-transform: uppercase;
   transition: all 0.2s ease-out;
   white-space: normal;
-}
-.save-link {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .save-link {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .save-link {
-    font-size: 0.75rem;
-  }
-}
-.save-link {
-  line-height: 1;
 }
 .save-link:hover, .save-link:focus {
   color: #261f26;
@@ -43,11 +29,9 @@
   }*/
 }
 .save-link + .ajax-progress {
+  line-height: 1;
   position: absolute;
   left: 100%;
-}
-.save-link + .ajax-progress {
-  line-height: 1;
 }
 .save-link__title {
   padding-left: 0.625rem;

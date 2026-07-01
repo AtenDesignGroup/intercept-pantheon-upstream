@@ -4,21 +4,9 @@
 }
 
 .filters__summary {
+  font-size: var(--font-size-x-small);
   font-weight: 900;
   font-style: italic;
-}
-.filters__summary {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .filters__summary {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .filters__summary {
-    font-size: 1rem;
-  }
 }
 
 .filters--uniform-padding .filters__inputs,

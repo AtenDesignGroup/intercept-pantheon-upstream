@@ -1,5 +1,5 @@
 .fs {
-  line-height: 1.2;
+  line-height: lh(0);
   margin: 10px;
   position: relative;
 }

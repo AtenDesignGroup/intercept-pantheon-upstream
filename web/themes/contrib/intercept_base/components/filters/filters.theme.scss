@@ -8,7 +8,7 @@
 }
 
 .filters__summary {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   font-weight: $fw-bold;
   font-style: italic;
 }

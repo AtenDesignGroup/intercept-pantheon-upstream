@@ -10,7 +10,6 @@ use Drupal\jsonapi\Access\EntityAccessChecker;
 use Drupal\jsonapi\JsonApiResource\ResourceObject;
 use Drupal\jsonapi\JsonApiResource\ResourceObjectData;
 use Drupal\jsonapi\ResourceType\ResourceType;
-use Drupal\jsonapi_resources\Exception\ResourceImplementationException;
 use Drupal\jsonapi_resources\Unstable\Entity\EntityCreationTrait;
 use Drupal\jsonapi_resources\Unstable\Entity\ResourceObjectToEntityMapperAwareInterface;
 
@@ -81,11 +80,15 @@ abstract class EntityResourceBase extends ResourceBase implements ResourceObject
    * @param \Drupal\Core\Entity\EntityInterface[] $entities
    *   The entities from which to create a resource objects.
    * @param bool $check_access
-   *   (optional) Whether to check access on the entities or not. Defaults to
-   *   TRUE. Careful consideration should be made whenever passing FALSE. There
-   *   are many subtle access checks to consider beyond the entity 'view'
-   *   operation. For example, the 'view label' operation and access to the
-   *   loaded revision, etc.
+   *   (optional) Whether to run JSON:API's entity access check on each entity.
+   *   Defaults to TRUE and should stay TRUE for any resource that is not
+   *   already enforcing access another way. Passing FALSE skips the `view`
+   *   operation check, the per-field access check, the `view label` fallback
+   *   for forbidden entities, and revision-access checks — every row passed
+   *   in is serialized in full. Only pass FALSE when the caller has already
+   *   restricted the result set to entities the current user may see (for
+   *   example, an entity query with `accessCheck(TRUE)` and an `uid` filter
+   *   bound to the current account).
    *
    * @return \Drupal\jsonapi\JsonApiResource\ResourceObjectData
    *   A ResourceObjectData object containing a resource object with unlimited
@@ -93,11 +96,16 @@ abstract class EntityResourceBase extends ResourceBase implements ResourceObject
    *   data on a collection response.
    */
   protected function createCollectionDataFromEntities(array $entities, $check_access = TRUE): ResourceObjectData {
-    if (!$check_access) {
-      throw new ResourceImplementationException('It is not yet allowed to create entity-oriented resources that do not check entity access. If this is a requirement for your project, please open a feature request in the issue queue: https://www.drupal.org/project/issues/jsonapi_resources');
-    }
     $resource_objects = [];
-    foreach ($entities as $entity) {
+    foreach ($entities as $key => $entity) {
+      assert($entity instanceof EntityInterface, sprintf(
+        'createCollectionDataFromEntities() expects EntityInterface[], got %s at index %s.',
+        get_debug_type($entity),
+        $key,
+      ));
+      if (!$entity instanceof EntityInterface) {
+        continue;
+      }
       $resource_objects["{$entity->getEntityTypeId()}:{$entity->id()}"] = $check_access
         ? $this->entityAccessChecker->getAccessCheckedResourceObject($entity)
         : ResourceObject::createFromEntity($this->resourceTypeRepository->get($entity->getEntityTypeId(), $entity->bundle()), $entity);

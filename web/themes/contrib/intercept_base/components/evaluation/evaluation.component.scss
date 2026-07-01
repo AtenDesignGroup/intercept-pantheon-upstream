@@ -4,7 +4,7 @@
 
 .evaluation__subject {
   &:not(:last-child) {
-    @include spacing('margin-bottom', tight);
+    margin-bottom: var(--spacing-tight);
   }
 
   .listing {
@@ -19,7 +19,7 @@
     width: 100%;
 
     &:not(:last-child) {
-      @include spacing('margin-bottom', tight);
+      margin-bottom: var(--spacing-tight);
     }
   }
 
@@ -39,7 +39,7 @@
     display: block;
 
     &:not(:last-child) {
-      @include spacing('margin-bottom', compact);
+      margin-bottom: var(--spacing-compact);
     }
   }
 

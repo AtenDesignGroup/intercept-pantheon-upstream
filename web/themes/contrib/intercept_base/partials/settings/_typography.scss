@@ -111,12 +111,10 @@ $font-sizes: (
 );
 
 // Line heights map
-$lh: (
-  -1: 1,
-  0: 1.2,
-  1: 1.5,
-  2: 2
-);
+$lh--1: 1;
+$lh-0: 1.2;
+$lh-1: 1.5;
+$lh-2: 2;
 
 //
 // Font Weights

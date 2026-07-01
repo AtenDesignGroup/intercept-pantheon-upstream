@@ -1,4 +1,5 @@
 .more-link {
+  font-size: var(--font-size-x-small);
   align-items: center;
   display: inline-block;
   font-weight: 900;
@@ -8,19 +9,6 @@
   text-transform: uppercase;
   transition: all 0.2s ease-out;
   white-space: normal;
-}
-.more-link {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .more-link {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .more-link {
-    font-size: 1rem;
-  }
 }
 .more-link:hover .more-link__arrow, .more-link:focus .more-link__arrow {
   transform: translateX(0.5em);

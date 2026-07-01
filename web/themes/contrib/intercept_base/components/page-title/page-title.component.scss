@@ -1,8 +1,8 @@
 @use 'partials' as *;
 
 .page-title {
-  @include fs(h1);
-  @include lh(0);
+  font-size: var(--font-size-h1);
+  line-height: $lh-0;
   padding-bottom: 0;
   margin-bottom: 0;
 
@@ -12,7 +12,7 @@
 }
 
 .page-title--small {
-  @include fs(h2);
+  font-size: var(--font-size-h2);
   margin-bottom: 0;
   padding-bottom: 0;
 }

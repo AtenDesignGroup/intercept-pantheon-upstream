@@ -7,11 +7,13 @@ namespace Drupal\views_bulk_operations\Service;
 use Drupal\Core\Access\AccessResultReasonInterface;
 use Drupal\Core\Action\ActionInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
+use Drupal\views\ViewsData;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionInterface;
 use Drupal\views_bulk_operations\ViewsBulkOperationsBatch;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -32,11 +34,6 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
    * Is the object initialized?
    */
   protected bool $initialized = FALSE;
-
-  /**
-   * Are we operating in exclude mode?
-   */
-  protected bool $excludeMode = FALSE;
 
   /**
    * The processed action object.
@@ -68,6 +65,8 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
     protected readonly ViewsBulkOperationsActionManager $actionManager,
     protected readonly AccountProxyInterface $currentUser,
     protected readonly ModuleHandlerInterface $moduleHandler,
+    protected readonly ViewsData $viewsData,
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
   ) {}
 
   /**
@@ -81,7 +80,13 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
       $this->queue = [];
     }
 
-    $this->excludeMode = \array_key_exists('exclude_mode', $view_data) && $view_data['exclude_mode'] !== FALSE;
+    if (
+      !\array_key_exists('exclude_list', $view_data) ||
+      \count($view_data['exclude_list']) === 0
+    ) {
+      // Nothing to exclude.
+      $view_data['exclude_mode'] = FALSE;
+    }
 
     if (\array_key_exists('action_id', $view_data)) {
       if (!\array_key_exists('configuration', $view_data)) {
@@ -172,24 +177,48 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
     }
 
     $base_field = $this->view->storage->get('base_field');
+    $base_table = $this->view->storage->get('base_table');
 
     // In some cases we may encounter nondeterministic behavior in
     // db queries with sorts allowing different order of results.
     // To fix this we're removing all sorts and setting one sorting
     // rule by the view base id field.
-    foreach (\array_keys($this->view->getHandlers('sort')) as $id) {
-      $this->view->setHandler($this->bulkFormData['display_id'], 'sort', $id, NULL);
-    }
-    $this->view->setHandler($this->bulkFormData['display_id'], 'sort', $base_field, [
-      'id' => $base_field,
-      'table' => $this->view->storage->get('base_table'),
-      'field' => $base_field,
+    $sort_base = [
+      'table' => $base_table,
       'order' => 'ASC',
       'relationship' => 'none',
       'group_type' => 'group',
       'exposed' => FALSE,
       'plugin_id' => 'standard',
-    ]);
+    ];
+    foreach (\array_keys($this->view->getHandlers('sort')) as $id) {
+      $this->view->setHandler($this->bulkFormData['display_id'], 'sort', $id, NULL);
+    }
+    $this->view->setHandler($this->bulkFormData['display_id'], 'sort', $base_field, [
+      'id' => $base_field,
+      'field' => $base_field,
+    ] + $sort_base);
+
+    // If the entity type supports translations, we need an additional sort
+    // by langcode.
+    $entity_type_id = $this
+      ->viewsData
+      ->get($base_table)['table']['entity type'] ?? NULL;
+    if ($entity_type_id !== NULL) {
+      $entity_type_definition = $this
+        ->entityTypeManager
+        ->getDefinition($entity_type_id);
+
+      if ($entity_type_definition->isTranslatable() && $entity_type_definition->hasKey('langcode')) {
+        $langcode_field = $entity_type_definition->getKey('langcode');
+
+        // Add this as another sort handler. You can give it a unique ID.
+        $this->view->setHandler($this->bulkFormData['display_id'], 'sort', $langcode_field, [
+          'id' => $langcode_field,
+          'field' => $langcode_field,
+        ] + $sort_base);
+      }
+    }
 
     $this->view->setItemsPerPage($this->bulkFormData['batch_size']);
     $this->view->setCurrentPage($page);
@@ -200,7 +229,8 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
     $offset = $this->bulkFormData['batch_size'] * $page;
     // If the view doesn't start from the first result,
     // move the offset.
-    if ($pager_offset = $this->view->pager->getOffset()) {
+    // @phpstan-ignore nullsafe.neverNull
+    if ($pager_offset = $this->view->pager?->getOffset()) {
       $offset += $pager_offset;
     }
     $this->view->query->setLimit($this->bulkFormData['batch_size']);
@@ -212,7 +242,7 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
       $entity = $this->viewDataService->getEntity($row);
 
       $exclude = FALSE;
-      if ($this->excludeMode) {
+      if ($this->bulkFormData['exclude_mode']) {
         // Filter out excluded results basing on base field ID and language.
         foreach ($this->bulkFormData['exclude_list'] as $item) {
           if ($row->{$base_field} === $item[0] && $entity->language()->getId() === $item[1]) {
@@ -319,7 +349,7 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
     if (!\method_exists($this->view->query, 'addWhere')) {
       throw new \Exception(\sprintf('Unsupported query type: %s', $this->view->query::class));
     }
-    $this->view->query->addWhere(0, $base_field_alias, $base_field_values, 'IN');
+    $this->view->query->addWhere('views_bulk_operations', $base_field_alias, $base_field_values, 'IN');
 
     // Rebuild the view query.
     $this->view->query->build($this->view);

@@ -5,14 +5,16 @@
 {% set modifiers = modifiers|default([])|merge([image or books ? 'has-image' : date ? 'without-image' : 'no-image']) %}
 <{{ tag|default('article') }} {{ component.attributes('teaser', modifiers, attr) }}>
   {% if image or books or date %}
-  <div class="teaser__image">
+
+  {% if title_link.url is not empty %}
+    {{ attach_library('intercept_base/block-link') }}
+    <div class="teaser__image js--block-link" data-href="{{ title_link.url|render }}">
+  {% else %}
+    <div class="teaser__image">
+  {% endif %}
     {% if image %}
-      {% if title_url %}
-        <a href="{{ title_url }}" class="teaser__image-link" aria-hidden="true">{{ image }}</a>
-      {% else %}
-        {{ image }}
-      {% endif %}
-      {% elseif books %}
+      {{ image }}
+    {% elseif books %}
       <div class="teaser__images">
         {% for book in books %}
         <div class="teaser__images-image">

@@ -1,49 +1,17 @@
 .current-filters__wrapper {
-  margin-top: 0.9375rem;
+  margin-top: var(--spacing-tight);
   display: flex;
-}
-@media (min-width: 48rem) {
-  .current-filters__wrapper {
-    margin-top: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .current-filters__wrapper {
-    margin-top: 1.875rem;
-  }
 }
 
 .current-filter__label {
+  font-size: var(--font-size-x-small);
   color: #747481;
   margin-right: 0.5em;
-}
-.current-filter__label {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .current-filter__label {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .current-filter__label {
-    font-size: 1rem;
-  }
 }
 
 .current-filter {
   margin-right: 1.5em;
-  margin-bottom: 0.375rem;
-}
-@media (min-width: 48rem) {
-  .current-filter {
-    margin-bottom: 0.495rem;
-  }
-}
-@media (min-width: 62rem) {
-  .current-filter {
-    margin-bottom: 0.75rem;
-  }
+  margin-bottom: var(--spacing-compact);
 }
 
 .current-filter--embedded {
@@ -52,6 +20,7 @@
 }
 
 .current-filter .option-chip {
+  font-size: var(--font-size-micro);
   align-items: center;
   background-color: #eef1f4;
   border: none;
@@ -69,19 +38,6 @@
   transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   vertical-align: middle;
   white-space: nowrap;
-}
-.current-filter .option-chip {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .current-filter .option-chip {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .current-filter .option-chip {
-    font-size: 0.75rem;
-  }
 }
 .current-filter .option-chip:hover, .current-filter .option-chip:focus {
   background-color: #d3d8df;
@@ -108,21 +64,9 @@
 }
 
 .current-filter .option-label {
+  font-size: var(--font-size-micro);
   display: inline-block;
   padding-right: 0.25em;
-}
-.current-filter .option-label {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .current-filter .option-label {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .current-filter .option-label {
-    font-size: 0.75rem;
-  }
 }
 .current-filter .option-label:not(:last-of-type)::after {
   content: ", ";

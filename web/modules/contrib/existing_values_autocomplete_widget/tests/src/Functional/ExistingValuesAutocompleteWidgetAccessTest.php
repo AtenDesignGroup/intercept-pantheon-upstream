@@ -50,7 +50,8 @@ class ExistingValuesAutocompleteWidgetAccessTest extends BrowserTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->testArticle = $this->createTestContent();
+    $this->createArticleTypeWithField();
+    $this->testArticle = $this->createArticle('abc');
 
     $this->user = $this->drupalCreateUser();
     $this->drupalLogin($this->user);
@@ -92,6 +93,25 @@ class ExistingValuesAutocompleteWidgetAccessTest extends BrowserTestBase {
     // from the controller results:
     $this->testArticle->setUnpublished()->save();
     $this->drupalGet('/existing-values/autocomplete/node/article/field_text', [
+      'query' => ['q' => 'a'],
+    ]);
+    $session->statusCodeEquals(Response::HTTP_OK);
+    $session->responseNotContains('abc');
+  }
+
+  /**
+   * Tests the controller access based on whether the widget has the right type.
+   */
+  public function testControllerAccessFieldWidgetType(): void {
+    // Try to access the controller on the autocomplete field:
+    $this->drupalGet('/existing-values/autocomplete/node/article/field_text', [
+      'query' => ['q' => 'a'],
+    ]);
+    $session = $this->assertSession();
+    $session->statusCodeEquals(Response::HTTP_OK);
+    $session->responseContains('abc');
+    // Try to access the controller on a field that does not have the widget:
+    $this->drupalGet('/existing-values/autocomplete/node/article/title', [
       'query' => ['q' => 'a'],
     ]);
     $session->statusCodeEquals(Response::HTTP_OK);

@@ -8,20 +8,8 @@
 }
 
 .messages__content {
+  font-size: var(--font-size-small);
   padding: 1em;
-}
-.messages__content {
-  font-size: 0.7291666667rem;
-}
-@media (min-width: 48rem) {
-  .messages__content {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .messages__content {
-    font-size: 1.125rem;
-  }
 }
 .messages__content ul {
   margin: 0;

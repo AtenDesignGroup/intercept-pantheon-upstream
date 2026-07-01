@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jsonapi_resources\Unstable\Entity\Query\Pagination;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Http\Exception\CacheableBadRequestHttpException;
 use Drupal\Core\Url;
@@ -13,6 +14,7 @@ use Drupal\jsonapi\JsonApiResource\LinkCollection;
 use Drupal\jsonapi\Query\OffsetPage;
 use Drupal\jsonapi_resources\Entity\Query\PaginatorInterface;
 use Drupal\jsonapi_resources\Entity\Query\PaginatorMetadata;
+use Drupal\jsonapi_resources\Entity\Query\TotalCountAwareInterface;
 use Drupal\jsonapi_resources\Unstable\Entity\Query\CacheabilityCapturingExecutor;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -23,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
  *   This class should never be instantiated directly. Use
  *   EntityQueryResourceBase::getPaginatorForRequest() instead.
  */
-final class OffsetLimitPaginator implements PaginatorInterface {
+final class OffsetLimitPaginator implements PaginatorInterface, TotalCountAwareInterface {
 
   /**
    * The request object which may have a `page` query parameter.
@@ -38,6 +40,11 @@ final class OffsetLimitPaginator implements PaginatorInterface {
    * @var \Drupal\jsonapi_resources\Unstable\Entity\Query\CacheabilityCapturingExecutor
    */
   protected $entityQueryExecutor;
+
+  /**
+   * Memoized total count of entities matching the executed query.
+   */
+  private ?int $totalCount = NULL;
 
   /**
    * OffsetPagerQueryModifier constructor.
@@ -78,7 +85,7 @@ final class OffsetLimitPaginator implements PaginatorInterface {
   /**
    * {@inheritdoc}
    */
-  public function applyToQuery(QueryInterface $query, CacheableMetadata $cacheable_metadata): void {
+  public function applyToQuery(QueryInterface|SelectInterface $query, CacheableMetadata $cacheable_metadata): void {
     // Ensure that different pages will be cached separately.
     $cacheable_metadata->addCacheContexts(['url.query_args:page']);
     // Derive any pagination options from the query params or use defaults.
@@ -100,13 +107,12 @@ final class OffsetLimitPaginator implements PaginatorInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPaginationLinks(QueryInterface $executed_query, CacheableMetadata $cacheable_metadata, $calculate_last_link = FALSE): LinkCollection {
+  public function getPaginationLinks(QueryInterface|SelectInterface $executed_query, CacheableMetadata $cacheable_metadata, $calculate_last_link = FALSE): LinkCollection {
     $paginator_metadata = $executed_query->getMetaData(PaginatorMetadata::KEY);
     assert($paginator_metadata instanceof PaginatorMetadata);
     $has_next_page = !empty($paginator_metadata->hasNextPage);
     if ($calculate_last_link && $has_next_page) {
-      $count_query = $executed_query->range(NULL, NULL)->count();
-      $total_count = (int) $this->entityQueryExecutor->executeQueryAndCaptureCacheability($count_query, $cacheable_metadata);
+      $total_count = $this->getTotalCount($executed_query, $cacheable_metadata);
       if (empty($total_count)) {
         return new LinkCollection([]);
       }
@@ -140,6 +146,22 @@ final class OffsetLimitPaginator implements PaginatorInterface {
     }
 
     return $pager_links;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTotalCount(QueryInterface|SelectInterface $executed_query, CacheableMetadata $cacheable_metadata): int {
+    if ($this->totalCount === NULL) {
+      if ($executed_query instanceof SelectInterface) {
+        $this->totalCount = (int) $this->entityQueryExecutor->executeSelectCountAndCaptureCacheability($executed_query, $cacheable_metadata);
+      }
+      else {
+        $count_query = $executed_query->range(NULL, NULL)->count();
+        $this->totalCount = (int) $this->entityQueryExecutor->executeQueryAndCaptureCacheability($count_query, $cacheable_metadata);
+      }
+    }
+    return $this->totalCount;
   }
 
   /**

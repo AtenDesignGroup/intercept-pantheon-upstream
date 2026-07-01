@@ -1,0 +1,10 @@
+services:
+  jsonapi_resources_test.color_query_factory:
+    class: Drupal\jsonapi_resources_test\Entity\Query\ColorSchemeQueryFactory
+
+  route_subscriber.jsonapi_resources_test:
+    class: Drupal\jsonapi_resources_test\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
+    arguments:
+      [ '%jsonapi.base_path%']

@@ -9,8 +9,8 @@
   }
 
   &__heading {
-    @include fs(large);
-    @include lh(0);
+    font-size: var(--font-size-large);
+    line-height: $lh-0;
     color: $blue-60;
   }
 
@@ -28,7 +28,7 @@
       }
 
       h5:not([class]) {
-        @include fs(secondary-menu);
+        font-size: var(--font-size-secondary-menu);
         font-family: $ff-sans;
         margin-bottom: rem(5px);
 
@@ -38,8 +38,8 @@
       }
 
       .field--label-inline {
-        @include lh(1);
-        @include fs(secondary-menu);
+        line-height: $lh-1;
+        font-size: var(--font-size-secondary-menu);
 
         > div {
           display: inline;

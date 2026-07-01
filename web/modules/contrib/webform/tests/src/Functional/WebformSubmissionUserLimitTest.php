@@ -15,9 +15,9 @@ class WebformSubmissionUserLimitTest extends WebformBrowserTestBase {
    * @var array
    */
   protected static $modules = [
-    'webform',
     'path',
     'user',
+    'webform',
   ];
 
   /**

@@ -2,7 +2,7 @@
 
 .footer {
   @include box--padded;
-  @include spacing(margin-top, sparse);
+  margin-top: rem(60px);
   align-self: stretch;
   background: $gray-80;
 
@@ -184,7 +184,7 @@
   }
 
   a {
-    @include fs(x-small);
+    font-size: var(--font-size-x-small);
     background-color: $clr-primary;
     color: $white;
     font-weight: bold;

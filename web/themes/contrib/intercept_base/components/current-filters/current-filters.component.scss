@@ -1,19 +1,19 @@
 @use 'partials' as *;
 
 .current-filters__wrapper {
-  @include spacing(margin-top, tight);
+  margin-top: var(--spacing-tight);
   display: flex;
 }
 
 .current-filter__label {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   color: $clr-secondary;
   margin-right: .5em;
 }
 
 .current-filter {
   margin-right: 1.5em;
-  @include spacing(margin-bottom, compact);
+  margin-bottom: var(--spacing-compact);
 }
 
 .current-filter--embedded {
@@ -22,7 +22,7 @@
 }
 
 .current-filter .option-chip {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   align-items: center;
   background-color: $gray-80;
     border: none;
@@ -70,7 +70,7 @@
   text-overflow: ellipsis;
 }
 .current-filter .option-label {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   display: inline-block;
   padding-right: .25em;
 

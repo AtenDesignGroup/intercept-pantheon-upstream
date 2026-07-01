@@ -1,0 +1,54 @@
+//
+// Settings - Typography
+//
+// - 01 - Imports
+// - 02 - Spacing Scale
+//
+
+
+//------------------------------------
+//  01 - Imports
+//------------------------------------
+@use 'sass:math';
+@use 'partials' as *;
+
+//------------------------------------
+//  02 - Spacing Scale
+//  Set values for spacing across breakpoints.
+//------------------------------------
+
+:root {
+  --spacing-tiny: #{rem($sp-tiny)};
+  --spacing-narrow: #{rem($sp-narrow * .5)};
+  --spacing-compact: #{rem($sp-compact * .5)};
+  --spacing-tight: #{rem($sp-tight * .5)};
+  --spacing-normal: #{rem($sp-normal * .5)};
+  --spacing-loose: #{rem($sp-loose * .33)};
+  --spacing-looser: #{rem($sp-looser * .33)};
+  --spacing-sparse: #{rem($sp-sparse * .33)};
+  --spacing-sparser: #{rem($sp-sparser * .33)};
+
+  @include bp(medium) {
+    --spacing-tiny: #{rem($sp-tiny * .66)};
+    --spacing-narrow: #{rem($sp-narrow * .66)};
+    --spacing-compact: #{rem($sp-compact * .66)};
+    --spacing-tight: #{rem($sp-tight * .66)};
+    --spacing-normal: #{rem($sp-normal * .66)};
+    --spacing-loose: #{rem($sp-loose * .66)};
+    --spacing-looser: #{rem($sp-looser * .66)};
+    --spacing-sparse: #{rem($sp-sparse * .66)};
+    --spacing-sparser: #{rem($sp-sparser * .66)};
+  }
+
+  @include bp(large) {
+    --spacing-tiny: #{rem($sp-tiny)};
+    --spacing-narrow: #{rem($sp-narrow)};
+    --spacing-compact: #{rem($sp-compact)};
+    --spacing-tight: #{rem($sp-tight)};
+    --spacing-normal: #{rem($sp-normal)};
+    --spacing-loose: #{rem($sp-loose)};
+    --spacing-looser: #{rem($sp-looser)};
+    --spacing-sparse: #{rem($sp-sparse)};
+    --spacing-sparser: #{rem($sp-sparser)};
+  }
+}

@@ -49,7 +49,7 @@ html {
 }
 
 body {
-  @include fs(body);
+  font-size: var(--font-size-body);
   color: $clr-text;
   font-family: $ff-sans;
   font-weight: $fw-regular;
@@ -76,43 +76,43 @@ h6 {
 }
 
 h1:not([class]) {
-  @include fs(h1);
+  font-size: var(--font-size-h1);
   color: $clr-heading;
   font-family: $ff-heading;
   margin: 1em 0 0.5em;
 }
 
 h2:not([class]) {
-  @include fs(h2);
+  font-size: var(--font-size-h2);
   color: $clr-heading;
   font-family: $ff-heading;
   margin: 1em 0 0.5em;
 }
 
 h3:not([class]) {
-  @include fs(h3);
-  @include lh(0);
+  font-size: var(--font-size-h3);
+  line-height: $lh-0;
   color: $clr-heading;
   font-family: $ff-heading;
   margin: 1.5em 0 0.5em;
 }
 
 h4:not([class]) {
-  @include fs(h4);
+  font-size: var(--font-size-h4);
   color: $clr-heading;
   font-family: $ff-heading;
   margin: 1.5em 0 0.5em;
 }
 
 h5:not([class]) {
-  @include fs(h5);
+  font-size: var(--font-size-h5);
   color: $clr-heading;
   font-family: $ff-heading;
   margin: 1.5em 0 0.5em;
 }
 
 h6:not([class]) {
-  @include fs(body);
+  font-size: var(--font-size-body);
   color: $clr-heading;
   font-family: $ff-heading;
   margin: 1.5em 0 0.5em;
@@ -220,7 +220,7 @@ p:not([class]) {
 }
 
 blockquote:not([class]) {
-  @include fs(small);
+  font-size: var(--font-size-small);
   border-top: solid $gray-80 0.333em;
   font-style: italic;
   margin: 2em 0 2em;
@@ -272,7 +272,7 @@ audio {
 
   &::-webkit-media-controls-current-time-display,
   &::-webkit-media-controls-time-remaining-display {
-    @include fs(tiny);
+    font-size: var(--font-size-tiny);
     font-weight: $fw-medium;
   }
 }
@@ -282,7 +282,7 @@ audio {
 //
 
 figcaption:not([class]) {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   color: $gray-40;
   font-style: italic;
   margin: 1em 0;
@@ -321,7 +321,7 @@ fieldset {
 button,
 input[type='submit']:not(.unstyled):not(.js-hide),
 .button {
-  @include fs(medium);
+  font-size: var(--font-size-medium);
   background-color: $clr-primary;
   border: 0;
   border-radius: 0;
@@ -404,7 +404,7 @@ input[type='submit']:not(.unstyled):not(.js-hide),
 
 input,
 textarea {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
   border: 1px solid $clr-border;
   border-radius: 0;
   box-shadow: none;
@@ -427,7 +427,7 @@ legend {
 }
 
 select {
-  @include fs(tiny);
+  font-size: var(--font-size-tiny);
   appearance: none;
   background: $white;
   border-color: $clr-border;
@@ -465,7 +465,7 @@ thead {
 
   th,
   td {
-    @include fs(tiny);
+    font-size: var(--font-size-tiny);
     border-bottom: 2px solid $clr-table-border;
 
     &:first-child {
@@ -520,7 +520,7 @@ thead {
 th,
 td {
   // border: 1px solid $clr-table-border;
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   padding: 1rem;
   vertical-align: top;
 

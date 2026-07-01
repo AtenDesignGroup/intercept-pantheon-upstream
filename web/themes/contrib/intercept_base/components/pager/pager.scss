@@ -6,7 +6,7 @@
 @use 'partials' as *;
 
 .pager {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
 }
 
 .pager__items {

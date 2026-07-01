@@ -5,37 +5,15 @@
 .view-switcher:not(:last-child) {
   margin-bottom: 0.9375rem;
 }
-@media (min-width: 48rem) {
-  .view-switcher:not(:last-child) {
-    margin-bottom: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .view-switcher:not(:last-child) {
-    margin-bottom: 1.875rem;
-  }
-}
 .view-switcher .visually-hidden {
   margin: 0;
 }
 
 .view-switcher__button {
+  font-size: var(--font-size-x-small);
   background-color: transparent;
   padding: 0;
   text-decoration: none;
-}
-.view-switcher__button {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .view-switcher__button {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .view-switcher__button {
-    font-size: 1rem;
-  }
 }
 .view-switcher__button:hover, .view-switcher__button:focus {
   background-color: transparent;
@@ -44,27 +22,7 @@
   color: #4c4d4f;
 }
 .view-switcher__button:not(:last-child) {
-  padding-right: 0.9375rem;
-  margin-right: 0.9375rem;
+  padding-right: var(--spacing-tight);
+  margin-right: var(--spacing-tight);
   border-right: 1px solid #d3d8df;
-}
-@media (min-width: 48rem) {
-  .view-switcher__button:not(:last-child) {
-    padding-right: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .view-switcher__button:not(:last-child) {
-    padding-right: 1.875rem;
-  }
-}
-@media (min-width: 48rem) {
-  .view-switcher__button:not(:last-child) {
-    margin-right: 1.2375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .view-switcher__button:not(:last-child) {
-    margin-right: 1.875rem;
-  }
 }

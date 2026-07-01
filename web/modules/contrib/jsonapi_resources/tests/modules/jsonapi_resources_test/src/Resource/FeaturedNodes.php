@@ -36,14 +36,18 @@ final class FeaturedNodes extends EntityQueryResourceBase {
 
     $cacheability = new CacheableMetadata();
 
+    $this->applyFiltersToQuery($request, $query, $cacheability);
+    $this->applySortingToQuery($request, $query, $cacheability);
+
     $paginator = $this->getPaginatorForRequest($request);
     $paginator->applyToQuery($query, $cacheability);
 
     $data = $this->loadResourceObjectDataFromEntityQuery($query, $cacheability);
 
     $pagination_links = $paginator->getPaginationLinks($query, $cacheability);
+    $meta = $this->buildCountMeta($paginator, $query, $cacheability);
 
-    return $this->createJsonapiResponse($data, $request, 200, [], $pagination_links);
+    return $this->createJsonapiResponse($data, $request, 200, [], $pagination_links, $meta);
   }
 
   /**

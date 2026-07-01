@@ -23,20 +23,8 @@ h2.styleguide {
 
 .styleguide__header .item-list {
   margin: 0 3em 4em 0;
+  font-size: var(--font-size-x-small);
   flex-grow: 1;
-}
-.styleguide__header .item-list {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .styleguide__header .item-list {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .styleguide__header .item-list {
-    font-size: 1rem;
-  }
 }
 
 .styleguide__toc-group:not(:last-child) {
@@ -44,22 +32,10 @@ h2.styleguide {
 }
 
 .styleguide__toc-heading {
+  font-size: var(--font-size-tiny);
   border-bottom: 1px solid #d3d8df;
   padding-bottom: 0.5em;
   margin-bottom: 2em;
   text-transform: uppercase;
   font-weight: 900;
-}
-.styleguide__toc-heading {
-  font-size: 0.5763888889rem;
-}
-@media (min-width: 48rem) {
-  .styleguide__toc-heading {
-    font-size: 0.7291666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  .styleguide__toc-heading {
-    font-size: 0.875rem;
-  }
 }

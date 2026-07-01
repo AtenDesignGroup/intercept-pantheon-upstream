@@ -82,6 +82,7 @@ final class ViewsBulkOperationsProcessSortingTest extends ViewsBulkOperationsKer
       'display_id' => $display_id,
       'batch_size' => 3,
       'relationship_id' => 'none',
+      'exclude_mode' => FALSE,
     ], $view2);
     $page_and_expected = [
       0 => [1, 2, 3],

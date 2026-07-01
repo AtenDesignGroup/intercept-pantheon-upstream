@@ -47,23 +47,9 @@
   color: #0277bd;
 }
 .card--location h3 {
-  width: 100%;
-}
-.card--location h3 {
-  font-size: 1.1875rem;
-}
-@media (min-width: 48rem) {
-  .card--location h3 {
-    font-size: 1.5625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .card--location h3 {
-    font-size: 1.875rem;
-  }
-}
-.card--location h3 {
+  font-size: var(--font-size-h3);
   line-height: 1.2;
+  width: 100%;
 }
 .card--location .office-hours__item-label {
   font-weight: normal;
@@ -87,21 +73,9 @@
   margin-top: 1em;
 }
 .card--location .card__footer a:not([class]) {
+  font-size: var(--font-size-x-small);
   letter-spacing: 0.0625rem;
   text-transform: unset;
-}
-.card--location .card__footer a:not([class]) {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .card--location .card__footer a:not([class]) {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .card--location .card__footer a:not([class]) {
-    font-size: 1rem;
-  }
 }
 .card--location .card__footer a:not([class]) .country {
   display: none;

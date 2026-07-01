@@ -1,5 +1,5 @@
 @use 'partials' as *;
 
 .byline {
-  @include fs(small);
+  font-size: var(--font-size-small);
 }

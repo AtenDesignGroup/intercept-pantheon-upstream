@@ -306,7 +306,7 @@ abstract class ViewsBulkOperationsKernelTestBase extends KernelTestBase {
       $context['message'] = '';
       ViewsBulkOperationsBatch::operation($vbo_data, $context);
       if (\array_key_exists('message', $context)) {
-        $summary['messages'][] = (string) $context['message'];
+        $summary['messages'][] = $context['message'];
       }
     } while ($context['finished'] < 1);
 
@@ -326,7 +326,7 @@ abstract class ViewsBulkOperationsKernelTestBase extends KernelTestBase {
    * @return array|null
    *   The messages set previously or NULL.
    */
-  public static function message(?string $message = NULL, string $type = 'status', ?bool $repeat = TRUE): ?array {
+  public static function message(string|\Stringable|NULL $message = NULL, string $type = 'status', ?bool $repeat = TRUE): ?array {
     if ($message === NULL) {
       return self::$messages;
     }

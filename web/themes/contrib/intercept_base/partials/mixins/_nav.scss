@@ -5,7 +5,6 @@
 // These styles deal with navigation / menu patterns
 //
 @use 'clearfix' as clearfix;
-@use 'typography' as t;
 @use '../settings/_settings' as *;
 
 @mixin nav($item-selector: li) {
@@ -27,7 +26,7 @@
 
 // Single Tab
 @mixin tabs-item {
-  @include t.fs(x-small);
+  font-size: var(--font-size-x-small);
   float: left;
   margin-bottom: -1px; // Make the list-items overlay the bottom border
   margin-top: 0;

@@ -222,7 +222,7 @@ h1 {
 }
 
 .current-filter .option-chip {
-  @include fs(body);
+  font-size: var(--font-size-body);
   align-items: center;
   padding: 0;
 

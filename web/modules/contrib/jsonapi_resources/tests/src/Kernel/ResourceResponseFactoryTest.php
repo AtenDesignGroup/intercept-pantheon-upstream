@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jsonapi_resources\Kernel;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\jsonapi\CacheableResourceResponse;
 use Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel;
+use Drupal\jsonapi\JsonApiResource\LinkCollection;
 use Drupal\jsonapi\JsonApiResource\ResourceIdentifierInterface;
 use Drupal\jsonapi\JsonApiResource\ResourceObject;
 use Drupal\jsonapi\JsonApiResource\ResourceObjectData;
+use Drupal\jsonapi\ResourceType\ResourceType;
+use Drupal\jsonapi\ResourceType\ResourceTypeRelationship;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
+use Drupal\jsonapi_resources\Resource\ResourceObjectRelationship;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,6 +50,13 @@ final class ResourceResponseFactoryTest extends KernelTestBase {
   private const NODE_ARTICLE_1_UUID = '7bf77016-93d2-4098-84e4-c2634c4d8ecf';
 
   private const NODE_ARTICLE_2_UUID = '36405873-6b42-44ec-9f47-b771d83149b1';
+
+  /**
+   * The test user account.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected AccountInterface $account;
 
   /**
    * {@inheritdoc}
@@ -178,6 +191,101 @@ final class ResourceResponseFactoryTest extends KernelTestBase {
       $includes_data
     );
     self::assertEquals($expected_includes, $includes_data);
+  }
+
+  /**
+   * Tests that ResourceObjectRelationship fields are resolved as includes.
+   *
+   * @covers ::create
+   */
+  public function testCreateWithResourceObjectRelationship(): void {
+    $article1 = Node::create([
+      'uuid' => self::NODE_ARTICLE_1_UUID,
+      'type' => 'article',
+      'title' => $this->randomString(),
+      'status' => 1,
+    ]);
+    $article1->save();
+    $article2 = Node::create([
+      'uuid' => self::NODE_ARTICLE_2_UUID,
+      'type' => 'article',
+      'title' => $this->randomString(),
+      'status' => 1,
+    ]);
+    $article2->save();
+
+    $resource_type_repository = $this->container->get('jsonapi.resource_type.repository');
+    self::assertInstanceOf(ResourceTypeRepositoryInterface::class, $resource_type_repository);
+
+    $article_resource_type = $resource_type_repository->get('node', 'article');
+    $article_ro1 = ResourceObject::createFromEntity($article_resource_type, $article1);
+    $article_ro2 = ResourceObject::createFromEntity($article_resource_type, $article2);
+
+    // Build a virtual resource type (no backing entity) with a custom
+    // relationship field pointing to article nodes.
+    $virtual_resource_type = new ResourceType(
+      'virtual', 'virtual', NULL, FALSE, TRUE, TRUE, FALSE,
+      ['related' => new ResourceTypeRelationship('related')]
+    );
+    $virtual_resource_type->setRelatableResourceTypes([
+      'related' => [$article_resource_type],
+    ]);
+
+    // The relationship needs a context resource object for link generation.
+    // Create a temporary context first, build the relationship, then create
+    // the final resource object with the relationship as a field value.
+    $cacheability = new CacheableMetadata();
+    $context = new ResourceObject(
+      $cacheability,
+      $virtual_resource_type,
+      'virtual-1',
+      NULL,
+      [],
+      new LinkCollection([])
+    );
+    $relationship = ResourceObjectRelationship::createFromResourceObjects(
+      $context,
+      'related',
+      [$article_ro1, $article_ro2]
+    );
+    $virtual_ro = new ResourceObject(
+      $cacheability,
+      $virtual_resource_type,
+      'virtual-1',
+      NULL,
+      ['related' => $relationship],
+      new LinkCollection([])
+    );
+
+    $request = Request::create('/foo?include=related');
+    $request->attributes->set('resource_types', [$virtual_resource_type]);
+
+    $sut = $this->container->get('jsonapi_resources.resource_response_factory');
+    $response = $sut->create(
+      new ResourceObjectData([$virtual_ro], 1),
+      $request
+    );
+
+    self::assertInstanceOf(CacheableResourceResponse::class, $response);
+    $document_top_level = $response->getResponseData();
+    self::assertInstanceOf(JsonApiDocumentTopLevel::class, $document_top_level);
+
+    /** @var \Drupal\jsonapi\JsonApiResource\ResourceIdentifierInterface[] $includes_data */
+    $includes_data = $document_top_level->getIncludes()->toArray();
+    $includes_data = array_map(
+      static fn (ResourceIdentifierInterface $identifier) => [
+        'id' => $identifier->getId(),
+        'type' => $identifier->getTypeName(),
+      ],
+      $includes_data
+    );
+    self::assertEquals(
+      [
+        ['id' => self::NODE_ARTICLE_1_UUID, 'type' => 'node--article'],
+        ['id' => self::NODE_ARTICLE_2_UUID, 'type' => 'node--article'],
+      ],
+      $includes_data
+    );
   }
 
   /**

@@ -28,11 +28,11 @@
 }
 
 .listing__prompt {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   font-style: italic;
 
   &:not(:first-child) {
-    @include spacing(margin-top, tiny);
+    margin-top: var(--spacing-tiny);
   }
 }
 
@@ -43,23 +43,23 @@
   justify-content: flex-end;
 
   &:not(:first-child) {
-    @include spacing(margin-top, compact);
+    margin-top: var(--spacing-compact);
   }
 }
 
 .listing__text {
-  @include fs(small);
-  @include lh(0);
+  font-size: var(--font-size-small);
+  line-height: $lh-0;
   font-weight: $fw-bold;
 }
 
 .listing__supertitle {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   font-weight: bold;
 }
 
 .listing__subtitle {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   font-weight: normal;
 }
 
@@ -93,7 +93,7 @@
 }
 
 .listing__date-month {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   display: block;
   text-transform: uppercase;
   font-weight: $fw-bold;
@@ -101,12 +101,12 @@
 }
 
 .listing__date-date {
-  @include fs(large);
+  font-size: var(--font-size-large);
   display: block;
 }
 
 .listing__date-time {
-  @include fs(micro);
+  font-size: var(--font-size-micro);
   display: block;
   font-weight: $fw-bold;
 }

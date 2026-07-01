@@ -1,6 +1,6 @@
 @use 'partials' as *;
 
 .intro {
-  @include fs(large);
-  @include lh(1);
+  font-size: var(--font-size-large);
+  line-height: $lh-1;
 }

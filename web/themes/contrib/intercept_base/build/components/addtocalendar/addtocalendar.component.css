@@ -13,6 +13,8 @@
 
 .addtocalendar .atcb-link,
 .react-add-to-calendar__button {
+  font-size: var(--font-size-micro);
+  line-height: 1;
   align-items: center;
   color: #747481 !important;
   display: flex;
@@ -23,26 +25,6 @@
   text-transform: uppercase;
   transition: all 0.2s ease-out;
   white-space: normal;
-}
-.addtocalendar .atcb-link,
-.react-add-to-calendar__button {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .addtocalendar .atcb-link,
-  .react-add-to-calendar__button {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .addtocalendar .atcb-link,
-  .react-add-to-calendar__button {
-    font-size: 0.75rem;
-  }
-}
-.addtocalendar .atcb-link,
-.react-add-to-calendar__button {
-  line-height: 1;
 }
 .addtocalendar .atcb-link:hover, .addtocalendar .atcb-link:focus,
 .react-add-to-calendar__button:hover,
@@ -99,25 +81,11 @@
   border-bottom: 1px solid #eef1f4;
 }
 .react-add-to-calendar__dropdown > ul:not([class]) > li > a {
+  font-size: var(--font-size-micro);
+  line-height: 1;
   display: block;
   padding: 0.75em 1em;
   text-decoration: none;
-}
-.react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-  font-size: 0.5rem;
-}
-@media (min-width: 48rem) {
-  .react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-    font-size: 0.625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-    font-size: 0.75rem;
-  }
-}
-.react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-  line-height: 1;
 }
 
 @media (min-width: 62rem) {
@@ -129,15 +97,5 @@
   margin-right: 2rem;
 }
 .teaser__footer .react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-  font-size: 0.4618055556rem;
-}
-@media (min-width: 48rem) {
-  .teaser__footer .react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-    font-size: 0.5208333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .teaser__footer .react-add-to-calendar__dropdown > ul:not([class]) > li > a {
-    font-size: 0.625rem;
-  }
+  font-size: var(--font-size-nano);
 }

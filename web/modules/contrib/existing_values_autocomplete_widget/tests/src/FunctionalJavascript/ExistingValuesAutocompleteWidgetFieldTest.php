@@ -41,7 +41,7 @@ class ExistingValuesAutocompleteWidgetFieldTest extends WebDriverTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->createTestContent();
+    $this->createArticleTypeWithField();
 
     $this->user = $this->drupalCreateUser([
       'create article content',

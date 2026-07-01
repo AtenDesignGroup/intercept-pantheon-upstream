@@ -1,6 +1,6 @@
 @use 'partials' as *;
 
 .dialog__panel {
-  @include spacing(padding-top, loose);
-  @include spacing(padding-bottom, normal);
+  padding-top: var(--spacing-loose);
+  padding-bottom: var(--spacing-normal);
 }

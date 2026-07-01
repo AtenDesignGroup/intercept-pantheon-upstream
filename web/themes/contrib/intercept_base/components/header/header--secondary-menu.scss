@@ -67,7 +67,7 @@
 
 // MENU
 .menu--account {
-  @include fs(secondary-menu);
+  font-size: var(--font-size-secondary-menu);
   @include nav;
   display: flex;
   flex-direction: column;
@@ -224,7 +224,7 @@ label[for='nav-trigger'] {
 
 label[for='account-trigger'],
 .account-trigger--logged-out {
-  @include fs(small);
+  font-size: var(--font-size-small);
   cursor: pointer;
   font-weight: bold;
   margin: 0;
@@ -365,7 +365,7 @@ label[for='account-trigger'].account-trigger--logged-out {
     margin: 0 0 0.25rem;
 
     @include bp(large) {
-      @include fs(small);
+      font-size: var(--font-size-small);
       font-weight: normal;
     }
   }

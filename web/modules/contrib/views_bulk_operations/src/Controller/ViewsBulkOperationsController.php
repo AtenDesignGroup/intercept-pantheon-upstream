@@ -88,7 +88,7 @@ class ViewsBulkOperationsController extends ControllerBase implements ContainerI
     $parameters = $request->request->all();
 
     if ($parameters['op'] === 'method_include') {
-      unset($tempstore_data['exclude_mode']);
+      $tempstore_data['exclude_mode'] = FALSE;
       $tempstore_data['list'] = [];
     }
     elseif ($parameters['op'] === 'method_exclude') {
@@ -96,9 +96,11 @@ class ViewsBulkOperationsController extends ControllerBase implements ContainerI
       $tempstore_data['list'] = [];
     }
     elseif ($parameters['op'] === 'update') {
-      $exclude_mode = \array_key_exists('exclude_mode', $tempstore_data) && $tempstore_data['exclude_mode'] === TRUE;
       foreach ($parameters['list'] as $bulkFormKey => $state) {
-        if ($exclude_mode) {
+        // PHP converts numeric string array keys to integers when parsing
+        // POST data. Cast back to string for base64_decode() compatibility.
+        $bulkFormKey = (string) $bulkFormKey;
+        if ($tempstore_data['exclude_mode']) {
           $state = $state === 'true' ? 'false' : 'true';
         }
         if ($state === 'true') {
@@ -115,8 +117,7 @@ class ViewsBulkOperationsController extends ControllerBase implements ContainerI
 
     $this->setTempstoreData($tempstore_data);
 
-    $exclude_mode = \array_key_exists('exclude_mode', $tempstore_data) && $tempstore_data['exclude_mode'] === TRUE;
-    $count = $exclude_mode ? $tempstore_data['total_results'] - \count($tempstore_data['list']) : \count($tempstore_data['list']);
+    $count = $tempstore_data['exclude_mode'] ? $tempstore_data['total_results'] - \count($tempstore_data['list']) : \count($tempstore_data['list']);
 
     $selection_info_renderable = $this->getMultipageList($tempstore_data);
     $response_data = [

@@ -16,23 +16,11 @@
 }
 
 .tabs__item {
+  font-size: var(--font-size-x-small);
   float: left;
   margin-bottom: -1px;
   margin-top: 0;
   padding-left: 0;
-}
-.tabs__item {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .tabs__item {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .tabs__item {
-    font-size: 1rem;
-  }
 }
 .tabs__item a {
   background-color: #eef1f4;

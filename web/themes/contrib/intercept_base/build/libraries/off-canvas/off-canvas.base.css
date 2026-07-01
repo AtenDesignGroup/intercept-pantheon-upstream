@@ -4,88 +4,24 @@
  */
 /* Set some global attributes. */
 [id=drupal-off-canvas] {
+  font-size: var(--font-size-small);
   line-height: 1.2;
 }
-[id=drupal-off-canvas] {
-  font-size: 0.7291666667rem;
-}
-@media (min-width: 48rem) {
-  [id=drupal-off-canvas] {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) {
-  [id=drupal-off-canvas] {
-    font-size: 1.125rem;
-  }
-}
 [id=drupal-off-canvas] h1:not([class]) {
-  font-size: 1.4166666667rem;
-}
-@media (min-width: 48rem) {
-  [id=drupal-off-canvas] h1:not([class]) {
-    font-size: 1.875rem;
-  }
-}
-@media (min-width: 62rem) {
-  [id=drupal-off-canvas] h1:not([class]) {
-    font-size: 2.25rem;
-  }
+  font-size: var(--font-size-h2);
 }
 [id=drupal-off-canvas] h2:not([class]) {
-  font-size: 1.1875rem;
-}
-@media (min-width: 48rem) {
-  [id=drupal-off-canvas] h2:not([class]) {
-    font-size: 1.5625rem;
-  }
-}
-@media (min-width: 62rem) {
-  [id=drupal-off-canvas] h2:not([class]) {
-    font-size: 1.875rem;
-  }
+  font-size: var(--font-size-h3);
 }
 [id=drupal-off-canvas] h3:not([class]) {
-  font-size: 0.9583333333rem;
-}
-@media (min-width: 48rem) {
-  [id=drupal-off-canvas] h3:not([class]) {
-    font-size: 1.25rem;
-  }
-}
-@media (min-width: 62rem) {
-  [id=drupal-off-canvas] h3:not([class]) {
-    font-size: 1.5rem;
-  }
-}
-[id=drupal-off-canvas] h3:not([class]) {
+  font-size: var(--font-size-h4);
   line-height: 1.2;
 }
 [id=drupal-off-canvas] h4:not([class]) {
-  font-size: 0.8819444444rem;
-}
-@media (min-width: 48rem) {
-  [id=drupal-off-canvas] h4:not([class]) {
-    font-size: 1.1458333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  [id=drupal-off-canvas] h4:not([class]) {
-    font-size: 1.375rem;
-  }
+  font-size: var(--font-size-h5);
 }
 [id=drupal-off-canvas] h5:not([class]) {
-  font-size: 0.8055555556rem;
-}
-@media (min-width: 48rem) {
-  [id=drupal-off-canvas] h5:not([class]) {
-    font-size: 1.0416666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  [id=drupal-off-canvas] h5:not([class]) {
-    font-size: 1.25rem;
-  }
+  font-size: var(--font-size-body);
 }
 [id=drupal-off-canvas] .field--label-inline {
   display: flex;

@@ -216,7 +216,7 @@
 }
 
 %filter__label {
-  @include fs(x-small);
+  font-size: var(--font-size-x-small);
   margin: 0;
 }
 
@@ -225,8 +225,8 @@
 }
 
 .filters__heading {
-  @include fs(x-small);
-  @include spacing(margin-bottom, narrow);
+  font-size: var(--font-size-x-small);
+  margin-bottom: var(--spacing-narrow);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -271,8 +271,8 @@
 
 .select-filter__menu {
   .select-filter__menu-item {
-    @include fs(tiny);
-    @include spacing('padding-left', narrow);
+    font-size: var(--font-size-tiny);
+    padding-left: var(--spacing-narrow);
 
     svg {
       height: rem(14px);
@@ -371,10 +371,10 @@
     -moz-appearance: textfield;
   }
 
-  @include fs(small);
+  font-size: var(--font-size-small);
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, compact);
+    margin-bottom: var(--spacing-compact);
   }
 }
 
@@ -383,7 +383,7 @@
   flex-wrap: wrap;
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, tight);
+    margin-bottom: var(--spacing-tight);
   }
 
   > .input--date {
@@ -401,10 +401,10 @@
 }
 
 .input-group--subgroup {
-  @include spacing('padding-left', tight);
+  padding-left: var(--spacing-tight);
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, tight);
+    margin-bottom: var(--spacing-tight);
   }
 }
 
@@ -436,26 +436,26 @@
 
 .input-group--find-room {
   > .input--select {
-    @include spacing(margin-bottom, narrow);
+    margin-bottom: var(--spacing-narrow);
   }
 }
 
 .input--textarea {
   .input__label {
-    @include fs(body);
+    font-size: var(--font-size-body);
     font-weight: $fw-bold;
   }
 
   .input__description {
-    @include fs(tiny);
+    font-size: var(--font-size-tiny);
 
     &:not(:last-child) {
-      @include spacing(margin-bottom, tight);
+      margin-bottom: var(--spacing-tight);
     }
   }
 
   textarea {
-    @include fs(x-small);
+    font-size: var(--font-size-x-small);
   }
 }
 
@@ -490,7 +490,7 @@ table[id='edit-field-attendees'] {
       padding-left: 0;
 
       > .input-field {
-        @include fs(x-small);
+        font-size: var(--font-size-x-small);
         font-weight: $fw-bold;
         margin-bottom: 0 !important;
         margin-top: 0 !important;

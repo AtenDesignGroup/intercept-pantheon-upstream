@@ -17,8 +17,8 @@
   @include list--no-bullets;
 
   > .list__item {
-    @include fs(x-small);
-    @include lh(-1);
+    font-size: var(--font-size-x-small);
+    line-height: $lh--1;
 
     &:not(:last-child) {
       margin-bottom: $sp-tight;
@@ -26,7 +26,7 @@
   }
 
   > .list__item > a:not([class]) {
-    @include lh(0);
+    line-height: $lh-0;
     border: 0;
     display: block;
     font-family: $ff-sans;
@@ -142,7 +142,7 @@
   }
 
   > .list__item > a:not([class]) {
-    @include lh(0);
+    line-height: $lh-0;
     // @include link--black;
     border: 0;
     display: block;

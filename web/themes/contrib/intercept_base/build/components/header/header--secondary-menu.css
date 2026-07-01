@@ -61,23 +61,11 @@
 }
 
 .menu--account {
+  font-size: var(--font-size-secondary-menu);
   margin: 0 0 1rem;
   padding: 0;
   display: flex;
   flex-direction: column;
-}
-.menu--account {
-  font-size: 0.8819444444rem;
-}
-@media (min-width: 48rem) {
-  .menu--account {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .menu--account {
-    font-size: 1.125rem;
-  }
 }
 .menu--account > li {
   display: block;
@@ -222,26 +210,11 @@ label[for=nav-trigger] svg {
 
 label[for=account-trigger],
 .account-trigger--logged-out {
+  font-size: var(--font-size-small);
   cursor: pointer;
   font-weight: bold;
   margin: 0;
   transition: all 0.2s ease-in-out;
-}
-label[for=account-trigger],
-.account-trigger--logged-out {
-  font-size: 0.7291666667rem;
-}
-@media (min-width: 48rem) {
-  label[for=account-trigger],
-  .account-trigger--logged-out {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) {
-  label[for=account-trigger],
-  .account-trigger--logged-out {
-    font-size: 1.125rem;
-  }
 }
 @media (min-width: 31.25rem) {
   label[for=account-trigger],
@@ -385,20 +358,8 @@ label[for=account-trigger].account-trigger--logged-out span {
 }
 @media (min-width: 62rem) {
   .header #user-login-form label {
+    font-size: var(--font-size-small);
     font-weight: normal;
-  }
-  .header #user-login-form label {
-    font-size: 0.7291666667rem;
-  }
-}
-@media (min-width: 62rem) and (min-width: 48rem) {
-  .header #user-login-form label {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) and (min-width: 62rem) {
-  .header #user-login-form label {
-    font-size: 1.125rem;
   }
 }
 .header #user-login-form input {

@@ -1,15 +1,5 @@
 .pager {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .pager {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .pager {
-    font-size: 1rem;
-  }
+  font-size: var(--font-size-x-small);
 }
 
 .pager__items {

@@ -4,22 +4,22 @@
   flex: 1;
 
   &:not(:last-child) {
-    @include spacing(margin-bottom, normal);
+    margin-bottom: var(--spacing-normal);
   }
 
   &__wrapper {
-    @include spacing(padding, normal);
+    padding: var(--spacing-normal);
   }
 
   &__footer {
-    @include spacing(padding-left, normal);
-    @include spacing(padding-right, normal);
-    @include spacing(padding-top, compact);
-    @include spacing(padding-bottom, compact);
+    padding-left: var(--spacing-normal);
+    padding-right: var(--spacing-normal);
+    padding-top: var(--spacing-compact);
+    padding-bottom: var(--spacing-compact);
   }
 
   &__value {
-    @include fs(h3);
+    font-size: var(--font-size-h3);
     margin-top: 0;
 
     @include bp(none medium) {
@@ -28,7 +28,7 @@
   }
 
   & &__button {
-    @include spacing(margin-top, compact);
+    margin-top: var(--spacing-compact);
   }
 
   & &__icon-button {

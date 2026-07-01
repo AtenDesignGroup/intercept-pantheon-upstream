@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.26] - 2026-07-01
+
+* Fixed an accessibility issue related to redundant links on teasers
+* Simplified some code related to SCSS styles
+* Fixed additional PHP 8.4 deprecation warnings
+
 ## [2.0.25] - 2026-05-27
 
 * Fixed some deprecation issues related to use to PHP 8.4

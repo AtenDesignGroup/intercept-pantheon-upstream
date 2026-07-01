@@ -33,30 +33,10 @@
   text-align: center;
 }
 .action-button__button.action-button__button:not(:first-child) {
-  margin-top: 0.1875rem;
-}
-@media (min-width: 48rem) {
-  .action-button__button.action-button__button:not(:first-child) {
-    margin-top: 0.12375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__button.action-button__button:not(:first-child) {
-    margin-top: 0.1875rem;
-  }
+  margin-top: var(--spacing-tiny);
 }
 .action-button__button.action-button__button:not(:last-child) {
-  margin-bottom: 0.1875rem;
-}
-@media (min-width: 48rem) {
-  .action-button__button.action-button__button:not(:last-child) {
-    margin-bottom: 0.12375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__button.action-button__button:not(:last-child) {
-    margin-bottom: 0.1875rem;
-  }
+  margin-bottom: var(--spacing-tiny);
 }
 [role=dialog] .action-button__button.action-button__button {
   width: auto;
@@ -66,10 +46,10 @@
   background-color: rgba(2, 136, 209, 0.16);
 }
 .action-button__button--outlined {
-  margin-bottom: 0.1875rem;
-  margin-top: 0.1875rem;
-  padding-bottom: 0.25rem;
-  padding-top: 0.25rem;
+  margin-bottom: var(--spacing-tiny);
+  margin-top: var(--spacing-tiny);
+  padding-bottom: var(--spacing-narrow);
+  padding-top: var(--spacing-narrow);
   background-color: #fff;
   border: 1px solid #d3d8df;
   border-radius: 0;
@@ -77,95 +57,21 @@
   justify-content: center;
   text-align: center;
 }
-@media (min-width: 48rem) {
-  .action-button__button--outlined {
-    margin-bottom: 0.12375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__button--outlined {
-    margin-bottom: 0.1875rem;
-  }
-}
-@media (min-width: 48rem) {
-  .action-button__button--outlined {
-    margin-top: 0.12375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__button--outlined {
-    margin-top: 0.1875rem;
-  }
-}
-@media (min-width: 48rem) {
-  .action-button__button--outlined {
-    padding-bottom: 0.33rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__button--outlined {
-    padding-bottom: 0.5rem;
-  }
-}
-@media (min-width: 48rem) {
-  .action-button__button--outlined {
-    padding-top: 0.33rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__button--outlined {
-    padding-top: 0.5rem;
-  }
-}
 .action-button__button--small {
   font-size: 0.8125rem;
 }
 
 .action-button__message {
+  font-size: var(--font-size-x-small);
+  line-height: 1.2;
   font-style: italic;
   text-align: center;
 }
-.action-button__message {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .action-button__message {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__message {
-    font-size: 1rem;
-  }
-}
-.action-button__message {
-  line-height: 1.2;
-}
 .action-button__message:not(:first-child) {
-  margin-top: 0.25rem;
-}
-@media (min-width: 48rem) {
-  .action-button__message:not(:first-child) {
-    margin-top: 0.33rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__message:not(:first-child) {
-    margin-top: 0.5rem;
-  }
+  margin-top: var(--spacing-narrow);
 }
 .action-button__message:not(:last-child) {
-  margin-bottom: 0.25rem;
-}
-@media (min-width: 48rem) {
-  .action-button__message:not(:last-child) {
-    margin-bottom: 0.33rem;
-  }
-}
-@media (min-width: 62rem) {
-  .action-button__message:not(:last-child) {
-    margin-bottom: 0.5rem;
-  }
+  margin-bottom: var(--spacing-narrow);
 }
 .summary__content .action-button__message {
   text-align: left;

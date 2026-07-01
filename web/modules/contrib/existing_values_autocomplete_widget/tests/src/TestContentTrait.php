@@ -12,12 +12,9 @@ use Drupal\node\NodeInterface;
 trait TestContentTrait {
 
   /**
-   * Creates a content type, field and autocomplete test data.
-   *
-   * @return \Drupal\node\NodeInterface
-   *   A generated article content to check against with the controller.
+   * Creates an article content type and an autocomplete text field on the type.
    */
-  protected function createTestContent(): NodeInterface {
+  protected function createArticleTypeWithField(): void {
     $this->createContentType(['type' => 'article'])->save();
     FieldStorageConfig::create([
       'field_name' => 'field_text',
@@ -36,20 +33,25 @@ trait TestContentTrait {
       ->setComponent('field_text', [
         'type' => 'existing_autocomplete_field_widget',
       ])->save();
-    $testArticle = $this->createNode([
+  }
+
+  /**
+   * Creates an article node with the given value for the autocomplete field.
+   *
+   * @param string $textFieldValue
+   *   The autocomplete field value.
+   *
+   * @return \Drupal\node\NodeInterface
+   *   The created article node.
+   */
+  protected function createArticle(string $textFieldValue): NodeInterface {
+    $article = $this->createNode([
       'type' => 'article',
-      'id' => 1,
       'title' => 'Test article',
-      'field_text' => 'abc',
+      'field_text' => $textFieldValue,
     ]);
-    $testArticle->save();
-    $this->createNode([
-      'type' => 'article',
-      'id' => 2,
-      'title' => 'Another article',
-      'field_text' => 'another value',
-    ])->save();
-    return $testArticle;
+    $article->save();
+    return $article;
   }
 
 }

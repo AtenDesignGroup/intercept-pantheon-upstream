@@ -273,7 +273,7 @@ class EventManager implements EventManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function updateAttendance(?UserInterface $user = NULL, Request $request) {
+  public function updateAttendance(Request $request, ?UserInterface $user = NULL) {
     $response = NULL;
     $event_id = $this->getRequestData($request, 'event');
     if ($event = $this->load($event_id)) {
@@ -296,7 +296,7 @@ class EventManager implements EventManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function createAttendee(?UserInterface $user = NULL, Request $request) {
+  public function createAttendee(Request $request) {
     $response = NULL;
     if ($barcode = $this->getRequestData($request, 'barcode')) {
       $user = \Drupal::service('intercept_ils.association_manager')->loadByBarcode($barcode);

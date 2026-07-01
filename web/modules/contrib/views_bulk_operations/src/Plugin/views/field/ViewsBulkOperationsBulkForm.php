@@ -760,6 +760,7 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
           '#value' => $label,
           '#attributes' => [
             'data-vbo' => 'vbo-action',
+            'data-action-id' => $this->options['selected_actions'][$id]['action_id'],
           ],
         ];
       }
@@ -836,7 +837,7 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
           '@count' => $this->tempStoreData['total_results'],
         ]),
         '#attributes' => ['class' => ['vbo-select-all']],
-        '#default_value' => $this->tempStoreData['exclude_mode'] ?? FALSE,
+        '#default_value' => $this->tempStoreData['exclude_mode'],
       ];
     }
 
@@ -922,12 +923,14 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
       foreach ($input[$this->options['id']] as $bulk_form_key) {
         $selected_keys[$bulk_form_key] = $bulk_form_key;
       }
-      $select_all = (bool) $form_state->getValue('select_all');
+
+      // Update exclude mode setting.
+      $this->tempStoreData['exclude_mode'] = (bool) $form_state->getValue('select_all');
 
       foreach ($this->tempStoreData['bulk_form_keys'] as $bulk_form_key) {
         if (
-          (\array_key_exists($bulk_form_key, $selected_keys) && !$select_all) ||
-          (!\array_key_exists($bulk_form_key, $selected_keys) && $select_all)
+          (\array_key_exists($bulk_form_key, $selected_keys) && !$this->tempStoreData['exclude_mode']) ||
+          (!\array_key_exists($bulk_form_key, $selected_keys) && $this->tempStoreData['exclude_mode'])
         ) {
           $this->tempStoreData['list'][$bulk_form_key] = $this->getListItem($bulk_form_key);
         }
@@ -935,9 +938,6 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
           unset($this->tempStoreData['list'][$bulk_form_key]);
         }
       }
-
-      // Update exclude mode setting.
-      $this->tempStoreData['exclude_mode'] = $select_all;
 
       // Redirect to the next step.
       if ($this->options['form_step'] && $this->isActionConfigurable($action)) {

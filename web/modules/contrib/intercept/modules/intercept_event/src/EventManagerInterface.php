@@ -66,22 +66,20 @@ interface EventManagerInterface {
   /**
    * Updates the attendance for an Event.
    *
-   * @param \Drupal\user\UserInterface $user
-   *   Deprecated.  The user.
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.
+   * @param \Drupal\user\UserInterface $user
+   *   Deprecated.  The user.
    */
-  public function updateAttendance(?UserInterface $user = NULL, Request $request);
+  public function updateAttendance(Request $request, ?UserInterface $user = NULL);
 
   /**
    * Creates an attendee for an event.
    *
-   * @param \Drupal\user\UserInterface $user
-   *   The user to create as an attendee.
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.
    */
-  public function createAttendee(?UserInterface $user = NULL, Request $request);
+  public function createAttendee(Request $request);
 
   /**
    * Determines whether the event's start time is in the past.

@@ -7,7 +7,7 @@
 
   &__room {
     &:not(:last-child) {
-      @include spacing(margin-bottom, compact);
+      margin-bottom: var(--spacing-compact);
     }
   }
 }

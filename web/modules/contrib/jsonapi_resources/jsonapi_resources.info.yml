@@ -1,11 +1,11 @@
 name: 'JSON:API Resources'
-description: "This module let's you define custom resources at routes of your choice that use existing resource types."
+description: "This module lets you define custom resources at routes of your choice that use existing resource types."
 core_version_requirement: ^9.1 || ^10 || ^11
 type: module
 dependencies:
   - drupal:jsonapi
 
-# Information added by Drupal.org packaging script on 2026-01-06
-version: '8.x-1.4'
+# Information added by Drupal.org packaging script on 2026-06-18
+version: '8.x-1.7'
 project: 'jsonapi_resources'
-datestamp: 1767708682
+datestamp: 1781794626

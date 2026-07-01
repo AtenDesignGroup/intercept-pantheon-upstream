@@ -49,6 +49,9 @@ final class JsonapiResourceClassResolver extends ClassResolver {
     }
     if ($resource instanceof EntityQueryResourceBase) {
       $resource->setCacheabilityCapturingExecutor($this->container->get('jsonapi_resources.entity_query_executor'));
+      $resource->setFieldResolver($this->container->get('jsonapi.field_resolver'));
+      $resource->setFieldManager($this->container->get('entity_field.manager'));
+      $resource->setModuleHandler($this->container->get('module_handler'));
     }
     if ($resource instanceof ResourceObjectToEntityMapperAwareInterface) {
       $resource->setResourceObjectToEntityMapper($this->container->get('jsonapi_resources.resource_object_to_entity_mapper'));

@@ -44,6 +44,10 @@ variables:
   modules/*/tests/modules/*/style-guide/*'
   _PHPCS_EXTRA: '--ignore=*/modules/webform_bootstap/*'
 
+composer (next minor):
+  variables:
+    _COMPOSER_PATCHES_FILE: .gitlab-ci/next_minor_patches.json
+
 phpcs:
   allow_failure: false
 

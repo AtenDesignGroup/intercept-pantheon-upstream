@@ -1,0 +1,14 @@
+services:
+  # A second decorator of the resource object normalizer, mimicking commerce_api.
+  # It adds top-level resource meta and, like commerce_api, extends core's
+  # normalizer and overrides normalize() without delegating to an inner service.
+  # jsonapi_resources' own decorator must not shadow it.
+  # @see https://www.drupal.org/i/3599417
+  jsonapi_resources_meta_test.normalizer.resource_object:
+    class: Drupal\jsonapi\Normalizer\ImpostorFrom\jsonapi_resources_meta_test\MetaShimResourceObjectNormalizer
+    decorates: serializer.normalizer.resource_object.jsonapi
+    arguments:
+      - '@jsonapi.normalization_cacher'
+      - '@event_dispatcher'
+      - '@entity_field.manager'
+      - '@entity_type.manager'

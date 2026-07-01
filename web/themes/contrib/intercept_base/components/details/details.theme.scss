@@ -19,7 +19,7 @@
   }
 
   .detail {
-    @include lh(1);
+    line-height: $lh-1;
     padding-bottom: math.percentage(math.div(1, 16));
 
     @include bp(smallish) {
@@ -38,13 +38,13 @@
       }
     }
     &__heading {
-      @include fs(medium);
-      @include lh(0);
+      font-size: var(--font-size-medium);
+      line-height: $lh-0;
       color: $blue-60;
     }
 
     &__content {
-      @include fs(label);
+      font-size: var(--font-size-label);
       color: $gray-30;
 
       @include bp(large) {
@@ -54,7 +54,7 @@
       }
 
       &__item {
-        @include lh(0);
+        line-height: $lh-0;
         padding-bottom: rem(20px);
 
         &:last-of-type {
@@ -67,7 +67,7 @@
       }
 
       span {
-        @include lh(1);
+        line-height: $lh-1;
         vertical-align: text-top;
       }
 

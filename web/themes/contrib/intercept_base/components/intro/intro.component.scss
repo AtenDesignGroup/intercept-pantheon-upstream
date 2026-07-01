@@ -2,6 +2,8 @@
 
 .intro {
   &:not(:last-child) {
-    @include spacing(margin-bottom, tight);
+    @include bp(large) {
+      margin-bottom: rem(30px);
+    }
   }
 }

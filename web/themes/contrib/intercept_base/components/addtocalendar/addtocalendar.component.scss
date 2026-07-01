@@ -18,8 +18,8 @@
 
 .addtocalendar .atcb-link,
 .react-add-to-calendar__button {
-  @include fs(micro);
-  @include lh(-1);
+  font-size: var(--font-size-micro);
+  line-height: $lh--1;
   align-items: center;
   color: $gray-30 !important;
   display: flex;
@@ -87,8 +87,8 @@
   }
 
   > ul:not([class]) > li > a {
-    @include fs(micro);
-    @include lh(-1);
+    font-size: var(--font-size-micro);
+    line-height: $lh--1;
     display: block;
     padding: .75em 1em;
     text-decoration: none;
@@ -112,7 +112,7 @@
   .react-add-to-calendar__dropdown {
 
     > ul:not([class]) > li > a {
-      @include fs(nano);
+      font-size: var(--font-size-nano);
     }
   }
 }

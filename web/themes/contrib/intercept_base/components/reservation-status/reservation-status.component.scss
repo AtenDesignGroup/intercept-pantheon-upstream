@@ -1,8 +1,8 @@
 @use 'partials' as *;
 
 .reservation-status {
-  @include fs(body);
-  @include lh(0);
+  font-size: var(--font-size-body);
+  line-height: $lh-0;
   color: $clr-text;
   display: inline-block;
   font-weight: $fw-bold;

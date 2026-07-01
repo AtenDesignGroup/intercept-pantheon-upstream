@@ -1457,7 +1457,7 @@ function intercept_event_sort_locations() {
   $nids = $query->execute();
   // If there are no nodes, move on.
   if (!$nids) {
-    return FALSE;
+    return [];
   }
 
   // Start building out the options for our select list.

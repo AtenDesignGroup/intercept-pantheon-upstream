@@ -1,45 +1,13 @@
 .metadata:not(:last-child) {
-  margin-bottom: 1.5625rem;
-}
-@media (min-width: 48rem) {
-  .metadata:not(:last-child) {
-    margin-bottom: 2.0625rem;
-  }
-}
-@media (min-width: 62rem) {
-  .metadata:not(:last-child) {
-    margin-bottom: 3.125rem;
-  }
+  margin-bottom: var(--spacing-normal);
 }
 
 .metadata--small:not(:last-child) {
-  margin-bottom: 0.375rem;
-}
-@media (min-width: 48rem) {
-  .metadata--small:not(:last-child) {
-    margin-bottom: 0.495rem;
-  }
-}
-@media (min-width: 62rem) {
-  .metadata--small:not(:last-child) {
-    margin-bottom: 0.75rem;
-  }
+  margin-bottom: var(--spacing-compact);
 }
 .metadata--small .metadata__title,
 .metadata--small .metadata__content {
-  font-size: 0.6527777778rem;
-}
-@media (min-width: 48rem) {
-  .metadata--small .metadata__title,
-  .metadata--small .metadata__content {
-    font-size: 0.8333333333rem;
-  }
-}
-@media (min-width: 62rem) {
-  .metadata--small .metadata__title,
-  .metadata--small .metadata__content {
-    font-size: 1rem;
-  }
+  font-size: var(--font-size-x-small);
 }
 
 .metadata--canceled {
@@ -47,24 +15,10 @@
 }
 
 .metadata__title {
+  font-size: var(--font-size-body);
+  line-height: 1.2;
   color: #4c4d4f;
   font-weight: 900;
-}
-.metadata__title {
-  font-size: 0.8055555556rem;
-}
-@media (min-width: 48rem) {
-  .metadata__title {
-    font-size: 1.0416666667rem;
-  }
-}
-@media (min-width: 62rem) {
-  .metadata__title {
-    font-size: 1.25rem;
-  }
-}
-.metadata__title {
-  line-height: 1.2;
 }
 .metadata__title:not(:last-child) {
   margin-bottom: 0.75em;
@@ -75,17 +29,7 @@
 }
 
 .metadata__content {
-  font-size: 0.7291666667rem;
-}
-@media (min-width: 48rem) {
-  .metadata__content {
-    font-size: 0.9375rem;
-  }
-}
-@media (min-width: 62rem) {
-  .metadata__content {
-    font-size: 1.125rem;
-  }
+  font-size: var(--font-size-small);
 }
 
 .metadata__item--block:not(:last-child) {
@@ -106,8 +50,6 @@
   content: ":";
 }
 .metadata--inline .metadata__content {
-  flex-grow: 1;
-}
-.metadata--inline .metadata__content {
   line-height: 1.2;
+  flex-grow: 1;
 }

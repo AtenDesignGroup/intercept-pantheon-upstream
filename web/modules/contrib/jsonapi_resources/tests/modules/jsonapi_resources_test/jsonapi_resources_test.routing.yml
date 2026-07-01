@@ -22,6 +22,22 @@ jsonapi_resources_test.author_content:
       user:
         type: entity:user
 
+# Same as author_content above, but skips per-entity access checks. The
+# entity query itself constrains the result set to entities the route's
+# bound user owns; the per-row access check would be redundant.
+jsonapi_resources_test.author_content_unchecked:
+  path: '/%jsonapi%/user/{user}/content-unchecked'
+  defaults:
+    _jsonapi_resource: Drupal\jsonapi_resources_test\Resource\UncheckedAuthorArticles
+    _jsonapi_resource_types: ['node--article']
+  requirements:
+    _permission: 'access content'
+    _entity_access: 'user.view'
+  options:
+    parameters:
+      user:
+        type: entity:user
+
 # Defines a route where a reminder can be created for a particular user.
 jsonapi_resources_test.add_reminder:
   path: '/%jsonapi%/user/{user}/reminders'
@@ -65,6 +81,20 @@ jsonapi_resources_test.current_user:
   requirements:
     _user_is_logged_in: 'TRUE'
 
+jsonapi.current_user--current_user.roles.related:
+  path: '/%jsonapi%/me/roles'
+  defaults:
+    _controller: 'Drupal\jsonapi_resources_test\Resource\CurrentUserInfo::getRelatedRoles'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jsonapi.current_user--current_user.roles.relationship.get:
+  path: '/%jsonapi%/me/relationships/roles'
+  defaults:
+    _controller: 'Drupal\jsonapi_resources_test\Resource\CurrentUserInfo::getRolesRelationship'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
 # Defines a route where a comment can be created on an article.
 jsonapi_resources_test.add_comment:
   path: '/%jsonapi%/comment/add'
@@ -74,3 +104,39 @@ jsonapi_resources_test.add_comment:
     _jsonapi_resource_types: ['comment--comment']
   requirements:
     _entity_create_access: 'comment'
+
+# Defines a route returning articles ordered by comment count.
+# Exercises a raw SelectInterface query with a JOIN, the use case for
+# #3132728.
+jsonapi_resources_test.commented_articles:
+  path: '/%jsonapi%/commented-articles'
+  defaults:
+    _jsonapi_resource: Drupal\jsonapi_resources_test\Resource\CommentedArticles
+    _jsonapi_resource_types: ['node--article']
+  requirements:
+    _permission: 'access content'
+
+# Defines a route for getting information about all theme color schemes.
+jsonapi_resources_test.color_scheme.collection:
+  path: '/%jsonapi%/color_schemes'
+  defaults:
+    _jsonapi_resource: \Drupal\jsonapi_resources_test\Resource\ColorSchemesList
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Defines a route for getting information about a theme color scheme.
+jsonapi_resources_test.color_scheme.individual:
+  path: '/%jsonapi%/color_schemes/{scheme_uuid}'
+  defaults:
+    _jsonapi_resource: \Drupal\jsonapi_resources_test\Resource\ColorScheme
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Defines a route exposing simple site configuration. Demonstrates a resource
+# backed by a configuration object rather than an entity.
+jsonapi_resources_test.site_info:
+  path: '/%jsonapi%/site-info'
+  defaults:
+    _jsonapi_resource: Drupal\jsonapi_resources_test\Resource\SiteInfo
+  requirements:
+    _access: 'TRUE'

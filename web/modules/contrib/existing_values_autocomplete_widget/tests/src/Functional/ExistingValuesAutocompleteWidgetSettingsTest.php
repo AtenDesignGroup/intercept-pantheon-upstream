@@ -41,7 +41,9 @@ class ExistingValuesAutocompleteWidgetSettingsTest extends BrowserTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->createTestContent();
+    $this->createArticleTypeWithField();
+    $this->createArticle('abc');
+    $this->createArticle('another value');
 
     $this->user = $this->drupalCreateUser();
     $this->drupalLogin($this->user);

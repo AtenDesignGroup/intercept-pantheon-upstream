@@ -3,10 +3,10 @@
 @use 'partials' as *;
 
 .evaluation-summary {
-  @include spacing('margin-top', tight);
+  margin-top: var(--spacing-tight);
 
   &:not(:last-child) {
-    @include spacing('margin-bottom', tight);
+    margin-bottom: var(--spacing-tight);
   }
 
   @include bp(default) {
@@ -27,7 +27,7 @@
 }
 
 .evaluation-summary__overview-text {
-  @include fs(h2);
+  font-size: var(--font-size-h2);
 }
 
 .evaluation-summary__criteria:not(:empty) {

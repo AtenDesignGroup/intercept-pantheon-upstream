@@ -3,6 +3,7 @@
 namespace Drupal\intercept_event\Form;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
@@ -326,9 +327,8 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
     else {
       $error_operation = reset($operations);
       \Drupal::service('messenger')
-        ->addMessage(new TranslatableMarkup('An error occurred while processing @operation with arguments : @args'), [
+        ->addMessage(new FormattableMarkup('An error occurred while processing operation : @operation'), [
           '@operation' => $error_operation[0],
-          '@args' => print_r($error_operation[0]),
         ]);
     }
   }

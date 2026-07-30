@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -31,7 +31,7 @@ const CLOSE_ROOM_RESERVATION = 'intercept:closeRoomReservation';
 const REFRESH_ROOM_RESERVATION = 'intercept:updateRoomReservation';
 const saveRoomReservationSuccess = 'intercept:saveRoomReservationSuccess';
 
-const POLL_INTERVAL = 5000;
+const POLL_INTERVAL = 10000;
 
 const getResourceGroupFromLocation = (location, getHours) => ({
   id: location.data.id,
@@ -250,6 +250,11 @@ const RoomReservationScheduler = ({
   const { rooms } = useContext(RoomsContext);
   const { setGroups } = useContext(GroupsContext);
 
+  // Holds the syncTimestamp function returned by useAvailabilityRefresh.
+  // Using a ref avoids dependency-ordering issues since the hook is called
+  // after the effects that invoke doFetchBlockedTime.
+  const syncTimestampRef = useRef(() => {});
+
   const doFetchBlockedTime = useCallback(() => {
     const roomIds = rooms.map(room => room.id);
     const tz = utils.getUserTimezone();
@@ -292,6 +297,9 @@ const RoomReservationScheduler = ({
     // Avoid overloading the system by only fetching if we are filtering by rooms.
     if (rooms.length > 0) {
       doFetchBlockedTime();
+      // Sync the refreshed-on timestamp so the poller does not treat this
+      // freshly fetched data as stale on its next tick.
+      syncTimestampRef.current();
     }
   }, [date, view, rooms]);
 
@@ -437,6 +445,7 @@ const RoomReservationScheduler = ({
     saveRoomReservationSuccess,
     () => {
       doFetchBlockedTime();
+      syncTimestampRef.current();
       // If we were creating a new reservation deselect the temp event.
       if (selectedEvent && typeof selectedEvent.id !== 'string') {
         setSelectedEvent(null);
@@ -467,12 +476,15 @@ const RoomReservationScheduler = ({
   // This keeps the calendar up to date with
   // changes made by other users.
   //
-  useAvailabilityRefresh(() => {
+  const { syncTimestamp } = useAvailabilityRefresh(() => {
     // Avoid overloading the system by only fetching if we are filtering by rooms.
     if (rooms.length > 0) {
       doFetchBlockedTime();
     }
   }, POLL_INTERVAL);
+  // Keep the ref current so effects defined above can call syncTimestamp
+  // without creating a dependency-ordering problem.
+  syncTimestampRef.current = syncTimestamp;
 
   return (<div>
     <RoomLimitWarning userStatus={userStatus} />

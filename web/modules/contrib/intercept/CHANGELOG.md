@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.27] - 2026-07-30
+
+* Improved performance of Calendar API
+
 ## [2.0.26] - 2026-07-01
 
 * Fixed an accessibility issue related to redundant links on teasers

@@ -85,7 +85,7 @@ class RecurringEventManager {
    * Check bundle access and permissions.
    */
   public function isRecurrenceBaseEvent(NodeInterface $node) {
-    return AccessResult::allowedIf($this->getBaseEventRecurrence($node));
+    return AccessResult::allowedIf((bool) $this->getBaseEventRecurrence($node));
   }
 
   /**

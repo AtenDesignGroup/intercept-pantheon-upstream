@@ -4,7 +4,7 @@ description: View data about your events
 package: 'Intercept'
 core_version_requirement: ^10 || ^11
 dependencies:
-  - intercept
-  - intercept_event
-  - charts
-  - charts_chartjs
+  - intercept:intercept
+  - intercept:intercept_event
+  - charts:charts
+  - charts:charts_chartjs

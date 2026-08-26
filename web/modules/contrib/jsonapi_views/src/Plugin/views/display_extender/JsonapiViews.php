@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jsonapi_views\Plugin\views\display_extender;
 
 use Drupal\Core\Form\FormStateInterface;
@@ -22,7 +24,7 @@ class JsonapiViews extends DisplayExtenderPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function defineOptions() {
+  protected function defineOptions() {
     return [
       'enabled' => ['default' => TRUE],
     ] + parent::defineOptions();
@@ -31,7 +33,7 @@ class JsonapiViews extends DisplayExtenderPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+  public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
     if ($form_state->get('section') == 'jsonapi_views') {
       $form['enabled'] = [
         '#type' => 'checkbox',
@@ -46,7 +48,7 @@ class JsonapiViews extends DisplayExtenderPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function submitOptionsForm(&$form, FormStateInterface $form_state) {
+  public function submitOptionsForm(&$form, FormStateInterface $form_state): void {
     if ($form_state->get('section') == 'jsonapi_views') {
       $this->options['enabled'] = (bool) $form_state->getValue('enabled');
     }
@@ -55,7 +57,7 @@ class JsonapiViews extends DisplayExtenderPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function optionsSummary(&$categories, &$options) {
+  public function optionsSummary(&$categories, &$options): void {
     $categories['jsonapi_views'] = [
       'title' => $this->t('JSON:API'),
       'column' => 'second',

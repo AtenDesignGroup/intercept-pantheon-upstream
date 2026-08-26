@@ -5,15 +5,20 @@
  * Core functions for the JSON:API Views module.
  */
 
+declare(strict_types=1);
+
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\jsonapi_views\Plugin\views\display_extender\JsonapiViews;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_views_preview_info_alter().
  */
-function jsonapi_views_views_preview_info_alter(&$rows, $executable) {
+function jsonapi_views_views_preview_info_alter(array &$rows, ViewExecutable $executable): void {
   // Build JSON:API View path for the current display.
   $jsonapi_base_path = \Drupal::getContainer()->getParameter('jsonapi.base_path');
+  assert(is_string($jsonapi_base_path));
   $path = implode('/', [
     $jsonapi_base_path,
     'views',
@@ -22,8 +27,9 @@ function jsonapi_views_views_preview_info_alter(&$rows, $executable) {
   ]);
 
   // Only show preview if view is allowed to be exposed via JSON:API.
-  $extenders = $executable->getDisplay($executable->current_display)->getExtenders();
-  if (!empty($extenders['jsonapi_views']) && !$extenders['jsonapi_views']->isExposed()) {
+  $extenders = $executable->getDisplay()->getExtenders();
+  $jsonapi_extender = $extenders['jsonapi_views'] ?? NULL;
+  if ($jsonapi_extender instanceof JsonapiViews && !$jsonapi_extender->isExposed()) {
     return;
   }
 
@@ -40,18 +46,22 @@ function jsonapi_views_views_preview_info_alter(&$rows, $executable) {
   // Build Exposed filter queries.
   $display_handler = $executable->getDisplay();
   foreach ($display_handler->view->filter as $filter) {
-    if ($filter->isExposed() && $input[$filter->field]) {
-      $query["views-filter[{$filter->field}]"] = $input[$filter->field];
+    if (!$filter->isExposed()) {
+      continue;
+    }
+    $identifier = $filter->options['expose']['identifier'] ?? $filter->field;
+    if (isset($input[$identifier])) {
+      $query[sprintf('views-filter[%s]', $identifier)] = $input[$identifier];
     }
   }
 
   // Build Contextual filter queries.
   foreach ($executable->args as $index => $arg) {
-    $query["views-argument[{$index}]"] = $arg;
+    $query[sprintf('views-argument[%s]', $index)] = $arg;
   }
 
   // Build JSON:API View URL.
-  $url = Url::fromUri("internal:{$path}");
+  $url = Url::fromUri('internal:' . $path);
   $url->setOptions(['query' => $query]);
 
   // Build render array.

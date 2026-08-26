@@ -63,6 +63,16 @@ services:
     arguments:
       - '@jsonapi_resources.include_resolver.inner'
 
+  paramconverter.jsonapi_resources.entity_auto:
+    class: Drupal\jsonapi_resources\ParamConverter\AutoEntityConverter
+    arguments: ['@entity_type.manager', '@entity.repository']
+    tags:
+      # The tag registers this converter with ParamConverterManager so it can
+      # be resolved by name. It never auto-applies (applies() returns FALSE):
+      # ResourceRoutes assigns it via an explicit `converter:` option, so no
+      # priority is needed.
+      - { name: paramconverter }
+
   jsonapi_resources.normalizer.resource_object:
     class: Drupal\jsonapi\Normalizer\ImpostorFrom\jsonapi_resources\ResourceObjectNormalizerImpostor
     decorates: serializer.normalizer.resource_object.jsonapi
@@ -77,4 +87,4 @@ services:
       - '@event_dispatcher'
       - '@entity_field.manager'
       - '@entity_type.manager'
-      - '@.inner'
+      - '@jsonapi_resources.normalizer.resource_object.inner'

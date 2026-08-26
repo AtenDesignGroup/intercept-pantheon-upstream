@@ -217,14 +217,23 @@ class ChartTableBuilder {
       $labels = !empty($series_data[0]['labels']) ? $series_data[0]['labels'] : $categories;
 
       foreach ($data_points as $index => $point) {
-        $row_label = $labels[$index] ?? $this->t('Slice @n', ['@n' => $index + 1]);
+        $row_label = $labels[$index] ?? NULL;
+        $value = $point;
+        if (is_array($point) && array_is_list($point) && count($point) === 2) {
+          [$slice_label, $slice_value] = $point;
+          if (is_scalar($slice_label) && (is_numeric($slice_value) || $slice_value === NULL)) {
+            $row_label ??= $slice_label;
+            $value = $slice_value;
+          }
+        }
+        $row_label ??= $this->t('Slice @n', ['@n' => $index + 1]);
         $rows[] = [
           [
             'data' => $row_label,
             'header' => TRUE,
             'scope' => 'row',
           ],
-          $this->processDataPoint($point),
+          $this->processDataPoint($value),
         ];
       }
     }

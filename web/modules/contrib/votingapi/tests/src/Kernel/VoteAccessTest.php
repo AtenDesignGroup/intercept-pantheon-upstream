@@ -121,10 +121,10 @@ class VoteAccessTest extends KernelTestBase {
    *
    * @dataProvider viewVoteAccessProvider
    */
-  public function testVoteViewAccess($expected_access, $vote, $user): void {
+  public function testVoteViewAccess($expected_access, $vote_getting_viewed, $user_viewing_vote): void {
     $this->assertSame($expected_access,
-      $this->accessHandler->access($this->{$vote}, 'view', $this->{$user}),
-      "$user user does not have expected vote view access to vote $vote."
+      $this->accessHandler->access($this->{$vote_getting_viewed}, 'view', $this->{$user_viewing_vote}),
+      "$user_viewing_vote user does not have expected vote view access to vote $vote_getting_viewed."
     );
   }
 
@@ -134,32 +134,32 @@ class VoteAccessTest extends KernelTestBase {
   public static function viewVoteAccessProvider(): array {
     return [
       [
-        'can_view' => TRUE,
+        'expected_access' => TRUE,
         'vote_getting_viewed' => 'userVote',
         'user_viewing_vote' => 'viewOwnVoteUser',
       ],
       [
-        'can_view' => FALSE,
+        'expected_access' => FALSE,
         'vote_getting_viewed' => 'adminVote',
         'user_viewing_vote' => 'viewOwnVoteUser',
       ],
       [
-        'can_view' => TRUE,
+        'expected_access' => TRUE,
         'vote_getting_viewed' => 'adminVote',
         'user_viewing_vote' => 'viewAnyVoteUser',
       ],
       [
-        'can_view' => TRUE,
+        'expected_access' => TRUE,
         'vote_getting_viewed' => 'userVote',
         'user_viewing_vote' => 'viewAnyVoteUser',
       ],
       [
-        'can_view' => FALSE,
+        'expected_access' => FALSE,
         'vote_getting_viewed' => 'noUserVote',
         'user_viewing_vote' => 'cannotViewVoteUser',
       ],
       [
-        'can_view' => FALSE,
+        'expected_access' => FALSE,
         'vote_getting_viewed' => 'userVote',
         'user_viewing_vote' => 'cannotViewVoteUser',
       ],

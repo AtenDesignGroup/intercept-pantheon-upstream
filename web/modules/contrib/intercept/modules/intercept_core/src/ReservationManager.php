@@ -1311,14 +1311,17 @@ class ReservationManager implements ReservationManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getReservationsByUser($type, AccountInterface $user) {
-    return $this->reservations($type, function ($query) use ($user) {
+  public function getReservationsByUser($type, AccountInterface $user, ?int $limit = NULL) {
+    return $this->reservations($type, function ($query) use ($user, $limit) {
       $query->accessCheck(TRUE);
       $orConditionGroup = $query->orConditionGroup();
       $orConditionGroup->condition('field_user', $user->id());
       $orConditionGroup->condition('author', $user->id());
       $query->condition($orConditionGroup);
       $query->sort('created', 'DESC');
+      if ($limit !== NULL) {
+        $query->range(0, $limit);
+      }
     });
   }
 

@@ -290,6 +290,17 @@ class RoomReservation extends ReservationBase implements RoomReservationInterfac
           $this->field_agreement->setValue(1);
         }
       }
+      // Treat all three custom agreements checked as equivalent to field_agreement.
+      if ($this->hasField('field_agreement')
+        && $this->hasField('field_agreement_custom1')
+        && $this->hasField('field_agreement_custom2')
+        && $this->hasField('field_agreement_custom3')
+        && $this->field_agreement_custom1->value
+        && $this->field_agreement_custom2->value
+        && $this->field_agreement_custom3->value
+      ) {
+        $this->field_agreement->setValue(1);
+      }
     }
     // Don't set the default status for staff. They may be editing the status.
     elseif ($current_user->hasPermission('bypass room reservation agreement') == FALSE) {

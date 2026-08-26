@@ -116,7 +116,7 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
       '#default_value' => $config['data'],
       '#rows' => 8,
       '#required' => TRUE,
-      '#description' => $this->t('Select a data format (above), then add your data here. CSV: a header row whose first cell is the category label and remaining cells are series names, followed by one row per category. Example:<br><code>Quarter,Product A,Product B<br>Q1,120,90<br>Q2,145,110</code><br><br>JSON: <code>{"categories":["Q1","Q2"],"series":[{"name":"Product A","data":[120,145],"color":"#1f77b4"},{"name":"Product B","data":[90,110],"target_axis":"secondary_yaxis"}]}</code><br><br>For pie and donut charts only the first series is used; categories become the slice labels.'),
+      '#description' => $this->t('Select a data format (above), then add your data here. CSV: a header row whose first cell is the category label and remaining cells are series names, followed by one row per category. Example:<br><code>Quarter,Product A,Product B<br>Q1,120,90<br>Q2,145,110</code><br><br>JSON: <code>{"categories":["Q1","Q2"],"series":[{"name":"Product A","data":[120,145],"color":"#1f77b4"},{"name":"Product B","data":[90,110],"target_axis":"secondary_yaxis","chart_type":"line"}]}</code><br><br>For pie and donut charts only the first series is used; categories become the slice labels.'),
     ];
 
     $form['display'] = [
@@ -346,6 +346,9 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
         if (!empty($s['color'])) {
           $element[$key]['#color'] = $s['color'];
         }
+        if (!empty($s['chart_type'])) {
+          $element[$key]['#chart_type'] = $s['chart_type'];
+        }
         if (isset($element['secondary_yaxis']) && ($s['target_axis'] ?? '') === 'secondary_yaxis') {
           $element[$key]['#target_axis'] = 'secondary_yaxis';
         }
@@ -481,6 +484,7 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
         'data' => $s['data'] ?? [],
         'color' => $s['color'] ?? NULL,
         'target_axis' => $s['target_axis'] ?? NULL,
+        'chart_type' => $s['chart_type'] ?? NULL,
       ];
     }
 

@@ -8,6 +8,7 @@ use Drupal\charts\Element\Chart as ChartElement;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\charts\TypeManager;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -39,6 +40,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     "scatter",
     "solidgauge",
     "spline",
+    "treemap",
   ],
   example_route: "charts_highcharts_api_example.display",
 )]
@@ -77,11 +79,19 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
    *   The form builder.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface|null $module_handler
    *   The module handler service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface|null $configFactory
+   *   The configuration factory service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ElementInfoManagerInterface $element_info, TypeManager $chart_type_manager, FormBuilderInterface $form_builder, ?ModuleHandlerInterface $module_handler = NULL) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ElementInfoManagerInterface $element_info, TypeManager $chart_type_manager, FormBuilderInterface $form_builder, ?ModuleHandlerInterface $module_handler = NULL, protected ?ConfigFactoryInterface $configFactory = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler, $form_builder);
     $this->elementInfo = $element_info;
     $this->chartTypeManager = $chart_type_manager;
+
+    if (empty($configFactory)) {
+      // @phpstan-ignore-next-line
+      $this->configFactory = \Drupal::service('config.factory');
+      @trigger_error('Calling Highcharts::__construct() without the $configFactory argument is deprecated in charts:5.2.3 and is required in charts:6.0.0. See https://www.drupal.org/node/3540000', E_USER_DEPRECATED);
+    }
   }
 
   /**
@@ -96,7 +106,105 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       $container->get('plugin.manager.charts_type'),
       $container->get('form_builder'),
       $container->get('module_handler'),
+      $container->get('config.factory'),
     );
+  }
+
+  /**
+   * Maps a library toggle to the chart types it makes available.
+   *
+   * This is the single source of truth for which optional Highcharts modules
+   * add whole chart *types*, and it is the only thing gated by the library
+   * configuration: when one of these toggles is off, its types drop out of the
+   * chart-type dropdown. Adding a new type-providing module is a one-line
+   * change here.
+   *
+   * Feature libraries that merely enhance an existing type (Color Axis for
+   * pie/donut/treemap, Pareto for bar/column) are deliberately NOT listed:
+   * their options must remain visible for the relevant type and their assets
+   * load on demand when the feature is used. Gating those here would hide the
+   * type-specific options form.
+   *
+   * @return array<string, string[]>
+   *   Keyed by configuration key; each value is the list of types it provides.
+   */
+  protected function typeProvidingLibraries(): array {
+    return [
+      'dumbbell_library' => ['dumbbell'],
+      'heatmap_library' => ['heatmap'],
+      'solidgauge_library' => ['solidgauge'],
+      'treemap_library' => ['treemap'],
+    ];
+  }
+
+  /**
+   * Maps a feature library toggle to the option element keys it gates.
+   *
+   * Feature libraries enhance existing chart types rather than adding new ones,
+   * so they never remove a type from the dropdown. Their option elements are
+   * shown only when the library is enabled; the surrounding options fieldset
+   * stays available, and the asset still loads on demand when the feature is
+   * actually used (see preRender()). Adding a new feature library is a one-line
+   * change here.
+   *
+   * @return array<string, string[]>
+   *   Keyed by configuration key; each value is the list of option element keys
+   *   the library gates.
+   */
+  protected function featureLibraries(): array {
+    return [
+      'coloraxis_library' => ['coloraxis', 'min_color', 'max_color'],
+      'pareto_library' => ['pareto_line', 'pareto_color'],
+    ];
+  }
+
+  /**
+   * Resolves the effective library configuration for this plugin.
+   *
+   * Per-instance configuration (an entity or view override) takes precedence;
+   * anything missing falls back to the site-wide settings for *this* library.
+   * The global lookup mirrors the resolution used elsewhere in the module
+   * (see \Drupal\charts\Element\BaseSettings): the per-library
+   * "library_configs" bucket keyed by plugin id, falling back to
+   * "library_config" only when this plugin is the configured default library.
+   *
+   * @return array
+   *   The merged library configuration.
+   */
+  protected function resolvedLibraryConfig(): array {
+    $settings = $this->configFactory->get('charts.settings');
+    $library_configs = $settings->get('charts_default_settings.library_configs') ?? [];
+    $global = $library_configs[$this->getPluginId()]
+      ?? ($settings->get('charts_default_settings.library_config') ?? []);
+
+    return $this->configuration + $global;
+  }
+
+  /**
+   * Determines whether an optional library is enabled.
+   *
+   * @param string $key
+   *   The configuration key, e.g. "heatmap_library".
+   *
+   * @return bool
+   *   TRUE when the optional library is enabled for this plugin.
+   */
+  protected function optionalLibraryEnabled(string $key): bool {
+    return !empty($this->resolvedLibraryConfig()[$key]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getUnsupportedChartTypes(): array {
+    $unsupported = [];
+    foreach ($this->typeProvidingLibraries() as $key => $types) {
+      if (!$this->optionalLibraryEnabled($key)) {
+        $unsupported = array_merge($unsupported, $types);
+      }
+    }
+
+    return $unsupported;
   }
 
   /**
@@ -126,6 +234,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       'no_data_library' => FALSE,
       'pareto_library' => FALSE,
       'texture_library' => FALSE,
+      'treemap_library' => FALSE,
       'solidgauge_library' => FALSE,
       'disable_default_css_library' => FALSE,
       'global_options' => static::defaultGlobalOptions(),
@@ -241,6 +350,13 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       '#type' => 'checkbox',
       '#default_value' => !empty($this->configuration['solidgauge_library']),
       '#description' => $this->t('Highcharts Texture module is a separate library that enables texture fill. See <a href="https://api.highcharts.com/highcharts/series.solidgauge" target="_blank">Solid Gauge documentation</a> for more information.'),
+    ];
+
+    $form['treemap_library'] = [
+      '#title' => $this->t('Enable Highcharts\' "Treemap" library'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->configuration['treemap_library']),
+      '#description' => $this->t('Highcharts Treemap module is a separate library that enables treemap charts. See <a href="https://www.highcharts.com/docs/chart-and-series-types/treemap" target="_blank">Highcharts Treemap documentation</a> for more information.'),
     ];
 
     // Provide option to disable adding the default Highcharts CSS library.
@@ -557,8 +673,10 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       $this->configuration['exporting_library'] = $values['exporting_library'];
       $this->configuration['heatmap_library'] = $values['heatmap_library'];
       $this->configuration['no_data_library'] = $values['no_data_library'];
-      $this->configuration['texture_library'] = $values['texture_library'];
+      $this->configuration['pareto_library'] = $values['pareto_library'];
       $this->configuration['solidgauge_library'] = $values['solidgauge_library'];
+      $this->configuration['texture_library'] = $values['texture_library'];
+      $this->configuration['treemap_library'] = $values['treemap_library'];
       $this->configuration['disable_default_css_library'] = $values['disable_default_css_library'];
       $this->configuration['global_options'] = $values['global_options'];
     }
@@ -577,6 +695,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       'dumbbell',
       'pie',
       'solidgauge',
+      'treemap',
     ];
 
     if (!in_array($element['#chart_type'], $extra_options_types)) {
@@ -584,14 +703,19 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       return;
     }
 
+    // Settings for donut and pie.
+    if (in_array($element['#chart_type'], ['donut', 'pie'])) {
+      $this->processDonutPieOptions($element, $options);
+    }
+
     // Settings for solidgauge.
     if ($element['#chart_type'] === 'solidgauge') {
       $this->processSolidGaugeOptions($element, $options);
     }
 
-    // Settings for donut and pie.
-    if (in_array($element['#chart_type'], ['donut', 'pie'])) {
-      $this->processDonutPieOptions($element, $options);
+    // Settings for treemap.
+    if ($element['#chart_type'] === 'treemap') {
+      $this->processColorAxisOptions($element, $options);
     }
 
     // Settings for dumbbell.
@@ -626,6 +750,29 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
             ':input[name*="pareto_line"]' => ['checked' => TRUE],
           ],
         ],
+      ];
+    }
+
+    // Feature libraries (Color Axis, Pareto) enhance existing chart types.
+    // Their option elements are offered only when the corresponding library is
+    // enabled; the chart type and the surrounding fieldset stay available. The
+    // asset still loads on demand when the feature is used (see preRender()).
+    foreach ($this->featureLibraries() as $key => $option_keys) {
+      if ($this->optionalLibraryEnabled($key)) {
+        continue;
+      }
+      foreach ($option_keys as $option_key) {
+        unset($element[$option_key]);
+      }
+    }
+
+    // The Color Axis types (pie, donut, treemap) have no other options, so
+    // disabling that library leaves the fieldset empty. Keep it visible but
+    // explain why, so the section is discoverable and does not look broken.
+    if (!Element::children($element) && !$this->optionalLibraryEnabled('coloraxis_library')) {
+      $element['empty_message'] = [
+        '#type' => 'item',
+        '#markup' => $this->t('Enable the Color Axis library to configure color options for this chart type.'),
       ];
     }
   }
@@ -708,6 +855,18 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
    *   The options array.
    */
   private function processDonutPieOptions(array &$element, array &$options): void {
+    $this->processColorAxisOptions($element, $options);
+  }
+
+  /**
+   * Process colorAxis options.
+   *
+   * @param array $element
+   *   The form element.
+   * @param array $options
+   *   The options array.
+   */
+  private function processColorAxisOptions(array &$element, array &$options): void {
     $element['coloraxis'] = [
       '#title' => $this->t('Enable colorAxis'),
       '#type' => 'checkbox',
@@ -826,9 +985,14 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       // If we are in standard mode, we might need to clean data colors.
       if (empty($element['#chart_definition']) && !empty($chart_definition['colorAxis'])) {
         foreach ($chart_definition['series'] as &$series_to_clean) {
+          if (isset($series_to_clean['color'])) {
+            unset($series_to_clean['color']);
+          }
           if (isset($series_to_clean['data'])) {
             foreach ($series_to_clean['data'] as &$data_to_clean) {
-              unset($data_to_clean['color']);
+              if (!empty($data_to_clean['color'])) {
+                unset($data_to_clean['color']);
+              }
             }
           }
         }
@@ -849,14 +1013,17 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
     if (!empty($this->configuration['no_data_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/no_data';
     }
+    if (!empty($this->configuration['solidgauge_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/solidgauge';
+    }
     if (!empty($this->configuration['pareto_library']) || !empty($element['#library_type_options']['pareto_line'])) {
       $element['#attached']['library'][] = 'charts_highcharts/pareto';
     }
     if (!empty($this->configuration['texture_library'])) {
       $element['#attached']['library'][] = 'charts_highcharts/texture';
     }
-    if (!empty($this->configuration['solidgauge_library'])) {
-      $element['#attached']['library'][] = 'charts_highcharts/solidgauge';
+    if (!empty($this->configuration['treemap_library'])) {
+      $element['#attached']['library'][] = 'charts_highcharts/treemap';
     }
 
     $element['#attributes']['class'][] = 'charts-highchart';
@@ -1124,14 +1291,14 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
       $chart_definition['plotOptions']['pie']['dataLabels']['format'] = '{percentage:.1f}%';
 
       $chart_definition['tooltip']['pointFormat'] = '<b>{point.y} ({point.percentage:.1f}%)</b><br/>';
+    }
 
-      // Check if colorAxis is enabled.
-      if (!empty($element['#library_type_options']['coloraxis'])) {
-        $chart_definition['colorAxis'] = [
-          'minColor' => $element['#library_type_options']['min_color'],
-          'maxColor' => $element['#library_type_options']['max_color'],
-        ];
-      }
+    // Check if colorAxis is enabled.
+    if (!empty($element['#library_type_options']['coloraxis'])) {
+      $chart_definition['colorAxis'] = [
+        'minColor' => $element['#library_type_options']['min_color'],
+        'maxColor' => $element['#library_type_options']['max_color'],
+      ];
     }
 
     if ($element['#legend'] === TRUE) {
@@ -1206,7 +1373,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
 
     foreach (Element::children($element) as $key) {
       if ($element[$key]['#type'] === 'chart_xaxis' && !empty($element[$key]['#labels'])) {
-        if ($chart_type === 'pie') {
+        if (in_array($chart_type, ['pie', 'treemap'])) {
           $categories = $element[$key]['#labels'];
           break;
         }
@@ -1248,7 +1415,7 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
             $series_data[$label_index][0] = $label;
           }
         }
-        elseif (!empty($categories) && $chart_type === 'pie') {
+        elseif (!empty($categories) && (in_array($chart_type, ['pie', 'treemap']))) {
           foreach ($categories as $label_index => $label) {
             $series_data[$label_index][0] = $label;
           }
@@ -1258,6 +1425,10 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
         foreach ($element[$key]['#data'] as $data_index => $data) {
           if (isset($series_data[$data_index])) {
             $series_data[$data_index][] = $data;
+            if ($chart_type === 'treemap') {
+              // Add the colorValue value.
+              $series_data[$data_index][] = $data;
+            }
           }
           elseif ($chart_type === 'pie') {
             $series_data[$data_index] = $data;

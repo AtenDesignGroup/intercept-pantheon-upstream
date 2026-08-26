@@ -752,28 +752,34 @@ class RoomReservationController extends ControllerBase implements ContainerInjec
     // Add default location.
     $default_locations = [];
     if ($this->currentUser->isAuthenticated()) {
-      /** @var $userStorage Drupal\user\UserStorageInterface */
+      /** @var \Drupal\user\UserStorageInterface $userStorage */
       $userStorage = $this->entityTypeManager()->getStorage('user');
-      /** @var $user Drupal\Core\Session\AccountInterface */
+      /** @var \Drupal\user\UserInterface $user */
       $user = $userStorage->load($this->currentUser->id());
 
-      if ($reservations = $this->reservationManager->getReservationsByUser('room', $user)) {
-        if (!empty($reservations)) {
-          $last_reservation = reset($reservations);
-          // First, look for the last room reservation made.
-          if ($last_reservation = reset($reservations)) {
-            $last_room = $last_reservation->field_room->entity;
-            $last_location = $last_room->field_location->entity;
+      $last_reservation = $this->reservationManager->getReservationsByUser('room', $user, 1);
+      if (!empty($last_reservation)) {
+        // First, look for the last room reservation made.
+        if ($last_reservation = reset($last_reservation)) {
+          $last_room = $last_reservation->field_room->entity;
+          $last_location = $last_room->field_location->entity;
 
-            if (!empty($last_location)) {
-              $default_locations = [$last_location->uuid()];
-            }
+          if (!empty($last_location)) {
+            $default_locations = [$last_location->uuid()];
           }
         }
       }
       else {
+        $customer = $this->entityTypeManager()
+          ->getStorage('profile')
+          ->loadByProperties([
+            'type' => 'customer',
+            'uid' => $this->currentUser->id(),
+          ]);
         // If no reservation, get the preferred locations.
         if (!empty($customer)) {
+          /** @var \Drupal\profile\Entity\Profile $customer */
+          $customer = reset($customer);
           foreach ($customer->get('field_preferred_location')->referencedEntities() as $location) {
             if ($location->field_branch_location->value) {
               $default_locations[] = $location->uuid();

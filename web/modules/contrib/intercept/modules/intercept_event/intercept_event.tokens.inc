@@ -79,6 +79,14 @@ function intercept_event_token_info() {
     'name' => t('Magic login link'),
     'description' => t('A password reset link.'),
   ];
+  $info['tokens']['event_registration']['location-address'] = [
+    'name' => t('Location address'),
+    'description' => t('The address of the event location, formatted as "Street | City, State".'),
+  ];
+  $info['tokens']['flagging']['event-saved-location-address'] = [
+    'name' => t('Saved event - Location address'),
+    'description' => t('The address of the saved event\'s location, formatted as "Street | City, State".'),
+  ];
   return $info;
 }
 
@@ -184,6 +192,10 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           }
           $replacements[$original] = new FormattableMarkup('Add to my calendar:<br />@calendar_urls', ['@calendar_urls' => implode(', ', $calendar_urls)]);
           break;
+        case 'location-address':
+          $event = $event_registration->get('field_event')->referencedEntities()[0];
+          $replacements[$original] = intercept_event_get_location_address($event);
+          break;
       }
     }
   }
@@ -248,6 +260,9 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
           $url = Url::fromRoute('entity.node.canonical', ['node' => $saved_event_id], ['absolute' => TRUE])->toString();
           $replacements[$original] = $url;
           break;
+        case 'event-saved-location-address':
+          $replacements[$original] = intercept_event_get_location_address($event);
+          break;
       }
     }
   }
@@ -265,4 +280,19 @@ function intercept_event_tokens($type, $tokens, array $data, array $options, Bub
   }
 
   return $replacements;
+}
+
+/**
+ * Formats an event's location address as "Street | City, State".
+ */
+function intercept_event_get_location_address($event) {
+  if (!$event || !$event->hasField('field_location') || $event->get('field_location')->isEmpty()) {
+    return '';
+  }
+  $location = $event->get('field_location')->entity;
+  if (!$location || !$location->hasField('field_address') || $location->get('field_address')->isEmpty()) {
+    return '';
+  }
+  $address = $location->get('field_address')->first();
+  return trim($address->getAddressLine1() . ', ' . $address->getLocality() . ', ' . $address->getAdministrativeArea());
 }

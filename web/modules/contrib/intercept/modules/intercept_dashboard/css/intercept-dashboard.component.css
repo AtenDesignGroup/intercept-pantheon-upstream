@@ -24,6 +24,16 @@
   margin-right: auto;
 }
 
+/**
+  Required for Chart.js to render the chart height correctly.
+  See Drupal/Intercept/InterceptDashboardController::buildBarChart()
+  for the actual height setting.
+*/
+.intercept-dashboard-chart .charts-figure {
+  position: relative;
+  height: 100%;
+}
+
 .intercept-dashboard-chart__table th:first-child,
 .intercept-dashboard-chart__table td:first-child {
   text-align: right;

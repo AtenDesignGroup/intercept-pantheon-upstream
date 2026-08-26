@@ -71,3 +71,8 @@ spline:
   axis: 'xy'
   axis_inverted: false
   stacking: false
+treemap:
+  label: 'Treemap'
+  axis: 'xy'
+  axis_inverted: false
+  stacking: false

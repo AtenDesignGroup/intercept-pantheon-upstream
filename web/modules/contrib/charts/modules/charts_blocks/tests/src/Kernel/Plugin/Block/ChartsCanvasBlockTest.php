@@ -158,4 +158,92 @@ final class ChartsCanvasBlockTest extends KernelTestBase {
     $this->assertEquals([90, 110], $build['series_1']['#data']);
   }
 
+  /**
+   * Tests per-series chart type overrides (combo charts) via JSON.
+   */
+  public function testBuildWithPerSeriesChartType(): void {
+    /** @var \Drupal\charts_blocks\Plugin\Block\ChartsCanvasBlock $block */
+    $block = $this->blockManager->createInstance('charts_canvas_block');
+
+    $block->setConfigurationValue('data_format', 'json');
+    $block->setConfigurationValue('chart_type', 'column');
+    $json_data = json_encode([
+      'categories' => [
+        'Q1',
+        'Q2',
+        'Q3',
+      ],
+      'series' => [
+        [
+          'name' => 'Revenue',
+          'data' => [
+            120,
+            145,
+            160,
+          ],
+        ],
+        [
+          'name' => 'Margin %',
+          'data' => [
+            12,
+            14,
+            15,
+          ],
+          'target_axis' => 'secondary_yaxis',
+          'chart_type' => 'line',
+        ],
+      ],
+    ]);
+    $block->setConfigurationValue('data', $json_data);
+
+    $build = $block->build();
+
+    // The base chart type is unchanged.
+    $this->assertEquals('column', $build['#chart_type']);
+
+    // The first series has no override, so it inherits the base type.
+    $this->assertArrayNotHasKey('#chart_type', $build['series_0']);
+
+    // The second series overrides the type and targets the secondary axis.
+    $this->assertEquals('line', $build['series_1']['#chart_type']);
+    $this->assertEquals('secondary_yaxis', $build['series_1']['#target_axis']);
+    $this->assertArrayHasKey('secondary_yaxis', $build);
+  }
+
+  /**
+   * Tests that a per-series chart type is ignored for single-axis charts.
+   */
+  public function testPerSeriesChartTypeIgnoredForPie(): void {
+    /** @var \Drupal\charts_blocks\Plugin\Block\ChartsCanvasBlock $block */
+    $block = $this->blockManager->createInstance('charts_canvas_block');
+
+    $block->setConfigurationValue('data_format', 'json');
+    $block->setConfigurationValue('chart_type', 'pie');
+    $json_data = json_encode([
+      'categories' => [
+        'A',
+        'B',
+        'C',
+      ],
+      'series' => [
+        [
+          'name' => 'Share',
+          'data' => [
+            30,
+            45,
+            25,
+          ],
+          'chart_type' => 'line',
+        ],
+      ],
+    ]);
+    $block->setConfigurationValue('data', $json_data);
+
+    $build = $block->build();
+
+    // Pie uses only the first series and never applies a per-series type.
+    $this->assertEquals('pie', $build['#chart_type']);
+    $this->assertArrayNotHasKey('#chart_type', $build['series_0']);
+  }
+
 }

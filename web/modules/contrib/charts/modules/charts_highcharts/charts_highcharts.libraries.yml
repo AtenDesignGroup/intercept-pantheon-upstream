@@ -226,6 +226,21 @@ solidgauge:
     - charts_highcharts/charts_highcharts
     - charts_highcharts/highcharts
 
+treemap:
+  remote: https://cdn.jsdelivr.net/npm/highcharts@12.5.0/modules/treemap.js
+  version: VERSION
+  license:
+    name: Non-commercial
+    url: https://creativecommons.org/licenses/by-nc/3.0/
+    gpl-compatible: false
+  cdn:
+    /libraries/highcharts_treemap/treemap.js: https://cdn.jsdelivr.net/npm/highcharts@12.5.0/modules/treemap.js
+  js:
+    /libraries/highcharts_treemap/treemap.js: { minified: true }
+  dependencies:
+    - charts_highcharts/charts_highcharts
+    - charts_highcharts/highcharts
+
 color_changer:
   version: VERSION
   js:

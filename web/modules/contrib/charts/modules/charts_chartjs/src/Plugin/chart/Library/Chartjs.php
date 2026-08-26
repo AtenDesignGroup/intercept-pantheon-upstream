@@ -4,6 +4,7 @@ namespace Drupal\charts_chartjs\Plugin\chart\Library;
 
 use Drupal\charts\ApplyRawOptionsTrait;
 use Drupal\charts\Attribute\Chart;
+use Drupal\charts\BackgroundColorTrait;
 use Drupal\Component\Utility\Color;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -28,17 +29,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     "bubble",
     "column",
     "donut",
+    "gauge",
     "line",
     "pie",
     "polarArea",
     "scatter",
     "spline",
+    "treemap",
   ],
   example_route: "charts_chartjs_api_example.display",
 )]
 class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
 
   use ApplyRawOptionsTrait;
+  use BackgroundColorTrait;
 
   /**
    * Constructs a \Drupal\views\Plugin\Block\ViewsBlockBase object.
@@ -197,12 +201,21 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
       $chart_definition = $this->populateCategories($element, $chart_definition);
       $chart_definition = $this->populateDatasets($element, $chart_definition);
       $chart_definition = $this->populateAxes($element, $chart_definition);
+      if ($element['#chart_type'] === 'gauge') {
+        $chart_definition = $this->buildGaugeChart($element, $chart_definition);
+      }
     }
+
+    // Workaround because Chart.js does not natively support background color.
+    $element = $this->applyBackgroundColor($element);
 
     // Merge in chart raw options (applies to both methods).
     $chart_definition = $this->applyRawOptions($element, $chart_definition);
 
     $element['#attached']['library'][] = 'charts_chartjs/chartjs';
+    if ($element['#chart_type'] === 'treemap') {
+      $element['#attached']['library'][] = 'charts_chartjs/chartjs_treemap_plugin';
+    }
     $element['#attributes']['class'][] = 'charts-chartjs';
     $element['#chart_definition'] = $chart_definition;
 
@@ -517,7 +530,7 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
             if (!empty($item['color'])) {
               unset($item['color']);
             }
-            return gettype($item) === 'array' ? array_values($item) : $item;
+            return is_array($item) ? reset($item) : $item;
           }, $element[$child]['#data']);
         }
       }
@@ -553,7 +566,10 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
           }
           else {
             if ($chart_type === 'scatter') {
-              $data = ['y' => $data[1], 'x' => $data[0]];
+              $data = [
+                'x' => $data[0] ?? 0,
+                'y' => $data[1] ?? 0,
+              ];
             }
             if ($chart_type === 'bubble') {
               /*
@@ -561,7 +577,11 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
                * For suggestions about how to deal with this, see:
                * https://github.com/chartjs/Chart.js/issues/3355
                */
-              $data = ['y' => $data[1], 'x' => $data[0], 'r' => $data[2]];
+              $data = [
+                'x' => $data[0] ?? 0,
+                'y' => $data[1] ?? 0,
+                'r' => $data[2] ?? 0,
+              ];
             }
             // Convert the array from Views when using pie-type charts
             // and no label field.
@@ -652,8 +672,11 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
         break;
 
       case 'gauge':
-        // Gauge is currently not supported by Chart.js.
-        $type = 'donut';
+        // Chart.js does not have a native gauge type. Gauges are rendered as
+        // a half-doughnut combined with a "doughnutLabel" annotation provided
+        // by the chartjs-plugin-annotation library.
+        // @see https://www.chartjs.org/chartjs-plugin-annotation/3.1.0/samples/doughnutLabel/gauge.html
+        $type = 'doughnut';
         break;
 
       default:
@@ -763,6 +786,123 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
   }
 
   /**
+   * Builds a gauge chart definition.
+   *
+   * Chart.js has no native gauge type, so the gauge is emulated with a
+   * half-doughnut chart: the first slice represents the value and the second
+   * (gray) slice represents the remainder of the range. The current value and
+   * the series label are printed in the center of the gauge using the
+   * "doughnutLabel" annotation from the chartjs-plugin-annotation library.
+   *
+   * @param array $element
+   *   The element.
+   * @param array $chart_definition
+   *   The chart definition.
+   *
+   * @return array
+   *   Return the chart definition.
+   *
+   * @see https://www.chartjs.org/chartjs-plugin-annotation/3.1.0/samples/doughnutLabel/gauge.html
+   */
+  private function buildGaugeChart(array $element, array $chart_definition) {
+    $gauge_settings = array_filter($element['#gauge'] ?? [], fn ($value) => $value !== '' && $value !== NULL);
+    $gauge_settings += [
+      'min' => 0,
+      'max' => 100,
+      'red_from' => 0,
+      'red_to' => 50,
+      'yellow_from' => 50,
+      'yellow_to' => 85,
+      'green_from' => 85,
+      'green_to' => 100,
+    ];
+    $min = (float) $gauge_settings['min'];
+    $max = (float) $gauge_settings['max'];
+
+    // Extract the gauge value and label from the first dataset built by
+    // populateDatasets().
+    $dataset = $chart_definition['data']['datasets'][0] ?? [];
+    $value = $dataset['data'][0] ?? 0;
+    // Views/API data may come as [label, value] pairs.
+    if (is_array($value)) {
+      $value = end($value);
+    }
+    $value = (float) $value;
+    $label = $dataset['label'] ?? '';
+    if (is_array($label)) {
+      $label = reset($label);
+    }
+    $label = (string) $label;
+
+    // Keep the value inside the configured range.
+    $value = max($min, min($max, $value));
+    $color = $this->getGaugeColor($value, $gauge_settings);
+
+    // A single dataset with two slices: the value and the remainder.
+    $chart_definition['data']['labels'] = [$label];
+    $chart_definition['data']['datasets'] = [
+      [
+        'label' => $label,
+        'data' => [$value - $min, $max - $value],
+        'backgroundColor' => [$color, 'rgb(234, 234, 234)'],
+        'borderWidth' => 0,
+        'type' => 'doughnut',
+      ],
+    ];
+
+    // Render the doughnut as a half circle.
+    $chart_definition['options']['aspectRatio'] = 2;
+    $chart_definition['options']['circumference'] = 180;
+    $chart_definition['options']['rotation'] = -90;
+
+    // Print the value and the series label in the center of the gauge with
+    // the doughnutLabel annotation type.
+    $formatted_value = rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
+    $chart_definition['options']['plugins']['annotation']['annotations']['gaugeLabel'] = [
+      'type' => 'doughnutLabel',
+      'drawTime' => 'beforeDraw',
+      'position' => ['y' => '-50%'],
+      'content' => array_values(array_filter([$formatted_value, $label], fn ($item) => $item !== '')),
+      'font' => [
+        ['size' => 50, 'weight' => 'bold'],
+        ['size' => 20],
+      ],
+      'color' => [$color, 'gray'],
+    ];
+
+    return $chart_definition;
+  }
+
+  /**
+   * Resolves the gauge color for a given value.
+   *
+   * @param float $value
+   *   The gauge value.
+   * @param array $gauge_settings
+   *   The gauge settings, containing "(red|yellow|green)_(from|to)" ranges.
+   *
+   * @return string
+   *   A CSS color string.
+   */
+  private function getGaugeColor(float $value, array $gauge_settings) {
+    $bands = [
+      'red' => 'rgb(231, 24, 49)',
+      'yellow' => 'rgb(239, 198, 0)',
+      'green' => 'rgb(140, 214, 16)',
+    ];
+    foreach ($bands as $band => $color) {
+      if (!isset($gauge_settings[$band . '_from']) || !isset($gauge_settings[$band . '_to'])) {
+        continue;
+      }
+      if ($value >= (float) $gauge_settings[$band . '_from'] && $value <= (float) $gauge_settings[$band . '_to']) {
+        return $color;
+      }
+    }
+    // Fall back to gray when the value is not inside any configured band.
+    return 'rgb(128, 128, 128)';
+  }
+
+  /**
    * Returns pie-style chart types.
    *
    * @return array
@@ -773,6 +913,7 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
       'pie',
       'doughnut',
       'donut',
+      'gauge',
       'polarArea',
     ];
   }

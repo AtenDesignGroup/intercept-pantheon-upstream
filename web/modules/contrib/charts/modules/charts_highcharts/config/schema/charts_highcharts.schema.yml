@@ -39,11 +39,23 @@ charts.settings.library_plugin.highcharts:
     boost_library:
       label: 'Enable boost library'
       type: boolean
+    coloraxis_library:
+      label: 'Enable colorAxis library'
+      type: boolean
     data_library:
       label: 'Enable data library'
       type: boolean
+    dumbbell_library:
+      label: 'Enable dumbbell library'
+      type: boolean
     exporting_library:
       label: 'Enable exporting library'
+      type: boolean
+    heatmap_library:
+      label: 'Enable heatmap library'
+      type: boolean
+    disable_default_css_library:
+      label: 'Disable default CSS library'
       type: boolean
     no_data_library:
       label: 'Enable no data library'
@@ -171,6 +183,13 @@ charts.settings.library_plugin.highcharts:
               sequence:
                 type: label
                 label: 'Numeric symbol'
+        chart:
+          type: mapping
+          label: Chart
+          mapping:
+            styled_mode:
+              type: boolean
+              label: 'Enable styled mode'
 
 charts.library_plugin.highcharts.options.solidgauge:
   type: mapping
@@ -213,12 +232,16 @@ charts.library_plugin.highcharts.options.donut:
 charts.library_plugin.highcharts.options.pie:
   type: charts_highcharts_coloraxis
 
+charts.library_plugin.highcharts.options.treemap:
+  type: charts_highcharts_coloraxis
+
 charts.library_plugin.highcharts.options.dumbbell:
   type: mapping
   mapping:
     low_color:
       label: 'Low color'
       type: string
+
 
 charts_highcharts_bar_column:
   type: mapping

@@ -10,8 +10,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Charts API examples rendered with the Chart.js library.
  *
  * The library-agnostic examples come from the shared ChartExampleBuilder, which
- * already omits anything Chart.js does not support (e.g. gauge). This
- * controller adds only the Chart.js-specific demonstrations.
+ * already omits anything Chart.js does not support. This controller adds only
+ * the Chart.js-specific demonstrations.
  */
 class ChartjsApiExample extends ControllerBase {
 

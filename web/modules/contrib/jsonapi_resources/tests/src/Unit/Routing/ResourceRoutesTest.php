@@ -73,6 +73,68 @@ final class ResourceRoutesTest extends UnitTestCase {
   }
 
   /**
+   * Tests AutoEntityConverter wiring on resource-route entity parameters.
+   *
+   * @covers ::decorateJsonapiResourceRoutes
+   */
+  public function testAutoEntityConverterWiring(): void {
+    $route_collection = new RouteCollection();
+
+    // Non-resource route — must remain untouched.
+    $generic_route = new Route('/generic', [], [], [
+      'parameters' => ['user' => ['type' => 'entity:user']],
+    ]);
+    $route_collection->add('generic_route', $generic_route);
+
+    $route_defaults = [
+      '_jsonapi_resource' => '\\Drupal\\jsonapi_resources_test\\Resource\\AuthorArticles',
+      '_jsonapi_resource_types' => ['node--article'],
+    ];
+
+    // Resource route with an entity-typed param — converter must be set.
+    $auto_route = new Route('/%jsonapi%/user/{user}/content', $route_defaults, [], [
+      'parameters' => ['user' => ['type' => 'entity:user']],
+    ]);
+    $route_collection->add('auto_route', $auto_route);
+
+    // Resource route with explicit converter — must be preserved.
+    $explicit_route = new Route('/%jsonapi%/strict/{user}', $route_defaults, [], [
+      'parameters' => ['user' => ['type' => 'entity:user', 'converter' => 'paramconverter.entity']],
+    ]);
+    $route_collection->add('explicit_route', $explicit_route);
+
+    // Resource route with a non-entity-typed param — must remain untouched.
+    $non_entity_route = new Route('/%jsonapi%/raw/{slug}', $route_defaults, [], [
+      'parameters' => ['slug' => ['type' => 'string']],
+    ]);
+    $route_collection->add('non_entity_route', $non_entity_route);
+
+    $resource_type_repository = $this->prophesize(ResourceTypeRepositoryInterface::class);
+    $container = $this->prophesize(ContainerInterface::class);
+    $container->has($route_defaults['_jsonapi_resource'])->willReturn(TRUE);
+    $container->get($route_defaults['_jsonapi_resource'])->willReturn(new $route_defaults['_jsonapi_resource']());
+    $resource_routes = new ResourceRoutes($resource_type_repository->reveal(), ['basic_auth' => 'basic_auth'], '/custom-base-path', $container->reveal());
+    $resource_routes->decorateJsonapiResourceRoutes(new RouteBuildEvent($route_collection));
+
+    $this->assertSame(
+      ['user' => ['type' => 'entity:user']],
+      $route_collection->get('generic_route')->getOption('parameters'),
+    );
+    $this->assertSame(
+      'paramconverter.jsonapi_resources.entity_auto',
+      $route_collection->get('auto_route')->getOption('parameters')['user']['converter'] ?? NULL,
+    );
+    $this->assertSame(
+      'paramconverter.entity',
+      $route_collection->get('explicit_route')->getOption('parameters')['user']['converter'] ?? NULL,
+    );
+    $this->assertSame(
+      ['slug' => ['type' => 'string']],
+      $route_collection->get('non_entity_route')->getOption('parameters'),
+    );
+  }
+
+  /**
    * Tests for an exception when the %jsonapi% base path placeholder is missing.
    */
   public function testMissingBasePathPlaceholder() {

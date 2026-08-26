@@ -4,6 +4,7 @@ namespace Drupal\charts_billboard\Plugin\chart\Library;
 
 use Drupal\charts\ApplyRawOptionsTrait;
 use Drupal\charts\Attribute\Chart;
+use Drupal\charts\BackgroundColorTrait;
 use Drupal\charts\Plugin\chart\Library\ChartBase;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -35,12 +36,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
     "pie",
     "scatter",
     "spline",
+    "treemap",
   ],
   example_route: "charts_billboard_api_example.display",
 )]
 class Billboard extends ChartBase implements ContainerFactoryPluginInterface {
 
   use ApplyRawOptionsTrait;
+  use BackgroundColorTrait;
 
   /**
    * The element info manager.
@@ -166,6 +169,13 @@ class Billboard extends ChartBase implements ContainerFactoryPluginInterface {
       $chart_definition = $this->populateData($element, $chart_definition);
       $chart_definition = $this->populateAxes($element, $chart_definition);
     }
+
+    // Workaround because Billboard.js does not natively support background
+    // color.
+    $element = $this->applyBackgroundColor($element);
+
+    // Merge in chart raw options (applies to both methods).
+    $chart_definition = $this->applyRawOptions($element, $chart_definition);
 
     // Ensure the chart knows where to render.
     // This must happen regardless of how the definition was built.
@@ -402,7 +412,7 @@ class Billboard extends ChartBase implements ContainerFactoryPluginInterface {
           // If no labels are provided, fill the categories with empty values.
           $categories = $this->fillCategoriesWithoutLabels($chart_definition);
         }
-        if (!in_array($chart_type, ['pie', 'donut'])) {
+        if (!in_array($chart_type, ['pie', 'donut', 'treemap'])) {
           if ($chart_type === 'scatter' || $chart_type === 'bubble') {
             // Do nothing.
           }
@@ -492,7 +502,7 @@ class Billboard extends ChartBase implements ContainerFactoryPluginInterface {
       if ($child_element['#color'] && $type !== 'gauge') {
         $chart_definition['color']['pattern'][] = $child_element['#color'];
       }
-      if (!in_array($type, ['pie', 'donut'])) {
+      if (!in_array($type, ['pie', 'donut', 'treemap'])) {
         $series_title = isset($child_element['#title']) ? strip_tags($child_element['#title']) : '';
         $types[$series_title] = $child_element['#chart_type'] ? $this->getType($child_element['#chart_type'], $element['#polar'] ?? FALSE) : $type;
         if (!in_array($type, ['scatter', 'bubble'])) {

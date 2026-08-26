@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.28] - 2026-08-26
+
+* Updated room reservation export to include group name
+* Cleaned up some visual styles on the event data dashboard
+* Fixed a slow query on Upcoming Reservations page
+* Fixed an accessibility issue with very small text on the Events page
+* Fixed an issue where staff couldn't correctly see agreements made by customers during room reservation creation
+* Fixed an issue that prevented new location closings from being created
+
 ## [2.0.27] - 2026-07-30
 
 * Improved performance of Calendar API

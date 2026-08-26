@@ -7,7 +7,7 @@ dependencies:
   - drupal:node
   - jsonapi_resources:jsonapi_resources
 
-# Information added by Drupal.org packaging script on 2026-06-18
-version: '8.x-1.7'
+# Information added by Drupal.org packaging script on 2026-08-21
+version: '8.x-1.8'
 project: 'jsonapi_resources'
-datestamp: 1781794626
+datestamp: 1787322571

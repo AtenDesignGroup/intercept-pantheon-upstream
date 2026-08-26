@@ -596,7 +596,10 @@ class ReserveRoomForm extends PureComponent {
                     <InputCheckbox
                       label="Groups soliciting, selling, charging admission or asking for donations *"
                       checked={values.agreementCustom1}
-                      onChange={() => this.toggleValue('agreementCustom1')}
+                      onChange={() => {
+                        const next = !values.agreementCustom1;
+                        this.updateValues({ agreementCustom1: next, agreement: next && values.agreementCustom2 && values.agreementCustom3 });
+                      }}
                       required
                       value={values.agreementCustom1}
                       name="agreementCustom1"
@@ -604,7 +607,10 @@ class ReserveRoomForm extends PureComponent {
                     <InputCheckbox
                       label="Conducting open call interviews, auditions or rehearsals *"
                       checked={values.agreementCustom2}
-                      onChange={() => this.toggleValue('agreementCustom2')}
+                      onChange={() => {
+                        const next = !values.agreementCustom2;
+                        this.updateValues({ agreementCustom2: next, agreement: values.agreementCustom1 && next && values.agreementCustom3 });
+                      }}
                       required
                       value={values.agreementCustom2}
                       name="agreementCustom2"
@@ -612,7 +618,10 @@ class ReserveRoomForm extends PureComponent {
                     <InputCheckbox
                       label="Delivery of direct, hands-on healthcare and wellness services, including examinations, hands-on demos, or treatments *"
                       checked={values.agreementCustom3}
-                      onChange={() => this.toggleValue('agreementCustom3')}
+                      onChange={() => {
+                        const next = !values.agreementCustom3;
+                        this.updateValues({ agreementCustom3: next, agreement: values.agreementCustom1 && values.agreementCustom2 && next });
+                      }}
                       required
                       value={values.agreementCustom3}
                       name="agreementCustom3"

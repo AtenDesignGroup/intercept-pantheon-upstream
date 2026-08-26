@@ -236,6 +236,16 @@ class ChartExampleBuilder {
       ]);
     }
 
+    // Treemap chart.
+    if ($plugin->isSupportedChartType('treemap')) {
+      $container['content']['treemap'] = $this->baseChart($library, 'treemap', $this->t('@library Treemap Chart', ['@library' => $label]));
+      $container['content']['treemap']['series'] = [
+        '#type' => 'chart_data',
+        '#title' => $this->t('Treemap'),
+        '#data' => [10, 30, 60, 80],
+      ];
+    }
+
     return $container;
   }
 

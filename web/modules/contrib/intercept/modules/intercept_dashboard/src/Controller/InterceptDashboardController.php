@@ -794,7 +794,7 @@ class InterceptDashboardController extends ControllerBase {
     // Add the link to download the CSV.
     $request = \Drupal::request();
     $link_renderable = Link::createFromRoute('Download CSV', 'intercept_dashboard.event_data_dashboard.export', ['_format' => 'csv'] + $request->query->all())->toRenderable();
-    $link_renderable['#attributes'] = ['class' => ['button', 'intercept-dashboard-chart__toggle']];
+    $link_renderable['#attributes'] = ['class' => ['button', 'intercept-dashboard-chart__toggle', 'intercept-dashboard-chart__toggle--download']];
     $build['csv_link'] = \Drupal::service('renderer')->renderPlain($link_renderable);
 
     return $build;
@@ -829,6 +829,10 @@ class InterceptDashboardController extends ControllerBase {
     $build['chart'] = [
       '#type' => 'chart',
       '#chart_type' => 'column',
+      '#height' => (count($data['rows']) + 1) * 40,
+      '#height_units' => 'px',
+      '#width' => '100',
+      '#width_units' => '%',
       'series' => [
         '#type' => 'chart_data',
         '#title' => t('Attendees'),
@@ -847,6 +851,7 @@ class InterceptDashboardController extends ControllerBase {
         'options' => [
           'indexAxis' => 'y',
           'maintainAspectRatio' => FALSE,
+          'responsive' => TRUE,
           'barThickness' => 22,
           'plugins' => [
             'legend' => [
@@ -879,6 +884,7 @@ class InterceptDashboardController extends ControllerBase {
                 'tickColor' => '#4C4D4F',
               ],
               'ticks' => [
+                'autoSkip' => FALSE,
                 'color' => '#4C4D4F',
                 'font' => [
                   'weight' => 'normal',

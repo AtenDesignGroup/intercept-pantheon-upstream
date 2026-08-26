@@ -1,18 +1,77 @@
 parameters:
-  level: 1
+	level: 1
+	reportUnmatchedIgnoredErrors: false
 
-  ignoreErrors:
-    -
-      message: '#\Drupal calls should be avoided in classes, use dependency injection instead#'
-      path: src/VoteStorage.php
-      count: 2
+	ignoreErrors:
+		# new static() is a best practice in Drupal, so we cannot fix that.
+		- "#^Unsafe usage of new static#"
+		-
+			message: '''
+				#^Call to method checkRequirements\(\) of deprecated class Drupal\\migrate_drupal\\Plugin\\migrate\\source\\DrupalSqlBase\:
+				in drupal\:11\.3\.0 and is removed from drupal\:12\.0\.0\. There is no
+				replacement\.$#
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: src/Plugin/migrate/D6VotingApiDeriver.php
 
-    # new static() is a best practice in Drupal, so we cannot fix that.
-    # @see https://www.drupal.org/docs/develop/development-tools/phpstan/handling-unsafe-usage-of-new-static
-    -
-      message: "#^Unsafe usage of new static#"
-      paths:
-        - src/Form/SettingsForm.php
-        - src/Form/VoteDeleteConfirm.php
-        - src/Form/VoteTypeDeleteConfirm.php
-        - src/VoteTypeForm.php
+		-
+			message: '''
+				#^Call to method checkRequirements\(\) of deprecated class Drupal\\migrate_drupal\\Plugin\\migrate\\source\\DrupalSqlBase\:
+				in drupal\:11\.3\.0 and is removed from drupal\:12\.0\.0\. There is no
+				replacement\.$#
+			'''
+			identifier: method.deprecatedClass
+			count: 1
+			path: src/Plugin/migrate/VotingApiDeriver.php
+
+		-
+			message: '''
+				#^Class Drupal\\votingapi\\Plugin\\migrate\\source\\d6\\Vote extends deprecated class Drupal\\migrate_drupal\\Plugin\\migrate\\source\\DrupalSqlBase\:
+				in drupal\:11\.3\.0 and is removed from drupal\:12\.0\.0\. There is no
+				replacement\.$#
+			'''
+			identifier: class.extendsDeprecatedClass
+			count: 1
+			path: src/Plugin/migrate/source/d6/Vote.php
+
+		-
+			message: '''
+				#^Class Drupal\\votingapi\\Plugin\\migrate\\source\\d7\\Vote extends deprecated class Drupal\\migrate_drupal\\Plugin\\migrate\\source\\DrupalSqlBase\:
+				in drupal\:11\.3\.0 and is removed from drupal\:12\.0\.0\. There is no
+				replacement\.$#
+			'''
+			identifier: class.extendsDeprecatedClass
+			count: 1
+			path: src/Plugin/migrate/source/d7/Vote.php
+
+		-
+			message: '''
+				#^Class Drupal\\votingapi\\Plugin\\migrate\\source\\d7\\VoteType extends deprecated class Drupal\\migrate_drupal\\Plugin\\migrate\\source\\DrupalSqlBase\:
+				in drupal\:11\.3\.0 and is removed from drupal\:12\.0\.0\. There is no
+				replacement\.$#
+			'''
+			identifier: class.extendsDeprecatedClass
+			count: 1
+			path: src/Plugin/migrate/source/d7/VoteType.php
+
+		-
+			message: '#^Method Drupal\\votingapi\\VoteTypeListBuilder\:\:getDefaultOperations\(\) is missing the CacheableMetadata parameter added in Drupal 11\.3\. Update the signature to\: getDefaultOperations\(\\Drupal\\Core\\Entity\\EntityInterface \$entity, \?\\Drupal\\Core\\Cache\\CacheableMetadata \$cacheability \= NULL\)\.$#'
+			identifier: drupal.entityListBuilderMissingCacheabilityParameter
+			count: 1
+			path: src/VoteTypeListBuilder.php
+
+		-
+			message: '''
+				#^Call to deprecated function node_add_body_field\(\)\:
+				in drupal\:11\.3\.0 and is removed from drupal\:12\.0\.0\. There is no replacement\.$#
+			'''
+			identifier: function.deprecated
+			count: 1
+			path: tests/src/Functional/VoteCreationTest.php
+
+		-
+			message: '#^\\Drupal calls should be avoided in classes, use dependency injection instead$#'
+			identifier: globalDrupalDependencyInjection.useDependencyInjection
+			count: 2
+			path: src/VoteStorage.php

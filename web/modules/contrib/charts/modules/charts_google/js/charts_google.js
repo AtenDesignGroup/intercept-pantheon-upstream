@@ -14,6 +14,31 @@
    */
   Drupal.behaviors.chartsGooglecharts = {
     attach() {
+      // Scan all charts on the page to determine required packages.
+      const requiredPackages = new Set(['corechart']);
+      const chartElements = document.querySelectorAll(
+        '.charts-google[data-chart]',
+      );
+
+      chartElements.forEach((element) => {
+        const contents = new Drupal.Charts.Contents();
+        const chartId = element.id;
+        const dataAttributes = contents.getData(chartId);
+
+        // Add packages based on visualization type
+        switch (dataAttributes.visualization) {
+          case 'TreeMap':
+            requiredPackages.add('treemap');
+            break;
+          case 'Gauge':
+            requiredPackages.add('gauge');
+            break;
+          case 'Table':
+            requiredPackages.add('table');
+            break;
+        }
+      });
+
       // Define a fallback value for globalOptions;
       const globalOptions =
         drupalSettings.charts === undefined
@@ -31,7 +56,7 @@
         'scatter',
         'column',
       ];
-      const packages = ['corechart', 'gauge', 'table'];
+      const packages = Array.from(requiredPackages);
       if (
         useMaterialDesign === 'true' &&
         materialDesignPackages.includes(chartType)
@@ -278,6 +303,13 @@
           chart = new google.visualization.Table(
             document.getElementById(chartId),
           );
+          break;
+
+        case 'TreeMap':
+          chart = new google.visualization.TreeMap(
+            document.getElementById(chartId),
+          );
+          break;
       }
 
       if (Drupal.googleCharts.charts[chartId]) {

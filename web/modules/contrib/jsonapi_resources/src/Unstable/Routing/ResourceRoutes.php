@@ -114,6 +114,25 @@ final class ResourceRoutes implements EventSubscriberInterface {
       if (empty($methods)) {
         $route->setMethods(['GET']);
       }
+
+      // Auto-wire UUID-or-ID upcasting onto every entity-typed parameter
+      // so route authors don't have to opt in per parameter. An explicit
+      // `converter:` declaration is respected verbatim (BC escape hatch).
+      $parameters = $route->getOption('parameters') ?? [];
+      $mutated = FALSE;
+      foreach ($parameters as $parameter_name => $definition) {
+        if (!isset($definition['type']) || !str_starts_with($definition['type'], 'entity:')) {
+          continue;
+        }
+        if (isset($definition['converter'])) {
+          continue;
+        }
+        $parameters[$parameter_name]['converter'] = 'paramconverter.jsonapi_resources.entity_auto';
+        $mutated = TRUE;
+      }
+      if ($mutated) {
+        $route->setOption('parameters', $parameters);
+      }
     }
   }
 

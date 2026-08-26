@@ -132,17 +132,8 @@ class VoteResultFunctionManager extends DefaultPluginManager implements VoteResu
 
     if (!empty($vote_ids)) {
       $votes = [];
-      $vote_type = '';
       foreach ($vote_ids as $vote_id) {
         $vote = $vote_storage->load($vote_id);
-
-        // Votes are sorted by vote type, so when we hit a new type, we can run
-        // find the results of the current set and then start over.
-        if (!empty($vote_type) && $vote_type != $vote->bundle()) {
-          $this->performAndStore($votes);
-          $vote_type = $vote->bundle();
-          $votes = [];
-        }
         $votes[] = $vote;
       }
 

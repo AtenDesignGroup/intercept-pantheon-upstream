@@ -9,6 +9,7 @@ use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Session\MetadataBag;
 use Drupal\Core\Url;
+use Drupal\jsonapi\JsonApiSpec;
 use Drupal\Tests\jsonapi\Kernel\JsonapiKernelTestBase;
 use Drupal\Tests\jsonapi_resources\Kernel\Traits\RequestTrait;
 use Drupal\Tests\user\Traits\UserCreationTrait;
@@ -156,6 +157,22 @@ final class JsonapiResourceTest extends JsonapiKernelTestBase {
     $owner_id = NestedArray::getValue($document, explode('/', 'data/relationships/uid/data/id'), $exists);
     $this->assertTrue($exists);
     $this->assertSame(User::load($this->account->id())->uuid(), $owner_id);
+
+    // The same route accepts the user's UUID as the {user} placeholder
+    // thanks to AutoEntityConverter.
+    $uuid_request = Request::create(
+      sprintf('/jsonapi/user/%s/reminders', $this->account->uuid()),
+      'POST',
+      [],
+      [],
+      [],
+      [],
+      $body,
+    );
+    $uuid_request->headers->set('Accept', 'application/vnd.api+json');
+    $uuid_request->headers->set('Content-Type', 'application/vnd.api+json');
+    $uuid_response = $this->request($uuid_request);
+    $this->assertSame(201, $uuid_response->getStatusCode(), (string) $uuid_response->getContent());
   }
 
   /**
@@ -449,6 +466,14 @@ final class JsonapiResourceTest extends JsonapiKernelTestBase {
     $document = self::decodeResponse($response);
     $this->assertCount(1, $document['data']);
     $this->assertSame($node2->uuid(), $document['data'][0]['id']);
+
+    // The same route accepts the user's UUID as the {user} placeholder
+    // thanks to AutoEntityConverter.
+    $uuid_request = Request::create(sprintf('/jsonapi/user/%s/content', $author_user->uuid()), 'GET');
+    $uuid_request->headers->set('Accept', 'application/vnd.api+json');
+    $uuid_response = $this->request($uuid_request);
+    $this->assertSame(200, $uuid_response->getStatusCode(), (string) $uuid_response->getContent());
+    $this->assertCount(2, self::decodeResponse($uuid_response)['data']);
   }
 
   /**
@@ -479,6 +504,69 @@ final class JsonapiResourceTest extends JsonapiKernelTestBase {
     $document = self::decodeResponse($response);
     $this->assertCount(1, $document['data']);
     $this->assertSame($node->uuid(), $document['data'][0]['id']);
+
+    // The same route accepts the user's UUID as the {user} placeholder
+    // thanks to AutoEntityConverter.
+    $uuid_request = Request::create(sprintf('/jsonapi/user/%s/content-unchecked', $author_user->uuid()), 'GET');
+    $uuid_request->headers->set('Accept', 'application/vnd.api+json');
+    $uuid_response = $this->request($uuid_request);
+    $this->assertSame(200, $uuid_response->getStatusCode(), (string) $uuid_response->getContent());
+    $this->assertCount(1, self::decodeResponse($uuid_response)['data']);
+  }
+
+  /**
+   * Tests that AutoEntityConverter is not auto-assigned to foreign routes.
+   *
+   * The converter is only wired onto JSON:API resource routes via an explicit
+   * `converter:` option. It must never become the default converter for entity
+   * parameters on routes belonging to other modules, which would happen if its
+   * applies() returned TRUE at its registered priority.
+   */
+  public function testAutoEntityConverterDoesNotHijackForeignRoutes(): void {
+    $route = $this->container->get('router.route_provider')
+      ->getRouteByName('entity.node.canonical');
+    $parameters = $route->getOption('parameters');
+    $this->assertArrayHasKey('node', $parameters);
+    // Core's entity converter still owns the parameter; ours did not steal it.
+    $this->assertSame('paramconverter.entity', $parameters['node']['converter'] ?? NULL);
+  }
+
+  /**
+   * Tests that an unknown UUID on a resource route returns 404.
+   */
+  public function testAutoEntityConverterUnknownUuidIsNotFound(): void {
+    $this->grantPermissionsToTestedRole(['access content']);
+
+    $request = Request::create('/jsonapi/user/00112233-4455-6677-8899-aabbccddeeff/content', 'GET');
+    $request->headers->set('Accept', 'application/vnd.api+json');
+    $response = $this->request($request, TRUE);
+    $this->assertSame(404, $response->getStatusCode(), (string) $response->getContent());
+  }
+
+  /**
+   * Tests that the `bundle` parameter flag applies to both ID and UUID values.
+   */
+  public function testAutoEntityConverterHonorsBundleForUuid(): void {
+    $article = Node::create([
+      'type' => 'article',
+      'title' => $this->randomString(),
+      'uid' => $this->account->id(),
+    ]);
+    $article->save();
+    $reminder = Node::create([
+      'type' => 'reminder',
+      'title' => $this->randomString(),
+      'uid' => $this->account->id(),
+    ]);
+    $reminder->save();
+
+    $converter = $this->container->get('paramconverter.jsonapi_resources.entity_auto');
+    $definition = ['type' => 'entity:node', 'bundle' => ['article']];
+
+    $this->assertSame($article->id(), $converter->convert($article->id(), $definition, 'node', [])->id());
+    $this->assertSame($article->id(), $converter->convert($article->uuid(), $definition, 'node', [])->id());
+    $this->assertNull($converter->convert($reminder->id(), $definition, 'node', []));
+    $this->assertNull($converter->convert($reminder->uuid(), $definition, 'node', []));
   }
 
   /**
@@ -1040,7 +1128,7 @@ final class JsonapiResourceTest extends JsonapiKernelTestBase {
           'meta' => [
             'links' => [
               'self' => [
-                'href' => 'http://jsonapi.org/format/1.1/',
+                'href' => JsonApiSpec::SUPPORTED_SPECIFICATION_PERMALINK,
               ],
             ],
           ],
@@ -1754,7 +1842,7 @@ final class JsonapiResourceTest extends JsonapiKernelTestBase {
           'meta' => [
             'links' => [
               'self' => [
-                'href' => 'http://jsonapi.org/format/1.1/',
+                'href' => JsonApiSpec::SUPPORTED_SPECIFICATION_PERMALINK,
               ],
             ],
           ],
@@ -2791,6 +2879,7 @@ final class JsonapiResourceTest extends JsonapiKernelTestBase {
     // size — the select count query must ignore the paginator's range.
     $this->assertSame(3, $document['meta']['count'] ?? NULL);
     // The `last` link points at the final page (offset 2 for a page size of 2).
+    // cspell:disable-next-line
     $this->assertStringContainsString('page%5Boffset%5D=2', $document['links']['last']['href']);
 
     // Follow the next link: should yield article[1] only (1 comment), no

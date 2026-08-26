@@ -166,24 +166,19 @@ class Vote extends ContentEntityBase implements VoteInterface {
   /**
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $fields */
-    $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(new TranslatableMarkup('ID'))
-      ->setDescription(new TranslatableMarkup('The vote ID.'))
-      ->setReadOnly(TRUE)
-      ->setSetting('unsigned', TRUE);
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(new TranslatableMarkup('UUID'))
-      ->setDescription(new TranslatableMarkup('The vote UUID.'))
-      ->setReadOnly(TRUE);
+    // Override parent id description.
+    $fields['id']->setDescription(new TranslatableMarkup('The vote ID.'));
 
-    $fields['type'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new TranslatableMarkup('Type'))
-      ->setDescription(new TranslatableMarkup('The vote type.'))
-      ->setSetting('target_type', 'vote_type')
-      ->setReadOnly(TRUE);
+    // Override parent uuid description.
+    $fields['uuid']->setDescription(new TranslatableMarkup('The vote UUID.'));
+
+    // Override the parent bundle label and description.
+    $fields['type']->setLabel(new TranslatableMarkup('Type'))
+      ->setDescription(new TranslatableMarkup('The vote type.'));
 
     $fields['entity_type'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Entity Type'))

@@ -8,7 +8,7 @@ dependencies:
   - 'charts:charts_highcharts'
   - 'charts:charts_api_example'
 
-# Information added by Drupal.org packaging script on 2026-06-23
-version: '5.2.2'
+# Information added by Drupal.org packaging script on 2026-08-04
+version: '5.2.3'
 project: 'charts'
-datestamp: 1782213254
+datestamp: 1785875201

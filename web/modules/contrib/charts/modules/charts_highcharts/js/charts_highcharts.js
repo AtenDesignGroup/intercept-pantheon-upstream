@@ -25,7 +25,6 @@
 
           config.chart.renderTo = id;
           Drupal.highchartsCharts.instances[id] = new Highcharts.Chart(config);
-          new Highcharts.Chart(config);
           if (
             element.nextElementSibling &&
             element.nextElementSibling.hasAttribute(

@@ -32,7 +32,7 @@ trait EventRegistrationRecipientSubformTrait {
         '#title' => $this->t('Custom email address'),
         '#type' => 'textfield',
         '#default_value' => $this->configuration['user_email_other'],
-        '#description' => $this->t('Multiple email addresses may be separated by commas. @token', ['@token' => $this->getTokenDescription()]),
+        '#description' => $this->t('Multiple email addresses may be separated by commas. @token', ['@token' => $this->getTokenDescription() ?: '']),
         '#states' => [
           'visible' => [
             ':input[name="email[' . $this->pluginDefinition['id'] . '][user][other]"]' => ['checked' => TRUE],

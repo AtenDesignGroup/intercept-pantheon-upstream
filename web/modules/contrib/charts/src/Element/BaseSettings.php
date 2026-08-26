@@ -2,6 +2,7 @@
 
 namespace Drupal\charts\Element;
 
+use Drupal\charts\TypeManager;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -12,6 +13,7 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\charts\ColorHelperTrait;
+use Drupal\charts\Plugin\chart\Library\ChartInterface;
 use Drupal\views\Views;
 
 /**
@@ -780,6 +782,50 @@ class BaseSettings extends FormElementBase {
   }
 
   /**
+   * Gets the chart types usable as a per-series override for a library.
+   *
+   * Only dual-axis (xy) types can be mixed within a single chart, so
+   * single-axis types (pie, donut, gauge) are excluded.
+   *
+   * @param string $library_plugin_id
+   *   The library plugin id.
+   * @param string $base_type_id
+   *   The base type id.
+   * @param \Drupal\charts\TypeManager $chart_type_plugin_manager
+   *   The Chart Type manager.
+   *
+   * @return array
+   *   An array of type id => label.
+   */
+  protected static function getCombinableChartTypes(string $library_plugin_id, string $base_type_id, TypeManager $chart_type_plugin_manager): array {
+    $type_options = self::getChartTypes($library_plugin_id);
+    if (!$type_options) {
+      return [];
+    }
+    // Coordinate types (scatter, bubble, heatmap) and multi-value types
+    // (candlestick, boxplot) use a different per-point data shape and cannot be
+    // mixed with plain value-per-category series in one data-collector table.
+    $multi_value_types = ['scatter', 'bubble', 'candlestick', 'boxplot'];
+    // Series can only be combined when they share the base type's axis
+    // orientation, so inverted types (e.g. bar) are not offered alongside
+    // non-inverted ones (e.g. column, line).
+    $base_definition = $base_type_id ? $chart_type_plugin_manager->getDefinition($base_type_id, FALSE) : NULL;
+    $base_inverted = !empty($base_definition['axis_inverted']);
+    foreach (array_keys($type_options) as $type_id) {
+      $definition = $chart_type_plugin_manager->getDefinition($type_id, FALSE);
+      if (!$definition
+        || ($definition['axis'] ?? '') !== ChartInterface::DUAL_AXIS
+        || !empty($definition['coordinate'])
+        || in_array($type_id, $multi_value_types, TRUE)
+        || (!empty($definition['axis_inverted']) !== $base_inverted)
+      ) {
+        unset($type_options[$type_id]);
+      }
+    }
+    return $type_options;
+  }
+
+  /**
    * Gets the configured site default library chart plugin id.
    *
    * @return string
@@ -1417,7 +1463,7 @@ class BaseSettings extends FormElementBase {
       ],
       '#operation' => 'add',
       '#element_state_indexes_key' => $state_color_indexes_key,
-      '#array_slicing_args' => ['offset' => 0, 'length' => -4],
+      '#array_slicing_args' => ['offset' => 0, 'length' => -5],
     ];
 
     $element['display']['color_changer'] = [
@@ -1500,7 +1546,14 @@ class BaseSettings extends FormElementBase {
       // @todo check if this would work with various hooks.
       $chart_build['#chart_id'] = $chart_id;
       $chart_build['#in_preview_mode'] = TRUE;
-      $element['preview']['content'] = $chart_build;
+      $element['preview']['content'] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['charts-preview-viewport'],
+          'style' => 'width:100%;max-width:100%;contain:inline-size',
+        ],
+        'chart' => $chart_build,
+      ];
     }
     else {
       $element['preview']['content'] = [
@@ -1511,6 +1564,21 @@ class BaseSettings extends FormElementBase {
     if (!empty($element['#default_value'])) {
       $options = NestedArray::mergeDeep($options, $element['#default_value']);
     }
+    // Per-series chart type overrides only make sense for dual-axis charts
+    // (single-axis types like pie/gauge cannot mix series types). When the base
+    // type is dual-axis, offer the combinable types the selected library
+    // supports; otherwise leave the options empty so no control is rendered.
+    $series_type_options = [];
+    $selected_library = $options['library'] ?? '';
+    $selected_type = $options['type'] ?? '';
+    if ($selected_library && $selected_type) {
+      $type_manager = \Drupal::service('plugin.manager.charts_type');
+      $base_type_definition = $type_manager->getDefinition($selected_type, FALSE);
+      if ($base_type_definition && ($base_type_definition['axis'] ?? '') === ChartInterface::DUAL_AXIS) {
+        $series_type_options = self::getCombinableChartTypes($selected_library, $selected_type, $type_manager);
+      }
+    }
+
     $element['series'] = [
       '#type' => 'chart_data_collector_table',
       '#initial_rows' => $element['#table_initial_rows'] ?? 5,
@@ -1518,6 +1586,7 @@ class BaseSettings extends FormElementBase {
       '#table_drag' => FALSE,
       '#default_value' => $options['series'] ?? [],
       '#default_colors' => $options['display']['colors'] ?? [],
+      '#series_type_options' => $series_type_options,
     ];
 
     return $element;

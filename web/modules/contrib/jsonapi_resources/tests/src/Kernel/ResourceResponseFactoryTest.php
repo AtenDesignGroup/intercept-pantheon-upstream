@@ -289,6 +289,163 @@ final class ResourceResponseFactoryTest extends KernelTestBase {
   }
 
   /**
+   * Include path valid for a route resource type absent from the data set.
+   *
+   * Regression test for #3172884: when the route declares a resource type that
+   * has a relationship field, but the actual data contains no resource objects
+   * of that type, the include must not raise a 400 — it should just produce
+   * empty includes for that path.
+   *
+   * @covers ::create
+   */
+  public function testCreateIncludeValidForRouteTypeAbsentFromData(): void {
+    $article1 = Node::create([
+      'uuid' => self::NODE_ARTICLE_1_UUID,
+      'type' => 'article',
+      'title' => $this->randomString(),
+      'status' => 1,
+    ]);
+    $article1->save();
+    $event = Node::create([
+      'type' => 'event',
+      'title' => $this->randomString(),
+      'status' => 1,
+    ]);
+    $event->save();
+
+    $resource_type_repository = $this->container->get('jsonapi.resource_type.repository');
+    self::assertInstanceOf(ResourceTypeRepositoryInterface::class, $resource_type_repository);
+
+    // Route declares article, page, and event. Page owns
+    // field_related_articles. Data contains only article + event — no page.
+    $route_resource_types = [
+      $resource_type_repository->get('node', 'article'),
+      $resource_type_repository->get('node', 'page'),
+      $resource_type_repository->get('node', 'event'),
+    ];
+    $resource_objects = [
+      ResourceObject::createFromEntity($route_resource_types[0], $article1),
+      ResourceObject::createFromEntity($route_resource_types[2], $event),
+    ];
+
+    $request = Request::create('/foo?include=field_related_articles');
+    $request->attributes->set('resource_types', $route_resource_types);
+
+    $sut = $this->container->get('jsonapi_resources.resource_response_factory');
+    $response = $sut->create(
+      new ResourceObjectData($resource_objects),
+      $request
+    );
+
+    self::assertInstanceOf(CacheableResourceResponse::class, $response);
+    $document_top_level = $response->getResponseData();
+    self::assertInstanceOf(JsonApiDocumentTopLevel::class, $document_top_level);
+    self::assertSame([], $document_top_level->getIncludes()->toArray());
+  }
+
+  /**
+   * All include paths are resolved in one resolver call per data group.
+   *
+   * Resolving each include path with its own resolver call re-walks the data
+   * for every path, re-creating every intermediate resource object each time.
+   * On deep include fan-outs this multiplies memory use by the number of
+   * paths and can exhaust PHP memory. The resolver already accepts a
+   * comma-separated list and merges it into a single include tree, so each
+   * group of resource objects must be resolved exactly once.
+   *
+   * @covers ::create
+   */
+  public function testIncludePathsResolvedOncePerGroup(): void {
+    $article1 = Node::create([
+      'uuid' => self::NODE_ARTICLE_1_UUID,
+      'type' => 'article',
+      'title' => $this->randomString(),
+      'status' => 1,
+    ]);
+    $article1->save();
+    $article2 = Node::create([
+      'uuid' => self::NODE_ARTICLE_2_UUID,
+      'type' => 'article',
+      'title' => $this->randomString(),
+      'status' => 1,
+    ]);
+    $article2->save();
+    $page = Node::create([
+      'type' => 'page',
+      'title' => $this->randomString(),
+      'status' => 1,
+      'field_related_articles' => [$article1->id(), $article2->id()],
+    ]);
+    $page->save();
+    $event = Node::create([
+      'type' => 'event',
+      'title' => $this->randomString(),
+      'status' => 1,
+    ]);
+    $event->save();
+
+    $counting_resolver = new CountingIncludeResolver($this->container->get('jsonapi.include_resolver'));
+    // Decoration makes the concrete decorator id the target of compiled
+    // references, so override both ids and drop the already-instantiated
+    // factory so it is rebuilt with the counting resolver.
+    $this->container->set('jsonapi.include_resolver', $counting_resolver);
+    $this->container->set('jsonapi_resources.include_resolver', $counting_resolver);
+    $this->container->set('jsonapi_resources.resource_response_factory', NULL);
+
+    $resource_type_repository = $this->container->get('jsonapi.resource_type.repository');
+    self::assertInstanceOf(ResourceTypeRepositoryInterface::class, $resource_type_repository);
+
+    $entities = [$article1, $page, $article2, $event];
+    $resource_types = [];
+    $resource_objects = [];
+    foreach ($entities as $entity) {
+      $resource_type = $resource_type_repository->get($entity->getEntityTypeId(), $entity->bundle());
+      $resource_types[$resource_type->getTypeName()] = $resource_type;
+      $resource_objects[] = ResourceObject::createFromEntity($resource_type, $entity);
+    }
+
+    // "node_type" applies to all three groups, "field_related_articles" only
+    // to the page group.
+    $request = Request::create('/foo?include=field_related_articles,node_type');
+    $request->attributes->set('resource_types', array_values($resource_types));
+
+    $sut = $this->container->get('jsonapi_resources.resource_response_factory');
+    $injected = (new \ReflectionProperty($sut, 'includeResolver'))->getValue($sut);
+    self::assertInstanceOf(CountingIncludeResolver::class, $injected);
+    $response = $sut->create(
+      new ResourceObjectData($resource_objects),
+      $request
+    );
+    self::assertInstanceOf(CacheableResourceResponse::class, $response);
+
+    // One call per data group (article, page, event) — not one per group and
+    // include path combination.
+    self::assertSame(3, $counting_resolver->resolveCalls);
+
+    $document_top_level = $response->getResponseData();
+    self::assertInstanceOf(JsonApiDocumentTopLevel::class, $document_top_level);
+    /** @var \Drupal\jsonapi\JsonApiResource\ResourceIdentifierInterface[] $includes_data */
+    $includes_data = $document_top_level->getIncludes()->toArray();
+    $includes_data = array_map(
+      static fn (ResourceIdentifierInterface $identifier) => [
+        'id' => $identifier->getId(),
+        'type' => $identifier->getTypeName(),
+      ],
+      $includes_data
+    );
+    self::assertEqualsCanonicalizing(
+      [
+        ['id' => self::NODE_TYPE_ARTICLE_UUID, 'type' => 'node_type--node_type'],
+        ['id' => self::NODE_TYPE_PAGE_UUID, 'type' => 'node_type--node_type'],
+        ['id' => self::NODE_TYPE_EVENT_UUID, 'type' => 'node_type--node_type'],
+        ['id' => self::NODE_ARTICLE_1_UUID, 'type' => 'node--article'],
+        ['id' => self::NODE_ARTICLE_2_UUID, 'type' => 'node--article'],
+      ],
+      $includes_data
+    );
+  }
+
+  /**
    * Test data for testCreate.
    *
    * @return array[]

@@ -423,6 +423,9 @@ class Chart extends RenderElementBase implements ContainerFactoryPluginInterface
         if (!empty($data['color'])) {
           $element[$key]['#color'] = $data['color'];
         }
+        if (!empty($data['chart_type'])) {
+          $element[$key]['#chart_type'] = $data['chart_type'];
+        }
         if (isset($element['yaxis'])) {
           $element[$key]['#prefix'] = $settings['yaxis']['prefix'];
           $element[$key]['#suffix'] = $settings['yaxis']['suffix'];

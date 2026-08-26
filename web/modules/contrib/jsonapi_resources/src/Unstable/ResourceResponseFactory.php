@@ -126,10 +126,50 @@ final class ResourceResponseFactory {
 
     /** @var \Drupal\jsonapi\ResourceType\ResourceType[] $route_resource_types */
     $route_resource_types = $request->attributes->get('resource_types');
-    $relatable_resource_types = array_map(
-      static fn (ResourceType $type) => array_keys($type->getRelatableResourceTypes()),
-      $route_resource_types
+
+    $include_paths = array_map('trim', explode(',', $include_parameter));
+    $exploded_paths = array_map(
+      static fn (string $include_path) => array_map('trim', explode('.', $include_path)),
+      $include_paths
     );
+
+    // Validate include paths against the union of route resource types.
+    // A path is valid if it can be walked against the relatable graph of at
+    // least one route resource type, regardless of which types are actually
+    // present in the response data.
+    $invalid_include_paths = [];
+    foreach ($include_paths as $index => $include_path) {
+      $path_parts = $exploded_paths[$index];
+      $valid_for_route = FALSE;
+      foreach ($route_resource_types as $route_resource_type) {
+        if (self::isIncludePathValidForResourceType($path_parts, $route_resource_type)) {
+          $valid_for_route = TRUE;
+          break;
+        }
+      }
+      if (!$valid_for_route) {
+        $invalid_include_paths[] = $include_path;
+      }
+    }
+
+    if (count($invalid_include_paths) > 0) {
+      // @see \Drupal\jsonapi\Context\FieldResolver::resolveInternalIncludePath().
+      $message = sprintf(
+        '%s are not valid relationship names.',
+        implode(',', array_map(static fn (string $path) => "`$path`", $invalid_include_paths))
+      );
+      $relatable_field_names = array_map(
+        static fn (ResourceType $type) => array_keys($type->getRelatableResourceTypes()),
+        $route_resource_types
+      );
+      if (count($relatable_field_names) > 0) {
+        $message .= sprintf(' Possible values: %s', implode(', ', array_unique(array_merge(...array_values($relatable_field_names)))));
+      }
+      throw new CacheableBadRequestHttpException(
+        (new CacheableMetadata())->addCacheContexts(['url.query_args:include']),
+        $message
+      );
+    }
 
     // Group resource objects to optimize IncludeResolver::toIncludeTree.
     $resource_objects_by_type = [];
@@ -138,39 +178,26 @@ final class ResourceResponseFactory {
       $resource_objects_by_type[$resource_object->getTypeName()][] = $resource_object;
     }
 
-    $include_paths = array_map('trim', explode(',', $include_parameter));
-    $unresolved_include_paths = [];
+    // Resolve includes from the actual data. A path that is valid for the
+    // route but not for a given data group simply contributes nothing.
+    // All applicable paths are resolved in a single call per group: the
+    // include resolver merges them into one tree and walks the data once,
+    // instead of re-walking (and re-creating every intermediate resource
+    // object of) the data for each path.
     $included_data = [];
     foreach ($resource_objects_by_type as $resource_objects) {
-      foreach ($include_paths as $include_path) {
-        try {
-          $included_data[] = $this->includeResolver->resolve(
-            new ResourceObjectData($resource_objects),
-            $include_path
-          );
-          $unresolved_include_paths[$include_path] = FALSE;
-        }
-        catch (\Exception) {
-          if (!isset($unresolved_include_paths[$include_path])) {
-            $unresolved_include_paths[$include_path] = TRUE;
-          }
-        }
-      }
-    }
-
-    if (count(array_filter($unresolved_include_paths)) > 0) {
-      // Throw an error if invalid include paths provided.
-      // @see \Drupal\jsonapi\Context\FieldResolver::resolveInternalIncludePath().
-      $message = sprintf(
-        '%s are not valid relationship names.',
-        implode(',', array_map(static fn (string $path) => "`$path`", array_keys($unresolved_include_paths)))
+      $resource_type = $resource_objects[0]->getResourceType();
+      $applicable_paths = array_filter(
+        $include_paths,
+        static fn (int $index) => self::isIncludePathValidForResourceType($exploded_paths[$index], $resource_type),
+        ARRAY_FILTER_USE_KEY
       );
-      if (count($relatable_resource_types) > 0) {
-        $message .= sprintf(' Possible values: %s', implode(', ', array_unique(array_merge(...array_values($relatable_resource_types)))));
+      if ($applicable_paths === []) {
+        continue;
       }
-      throw new CacheableBadRequestHttpException(
-        (new CacheableMetadata())->addCacheContexts(['url.query_args:include']),
-        $message
+      $included_data[] = $this->includeResolver->resolve(
+        new ResourceObjectData($resource_objects),
+        implode(',', $applicable_paths)
       );
     }
 
@@ -181,6 +208,34 @@ final class ResourceResponseFactory {
     );
 
     return IncludedData::deduplicate($included_data);
+  }
+
+  /**
+   * Walks an include path against a resource type's relatable graph.
+   *
+   * @param string[] $path_parts
+   *   The include path split on `.`.
+   * @param \Drupal\jsonapi\ResourceType\ResourceType $resource_type
+   *   The resource type to walk against.
+   *
+   * @return bool
+   *   TRUE if every segment resolves to a relatable field on the chain.
+   */
+  private static function isIncludePathValidForResourceType(array $path_parts, ResourceType $resource_type): bool {
+    if (empty($path_parts)) {
+      return TRUE;
+    }
+    $field = array_shift($path_parts);
+    $relatable = $resource_type->getRelatableResourceTypesByField($field);
+    if (empty($relatable)) {
+      return FALSE;
+    }
+    foreach ($relatable as $next_resource_type) {
+      if (self::isIncludePathValidForResourceType($path_parts, $next_resource_type)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }

@@ -52,7 +52,7 @@
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.26.3",
     "terser-webpack-plugin": "^5.3.11",
-    "webpack": "^5.98.0",
+    "webpack": "^5.105.0",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "^6.0.1",
     "webpack-merge": "^6.0.1"

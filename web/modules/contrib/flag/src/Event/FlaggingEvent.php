@@ -10,21 +10,9 @@ use Drupal\flag\FlaggingInterface;
  */
 class FlaggingEvent extends Event {
 
-  /**
-   * The flagging in question.
-   *
-   * @var \Drupal\flag\FlaggingInterface
-   */
-  protected $flagging;
-
-  /**
-   * Builds a new FlaggingEvent.
-   *
-   * @param \Drupal\flag\FlaggingInterface $flagging
-   *   The flagging.
-   */
-  public function __construct(FlaggingInterface $flagging) {
-    $this->flagging = $flagging;
+  public function __construct(
+    protected FlaggingInterface $flagging,
+  ) {
   }
 
   /**

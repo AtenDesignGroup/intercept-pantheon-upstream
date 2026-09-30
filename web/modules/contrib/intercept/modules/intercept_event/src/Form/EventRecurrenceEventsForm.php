@@ -70,7 +70,7 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL, RecurringEventManager $recurring_event_manager, Dates $date_utility, ReservationManagerInterface $reservation_manager, MessengerInterface $messenger) {
+  public function __construct(EntityRepositoryInterface $entity_repository, RecurringEventManager $recurring_event_manager, Dates $date_utility, ReservationManagerInterface $reservation_manager, MessengerInterface $messenger, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, ?TimeInterface $time = NULL) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->recurringEventManager = $recurring_event_manager;
     $this->dateUtility = $date_utility;
@@ -84,12 +84,12 @@ class EventRecurrenceEventsForm extends ContentEntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.repository'),
-      $container->get('entity_type.bundle.info'),
-      $container->get('datetime.time'),
       $container->get('intercept_event.recurring_manager'),
       $container->get('intercept_core.utility.dates'),
       $container->get('intercept_core.reservation.manager'),
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time')
     );
   }
 

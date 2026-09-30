@@ -206,7 +206,6 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
     $storage = \Drupal::entityTypeManager()->getStorage('flagging');
     $flag_ids = $storage->loadIsFlagged($entity, $account, $session_id);
     return isset($flag_ids[$this->id()]);
-
   }
 
   /**
@@ -261,7 +260,8 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
     if (!$this->flagTypeCollection) {
       $this->flagTypeCollection = new DefaultSingleLazyPluginCollection(
         \Drupal::service('plugin.manager.flag.flagtype'),
-        $this->flag_type, $this->flagTypeConfig
+        $this->flag_type,
+        $this->flagTypeConfig
       );
     }
     return $this->flagTypeCollection;
@@ -283,7 +283,8 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
     // Workaround for https://www.drupal.org/node/2288805
     $this->flagTypeCollection = new DefaultSingleLazyPluginCollection(
       \Drupal::service('plugin.manager.flag.flagtype'),
-      $this->flag_type, $this->flagTypeConfig
+      $this->flag_type,
+      $this->flagTypeConfig
     );
 
     // Get the entity type from the plugin definition.
@@ -309,8 +310,7 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
   protected function getLinkTypeCollection() {
     if (!$this->linkTypeCollection) {
       $this->linkTypeCollection = new DefaultSingleLazyPluginCollection(
-        \Drupal::service('plugin.manager.flag.linktype'),
-        $this->link_type, $this->linkTypeConfig
+        \Drupal::service('plugin.manager.flag.linktype'), $this->link_type, $this->linkTypeConfig
       );
     }
     return $this->linkTypeCollection;
@@ -326,7 +326,8 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
     // Workaround for https://www.drupal.org/node/2288805
     $this->linkTypeCollection = new DefaultSingleLazyPluginCollection(
       \Drupal::service('plugin.manager.flag.linktype'),
-      $this->link_type, $this->linkTypeConfig
+      $this->link_type,
+      $this->linkTypeConfig
     );
   }
 
@@ -342,7 +343,8 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
    */
   public function actionAccess($action, ?AccountInterface $account = NULL, ?EntityInterface $flaggable = NULL) {
     $account = $account ?: \Drupal::currentUser();
-    return $this->getFlagTypePlugin()->actionAccess($action, $this, $account, $flaggable);
+    return $this->getFlagTypePlugin()
+      ->actionAccess($action, $this, $account, $flaggable);
   }
 
   /**
@@ -350,25 +352,6 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
    */
   public function isGlobal() {
     return $this->global;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setGlobal($global = TRUE) {
-    if ($global) {
-      $this->global = TRUE;
-    }
-    else {
-      $this->global = FALSE;
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setFlagShortText($text) {
-    $this->flag_short = $text;
   }
 
   /**
@@ -388,43 +371,8 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
   /**
    * {@inheritdoc}
    */
-  public function setFlagLongText($flag_long) {
-    $this->flag_long = $flag_long;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getMessage($action) {
     return $action === 'unflag' ? $this->unflag_message : $this->flag_message;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setFlagMessage($flag_message) {
-    $this->flag_message = $flag_message;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUnflagLongText($unflag_long) {
-    $this->unflag_long = $unflag_long;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUnflagMessage($unflag_message) {
-    $this->unflag_message = $unflag_message;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUnflagShortText($unflag_short) {
-    $this->unflag_short = $unflag_short;
   }
 
   /**
@@ -437,22 +385,8 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
   /**
    * {@inheritdoc}
    */
-  public function setUnflagDeniedText($unflag_denied_text) {
-    $this->unflag_denied_text = $unflag_denied_text;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getWeight() {
     return $this->weight;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setWeight($weight) {
-    $this->weight = $weight;
   }
 
   /**
@@ -527,10 +461,8 @@ class Flag extends ConfigEntityBundleBase implements FlagInterface {
    * @see \Drupal\Core\Config\Entity\ConfigEntityBase::sort()
    */
   public static function sort(ConfigEntityInterface $a, ConfigEntityInterface $b) {
-
     // Check if the entities are flags, if not go with the default.
     if ($a instanceof FlagInterface && $b instanceof FlagInterface) {
-
       if ($a->status() && $b->status()) {
         return parent::sort($a, $b);
       }

@@ -3,6 +3,9 @@
 namespace Drupal\charts\Element;
 
 use Drupal\Component\Utility\Environment;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InsertCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Unicode;
@@ -48,6 +51,12 @@ class ChartDataCollectorTable extends FormElementBase {
       // Optional per-series chart type override options, as [type_id => label].
       // When empty (the default), no per-series type control is rendered.
       '#series_type_options' => [],
+      // Other parts of the form that are derived from this table's contents and
+      // must therefore be refreshed whenever the table changes. Each item is an
+      // associative array with two keys:
+      // - wrapper_id: the HTML id of the element to replace.
+      // - array_parents: the #array_parents of the element in the form.
+      '#ajax_companions' => [],
       '#process' => [
         [$class, 'processDataCollectorTable'],
       ],
@@ -293,9 +302,12 @@ class ChartDataCollectorTable extends FormElementBase {
           'class' => ['data-collector-table--row--move-up'],
         ]);
       }
-      $row_form['operations']['delete'] = self::buildOperationButton('delete', 'row', $id_prefix, $wrapper_id, $i, [], [
-        'class' => ['data-collector-table--row--delete'],
-      ]);
+      $is_single_row = count($element_state['data_collector_table']) === 1;
+      if (!$is_single_row) {
+        $row_form['operations']['delete'] = self::buildOperationButton('delete', 'row', $id_prefix, $wrapper_id, $i, [], [
+          'class' => ['data-collector-table--row--delete'],
+        ]);
+      }
       if (!$is_last_data_row) {
         $row_form['operations']['move_down'] = self::buildOperationButton('move_down', 'row', $id_prefix, $wrapper_id, $i, [], [
           'class' => ['data-collector-table--row--move-down'],
@@ -342,9 +354,13 @@ class ChartDataCollectorTable extends FormElementBase {
           'class' => ['data-collector-table--column--move-left'],
         ]);
       }
-      $table['_delete_column_buttons'][$column]['delete'] = self::buildOperationButton('delete', 'column', $id_prefix, $wrapper_id, $column, [], [
-        'class' => ['data-collector-table--column--delete'],
-      ]);
+      $first_row = current($element_state['data_collector_table']);
+      $is_single_column = count($first_row) === 1;
+      if (!$is_single_column) {
+        $table['_delete_column_buttons'][$column]['delete'] = self::buildOperationButton('delete', 'column', $id_prefix, $wrapper_id, $column, [], [
+          'class' => ['data-collector-table--column--delete'],
+        ]);
+      }
       if ($column !== $max_column) {
         $table['_delete_column_buttons'][$column]['move_right'] = self::buildOperationButton('move_right', 'column', $id_prefix, $wrapper_id, $column, [], [
           'class' => ['data-collector-table--column--move-right'],
@@ -503,7 +519,41 @@ class ChartDataCollectorTable extends FormElementBase {
       $length = -4;
     }
     $element_parents = array_slice($triggering_element['#array_parents'], 0, $length);
-    return NestedArray::getValue($form, $element_parents);
+    $element = NestedArray::getValue($form, $element_parents);
+
+    // Elements outside this one can be derived from the table's contents (for
+    // example the plot lines section, whose rows are the table's series). They
+    // register themselves through #ajax_companions so that they are refreshed
+    // in the same request; otherwise they would keep showing stale data until
+    // the form is saved and re-opened.
+    $companions = $element['#ajax_companions'] ?? [];
+    if (!$companions) {
+      return $element;
+    }
+
+    // No server-computed id can address this element's own wrapper reliably.
+    // #wrapper_id comes from Html::getUniqueId(), whose registry of issued ids
+    // is per request, so the id produced during an AJAX rebuild need not match
+    // the one in the DOM; #ajax['wrapper'] on the rebuilt triggering element
+    // has the same problem. A command carrying either one can silently match
+    // nothing, leaving the browser showing a table that the server has already
+    // changed. Passing a NULL selector is what returning a render array does
+    // internally: the client falls back to the wrapper and method recorded in
+    // its own Drupal.Ajax settings, which are the values the page was actually
+    // rendered with.
+    $response = new AjaxResponse();
+    $response->addCommand(new InsertCommand(NULL, $element));
+    foreach ($companions as $companion) {
+      if (empty($companion['wrapper_id']) || empty($companion['array_parents'])) {
+        continue;
+      }
+      $companion_element = NestedArray::getValue($form, $companion['array_parents']);
+      if ($companion_element) {
+        $response->addCommand(new ReplaceCommand('#' . $companion['wrapper_id'], $companion_element));
+      }
+    }
+
+    return $response;
   }
 
   /**

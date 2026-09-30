@@ -7,6 +7,7 @@ namespace Drupal\Tests\flag\FunctionalJavascript;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\flag\Traits\FlagCreateTrait;
 use Drupal\Tests\flag\Traits\FlagPermissionsTrait;
+use Drupal\user\Entity\Role;
 
 /**
  * Javascript test for AjaxLinks.
@@ -152,6 +153,42 @@ class AjaxLinkTest extends WebDriverTestBase {
     // Verify the cycle completes and flag returns.
     $flag_link2 = $session->getPage()->findLink($this->flag->getShortText('flag'));
     $this->assertTrue($flag_link2->isVisible(), 'flag cycle return to start.');
+
+  }
+
+  /**
+   * Test anonymous role sees flag message when permission to unflag not set.
+   */
+  public function testAnonymousMessage() {
+    $this->drupalLogout();
+    // Grant the anonymous role permission to flag.
+    /** @var \Drupal\user\RoleInterface $anonymousRole */
+    $anonymousRole = Role::load(Role::ANONYMOUS_ID);
+    $anonymousRole->grantPermission('flag ' . $this->flag->id());
+    $anonymousRole->save();
+
+    // Get Page.
+    $this->drupalGet('/node/' . $this->node->id());
+
+    // Verify flag link is on the page.
+    $page = $this->getSession()->getPage();
+    $flagLink = $page->findLink($this->flag->getShortText('flag'));
+    $this->assertTrue($flagLink->isVisible(), 'flag link exists.');
+
+    // Click the flag link.
+    $flagLink->click();
+
+    // Verify flags message appears.
+    $flagMessage = $this->flag->getMessage('flag');
+    $p_flash = $this->assertSession()->waitForElementVisible('css', 'p.js-flag-message');
+    $this->assertEquals($flagMessage, $p_flash->getText(), 'DOM update(1): The flag message is flashed.');
+
+    $this->assertSession()->assertNoElementAfterWait('css', 'p.js-flag-message');
+    $this->assertSession()->elementTextEquals('css', '#drupal-live-announce', $flagMessage);
+
+    // Verify unflag link does not exists.
+    $unflagLink = $this->getSession()->getPage()->findLink($this->flag->getShortText('unflag'));
+    $this->assertNull($unflagLink);
 
   }
 

@@ -17,6 +17,7 @@ use Drupal\charts\Element\BaseSettings;
 use Drupal\charts\Plugin\chart\Library\ChartInterface;
 use Drupal\charts\Plugin\chart\Library\LibraryRetrieverTrait;
 use Drupal\charts\TypeManager;
+use Drupal\charts\Util\Util;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\views\Attribute\ViewsStyle;
 use Drupal\views\Plugin\views\field\EntityField;
@@ -422,6 +423,8 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
         '#min' => $chart_settings['yaxis']['min'],
       ];
 
+      $this->attachPlotLines($chart, $chart_settings);
+
       $view_records = $this->view->result;
       $sets = $this->renderGrouping($view_records, $this->options['grouping'], TRUE);
       if ($is_grouped) {
@@ -667,6 +670,59 @@ class ChartsPluginStyleChart extends StylePluginBase implements ContainerFactory
     $dependencies['module'] = [$plugin_definition['provider']];
 
     return $dependencies;
+  }
+
+  /**
+   * Attaches plot lines from the style settings to the chart axes.
+   *
+   * For every view field enabled as a plot line in the settings, the line is
+   * drawn at the value the field provides. Charts does not aggregate here: the
+   * value is expected to come ready-made from the field's own Views
+   * aggregation, from a module such as views_descriptive_statistics, or from a
+   * source column that already holds the computed figure. The first row that
+   * yields a numeric value is therefore used.
+   *
+   * @param array $chart
+   *   The chart render element, with xaxis and yaxis children already built.
+   * @param array $chart_settings
+   *   The chart settings.
+   */
+  protected function attachPlotLines(array &$chart, array $chart_settings): void {
+    if (empty($chart_settings['plot_lines']['sources'])) {
+      return;
+    }
+
+    foreach ($chart_settings['plot_lines']['sources'] as $field_key => $plot_line_settings) {
+      if (empty($plot_line_settings['enabled']) || empty($this->view->field[$field_key])) {
+        continue;
+      }
+      // Array-based fields (scatter, bubble, numeric array) do not provide a
+      // scalar value a plot line could be drawn at.
+      if ($this->fieldProvidesArrayData($field_key)) {
+        continue;
+      }
+
+      $value = NULL;
+      foreach (array_keys($this->view->result) as $row_number) {
+        $value = Util::firstNumericValue([$this->processNumberValueFromField($row_number, $field_key)]);
+        if ($value !== NULL) {
+          break;
+        }
+      }
+      if ($value === NULL) {
+        continue;
+      }
+
+      $plot_line = [
+        'value' => $value,
+        'label' => $plot_line_settings['label_text'] ?? '',
+        'color' => $plot_line_settings['color'] ?? '',
+      ];
+      $axis_key = ($plot_line_settings['orientation'] ?? 'horizontal') === 'vertical' ? 'xaxis' : 'yaxis';
+      if (isset($chart[$axis_key])) {
+        $chart[$axis_key]['#plot_lines'][] = $plot_line;
+      }
+    }
   }
 
   /**

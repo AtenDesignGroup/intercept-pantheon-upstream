@@ -41,6 +41,13 @@ class InlineLinksTest extends FlagTestBase {
   protected $flag;
 
   /**
+   * The second flag under test.
+   *
+   * @var \Drupal\flag\FlagInterface
+   */
+  protected $secondFlag;
+
+  /**
    * The node to be flagged and unflagged.
    *
    * @var \Drupal\node\NodeInterface
@@ -120,6 +127,27 @@ class InlineLinksTest extends FlagTestBase {
     // Grant flag permissions.
     $this->grantFlagPermissions($this->flag);
 
+    // Create a second flag that will be used for weights testing.
+    $second_edit = [
+      'id' => 'second_inline_flag',
+      'label' => 'second inline flag',
+      'flag_short' => 'Second Flag Inline links',
+      'unflag_short' => 'Second Unflag Inline links',
+      'show_as_field' => FALSE,
+      'show_in_links[full]' => 'full',
+      "bundles[$this->nodeType]" => $this->nodeType,
+    ];
+
+    // Create the flag with the AJAX link type using the form.
+    $this->secondFlag = $this->createFlagWithForm('node', $second_edit);
+    $set_weight['flags[' . $this->secondFlag->id() . '][weight]'] = 1;
+    // Save the new weight.
+    $this->drupalGet('admin/structure/flags');
+    $this->submitForm($set_weight, 'Save');
+
+    // Grant flag permissions.
+    $this->grantFlagPermissions($this->secondFlag);
+
     // Log in as regular user.
     $this->drupalLogin($this->user1);
 
@@ -145,6 +173,46 @@ class InlineLinksTest extends FlagTestBase {
     drupal_flush_all_caches();
     $this->drupalGet($node_url);
     $this->assertSession()->linkExists($this->flag->getShortText('flag'));
+
+    // Test the display of links when weights are not set. Expecting the display
+    // to match what's set in flags (admin/structure/flags).
+    // Navigate to the node page.
+    $this->drupalGet($node_url);
+
+    // Verify the flag links exist as inline links.
+    $this->assertSession()->elementExists('xpath', "//ul[@class='links inline']");
+    $this->assertSession()->linkExists($this->flag->getShortText('flag'));
+    $this->assertSession()->linkExists($this->secondFlag->getShortText('flag'));
+
+    // Verify order of links, flag is first, secondFlag is second.
+    $page = $this->getSession()->getPage();
+    $links = $page->findAll('css', 'ul.links.inline li');
+    $this->assertNotEmpty($links);
+    $first_link = $links[0];
+    $first_link_text = $first_link->find('css', 'div a');
+    $expected_text = $this->flag->getShortText('flag');
+    $this->assertEquals($expected_text, $first_link_text->getText(), 'The first link text matches the first flag text.');
+
+    // Login as admin user and update the weight of the second flag, so it's
+    // displayed as first in order.
+    $this->drupalLogin($this->adminUser);
+    $set_weight['flags[' . $this->secondFlag->id() . '][weight]'] = -10;
+    // Save the new weight.
+    $this->drupalGet('admin/structure/flags');
+    $this->submitForm($set_weight, 'Save');
+
+    // Log in as regular user and navigate to the node page.
+    $this->drupalLogin($this->user1);
+    $this->drupalGet($node_url);
+
+    // Verify first link is now not the first flag, but the secondFlag.
+    $after_links = $page->findAll('css', 'ul.links.inline li');
+    $this->assertNotEmpty($after_links);
+    $after_first_link = $after_links[0];
+    $after_first_link_text = $after_first_link->find('css', 'div a');
+    $after_expected_text = $this->flag->getShortText('flag');
+    $this->assertNotEquals($after_expected_text, $after_first_link_text->getText(), 'The first link text does not match the first flag text.');
+
   }
 
   /**

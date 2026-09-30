@@ -22,30 +22,14 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class AJAXactionLink extends Reload {
 
-  /**
-   * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\Request
-   */
-  protected $request;
-
-  /**
-   * Build a new link type instance and sets the configuration.
-   *
-   * @param array $configuration
-   *   The configuration array with which to initialize this plugin.
-   * @param string $plugin_id
-   *   The ID with which to initialize this plugin.
-   * @param array $plugin_definition
-   *   The plugin definition array.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The current request from the request stack.
-   */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, AccountInterface $current_user, Request $request) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    AccountInterface $current_user,
+    protected Request $request,
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $current_user);
-    $this->request = $request;
   }
 
   /**

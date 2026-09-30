@@ -131,6 +131,7 @@ class ModalFormTest extends WebDriverTestBase {
     // button, so after asserting it exists, click via this method.
     $assert_session->buttonExists('Create flagging');
     $this->click('button:contains("Create flagging")');
+    $assert_session->assertWaitOnAjaxRequest();
     $assert_session->addressEquals($this->node->toUrl()->getInternalPath());
 
     // Unflag.
@@ -139,6 +140,7 @@ class ModalFormTest extends WebDriverTestBase {
     $assert_session->addressEquals($this->node->toUrl()->getInternalPath());
     $assert_session->buttonExists('Delete flagging');
     $this->click('button:contains("Delete flagging")');
+    $assert_session->assertWaitOnAjaxRequest();
     $assert_session->addressEquals($this->node->toUrl()->getInternalPath());
   }
 

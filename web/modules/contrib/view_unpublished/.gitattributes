@@ -1,5 +1,4 @@
 /tests export-ignore
 /phpcs.xml export-ignore
-/phpstan.dist.neon export-ignore
+/phpstan.neon export-ignore
 /phpunit.xml export-ignore
-

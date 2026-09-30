@@ -76,7 +76,7 @@ display:
         type: 'entity:node'
         options:
           relationship: none
-          view_mode: full
+          view_mode: teaser
       fields:
         title:
           id: title

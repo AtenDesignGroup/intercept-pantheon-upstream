@@ -7,7 +7,7 @@ type: module
 test_dependencies:
   - views_ajax_history:views_ajax_history
 
-# Information added by Drupal.org packaging script on 2026-07-11
-version: '8.x-2.0-beta13'
+# Information added by Drupal.org packaging script on 2026-08-20
+version: '8.x-2.0-beta14'
 project: 'viewsreference'
-datestamp: 1783759657
+datestamp: 1787221815

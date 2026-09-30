@@ -11,21 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class FlagPermissions implements ContainerInjectionInterface {
 
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * Constructs a FlagPermissions instance.
-   *
-   * @param \Drupal\flag\FlagServiceInterface $flag
-   *   The flag service.
-   */
-  public function __construct(FlagServiceInterface $flag) {
-    $this->flagService = $flag;
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+  ) {
   }
 
   /**

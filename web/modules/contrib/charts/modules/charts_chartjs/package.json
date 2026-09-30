@@ -7,7 +7,7 @@
       "libraries:copy": "rimraf ../../../../../libraries/chart.js ../../../../../libraries/chartjs-adapter-date-fns ../../../../../libraries/chartjs-plugin-datalabels ../../../../../libraries/chartjs-plugin-annotation && copy-files-from-to"
     },
     "dependencies": {
-      "chart.js": "^4.4.0",
+      "chart.js": "^4.5.1",
       "chartjs-adapter-date-fns": "^3.0.0",
       "chartjs-plugin-datalabels": "^2.2.0",
       "chartjs-plugin-annotation": "^3.1.0"
@@ -30,9 +30,8 @@
         "to": "../../../../../libraries/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js"
       },
       {
-        "from": "../../../../../../node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.js",
-        "to": "../../../../../libraries/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.js"
+        "from": "../../../../../../node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js",
+        "to": "../../../../../libraries/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js"
       }
     ]
   }
-  

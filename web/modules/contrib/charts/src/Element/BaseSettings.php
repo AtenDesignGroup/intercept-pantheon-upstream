@@ -310,6 +310,8 @@ class BaseSettings extends FormElementBase {
       $element = self::processConfigForm($element, $options, $form_state);
     }
 
+    $element = self::processPlotLinesForm($element, $options, $form_state, $selected_library, $used_in);
+
     $element['display']['title_position'] = [
       '#title' => new TranslatableMarkup('Title position'),
       '#type' => 'select',
@@ -1347,6 +1349,291 @@ class BaseSettings extends FormElementBase {
   }
 
   /**
+   * Builds the plot lines settings section.
+   *
+   * The section is only added for chart libraries that support plot lines
+   * (see ChartBase::supportsPlotLines()) and follows the same table format as
+   * the views data provider table: one row per potential source with an
+   * "enable" checkbox, per-row options and a weight for ordering.
+   *
+   * In the view form, sources are the view fields; the plot line value is
+   * calculated from the field values across the view results. In series-based
+   * forms (blocks, fields, config form), sources are the series columns of the
+   * data collector table; an enabled series is rendered as a plot line instead
+   * of a regular series.
+   *
+   * @param array $element
+   *   The current element.
+   * @param array $options
+   *   The current options (element value).
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param string $selected_library
+   *   The selected chart library plugin ID (possibly 'site_default').
+   * @param string $used_in
+   *   Where the settings element is used.
+   *
+   * @return array
+   *   The element.
+   */
+  private static function processPlotLinesForm(array $element, array $options, FormStateInterface $form_state, string $selected_library, string $used_in): array {
+    if (!self::librarySupportsPlotLines($selected_library)) {
+      return $element;
+    }
+
+    // Collect the plot line sources for the current context.
+    if ($used_in === 'view_form') {
+      $sources = $element['#field_options'];
+      $sources_column_header = new TranslatableMarkup('Field Name');
+      $description = new TranslatableMarkup('Draw straight lines across the chart at fixed values, such as a target, threshold or average. Select fields whose value should be rendered as a plot line. The line is drawn at the value the field already provides — Charts does not aggregate it. Use the field\'s own aggregation settings, a module such as <a href="@href">Views Descriptive Statistics</a>, or a source column that already holds the computed figure. Horizontal lines are drawn on the value (y) axis; vertical lines on the category (x) axis, where the value is used as the zero-based category index. The line color is not supported by every charting library.', ['@href' => 'https://www.drupal.org/project/views_descriptive_statistics']);
+    }
+    elseif (!empty($element['#series'])) {
+      $sources = self::getPlotLineSeriesSources($element, $options, $form_state);
+      $sources_column_header = new TranslatableMarkup('Series');
+      $description = new TranslatableMarkup('Draw straight lines across the chart at fixed values, such as a target, threshold or average. Select data series that should be rendered as a plot line instead of a regular series. The line is drawn at the first value of the series — Charts does not aggregate it, so enter or import a series that already holds the computed figure. Horizontal lines are drawn on the value (y) axis; vertical lines on the category (x) axis, where the value is used as the zero-based category index. Series added to the data table appear here after updating the preview or saving. The line color is not supported by every charting library.');
+    }
+    else {
+      return $element;
+    }
+
+    $plot_lines_options = $options['plot_lines']['sources'] ?? [];
+    $table_drag_group = 'charts-plot-lines-sources-order-weight';
+    // The wrapper id has to be derived from the element parents rather than
+    // generated, so that it survives form rebuilds and stays a valid AJAX
+    // replacement target.
+    $wrapper_id = Html::getId(implode('-', $element['#parents']) . '-plot-lines');
+
+    $element['plot_lines'] = [
+      '#title' => new TranslatableMarkup('Plot lines'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#weight' => 2,
+      '#attributes' => [
+        'class' => ['chart-plot-lines'],
+        'id' => $wrapper_id,
+      ],
+      '#description' => $description,
+      '#description_display' => 'before',
+    ];
+
+    if (!empty($element['series']['#type'])) {
+      // The rows below are derived from the data collector table, so they go
+      // stale whenever a row or column is added or removed. Ask the table to
+      // refresh this fieldset as part of its own AJAX response.
+      $element['series']['#ajax_companions'][] = [
+        'wrapper_id' => $wrapper_id,
+        'array_parents' => array_merge($element['#array_parents'], ['plot_lines']),
+      ];
+    }
+
+    // The fieldset is rendered even when there is nothing to list yet, so that
+    // it remains a valid AJAX replacement target once series do exist.
+    if (!$sources) {
+      $element['plot_lines']['empty'] = [
+        '#markup' => '<p>' . new TranslatableMarkup('No series are available to use as plot lines yet.') . '</p>',
+      ];
+      return $element;
+    }
+
+    $element['plot_lines']['sources'] = [
+      '#type' => 'table',
+      '#header' => [
+        $sources_column_header,
+        new TranslatableMarkup('Use as plot line'),
+        new TranslatableMarkup('Orientation'),
+        new TranslatableMarkup('Color'),
+        new TranslatableMarkup('Label'),
+        new TranslatableMarkup('Weight'),
+      ],
+      '#tabledrag' => [
+        [
+          'action' => 'order',
+          'relationship' => 'sibling',
+          'group' => $table_drag_group,
+        ],
+      ],
+    ];
+
+    $max_weight = count($sources);
+    foreach ($sources as $source_key => $source_label) {
+      $source_element = &$element['plot_lines']['sources'][$source_key];
+      $default_value = $plot_lines_options[$source_key] ?? [];
+      $default_weight = $default_value['weight'] ?? $max_weight;
+
+      $source_element['#attributes']['class'][] = 'draggable';
+      $source_element['label'] = [
+        '#markup' => new TranslatableMarkup('@label', [
+          '@label' => $source_label,
+        ]),
+      ];
+
+      $source_element['enabled'] = [
+        '#type' => 'checkbox',
+        '#title' => new TranslatableMarkup('Use as plot line'),
+        '#title_display' => 'invisible',
+        '#default_value' => !empty($default_value['enabled']),
+      ];
+
+      $source_element['orientation'] = [
+        '#type' => 'select',
+        '#title' => new TranslatableMarkup('Orientation'),
+        '#title_display' => 'invisible',
+        '#options' => [
+          'horizontal' => new TranslatableMarkup('Horizontal (y-axis [data value])'),
+          'vertical' => new TranslatableMarkup('Vertical (x-axis [numeric category index])'),
+        ],
+        '#default_value' => $default_value['orientation'] ?? 'horizontal',
+      ];
+
+      $source_element['color'] = [
+        '#type' => 'textfield',
+        '#title' => new TranslatableMarkup('Color'),
+        '#attributes' => [
+          'TYPE' => 'color',
+          'style' => 'min-width:50px;',
+        ],
+        '#title_display' => 'invisible',
+        '#size' => 10,
+        '#maxlength' => 7,
+        '#default_value' => $default_value['color'] ?? '#000000',
+      ];
+
+      $source_element['label_text'] = [
+        '#type' => 'textfield',
+        '#title' => new TranslatableMarkup('Label'),
+        '#title_display' => 'invisible',
+        '#size' => 15,
+        '#default_value' => $default_value['label_text'] ?? '',
+      ];
+
+      $source_element['weight'] = [
+        '#type' => 'weight',
+        '#title' => new TranslatableMarkup('Weight'),
+        '#title_display' => 'invisible',
+        '#delta' => $max_weight,
+        '#default_value' => $default_weight,
+        '#attributes' => [
+          'class' => [$table_drag_group],
+        ],
+      ];
+
+      $source_element['#weight'] = $default_weight;
+    }
+
+    return $element;
+  }
+
+  /**
+   * Checks whether a chart library plugin supports plot lines.
+   *
+   * @param string $library
+   *   The library plugin ID, possibly 'site_default'.
+   *
+   * @return bool
+   *   TRUE when the (resolved) library supports plot lines.
+   */
+  private static function librarySupportsPlotLines(string $library): bool {
+    if (!$library) {
+      return FALSE;
+    }
+    if ($library === 'site_default') {
+      $library = static::getConfiguredSiteDefaultLibraryId();
+    }
+    if (!$library) {
+      return FALSE;
+    }
+    /** @var \Drupal\Component\Plugin\PluginManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('plugin.manager.charts');
+    if (!$plugin_manager->hasDefinition($library)) {
+      return FALSE;
+    }
+    $plugin = $plugin_manager->createInstance($library);
+    return method_exists($plugin, 'supportsPlotLines') && $plugin->supportsPlotLines();
+  }
+
+  /**
+   * Extracts the plot line series sources from the data collector table.
+   *
+   * @param array $element
+   *   The settings element.
+   * @param array $options
+   *   The current options (element value).
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @return array
+   *   Series labels keyed by 'series_INDEX', where INDEX matches the series
+   *   index returned by ChartDataCollectorTable::getSeriesFromCollectedTable().
+   */
+  private static function getPlotLineSeriesSources(array $element, array $options, FormStateInterface $form_state): array {
+    $series_value = $options['series'] ?? [];
+    // Prefer the live element state of the data collector table so that rows
+    // and columns added during the current form workflow are reflected.
+    $series_state = ChartDataCollectorTable::getElementState(array_merge($element['#parents'], ['series']), $form_state);
+    if (!empty($series_state['data_collector_table'])) {
+      $series_value = [
+        'data_collector_table' => $series_state['data_collector_table'],
+        'table_categories_identifier' => $series_state['table_categories_identifier'] ?? ($series_value['table_categories_identifier'] ?? ChartDataCollectorTable::FIRST_COLUMN),
+      ];
+    }
+    if (empty($series_value['data_collector_table']) || !is_array($series_value['data_collector_table'])) {
+      return [];
+    }
+
+    // Only keep the numeric (data) rows and columns of the table.
+    $rows = array_filter($series_value['data_collector_table'], 'is_numeric', ARRAY_FILTER_USE_KEY);
+    if (!$rows) {
+      return [];
+    }
+
+    $get_cell_data = function ($cell) {
+      $data = is_array($cell) ? ($cell['data'] ?? '') : $cell;
+      return is_scalar($data) ? (string) $data : '';
+    };
+
+    $sources = [];
+    $identifier = $series_value['table_categories_identifier'] ?? ChartDataCollectorTable::FIRST_COLUMN;
+    if ($identifier === ChartDataCollectorTable::FIRST_COLUMN) {
+      // Series are the columns; their names live in the first row, skipping
+      // the first (category label) cell.
+      $first_row = current($rows);
+      $first_col_key = NULL;
+      $i = 0;
+      foreach ($first_row as $col_key => $cell) {
+        if (!is_numeric($col_key)) {
+          continue;
+        }
+        if ($first_col_key === NULL) {
+          $first_col_key = $col_key;
+          continue;
+        }
+        $name = $get_cell_data($cell);
+        $sources['series_' . $i] = $name !== '' ? $name : new TranslatableMarkup('Series @number', ['@number' => $i + 1]);
+        $i++;
+      }
+    }
+    else {
+      // Series are the rows; their names live in the first cell of each row,
+      // skipping the first (categories) row.
+      $first_row_key = NULL;
+      $i = 0;
+      foreach ($rows as $row_key => $row) {
+        if ($first_row_key === NULL) {
+          $first_row_key = $row_key;
+          continue;
+        }
+        $columns = array_filter($row, 'is_numeric', ARRAY_FILTER_USE_KEY);
+        $name = $columns ? $get_cell_data(current($columns)) : '';
+        $sources['series_' . $i] = $name !== '' ? $name : new TranslatableMarkup('Series @number', ['@number' => $i + 1]);
+        $i++;
+      }
+    }
+
+    return $sources;
+  }
+
+  /**
    * Process config form.
    *
    * @param array $element
@@ -1425,46 +1712,20 @@ class BaseSettings extends FormElementBase {
         // Generating a random color for the new default color.
         $element['display']['colors'][$color_index]['color']['#default_value'] = static::randomColor();
       }
-      $element['display']['colors'][$color_index]['remove'] = [
-        '#type' => 'submit',
-        '#name' => 'remove_value_display_colors_color' . $color_index,
-        '#value' => new TranslatableMarkup('Remove'),
-        '#limit_validation_errors' => [],
-        '#submit' => [
-          [get_called_class(), 'removeDefaultColorElementItemSubmit'],
-        ],
-        '#element_color_index' => $color_index,
-        '#ajax' => [
-          'callback' => [get_called_class(), 'defaultColorElementItemsAjax'],
-          'wrapper' => $wrapper_id,
-        ],
-        '#operation' => 'remove',
-        '#element_state_indexes_key' => $state_color_indexes_key,
-        '#array_slicing_args' => ['offset' => 0, 'length' => -4],
-      ];
+      $element['display']['colors'][$color_index]['remove'] = static::buildRemoveColorElementItem(
+        $wrapper_id,
+        $state_color_indexes_key,
+        ['offset' => 0, 'length' => -4],
+        $color_index
+      );
     }
 
-    $element['display']['colors']['_add_new'] = [
-      '#tree' => FALSE,
-    ];
-    $element['display']['colors']['_add_new']['add_item'] = [
-      '#type' => 'container',
-      '#wrapper_attributes' => ['colspan' => 2],
-      '#tree' => FALSE,
-    ];
-    $element['display']['colors']['_add_new']['add_item']['submit'] = [
-      '#type' => 'submit',
-      '#value' => new TranslatableMarkup('Add a new default color'),
-      '#submit' => [[get_called_class(), 'addDefaultColorElementItemSubmit']],
-      '#limit_validation_errors' => [],
-      '#ajax' => [
-        'callback' => [get_called_class(), 'defaultColorElementItemsAjax'],
-        'wrapper' => $wrapper_id,
-      ],
-      '#operation' => 'add',
-      '#element_state_indexes_key' => $state_color_indexes_key,
-      '#array_slicing_args' => ['offset' => 0, 'length' => -5],
-    ];
+    $element['display']['colors']['_add_new'] = static::buildAddNewColorElementItem(
+      $wrapper_id,
+      $state_color_indexes_key,
+      ['offset' => 0, 'length' => -5],
+      2
+    );
 
     $element['display']['color_changer'] = [
       '#title' => new TranslatableMarkup('Expose color changer'),
@@ -2048,46 +2309,20 @@ class BaseSettings extends FormElementBase {
         $field_option_element['color']['#default_value'] = static::randomColor();
       }
 
-      $field_option_element['remove'] = [
-        '#type' => 'submit',
-        '#name' => 'remove_property_value_color' . $property_value_color_index,
-        '#value' => new TranslatableMarkup('Remove'),
-        '#limit_validation_errors' => [],
-        '#submit' => [
-          [get_called_class(), 'removeDefaultColorElementItemSubmit'],
-        ],
-        '#element_color_index' => $property_value_color_index,
-        '#ajax' => [
-          'callback' => [get_called_class(), 'defaultColorElementItemsAjax'],
-          'wrapper' => $wrapper_id,
-        ],
-        '#operation' => 'remove',
-        '#element_state_indexes_key' => $state_property_value_color_indexes_key,
-        '#array_slicing_args' => ['offset' => 1, 'length' => -3],
-      ];
+      $field_option_element['remove'] = static::buildRemoveColorElementItem(
+        $wrapper_id,
+        $state_property_value_color_indexes_key,
+        ['offset' => 1, 'length' => -3],
+        $property_value_color_index
+      );
     }
 
-    $sub_form['colors']['_add_new'] = [
-      '#tree' => FALSE,
-    ];
-    $sub_form['colors']['_add_new']['add_item'] = [
-      '#type' => 'container',
-      '#wrapper_attributes' => ['colspan' => 3],
-      '#tree' => FALSE,
-    ];
-    $sub_form['colors']['_add_new']['add_item']['submit'] = [
-      '#type' => 'submit',
-      '#value' => new TranslatableMarkup('Add a new default color'),
-      '#submit' => [[get_called_class(), 'addDefaultColorElementItemSubmit']],
-      '#limit_validation_errors' => [],
-      '#ajax' => [
-        'callback' => [get_called_class(), 'defaultColorElementItemsAjax'],
-        'wrapper' => $wrapper_id,
-      ],
-      '#operation' => 'add',
-      '#element_state_indexes_key' => $state_property_value_color_indexes_key,
-      '#array_slicing_args' => ['offset' => 1, 'length' => -4],
-    ];
+    $sub_form['colors']['_add_new'] = static::buildAddNewColorElementItem(
+      $wrapper_id,
+      $state_property_value_color_indexes_key,
+      ['offset' => 1, 'length' => -4],
+      3
+    );
 
     return $sub_form;
   }
@@ -2116,6 +2351,84 @@ class BaseSettings extends FormElementBase {
       }
     }
     return $metadata;
+  }
+
+  /**
+   * Builds the row holding the button adding a new color to a colors table.
+   *
+   * @param string $wrapper_id
+   *   The id of the element wrapping the colors table, used as the ajax
+   *   wrapper and as a base to generate the button unique id.
+   * @param string $state_indexes_key
+   *   The element state key holding the color indexes of the colors table.
+   * @param array $array_slicing_args
+   *   The offset and length arguments used by the submit callback to resolve
+   *   the element parents out of the button parents.
+   * @param int $colspan
+   *   The number of columns the row spans, matching the number of columns of
+   *   the colors table.
+   *
+   * @return array
+   *   The render array of the add a new color row.
+   */
+  private static function buildAddNewColorElementItem(string $wrapper_id, string $state_indexes_key, array $array_slicing_args, int $colspan): array {
+    return [
+      '#tree' => FALSE,
+      'add_item' => [
+        '#type' => 'container',
+        '#wrapper_attributes' => ['colspan' => $colspan],
+        '#tree' => FALSE,
+        'submit' => [
+          '#type' => 'submit',
+          '#value' => new TranslatableMarkup('Add a new default color'),
+          '#submit' => [[static::class, 'addDefaultColorElementItemSubmit']],
+          '#id' => Html::getUniqueId($wrapper_id . '__add-new-color'),
+          '#limit_validation_errors' => [],
+          '#ajax' => [
+            'callback' => [static::class, 'defaultColorElementItemsAjax'],
+            'wrapper' => $wrapper_id,
+          ],
+          '#operation' => 'add',
+          '#element_state_indexes_key' => $state_indexes_key,
+          '#array_slicing_args' => $array_slicing_args,
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Builds a form element for removing a color item.
+   *
+   * @param string $wrapper_id
+   *   The ID of the wrapper element for the AJAX callback.
+   * @param string $state_color_indexes_key
+   *   The key used to retrieve the state color indexes.
+   * @param array $array_slicing_args
+   *   The arguments used for slicing the color array.
+   * @param int $color_index
+   *   The index of the color element to be removed.
+   *
+   * @return array
+   *   A renderable array representing the form element.
+   */
+  private static function buildRemoveColorElementItem(string $wrapper_id, string $state_color_indexes_key, array $array_slicing_args, int $color_index): array {
+    return [
+      '#type' => 'submit',
+      '#name' => 'remove_value_display_colors_color' . $color_index,
+      '#value' => new TranslatableMarkup('Remove'),
+      '#limit_validation_errors' => [],
+      '#submit' => [
+        [get_called_class(), 'removeDefaultColorElementItemSubmit'],
+      ],
+      '#element_color_index' => $color_index,
+      '#ajax' => [
+        'callback' => [get_called_class(), 'defaultColorElementItemsAjax'],
+        'wrapper' => $wrapper_id,
+      ],
+      '#operation' => 'remove',
+      '#element_state_indexes_key' => $state_color_indexes_key,
+      '#array_slicing_args' => $array_slicing_args,
+    ];
   }
 
 }

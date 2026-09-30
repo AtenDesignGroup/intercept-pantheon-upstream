@@ -174,6 +174,26 @@ abstract class ChartBase extends PluginBase implements ChartInterface {
   }
 
   /**
+   * Whether the library can render plot lines from the #plot_lines property.
+   *
+   * Plot lines are straight lines drawn across the plot area at a fixed axis
+   * value (Highcharts "plotLines", C3.js/Billboard.js "grid lines", Chart.js
+   * "line" annotations, ...). Libraries that support them should override this
+   * method to return TRUE and map the #plot_lines property of chart_xaxis and
+   * chart_yaxis child elements in their preRender() implementation.
+   *
+   * This method is intentionally not (yet) part of ChartInterface to avoid
+   * breaking chart library plugins that implement the interface directly.
+   * Consumers should guard calls with method_exists().
+   *
+   * @return bool
+   *   TRUE when the library supports plot lines, FALSE otherwise.
+   */
+  public function supportsPlotLines(): bool {
+    return FALSE;
+  }
+
+  /**
    * Gets defaults settings.
    *
    * @return array

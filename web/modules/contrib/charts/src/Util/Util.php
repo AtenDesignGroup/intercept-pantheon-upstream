@@ -10,6 +10,31 @@ use Drupal\views\ViewExecutable;
 class Util {
 
   /**
+   * Returns the first numeric value from a set of values.
+   *
+   * Charts deliberately does not aggregate values for plot lines. The value a
+   * plot line is drawn at is expected to be supplied ready-made by the data
+   * source: a Views aggregation setting, a module such as
+   * views_descriptive_statistics, or a column that already holds the computed
+   * figure (for example a threshold or mean column in a CSV import). Every row
+   * of such a source repeats the same value, so the first numeric one is used.
+   *
+   * @param array $values
+   *   The candidate values. Non-numeric values are ignored.
+   *
+   * @return float|null
+   *   The first numeric value, or NULL when there is none.
+   */
+  public static function firstNumericValue(array $values): ?float {
+    foreach ($values as $value) {
+      if (is_numeric($value)) {
+        return (float) $value;
+      }
+    }
+    return NULL;
+  }
+
+  /**
    * Views Data.
    *
    * @param \Drupal\views\ViewExecutable|null $view

@@ -93,7 +93,12 @@ class FilterTest extends KernelTestBase {
     if ($expected === FALSE) {
       $expected = $content;
     }
-    $filtered_markup = $this->stripWhitespace(check_markup($content, 'test_format'));
+    $element = [
+      '#type' => 'processed_text',
+      '#text' => $content,
+      '#format' => 'test_format',
+    ];
+    $filtered_markup = $this->stripWhitespace((string) $this->container->get('renderer')->renderInIsolation($element));
     $this->assertEquals($expected, $filtered_markup);
   }
 

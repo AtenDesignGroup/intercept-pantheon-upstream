@@ -21,6 +21,16 @@
               config.title.text = title.replace(/\\n/g, '\n');
             }
           }
+
+          Object.values(config.axis || {}).forEach(function (axis) {
+            const { prefix, suffix } = axis?.tick?.format || {};
+            if (prefix || suffix) {
+              axis.tick.format = function (value) {
+                return (prefix || '') + value + (suffix || '');
+              };
+            }
+          });
+
           // Store the generated instance in our registry.
           Drupal.billboardCharts.instances[chartId] = bb.generate(config);
 

@@ -229,7 +229,7 @@ interface FlagServiceInterface {
    *   anonymous, then this can also be omitted to use the current session.
    *   to identify an anonymous user.
    *
-   * @return \Drupal\flag\FlagInterface|null
+   * @return \Drupal\flag\FlaggingInterface
    *   The flagging.
    *
    * @throws \LogicException
@@ -319,6 +319,23 @@ interface FlagServiceInterface {
   public function userFlagRemoval(UserInterface $account);
 
   /**
+   * Remove all of a user's flaggings from a flag.
+   *
+   * @param \Drupal\flag\FlagInterface $flag
+   *   The flag object.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user object.
+   * @param string $session_id
+   *   (optional) The session ID. This must be specified if $account is the
+   *   anonymous user.
+   *
+   * @throws \LogicException
+   *   Thrown when $account is anonymous but no associated session ID is
+   *   specified.
+   */
+  public function unflagAllByFlagByUser(FlagInterface $flag, AccountInterface $account, $session_id = NULL);
+
+  /**
    * Set up values for the flagger user account and session.
    *
    * This is a helper method for functions that allow the flagger account to be
@@ -370,5 +387,12 @@ interface FlagServiceInterface {
    *   An array of flaggings.
    */
   public function getFlagFlaggings(FlagInterface $flag);
+
+  /**
+   * Makes sure session is started.
+   *
+   * @see \Drupal\Core\TempStore\PrivateTempStore::startSession()
+   */
+  public function ensureSession();
 
 }

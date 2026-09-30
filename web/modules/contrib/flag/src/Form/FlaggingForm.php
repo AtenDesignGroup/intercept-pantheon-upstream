@@ -32,12 +32,11 @@ class FlaggingForm extends ContentEntityForm {
     $flag = $flagging->getFlag();
     $action_link = $flag->getLinkTypePlugin();
 
-    $create_button_text = $this->t('Create Flagging');
-    if ($action_link instanceof FormEntryInterface) {
-      $create_button_text = $action_link->getCreateButtonText();
-    }
-
     if ($this->entity->isNew()) {
+      $create_button_text = $this->t('Create Flagging');
+      if ($action_link instanceof FormEntryInterface) {
+        $create_button_text = $action_link->getCreateButtonText();
+      }
       $actions['submit']['#value'] = $create_button_text;
     }
     else {

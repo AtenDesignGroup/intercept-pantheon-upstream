@@ -69,11 +69,8 @@ class FocalPointManager implements FocalPointManagerInterface {
    * {@inheritdoc}
    */
   public function getCropEntity(FileInterface $file, $crop_type) {
-    if (Crop::cropExists($file->getFileUri(), $crop_type)) {
-      /** @var \Drupal\crop\CropInterface $crop */
-      $crop = Crop::findCrop($file->getFileUri(), $crop_type);
-    }
-    else {
+    /** @var \Drupal\crop\CropInterface $crop */
+    if (!($crop = Crop::findCrop($file->getFileUri(), $crop_type))) {
       $values = [
         'type' => $crop_type,
         'entity_id' => $file->id(),

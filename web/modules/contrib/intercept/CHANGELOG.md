@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.29] - 2026-09-30
+
+* Fixed a couple of minor PHP and CSS issues
+
 ## [2.0.28] - 2026-08-26
 
 * Updated room reservation export to include group name

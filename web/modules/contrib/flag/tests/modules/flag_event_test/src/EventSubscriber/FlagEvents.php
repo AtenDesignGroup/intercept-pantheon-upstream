@@ -16,31 +16,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class FlagEvents implements EventSubscriberInterface {
 
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * The state service.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The flag service.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state service.
-   */
-  public function __construct(FlagServiceInterface $flag_service, StateInterface $state) {
-    $this->flagService = $flag_service;
-    $this->state = $state;
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+    protected StateInterface $state,
+  ) {
   }
 
   /**

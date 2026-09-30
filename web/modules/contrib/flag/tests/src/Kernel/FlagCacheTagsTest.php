@@ -82,7 +82,6 @@ class FlagCacheTagsTest extends FlagKernelTestBase {
     $tags_to_invalidate = [
       'flagging:test_flag:node:' . $this->node->id(),
       'flagging:test_flag:node:' . $this->node->id() . ':1',
-      'flagging:test_flag:node:*:1',
     ];
     Cache::invalidateTags($tags_to_invalidate);
 

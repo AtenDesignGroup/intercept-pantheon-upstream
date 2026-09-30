@@ -4,9 +4,7 @@ namespace Drupal\flag\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Utility\LinkGeneratorInterface;
 use Drupal\flag\ActionLink\ActionLinkPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -19,51 +17,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class FlagFormBase extends EntityForm {
 
-  /**
-   * The action link plugin manager.
-   *
-   * @var \Drupal\flag\ActionLink\ActionLinkPluginManager
-   */
-  protected $actionLinkManager;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
-   */
-  protected $bundleInfoService;
-
-  /**
-   * The link generator.
-   *
-   * @var \Drupal\Core\Utility\LinkGeneratorInterface
-   */
-  protected $linkGenerator;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * Constructs a new form.
-   *
-   * @param \Drupal\flag\ActionLink\ActionLinkPluginManager $action_link_manager
-   *   The link type plugin manager.
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info_service
-   *   The bundle info service.
-   * @param \Drupal\Core\Utility\LinkGeneratorInterface $link_generator
-   *   The link generator service.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager service.
-   */
-  public function __construct(ActionLinkPluginManager $action_link_manager, EntityTypeBundleInfoInterface $bundle_info_service, LinkGeneratorInterface $link_generator, EntityTypeManagerInterface $entity_type_manager) {
-    $this->actionLinkManager = $action_link_manager;
-    $this->bundleInfoService = $bundle_info_service;
-    $this->linkGenerator = $link_generator;
-    $this->entityTypeManager = $entity_type_manager;
+  public function __construct(
+    protected ActionLinkPluginManager $actionLinkManager,
+    protected EntityTypeBundleInfoInterface $bundleInfoService,
+  ) {
   }
 
   /**
@@ -73,8 +30,6 @@ abstract class FlagFormBase extends EntityForm {
     return new static(
       $container->get('plugin.manager.flag.linktype'),
       $container->get('entity_type.bundle.info'),
-      $container->get('link_generator'),
-      $container->get('entity_type.manager')
     );
   }
 

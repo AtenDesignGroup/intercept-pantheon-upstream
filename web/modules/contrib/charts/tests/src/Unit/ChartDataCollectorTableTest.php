@@ -49,9 +49,10 @@ class ChartDataCollectorTableTest extends UnitTestCase {
   public function testGetInfo(): void {
     $info = $this->table->getInfo();
     $this->assertIsArray($info);
-    $this->assertCount(14, $info);
+    $this->assertCount(15, $info);
     $this->assertArrayHasKey('#theme_wrappers', $info);
     $this->assertArrayHasKey('#series_type_options', $info);
+    $this->assertArrayHasKey('#ajax_companions', $info);
   }
 
   /**

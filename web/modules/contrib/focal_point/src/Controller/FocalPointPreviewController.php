@@ -80,7 +80,7 @@ class FocalPointPreviewController extends ControllerBase {
     RequestStack $request_stack,
     LoggerChannelFactoryInterface $logger,
     ImageEffectManager $imageEffectManager,
-    EntityStorageInterface $fileStorage
+    EntityStorageInterface $fileStorage,
   ) {
     $this->imageFactory = $image_factory;
     $this->request = $request_stack->getCurrentRequest();
@@ -112,7 +112,7 @@ class FocalPointPreviewController extends ControllerBase {
     $file = $this->fileStorage->load($fid);
     $image = $this->imageFactory->get($file->getFileUri());
     if (!$image->isValid()) {
-      $this->logger->warning($this->t('Source image with fid=%fid not confirmed as valid.'), ['%fid' => $fid]);
+      $this->logger->warning('Source image with fid=%fid not confirmed as valid.', ['%fid' => $fid]);
     }
 
     $styles = $this->getFocalPointImageStyles();
@@ -209,7 +209,7 @@ class FocalPointPreviewController extends ControllerBase {
     $file = $this->fileStorage->load($fid);
     $image = $this->imageFactory->get($file->getFileUri());
     if (!$image->isValid()) {
-      $this->logger->warning($this->t('Source image with fid=%fid not confirmed as valid while checking access.'), ['%fid' => $fid]);
+      $this->logger->warning('Source image with fid=%fid not confirmed as valid while checking access.', ['%fid' => $fid]);
     }
 
     // Check if there was a valid token provided in with the HTTP request so

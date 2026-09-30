@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\flag\Functional;
 
 use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
+use Drupal\user\Entity\Role;
 
 /**
  * Test the Field Entry link type.
@@ -21,6 +22,13 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
    * @var string
    */
   protected $nodeId;
+
+  /**
+   * Global node id.
+   *
+   * @var string
+   */
+  protected $globalNodeId;
 
   /**
    * Flag Confirm Message.
@@ -93,6 +101,13 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
   protected $flag;
 
   /**
+   * The global flag object.
+   *
+   * @var \Drupal\flag\FlagInterface
+   */
+  protected $globalFlag;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -115,6 +130,7 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
     $this->doEditFlagField();
     $this->doBadEditFlagField();
     $this->doUnflagNode();
+    $this->drupalLogout();
   }
 
   /**
@@ -259,6 +275,89 @@ class LinkTypeFieldEntryTest extends FlagTestBase {
     // Check that the node is no longer flagged.
     $this->drupalGet('node/' . $this->nodeId);
     $this->assertSession()->linkExists($this->flag->getShortText('flag'));
+  }
+
+  /**
+   * Tests global flagging.
+   */
+  public function testGlobalFlaggingNode(): void {
+    // Create a new global flag.
+    $this->drupalLogin($this->adminUser);
+    $edit = [
+      'bundles' => [$this->nodeType],
+      'linkTypeConfig' => [
+        'flag_confirmation' => $this->flagConfirmMessage,
+        'unflag_confirmation' => $this->unflagConfirmMessage,
+        'edit_flagging' => $this->flagDetailsMessage,
+        'flag_create_button' => $this->createButtonText,
+        'flag_delete_button' => $this->deleteButtonText,
+        'flag_update_button' => $this->updateButtonText,
+      ],
+      'link_type' => 'field_entry',
+      'global' => TRUE,
+    ];
+    $this->globalFlag = $this->createFlagFromArray($edit);
+
+    // Create a new node that will be flagged with global flag.
+    $globalNode = $this->drupalCreateNode(['type' => $this->nodeType]);
+    $this->globalNodeId = $globalNode->id();
+
+    // Grant flagging permission to authenticated users.
+    $this->grantFlagPermissions($this->globalFlag);
+
+    // Create and login a new user.
+    $user_2 = $this->drupalCreateUser();
+    $this->drupalLogin($user_2);
+
+    // Visit the node and flag it.
+    $this->drupalGet('node/' . $this->globalNodeId);
+    $this->clickLink($this->globalFlag->getShortText('flag'));
+
+    // Verify the confirm form message is displayed.
+    $this->assertSession()->responseContains($this->flagConfirmMessage);
+    $this->submitForm([], $this->createButtonText);
+
+    // Verify the node is flagged.
+    $this->assertSession()->linkExists($this->globalFlag->getShortText('unflag'));
+
+    // Create and login a new user.
+    $user_3 = $this->drupalCreateUser();
+    $this->drupalLogin($user_3);
+
+    // Verify the previous node remained flagged.
+    $this->drupalGet('node/' . $this->globalNodeId);
+    $this->assertSession()->linkExists($this->globalFlag->getShortText('unflag'));
+  }
+
+  /**
+   * Tests personal anonymous flagging.
+   */
+  public function testAnonymousPersonalFlag(): void {
+    // Create a test node.
+    $node = $this->drupalCreateNode(['type' => $this->nodeType]);
+
+    // Create the flag.
+    $this->doCreateFlag();
+
+    // Grant the anonymous role permission to flag.
+    /** @var \Drupal\user\RoleInterface $anonymousRole */
+    $anonymousRole = Role::load(Role::ANONYMOUS_ID);
+    $anonymousRole->grantPermission('flag ' . $this->flag->id());
+    $anonymousRole->grantPermission('unflag ' . $this->flag->id());
+    $anonymousRole->save();
+
+    // Navigate to the node page.
+    $this->drupalGet('node/' . $node->id());
+    $this->clickLink($this->flag->getShortText('flag'));
+
+    // Verify confirm form message id displayed.
+    $this->assertSession()->responseContains($this->flagConfirmMessage);
+
+    // Confirm the form.
+    $this->submitForm([], $this->createButtonText);
+
+    // Verify the node is flagged.
+    $this->assertSession()->linkExists($this->flag->getShortText('unflag'));
   }
 
 }

@@ -3,6 +3,7 @@
 namespace Drupal\flag\TwigExtension;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\flag\FlagCountManagerInterface;
 use Drupal\flag\FlagInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -12,24 +13,9 @@ use Twig\TwigFunction;
  */
 class FlagCount extends AbstractExtension {
 
-  /**
-   * The flag count.
-   *
-   * @var \Drupal\flag\FlagCountManagerInterface
-   */
-  protected $flagCount;
-
-  /**
-   * Constructs \Drupal\flag\TwigExtension\FlagCount.
-   *
-   * @param \Drupal\flag\FlagCountManagerInterface $flag_count
-   *   The flag count service.
-   */
-  public function __construct($flag_count) {
-    if (func_num_args() == 5) {
-      $flag_count = func_get_arg(4);
-    }
-    $this->flagCount = $flag_count;
+  public function __construct(
+    protected FlagCountManagerInterface $flagCount,
+  ) {
   }
 
   /**

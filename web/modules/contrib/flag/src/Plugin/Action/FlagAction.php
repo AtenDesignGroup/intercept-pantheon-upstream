@@ -37,26 +37,12 @@ class FlagAction extends ActionBase implements ContainerFactoryPluginInterface, 
    */
   protected $flag;
 
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * Constructs the flag action plugin.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The flag service.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, FlagServiceInterface $flag_service) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected FlagServiceInterface $flagService,
+  ) {
     if (!isset($configuration['flag_id'], $configuration['flag_action'])) {
       // When not specified otherwise, use the information of the plugin
       // definition, as provided by the deriver.
@@ -65,7 +51,6 @@ class FlagAction extends ActionBase implements ContainerFactoryPluginInterface, 
     }
 
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->flagService = $flag_service;
     $this->flag = $this->flagService->getFlagById($configuration['flag_id']);
     $this->flagOperation = $configuration['flag_action'];
   }

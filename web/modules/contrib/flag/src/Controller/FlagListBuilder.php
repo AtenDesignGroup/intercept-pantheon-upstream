@@ -15,24 +15,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class FlagListBuilder extends DraggableListBuilder {
 
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * Constructs a new FlagListBuilder object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager service.
-   */
-  public function __construct(EntityTypeInterface $entity_type, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct($entity_type, $entity_type_manager->getStorage($entity_type->id()));
-    $this->entityTypeManager = $entity_type_manager;
+  public function __construct(
+    EntityTypeInterface $entity_type,
+    protected EntityTypeManagerInterface $entityTypeManager,
+  ) {
+    parent::__construct($entity_type, $entityTypeManager->getStorage($entity_type->id()));
   }
 
   /**
@@ -125,13 +112,13 @@ class FlagListBuilder extends DraggableListBuilder {
   }
 
   /**
-   * Generates a render array of the applicable bundles for the flag..
+   * Generates a render array of the applicable bundles for the flag.
    *
    * @param \Drupal\flag\FlagInterface $flag
    *   The flag entity.
    *
    * @return array
-   *   A render array of the applicable bundles for the flag..
+   *   A render array of the applicable bundles for the flag.
    */
   protected function getBundles(FlagInterface $flag) {
     $bundles = $flag->getBundles();

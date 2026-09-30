@@ -2,8 +2,8 @@
 
 namespace Drupal\flag\Plugin\migrate\source\d7;
 
+use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Row;
-use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
 
 /**
  * Drupal 7 Flag source from database.
@@ -13,7 +13,7 @@ use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
  *   source_module = "flag"
  * )
  */
-class Flag extends DrupalSqlBase {
+class Flag extends SqlBase {
 
   /**
    * {@inheritdoc}

@@ -5,11 +5,11 @@ namespace Drupal\flag;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\flag\Event\FlagEvents;
 use Drupal\flag\Event\FlaggingEvent;
 use Drupal\flag\Event\UnflaggingEvent;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -45,36 +45,11 @@ class FlagCountManager implements FlagCountManagerInterface, EventSubscriberInte
    */
   protected $userFlagCounts = [];
 
-  /**
-   * Database connection.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected $connection;
-
-  /**
-   * The date time service.
-   *
-   * @var \Drupal\Component\Datetime\TimeInterface
-   */
-  protected $dateTime;
-
-  /**
-   * Constructs a FlagCountManager.
-   */
-  public function __construct(Connection $connection, TimeInterface $date_time) {
-    $this->connection = $connection;
-    $this->dateTime = $date_time;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new self(
-      $container->get('database'),
-      $container->get('datetime.time')
-    );
+  public function __construct(
+    protected Connection $connection,
+    protected TimeInterface $dateTime,
+    protected EntityTypeManagerInterface $entityTypeManager,
+  ) {
   }
 
   /**
@@ -155,9 +130,6 @@ class FlagCountManager implements FlagCountManagerInterface, EventSubscriberInte
         return $this->userFlagCounts[$flag_id][$uid][$session_id];
       }
     }
-    elseif (isset($this->userFlagCounts[$flag_id][$uid])) {
-      return $this->userFlagCounts[$flag_id][$uid];
-    }
 
     // Run the query.
     $query = $this->connection->select('flagging', 'f')
@@ -168,22 +140,30 @@ class FlagCountManager implements FlagCountManagerInterface, EventSubscriberInte
       $query->condition('session_id', $session_id);
     }
 
-    $query->addExpression('COUNT(*)');
+    $query->fields('f', ['entity_type', 'entity_id']);
 
     $result = $query->execute()
-      ->fetchField();
+      ->fetchAll();
+
+    $count = 0;
+    foreach ($result as $row) {
+      $entity = $this->entityTypeManager->getStorage($row->entity_type)->load($row->entity_id);
+      if ($entity->access('view', $user)) {
+        $count++;
+      }
+    }
 
     // Cache the result.
     if ($get_by_session_id) {
       // Cached by flag, by uid and by session_id.
-      $this->userFlagCounts[$flag_id][$uid][$session_id] = $result;
+      $this->userFlagCounts[$flag_id][$uid][$session_id] = $count;
     }
     else {
       // Cached by flag, by uid.
-      $this->userFlagCounts[$flag_id][$uid] = $result;
+      $this->userFlagCounts[$flag_id][$uid] = $count;
     }
 
-    return $result;
+    return $count;
   }
 
   /**

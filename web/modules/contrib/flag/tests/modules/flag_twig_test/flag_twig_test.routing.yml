@@ -1,0 +1,11 @@
+flag_twig_test.test_page:
+  path: '/flag-test-page/{node}'
+  defaults:
+    _controller: '\Drupal\flag_twig_test\Controller\FlagTwigTestController::render'
+    _title: 'Flag Twig Test Page'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      node:
+        type: entity:node

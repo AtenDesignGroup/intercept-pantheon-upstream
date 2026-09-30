@@ -102,7 +102,10 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
     $method = $effect_reflection->getMethod('transformFocalPoint');
     $method->setAccessible(TRUE);
 
-    $this->assertSame($expected_focal_point, $method->invokeArgs($effect, [$image, $original_focal_point]));
+    $this->assertSame($expected_focal_point, $method->invokeArgs($effect, [
+      $image,
+      $original_focal_point,
+    ]));
   }
 
   /**
@@ -150,13 +153,19 @@ class FocalPointEffectsTest extends FocalPointUnitTestCase {
     $crop->position()->willReturn($expected);
 
     // Non-preview.
-    $this->assertSame($expected, $method->invokeArgs($effect, [$crop->reveal(), $this->focalPointManager]));
+    $this->assertSame($expected, $method->invokeArgs($effect, [
+      $crop->reveal(),
+      $this->focalPointManager,
+    ]));
 
     // Preview test.
     $query_string = '500x250';
     $expected = ['x' => 250, 'y' => 125];
     $effect->setPreviewValue($query_string);
-    $this->assertSame($expected, $method->invokeArgs($effect, [$crop->reveal(), $this->focalPointManager]));
+    $this->assertSame($expected, $method->invokeArgs($effect, [
+      $crop->reveal(),
+      $this->focalPointManager,
+    ]));
   }
 
   /**

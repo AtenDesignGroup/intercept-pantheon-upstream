@@ -1,0 +1,4 @@
+services:
+  Drupal\flag_count\Hook\FlagCountHooks:
+    class: Drupal\flag_count\Hook\FlagCountHooks
+    autowire: true

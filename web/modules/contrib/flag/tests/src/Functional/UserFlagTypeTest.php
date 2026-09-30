@@ -19,6 +19,13 @@ class UserFlagTypeTest extends FlagTestBase {
   protected $flag;
 
   /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  protected static $modules = ['flag_views_users_test', 'views_ui'];
+
+  /**
    * Tests that when adding a flag for users the relevant checkboxes are added.
    */
   public function testFlagSelfCheckbox() {
@@ -33,6 +40,15 @@ class UserFlagTypeTest extends FlagTestBase {
     $this->assertSession()->responseContains('Permissions for users to flag themselves.');
 
     $this->assertSession()->responseContains('Display link on user profile page');
+  }
+
+  /**
+   * Test that the view exists and User flag relationship is not present.
+   */
+  public function testUserView(): void {
+    $this->drupalLogin($this->rootUser);
+    $this->drupalGet('admin/structure/views/nojs/add-handler/users_test/page_1/relationship');
+    $this->assertSession()->elementNotExists('css', 'input[data-drupal-selector="edit-name-users-field-dataflag-relationship"]');
   }
 
   /**
@@ -73,6 +89,13 @@ class UserFlagTypeTest extends FlagTestBase {
     $this->drupalGet('user/' . $user->id());
     $this->assertSession()->linkExists($flag->getShortText('flag'));
 
+    // Check that User flag relationship is available to add after flagging
+    // is enabled and no additional cache clear is needed.
+    $this->drupalLogin($this->rootUser);
+    $this->drupalGet('admin/structure/views/nojs/add-handler/users_test/page_1/relationship');
+    $this->assertSession()->elementExists('css', 'input[data-drupal-selector="edit-name-users-field-dataflag-relationship"]');
+
+    $this->drupalLogin($user);
     // Uncheck extra permissions.
     $edit = [
       'extra_permissions[owner]' => FALSE,

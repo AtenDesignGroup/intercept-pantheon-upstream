@@ -25,6 +25,14 @@ image.effect.focal_point_crop:
       type: string
       label: 'Crop type to be used with Focal point'
 
+image.effect.focal_point_crop_by_width:
+  type: image_size
+  label: 'Focal Point Crop by Width'
+  mapping:
+    crop_type:
+      type: string
+      label: 'Crop type to be used with Focal point'
+
 field.widget.settings.image_focal_point:
   type: mapping
   label: 'Focal Point widget settings'

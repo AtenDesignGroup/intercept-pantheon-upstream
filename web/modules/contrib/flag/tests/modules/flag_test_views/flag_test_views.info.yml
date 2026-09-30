@@ -1,0 +1,15 @@
+name: 'Flag test views'
+type: module
+description: 'Provides default views for views flag tests.'
+package: Testing
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - node:node
+  - views:views
+  - language:language
+  - flag:flag
+
+# Information added by Drupal.org packaging script on 2026-09-01
+version: '5.1.0'
+project: 'flag'
+datestamp: 1788266238

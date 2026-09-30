@@ -31,3 +31,140 @@ function video_embed_media_install() {
     }
   }
 }
+
+/**
+ * Replace the 0x0 thumbnail dimensions stored for video embed media.
+ *
+ * Each thumbnail gets the size of its image file, which is what a save stores.
+ * A thumbnail whose file is missing, empty or unreadable gets no dimensions,
+ * and its media is added to the core thumbnail queue, so that cron downloads
+ * the thumbnail again and stores its size.
+ */
+function video_embed_media_update_10001(&$sandbox) {
+  $database = \Drupal::database();
+
+  if (!isset($sandbox['bundles'])) {
+    $sandbox['bundles'] = [];
+    $config_factory = \Drupal::configFactory();
+    foreach ($config_factory->listAll('media.type.') as $config_name) {
+      $media_type = $config_factory->get($config_name);
+      if ($media_type->get('source') === 'video_embed_field') {
+        $sandbox['bundles'][] = $media_type->get('id');
+      }
+    }
+    if (!$sandbox['bundles']) {
+      return t('No video embed media type found.');
+    }
+
+    // Only a cursor is kept between batches, so the sandbox stays small on a
+    // site with thousands of videos.
+    $sandbox['total'] = (int) _video_embed_media_select_zero_size_thumbnail_file_ids($sandbox['bundles'], 0)
+      ->distinct()
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    $sandbox['last_file_id'] = 0;
+    $sandbox['processed'] = 0;
+    $sandbox['queued'] = 0;
+  }
+
+  // Without DISTINCT, the database can stop reading the index after 100 rows.
+  // Revisions sharing a file return it several times: keep it once.
+  $rows = _video_embed_media_select_zero_size_thumbnail_file_ids($sandbox['bundles'], $sandbox['last_file_id'])
+    ->orderBy('thumbnail__target_id')
+    ->range(0, 100)
+    ->execute()
+    ->fetchCol();
+  $file_ids = array_unique($rows);
+
+  $image_factory = \Drupal::service('image.factory');
+  $thumbnails_directory = \Drupal::config('system.file')->get('default_scheme') . '://video_thumbnails/';
+  foreach ($file_ids as $file_id) {
+    $uri = $database->select('file_managed', 'f')
+      ->fields('f', ['uri'])
+      ->condition('fid', $file_id)
+      ->execute()
+      ->fetchField();
+    $image = $uri ? $image_factory->get($uri) : NULL;
+    $is_valid = $image && $image->isValid();
+
+    if (!$is_valid) {
+      // A provider only downloads a thumbnail whose file does not exist yet.
+      if ($uri && str_starts_with($uri, $thumbnails_directory) && file_exists($uri)) {
+        \Drupal::service('file_system')->delete($uri);
+      }
+      $media_ids = $database->select('media_field_data', 't')
+        ->fields('t', ['mid'])
+        ->condition('mid', _video_embed_media_select_media_ids($sandbox['bundles']), 'IN')
+        ->condition('thumbnail__target_id', $file_id)
+        ->distinct()
+        ->execute()
+        ->fetchCol();
+      foreach ($media_ids as $media_id) {
+        \Drupal::queue('media_entity_thumbnail')->createItem(['id' => $media_id]);
+      }
+      $sandbox['queued'] += count($media_ids);
+    }
+
+    foreach (['media_field_data', 'media_field_revision'] as $table) {
+      $database->update($table)
+        ->fields([
+          'thumbnail__width' => $is_valid ? $image->getWidth() : NULL,
+          'thumbnail__height' => $is_valid ? $image->getHeight() : NULL,
+        ])
+        ->condition('mid', _video_embed_media_select_media_ids($sandbox['bundles']), 'IN')
+        ->condition('thumbnail__target_id', $file_id)
+        ->condition('thumbnail__width', 0)
+        ->condition('thumbnail__height', 0)
+        ->execute();
+    }
+
+    $sandbox['last_file_id'] = $file_id;
+    $sandbox['processed']++;
+  }
+
+  $sandbox['#finished'] = count($rows) < 100 ? 1 : min(0.99, $sandbox['processed'] / max(1, $sandbox['total']));
+  if ($sandbox['#finished'] >= 1) {
+    return t('Set the thumbnail dimensions of @count video embed media thumbnails. Cron will download the thumbnails of @queued media again.', [
+      '@count' => $sandbox['processed'],
+      '@queued' => $sandbox['queued'],
+    ]);
+  }
+}
+
+/**
+ * Builds a query selecting the IDs of the media of the given types.
+ *
+ * @param string[] $bundles
+ *   The media type IDs.
+ *
+ * @return \Drupal\Core\Database\Query\SelectInterface
+ *   The query.
+ */
+function _video_embed_media_select_media_ids(array $bundles) {
+  return \Drupal::database()->select('media', 'm')
+    ->fields('m', ['mid'])
+    ->condition('m.bundle', $bundles, 'IN');
+}
+
+/**
+ * Builds a query selecting the thumbnail files stored with a 0x0 size.
+ *
+ * The revision table holds every revision, the current ones included.
+ *
+ * @param string[] $bundles
+ *   The IDs of the media types that use the video embed field source.
+ * @param int $after_file_id
+ *   Only files with a greater ID are selected.
+ *
+ * @return \Drupal\Core\Database\Query\SelectInterface
+ *   The query.
+ */
+function _video_embed_media_select_zero_size_thumbnail_file_ids(array $bundles, $after_file_id) {
+  return \Drupal::database()->select('media_field_revision', 't')
+    ->fields('t', ['thumbnail__target_id'])
+    ->condition('mid', _video_embed_media_select_media_ids($bundles), 'IN')
+    ->condition('thumbnail__target_id', $after_file_id, '>')
+    ->condition('thumbnail__width', 0)
+    ->condition('thumbnail__height', 0);
+}

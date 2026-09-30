@@ -141,24 +141,6 @@ interface FlagInterface extends ConfigEntityInterface, EntityWithPluginCollectio
   public function isGlobal();
 
   /**
-   * Sets the flag as global or not.
-   *
-   * @param bool $global
-   *   TRUE to mark the flag as global, FALSE for the default behavior.
-   *
-   * @see \Drupal\flag\Entity\Flag::isGlobal()
-   */
-  public function setGlobal($global);
-
-  /**
-   * The flag short text.
-   *
-   * @param string $text
-   *   The flag short text to set.
-   */
-  public function setFlagShortText($text);
-
-  /**
    * Gets the flag short text.
    *
    * @param string $action
@@ -181,14 +163,6 @@ interface FlagInterface extends ConfigEntityInterface, EntityWithPluginCollectio
   public function getLongText($action);
 
   /**
-   * Sets the flag long text.
-   *
-   * @param string $flag_long
-   *   The flag long text to use.
-   */
-  public function setFlagLongText($flag_long);
-
-  /**
    * Gets the flag message.
    *
    * @param string $action
@@ -200,38 +174,6 @@ interface FlagInterface extends ConfigEntityInterface, EntityWithPluginCollectio
   public function getMessage($action);
 
   /**
-   * Sets the flag message.
-   *
-   * @param string $flag_message
-   *   The flag message text to use.
-   */
-  public function setFlagMessage($flag_message);
-
-  /**
-   * Sets the unflag short text.
-   *
-   * @param string $flag_short
-   *   The unflag short text to use.
-   */
-  public function setUnflagShortText($flag_short);
-
-  /**
-   * Sets the unflag long text.
-   *
-   * @param string $unflag_long
-   *   The unflag long text to use.
-   */
-  public function setUnflagLongText($unflag_long);
-
-  /**
-   * Sets the unflag message.
-   *
-   * @param string $unflag_message
-   *   The unflag message text to use.
-   */
-  public function setUnflagMessage($unflag_message);
-
-  /**
    * Get the flag's weight.
    *
    * @return int
@@ -240,28 +182,12 @@ interface FlagInterface extends ConfigEntityInterface, EntityWithPluginCollectio
   public function getWeight();
 
   /**
-   * Set the flag's weight.
-   *
-   * @param int $weight
-   *   An int containing the flag weight to use.
-   */
-  public function setWeight($weight);
-
-  /**
    * Get the flag's unflag denied message text.
    *
    * @return string
    *   A string containing the unflag denied message text.
    */
   public function getUnflagDeniedText();
-
-  /**
-   * Set's the flag's unflag denied message text.
-   *
-   * @param string $unflag_denied_text
-   *   The unflag denied message text to use.
-   */
-  public function setUnflagDeniedText($unflag_denied_text);
 
   /**
    * Checks whether a user has permission to flag/unflag or not.

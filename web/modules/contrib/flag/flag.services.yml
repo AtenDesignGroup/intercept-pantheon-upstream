@@ -1,33 +1,70 @@
 services:
+  _defaults:
+    autoconfigure: true
+
   access_check.flag.action:
     class: Drupal\flag\Access\FlagAccessCheck
-    arguments: ['@flag']
+    autowire: true
+    # autoconfigure doesn't work here
     tags:
       - { name: access_check, applies_to: _flag_access }
+
   access_check.unflag.action:
     class: Drupal\flag\Access\UnFlagAccessCheck
-    arguments: ['@flag']
+    autowire: true
+    # autoconfigure doesn't work here
     tags:
       - { name: access_check, applies_to: _unflag_access }
+
   plugin.manager.flag.flagtype:
     class: Drupal\flag\FlagType\FlagTypePluginManager
-    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
+    arguments: [ '@container.namespaces', '@cache.discovery', '@module_handler' ]
+
   plugin.manager.flag.linktype:
     class: Drupal\flag\ActionLink\ActionLinkPluginManager
-    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
+    arguments: [ '@container.namespaces', '@cache.discovery', '@module_handler' ]
+
   flag:
     class: Drupal\flag\FlagService
-    arguments: ['@current_user', '@entity_type.manager', '@request_stack']
+    autowire: true
+  Drupal\flag\FlagServiceInterface: '@flag'
+
   flag.count:
     class: Drupal\flag\FlagCountManager
-    arguments: ['@database', '@datetime.time']
-    tags:
-      - { name: event_subscriber }
+    autowire: true
+  Drupal\flag\FlagCountManagerInterface: '@flag.count'
+
   flag.link_builder:
     class: Drupal\flag\FlagLinkBuilder
-    arguments: ['@entity_type.manager', '@flag']
+    autowire: true
+  Drupal\flag\FlagLinkBuilderInterface: '@flag.link_builder'
+
   flag.twig.count:
-    arguments: ['@flag.count']
     class: Drupal\flag\TwigExtension\FlagCount
+    autowire: true
+    # autoconfigure doesn't work here
     tags:
       - { name: twig.extension }
+
+  flag.twig.link:
+    class: Drupal\flag\TwigExtension\FlagLink
+    autowire: true
+    # autoconfigure doesn't work here
+    tags:
+      - { name: twig.extension }
+
+  Drupal\flag\Hook\FlagHooks:
+    class: Drupal\flag\Hook\FlagHooks
+    autowire: true
+
+  Drupal\flag\Hook\FlagTokensHooks:
+    class: Drupal\flag\Hook\FlagTokensHooks
+    autowire: true
+
+  Drupal\flag\Hook\FlagViewsHooks:
+    class: Drupal\flag\Hook\FlagViewsHooks
+    autowire: true
+
+  Drupal\flag\Hook\FlagViewsExecutionHooks:
+    class: Drupal\flag\Hook\FlagViewsExecutionHooks
+    autowire: true

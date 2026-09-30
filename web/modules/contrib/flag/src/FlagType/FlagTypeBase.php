@@ -10,7 +10,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\flag\FlagInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -21,21 +20,14 @@ abstract class FlagTypeBase extends PluginBase implements FlagTypePluginInterfac
 
   use StringTranslationTrait;
 
-  /**
-   * The module handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, TranslationInterface $string_translation) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    protected ModuleHandlerInterface $moduleHandler,
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->moduleHandler = $module_handler;
     $this->configuration += $this->defaultConfiguration();
-    $this->stringTranslation = $string_translation;
   }
 
   /**

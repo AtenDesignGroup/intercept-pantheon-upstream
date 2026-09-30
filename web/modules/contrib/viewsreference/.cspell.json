@@ -9,7 +9,8 @@
       "php",
       "softwareTerms",
       "viewsreference",
-      "viewsrefere"
+      "viewsrefere",
+      "autocompleteclose"
     ],
      "dictionaryDefinitions": [
       { "name": "viewsreference", "path": "./dictionary.txt"}

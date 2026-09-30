@@ -99,7 +99,7 @@ class VideoEmbedField extends MediaSourceBase {
         return parent::getMetadata($media, 'thumbnail_uri');
     }
 
-    return FALSE;
+    return parent::getMetadata($media, $attribute_name);
   }
 
   /**

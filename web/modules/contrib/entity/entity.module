@@ -197,10 +197,7 @@ function entity_jsonapi_entity_filter_access(EntityTypeInterface $entity_type, A
 
   $allowed = AccessResult::allowed()->addCacheableDependency($conditions);
   $result = [];
-  if ($conditions->count() === 0) {
-    $result[JSONAPI_FILTER_AMONG_ALL] = $allowed;
-  }
-  elseif ($conditions->count() === 1 || $conditions->getConjunction() === 'OR') {
+  if ($conditions->count() === 1 || $conditions->getConjunction() === 'OR') {
     $published_key = $entity_type->getKey('published');
     $owner_key = $entity_type->getKey('owner');
     foreach ($conditions->getConditions() as $condition) {

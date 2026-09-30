@@ -13,13 +13,6 @@ use Drupal\flag\Plugin\ActionLink\FormEntryInterface;
 class UnflaggingForm extends FlagConfirmFormBase {
 
   /**
-   * The flagging entity.
-   *
-   * @var \Drupal\flag\FlaggingInterface
-   */
-  protected $flagging;
-
-  /**
    * The flaggable entity.
    *
    * @var \Drupal\Core\Entity\EntityInterface

@@ -23,69 +23,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class FlagViewsRelationship extends RelationshipPluginBase implements CacheableDependencyInterface {
 
-  /**
-   * The Page Cache Kill switch.
-   *
-   * @var \Drupal\Core\PageCache\ResponsePolicy\KillSwitch
-   */
-  protected $pageCacheKillSwitch;
-
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected $currentUser;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The route match.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected $router;
-
-  /**
-   * Constructs a FlagViewsRelationship object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\PageCache\ResponsePolicy\KillSwitch $page_cache_kill_switch
-   *   The kill switch.
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The flag service.
-   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
-   *   The current user.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager service.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $router
-   *   The route match.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, KillSwitch $page_cache_kill_switch, FlagServiceInterface $flag_service, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, RouteMatchInterface $router) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected KillSwitch $pageCacheKillSwitch,
+    protected FlagServiceInterface $flagService,
+    protected AccountProxyInterface $currentUser,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected RouteMatchInterface $router,
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->flagService = $flag_service;
-    $this->pageCacheKillSwitch = $page_cache_kill_switch;
-    $this->currentUser = $current_user;
-    $this->entityTypeManager = $entity_type_manager;
     $this->definition = $plugin_definition + $configuration;
-    $this->router = $router;
   }
 
   /**

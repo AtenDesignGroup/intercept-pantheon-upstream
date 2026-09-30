@@ -3,13 +3,10 @@ flag.flag.*:
   label: 'Flag'
   mapping:
     id:
-      type: string
+      type: machine_name
       label: 'Flag identifier'
-    uuid:
-      type: string
-      label: 'UUID'
     label:
-      type: label
+      type: required_label
       label: 'Name'
     bundles:
       type: sequence
@@ -44,7 +41,7 @@ flag.flag.*:
       type: label
       label: 'Unflag denied text'
     weight:
-      type: integer
+      type: weight
       label: 'Weight'
     flag_type:
       type: string

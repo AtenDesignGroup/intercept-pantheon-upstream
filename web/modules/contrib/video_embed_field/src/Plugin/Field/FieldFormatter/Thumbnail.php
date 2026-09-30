@@ -103,7 +103,8 @@ class Thumbnail extends FormatterBase implements ContainerFactoryPluginInterface
       '#type' => 'select',
       '#default_value' => $this->getSetting('image_style'),
       '#required' => FALSE,
-      '#options' => image_style_options(),
+      '#empty_option' => $this->t('- None -'),
+      '#options' => array_map(fn ($style) => $style->label(), $this->imageStyleStorage->loadMultiple()),
     ];
     $element['link_image_to'] = [
       '#title' => $this->t('Link image to'),

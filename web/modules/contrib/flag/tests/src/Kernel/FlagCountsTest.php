@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Drupal\Tests\flag\Kernel;
 
 use Drupal\flag\Entity\Flag;
+use Drupal\flag\FlagCountManager;
+use Drupal\flag\FlagCountManagerInterface;
+use Drupal\flag\TwigExtension\FlagCount;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests the Flag counts API.
@@ -79,6 +83,13 @@ class FlagCountsTest extends FlagKernelTestBase {
    * @var \Drupal\user\Entity\User|false
    */
   protected $anonymousUser;
+
+  /**
+   * Web user object.
+   *
+   * @var \Drupal\user\Entity\User|false
+   */
+  protected $webUser;
 
   /**
    * {@inheritdoc}
@@ -155,6 +166,12 @@ class FlagCountsTest extends FlagKernelTestBase {
     // Get the anonymous user.
     $this->anonymousUser = User::getAnonymousUser();
 
+    $this->webUser = $this->createUser([
+      'flag ' . $this->flag->id(),
+      'unflag ' . $this->flag->id(),
+      'access content',
+    ]);
+
     $article = NodeType::create(['type' => 'article']);
     $article->save();
 
@@ -170,6 +187,14 @@ class FlagCountsTest extends FlagKernelTestBase {
       'title' => $this->randomMachineName(8),
     ]);
     $this->otherNode->save();
+
+    $role = \Drupal::entityTypeManager()
+      ->getStorage('user_role')
+      ->load(RoleInterface::ANONYMOUS_ID);
+
+    $role->grantPermission('access content');
+    $role->save();
+
   }
 
   /**
@@ -206,6 +231,31 @@ class FlagCountsTest extends FlagKernelTestBase {
     $this->flagService->unflagAllByFlag($this->flag);
     $flag_get_flag_counts = $this->flagCountService->getFlagEntityCount($this->flag);
     $this->assertEquals(0, $flag_get_flag_counts, "getFlagEntityCount() on reset flag returns the expected count.");
+  }
+
+  /**
+   * Tests user count when access is restricted.
+   */
+  public function testUserFlagCounts(): void {
+    // Flag content with web user.
+    $this->flagService->flag($this->flag, $this->node, $this->webUser);
+
+    // Check count when access is not restricted.
+    $flag_get_user_flag_counts = $this->flagCountService->getUserFlagFlaggingCount($this->flag, $this->webUser);
+    $this->assertEquals(1, $flag_get_user_flag_counts, "getUserFlagFlaggingCount() returns the expected count.");
+
+    // Unpublish node and count.
+    $this->node->setUnpublished()->save();
+
+    // Clear cache as permissions are cached.
+    drupal_flush_all_caches();
+
+    // Check count when access is restricted.
+    $flag_get_user_flag_counts = $this->flagCountService->getUserFlagFlaggingCount($this->flag, $this->webUser);
+    $this->assertEquals(0, $flag_get_user_flag_counts, "getUserFlagFlaggingCount() returns the expected count.");
+
+    // Publish node.
+    $this->node->setPublished()->save();
   }
 
   /**
@@ -385,6 +435,49 @@ class FlagCountsTest extends FlagKernelTestBase {
 
     $flaggings_after = $this->getFlagFlaggings($this->flag);
     $this->assertEmpty($flaggings_after, 'The node flaggings were removed when the user was deleted');
+  }
+
+  /**
+   * Tests that the FlagCountManager service is autowired.
+   */
+  public function testServiceIsAutowired(): void {
+    // Get the service from the container.
+    $service = $this->container->get('flag.count');
+
+    // Check it implements the interface.
+    $this->assertInstanceOf(FlagCountManagerInterface::class, $service);
+
+    // Check it is actually the correct class.
+    $this->assertInstanceOf(FlagCountManager::class, $service);
+  }
+
+  /**
+   * Tests that the service is registered as an event subscriber.
+   */
+  public function testServiceRegisteredAsEventSubscriber(): void {
+    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
+    $dispatcher = $this->container->get('event_dispatcher');
+    $subscribers = $dispatcher->getListeners('flag.entity_flagged');
+
+    $found = FALSE;
+    foreach ($subscribers as $listener) {
+      if (is_array($listener) && $listener[0] instanceof FlagCountManager) {
+        $found = TRUE;
+        break;
+      }
+    }
+    $this->assertTrue($found, 'The FlagCountManager is registered as an event subscriber for ENTITY_FLAGGED event.');
+  }
+
+  /**
+   * Tests twig extension is autowired.
+   */
+  public function testTwigExtensionAutowired(): void {
+    // Get the service from the container.
+    $twigExtension = $this->container->get('flag.twig.count');
+
+    // Assert it exists and is the correct class.
+    $this->assertInstanceOf(FlagCount::class, $twigExtension);
   }
 
 }

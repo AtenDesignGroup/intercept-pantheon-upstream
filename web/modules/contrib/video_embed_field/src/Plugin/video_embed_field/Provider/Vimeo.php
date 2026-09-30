@@ -17,6 +17,14 @@ use Drupal\video_embed_field\ProviderPluginBase;
 class Vimeo extends ProviderPluginBase {
 
   /**
+   * The width of the thumbnail requested from Vimeo, in pixels.
+   *
+   * It is the widest thumbnail Vimeo serves, and as wide as the maxresdefault
+   * thumbnail the YouTube provider downloads.
+   */
+  protected const THUMBNAIL_WIDTH = 1280;
+
+  /**
    * {@inheritdoc}
    */
   public function renderEmbed(array $options) {
@@ -77,7 +85,12 @@ class Vimeo extends ProviderPluginBase {
    */
   protected function oEmbedData(): ?array {
     $normalized_url = sprintf('https://vimeo.com/%s', $this->videoId);
-    $url = Url::fromUri('https://vimeo.com/api/oembed.json', ['query' => ['url' => $normalized_url]]);
+    $url = Url::fromUri('https://vimeo.com/api/oembed.json', [
+      'query' => [
+        'url' => $normalized_url,
+        'width' => static::THUMBNAIL_WIDTH,
+      ],
+    ]);
     return $this->downloadJsonData($url->toString());
   }
 

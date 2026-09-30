@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Drupal\Tests\flag\Kernel;
 
 use Drupal\flag\Entity\Flag;
+use Drupal\flag\FlagLinkBuilderInterface;
+use Drupal\flag\FlagServiceInterface;
+use Drupal\flag\TwigExtension\FlagLink;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 
@@ -417,6 +420,117 @@ class FlagServiceTest extends FlagKernelTestBase {
 
     // Ensure correct flag counts.
     $this->assertCount(3, $this->flagService->getFlagFlaggings($flag));
+  }
+
+  /**
+   * Tests unflagAllByFlagByUser() method.
+   */
+  public function testUnflagAllByFlagByUser() {
+    // Create two users.
+    $user1 = $this->createUser();
+    $user2 = $this->createUser();
+
+    // Create twp flags.
+    $flag = Flag::create([
+      'id' => strtolower($this->randomMachineName()),
+      'label' => 'First Flag test',
+      'entity_type' => 'node',
+      'bundles' => ['article'],
+      'flag_type' => 'entity:node',
+      'link_type' => 'reload',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $flag->save();
+
+    $secondFlag = Flag::create([
+      'id' => strtolower($this->randomMachineName()),
+      'label' => 'Second Flag test',
+      'entity_type' => 'node',
+      'bundles' => ['article'],
+      'flag_type' => 'entity:node',
+      'link_type' => 'reload',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $secondFlag->save();
+
+    // Create two nodes.
+    $node1 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node1->save();
+
+    $node2 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node2->save();
+
+    // Flag first node with first flag and user one and two.
+    $this->flagService->flag($flag, $node1, $user1);
+    $this->flagService->flag($flag, $node1, $user2);
+    // Flag first and second node with second flag with user one.
+    $this->flagService->flag($secondFlag, $node1, $user1);
+    $this->flagService->flag($secondFlag, $node2, $user1);
+
+    // Ensure correct flag counts before unflagging for both users.
+    $this->assertCount(3, $this->flagService->getAllFlaggingByUser($user1), 'User 1 has 3 flaggings.');
+    $this->assertCount(1, $this->flagService->getAllFlaggingByUser($user2), 'User 2 has 1 flagging.');
+
+    // Unflag first flag that was flagged with user one.
+    $this->flagService->unflagAllByFlagByUser($flag, $user1);
+
+    // Ensure correct flag counts after unflagging for both users.
+    $this->assertCount(2, $this->flagService->getAllFlaggingByUser($user1), 'User 1 has 2 flaggings.');
+    $this->assertCount(1, $this->flagService->getAllFlaggingByUser($user2), 'User 2 still has 1 flagging.');
+  }
+
+  /**
+   * Tests FlagService is autowired.
+   */
+  public function testFlagServiceIsWired(): void {
+    // Get the service from the container.
+    $service = $this->container->get('flag');
+    // Assert it exists and is the correct class.
+    $this->assertInstanceOf(FlagServiceInterface::class, $service);
+  }
+
+  /**
+   * Tests Flag service alias resolution.
+   */
+  public function testFlagServiceInterfaceInjection(): void {
+    // Get the service from the container.
+    $service = $this->container->get(FlagServiceInterface::class);
+    $this->assertSame($this->container->get('flag'), $service);
+  }
+
+  /**
+   * Tests that flag link builder is autowired.
+   */
+  public function testFlagLinkBuilderService(): void {
+    // Get the service by id.
+    $serviceId = $this->container->get('flag.link_builder');
+    $this->assertInstanceOf(FlagLinkBuilderInterface::class, $serviceId);
+
+    // Get the service by interface.
+    $serviceInterface = $this->container->get(FlagLinkBuilderInterface::class);
+    $this->assertInstanceOf(FlagLinkBuilderInterface::class, $serviceInterface);
+
+    // Assert both are actually the same service instance.
+    $this->assertSame($serviceId, $serviceInterface);
+  }
+
+  /**
+   * Tests twig extension link is autowired.
+   */
+  public function testTwigExtensionLinkAutowired(): void {
+    // Get the service from the container.
+    $twigExtension = $this->container->get('flag.twig.link');
+
+    // Assert it exists and is the correct class.
+    $this->assertInstanceOf(FlagLink::class, $twigExtension);
   }
 
 }

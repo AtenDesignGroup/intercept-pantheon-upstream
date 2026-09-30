@@ -23,50 +23,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class FlagViewsLinkField extends FieldPluginBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * The flag for this row.
    *
    * @var \Drupal\flag\FlagInterface
    */
   protected $flag;
 
-  /**
-   * The builder for flag links.
-   *
-   * @var \Drupal\flag\FlagLinkBuilderInterface
-   */
-  protected $flagLinkBuilder;
-
-  /**
-   * Constructs a FlagViewsLinkField object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\flag\FlagLinkBuilderInterface $flag_link_builder
-   *   Tha flag link builder.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   */
   public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    FlagLinkBuilderInterface $flag_link_builder,
-    EntityTypeManagerInterface $entity_type_manager,
+    protected FlagLinkBuilderInterface $flagLinkBuilder,
+    protected EntityTypeManagerInterface $entityTypeManager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->flagLinkBuilder = $flag_link_builder;
-    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -137,6 +107,15 @@ class FlagViewsLinkField extends FieldPluginBase implements ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
+  public function clickSort($order) {
+    $this->realField = 'uid';
+    parent::query();
+    parent::clickSort($order);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function render(ResultRow $values) {
     // If the flagging is the base for the view, there wouldn't be a
     // relationship involved.
@@ -171,6 +150,7 @@ class FlagViewsLinkField extends FieldPluginBase implements ContainerFactoryPlug
    */
   protected function getParentRelationshipEntity(ResultRow $values) {
     $relationship_id = $this->options['relationship'];
+    /** @var \Drupal\flag\Plugin\views\relationship\FlagViewsRelationship $relationship_handler */
     $relationship_handler = $this->view->display_handler->handlers['relationship'][$relationship_id];
     $parent_relationship_id = $relationship_handler->options['relationship'];
 

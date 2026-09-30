@@ -46,7 +46,12 @@ class FlagViewsRelationshipTest extends FlagTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['flag', 'flag_bookmark', 'views'];
+  protected static $modules = [
+    'flag',
+    'flag_bookmark',
+    'views',
+    'views_ui',
+  ];
 
   /**
    * {@inheritdoc}
@@ -165,6 +170,65 @@ class FlagViewsRelationshipTest extends FlagTestBase {
       ],
       'John Doe'
     );
+  }
+
+  /**
+   * Add flagged filter and test "all/any" filter option is present.
+   */
+  public function testFlaggingExposedFilter(): void {
+    $this->drupalLogin($this->rootUser);
+
+    $this->articles[] = $this->drupalCreateNode(['type' => 'article', 'title' => 'Flagged article 1']);
+    $this->articles[] = $this->drupalCreateNode(['type' => 'article', 'title' => 'Unflagged article 1']);
+
+    /** @var \Drupal\flag\FlagService $flag_service */
+    $flag_service = \Drupal::service('flag');
+    $bookmark_flag = $flag_service->getFlagById('bookmark');
+
+    $flag_service->flag($bookmark_flag, $this->articles[5], $this->rootUser);
+
+    $this->drupalGet('/admin/structure/views/view/flag_bookmark');
+
+    // Remove filter that only displays published content.
+    $this->drupalGet('/admin/structure/views/nojs/handler/flag_bookmark/page_1/filter/status');
+    $this->assertSession()->elementExists('css', '#edit-remove');
+    $this->submitForm([], 'Remove');
+
+    // Update flag relationship to display all content, not just flagged.
+    $this->drupalGet('/admin/structure/views/nojs/handler/flag_bookmark/page_1/relationship/flag_relationship');
+    $this->assertSession()->elementExists('css', 'input[data-drupal-selector="edit-options-required"]');
+    $edit = [
+      'options[required]' => 0,
+    ];
+    $this->submitForm($edit, 'Apply');
+
+    $this->drupalGet('/admin/structure/views/nojs/add-handler/flag_bookmark/page_1/filter');
+    $this->assertSession()->elementExists('css', 'input[data-drupal-selector="edit-name-flaggingflagged"]');
+    $edit = [
+      'name[flagging.flagged]' => 1,
+    ];
+    $this->submitForm($edit, 'Add and configure filter criteria');
+
+    $edit = [
+      'options[expose_button][checkbox][checkbox]' => 1,
+    ];
+    $this->submitForm($edit, 'Expose filter');
+    $this->assertSession()->pageTextContains('All');
+    $this->assertSession()->elementExists('css', '#edit-options-value-all');
+    $edit = [
+      'options[expose_button][checkbox][checkbox]' => 1,
+      'options[expose][required]' => 0,
+      'options[group_button][radios][radios]' => 0,
+    ];
+    $this->submitForm($edit, 'Apply');
+    $this->submitForm([], 'Save');
+
+    $this->drupalGet('/user/' . $this->rootUser->id() . '/my-bookmarks');
+    $this->assertSession()->pageTextContains('Flagged');
+    $this->assertSession()->pageTextContains('- Any -');
+
+    // Verify that the Unflagged article 1 is displayed on the page.
+    $this->assertSession()->pageTextContains('Unflagged article 1');
   }
 
 }

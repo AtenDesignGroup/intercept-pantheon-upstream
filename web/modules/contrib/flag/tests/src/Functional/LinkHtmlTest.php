@@ -44,8 +44,9 @@ class LinkHtmlTest extends FlagTestBase {
     // the flag and unflag short text in italics to test using HTML in the text.
     // We use a long random string to increase the probability of randomly
     // generating something that looks like an HTML tag.
-    $this->flag->setFlagShortText('<i>' . $this->randomString(32) . '</i>');
-    $this->flag->setUnflagShortText('<i>' . $this->randomString(32) . '</i>');
+    $this->flag->set('flag_short', '<i>' . $this->randomString(32) . '</i>');
+    $this->flag->set('unflag_short', '<i>' . $this->randomString(32) . '</i>');
+
     $this->flag->save();
   }
 
@@ -67,7 +68,8 @@ class LinkHtmlTest extends FlagTestBase {
     // Click the flag link.
     $this->drupalGet('node/' . $node_id);
     // Find the marked-up flag short text in the raw HTML.
-    $this->assertSession()->responseContains(Xss::filterAdmin($this->flag->getShortText('flag')));
+    $this->assertSession()
+      ->responseContains(Xss::filterAdmin($this->flag->getShortText('flag')));
     // Xss::filter() is used to strip all HTML tags from the short text
     // because clickLink() looks for text as it appears in the browser, and that
     // does not include the unescaped HTML tags. Note that the stripped tags
@@ -78,7 +80,8 @@ class LinkHtmlTest extends FlagTestBase {
 
     // Check that the node is flagged.
     $this->drupalGet('node/' . $node_id);
-    $this->assertSession()->responseContains(Xss::filterAdmin($this->flag->getShortText('unflag')));
+    $this->assertSession()
+      ->responseContains(Xss::filterAdmin($this->flag->getShortText('unflag')));
 
     // Unflag the node.
     $this->drupalGet('node/' . $node_id);
@@ -86,7 +89,8 @@ class LinkHtmlTest extends FlagTestBase {
 
     // Check that the node is no longer flagged.
     $this->drupalGet('node/' . $node_id);
-    $this->assertSession()->responseContains(Xss::filterAdmin($this->flag->getShortText('flag')));
+    $this->assertSession()
+      ->responseContains(Xss::filterAdmin($this->flag->getShortText('flag')));
   }
 
 }

@@ -22,31 +22,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * with drupal update message.
  */
 class ActionLinkNoJsController implements ContainerInjectionInterface {
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
 
-  /**
-   * The messenger service.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  protected $messenger;
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\flag\FlagServiceInterface $flag
-   *   The flag service.
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   The messenger service.
-   */
-  public function __construct(FlagServiceInterface $flag, MessengerInterface $messenger) {
-    $this->flagService = $flag;
-    $this->messenger = $messenger;
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+    protected MessengerInterface $messenger,
+  ) {
   }
 
   /**

@@ -14,27 +14,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class FlagResetForm extends ConfirmFormBase {
 
   /**
-   * The Flag Service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
    * The flag to reset.
    *
    * @var \Drupal\flag\FlagInterface
    */
   protected $flag;
 
-  /**
-   * Class constructor.
-   *
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The Flag Service.
-   */
-  public function __construct(FlagServiceInterface $flag_service) {
-    $this->flagService = $flag_service;
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+  ) {
   }
 
   /**

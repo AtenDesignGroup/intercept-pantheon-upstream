@@ -10,7 +10,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\flag\FlagInterface;
 use Drupal\flag\FlagType\FlagTypeBase;
 use Drupal\user\EntityOwnerInterface;
@@ -32,42 +31,22 @@ class EntityFlagType extends FlagTypeBase {
   use StringTranslationTrait;
 
   /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * The entity type defined in plugin definition.
    *
    * @var string
    */
   protected $entityType = '';
 
-  /**
-   * The entity display repository.
-   *
-   * @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface
-   */
-  protected $entityDisplayRepository;
-
-  /**
-   * {@inheritdoc}
-   */
   public function __construct(
     array $configuration,
     $plugin_id,
     array $plugin_definition,
     ModuleHandlerInterface $module_handler,
-    EntityTypeManagerInterface $entity_type_manager,
-    TranslationInterface $string_translation,
-    EntityDisplayRepositoryInterface $entity_display_repository,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected EntityDisplayRepositoryInterface $entityDisplayRepository,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler, $string_translation);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $module_handler);
     $this->entityType = $plugin_definition['entity_type'];
-    $this->entityTypeManager = $entity_type_manager;
-    $this->entityDisplayRepository = $entity_display_repository;
   }
 
   /**
@@ -80,7 +59,6 @@ class EntityFlagType extends FlagTypeBase {
       $plugin_definition,
       $container->get('module_handler'),
       $container->get('entity_type.manager'),
-      $container->get('string_translation'),
       $container->get('entity_display.repository'),
     );
   }

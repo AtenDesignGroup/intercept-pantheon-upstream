@@ -5,10 +5,13 @@ namespace Drupal\viewsreference\Plugin\Field\FieldFormatter;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\ContextualLinksHelper;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Field formatter for Viewsreference Field.
@@ -20,6 +23,32 @@ use Drupal\views\Views;
  * )
  */
 class ViewsReferenceFieldFormatter extends FormatterBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, protected ?ContextualLinksHelper $contextualLinksHelper = NULL) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    /** @phpstan-ignore-next-line */
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['label'],
+      $configuration['view_mode'],
+      $configuration['third_party_settings'],
+      // ContextualLinksHelper was added to Views in Drupal core 11.4; the
+      // service is absent on older cores this module still supports.
+      $container->has(ContextualLinksHelper::class) ? $container->get(ContextualLinksHelper::class) : NULL,
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -124,12 +153,12 @@ class ViewsReferenceFieldFormatter extends FormatterBase {
       // Exposed form handler.
       /** @var \Drupal\views\Plugin\views\exposed_form\ExposedFormPluginBase $exposed_form_handler */
       $exposed_form_handler = $view->display_handler->getPlugin('exposed_form');
-
       $render_array = $view->buildRenderable($display_id, $view->args, FALSE);
-      if (!empty(array_filter($this->getSetting('plugin_types')))) {
-        // Show view if there are results, empty behaviour defined, exposed
-        // widgets, or a header or footer set to appear despite no results.
-        if (!empty($view->result) || !empty($view->empty) || ($exposed_form_handler?->options['input_required'] ?? FALSE) || !empty($view->exposed_widgets) || !empty($view->header) || !empty($view->footer)) {
+
+      // Show view if there are results, empty behavior defined, exposed
+      // widgets, or a header or footer set to appear despite no results.
+      if (!empty($view->result) || !empty($view->empty) || ($exposed_form_handler?->options['input_required'] ?? FALSE) || !empty($view->exposed_widgets) || !empty($view->header) || !empty($view->footer)) {
+        if (!empty(array_filter($this->getSetting('plugin_types')))) {
           // Add a custom template if the title is available.
           $title = $view->getTitle();
           if (!empty($title) && !empty($enabled_settings['title'])) {
@@ -145,22 +174,23 @@ class ViewsReferenceFieldFormatter extends FormatterBase {
               '#view' => $view,
             ];
           }
-          // The views_add_contextual_links() function needs the following
-          // information in the render array in order to attach the contextual
-          // links to the view.
-          $render_array['#view_id'] = $view->storage->id();
-          $render_array['#view_display_show_admin_links'] = $view->getShowAdminLinks();
-          $render_array['#view_display_plugin_id'] = $view->getDisplay()->getPluginId();
-          $plugin_id = $render_array['#view_display_plugin_id'];
-          $location = in_array($plugin_id, ['block', 'page', 'view']) ? $plugin_id : 'view';
-          views_add_contextual_links($render_array, $location, $display_id);
+        }
 
-          $elements[$delta]['contents'] = $render_array;
-        }
-        else {
-          // We should always add the cache metadata.
-          $elements[$delta]['contents']['#cache'] = $render_array['#cache'];
-        }
+        // ContextualLinksHelper::addLinks() needs the following information
+        // in the render array in order to attach the contextual links to
+        // the view.
+        $render_array['#view_id'] = $view->storage->id();
+        $render_array['#view_display_show_admin_links'] = $view->getShowAdminLinks();
+        $render_array['#view_display_plugin_id'] = $view->getDisplay()->getPluginId();
+        $plugin_id = $render_array['#view_display_plugin_id'];
+        $location = in_array($plugin_id, ['block', 'page', 'view']) ? $plugin_id : 'view';
+        $this->contextualLinksHelper?->addLinks($render_array, $location, $display_id);
+
+        $elements[$delta]['contents'] = $render_array;
+      }
+      else {
+        // We should always add the cache metadata.
+        $elements[$delta]['contents']['#cache'] = $render_array['#cache'];
       }
 
       // Collect cache metadata of the fully processed view, even if no results.

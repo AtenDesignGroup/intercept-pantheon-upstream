@@ -67,7 +67,7 @@ abstract class FocalPointUnitTestCase extends UnitTestCase {
    * @return \Drupal\focal_point\Plugin\ImageEffect\FocalPointCropImageEffect
    *   Effect.
    */
-  protected function getTestEffect(ImageInterface $original_image = NULL) {
+  protected function getTestEffect(?ImageInterface $original_image = NULL) {
     if (is_null($original_image)) {
       $original_image = $this->getTestImage(0, 0);
     }

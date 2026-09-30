@@ -190,7 +190,7 @@ them. So: create a new directory in your project root called "scripts".
 7. Run the following command; you should find that new directories have been
    created under "/libraries".
 
-        composer require --prefer-dist npm-asset/chart.js:^4.4
+        composer require --prefer-dist npm-asset/chart.js:^4.5
         npm-asset/chartjs-adapter-date-fns:^3.0
         npm-asset/chartjs-plugin-datalabels:^2.0
         npm-asset/chartjs-plugin-annotation:^3.1

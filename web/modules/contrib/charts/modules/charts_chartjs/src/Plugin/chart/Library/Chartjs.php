@@ -163,6 +163,83 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
+  public function supportsPlotLines(): bool {
+    return TRUE;
+  }
+
+  /**
+   * Maps the #plot_lines property of axis elements to line annotations.
+   *
+   * Chart.js does not support plot lines natively; they are rendered through
+   * the chartjs-plugin-annotation library, which is loaded as part of the
+   * charts_chartjs library definition.
+   *
+   * @param array $element
+   *   The chart element.
+   * @param array $chart_definition
+   *   The chart definition.
+   *
+   * @return array
+   *   The chart definition.
+   */
+  private function populatePlotLineAnnotations(array $element, array $chart_definition) {
+    if (in_array($element['#chart_type'], $this->getPieStyleTypes())) {
+      return $chart_definition;
+    }
+
+    $counter = 0;
+    $dataset_axes = array_column($chart_definition['data']['datasets'] ?? [], 'yAxisID');
+    foreach (Element::children($element) as $child) {
+      $type = $element[$child]['#type'] ?? '';
+      if (($type !== 'chart_xaxis' && $type !== 'chart_yaxis') || empty($element[$child]['#plot_lines'])) {
+        continue;
+      }
+      if ($type === 'chart_xaxis') {
+        $scale_id = 'x';
+      }
+      else {
+        // Match the scale ID resolution used in populateAxes() so lines on a
+        // secondary y-axis attach to the right scale.
+        $scale_id = in_array($child, $dataset_axes) ? $child : 'y';
+      }
+      foreach ($element[$child]['#plot_lines'] as $plot_line) {
+        if (!isset($plot_line['value']) || !is_numeric($plot_line['value'])) {
+          continue;
+        }
+        $annotation = [
+          'type' => 'line',
+          'scaleID' => $scale_id,
+          'value' => (float) $plot_line['value'],
+          'borderColor' => !empty($plot_line['color']) ? $plot_line['color'] : '#000000',
+          'borderWidth' => 1,
+        ];
+        if (!empty($plot_line['label'])) {
+          $annotation['label'] = [
+            'content' => $plot_line['label'],
+            'display' => TRUE,
+          ];
+        }
+        $chart_definition['options']['plugins']['annotation']['annotations']['plot_line_' . $counter] = $annotation;
+        $counter++;
+
+        // Annotations are not part of the data Chart.js uses to determine a
+        // scale's bounds, so a line outside those bounds is never painted.
+        // Suggested bounds extend the scale only when the data does not
+        // already cover the value, and are ignored when a hard min or max is
+        // configured.
+        $scale = &$chart_definition['options']['scales'][$scale_id];
+        $scale['suggestedMin'] = isset($scale['suggestedMin']) ? min($scale['suggestedMin'], $annotation['value']) : $annotation['value'];
+        $scale['suggestedMax'] = isset($scale['suggestedMax']) ? max($scale['suggestedMax'], $annotation['value']) : $annotation['value'];
+        unset($scale);
+      }
+    }
+
+    return $chart_definition;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preRender(array $element) {
     if (!isset($element['#id'])) {
       $element['#id'] = Html::getUniqueId('chartjs-render');
@@ -201,6 +278,7 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
       $chart_definition = $this->populateCategories($element, $chart_definition);
       $chart_definition = $this->populateDatasets($element, $chart_definition);
       $chart_definition = $this->populateAxes($element, $chart_definition);
+      $chart_definition = $this->populatePlotLineAnnotations($element, $chart_definition);
       if ($element['#chart_type'] === 'gauge') {
         $chart_definition = $this->buildGaugeChart($element, $chart_definition);
       }
@@ -455,7 +533,38 @@ class Chartjs extends ChartBase implements ContainerFactoryPluginInterface {
       }
     }
 
+    $this->setAxisValuePrefixSuffix($chart_definition, $element);
+
     return $chart_definition;
+  }
+
+  /**
+   * Set the axis value prefix and suffix.
+   *
+   * @param array $chart_definition
+   *   The chart definition.
+   * @param array $element
+   *   The element.
+   */
+  private function setAxisValuePrefixSuffix(array &$chart_definition, array $element): void {
+    foreach (Element::children($element) as $key) {
+      if ($element[$key]['#type'] !== 'chart_data') {
+        continue;
+      }
+      $prefix = $element[$key]['#prefix'] ?? '';
+      $suffix = $element[$key]['#suffix'] ?? '';
+      if ($prefix === '' && $suffix === '') {
+        continue;
+      }
+      $target = $element[$key]['#target_axis'] ?? NULL;
+      $axis = ($target && isset($chart_definition['options']['scales'][$target])) ? $target : 'y';
+      if ($prefix !== '') {
+        $chart_definition['options']['scales'][$axis]['ticks']['prefix'] = $prefix;
+      }
+      if ($suffix !== '') {
+        $chart_definition['options']['scales'][$axis]['ticks']['suffix'] = $suffix;
+      }
+    }
   }
 
   /**

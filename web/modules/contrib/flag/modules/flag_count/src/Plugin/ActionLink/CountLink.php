@@ -15,8 +15,7 @@ use Drupal\flag\Plugin\ActionLink\AJAXactionLink;
  * @ActionLinkType(
  *   id = "count_link",
  *   label = @Translation("Count link"),
- *   description = "An example AJAX action link which displays the count with
- * the flag."
+ *   description = "An AJAX action link which displays flag count."
  * )
  */
 class CountLink extends AJAXactionLink {

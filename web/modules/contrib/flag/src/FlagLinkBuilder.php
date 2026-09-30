@@ -10,31 +10,10 @@ use Drupal\Core\Security\TrustedCallbackInterface;
  */
 class FlagLinkBuilder implements FlagLinkBuilderInterface, TrustedCallbackInterface {
 
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The flag service.
-   */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, FlagServiceInterface $flag_service) {
-    $this->entityTypeManager = $entity_type_manager;
-    $this->flagService = $flag_service;
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected FlagServiceInterface $flagService,
+  ) {
   }
 
   /**
@@ -48,11 +27,33 @@ class FlagLinkBuilder implements FlagLinkBuilderInterface, TrustedCallbackInterf
    * {@inheritdoc}
    */
   public function build($entity_type_id, $entity_id, $flag_id, $view_mode = 'default') {
+    // Load the entity.
     $entity = $this->entityTypeManager->getStorage($entity_type_id)->load($entity_id);
-    $flag = $this->flagService->getFlagById($flag_id);
+    if (!$entity) {
+      return [];
+    }
 
-    $link_type_plugin = $flag->getLinkTypePlugin();
-    return $link_type_plugin->getAsFlagLink($flag, $entity, $view_mode);
+    // Load the flag.
+    $flag = $this->flagService->getFlagById($flag_id);
+    if (!$flag) {
+      return [];
+    }
+
+    // Get the entity's bundle (content type).
+    $entity_bundle = $entity->bundle();
+
+    // Get the bundles (content types) that this flag applies to.
+    $flaggable_bundles = $flag->getBundles();
+
+    // If no content types are selected for the flag,
+    // assume it applies to all content types.
+    if (empty($flaggable_bundles) || in_array($entity_bundle, $flaggable_bundles, TRUE)) {
+      // Generate the flag link if the flag applies to this content type.
+      return $flag->getLinkTypePlugin()->getAsFlagLink($flag, $entity, $view_mode);
+    }
+
+    // If the flag does not apply, return an empty array.
+    return [];
   }
 
 }

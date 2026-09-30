@@ -15,21 +15,9 @@ class EntityFlagActionDeriver extends DeriverBase implements ContainerDeriverInt
 
   use StringTranslationTrait;
 
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * Constructs the flag action deriver.
-   *
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The flag service.
-   */
-  public function __construct(FlagServiceInterface $flag_service) {
-    $this->flagService = $flag_service;
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+  ) {
   }
 
   /**

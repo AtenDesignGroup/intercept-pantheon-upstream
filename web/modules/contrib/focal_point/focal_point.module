@@ -117,6 +117,15 @@ function focal_point_imce_supported_widgets_alter(array &$widgets) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
+function focal_point_form_media_library_add_form_dropzonejs_alter(array &$form, FormStateInterface $form_state) {
+  // Dropzonejs changed their form-id for the media-library-form.
+  // Call our form-alter for the old form-id to make sure focal_point is added.
+  focal_point_form_media_library_add_form_upload_alter($form, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
 function focal_point_form_media_library_add_form_upload_alter(array &$form, FormStateInterface $form_state) {
   // Get any media items that are in the process of being added.
   // @see \Drupal\media_library\Form\AddFormBase::getAddedMediaItems().

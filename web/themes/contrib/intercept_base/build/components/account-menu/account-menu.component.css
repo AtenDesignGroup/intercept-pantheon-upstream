@@ -93,9 +93,6 @@
   font-size: 0.75rem;
   color: #4C4D4F;
 }
-.account-menu__content .menu--account-id a {
-  margin-left: 1rem;
-}
 @media (min-width: 62rem) {
   .account-menu__content .menu--account-id {
     display: inline-block;

@@ -47,13 +47,13 @@ directories other than "/vendor" (e.g. "/libraries") using Composer.
              "type": "package",
              "package": {
                  "name": "billboardjs/billboard",
-                 "version": "3.10.3",
+                 "version": "4.0.3",
                  "type": "drupal-library",
                  "extra": {
                      "installer-name": "billboard"
                  },
                  "dist": {
-                     "url": "https://registry.npmjs.org/billboard.js/-/billboard.js-3.10.3.tgz",
+                     "url": "https://registry.npmjs.org/billboard.js/-/billboard.js-4.0.3.tgz",
                      "type": "tar"
                  }
              }
@@ -142,4 +142,4 @@ the code below.
 7. Run the following command; you should find that new directories have been
 created under "/libraries".
 
-        composer require --prefer-dist billboardjs/billboard:3.10.3 d3/d3:7.9.0
+        composer require --prefer-dist billboardjs/billboard:4.0.3 d3/d3:7.9.0

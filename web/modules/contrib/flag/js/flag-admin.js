@@ -1,21 +1,32 @@
-(function ($, Drupal) {
-  const _this = this;
-
+((Drupal, once) => {
   Drupal.behaviors.flagsSummary = {
-    attach: function attach(context) {
-      const $context = $(context);
-      $context
-        .find('details[data-drupal-selector="edit-flag"]')
-        .drupalSetSummary(function (context) {
-          const checkedBoxes = $(context).find('input:checkbox:checked');
-          if (checkedBoxes.length === 0) {
-            return Drupal.t('No flags');
-          }
-          const getTitle = function getTitle() {
-            return _this.title;
-          };
-          return checkedBoxes.map(getTitle).toArray().join(', ');
-        });
+    attach(context) {
+      once(
+        'flags-summary',
+        'details[data-drupal-selector="edit-flag"]',
+        context,
+      ).forEach((details) => {
+        const summary = details.querySelector('span[class*="summary"]');
+
+        if (!summary) {
+          return;
+        }
+
+        const updateSummary = () => {
+          const checked = details.querySelectorAll(
+            'input[type="checkbox"]:checked',
+          );
+
+          summary.textContent = checked.length
+            ? ` ${Array.from(checked)
+                .map((checkbox) => checkbox.title)
+                .join(', ')}`
+            : ` ${Drupal.t('No flags')}`;
+        };
+
+        details.addEventListener('change', updateSummary);
+        updateSummary();
+      });
     },
   };
-})(jQuery, Drupal);
+})(Drupal, once);

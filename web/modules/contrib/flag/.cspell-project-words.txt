@@ -41,3 +41,6 @@ Unflags
 Unfollow
 unfollow
 unfollowed
+flaglink
+dataflag
+flaggingflagged

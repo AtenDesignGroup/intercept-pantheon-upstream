@@ -15,21 +15,9 @@ use Drupal\flag\FlagServiceInterface;
  */
 class UnFlagAccessCheck implements AccessInterface {
 
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The flag service.
-   */
-  public function __construct(FlagServiceInterface $flag_service) {
-    $this->flagService = $flag_service;
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+  ) {
   }
 
   /**
@@ -42,7 +30,7 @@ class UnFlagAccessCheck implements AccessInterface {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account.
    *
-   * @return string
+   * @return \Drupal\Core\Access\AccessResult
    *   A \Drupal\Core\Access\AccessInterface constant value.
    */
   public function access(RouteMatchInterface $route_match, FlagInterface $flag, AccountInterface $account) {

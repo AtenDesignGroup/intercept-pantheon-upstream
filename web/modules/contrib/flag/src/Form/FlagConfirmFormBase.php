@@ -29,21 +29,9 @@ abstract class FlagConfirmFormBase extends ConfirmFormBase {
    */
   protected $flag;
 
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagService
-   */
-  protected $flagService;
-
-  /**
-   * Constructs a FlagConfirmFormBase object.
-   *
-   * @param \Drupal\flag\FlagService $flag_service
-   *   The flag service.
-   */
-  public function __construct(FlagService $flag_service) {
-    $this->flagService = $flag_service;
+  public function __construct(
+    protected FlagService $flagService,
+  ) {
   }
 
   /**

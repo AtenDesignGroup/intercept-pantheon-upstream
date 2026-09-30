@@ -34,15 +34,27 @@ function _toConsumableArray(arr) {
         para.innerText = response.message;
 
         para.setAttribute('class', 'js-flag-message');
+        para.setAttribute('aria-live', 'polite');
+
+        const flagElement = document.querySelector(response.selector);
 
         para.addEventListener(
           'animationend',
           function (event) {
+            const flagLink = flagElement.getElementsByTagName('a');
+            // If there is no link, remove the parent.
+            if (flagLink.length === 0) {
+              flagElement.remove();
+            }
             return event.target.remove();
           },
           false,
         );
 
+        // Remove margin left as there is no link.
+        if (flagElement.getElementsByTagName('a').length === 0) {
+          para.style.marginLeft = 0;
+        }
         document.querySelector(response.selector).appendChild(para);
         Drupal.announce(response.message, 'assertive');
       }

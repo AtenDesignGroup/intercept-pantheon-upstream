@@ -7,7 +7,7 @@ dependencies:
   - drupal:media
   - video_embed_field:video_embed_field
 
-# Information added by Drupal.org packaging script on 2026-04-20
-version: '3.1.0'
+# Information added by Drupal.org packaging script on 2026-09-30
+version: '3.1.1'
 project: 'video_embed_field'
-datestamp: 1776704166
+datestamp: 1790757259

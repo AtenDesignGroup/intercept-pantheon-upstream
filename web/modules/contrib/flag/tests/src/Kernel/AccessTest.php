@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\flag\Kernel;
 
+use Drupal\flag\Access\FlagAccessCheck;
+use Drupal\flag\Access\UnFlagAccessCheck;
 use Drupal\flag\Entity\Flag;
 use Drupal\node\Entity\Node;
 
@@ -214,6 +216,40 @@ class AccessTest extends FlagKernelTestBase {
     $this->assertTrue($flag->actionAccess('flag', $user_bob)->isNeutral());
     $this->assertTrue($flag->actionAccess('unflag', $user_alice)->isNeutral());
     $this->assertTrue($flag->actionAccess('unflag', $user_bob)->isNeutral());
+  }
+
+  /**
+   * Tests access check flag is autowired.
+   */
+  public function testAccessCheckFlagAutowire(): void {
+    // Get the service from the container.
+    $flagAction = $this->container->get('access_check.flag.action');
+
+    // Assert it exists and is the correct class.
+    $this->assertInstanceOf(FlagAccessCheck::class, $flagAction);
+
+    // Get the service again from container to simulate autowiring injection.
+    $flagActionAgain = $this->container->get('access_check.flag.action');
+
+    // Assert that the container returns the same service instance.
+    $this->assertSame($flagAction, $flagActionAgain);
+  }
+
+  /**
+   * Tests access check unflag is autowired.
+   */
+  public function testAccessCheckUnflagAutowire(): void {
+    // Get the service from the container.
+    $unFlagAction = $this->container->get('access_check.unflag.action');
+
+    // Assert it exists and is the correct class.
+    $this->assertInstanceOf(UnFlagAccessCheck::class, $unFlagAction);
+
+    // Get the service again from container to simulate autowiring injection.
+    $unFlagActionAgain = $this->container->get('access_check.unflag.action');
+
+    // Assert that the container returns the same service instance.
+    $this->assertSame($unFlagAction, $unFlagActionAgain);
   }
 
 }

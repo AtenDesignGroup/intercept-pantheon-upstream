@@ -49,7 +49,7 @@ class AgreeToTermsWidgetCustom1 extends BooleanCheckboxWidget {
     }
 
     $element['#prefix'] = '<h5>' . t('Terms of Service') . '</h5>' .
-    '<p><b>' . t('Please note all meetings are open to the public. Rooms will only be held for 30 minutes after the reservation start-time and then will be released for use by other customers.') . '</b></p>' .
+    '<p><b>' . t('Please note all meetings are open to the public. Rooms will only be held for 30 minutes after the reservation start time and then will be released for use by other customers.') . '</b></p>' .
     '<p>' . t('I have read and agree to the <a class="use-ajax" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:800}" href="/room-reservation/terms">Terms of Service</a>, including but not limited to Library spaces not being used for:') . '</p>';
     $element['#allowed_tags'] = ['p', 'span', 'legend', 'fieldset'];
     $element['#required'] = TRUE;

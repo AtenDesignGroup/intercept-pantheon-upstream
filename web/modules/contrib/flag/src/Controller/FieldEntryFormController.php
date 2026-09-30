@@ -3,11 +3,9 @@
 namespace Drupal\flag\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Session\SessionManagerInterface;
 use Drupal\flag\FlagInterface;
 use Drupal\flag\FlagServiceInterface;
 use Drupal\flag\FlaggingInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -15,41 +13,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class FieldEntryFormController extends ControllerBase {
 
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
-
-  /**
-   * The session manager.
-   *
-   * @var \Drupal\Core\Session\SessionManagerInterface
-   */
-  protected $sessionManager;
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\Core\Session\SessionManagerInterface $session_manager
-   *   The session manager.
-   * @param \Drupal\flag\FlagServiceInterface $flag_service
-   *   The flag service.
-   */
-  public function __construct(SessionManagerInterface $session_manager, FlagServiceInterface $flag_service) {
-    $this->sessionManager = $session_manager;
-    $this->flagService = $flag_service;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('session_manager'),
-      $container->get('flag')
-      );
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+  ) {
   }
 
   /**
@@ -70,12 +36,21 @@ class FieldEntryFormController extends ControllerBase {
     $account = $session_id = NULL;
     $this->flagService->populateFlaggerDefaults($account, $session_id);
 
+    $this->flagService->ensureSession();
+    $entity = $this->flagService->getFlaggableById($flag, $entity_id);
+    $flagging = $this->flagService->getFlagging($flag, $entity, NULL, NULL);
+
+    if ($flagging) {
+      return $this->getForm($flagging, 'add');
+    }
+
     $flagging = $this->entityTypeManager()->getStorage('flagging')->create([
       'flag_id' => $flag->id(),
       'entity_type' => $flag->getFlaggableEntityTypeId(),
       'entity_id' => $entity_id,
       'uid' => $account->id(),
       'session_id' => $session_id,
+      'global' => $flag->isGlobal(),
     ]);
 
     return $this->getForm($flagging, 'add');

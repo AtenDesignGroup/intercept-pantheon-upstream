@@ -24,32 +24,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class ActionLinkTypeBase extends PluginBase implements ActionLinkTypePluginInterface, ContainerFactoryPluginInterface {
 
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
-
   use StringTranslationTrait;
   use RedirectDestinationTrait;
 
-  /**
-   * Build a new link type instance and sets the configuration.
-   *
-   * @param array $configuration
-   *   The configuration array with which to initialize this plugin.
-   * @param string $plugin_id
-   *   The ID with which to initialize this plugin.
-   * @param array $plugin_definition
-   *   The plugin definition array.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, AccountInterface $current_user) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    protected AccountInterface $currentUser,
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configuration += $this->defaultConfiguration();
-    $this->currentUser = $current_user;
   }
 
   /**
@@ -124,10 +109,16 @@ abstract class ActionLinkTypeBase extends PluginBase implements ActionLinkTypePl
       // collected and applied to the render array, as it might be rendered on
       // its own, for example in an ajax response. Specifically, this is
       // necessary for CSRF token placeholder replacements.
-      $rendered_url = $url->toString(TRUE);
-      $rendered_url->applyTo($render);
+      if ($entity->id() !== NULL) {
+        $rendered_url = $url->toString(TRUE);
+        $rendered_url->applyTo($render);
 
-      $render['#attributes']['href'] = $rendered_url->getGeneratedUrl();
+        $render['#attributes']['href'] = $rendered_url->getGeneratedUrl();
+      }
+      else {
+        // If entity is in preview add a dummy url.
+        $render['#attributes']['href'] = '<current>';
+      }
 
       // Use render array for title to allow limited markup in the link text.
       $render['#title'] = ['#markup' => $flag->getShortText($action)];
@@ -136,6 +127,11 @@ abstract class ActionLinkTypeBase extends PluginBase implements ActionLinkTypePl
     elseif (!$this->currentUser->isAnonymous() && $flag->isFlagged($entity, $this->currentUser)) {
       $render['#access'] = !$access->isAllowed();
       $render['#unflag_denied_text'] = $flag->getUnflagDeniedText();
+    }
+    // If anonymous user does not have permission to unflag, render the flag
+    // so a flagged message can be displayed.
+    elseif ($this->currentUser->isAnonymous()) {
+      $render['#access'] = !$access->isAllowed();
     }
     else {
       $render = [];

@@ -7,6 +7,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Security\TrustedCallbackInterface;
+use Drupal\views\ContextualLinksHelper;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
 
@@ -188,8 +189,8 @@ class ViewsReferenceLazyFieldFormatter extends FormatterBase implements TrustedC
     $view->execute($display_id);
 
     $render_array = $view->buildRenderable($display_id, $view->args, FALSE);
-    if ($plugin_types) {
-      if (!empty($view->result) || !empty($view->empty)) {
+    if (!empty($view->result) || !empty($view->empty)) {
+      if ($plugin_types) {
         // Add a custom template if the title is available.
         $title = $view->getTitle();
         if (!empty($title) && !empty($unserialized_enabled_settings['title'])) {
@@ -204,13 +205,18 @@ class ViewsReferenceLazyFieldFormatter extends FormatterBase implements TrustedC
             '#title' => $title,
           ];
         }
-        // The views_add_contextual_links() function needs the following
-        // information in the render array in order to attach the contextual
-        // links to the view.
-        $render_array['#view_id'] = $view->storage->id();
-        $render_array['#view_display_show_admin_links'] = $view->getShowAdminLinks();
-        $render_array['#view_display_plugin_id'] = $view->getDisplay()->getPluginId();
-        views_add_contextual_links($render_array, $render_array['#view_display_plugin_id'], $display_id);
+      }
+
+      // ContextualLinksHelper::addLinks() needs the following information
+      // in the render array in order to attach the contextual links to
+      // the view.
+      $render_array['#view_id'] = $view->storage->id();
+      $render_array['#view_display_show_admin_links'] = $view->getShowAdminLinks();
+      $render_array['#view_display_plugin_id'] = $view->getDisplay()->getPluginId();
+      $plugin_id = $render_array['#view_display_plugin_id'];
+      $location = in_array($plugin_id, ['block', 'page', 'view']) ? $plugin_id : 'view';
+      if (\Drupal::hasService(ContextualLinksHelper::class)) {
+        \Drupal::service(ContextualLinksHelper::class)->addLinks($render_array, $location, $display_id);
       }
     }
 

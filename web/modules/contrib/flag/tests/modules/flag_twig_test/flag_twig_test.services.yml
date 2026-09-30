@@ -1,0 +1,4 @@
+services:
+  Drupal\flag_twig_test\Hook\FlagTwigTestHooks:
+    class: Drupal\flag_twig_test\Hook\FlagTwigTestHooks
+    autowire: true

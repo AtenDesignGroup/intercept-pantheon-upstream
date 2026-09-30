@@ -13,31 +13,10 @@ use Drupal\Core\Ajax\CommandInterface;
  */
 class ActionLinkFlashCommand implements CommandInterface {
 
-  /**
-   * Identifies the action link to be flashed.
-   *
-   * @var string
-   */
-  protected $selector;
-
-  /**
-   * The message to be flashed under the link.
-   *
-   * @var string
-   */
-  protected $message;
-
-  /**
-   * Construct a message Flasher.
-   *
-   * @param string $selector
-   *   Identifies the action link to be flashed.
-   * @param string $message
-   *   The message to be displayed.
-   */
-  public function __construct($selector, $message) {
-    $this->selector = $selector;
-    $this->message = $message;
+  public function __construct(
+    protected string $selector,
+    protected string $message,
+  ) {
   }
 
   /**

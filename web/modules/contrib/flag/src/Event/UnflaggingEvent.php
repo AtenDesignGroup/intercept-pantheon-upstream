@@ -9,21 +9,9 @@ use Drupal\Component\EventDispatcher\Event;
  */
 class UnflaggingEvent extends Event {
 
-  /**
-   * An array of flaggings.
-   *
-   * @var \Drupal\flag\FlaggingInterface[]
-   */
-  protected $flaggings = [];
-
-  /**
-   * Builds a new UnflaggingEvent.
-   *
-   * @param \Drupal\flag\FlaggingInterface[] $flaggings
-   *   The flaggings.
-   */
-  public function __construct(array $flaggings) {
-    $this->flaggings = $flaggings;
+  public function __construct(
+    protected array $flaggings,
+  ) {
   }
 
   /**

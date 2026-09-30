@@ -152,6 +152,25 @@ charts_yaxis:
       type: string
       label: 'Y axis labels rotation'
 
+charts_plot_line:
+  type: mapping
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Use as plot line'
+    orientation:
+      type: string
+      label: 'Orientation'
+    color:
+      type: string
+      label: Color
+    label_text:
+      type: label
+      label: 'Label'
+    weight:
+      type: integer
+      label: 'Weight'
+
 charts_views_field_data_provider:
   type: mapping
   mapping:
@@ -230,6 +249,15 @@ charts_config:
     yaxis:
       type: charts_yaxis
       label: 'Y axis Display'
+    plot_lines:
+      type: mapping
+      label: 'Plot lines'
+      mapping:
+        sources:
+          type: sequence
+          label: 'Plot line sources'
+          sequence:
+            type: charts_plot_line
     library_config:
       type: charts.settings.library_plugin.[%parent.library]
     library_configs:

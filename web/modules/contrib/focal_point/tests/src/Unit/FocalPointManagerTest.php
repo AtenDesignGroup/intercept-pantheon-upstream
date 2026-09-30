@@ -64,9 +64,18 @@ class FocalPointManagerTest extends FocalPointUnitTestCase {
     $data['invalid_focal_point_position_out_of_bounds_y'] = ['44,101', FALSE];
     $data['invalid_focal_point_position_out_of_bounds_xy'] = ['313,512', FALSE];
     $data['invalid_focal_point_position_empty'] = ['', FALSE];
-    $data['invalid_focal_point_position_incorrect_format_1'] = ['invalid', FALSE];
-    $data['invalid_focal_point_position_incorrect_format_2'] = ['invalid,invalid', FALSE];
-    $data['invalid_focal_point_position_incorrect_format_3'] = ['23,invalid', FALSE];
+    $data['invalid_focal_point_position_incorrect_format_1'] = [
+      'invalid',
+      FALSE,
+    ];
+    $data['invalid_focal_point_position_incorrect_format_2'] = [
+      'invalid,invalid',
+      FALSE,
+    ];
+    $data['invalid_focal_point_position_incorrect_format_3'] = [
+      '23,invalid',
+      FALSE,
+    ];
 
     return $data;
   }

@@ -91,7 +91,9 @@ function hook_chart_alter(array &$element, $chart_id) {
  * Alter an individual chart before it's rendered.
  *
  * Same as hook_chart_alter(), only including the $chart_id in the function
- * name instead of being passed in as an argument.
+ * name instead of being passed in as an argument. Do not use a dynamic
+ * chart ID, as Drupal caches every generated hook lookup in
+ * `module_implements`, even when no implementation exists.
  *
  * @see hook_chart_alter()
  */
@@ -139,7 +141,9 @@ function hook_chart_definition_alter(array &$definition, array $element, $chart_
  * Alter an individual chart before it's rendered.
  *
  * Same as hook_chart_definition_alter(), only including the $chart_id in the
- * function name instead of being passed in as an argument.
+ * function name instead of being passed in as an argument. Do not use a
+ * dynamic chart ID, as Drupal caches every generated hook lookup in
+ * `module_implements`, even when no implementation exists.
  *
  * @see hook_chart_definition_alter()
  */

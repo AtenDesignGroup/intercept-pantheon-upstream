@@ -6,7 +6,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\CsrfAccessCheck as OriginalCsrfAccessCheck;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 
@@ -17,31 +17,10 @@ use Symfony\Component\Routing\Route;
  */
 class CsrfAccessCheck implements AccessInterface {
 
-  /**
-   * Original.
-   *
-   * @var \Drupal\Core\Access\CsrfAccessCheck
-   */
-  protected $original;
-
-  /**
-   * Account Interface.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $account;
-
-  /**
-   * CsrfAccessCheck constructor.
-   *
-   * @param \Drupal\Core\Access\CsrfAccessCheck $original
-   *   Original.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   Account.
-   */
-  public function __construct(OriginalCsrfAccessCheck $original, AccountInterface $account) {
-    $this->original = $original;
-    $this->account = $account;
+  public function __construct(
+    protected OriginalCsrfAccessCheck $originalAccessCheck,
+    protected AccountProxyInterface $currentUser,
+  ) {
   }
 
   /**
@@ -60,7 +39,7 @@ class CsrfAccessCheck implements AccessInterface {
   public function access(Route $route, Request $request, RouteMatchInterface $route_match) {
     // As the original returns AccessResult::allowedif the token validates,
     // we do the same for anonymous.
-    return $this->account->isAnonymous() ? AccessResult::allowed() : $this->original->access($route, $request, $route_match);
+    return $this->currentUser->isAnonymous() ? AccessResult::allowed() : $this->originalAccessCheck->access($route, $request, $route_match);
   }
 
 }

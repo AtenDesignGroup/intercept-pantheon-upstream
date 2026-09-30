@@ -11,7 +11,7 @@ use Drupal\flag\Event\FlaggingEvent;
 use Drupal\flag\Event\UnflaggingEvent;
 use Drupal\flag\FlaggingInterface;
 use Drupal\flag\Plugin\Field\FlaggedEntityFieldItemList;
-use Drupal\user\UserInterface;
+use Drupal\user\EntityOwnerTrait;
 
 /**
  * Provides the flagging content entity.
@@ -42,7 +42,7 @@ use Drupal\user\UserInterface;
  *    "id" = "id",
  *    "bundle" = "flag_id",
  *    "uuid" = "uuid",
- *    "uid" = "uid"
+ *    "owner" = "uid",
  *  },
  *  bundle_entity_type = "flag",
  *  field_ui_base_route = "entity.flag.edit_form",
@@ -57,10 +57,14 @@ class Flagging extends ContentEntityBase implements FlaggingInterface {
   // phpcs:ignore
   // @todo should the bundle entity_key annotation be "flag" not "type"?
 
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $values, $entity_type, $bundle = FALSE, $translations = []) {
+  use EntityOwnerTrait;
+
+  public function __construct(
+    array $values,
+    $entity_type,
+    $bundle = FALSE,
+    $translations = [],
+  ) {
     if (isset($values['entity_id'])) {
       $values['flagged_entity'] = $values['entity_id'];
     }
@@ -116,6 +120,7 @@ class Flagging extends ContentEntityBase implements FlaggingInterface {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
     // This field is on flaggings even though it duplicates the entity type
     // field on the flag so that flagging queries can use it.
@@ -139,13 +144,9 @@ class Flagging extends ContentEntityBase implements FlaggingInterface {
       ->setLabel(t('Global'))
       ->setDescription(t('A boolean indicating whether the flagging is global.'));
 
-    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('User ID'))
-      ->setDescription(t('The user ID of the flagging user. This is recorded for both global and personal flags.'))
-      ->setSettings([
-        'target_type' => 'user',
-        'default_value' => 0,
-      ]);
+    assert($fields['uid'] instanceof BaseFieldDefinition);
+    $fields['uid']
+      ->setDescription(t('The user ID of the flagging user. This is recorded for both global and personal flags.'));
 
     $fields['session_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Session ID'))
@@ -210,42 +211,11 @@ class Flagging extends ContentEntityBase implements FlaggingInterface {
   /**
    * {@inheritdoc}
    */
-  public function getOwner() {
-    return $this->get('uid')->entity;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setOwner(UserInterface $account) {
-    $this->set('uid', $account->id());
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOwnerId() {
-    return $this->getEntityKey('uid');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setOwnerId($uid) {
-    $this->set('uid', $uid);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getCacheTagsToInvalidate() {
     $tags = parent::getCacheTagsToInvalidate();
 
     $tags[] = 'flagging:' . $this->bundle() . ':' . $this->getFlaggableType() . ':' . $this->getFlaggableId();
     $tags[] = 'flagging:' . $this->bundle() . ':' . $this->getFlaggableType() . ':' . $this->getFlaggableId() . ':' . $this->getOwnerId();
-    $tags[] = 'flagging:' . $this->bundle() . ':' . $this->getFlaggableType() . ':*:' . $this->getOwnerId();
 
     return $tags;
   }

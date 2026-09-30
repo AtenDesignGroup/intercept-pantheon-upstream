@@ -170,6 +170,52 @@ class ChartExampleBuilder {
       ];
     }
 
+    // Chart with plot lines, for libraries that support them. The values are
+    // not calculated here: they come from the data source already aggregated,
+    // which is how the Charts settings forms expect them to arrive too (Views
+    // aggregation, views_descriptive_statistics, or a precomputed column).
+    if ($plugin->isSupportedChartType('column') && method_exists($plugin, 'supportsPlotLines') && $plugin->supportsPlotLines()) {
+      $csv = $this->getCsvContents();
+      $installs = array_reverse($csv['5.0.x']);
+      // Stand in for a value the data source would supply ready-made.
+      $mean = (int) round(array_sum($installs) / max(count($installs), 1));
+
+      $container['content']['plot_lines'] = $this->baseChart($library, 'column', $this->t('@library Column Chart with Plot Lines', ['@library' => $label]));
+      $container['content']['plot_lines'] += [
+        'series' => [
+          '#type' => 'chart_data',
+          '#title' => $this->t('5.0.x'),
+          '#data' => $installs,
+          '#color' => '#1d84c3',
+        ],
+      ];
+      $container['content']['plot_lines']['x_axis'] = [
+        '#type' => 'chart_xaxis',
+        '#title' => $this->t('Week'),
+        '#labels' => array_reverse($csv['Week']),
+        // Vertical line: the value is the zero-based category index.
+        '#plot_lines' => [
+          [
+            'value' => 0,
+            'label' => $this->t('First week'),
+            'color' => '#8c8c8c',
+          ],
+        ],
+      ];
+      $container['content']['plot_lines']['y_axis'] = [
+        '#type' => 'chart_yaxis',
+        '#title' => $this->t('Number of Installs'),
+        // Horizontal lines drawn at values supplied by the data source.
+        '#plot_lines' => [
+          [
+            'value' => $mean,
+            'label' => $this->t('Mean'),
+            'color' => '#e15759',
+          ],
+        ],
+      ];
+    }
+
     // Gauge chart.
     if ($plugin->isSupportedChartType('gauge')) {
       $container['content']['gauge'] = $this->baseChart($library, 'gauge', $this->t('@library Gauge Chart', ['@library' => $label]));

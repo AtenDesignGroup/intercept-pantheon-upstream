@@ -76,6 +76,10 @@ class ChartExampleBuilderTest extends ChartsKernelTestBase {
     // This is the core gating guarantee.
     $this->assertNotContains('spline', $keys);
 
+    // The plot lines example is gated on the library supporting plot lines.
+    // The test library inherits the ChartBase default of no support.
+    $this->assertNotContains('plot_lines', $keys);
+
     // Every built example is rendered with the requested library.
     foreach ($build['content'] as $example) {
       $this->assertSame('charts_test_library', $example['#chart_library']);

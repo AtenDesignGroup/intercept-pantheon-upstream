@@ -49,7 +49,7 @@ class FlagFollowerInstallUninstallTest extends FlagKernelTestBase {
   protected function doTestsOnInstall() {
     $this->assertEquals(['user', 'flag_follower'], Flag::load('following')->getDependencies()['module']);
     $this->assertEquals(['flag.flag.following'], View::load('flag_followers')->getDependencies()['config']);
-    $this->assertEquals(['core.entity_view_mode.node.full', 'flag.flag.following'], View::load('flag_followers_content')->getDependencies()['config']);
+    $this->assertEquals(['core.entity_view_mode.node.teaser', 'flag.flag.following'], View::load('flag_followers_content')->getDependencies()['config']);
   }
 
 }

@@ -21,31 +21,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * link in the page.
  */
 class ActionLinkController implements ContainerInjectionInterface {
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  protected $flagService;
 
-  /**
-   * The renderer service.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\flag\FlagServiceInterface $flag
-   *   The flag service.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer service.
-   */
-  public function __construct(FlagServiceInterface $flag, RendererInterface $renderer) {
-    $this->flagService = $flag;
-    $this->renderer = $renderer;
+  public function __construct(
+    protected FlagServiceInterface $flagService,
+    protected RendererInterface $renderer,
+  ) {
   }
 
   /**

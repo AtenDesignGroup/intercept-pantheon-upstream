@@ -928,6 +928,13 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
+  public function supportsPlotLines(): bool {
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preRender(array $element) {
     // Check if a raw chart definition is already provided.
     // This allows bypassing the Drupal Charts abstraction layer.
@@ -1586,6 +1593,42 @@ class Highcharts extends ChartBase implements ContainerFactoryPluginInterface {
         $axis['max'] = $element[$key]['#max'];
         $axis['min'] = $element[$key]['#min'];
         $axis['opposite'] = $element[$key]['#opposite'];
+
+        // Map the #plot_lines property to Highcharts plotLines.
+        if (!empty($element[$key]['#plot_lines'])) {
+          foreach ($element[$key]['#plot_lines'] as $plot_line) {
+            if (!isset($plot_line['value']) || !is_numeric($plot_line['value'])) {
+              continue;
+            }
+            $line = [
+              'value' => (float) $plot_line['value'],
+              'color' => !empty($plot_line['color']) ? $plot_line['color'] : '#000000',
+              'width' => 1,
+              'zIndex' => 5,
+            ];
+            if (!empty($plot_line['label'])) {
+              $line['label'] = ['text' => $plot_line['label']];
+            }
+            $axis['plotLines'][] = $line;
+          }
+
+          // Plot lines do not influence how an axis computes its extremes, so
+          // a line outside the range of the series data is simply not drawn.
+          // Column charts baseline at zero and therefore usually cover the
+          // line by accident, while line charts fit tightly around their data
+          // and hide it. Soft extremes widen the axis just enough to bring the
+          // line into view, without overriding an explicitly configured bound
+          // or clamping the axis the way min/max would.
+          if (!empty($axis['plotLines'])) {
+            $plot_line_values = array_column($axis['plotLines'], 'value');
+            if (!is_numeric($element[$key]['#min'])) {
+              $axis['softMin'] = min($plot_line_values);
+            }
+            if (!is_numeric($element[$key]['#max'])) {
+              $axis['softMax'] = max($plot_line_values);
+            }
+          }
+        }
 
         if ($axis['labels']['rotation']) {
           $chart_type = $this->chartTypeManager->getDefinition($element['#chart_type']);

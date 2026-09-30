@@ -106,10 +106,6 @@
     font-size: 12px;
     color: #4C4D4F;
 
-    a {
-      margin-left: 1rem;
-    }
-
     @include bp(large) {
       display: inline-block;
       font-size: 16px;

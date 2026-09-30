@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -18,51 +19,17 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class FlagService implements FlagServiceInterface {
 
   /**
-   * The current user injected into the service.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
-
-  /**
-   * The Entity Type Manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  protected $requestStack;
-
-  /**
    * The anonymous session ID.
    *
    * @var string|null
    */
   protected $anonymousSessionId;
 
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Symfony\Component\HttpFoundation\RequestStack|null $request_stack
-   *   Te request stack.
-   */
   public function __construct(
-    AccountInterface $current_user,
-    EntityTypeManagerInterface $entity_type_manager,
-    ?RequestStack $request_stack = NULL,
+    protected AccountProxyInterface $currentUser,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected ?RequestStack $requestStack = NULL,
   ) {
-    $this->currentUser = $current_user;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->requestStack = $request_stack;
   }
 
   /**
@@ -74,6 +41,7 @@ class FlagService implements FlagServiceInterface {
     if ($entity_type != NULL) {
       $query->condition('entity_type', $entity_type);
     }
+    $query->sort('weight', 'ASC');
 
     $ids = $query->execute();
     $flags = $this->getFlagsByIds($ids);
@@ -129,7 +97,7 @@ class FlagService implements FlagServiceInterface {
    *
    * @see \Drupal\Core\TempStore\PrivateTempStore::startSession()
    */
-  protected function ensureSession() {
+  public function ensureSession() {
     if (!$this->currentUser->isAnonymous()) {
       return;
     }
@@ -365,6 +333,30 @@ class FlagService implements FlagServiceInterface {
     $query = $this->entityTypeManager->getStorage('flagging')->getQuery();
     $query->accessCheck();
     $query->condition('flag_id', $flag->id());
+
+    $ids = $query->execute();
+
+    $flaggings = $this->getFlaggingsByIds($ids);
+
+    $this->entityTypeManager->getStorage('flagging')->delete($flaggings);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function unflagAllByFlagByUser(FlagInterface $flag, AccountInterface $account, $session_id = NULL) {
+    $query = $this->entityTypeManager->getStorage('flagging')->getQuery();
+    $query->accessCheck(FALSE);
+    $query->condition('flag_id', $flag->id());
+    $query->condition('uid', $account->id());
+
+    if ($account->isAnonymous()) {
+      if (empty($session_id)) {
+        throw new \LogicException('An anonymous user must be identified by session ID.');
+      }
+
+      $query->condition('session_id', $session_id);
+    }
 
     $ids = $query->execute();
 

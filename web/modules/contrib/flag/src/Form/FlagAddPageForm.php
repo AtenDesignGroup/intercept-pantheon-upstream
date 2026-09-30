@@ -22,31 +22,10 @@ class FlagAddPageForm extends FormBase {
 
   use RedirectDestinationTrait;
 
-  /**
-   * The flag type plugin manager.
-   *
-   * @var \Drupal\flag\FlagType\FlagTypePluginManager
-   */
-  protected $flagTypeManager;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * Constructs a new form.
-   *
-   * @param \Drupal\flag\FlagType\FlagTypePluginManager $flag_type_manager
-   *   The link type plugin manager.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   */
-  public function __construct(FlagTypePluginManager $flag_type_manager, EntityTypeManagerInterface $entity_type_manager) {
-    $this->flagTypeManager = $flag_type_manager;
-    $this->entityTypeManager = $entity_type_manager;
+  public function __construct(
+    protected FlagTypePluginManager $flagTypeManager,
+    protected EntityTypeManagerInterface $entityTypeManager,
+  ) {
   }
 
   /**

@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\charts\Element\BaseSettings;
+use Drupal\charts\Util\Util;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,11 +38,19 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
   protected $uuidService;
 
   /**
+   * The chart plugin manager.
+   *
+   * @var \Drupal\charts\ChartManager
+   */
+  protected $chartManager;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = new static($configuration, $plugin_id, $plugin_definition);
     $instance->uuidService = $container->get('uuid');
+    $instance->chartManager = $container->get('plugin.manager.charts');
     return $instance;
   }
 
@@ -116,7 +125,7 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
       '#default_value' => $config['data'],
       '#rows' => 8,
       '#required' => TRUE,
-      '#description' => $this->t('Select a data format (above), then add your data here. CSV: a header row whose first cell is the category label and remaining cells are series names, followed by one row per category. Example:<br><code>Quarter,Product A,Product B<br>Q1,120,90<br>Q2,145,110</code><br><br>JSON: <code>{"categories":["Q1","Q2"],"series":[{"name":"Product A","data":[120,145],"color":"#1f77b4"},{"name":"Product B","data":[90,110],"target_axis":"secondary_yaxis","chart_type":"line"}]}</code><br><br>For pie and donut charts only the first series is used; categories become the slice labels.'),
+      '#description' => $this->t('Select a data format (above), then add your data here.<br><br><strong>CSV:</strong> a header row whose first cell is the category label and remaining cells are series names, followed by one row per category. Example:<br><code>Quarter,Product A,Product B<br>Q1,120,90<br>Q2,145,110</code><br><br><strong>JSON:</strong> an object with a "categories" array and a "series" array. Each series may set "color", "chart_type" and "target_axis". Example:<br><code>{"categories":["Q1","Q2"],"series":[{"name":"Product A","data":[120,145],"color":"#1f77b4"},{"name":"Product B","data":[90,110],"target_axis":"secondary_yaxis","chart_type":"line"}]}</code><br><br><strong>JSON with a plot line:</strong> a series with a "plot_line" key is drawn as a straight line across the chart instead of as data, using the first value of its "data" array. Charts does not aggregate, so supply the computed figure. "orientation" is "horizontal" (value axis) or "vertical" (category axis, where the value is the zero-based category index). "label" and "color" are optional and fall back to the series name and color. Example:<br><code>{"categories":["Q1","Q2","Q3"],"series":[{"name":"Sales","data":[120,145,160]},{"name":"Target","data":[150],"color":"#e15759","plot_line":{"orientation":"horizontal","label":"Target"}}]}</code><br><br>Plot lines are ignored by charting libraries that do not support them, and the line color is not supported by every library. For pie and donut charts only the first series is used; categories become the slice labels.'),
     ];
 
     $form['display'] = [
@@ -181,6 +190,110 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
     ];
 
     return $form;
+  }
+
+  /**
+   * Adds the plot lines section to the block form.
+   *
+   * Plot lines are only offered for libraries that support them. Because this
+   * block deliberately avoids AJAX, the rows are derived from the data already
+   * stored in the block configuration: a series becomes selectable once the
+   * data has been saved.
+   *
+   * @param array $form
+   *   The block form, altered by reference.
+   * @param array $config
+   *   The block configuration.
+   */
+  protected function buildPlotLinesForm(array &$form, array $config): void {
+    if (!$this->librarySupportsPlotLines($config['chart_library'] ?? '')) {
+      return;
+    }
+    $parsed = $this->parseData($config['data_format'] ?? 'csv', $config['data'] ?? '');
+    if (empty($parsed['series'])) {
+      return;
+    }
+
+    $form['plot_lines'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Plot lines'),
+      '#tree' => TRUE,
+      '#description' => $this->t('Draw straight lines across the chart at fixed values, such as a target, threshold or average. Select data series that should be rendered as a plot line instead of a regular series. The line is drawn at the first value of the series — Charts does not aggregate it, so supply a series that already holds the computed figure (for example a threshold column in your CSV). Horizontal lines are drawn on the value (y) axis; vertical lines on the category (x) axis, where the value is used as the zero-based category index. The line color is not supported by every charting library.'),
+    ];
+    $form['plot_lines']['sources'] = [
+      '#type' => 'table',
+      '#header' => [
+        $this->t('Series'),
+        $this->t('Use as plot line'),
+        $this->t('Orientation'),
+        $this->t('Color'),
+        $this->t('Label'),
+      ],
+    ];
+
+    foreach ($parsed['series'] as $index => $series) {
+      $key = 'series_' . $index;
+      $default_value = $config['plot_lines']['sources'][$key] ?? [];
+      $row = &$form['plot_lines']['sources'][$key];
+      $row['label'] = [
+        '#markup' => $series['name'] !== '' ? $series['name'] : $this->t('Series @number', ['@number' => $index + 1]),
+      ];
+      $row['enabled'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Use as plot line'),
+        '#title_display' => 'invisible',
+        '#default_value' => !empty($default_value['enabled']),
+      ];
+      $row['orientation'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Orientation'),
+        '#title_display' => 'invisible',
+        '#options' => [
+          'horizontal' => $this->t('Horizontal (y-axis [data value])'),
+          'vertical' => $this->t('Vertical (x-axis [numeric category index])'),
+        ],
+        '#default_value' => $default_value['orientation'] ?? 'horizontal',
+      ];
+      $row['color'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Color'),
+        '#title_display' => 'invisible',
+        '#attributes' => [
+          'TYPE' => 'color',
+        ],
+        '#size' => 10,
+        '#maxlength' => 7,
+        '#default_value' => $default_value['color'] ?? '#000000',
+      ];
+      $row['label_text'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Label'),
+        '#title_display' => 'invisible',
+        '#size' => 15,
+        '#default_value' => $default_value['label_text'] ?? '',
+      ];
+    }
+  }
+
+  /**
+   * Checks whether a chart library plugin supports plot lines.
+   *
+   * @param string $library
+   *   The library plugin ID, possibly 'site_default' or empty.
+   *
+   * @return bool
+   *   TRUE when the (resolved) library supports plot lines.
+   */
+  protected function librarySupportsPlotLines(string $library): bool {
+    if (!$library || $library === 'site_default') {
+      $library = BaseSettings::getConfiguredSiteDefaultLibraryId();
+    }
+    if (!$library || !$this->chartManager->hasDefinition($library)) {
+      return FALSE;
+    }
+    $plugin = $this->chartManager->createInstance($library);
+
+    return method_exists($plugin, 'supportsPlotLines') && $plugin->supportsPlotLines();
   }
 
   /**
@@ -264,6 +377,39 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
     $series = array_values($parsed['series']);
     $single_axis = in_array($type, ['pie', 'donut'], TRUE);
 
+    // Series flagged with a "plot_line" key are drawn as straight lines rather
+    // than as data, when the library supports them. Otherwise, they render as a
+    // regular series so nothing silently disappears from the chart.
+    $plot_lines = ['horizontal' => [], 'vertical' => []];
+    if (!$single_axis && $this->librarySupportsPlotLines($config['chart_library'] ?? '')) {
+      foreach ($series as $index => $s) {
+        if (empty($s['plot_line']) || !is_array($s['data'] ?? NULL)) {
+          continue;
+        }
+        $value = Util::firstNumericValue($s['data']);
+        if ($value === NULL) {
+          // No numeric value: keep rendering the regular series.
+          continue;
+        }
+        $settings = is_array($s['plot_line']) ? $s['plot_line'] : [];
+        $orientation = ($settings['orientation'] ?? 'horizontal') === 'vertical' ? 'vertical' : 'horizontal';
+        $plot_lines[$orientation][] = [
+          'value' => $value,
+          'label' => (string) ($settings['label'] ?? $s['name'] ?? ''),
+          'color' => (string) ($settings['color'] ?? $s['color'] ?? ''),
+        ];
+        unset($series[$index]);
+      }
+      $series = array_values($series);
+    }
+
+    if (!$series) {
+      return [
+        '#markup' => $this->t('No chart data provided.'),
+        '#cache' => ['max-age' => 0],
+      ];
+    }
+
     $chart_id = 'charts_canvas__' . ($config['id'] ?? $this->getPluginId());
     $element = [
       '#type' => 'chart',
@@ -297,6 +443,9 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
     if (!empty($config['xaxis']['title'])) {
       $element['xaxis']['#title'] = $config['xaxis']['title'];
     }
+    if ($plot_lines['vertical']) {
+      $element['xaxis']['#plot_lines'] = $plot_lines['vertical'];
+    }
 
     // Y axis / series.
     if ($single_axis) {
@@ -320,6 +469,9 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
       }
       if (($config['yaxis']['max'] ?? '') !== '') {
         $element['yaxis']['#max'] = (int) $config['yaxis']['max'];
+      }
+      if ($plot_lines['horizontal']) {
+        $element['yaxis']['#plot_lines'] = $plot_lines['horizontal'];
       }
 
       $has_secondary = FALSE;
@@ -407,7 +559,7 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
       if (trim($line) === '') {
         continue;
       }
-      $rows[] = str_getcsv($line);
+      $rows[] = str_getcsv($line, ',', '"', '');
     }
     if (count($rows) < 2) {
       return $empty;
@@ -485,6 +637,7 @@ class ChartsCanvasBlock extends BlockBase implements ContainerFactoryPluginInter
         'color' => $s['color'] ?? NULL,
         'target_axis' => $s['target_axis'] ?? NULL,
         'chart_type' => $s['chart_type'] ?? NULL,
+        'plot_line' => $s['plot_line'] ?? NULL,
       ];
     }
 

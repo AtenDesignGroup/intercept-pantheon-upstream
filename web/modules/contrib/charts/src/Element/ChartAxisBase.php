@@ -43,6 +43,16 @@ abstract class ChartAxisBase extends RenderElementBase {
       '#min' => NULL,
       // Display axis on opposite normal side.
       '#opposite' => FALSE,
+      // An array of plot lines drawn across the plot area at fixed values on
+      // this axis. Attach lines to a chart_yaxis element for horizontal lines
+      // and to a chart_xaxis element for vertical lines. Each item is an
+      // associative array with the following keys:
+      // - value: (float|int) Required. The axis value the line is drawn at.
+      //   On a categorical x-axis this is the zero-based category index.
+      // - label: (string) Optional label rendered alongside the line.
+      // - color: (string) Optional hexadecimal color. Not supported by every
+      //   charting library (e.g. C3.js and Billboard.js ignore it).
+      '#plot_lines' => [],
       // Allows properties or options not coded in the Charts module.
       '#raw_options' => [],
     ];

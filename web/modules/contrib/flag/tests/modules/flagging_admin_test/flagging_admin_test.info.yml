@@ -11,7 +11,7 @@ dependencies:
   - user:user
 package: Testing
 
-# Information added by Drupal.org packaging script on 2025-10-27
-version: '5.0.3'
+# Information added by Drupal.org packaging script on 2026-09-01
+version: '5.1.0'
 project: 'flag'
-datestamp: 1761563279
+datestamp: 1788266238
